@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="error">#FF3B30</color>
+
+    <!--Light-->
+    <color name="lightBackground">#F2F2F7</color>
+    <color name="lightPrimaryText">#000000</color>
+    <color name="lightHintText">#483C3C43</color>
+    <color name="lightElevated">#FFFFFF</color>
+    <color name="lightDivider">#593C3C43</color>
+    <color name="lightActionTextDisabled">#4D3C3C43</color>
+    <color name="lightActionText">#0A84FF</color>
+    <color name="lightInactive">#999999</color>
+    <color name="lightBlurredBackground">#BFFFFFFF</color>
+    <color name="lightHeader">#BFFFFFFF</color>
+    <color name="lightSuccess">#34C759</color>
+    <color name="lightInactiveToggle">#40767680</color>
+    <color name="lightButton">#0A84FF</color>
+    <color name="lightButtonInactive">#E3E3E9</color>
+
+    <!--Dark-->
+    <color name="darkBackground">#000000</color>
+    <color name="darkPrimaryText">#FFFFFF</color>
+    <color name="darkHintText">#EBEBF5</color>
+    <color name="darkElevated">#1C1C1E</color>
+    <color name="darkDivider">#A6545458</color>
+    <color name="darkActionTextDisabled">#4DEBEBF5</color>
+    <color name="darkActionText">#0A84FF</color>
+    <color name="darkInactive">#999999</color>
+    <color name="darkBlurredBackground">#BF000000</color>
+    <color name="darkHeader">#99EBEBF5</color>
+    <color name="darkSuccess">#30D158</color>
+    <color name="darkInactiveToggle">#40767680</color>
+    <color name="darkButton">#0A84FF</color>
+    <color name="darkButtonInactive">#0E0E0F</color>
+</resources>

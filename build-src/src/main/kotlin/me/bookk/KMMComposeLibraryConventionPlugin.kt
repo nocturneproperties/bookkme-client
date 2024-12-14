@@ -40,6 +40,7 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                 }
                 sourceSets.commonMain.dependencies {
                     implementation(libs.kmm.resources)
+                    implementation(libs.compose.runtime)
                 }
             }
 

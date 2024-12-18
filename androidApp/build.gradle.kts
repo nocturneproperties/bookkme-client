@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
-    namespace = "me.bookk.android"
+    namespace = AndroidConfig.ROOT_PACKAGE
 
     defaultConfig {
-        applicationId = "me.bookk.android"
+        applicationId = AndroidConfig.ROOT_PACKAGE
         versionCode = AndroidConfig.VERSION_CODE
         versionName = AndroidConfig.VERSION_NAME
     }
@@ -16,4 +16,5 @@ android {
 
 dependencies {
     implementation(projects.shared)
+    implementation(projects.feature.authorization.presentation)
 }

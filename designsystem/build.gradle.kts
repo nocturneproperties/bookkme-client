@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.bookk.kmm.library.compose)
     alias(libs.plugins.bookk.localise)
-    alias(libs.plugins.kmm.resources)
 }
 
 android {

@@ -8,29 +8,25 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
+import java.util.Locale
 import java.util.Properties
-import java.util.regex.Pattern
 
 fun ApplicationBuildType.firebaseCrashlytics(configuration: CrashlyticsExtension.() -> Unit) {
     (this as ExtensionAware).configure(configuration)
 }
 
-fun Project.getCurrentFlavor(): String {
-    val tskReqStr = gradle.startParameter.taskRequests.toString()
-
+fun Project.getCurrentVariant(): String {
+    val tskReqStr = gradle.startParameter.taskNames.toString()
     val patternStr = when {
-        tskReqStr.contains("assemble") -> "assemble(\\w+)(Release|Debug)"
-        tskReqStr.contains("bundle") -> "bundle(\\w+)(Release|Debug)"
-        else -> "generate(\\w+)(Release|Debug)"
+        tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"
+        tskReqStr.contains("bundle") -> "(?<=bundle)\\w*?(?=Aar)"
+        tskReqStr.contains("assemble") -> "(?<=assemble)\\w*"
+        else -> "(?<=check)\\w*?(?=Manifest)"
     }
 
-    val pattern = Pattern.compile(patternStr)
-    val matcher = pattern.matcher(tskReqStr)
-    return if (matcher.find())
-        matcher.group(1).lowercase()
-    else {
-        ""
-    }
+    val pattern = Regex(patternStr)
+    return pattern.find(tskReqStr)?.value.orEmpty()
+        .replaceFirstChar { it.lowercase(Locale.getDefault()) }
 }
 
 fun Project.findStringProperty(key: String, fileName: String): String {

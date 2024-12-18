@@ -19,6 +19,8 @@ dependencies {
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.kotlin.multiplatform.gradlePlugin)
     compileOnly(libs.firebase.crashlytics.gradlePlugin)
+    compileOnly(libs.buildkonfig.gradlePlugin)
+    compileOnly(libs.buildkonfig.compiler)
 }
 
 gradlePlugin {
@@ -41,6 +43,11 @@ gradlePlugin {
         register("kotlinLibrary") {
             id = "me.bookk.kotlin.library"
             implementationClass = "me.bookk.KotlinLibraryConventionPlugin"
+            version = "1.0"
+        }
+        register("kmmDatabase") {
+            id = "me.bookk.kmm.library.database"
+            implementationClass = "me.bookk.KMMDatabaseConventionPlugin"
             version = "1.0"
         }
         register("localise") {

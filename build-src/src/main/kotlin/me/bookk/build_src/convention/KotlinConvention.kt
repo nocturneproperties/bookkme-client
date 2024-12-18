@@ -31,6 +31,10 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     iosArm64()
     iosSimulatorArm64()
 
+    sourceSets.all {
+        languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+    }
+
     sourceSets.androidMain.dependencies {
         implementation(project.libs.kotlinx.coroutines.android)
     }
@@ -38,6 +42,7 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
         implementation(project.libs.koin.core)
         implementation(project.libs.kotlinx.datetime)
         implementation(project.libs.kotlinx.coroutines.core)
+        implementation(project.libs.okio)
     }
     sourceSets.commonTest.dependencies {
         implementation(project.libs.kotlin.test)

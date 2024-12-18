@@ -2,21 +2,21 @@ package me.bookk.build_src.convention
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import me.bookk.build_src.constants.ProductFlavour
 
 fun CommonExtension<*, *, *, *, *, *>.applyFlavourConvention() {
     flavorDimensions.add("type")
 
     productFlavors {
-        create("dev") {
-            dimension = "type"
-            matchingFallbacks
-        }
-
-        create("stage") {
+        create(ProductFlavour.DEV.title) {
             dimension = "type"
         }
 
-        create("prod") {
+        create(ProductFlavour.STAGE.title) {
+            dimension = "type"
+        }
+
+        create(ProductFlavour.PROD.title) {
             dimension = "type"
         }
     }
@@ -26,17 +26,17 @@ fun ApplicationExtension.applyFlavourConvention() {
     flavorDimensions.add("type")
 
     productFlavors {
-        create("dev") {
+        create(ProductFlavour.DEV.title) {
             dimension = "type"
-            applicationIdSuffix = ".dev"
+            applicationIdSuffix = ".${ProductFlavour.DEV.title}"
         }
 
-        create("stage") {
+        create(ProductFlavour.STAGE.title) {
             dimension = "type"
-            applicationIdSuffix = ".stage"
+            applicationIdSuffix = ".${ProductFlavour.STAGE.title}"
         }
 
-        create("prod") {
+        create(ProductFlavour.PROD.title) {
             dimension = "type"
         }
     }

@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
-import me.bookk.core.Logger
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationError
 import kotlin.coroutines.CoroutineContext
@@ -12,7 +11,6 @@ import kotlin.coroutines.CoroutineContext
 expect abstract class ViewModel(
     vmArgs: VmArgs
 ) {
-    protected val logger: Logger
     protected val viewModelScope: CoroutineScope
     protected val mapper: ErrorMapper
     protected open val viewModelScopeErrorHandler: CoroutineExceptionHandler

@@ -37,4 +37,6 @@ include(":domain:environment:api")
 include(":domain:environment:impl")
 
 //Sign Up
+include(":feature:authorization:domain:api")
+include(":feature:authorization:domain:impl")
 include(":feature:authorization:presentation")

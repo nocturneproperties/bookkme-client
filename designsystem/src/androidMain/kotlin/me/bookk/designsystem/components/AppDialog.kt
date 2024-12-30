@@ -22,7 +22,6 @@ import androidx.compose.ui.window.DialogProperties
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.designsystem.theme.text.AppTypography
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.ButtonStateImpl
 
@@ -50,14 +49,14 @@ fun AppDialog(
                 title?.let {
                     Text(
                         text = it,
-                        style = AppTypography.title3SemiBold,
+                        style = MaterialTheme.typography.titleMedium,
                         color = LocalColors.current.PrimaryText,
                     )
                 }
                 subtitle?.let {
                     Text(
                         text = it,
-                        style = AppTypography.body1Regular,
+                        style = MaterialTheme.typography.bodySmall,
                         color = LocalColors.current.PrimaryText,
                     )
                 }
@@ -69,7 +68,7 @@ fun AppDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 leftButton?.let {
-                    PrimaryButton(
+                    ActionButton(
                         onClick = { onLeftButtonClicked?.invoke() },
                         state = it,
                         colors = ButtonDefaults.buttonColors(
@@ -79,7 +78,7 @@ fun AppDialog(
                     )
                 }
                 rightButton?.let {
-                    PrimaryButton(
+                    ActionButton(
                         onClick = { onRightButtonClicked?.invoke() },
                         state = it,
                         colors = ButtonDefaults.buttonColors(

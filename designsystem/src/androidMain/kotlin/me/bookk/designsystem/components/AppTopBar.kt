@@ -1,114 +1,140 @@
 package me.bookk.designsystem.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import android.graphics.Color.BLACK
+import android.graphics.Color.WHITE
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.string
 import me.bookk.designsystem.theme.AppTheme
+import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.designsystem.theme.text.AppTypography
+import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.AppBarStateImpl
 
-val DefaultTopBarHeight = 44.dp
+enum class TopBarSize {
+    SMALL,
+    MEDIUM
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(
     modifier: Modifier = Modifier,
-    startContent: @Composable (() -> Unit)? = null,
-    centerContent: @Composable (() -> Unit)? = null,
-    endContent: @Composable (() -> Unit)? = null,
-    containerColor: Color = LocalColors.current.Background,
-    bottomLineColor: Color = LocalColors.current.Divider,
+    state: AppBarState,
+    size: TopBarSize,
+    onNavigationIconClick: (() -> Unit)? = null
 ) {
-    Column {
-        Row(
-            modifier = modifier
-                .background(containerColor)
-                .statusBarsPadding()
-                .height(DefaultTopBarHeight)
-                .padding(horizontal = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                startContent?.invoke()
-            }
-
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                centerContent?.invoke()
-            }
-
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                endContent?.invoke()
-            }
+    when (size) {
+        TopBarSize.SMALL -> {
+            TopAppBar(
+                modifier = modifier,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = LocalColors.current.Background
+                ),
+                title = {
+                    AppBarTitle(state.title.string())
+                },
+                navigationIcon = {
+                    onNavigationIconClick?.let {
+                        ClickableIcon(
+                            icon = Icons.AutoMirrored.Filled.ArrowBack,
+                            onClick = it
+                        )
+                    }
+                }
+            )
         }
 
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            color = bottomLineColor,
-            thickness = 0.5.dp
-        )
+        TopBarSize.MEDIUM -> {
+            MediumTopAppBar(
+                modifier = modifier,
+                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                    containerColor = LocalColors.current.Background
+                ),
+                title = {
+                    AppBarTitle(state.title.string())
+                },
+                navigationIcon = {
+                    onNavigationIconClick?.let {
+                        ClickableIcon(
+                            icon = Icons.AutoMirrored.Filled.ArrowBack,
+                            onClick = it
+                        )
+                    }
+                }
+            )
+        }
     }
 }
 
 @Composable
-fun AppBarTitle(text: String) {
+private fun AppBarTitle(text: String) {
     Text(
         text = text,
-        style = AppTypography.title3SemiBold,
+        style = MaterialTheme.typography.headlineSmall,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
 }
 
+@Preview(showBackground = true, backgroundColor = BLACK.toLong())
 @Composable
-fun AppBarNavButton(onClick: () -> Unit) {
-    ClickableIcon(
-        icon = Icons.AutoMirrored.Filled.ArrowBack,
-        onClick = onClick
-    )
+private fun PreviewDark() {
+    AppTheme(themeMode = ThemeMode.DARK) {
+        Column {
+            AppTopBar(
+                state = AppBarStateImpl(
+                    title = "Title".desc(),
+                    subtitle = null
+                ),
+                size = TopBarSize.SMALL,
+                onNavigationIconClick = {}
+            )
+            AppTopBar(
+                state = AppBarStateImpl(
+                    title = "Title".desc(),
+                    subtitle = null
+                ),
+                size = TopBarSize.MEDIUM,
+                onNavigationIconClick = {}
+            )
+        }
+    }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = WHITE.toLong())
 @Composable
-private fun Preview() {
-    AppTheme {
-        AppTopBar(
-            startContent = {
-                AppBarNavButton {}
-            },
-            centerContent = {
-                AppBarTitle(text = "Title")
-            },
-            endContent = {
-                ClickableIcon(
-                    icon = Icons.AutoMirrored.Filled.ArrowBack
-                ) {}
-            }
-        )
+private fun PreviewLight() {
+    AppTheme(themeMode = ThemeMode.LIGHT) {
+        Column {
+            AppTopBar(
+                state = AppBarStateImpl(
+                    title = "Title".desc(),
+                    subtitle = null
+                ),
+                size = TopBarSize.SMALL,
+                onNavigationIconClick = {}
+            )
+            AppTopBar(
+                state = AppBarStateImpl(
+                    title = "Title".desc(),
+                    subtitle = null
+                ),
+                size = TopBarSize.MEDIUM,
+                onNavigationIconClick = {}
+            )
+        }
     }
 }

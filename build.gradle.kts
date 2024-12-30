@@ -1,6 +1,5 @@
 plugins {
     //trick: for the same plugin versions in all sub-modules
-
     alias(libs.plugins.android.application).apply(false)
     alias(libs.plugins.android.library).apply(false)
     alias(libs.plugins.android.room).apply(false)
@@ -12,7 +11,6 @@ plugins {
     alias(libs.plugins.bookk.kmm.database).apply(false)
     alias(libs.plugins.bookk.kotlin.library).apply(false)
     alias(libs.plugins.bookk.android.application).apply(false)
-    alias(libs.plugins.bookk.localise).apply(false)
     alias(libs.plugins.google.services).apply(false)
     alias(libs.plugins.google.ksp).apply(false)
     alias(libs.plugins.firebase.crashlytics).apply(false)

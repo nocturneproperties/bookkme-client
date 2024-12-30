@@ -23,12 +23,13 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.theme.AppTheme
+import me.bookk.designsystem.theme.color.AppColors
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.ButtonStateImpl
 
 @Composable
-fun PrimaryButton(
+fun ActionButton(
     state: ButtonState,
     modifier: Modifier = Modifier,
     startIcon: Int? = null,
@@ -36,12 +37,12 @@ fun PrimaryButton(
     startContent: (@Composable () -> Unit)? = null,
     endContent: (@Composable () -> Unit)? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
+        containerColor = LocalColors.current.ButtonActive,
+        contentColor = AppColors.White,
         disabledContainerColor = LocalColors.current.ButtonInactive,
         disabledContentColor = LocalColors.current.ActionTextDisabled
     ),
-    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     onClick: () -> Unit
 ) {
     Button(
@@ -75,7 +76,7 @@ fun PrimaryButton(
 }
 
 @Composable
-fun SecondaryButton(
+fun TextButton(
     state: ButtonState,
     modifier: Modifier = Modifier,
     startIcon: Int? = null,
@@ -84,11 +85,11 @@ fun SecondaryButton(
     endContent: (@Composable () -> Unit)? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         containerColor = Color.Transparent,
-        contentColor = LocalColors.current.PrimaryText,
+        contentColor = LocalColors.current.ButtonActive,
         disabledContainerColor = Color.Transparent,
         disabledContentColor = LocalColors.current.ActionTextDisabled
     ),
-    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     onClick: () -> Unit
 ) {
     Button(
@@ -122,7 +123,7 @@ fun SecondaryButton(
 }
 
 @Composable
-internal fun ButtonIcon(id: Int, contentDescription: String? = null) {
+private fun ButtonIcon(id: Int, contentDescription: String? = null) {
     Icon(painter = painterResource(id = id), contentDescription = contentDescription)
 }
 
@@ -131,8 +132,8 @@ internal fun ButtonIcon(id: Int, contentDescription: String? = null) {
 private fun PreviewDefault() {
     AppTheme {
         Column {
-            PrimaryButton(state = ButtonStateImpl(text = "Text Example".desc())) {}
-            SecondaryButton(state = ButtonStateImpl(text = "Text Example".desc())) {}
+            ActionButton(state = ButtonStateImpl(text = "Text Example".desc())) {}
+            TextButton(state = ButtonStateImpl(text = "Text Example".desc())) {}
         }
     }
 }
@@ -142,13 +143,13 @@ private fun PreviewDefault() {
 private fun PreviewDisabled() {
     AppTheme {
         Column {
-            PrimaryButton(
+            ActionButton(
                 state = ButtonStateImpl(
                     text = "Text Example".desc(),
                     isEnabled = false
                 )
             ) {}
-            SecondaryButton(
+            TextButton(
                 state = ButtonStateImpl(
                     text = "Text Example".desc(),
                     isEnabled = false
@@ -163,13 +164,13 @@ private fun PreviewDisabled() {
 private fun PreviewLoading() {
     AppTheme {
         Column {
-            PrimaryButton(
+            ActionButton(
                 state = ButtonStateImpl(
                     text = "Text Example".desc(),
                     isLoading = true
                 )
             ) {}
-            SecondaryButton(
+            TextButton(
                 state = ButtonStateImpl(
                     text = "Text Example".desc(),
                     isLoading = true

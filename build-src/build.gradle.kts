@@ -50,10 +50,5 @@ gradlePlugin {
             implementationClass = "me.bookk.KMMDatabaseConventionPlugin"
             version = "1.0"
         }
-        register("localise") {
-            id = "me.bookk.localise"
-            implementationClass = "me.bookk.build_src.localise.LocalisePlugin"
-            version = "1.0"
-        }
     }
 }

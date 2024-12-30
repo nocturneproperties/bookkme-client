@@ -9,7 +9,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 
 @Immutable
-class TextFieldStateImpl (
+class TextFieldStateImpl(
     hint: StringDesc = "".desc(),
     text: String = "",
     errorTextRes: StringDesc? = null,
@@ -17,6 +17,7 @@ class TextFieldStateImpl (
     enabled: Boolean = true,
     readOnly: Boolean = false,
     maxLength: Int = Int.MAX_VALUE,
+    isValid: Boolean = false
 ) : TextFieldState {
     override var hint: StringDesc by mutableStateOf(hint)
     override var text: String by mutableStateOf(text)
@@ -25,4 +26,5 @@ class TextFieldStateImpl (
     override var enabled: Boolean by mutableStateOf(enabled)
     override var readOnly: Boolean by mutableStateOf(readOnly)
     override var maxLength: Int by mutableIntStateOf(maxLength)
+    override var isValid: Boolean by mutableStateOf(isValid)
 }

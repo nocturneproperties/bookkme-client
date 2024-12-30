@@ -3,16 +3,11 @@ package me.bookk.feature.authorization.presentation.sign_up.navigation
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import me.bookk.core.presentation.NavigationDestination
 import me.bookk.designsystem.components.ObserveErrors
 import me.bookk.feature.authorization.presentation.sign_up.SignUpNavigationEvent
 import me.bookk.feature.authorization.presentation.sign_up.SignUpScreen
 import me.bookk.feature.authorization.presentation.sign_up.SignUpViewModel
 import org.koin.androidx.compose.koinViewModel
-
-object SignUpDestination : NavigationDestination {
-    override val route: String = "sign_up"
-}
 
 internal fun NavGraphBuilder.signUpScreen() {
     composable(route = SignUpDestination.route) {

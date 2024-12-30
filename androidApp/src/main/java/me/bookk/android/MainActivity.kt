@@ -3,6 +3,7 @@ package me.bookk.android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -12,15 +13,17 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import me.bookk.designsystem.theme.AppTheme
+import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.feature.authorization.presentation.navigation.authGraph
 import me.bookk.feature.authorization.presentation.sign_up.navigation.SignUpDestination
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         installSplashScreen()
         setContent {
-            AppTheme {
+            AppTheme(themeMode = ThemeMode.LIGHT) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

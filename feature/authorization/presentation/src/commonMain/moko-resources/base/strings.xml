@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_up_create_acc">Create account</string>
+    <string name="sign_up_personal_section_title">Personal info</string>
+    <string name="sign_up_first_name">First name</string>
+    <string name="sign_up_first_name_error">Name should be at least 2 characters long</string>
+    <string name="sign_up_last_name">Last name</string>
+    <string name="sign_up_last_name_error">Last should be at least 2 characters long</string>
+    <string name="sign_up_email">Email</string>
+    <string name="sign_up_email_error">Invalid email format</string>
+    <string name="sign_up_create_account_button">Create</string>
+</resources>

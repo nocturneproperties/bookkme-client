@@ -31,7 +31,7 @@ kotlin {
         }
         commonMain.dependencies {
             // Projects
-            implementation(projects.feature.authorization.presentation)
+            implementation(projects.feature.authorization.domain.impl)
             implementation(projects.database)
             implementation(projects.core.data)
             api(projects.core)
@@ -39,6 +39,7 @@ kotlin {
             api(projects.core.di)
             api(projects.core.presentation)
             api(projects.designsystem)
+            api(projects.feature.authorization.presentation)
             // Libs
             implementation(libs.koin.core)
             implementation(libs.ktor.client.negotiation)
@@ -50,6 +51,8 @@ kotlin {
             api(libs.kmm.resources)
         }
         iosMain.dependencies {
+            api(projects.designsystem)
+            api(projects.feature.authorization.presentation)
             implementation(libs.ktor.client.darwin)
         }
 
@@ -67,8 +70,9 @@ kotlin {
             export(projects.core.di)
             export(projects.core.presentation)
             export(projects.designsystem)
-            export(libs.kmm.resources)
+            export(projects.feature.authorization.presentation)
             export(libs.kotlinx.datetime)
+            export(libs.kmm.resources)
             export(libs.kmm.resources.graphics)
         }
     }

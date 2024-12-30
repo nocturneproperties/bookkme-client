@@ -17,9 +17,6 @@ object AppColors {
     val Black: Color
         @Composable
         get() = colorResource(resource = DesignSystem.colors.black)
-    val Error: Color
-        @Composable
-        get() = colorResource(resource = DesignSystem.colors.error)
 
     object Light : ColorSchemeProvider {
         override val Background: Color
@@ -61,9 +58,15 @@ object AppColors {
         override val ButtonPrimary: Color
             @Composable
             get() = colorResource(resource = DesignSystem.colors.lightButton)
+        override val ButtonActive: Color
+            @Composable
+            get() = colorResource(resource = DesignSystem.colors.lightButtonActive)
         override val ButtonInactive: Color
             @Composable
             get() = colorResource(resource = DesignSystem.colors.lightButtonInactive)
+        override val Error: Color
+            @Composable
+            get() = colorResource(resource = DesignSystem.colors.error)
 
         @Composable
         override fun toColorScheme(): ColorScheme {
@@ -122,9 +125,15 @@ object AppColors {
         override val ButtonPrimary: Color
             @Composable
             get() = colorResource(resource = DesignSystem.colors.darkButton)
+        override val ButtonActive: Color
+            @Composable
+            get() = colorResource(resource = DesignSystem.colors.darkButtonActive)
         override val ButtonInactive: Color
             @Composable
             get() = colorResource(resource = DesignSystem.colors.darkButtonInactive)
+        override val Error: Color
+            @Composable
+            get() = colorResource(resource = DesignSystem.colors.error)
 
         @Composable
         override fun toColorScheme(): ColorScheme {

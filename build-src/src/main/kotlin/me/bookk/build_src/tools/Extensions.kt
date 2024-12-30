@@ -25,7 +25,7 @@ fun Project.getCurrentVariant(): String {
     }
 
     val pattern = Regex(patternStr)
-    return pattern.find(tskReqStr)?.value.orEmpty()
+    return (pattern.find(tskReqStr)?.value ?: System.getenv("KOTLIN_FRAMEWORK_FLAVOUR").orEmpty())
         .replaceFirstChar { it.lowercase(Locale.getDefault()) }
 }
 

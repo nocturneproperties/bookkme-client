@@ -7,6 +7,7 @@ interface TextFieldState : UiState {
     var text: String
     var errorTextRes: StringDesc?
     var isError: Boolean
+    var isValid: Boolean
     var enabled: Boolean
     var readOnly: Boolean
     var maxLength: Int

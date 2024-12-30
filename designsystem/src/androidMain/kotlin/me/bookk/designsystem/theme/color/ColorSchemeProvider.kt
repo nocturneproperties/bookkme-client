@@ -45,7 +45,13 @@ interface ColorSchemeProvider {
     val ButtonPrimary: Color
         @Composable
         get
+    val ButtonActive: Color
+        @Composable
+        get
     val ButtonInactive: Color
+        @Composable
+        get
+    val Error: Color
         @Composable
         get
 

@@ -96,7 +96,6 @@ bookk-kmm-library = { id = "me.bookk.kmm.library", version.ref = "local-plugin-v
 bookk-kmm-library-compose = { id = "me.bookk.kmm.library.compose", version.ref = "local-plugin-version" }
 bookk-kmm-database = { id = "me.bookk.kmm.library.database", version.ref = "local-plugin-version" }
 bookk-kotlin-library = { id = "me.bookk.kotlin.library", version.ref = "local-plugin-version" }
-bookk-localise = { id = "me.bookk.localise", version.ref = "local-plugin-version" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }

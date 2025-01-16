@@ -14,10 +14,6 @@ struct StateTextField: View {
     @ObservedObject
     var state: IOSTextFieldState
     @State
-    var keyboardType: UIKeyboardType = .default
-    @State
-    var textContentType: UITextContentType? = nil
-    @State
     var onTextChanged: (String) -> Void = {_ in }
     
     var body: some View {
@@ -37,8 +33,6 @@ struct StateTextField: View {
                                 }
                         )
                     )
-                    .keyboardType(keyboardType)
-                    .textContentType(textContentType)
                     .font(Font.system(.body))
                     .disabled(!state.enabled)
                 }

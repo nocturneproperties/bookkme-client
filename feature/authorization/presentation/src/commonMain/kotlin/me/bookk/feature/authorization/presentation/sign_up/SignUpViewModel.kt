@@ -3,8 +3,10 @@ package me.bookk.feature.authorization.presentation.sign_up
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.MutableSharedFlow
 import me.bookk.android.feature.sign_up.resources.SignUpRes
+import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.ValidateEmail
 import me.bookk.feature.authorization.domain.api.ValidateName
 import me.bookk.feature.authorization.domain.api.isValid
@@ -15,6 +17,7 @@ import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 class SignUpViewModel(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
+    private val createAccount: CreateAccount,
     stateFactory: AuthStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs), SignUpEventListener {
@@ -59,7 +62,23 @@ class SignUpViewModel(
     }
 
     override fun onConfirmButtonClick() {
-
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.confirmButton.isLoading = true },
+            call = {
+                createAccount(
+                    CreateAccount.UserData(
+                        uiState.name.text,
+                        uiState.lastName.text,
+                        uiState.email.text
+                    )
+                )
+            },
+            onComplete = {
+                it
+            },
+            onTerminate = { uiState.confirmButton.isLoading = false },
+        )
     }
 
     private fun validateButton() {

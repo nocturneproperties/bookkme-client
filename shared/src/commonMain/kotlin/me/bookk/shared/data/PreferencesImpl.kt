@@ -23,7 +23,7 @@ class PreferencesImpl(
 ) : BookkPreferences {
 
     private val dataStore = PreferenceDataStoreFactory.createWithPath(
-        produceFile = { fileProvider.touchPrefsFile(fileName) }
+        produceFile = { fileProvider.touchPrefsFile("$fileName.preferences_pb") }
     )
 
     override suspend fun <T : Any> get(key: BookkPreferences.Key<T>, cls: KClass<T>): T? {

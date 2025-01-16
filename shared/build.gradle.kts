@@ -12,13 +12,13 @@ android {
 
 buildkonfigExtend {
     forFlavour(ProductFlavour.DEV) {
-        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "dev", const = true)
+        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://10.0.2.2/api", const = true)
     }
     forFlavour(ProductFlavour.STAGE) {
-        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "stage", const = true)
+        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://bookkk.me/api", const = true)
     }
     forFlavour(ProductFlavour.PROD) {
-        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "prod", const = true)
+        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://bookkk.me/api", const = true)
     }
 }
 
@@ -31,7 +31,11 @@ kotlin {
         }
         commonMain.dependencies {
             // Projects
+            //Auth
             implementation(projects.feature.authorization.domain.impl)
+            implementation(projects.feature.authorization.data)
+            api(projects.feature.authorization.presentation)
+            //
             implementation(projects.database)
             implementation(projects.core.data)
             api(projects.core)
@@ -39,12 +43,13 @@ kotlin {
             api(projects.core.di)
             api(projects.core.presentation)
             api(projects.designsystem)
-            api(projects.feature.authorization.presentation)
             // Libs
             implementation(libs.koin.core)
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.client.protobuf)
             implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.client.resources)
+            implementation(libs.ktor.client.auth)
             implementation(libs.androidx.preferences)
             implementation(libs.okio)
             api(libs.kotlinx.datetime)

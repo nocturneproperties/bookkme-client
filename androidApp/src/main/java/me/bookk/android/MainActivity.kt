@@ -19,9 +19,9 @@ import me.bookk.feature.authorization.presentation.sign_up.navigation.SignUpDest
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        installSplashScreen()
         setContent {
             AppTheme(themeMode = ThemeMode.LIGHT) {
                 Surface(

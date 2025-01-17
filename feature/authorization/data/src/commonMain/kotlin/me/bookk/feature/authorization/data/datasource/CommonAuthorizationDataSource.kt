@@ -36,7 +36,7 @@ class CommonAuthorizationDataSource(
         return preferences.get(Key.refreshToken)
     }
 
-    override suspend fun refreshToken(refreshToken: String): TokenInfo = execute {
+    override suspend fun refreshToken(refreshToken: String): TokenInfo = mapExceptions {
         val response = httpClient.post(AuthRouting.Api.Auth.Refresh()) {
             setBody(RefreshTokenRemote(refreshToken))
         }

@@ -6,7 +6,9 @@ import me.bookk.android.feature.sign_up.resources.SignUpRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationError.Message
 import me.bookk.feature.authorization.domain.api.CreateAccount
+import me.bookk.feature.authorization.domain.api.CreateAccount.Error
 import me.bookk.feature.authorization.domain.api.ValidateEmail
 import me.bookk.feature.authorization.domain.api.ValidateName
 import me.bookk.feature.authorization.domain.api.isValid
@@ -75,7 +77,28 @@ class SignUpViewModel(
                 )
             },
             onComplete = {
-                it
+                navigationFlow.emit(SignUpNavigationEvent.ToMain)
+            },
+            onError = {
+                when (it) {
+                    is Error.EmailAlreadyExist -> {
+                        uiState.email.isError = true
+                        uiState.email.isValid = false
+                        uiState.email.errorTextRes = SignUpRes.strings.sign_up_email_exist.desc()
+                    }
+                    is Error.InvalidEmailFormat -> {
+                        uiState.email.isError = true
+                        uiState.email.isValid = false
+                        uiState.email.errorTextRes = SignUpRes.strings.sign_up_email_error.desc()
+                    }
+                    is Error.PasskeyVerificationFailed -> {
+                        errorFlow.emit(Message(SignUpRes.strings.sign_up_passkey_failed.desc()))
+                    }
+                    is Error.AccountCreationFailed -> {
+                        errorFlow.emit(Message(SignUpRes.strings.sign_up_failed.desc()))
+                    }
+                    else -> throw it
+                }
             },
             onTerminate = { uiState.confirmButton.isLoading = false },
         )

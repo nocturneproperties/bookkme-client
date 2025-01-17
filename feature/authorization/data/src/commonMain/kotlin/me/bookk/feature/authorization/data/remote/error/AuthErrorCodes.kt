@@ -1,0 +1,9 @@
+package me.bookk.feature.authorization.data.remote.error
+
+object AuthErrorCodes {
+    const val EMAIL_EXIST = 1
+    const val INVALID_EMAIL_FORMAT = 2
+    const val USER_ALREADY_EXIST = 3
+    const val VERIFICATION_FAILED = 4
+    const val ACCOUNT_CREATION_FAILED = 5
+}

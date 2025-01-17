@@ -56,7 +56,8 @@ fun ActionButton(
         if (state.isLoading) {
             CircularProgressIndicator(
                 strokeWidth = 2.dp,
-                trackColor = colors.contentColor,
+                trackColor = Color.Transparent,
+                color = colors.contentColor,
                 modifier = Modifier
                     .height(24.dp)
                     .width(24.dp)
@@ -103,7 +104,8 @@ fun TextButton(
         if (state.isLoading) {
             CircularProgressIndicator(
                 strokeWidth = 2.dp,
-                trackColor = colors.contentColor,
+                trackColor = Color.Transparent,
+                color = colors.contentColor,
                 modifier = Modifier
                     .height(24.dp)
                     .width(24.dp)

@@ -15,6 +15,7 @@ import me.bookk.feature.authorization.domain.api.CreateAccount.UserData
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationData
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.ServerChallenge
+import me.bookk.feature.authorization.domain.entity.TokenInfo
 
 internal class CommonRegistrationDataSource(
     private val client: HttpClient,
@@ -27,13 +28,11 @@ internal class CommonRegistrationDataSource(
         response.body<RegistrationChallengeResponse>().toDomain()
     }
 
-    override suspend fun finishRegistration(registrationData: RegistrationData) {
-        execute {
-            val response = client.post(Auth.SignUp.PassKey.Validate()) {
-                setBody(registrationData.toRemote())
-            }
-            response.body<TokenInfoResponse>().toDomain()
+    override suspend fun finishRegistration(data: RegistrationData): TokenInfo = execute {
+        val response = client.post(Auth.SignUp.PassKey.Validate()) {
+            setBody(data.toRemote())
         }
+        response.body<TokenInfoResponse>().toDomain()
     }
 
     override suspend fun createPasskey(challenge: ServerChallenge) = execute {

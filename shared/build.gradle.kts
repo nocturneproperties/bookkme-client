@@ -32,6 +32,7 @@ kotlin {
         commonMain.dependencies {
             // Projects
             //Auth
+            implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.domain.impl)
             implementation(projects.feature.authorization.data)
             api(projects.feature.authorization.presentation)

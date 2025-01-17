@@ -5,6 +5,6 @@ import me.bookk.feature.authorization.domain.entity.TokenInfo
 
 interface RegistrationDataSource {
     suspend fun getSignUpPasskeyChallenge(userData: CreateAccount.UserData): ServerChallenge
-    suspend fun finishRegistration(registrationData: RegistrationData): TokenInfo
+    suspend fun finishRegistration(data: RegistrationData): TokenInfo
     suspend fun createPasskey(challenge: ServerChallenge): PasskeyVerificationPayload
 }

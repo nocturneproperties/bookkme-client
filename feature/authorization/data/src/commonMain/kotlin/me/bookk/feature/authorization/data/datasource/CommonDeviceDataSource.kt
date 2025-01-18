@@ -1,11 +1,10 @@
 package me.bookk.feature.authorization.data.datasource
 
-import me.bookk.core.Platform
-import me.bookk.core.storage.PreferenceProvider
-import me.bookk.core.storage.Preferences
-import me.bookk.core.storage.get
-import me.bookk.core.storage.set
 import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
+import me.bookk.feature.platform.domain.datasource.PreferenceProvider
+import me.bookk.feature.platform.domain.datasource.Preferences
+import me.bookk.feature.platform.domain.datasource.get
+import me.bookk.feature.platform.domain.datasource.set
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -23,10 +22,6 @@ internal class CommonDeviceDataSource(
             preferences.set(Key.deviceUUID, uuid)
         }
         return uuid
-    }
-
-    override suspend fun getDeviceName(): String {
-        return Platform().getDeviceName()
     }
 
     private object Key {

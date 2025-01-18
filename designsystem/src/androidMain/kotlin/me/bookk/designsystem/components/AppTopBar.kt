@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
@@ -25,7 +26,8 @@ import me.bookk.designsystem.uistate.AppBarStateImpl
 
 enum class TopBarSize {
     SMALL,
-    MEDIUM
+    MEDIUM,
+    LARGE
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +46,7 @@ fun AppTopBar(
                     containerColor = LocalColors.current.Background
                 ),
                 title = {
-                    AppBarTitle(state.title.string())
+                    AppBarTitle(state.title.string(), size)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -64,7 +66,27 @@ fun AppTopBar(
                     containerColor = LocalColors.current.Background
                 ),
                 title = {
-                    AppBarTitle(state.title.string())
+                    AppBarTitle(state.title.string(), size)
+                },
+                navigationIcon = {
+                    onNavigationIconClick?.let {
+                        ClickableIcon(
+                            icon = Icons.AutoMirrored.Filled.ArrowBack,
+                            onClick = it
+                        )
+                    }
+                }
+            )
+        }
+
+        TopBarSize.LARGE -> {
+            LargeTopAppBar(
+                modifier = modifier,
+                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                    containerColor = LocalColors.current.Background
+                ),
+                title = {
+                    AppBarTitle(state.title.string(), size)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -80,10 +102,15 @@ fun AppTopBar(
 }
 
 @Composable
-private fun AppBarTitle(text: String) {
+private fun AppBarTitle(text: String, size: TopBarSize) {
+    val style = when(size) {
+        TopBarSize.SMALL -> MaterialTheme.typography.headlineSmall
+        TopBarSize.MEDIUM -> MaterialTheme.typography.headlineLarge
+        TopBarSize.LARGE -> MaterialTheme.typography.headlineLarge
+    }
     Text(
         text = text,
-        style = MaterialTheme.typography.headlineSmall,
+        style = style,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )

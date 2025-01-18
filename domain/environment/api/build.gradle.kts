@@ -9,7 +9,6 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.di)
             implementation(libs.kotlinx.datetime)
             api(projects.core.domain)
         }

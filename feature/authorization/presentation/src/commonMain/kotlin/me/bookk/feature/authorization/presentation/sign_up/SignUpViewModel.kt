@@ -2,7 +2,7 @@ package me.bookk.feature.authorization.presentation.sign_up
 
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.MutableSharedFlow
-import me.bookk.android.feature.sign_up.resources.SignUpRes
+import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
@@ -33,7 +33,7 @@ class SignUpViewModel(
         uiState.name.isValid = validationResult.isValid
         uiState.name.isError = !validationResult.isValid
         uiState.name.errorTextRes = when (validationResult) {
-            ValidateName.Result.Invalid.Length -> SignUpRes.strings.sign_up_first_name_error.desc()
+            ValidateName.Result.Invalid.Length -> AuthRes.strings.sign_up_first_name_error.desc()
             ValidateName.Result.Valid -> null
         }
         validateButton()
@@ -45,7 +45,7 @@ class SignUpViewModel(
         uiState.lastName.isValid = validationResult.isValid
         uiState.lastName.isError = !validationResult.isValid
         uiState.lastName.errorTextRes = when (validationResult) {
-            ValidateName.Result.Invalid.Length -> SignUpRes.strings.sign_up_last_name_error.desc()
+            ValidateName.Result.Invalid.Length -> AuthRes.strings.sign_up_last_name_error.desc()
             ValidateName.Result.Valid -> null
         }
         validateButton()
@@ -57,7 +57,7 @@ class SignUpViewModel(
         uiState.email.isValid = validationResult.isValid
         uiState.email.isError = !validationResult.isValid
         uiState.email.errorTextRes = when (validationResult) {
-            ValidateEmail.Result.Invalid.Format -> SignUpRes.strings.sign_up_email_error.desc()
+            ValidateEmail.Result.Invalid.Format -> AuthRes.strings.sign_up_email_error.desc()
             ValidateEmail.Result.Valid -> null
         }
         validateButton()
@@ -84,18 +84,18 @@ class SignUpViewModel(
                     is Error.EmailAlreadyExist -> {
                         uiState.email.isError = true
                         uiState.email.isValid = false
-                        uiState.email.errorTextRes = SignUpRes.strings.sign_up_email_exist.desc()
+                        uiState.email.errorTextRes = AuthRes.strings.sign_up_email_exist.desc()
                     }
                     is Error.InvalidEmailFormat -> {
                         uiState.email.isError = true
                         uiState.email.isValid = false
-                        uiState.email.errorTextRes = SignUpRes.strings.sign_up_email_error.desc()
+                        uiState.email.errorTextRes = AuthRes.strings.sign_up_email_error.desc()
                     }
                     is Error.PasskeyVerificationFailed -> {
-                        errorFlow.emit(Message(SignUpRes.strings.sign_up_passkey_failed.desc()))
+                        errorFlow.emit(Message(AuthRes.strings.sign_up_passkey_failed.desc()))
                     }
                     is Error.AccountCreationFailed -> {
-                        errorFlow.emit(Message(SignUpRes.strings.sign_up_failed.desc()))
+                        errorFlow.emit(Message(AuthRes.strings.sign_up_failed.desc()))
                     }
                     else -> throw it
                 }
@@ -112,11 +112,11 @@ class SignUpViewModel(
 
     companion object {
         fun createInitData() = SignUpState.InitData(
-            title = SignUpRes.strings.sign_up_create_acc.desc(),
-            nameHint = SignUpRes.strings.sign_up_first_name.desc(),
-            lastNameHint = SignUpRes.strings.sign_up_last_name.desc(),
-            emailHint = SignUpRes.strings.sign_up_email.desc(),
-            confirmButtonText = SignUpRes.strings.sign_up_create_account_button.desc()
+            title = AuthRes.strings.sign_up_create_acc.desc(),
+            nameHint = AuthRes.strings.sign_up_first_name.desc(),
+            lastNameHint = AuthRes.strings.sign_up_last_name.desc(),
+            emailHint = AuthRes.strings.sign_up_email.desc(),
+            confirmButtonText = AuthRes.strings.sign_up_create_account_button.desc()
         )
     }
 }

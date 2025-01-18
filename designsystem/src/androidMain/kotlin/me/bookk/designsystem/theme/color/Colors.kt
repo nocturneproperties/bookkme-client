@@ -25,6 +25,9 @@ object AppColors {
         override val PrimaryText: Color
             @Composable
             get() = colorResource(resource = DesignSystem.colors.lightPrimaryText)
+        override val SecondaryText: Color
+            @Composable
+            get() =  colorResource(resource = DesignSystem.colors.lightSecondaryText)
         override val HintText: Color
             @Composable
             get() = colorResource(resource = DesignSystem.colors.lightHintText)
@@ -92,6 +95,9 @@ object AppColors {
         override val PrimaryText: Color
             @Composable
             get() = colorResource(resource = DesignSystem.colors.darkPrimaryText)
+        override val SecondaryText: Color
+            @Composable
+            get() =  colorResource(resource = DesignSystem.colors.darkSecondaryText)
         override val HintText: Color
             @Composable
             get() = colorResource(resource = DesignSystem.colors.darkHintText)

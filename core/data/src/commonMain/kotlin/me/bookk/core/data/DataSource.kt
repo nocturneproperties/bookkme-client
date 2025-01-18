@@ -2,8 +2,8 @@ package me.bookk.core.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import me.bookk.core.data.map.toDomain
 import me.bookk.core.domain.entity.Error
-import me.bookk.core.map.toDomain
 
 abstract class DataSource {
 

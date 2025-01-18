@@ -5,16 +5,16 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
 import me.bookk.core.data.DataSource
-import me.bookk.core.storage.PreferenceProvider
-import me.bookk.core.storage.Preferences
-import me.bookk.core.storage.get
-import me.bookk.core.storage.set
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.remote.api.AuthRouting
 import me.bookk.feature.authorization.data.remote.model.RefreshTokenRemote
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.entity.TokenInfo
+import me.bookk.feature.platform.domain.datasource.PreferenceProvider
+import me.bookk.feature.platform.domain.datasource.Preferences
+import me.bookk.feature.platform.domain.datasource.get
+import me.bookk.feature.platform.domain.datasource.set
 
 class CommonAuthorizationDataSource(
     private val httpClient: HttpClient,

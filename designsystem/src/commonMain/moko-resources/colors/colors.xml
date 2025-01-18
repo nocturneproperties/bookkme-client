@@ -7,6 +7,7 @@
     <!--Light-->
     <color name="lightBackground">#FFFFFF</color>
     <color name="lightPrimaryText">#000000</color>
+    <color name="lightSecondaryText">#9E9E9E</color>
     <color name="lightHintText">#BFBFC1</color>
     <color name="lightElevated">#F3F3F3</color>
     <color name="lightDivider">#57575B</color>
@@ -24,6 +25,7 @@
     <!--Dark-->
     <color name="darkBackground">#000000</color>
     <color name="darkPrimaryText">#FFFFFF</color>
+    <color name="darkSecondaryText">#9E9E9E</color>
     <color name="darkHintText">#5A5A5F</color>
     <color name="darkElevated">#1C1C1E</color>
     <color name="darkDivider">#373739</color>

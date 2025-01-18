@@ -19,6 +19,7 @@ rootProject.name = "Bookk"
 
 //Shared
 include(":shared")
+include(":database")
 
 //App
 include(":androidApp")
@@ -34,3 +35,10 @@ include(":core:di")
 //Domain
 include(":domain:environment:api")
 include(":domain:environment:impl")
+
+//Sign Up
+include(":feature:authorization:data")
+include(":feature:authorization:domain:api")
+include(":feature:authorization:domain:impl")
+include(":feature:authorization:domain:datasource")
+include(":feature:authorization:presentation")

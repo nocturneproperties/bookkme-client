@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.bookk.kmm.library)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {

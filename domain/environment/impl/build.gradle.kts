@@ -9,15 +9,9 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.koin.core)
             implementation(projects.core.di)
             implementation(projects.domain.environment.api)
             api(projects.core.domain)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.koin.test)
         }
     }
 }

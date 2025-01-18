@@ -1,35 +1,23 @@
 package me.bookk.designsystem.components
 
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.Flow
 import me.bookk.core.presentation.error.PresentationError
-import me.bookk.core.presentation.showToast
+import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.ButtonStateImpl
 
 @Composable
 fun ObserveErrors(errorFlow: Flow<PresentationError>) {
-    val context = LocalContext.current
     val errors = remember { mutableStateListOf<PresentationError>() }
 
     LaunchedEffect(errorFlow) {
         errorFlow.collect { error ->
-            when (error) {
-                is PresentationError.Unsupported -> {
-                    context.showToast(
-                        message = error.message?.desc() ?: "Unknown error".desc(),
-                        length = Toast.LENGTH_LONG
-                    )
-                }
-
-                else -> errors.add(error)
-            }
+             errors.add(error)
         }
     }
 
@@ -45,9 +33,16 @@ fun ObserveErrors(errorFlow: Flow<PresentationError>) {
 fun ErrorDialog(error: PresentationError, onDismiss: () -> Unit) {
     AppDialog(
         subtitle = when (error) {
-            else -> "Not yet implemented".desc()
+            is PresentationError.Message -> error.message
+            PresentationError.NoConnection -> DesignSystem.strings.error_no_internet.desc()
+            PresentationError.ServerError -> DesignSystem.strings.error_server.desc()
+            is PresentationError.Unsupported -> DesignSystem.strings.error_unexpected.desc()
+            PresentationError.Ignore -> {
+                onDismiss()
+                return
+            }
         }.localized(),
-        rightButton = ButtonStateImpl("OK".desc()),
+        rightButton = ButtonStateImpl(DesignSystem.strings.action_ok.desc()),
         onRightButtonClicked = { onDismiss() },
         onDismiss = { onDismiss() },
     )

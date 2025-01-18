@@ -17,7 +17,6 @@ internal fun ApplicationExtension.applyConvention(project: Project) {
         targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
-        buildConfig = true
         compose = true
     }
     project.applyComposeCompilerConvention()

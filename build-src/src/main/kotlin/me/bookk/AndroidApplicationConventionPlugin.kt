@@ -40,6 +40,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 add("implementation", libs.compose.ui.tooling)
                 add("implementation", libs.compose.ui.tooling.preview)
                 add("implementation", libs.compose.material3)
+                add("implementation", libs.compose.navigation)
                 add("implementation", libs.androidx.activity.compose)
 
                 add("implementation", platform(libs.firebase.bom))

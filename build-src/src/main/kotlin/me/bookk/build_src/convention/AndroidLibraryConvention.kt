@@ -14,7 +14,6 @@ internal fun LibraryExtension.applyConvention(project: Project, useCompose: Bool
         consumerProguardFiles.add(File(project.projectDir, "consumer-rules.pro"))
     }
     buildFeatures {
-        buildConfig = true
         compose = useCompose
     }
     if (useCompose) {

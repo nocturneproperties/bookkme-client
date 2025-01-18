@@ -1,6 +1,7 @@
 package me.bookk
 
 import com.android.build.gradle.LibraryExtension
+import com.codingfeline.buildkonfig.gradle.BuildKonfigExtension
 import me.bookk.build_src.convention.applyConvention
 import me.bookk.build_src.convention.applyFlavourConvention
 import me.bookk.build_src.tools.libs
@@ -16,6 +17,7 @@ class KMMLibraryConventionPlugin : Plugin<Project> {
             pluginManager.apply {
                 apply(libs.plugins.android.library.get().pluginId)
                 apply(libs.plugins.kotlin.multiplatform.get().pluginId)
+                apply(libs.plugins.buldconfig.get().pluginId)
             }
 
             extensions.getByType<LibraryExtension>().apply {
@@ -23,6 +25,7 @@ class KMMLibraryConventionPlugin : Plugin<Project> {
                 applyFlavourConvention()
                 extensions.getByType<KotlinMultiplatformExtension>().applyConvention(target)
             }
+            extensions.getByType<BuildKonfigExtension>().applyConvention(target)
         }
     }
 }

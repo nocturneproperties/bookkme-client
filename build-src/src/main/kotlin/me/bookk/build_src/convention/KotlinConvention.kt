@@ -38,6 +38,7 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
         implementation(project.libs.koin.core)
         implementation(project.libs.kotlinx.datetime)
         implementation(project.libs.kotlinx.coroutines.core)
+        implementation(project.libs.okio)
     }
     sourceSets.commonTest.dependencies {
         implementation(project.libs.kotlin.test)

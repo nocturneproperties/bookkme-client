@@ -2,14 +2,24 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
-	let greet = ""
+    
+    @EnvironmentObject var navigationStack: NavigationStackHolder
+	
 	var body: some View {
-		Text(greet)
+        NavigationStack(path: $navigationStack.path) {
+            Button("Sign Up") {
+                navigationStack.path.append(SignUpDestination())
+            }
+            .navigationDestination(for: SignUpDestination.self) { value in
+                SignUpScreen()
+            }
+        }
 	}
 }
 
 struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
 		ContentView()
+            .environmentObject(NavigationStackHolder())
 	}
 }

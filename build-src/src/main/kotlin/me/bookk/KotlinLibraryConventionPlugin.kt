@@ -1,5 +1,6 @@
 package me.bookk
 
+import com.codingfeline.buildkonfig.gradle.BuildKonfigExtension
 import me.bookk.build_src.convention.applyConvention
 import me.bookk.build_src.tools.libs
 import org.gradle.api.Plugin
@@ -14,10 +15,12 @@ class KotlinLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply {
                 apply(libs.plugins.kotlin.multiplatform.get().pluginId)
+                apply(libs.plugins.buldconfig.get().pluginId)
             }
 
             extensions.getByType<JavaPluginExtension>().applyConvention()
             extensions.getByType<KotlinJvmProjectExtension>().applyConvention()
+            extensions.getByType<BuildKonfigExtension>().applyConvention(target)
         }
     }
 }

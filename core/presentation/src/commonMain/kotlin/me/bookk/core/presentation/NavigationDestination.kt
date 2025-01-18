@@ -1,6 +1,6 @@
 package me.bookk.core.presentation
 
 
-interface NavigationDestination {
-    val route: String
+abstract class NavigationDestination {
+    abstract val route: String
 }

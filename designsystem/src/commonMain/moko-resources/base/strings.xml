@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- Loco xml export: Android string resources
- Project: bookk
- Locale: en-GB, English (UK)
- Tagged: designsystem
- Exported by: Amina Hafarova
- Exported at: Mon, 10 Jun 2024 22:24:56 +0200
--->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources>
+    <string name="error_no_internet">Oops! It seems you're offline. Please check your internet connection and try again.</string>
+    <string name="error_server">Our server ran into an issue. We're on it! Please refresh or come back shortly.</string>
+    <string name="error_unexpected">Unexpected error. Contact support if needed.</string>
 
+    <string name="action_ok">Ok</string>
+    <string name="action_cancel">Cancel</string>
 </resources>

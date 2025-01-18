@@ -6,6 +6,7 @@ compose-runtime = "1.7.1"
 androidx-activityCompose = "1.9.3"
 androidx-lifecycle = "2.8.7"
 androidx-core = "1.15.0"
+androidx-credentials = "1.5.0-beta01"
 kotlinSerialization = "1.6.2"
 coroutines = "1.9.0"
 firebase = "33.7.0"
@@ -13,7 +14,7 @@ appDistribution = "5.0.0"
 crashlytics = "3.0.2"
 firebase-kotlin = "1.12.0"
 google-services = "4.4.2"
-koin = "3.5.3"
+koin = "4.0.0"
 core-ktx = "1.12.0"
 ktor = "3.0.1"
 logback = "1.5.6"
@@ -26,6 +27,12 @@ datetime = "0.6.1"
 coil = "2.6.0"
 slf4jSimple = "2.0.16"
 room = "2.7.0-alpha12"
+sqlite = "2.5.0-alpha12"
+compose-navigation = "2.8.5"
+ksp = "2.1.0-1.0.29"
+preferences = "1.1.1"
+okio = "3.9.1"
+build-konfig = "0.15.2"
 
 [libraries]
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -34,6 +41,9 @@ androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+androidx-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "preferences" }
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidx-credentials" }
+androidx-credentials-compat = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidx-credentials" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-multiplatform-gradlePlugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -46,8 +56,9 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-runtime" }
-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+compose-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
@@ -64,13 +75,21 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-client-logging-logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-protobuf = { module = "io.ktor:ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
-simplelogger-slf4j = { module = "org.slf4j:slf4j-simple", version.ref = "slf4jSimple" }
+ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 kmm-resources = { module = "dev.icerock.moko:resources", version.ref = "kmm-resources" }
 kmm-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "kmm-resources" }
 kmm-resources-graphics = { module = "dev.icerock.moko:graphics", version.ref = "kmm-resources-graphics" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-sqlite = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+simplelogger-slf4j = { module = "org.slf4j:slf4j-simple", version.ref = "slf4jSimple" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+buildkonfig-gradlePlugin = { module = "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin", version.ref = "build-konfig" }
+buildkonfig-compiler = { module = "com.codingfeline.buildkonfig:buildkonfig-compiler", version.ref = "build-konfig" }
 
 [plugins]
-android-room = { id = "androidx.room:room-gradle-plugin", version.ref = "room" }
+android-room = { id = "androidx.room", version.ref = "room" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -80,11 +99,13 @@ kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = 
 bookk-android-application = { id = "me.bookk.android.application", version.ref = "local-plugin-version" }
 bookk-kmm-library = { id = "me.bookk.kmm.library", version.ref = "local-plugin-version" }
 bookk-kmm-library-compose = { id = "me.bookk.kmm.library.compose", version.ref = "local-plugin-version" }
+bookk-kmm-database = { id = "me.bookk.kmm.library.database", version.ref = "local-plugin-version" }
 bookk-kotlin-library = { id = "me.bookk.kotlin.library", version.ref = "local-plugin-version" }
-bookk-localise = { id = "me.bookk.localise", version.ref = "local-plugin-version" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 kmm-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "kmm-resources" }
 firebase-appDistribution = { id = "com.google.firebase.appdistribution", version.ref = "appDistribution" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+buldconfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }

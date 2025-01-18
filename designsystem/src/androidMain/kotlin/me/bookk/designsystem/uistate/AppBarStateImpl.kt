@@ -9,8 +9,8 @@ import dev.icerock.moko.resources.desc.StringDesc
 @Immutable
 class AppBarStateImpl(
     title: StringDesc,
-    subtitle: StringDesc?
-): AppBarState {
+    subtitle: StringDesc? = null
+) : AppBarState {
     override var title: StringDesc by mutableStateOf(title)
     override var subtitle: StringDesc? by mutableStateOf(subtitle)
 }

@@ -13,9 +13,13 @@ class IOSSignInState: SignInState {
     
     var learnMoreButton: any ButtonState
     
-    var passkeyCard: TroubleshootPasskeyCardData
-    
     var signInButton: any ButtonState
+    
+    var troubleshootCardStaticData: TroubleshootCardData
+    
+    var troubleshootView: any ViewState
+    
+
     
     init(initData: SignInStateInitData) {
         appBar = IOSAppBarState(
@@ -24,7 +28,8 @@ class IOSSignInState: SignInState {
         learnMoreButton = IOSButtonState(
             text: initData.learnMoreText
         )
-        passkeyCard = initData.passkeyCardData
+        troubleshootView = IOSViewState()
+        troubleshootCardStaticData = initData.troubleshootCardStaticData
         signInButton = IOSButtonState(
             text: initData.buttonText
         )

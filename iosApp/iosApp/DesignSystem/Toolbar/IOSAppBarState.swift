@@ -8,13 +8,14 @@
 
 import shared
 
-class IOSAppBarState: shared.AppBarState, ObservableObject {
+class IOSAppBarState: IOSViewState, AppBarState {
     var subtitle: (any StringDesc)?
     
     var title: any StringDesc
     
-    init(subtitle: (any StringDesc)? = nil, title: any StringDesc) {
+    init(title: any StringDesc, subtitle: (any StringDesc)? = nil, isVisible: Bool = true) {
         self.subtitle = subtitle
         self.title = title
+        super.init(isVisible: isVisible)
     }
 }

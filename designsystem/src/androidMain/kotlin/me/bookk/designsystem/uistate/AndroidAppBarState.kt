@@ -7,10 +7,11 @@ import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
 
 @Immutable
-class AppBarStateImpl(
+class AndroidAppBarState(
     title: StringDesc,
-    subtitle: StringDesc? = null
-) : AppBarState {
+    subtitle: StringDesc? = null,
+    isVisible: Boolean = true
+) : AndroidViewState(isVisible), AppBarState {
     override var title: StringDesc by mutableStateOf(title)
     override var subtitle: StringDesc? by mutableStateOf(subtitle)
 }

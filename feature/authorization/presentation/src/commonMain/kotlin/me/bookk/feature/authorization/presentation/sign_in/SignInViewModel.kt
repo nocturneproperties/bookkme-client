@@ -9,7 +9,7 @@ import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.sign_in.state.Reason
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInEventListener
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
-import me.bookk.feature.authorization.presentation.sign_in.state.TroubleshootPasskeyCardData
+import me.bookk.feature.authorization.presentation.sign_in.state.TroubleshootCardData
 
 class SignInViewModel(
     stateFactory: AuthStateFactory,
@@ -31,7 +31,7 @@ class SignInViewModel(
 
         fun createInitData() = SignInState.InitData(
             title = AuthRes.strings.sign_in_title.desc(),
-            passkeyCardData = TroubleshootPasskeyCardData(
+            troubleshootCardStaticData = TroubleshootCardData(
                 title = AuthRes.strings.sign_in_passkey_troubleshoot.desc(),
                 icon = AuthRes.images.passkey,
                 reasons = listOf(
@@ -45,6 +45,7 @@ class SignInViewModel(
                     )
                 )
             ),
+            isTroubleshootCardVisible = false,
             learnMoreText = AuthRes.strings.sign_in_passkey_learn_more_button.desc(),
             buttonText = AuthRes.strings.sign_in_passkey_button.desc()
         )

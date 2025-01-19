@@ -9,7 +9,7 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.Flow
 import me.bookk.core.presentation.error.PresentationError
 import me.bookk.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.ButtonStateImpl
+import me.bookk.designsystem.uistate.AndroidButtonState
 
 @Composable
 fun ObserveErrors(errorFlow: Flow<PresentationError>) {
@@ -42,7 +42,7 @@ fun ErrorDialog(error: PresentationError, onDismiss: () -> Unit) {
                 return
             }
         }.localized(),
-        rightButton = ButtonStateImpl(DesignSystem.strings.action_ok.desc()),
+        rightButton = AndroidButtonState(DesignSystem.strings.action_ok.desc()),
         onRightButtonClicked = { onDismiss() },
         onDismiss = { onDismiss() },
     )

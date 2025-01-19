@@ -2,9 +2,8 @@ package me.bookk.designsystem.uistate
 
 import dev.icerock.moko.resources.desc.StringDesc
 
-interface TextState : UiState {
+interface TextState : ViewState {
     var text: StringDesc
-    var isVisible: Boolean
     var isHighlighted: Boolean
 }
 

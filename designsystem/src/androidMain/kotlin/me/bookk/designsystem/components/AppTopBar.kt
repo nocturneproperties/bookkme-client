@@ -21,8 +21,8 @@ import me.bookk.core.presentation.string
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AppBarState
-import me.bookk.designsystem.uistate.AppBarStateImpl
 
 enum class TopBarSize {
     SMALL,
@@ -122,7 +122,7 @@ private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         Column {
             AppTopBar(
-                state = AppBarStateImpl(
+                state = AndroidAppBarState(
                     title = "Title".desc(),
                     subtitle = null
                 ),
@@ -130,7 +130,7 @@ private fun PreviewDark() {
                 onNavigationIconClick = {}
             )
             AppTopBar(
-                state = AppBarStateImpl(
+                state = AndroidAppBarState(
                     title = "Title".desc(),
                     subtitle = null
                 ),
@@ -147,7 +147,7 @@ private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         Column {
             AppTopBar(
-                state = AppBarStateImpl(
+                state = AndroidAppBarState(
                     title = "Title".desc(),
                     subtitle = null
                 ),
@@ -155,7 +155,7 @@ private fun PreviewLight() {
                 onNavigationIconClick = {}
             )
             AppTopBar(
-                state = AppBarStateImpl(
+                state = AndroidAppBarState(
                     title = "Title".desc(),
                     subtitle = null
                 ),

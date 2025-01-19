@@ -16,13 +16,13 @@ import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVeri
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.datasource.registration.ServerChallenge
 
-actual class PassKeyCreator(
+class AndroidPassKeyCreator(
     private val context: Context
-) {
+) : PassKeyCreator {
 
     private val credentialManager = CredentialManager.create(context.applicationContext)
 
-    actual suspend fun create(challenge: ServerChallenge): PasskeyVerificationPayload {
+    override suspend fun create(challenge: ServerChallenge): PasskeyVerificationPayload {
         return runCatching {
             val createPublicKeyCredentialRequest = CreatePublicKeyCredentialRequest(
                 requestJson = challenge.jsonChallengeData
@@ -41,10 +41,11 @@ actual class PassKeyCreator(
         }.recoverCatching {
             throw when (it) {
                 is CreateCredentialCancellationException -> PasskeyVerificationError.UserCancelled
-                is CreatePublicKeyCredentialDomException -> when(it.domError) {
+                is CreatePublicKeyCredentialDomException -> when (it.domError) {
                     is NotAllowedError -> PasskeyVerificationError.UserCancelled
                     else -> PasskeyVerificationError.Infrastructure
                 }
+
                 is CreateCredentialInterruptedException,
                 is CreateCredentialProviderConfigurationException -> PasskeyVerificationError.Infrastructure
 

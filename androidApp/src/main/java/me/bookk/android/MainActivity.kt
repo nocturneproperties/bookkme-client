@@ -41,8 +41,8 @@ fun NavigationRoot() {
         navController = controller,
         startDestination = SignUpDestination.route
     ) {
-        authGraph {
-
-        }
+        authGraph(
+            navigateToMainScreen = {}
+        )
     }
 }

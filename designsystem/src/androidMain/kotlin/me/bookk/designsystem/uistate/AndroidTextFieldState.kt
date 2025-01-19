@@ -9,7 +9,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 
 @Immutable
-class TextFieldStateImpl(
+class AndroidTextFieldState(
     hint: StringDesc = "".desc(),
     text: String = "",
     errorTextRes: StringDesc? = null,
@@ -17,8 +17,9 @@ class TextFieldStateImpl(
     enabled: Boolean = true,
     readOnly: Boolean = false,
     maxLength: Int = Int.MAX_VALUE,
-    isValid: Boolean = false
-) : TextFieldState {
+    isValid: Boolean = false,
+    isVisible: Boolean = true
+) : AndroidViewState(isVisible), TextFieldState {
     override var hint: StringDesc by mutableStateOf(hint)
     override var text: String by mutableStateOf(text)
     override var errorTextRes: StringDesc? by mutableStateOf(errorTextRes)

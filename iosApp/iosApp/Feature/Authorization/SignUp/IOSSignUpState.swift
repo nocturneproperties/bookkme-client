@@ -33,8 +33,8 @@ class IOSSignUpState: SignUpState {
             hint: initData.emailHint
         )
         confirmButton = IOSButtonState(
-            isEnabled: false,
-            text: initData.confirmButtonText
+            text: initData.confirmButtonText,
+            isEnabled: false
         )
     }
 }

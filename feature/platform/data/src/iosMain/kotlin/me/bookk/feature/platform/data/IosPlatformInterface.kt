@@ -1,17 +1,23 @@
 package me.bookk.feature.platform.data
 
 import me.bookk.feature.platform.domain.datasource.PlatformInterface
+import platform.Foundation.NSURL
+import platform.UIKit.UIApplication
+import platform.UIKit.UIDevice
 
-class IosPlatformInterface() : PlatformInterface {
+class IosPlatformInterface : PlatformInterface {
+
     override fun getPlatformName(): String {
-        TODO("Not yet implemented")
+        return "ios"
     }
 
     override fun getDeviceName(): String {
-        TODO("Not yet implemented")
+        return UIDevice.currentDevice.name
     }
 
     override fun openUrlPreview(url: String) {
-        TODO("Not yet implemented")
+        NSURL.URLWithString(url)?.let {
+            UIApplication.sharedApplication().openURL(it)
+        }
     }
 }

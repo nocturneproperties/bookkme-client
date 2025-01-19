@@ -25,8 +25,8 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.AppColors
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.ButtonState
-import me.bookk.designsystem.uistate.ButtonStateImpl
 
 @Composable
 fun ActionButton(
@@ -134,8 +134,8 @@ private fun ButtonIcon(id: Int, contentDescription: String? = null) {
 private fun PreviewDefault() {
     AppTheme {
         Column {
-            ActionButton(state = ButtonStateImpl(text = "Text Example".desc())) {}
-            TextButton(state = ButtonStateImpl(text = "Text Example".desc())) {}
+            ActionButton(state = AndroidButtonState(text = "Text Example".desc())) {}
+            TextButton(state = AndroidButtonState(text = "Text Example".desc())) {}
         }
     }
 }
@@ -146,13 +146,13 @@ private fun PreviewDisabled() {
     AppTheme {
         Column {
             ActionButton(
-                state = ButtonStateImpl(
+                state = AndroidButtonState(
                     text = "Text Example".desc(),
                     isEnabled = false
                 )
             ) {}
             TextButton(
-                state = ButtonStateImpl(
+                state = AndroidButtonState(
                     text = "Text Example".desc(),
                     isEnabled = false
                 )
@@ -167,13 +167,13 @@ private fun PreviewLoading() {
     AppTheme {
         Column {
             ActionButton(
-                state = ButtonStateImpl(
+                state = AndroidButtonState(
                     text = "Text Example".desc(),
                     isLoading = true
                 )
             ) {}
             TextButton(
-                state = ButtonStateImpl(
+                state = AndroidButtonState(
                     text = "Text Example".desc(),
                     isLoading = true
                 )

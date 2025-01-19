@@ -8,12 +8,13 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 
 @Immutable
-class TextStateImpl(
+class AndroidButtonState(
     text: StringDesc = "".desc(),
-    isVisible: Boolean = false,
-    isHighlighted: Boolean = false,
-) : TextState {
+    isLoading: Boolean = false,
+    isEnabled: Boolean = true,
+    isVisible: Boolean = true
+) : AndroidViewState(isVisible), ButtonState {
     override var text: StringDesc by mutableStateOf(text)
-    override var isVisible: Boolean by mutableStateOf(isVisible)
-    override var isHighlighted: Boolean by mutableStateOf(isHighlighted)
+    override var isLoading: Boolean by mutableStateOf(isLoading)
+    override var isEnabled: Boolean by mutableStateOf(isEnabled)
 }

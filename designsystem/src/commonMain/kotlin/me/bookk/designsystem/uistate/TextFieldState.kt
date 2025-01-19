@@ -2,7 +2,7 @@ package me.bookk.designsystem.uistate
 
 import dev.icerock.moko.resources.desc.StringDesc
 
-interface TextFieldState : UiState {
+interface TextFieldState : ViewState {
     var hint: StringDesc
     var text: String
     var errorTextRes: StringDesc?

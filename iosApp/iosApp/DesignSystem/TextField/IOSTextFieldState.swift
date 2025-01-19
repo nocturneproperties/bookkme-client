@@ -7,7 +7,7 @@
 //
 import shared
 
-class IOSTextFieldState: shared.TextFieldState, ObservableObject {
+class IOSTextFieldState: IOSViewState, TextFieldState {
     
     @Published
     var enabled: Bool
@@ -34,7 +34,8 @@ class IOSTextFieldState: shared.TextFieldState, ObservableObject {
         isValid: Bool = false,
         maxLength: Int32 = Int32.max,
         readOnly: Bool = false,
-        text: String = ""
+        text: String = "",
+        isVisible: Bool = true
     ) {
         self.enabled = enabled
         self.errorTextRes = errorTextRes
@@ -44,6 +45,7 @@ class IOSTextFieldState: shared.TextFieldState, ObservableObject {
         self.maxLength = maxLength
         self.readOnly = readOnly
         self.text = text
+        super.init(isVisible: isVisible)
     }
     
 }

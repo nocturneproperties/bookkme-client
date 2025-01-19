@@ -60,6 +60,9 @@ struct SignUpScreen: View {
         .onAppear {
             focusedField = .name
         }
+        .onDisappear {
+            signUpVM.clear()
+        }
     }
 }
 

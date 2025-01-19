@@ -67,7 +67,5 @@ struct SignUpScreen: View {
 }
 
 #Preview {
-    KMMPreviewView {
-        SignUpScreen()
-    }
+    SignUpScreen()
 }

@@ -20,3 +20,8 @@ struct SignInScreen: View {
     
 }
 
+#Preview {
+    SignInScreen()
+}
+
+

@@ -13,6 +13,9 @@ struct ContentView: View {
             .navigationDestination(for: SignUpDestination.self) { value in
                 SignUpScreen()
             }
+            .navigationDestination(for: SignInDestination.self) { value in
+                SignInScreen()
+            }
         }
 	}
 }

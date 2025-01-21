@@ -3,7 +3,7 @@ package me.bookk.feature.authorization.data.local
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
-import me.bookk.feature.authorization.domain.datasource.registration.ServerChallenge
+import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
 import platform.AuthenticationServices.ASAuthorizationController
 import platform.AuthenticationServices.ASAuthorizationControllerPresentationContextProvidingProtocol
 import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialProvider
@@ -15,10 +15,10 @@ import platform.Foundation.dataUsingEncoding
 import platform.UIKit.UIApplication
 import platform.darwin.NSObject
 
-class IosPassKeyCreator: PassKeyCreator {
+class IosPassKeyManager: PassKeyManager {
 
     @OptIn(BetaInteropApi::class)
-    override suspend fun create(challenge: ServerChallenge): PasskeyVerificationPayload =
+    override suspend fun create(challenge: ServerSignUpChallenge): PasskeyVerificationPayload =
         suspendCancellableCoroutine {
             val delegate = PasskeyControllerDelegate(it)
             val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(

@@ -2,11 +2,15 @@ package me.bookk.feature.authorization.data.mapping
 
 import me.bookk.feature.authorization.data.remote.model.PassKeySignUpStartInfo
 import me.bookk.feature.authorization.data.remote.model.RegistrationChallengeResponse
+import me.bookk.feature.authorization.data.remote.model.SignInStartResponse
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
 import me.bookk.feature.authorization.data.remote.model.VerifyAccountCreationRequest
+import me.bookk.feature.authorization.data.remote.model.VerifySignInRequest
 import me.bookk.feature.authorization.domain.api.CreateAccount
+import me.bookk.feature.authorization.domain.datasource.authorization.ServerSignInChallenge
+import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationData
-import me.bookk.feature.authorization.domain.datasource.registration.ServerChallenge
+import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 
 internal fun CreateAccount.UserData.toRemote(): PassKeySignUpStartInfo {
@@ -17,8 +21,8 @@ internal fun CreateAccount.UserData.toRemote(): PassKeySignUpStartInfo {
     )
 }
 
-internal fun RegistrationChallengeResponse.toDomain(): ServerChallenge {
-    return ServerChallenge(
+internal fun RegistrationChallengeResponse.toDomain(): ServerSignUpChallenge {
+    return ServerSignUpChallenge(
         userId = userId,
         displayName = displayName,
         jsonChallengeData = challenge
@@ -43,6 +47,24 @@ internal fun RegistrationData.toRemote(): VerifyAccountCreationRequest {
             name = userInfo.name,
             lastName = userInfo.lastName,
             email = userInfo.email
+        ),
+        publicKeyCredentialJson = publicKeyCredentialJson
+    )
+}
+
+internal fun SignInStartResponse.toDomain(): ServerSignInChallenge {
+    return ServerSignInChallenge(
+        requestId = requestId,
+        challengeJson = challengeJson
+    )
+}
+
+internal fun SignInData.toRemote(): VerifySignInRequest {
+    return VerifySignInRequest(
+        requestId = requestId,
+        deviceInfo = VerifySignInRequest.DeviceInfo(
+            deviceUUID = deviceInfo.deviceUUID,
+            deviceName = deviceInfo.deviceName
         ),
         publicKeyCredentialJson = publicKeyCredentialJson
     )

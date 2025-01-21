@@ -96,48 +96,50 @@ private fun PassKeyTroubleshootCard(
     state: SignInState,
     onButtonClick: () -> Unit
 ) {
-    AppCard(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large
-    ) {
-        Column {
-            Row(
-                modifier = Modifier.padding(all = 24.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleMedium,
-                    text = state.passkeyCard.title.string()
-                )
-
-                Box(
-                    modifier = Modifier.size(48.dp),
-                    contentAlignment = Alignment.Center
+    AnimatedVisibility(state.troubleshootView.isVisible) {
+        AppCard(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.padding(all = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        modifier = Modifier.fillMaxSize(),
-                        painter = painterResource(state.passkeyCard.icon),
-                        contentDescription = null
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleMedium,
+                        text = state.troubleshootCardStaticData.title.string()
+                    )
+
+                    Box(
+                        modifier = Modifier.size(48.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            modifier = Modifier.fillMaxSize(),
+                            painter = painterResource(state.troubleshootCardStaticData.icon),
+                            contentDescription = null
+                        )
+                    }
+                }
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(LocalColors.current.Divider)
+                )
+                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    state.troubleshootCardStaticData.reasons.forEach {
+                        ReasonItem(reason = it)
+                    }
+                    TextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        state = state.learnMoreButton,
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        onClick = onButtonClick
                     )
                 }
-            }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(LocalColors.current.Divider)
-            )
-            Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                state.passkeyCard.reasons.forEach {
-                    ReasonItem(reason = it)
-                }
-                TextButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = state.learnMoreButton,
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    onClick = onButtonClick
-                )
             }
         }
     }

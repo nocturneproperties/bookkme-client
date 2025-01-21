@@ -32,6 +32,6 @@ suspend fun Throwable.toDomain(): Error {
             }
         }
 
-        else -> Error.SimpleError(message.orEmpty(), this)
+        else -> Error.WrappedError(message.orEmpty(), this)
     }
 }

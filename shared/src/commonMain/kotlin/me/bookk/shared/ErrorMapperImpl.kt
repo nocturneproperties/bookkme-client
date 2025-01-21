@@ -14,9 +14,10 @@ class ErrorMapperImpl : ErrorMapper {
                 is Error.Unauthorized,
                 is Error.InternalServerError -> PresentationError.ServerError
                 is Error.NoConnectionError -> PresentationError.NoConnection
-                is Error.SimpleError -> PresentationError.Message(e.message.orEmpty().desc())
+                is Error.WrappedError -> PresentationError.Message(e.message.orEmpty().desc())
                 is Error.BusinessError -> PresentationError.Message(e.message.orEmpty().desc())
-                is Error.Cancelled -> PresentationError.Ignore
+                is Error.Cancelled,
+                is Error.Ignore -> PresentationError.Ignore
             }
 
             else -> PresentationError.Unsupported

@@ -21,4 +21,7 @@
     <string name="sign_in_passkey_missing_description">If you have passkeys on your account but aren\'t offered a passkey during sign-in, make sure tha the device with the passkey has the screen lock enabled. If your device\'s screen lock is disabled, you will not be able to use the passkey on that device until you enable the screen lock again. \nYou can recover your passkey with your credential provider, e.g. Google or Apple etc.</string>
     <string name="sign_in_passkey_button">Sign in with passkey</string>
     <string name="sign_in_passkey_learn_more_button">Learn more about passkey</string>
+    <string name="sign_in_error_no_passkeys_on_device">No passkeys found on this device</string>
+    <string name="sign_in_error_passkey_verification">Passkey verification failed</string>
+    <string name="sign_in_error_no_account">No account associated with this passkey</string>
 </resources>

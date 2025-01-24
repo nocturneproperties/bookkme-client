@@ -9,5 +9,6 @@ import shared
 import SwiftUI
 
 extension ViewModel:@retroactive ObservableObject {
-    
 }
+
+

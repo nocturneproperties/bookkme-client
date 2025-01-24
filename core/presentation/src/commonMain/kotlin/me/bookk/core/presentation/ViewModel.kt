@@ -3,9 +3,7 @@ package me.bookk.core.presentation
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
 import me.bookk.core.presentation.error.ErrorMapper
-import me.bookk.core.presentation.error.PresentationError
 import kotlin.coroutines.CoroutineContext
 
 expect abstract class ViewModel(
@@ -14,8 +12,6 @@ expect abstract class ViewModel(
     protected val viewModelScope: CoroutineScope
     protected val mapper: ErrorMapper
     protected open val viewModelScopeErrorHandler: CoroutineExceptionHandler
-
-    val errorFlow: MutableSharedFlow<PresentationError>
 
     open fun clear()
 

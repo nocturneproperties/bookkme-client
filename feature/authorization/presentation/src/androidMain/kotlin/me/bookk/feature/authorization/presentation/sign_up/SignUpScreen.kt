@@ -35,7 +35,8 @@ fun SignUpScreen(
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                size = TopBarSize.MEDIUM
+                size = TopBarSize.MEDIUM,
+                onNavigationIconClick = listener::onBackClick
             )
         },
         content = { paddings ->
@@ -84,19 +85,7 @@ private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         SignUpScreen(
             state = AndroidSignUpState(SignUpViewModel.createInitData()),
-            listener = object : SignUpEventListener {
-                override fun onFirstNameTextChanged(text: String) {
-                }
-
-                override fun onLastNameTextChanged(text: String) {
-                }
-
-                override fun onEmailTextChanged(text: String) {
-                }
-
-                override fun onConfirmButtonClick() {
-                }
-            }
+            listener = mockListener()
         )
     }
 }
@@ -107,19 +96,24 @@ private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         SignUpScreen(
             state = AndroidSignUpState(SignUpViewModel.createInitData()),
-            listener = object : SignUpEventListener {
-                override fun onFirstNameTextChanged(text: String) {
-                }
-
-                override fun onLastNameTextChanged(text: String) {
-                }
-
-                override fun onEmailTextChanged(text: String) {
-                }
-
-                override fun onConfirmButtonClick() {
-                }
-            }
+            listener = mockListener()
         )
+    }
+}
+
+private fun mockListener() = object : SignUpEventListener {
+    override fun onBackClick() {
+    }
+
+    override fun onFirstNameTextChanged(text: String) {
+    }
+
+    override fun onLastNameTextChanged(text: String) {
+    }
+
+    override fun onEmailTextChanged(text: String) {
+    }
+
+    override fun onConfirmButtonClick() {
     }
 }

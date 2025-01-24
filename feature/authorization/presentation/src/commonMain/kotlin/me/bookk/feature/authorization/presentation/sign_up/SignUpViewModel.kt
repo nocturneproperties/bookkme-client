@@ -1,12 +1,12 @@
 package me.bookk.feature.authorization.presentation.sign_up
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.flow.MutableSharedFlow
 import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationError.Message
+import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.Error
 import me.bookk.feature.authorization.domain.api.ValidateEmail
@@ -25,7 +25,10 @@ class SignUpViewModel(
 ) : ViewModel(vmArgs), SignUpEventListener {
 
     val uiState: SignUpState = stateFactory.createSignUpState(createInitData())
-    val navigationFlow = MutableSharedFlow<SignUpNavigationEvent>()
+
+    override fun onBackClick() {
+        uiState.navigation.navigationDestination = SignUpNavigationDestination.Back
+    }
 
     override fun onFirstNameTextChanged(text: String) {
         val validationResult = validateName.invoke(text)
@@ -77,7 +80,7 @@ class SignUpViewModel(
                 )
             },
             onComplete = {
-                navigationFlow.emit(SignUpNavigationEvent.ToMain)
+                uiState.navigation.navigationDestination = SignUpNavigationDestination.ToMain
             },
             onError = {
                 when (it) {
@@ -92,10 +95,20 @@ class SignUpViewModel(
                         uiState.email.errorTextRes = AuthRes.strings.sign_up_email_error.desc()
                     }
                     is Error.PasskeyVerificationFailed -> {
-                        errorFlow.emit(Message(AuthRes.strings.sign_up_passkey_failed.desc()))
+                        uiState.error.add(
+                            Message(
+                                message = AuthRes.strings.sign_up_passkey_failed.desc(),
+                                buttonText = DesignSystem.strings.action_ok.desc()
+                            )
+                        )
                     }
                     is Error.AccountCreationFailed -> {
-                        errorFlow.emit(Message(AuthRes.strings.sign_up_failed.desc()))
+                        uiState.error.add(
+                            Message(
+                                message = AuthRes.strings.sign_up_failed.desc(),
+                                buttonText = DesignSystem.strings.action_ok.desc()
+                            )
+                        )
                     }
                     else -> throw it
                 }

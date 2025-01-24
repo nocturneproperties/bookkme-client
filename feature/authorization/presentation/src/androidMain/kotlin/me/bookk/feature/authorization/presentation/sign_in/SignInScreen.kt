@@ -4,8 +4,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,7 +62,8 @@ fun SignInScreen(
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                size = TopBarSize.MEDIUM
+                size = TopBarSize.MEDIUM,
+                onNavigationIconClick = listener::onBackClick
             )
         },
         content = { paddings ->
@@ -76,15 +80,21 @@ fun SignInScreen(
             }
         },
         bottomBar = {
-            Box(
+            Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ActionButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.signInButton,
                     onClick = listener::onSignInClick
+                )
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state.signUpButton,
+                    onClick = listener::onSignUpClick
                 )
             }
         }
@@ -96,18 +106,27 @@ private fun PassKeyTroubleshootCard(
     state: SignInState,
     onButtonClick: () -> Unit
 ) {
-    AnimatedVisibility(state.troubleshootView.isVisible) {
+    AnimatedVisibility(
+        visible = state.troubleshootView.isVisible,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         AppCard(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.large
         ) {
             Column {
                 Row(
-                    modifier = Modifier.padding(all = 24.dp),
+                    modifier = Modifier.padding(
+                        start = 24.dp,
+                        top = 24.dp,
+                        bottom = 24.dp,
+                        end = 16.dp
+                    ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).padding(end = 16.dp),
                         style = MaterialTheme.typography.titleMedium,
                         text = state.troubleshootCardStaticData.title.string()
                     )
@@ -206,9 +225,15 @@ private fun PreviewLight() {
 }
 
 private fun mockListener() = object : SignInEventListener {
+    override fun onBackClick() {
+    }
+
     override fun onSignInClick() {
     }
 
     override fun onLearnMoreClick() {
+    }
+
+    override fun onSignUpClick() {
     }
 }

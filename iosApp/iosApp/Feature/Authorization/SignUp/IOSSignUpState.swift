@@ -9,6 +9,7 @@
 import shared
 
 class IOSSignUpState: SignUpState {
+    
     var appBar: any AppBarState
     
     var email: any TextFieldState
@@ -18,6 +19,10 @@ class IOSSignUpState: SignUpState {
     var name: any TextFieldState
     
     var confirmButton: any ButtonState
+    
+    var error: any ErrorState
+    
+    var navigation: any NavigationState
     
     init(initData: SignUpStateInitData) {
         appBar = IOSAppBarState(
@@ -36,5 +41,7 @@ class IOSSignUpState: SignUpState {
             text: initData.confirmButtonText,
             isEnabled: false
         )
+        error = IOSErrorState()
+        navigation = IOSNavigationState()
     }
 }

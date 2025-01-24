@@ -3,7 +3,6 @@ package me.bookk.feature.authorization.data.local
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
-import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
 import platform.AuthenticationServices.ASAuthorizationController
 import platform.AuthenticationServices.ASAuthorizationControllerPresentationContextProvidingProtocol
 import platform.AuthenticationServices.ASAuthorizationPlatformPublicKeyCredentialProvider
@@ -15,34 +14,40 @@ import platform.Foundation.dataUsingEncoding
 import platform.UIKit.UIApplication
 import platform.darwin.NSObject
 
-class IosPassKeyManager: PassKeyManager {
+class IosPassKeyManager : PassKeyManager {
 
     @OptIn(BetaInteropApi::class)
-    override suspend fun create(challenge: ServerSignUpChallenge): PasskeyVerificationPayload =
+    override suspend fun create(jsonChallenge: String): PasskeyVerificationPayload =
         suspendCancellableCoroutine {
             val delegate = PasskeyControllerDelegate(it)
             val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
                 relyingPartyIdentifier = "bookkk.me"
             )
             val nsChallenge = NSString
-                .create(string = challenge.jsonChallengeData)
+                .create(string = jsonChallenge)
                 .dataUsingEncoding(encoding = NSUTF8StringEncoding)!!
             val nsUserId = NSString
-                .create(string = challenge.userId)
+                .create(string = "Name")
                 .dataUsingEncoding(encoding = NSUTF8StringEncoding)!!
             val platformKeyRequest =
                 platformProvider.createCredentialRegistrationRequestWithChallenge(
                     challenge = nsChallenge,
-                    name = challenge.displayName,
+                    name = "challenge.displayName",
                     userID = nsUserId
                 )
             val authController = ASAuthorizationController(listOf(platformKeyRequest))
             authController.delegate = delegate
-            authController.presentationContextProvider = object : ASAuthorizationControllerPresentationContextProvidingProtocol, NSObject() {
-                override fun presentationAnchorForAuthorizationController(
-                    controller: ASAuthorizationController
-                ): ASPresentationAnchor = requireNotNull(UIApplication.sharedApplication.keyWindow)
-            }
+            authController.presentationContextProvider =
+                object : ASAuthorizationControllerPresentationContextProvidingProtocol, NSObject() {
+                    override fun presentationAnchorForAuthorizationController(
+                        controller: ASAuthorizationController
+                    ): ASPresentationAnchor =
+                        requireNotNull(UIApplication.sharedApplication.keyWindow)
+                }
             authController.performRequests()
         }
+
+    override suspend fun authorize(jsonChallenge: String): PasskeyVerificationPayload {
+        TODO("Not yet implemented")
+    }
 }

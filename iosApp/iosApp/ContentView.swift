@@ -16,7 +16,7 @@ struct ContentView: View {
             .navigationDestination(for: SignInDestination.self) { value in
                 SignInScreen()
             }
-        }
+        }.environmentObject(navigationStack)
 	}
 }
 

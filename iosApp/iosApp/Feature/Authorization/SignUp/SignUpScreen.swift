@@ -15,7 +15,7 @@ struct SignUpScreen: View {
         case lastName
         case email
     }
-    
+    @EnvironmentObject var navigationStack: NavigationStackHolder
     @StateObject var signUpVM: SignUpViewModel = AuthDiKt.signUpVM()
     @FocusState private var focusedField: FocusField?
     
@@ -53,10 +53,22 @@ struct SignUpScreen: View {
             Spacer()
             
             StateButton(state: signUpVM.uiState.confirmButton.impl()) {
-                
+                signUpVM.onConfirmButtonClick()
             }
         }
         .padding()
+        .handleErrors(state: signUpVM.uiState.error)
+        .onReceive(signUpVM.uiState.navigation.impl().publisher) { value in
+            switch value {
+            case is SignUpNavigationDestinationBack:
+                navigationStack.path.removeLast()
+                break
+            case is SignUpNavigationDestinationToMain:
+                navigationStack.path.append(SignInDestination())
+                break
+            default: break
+            }
+        }
         .onAppear {
             focusedField = .name
         }

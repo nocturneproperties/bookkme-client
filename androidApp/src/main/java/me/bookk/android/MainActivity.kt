@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.feature.authorization.presentation.navigation.SignInDestination
+import me.bookk.feature.authorization.presentation.navigation.SignUpDestination
 import me.bookk.feature.authorization.presentation.navigation.authGraph
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +43,9 @@ fun NavigationRoot() {
         startDestination = SignInDestination.route
     ) {
         authGraph(
-            navigateToMainScreen = {}
+            navigateBack = controller::popBackStack,
+            navigateToMainScreen = {},
+            navigateToSignUp = { controller.navigate(SignUpDestination.route) }
         )
     }
 }

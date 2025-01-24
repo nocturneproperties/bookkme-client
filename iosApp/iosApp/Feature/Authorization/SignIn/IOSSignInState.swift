@@ -9,6 +9,7 @@
 import shared
 
 class IOSSignInState: SignInState {
+    
     var appBar: any AppBarState
     
     var learnMoreButton: any ButtonState
@@ -19,7 +20,11 @@ class IOSSignInState: SignInState {
     
     var troubleshootView: any ViewState
     
-
+    var signUpButton: any ButtonState
+    
+    var error: any ErrorState
+    
+    var navigation: any NavigationState
     
     init(initData: SignInStateInitData) {
         appBar = IOSAppBarState(
@@ -31,7 +36,12 @@ class IOSSignInState: SignInState {
         troubleshootView = IOSViewState()
         troubleshootCardStaticData = initData.troubleshootCardStaticData
         signInButton = IOSButtonState(
-            text: initData.buttonText
+            text: initData.signInButtonText
         )
+        signUpButton = IOSButtonState(
+            text: initData.signUpButtonText
+        )
+        error = IOSErrorState()
+        navigation = IOSNavigationState()
     }
 }

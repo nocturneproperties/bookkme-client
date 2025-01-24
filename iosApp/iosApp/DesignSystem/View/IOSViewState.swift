@@ -17,3 +17,9 @@ class IOSViewState: ViewState, ObservableObject {
         self.isVisible = isVisible
     }
 }
+
+extension shared.ViewState {
+    func impl() -> IOSViewState {
+        return self as! IOSViewState
+    }
+}

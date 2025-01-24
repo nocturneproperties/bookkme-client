@@ -9,7 +9,6 @@ import me.bookk.core.presentation.error.PresentationError
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.authorization.domain.api.SignIn
 import me.bookk.feature.authorization.presentation.AuthStateFactory
-import me.bookk.feature.authorization.presentation.sign_in.state.Reason
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInEventListener
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
 import me.bookk.feature.authorization.presentation.sign_in.state.TroubleshootCardData
@@ -73,11 +72,13 @@ class SignInViewModel(
                 title = AuthRes.strings.sign_in_passkey_troubleshoot.desc(),
                 icon = AuthRes.images.passkey,
                 reasons = listOf(
-                    Reason(
+                    TroubleshootCardData.Reason(
+                        id = 0,
                         title = AuthRes.strings.sign_in_passkey_lost.desc(),
                         description = AuthRes.strings.sign_in_passkey_lost_description.desc()
                     ),
-                    Reason(
+                    TroubleshootCardData.Reason(
+                        id = 1,
                         title = AuthRes.strings.sign_in_passkey_missing.desc(),
                         description = AuthRes.strings.sign_in_passkey_missing_description.desc()
                     )

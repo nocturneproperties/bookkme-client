@@ -11,4 +11,10 @@ import SwiftUI
 extension ViewModel:@retroactive ObservableObject {
 }
 
+extension Image {
+    init(resource: KeyPath<AuthRes.images, shared.ImageResource>) {
+        self.init(uiImage: AuthRes.images()[keyPath: resource].toUIImage()!)
+    }
+}
+
 

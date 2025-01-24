@@ -13,7 +13,7 @@ struct TextButton: View {
     @ObservedObject
     var state: IOSButtonState
     @State
-    var onClick: () -> Void = {}
+    var onClick: () -> Void
     
     var body: some View {
         Button(action: onClick) {
@@ -33,7 +33,7 @@ struct StateButton: View {
     @ObservedObject
     var state: IOSButtonState
     @State
-    var onClick: () -> Void = {}
+    var onClick: () -> Void
     
     var body: some View {
         Button(action: onClick) {
@@ -56,6 +56,8 @@ struct StateButton: View {
     @State
     var value: IOSButtonState = IOSButtonState(text: RawStringDesc(string: "Button"))
     VStack {
-        StateButton(state: value)
+        StateButton(state: value) {
+            
+        }
     }
 }

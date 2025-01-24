@@ -17,7 +17,11 @@ class IosPlatformInterface : PlatformInterface {
 
     override fun openUrlPreview(url: String) {
         NSURL.URLWithString(url)?.let {
-            UIApplication.sharedApplication().openURL(it)
+            UIApplication.sharedApplication.openURL(
+                url = it,
+                options = emptyMap<Any?, Any>(),
+                completionHandler = null
+            )
         }
     }
 }

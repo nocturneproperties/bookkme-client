@@ -33,7 +33,7 @@ class IOSSignInState: SignInState {
         learnMoreButton = IOSButtonState(
             text: initData.learnMoreText
         )
-        troubleshootView = IOSViewState()
+        troubleshootView = IOSViewState(isVisible: initData.isTroubleshootCardVisible)
         troubleshootCardStaticData = initData.troubleshootCardStaticData
         signInButton = IOSButtonState(
             text: initData.signInButtonText

@@ -19,30 +19,28 @@ struct StateTextField: View {
     var body: some View {
         VStack {
             LabeledContent {
-                ZStack {
-                    TextField(
-                        state.hint.localized(),
-                        text: Binding<String>(
-                            get: { state.text },
-                            set: { text in
-                                withAnimation {
-                                    let newValue = String(text.prefix(Int(state.maxLength)))
-                                    if (newValue != state.text) {
-                                        onTextChanged(String(text.prefix(Int(state.maxLength)))) }
-                                    }
+                TextField(
+                    state.hint.localized(),
+                    text: Binding<String>(
+                        get: { state.text },
+                        set: { text in
+                            withAnimation {
+                                let newValue = String(text.prefix(Int(state.maxLength)))
+                                if (newValue != state.text) {
+                                    onTextChanged(String(text.prefix(Int(state.maxLength)))) }
                                 }
-                        )
+                            }
                     )
-                    .font(Font.system(.body))
-                    .disabled(!state.enabled)
-                }
+                )
+                .font(Font.system(.body))
+                .disabled(!state.enabled)
             } label: {
                 Text(state.hint.localized())
                     .frame(minWidth: 100, alignment: .leading)
             }
             .padding(.horizontal)
             .padding(.vertical, 12)
-            .background(Color(AppColors.elevated))
+            .background(AppColors.elevated)
             .overlay(
                 state.isError ?
                 RoundedRectangle(cornerRadius: 10)

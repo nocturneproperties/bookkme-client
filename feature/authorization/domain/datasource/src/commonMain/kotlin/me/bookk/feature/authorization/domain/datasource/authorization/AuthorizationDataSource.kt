@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.domain.datasource.authorization
 
+import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 
 interface AuthorizationDataSource {
@@ -7,4 +8,7 @@ interface AuthorizationDataSource {
     suspend fun getAccessToken(): String?
     suspend fun getRefreshToken(): String?
     suspend fun refreshToken(refreshToken: String): TokenInfo
+    suspend fun getAuthorizationChallenge(): ServerSignInChallenge
+    suspend fun verifyAuthorization(signInData: SignInData): TokenInfo
+    suspend fun requestPasskey(challenge: ServerSignInChallenge): PasskeyVerificationPayload
 }

@@ -3,7 +3,10 @@ package me.bookk.feature.authorization.presentation.sign_up.state
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.ErrorState
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.TextFieldState
+import me.bookk.feature.authorization.presentation.sign_up.SignUpNavigationDestination
 
 interface SignUpState {
     val appBar: AppBarState
@@ -11,6 +14,9 @@ interface SignUpState {
     val lastName: TextFieldState
     val email: TextFieldState
     val confirmButton: ButtonState
+
+    val error: ErrorState
+    val navigation: NavigationState<SignUpNavigationDestination>
 
     class InitData(
         val title: StringDesc,

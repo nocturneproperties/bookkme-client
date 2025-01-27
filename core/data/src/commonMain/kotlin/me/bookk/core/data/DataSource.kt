@@ -2,13 +2,14 @@ package me.bookk.core.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import me.bookk.core.data.map.toDomain
 import me.bookk.core.domain.entity.Error
-import me.bookk.core.map.toDomain
 
 abstract class DataSource {
 
     suspend fun <T> mapExceptions(
-        exceptionMapper: ((Error.BusinessError) -> Throwable)? = null,
+        businessExceptionMapper: ((Error.BusinessError) -> Throwable)? = null,
+        exceptionMapper: (Error) -> Throwable = { it },
         finally: (() -> Unit)? = null,
         action: suspend () -> T
     ): T {
@@ -16,10 +17,10 @@ abstract class DataSource {
             action()
         } catch (e: Exception) {
             val domainError = e.toDomain()
-            if (exceptionMapper != null && domainError is Error.BusinessError) {
-                throw exceptionMapper.invoke(domainError)
+            if (businessExceptionMapper != null && domainError is Error.BusinessError) {
+                throw businessExceptionMapper.invoke(domainError)
             } else {
-                throw domainError
+                throw exceptionMapper(domainError)
             }
         } finally {
             finally?.invoke()

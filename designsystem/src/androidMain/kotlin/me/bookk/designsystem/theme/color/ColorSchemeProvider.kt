@@ -12,6 +12,9 @@ interface ColorSchemeProvider {
     val PrimaryText: Color
         @Composable
         get
+    val SecondaryText: Color
+        @Composable
+        get
     val HintText: Color
         @Composable
         get

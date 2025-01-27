@@ -7,7 +7,7 @@
 //
 import shared
 
-class IOSButtonState: ButtonState, ObservableObject {
+class IOSButtonState: IOSViewState, ButtonState {
     @Published
     var isEnabled: Bool
     @Published
@@ -15,10 +15,11 @@ class IOSButtonState: ButtonState, ObservableObject {
     @Published
     var text: any StringDesc
     
-    init(isEnabled: Bool = true, isLoading: Bool = false, text: any StringDesc) {
+    init(text: any StringDesc, isEnabled: Bool = true, isLoading: Bool = false, isVisible: Bool = true) {
         self.isEnabled = isEnabled
         self.isLoading = isLoading
         self.text = text
+        super.init(isVisible: isVisible)
     }
 }
 

@@ -1,34 +1,51 @@
 package me.bookk.feature.authorization.presentation.sign_in.navigation
 
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import me.bookk.designsystem.components.ObserveErrors
 import me.bookk.feature.authorization.presentation.navigation.SignInDestination
-import me.bookk.feature.authorization.presentation.sign_up.SignUpNavigationEvent
-import me.bookk.feature.authorization.presentation.sign_up.SignUpScreen
-import me.bookk.feature.authorization.presentation.sign_up.SignUpViewModel
+import me.bookk.feature.authorization.presentation.sign_in.SignInNavigationDestination
+import me.bookk.feature.authorization.presentation.sign_in.SignInScreen
+import me.bookk.feature.authorization.presentation.sign_in.SignInViewModel
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.signInScreen(
-    navigateToMainScreen: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToMainScreen: () -> Unit,
+    navigateToSignUp: () -> Unit
 ) {
     composable(route = SignInDestination.route) {
-        val viewModel: SignUpViewModel = koinViewModel()
+        val viewModel: SignInViewModel = koinViewModel()
 
-        ObserveErrors(errorFlow = viewModel.errorFlow)
+        ObserveErrors(state = viewModel.uiState.error)
+        HandleNavigation(
+            viewModel = viewModel,
+            navigateBack = navigateBack,
+            navigateToMainScreen = navigateToMainScreen,
+            navigateToSignUp = navigateToSignUp
+        )
 
-        LaunchedEffect(viewModel.navigationFlow) {
-            viewModel.navigationFlow.collect { event ->
-                when (event) {
-                    SignUpNavigationEvent.ToMain -> navigateToMainScreen()
-                }
-            }
-        }
-
-        SignUpScreen(
+        SignInScreen(
             state = viewModel.uiState,
             listener = viewModel,
         )
+    }
+}
+
+@Composable
+private fun HandleNavigation(
+    viewModel: SignInViewModel,
+    navigateBack: () -> Unit,
+    navigateToMainScreen: () -> Unit,
+    navigateToSignUp: () -> Unit
+) {
+    viewModel.uiState.navigation.navigationDestination?.let {
+        when (it) {
+            SignInNavigationDestination.Back -> navigateBack()
+            SignInNavigationDestination.ToMain -> navigateToMainScreen()
+            SignInNavigationDestination.ToSignUp -> navigateToSignUp()
+        }
+        viewModel.uiState.navigation.navigationDestination = null
     }
 }

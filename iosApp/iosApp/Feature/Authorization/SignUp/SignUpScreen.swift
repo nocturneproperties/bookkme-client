@@ -15,13 +15,14 @@ struct SignUpScreen: View {
         case lastName
         case email
     }
-    
+    @EnvironmentObject var navigationStack: NavigationStackHolder
     @StateObject var signUpVM: SignUpViewModel = AuthDiKt.signUpVM()
     @FocusState private var focusedField: FocusField?
     
     var body: some View {
+        let uiState = signUpVM.uiState
         VStack {
-            StateTextField(state: signUpVM.uiState.name.impl()) { text in
+            StateTextField(state: uiState.name.impl()) { text in
                 signUpVM.onFirstNameTextChanged(text: text)
             }
             .focused($focusedField, equals: .name)
@@ -31,7 +32,7 @@ struct SignUpScreen: View {
                 focusedField = .lastName
             }
             
-            StateTextField(state: signUpVM.uiState.lastName.impl()) { text in
+            StateTextField(state: uiState.lastName.impl()) { text in
                 signUpVM.onLastNameTextChanged(text: text)
             }
             .focused($focusedField, equals: .lastName)
@@ -41,7 +42,7 @@ struct SignUpScreen: View {
                 focusedField = .email
             }
             
-            StateTextField(state: signUpVM.uiState.email.impl()) { text in
+            StateTextField(state: uiState.email.impl()) { text in
                 signUpVM.onEmailTextChanged(text: text)
             }
             .autocapitalization(.none)
@@ -52,19 +53,34 @@ struct SignUpScreen: View {
             
             Spacer()
             
-            StateButton(state: signUpVM.uiState.confirmButton.impl()) {
-                
+            StateButton(state: uiState.confirmButton.impl()) {
+                signUpVM.onConfirmButtonClick()
             }
         }
         .padding()
+        .navigationTitle(uiState.appBar.title.localized())
+        .navigationBarTitleDisplayMode(.large)
+        .handleErrors(state: uiState.error)
+        .handleNavigation(state: uiState.navigation) { navigation in
+            switch navigation {
+            case is SignUpNavigationDestinationBack:
+                navigationStack.path.removeLast()
+                break
+            case is SignUpNavigationDestinationToMain:
+                navigationStack.path.append(SignInDestination())
+                break
+            default: break
+            }
+        }
         .onAppear {
             focusedField = .name
+        }
+        .onDisappear {
+            signUpVM.clear()
         }
     }
 }
 
 #Preview {
-    KMMPreviewView {
-        SignUpScreen()
-    }
+    SignUpScreen()
 }

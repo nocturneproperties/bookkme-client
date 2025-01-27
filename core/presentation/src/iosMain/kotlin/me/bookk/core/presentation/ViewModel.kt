@@ -5,14 +5,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.LogFactory
 import me.bookk.core.UsedInSwift
 import me.bookk.core.presentation.error.ErrorMapper
-import me.bookk.core.presentation.error.PresentationError
 import kotlin.coroutines.CoroutineContext
 
 actual abstract class ViewModel actual constructor(
@@ -21,16 +19,13 @@ actual abstract class ViewModel actual constructor(
     private val internalLogger = LogFactory.forName("ViewModel")
     protected actual val mapper: ErrorMapper = vmArgs.errorMapper
     protected actual val viewModelScope = CoroutineScope(SupervisorJob() + DispatcherProvider.main)
-    protected actual open val viewModelScopeErrorHandler = CoroutineExceptionHandler { _, throwable ->
-        handleError(throwable)
-    }
-    actual val errorFlow = MutableSharedFlow<PresentationError>()
+    protected actual open val viewModelScopeErrorHandler =
+        CoroutineExceptionHandler { _, throwable ->
+            handleError(throwable)
+        }
 
     actual open fun handleError(throwable: Throwable) {
         internalLogger.e(throwable)
-        viewModelScope.launch {
-            errorFlow.emit(mapper.mapToError(throwable))
-        }
     }
 
     actual fun <Output> launch(

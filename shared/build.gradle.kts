@@ -30,18 +30,20 @@ kotlin {
             implementation(libs.simplelogger.slf4j) // Required for ktor-logging support on JVM
         }
         commonMain.dependencies {
-            // Projects
             //Auth
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.domain.impl)
             implementation(projects.feature.authorization.data)
             api(projects.feature.authorization.presentation)
-            //
+            //Platform
+            implementation(projects.feature.platform.domain.api)
+            implementation(projects.feature.platform.domain.impl)
+            implementation(projects.feature.platform.data)
+            //Core
             implementation(projects.database)
             implementation(projects.core.data)
             api(projects.core)
             api(projects.core.domain)
-            api(projects.core.di)
             api(projects.core.presentation)
             api(projects.designsystem)
             // Libs
@@ -51,8 +53,6 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.resources)
             implementation(libs.ktor.client.auth)
-            implementation(libs.androidx.preferences)
-            implementation(libs.okio)
             api(libs.kotlinx.datetime)
             api(libs.kmm.resources)
         }
@@ -73,7 +73,6 @@ kotlin {
             isStatic = false
             export(projects.core)
             export(projects.core.domain)
-            export(projects.core.di)
             export(projects.core.presentation)
             export(projects.designsystem)
             export(projects.feature.authorization.presentation)

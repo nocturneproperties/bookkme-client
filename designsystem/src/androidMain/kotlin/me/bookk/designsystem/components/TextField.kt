@@ -28,8 +28,8 @@ import me.bookk.core.presentation.string
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.TextFieldState
-import me.bookk.designsystem.uistate.TextFieldStateImpl
 
 @Composable
 fun TextField(
@@ -115,7 +115,7 @@ private fun Preview() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             TextField(
-                state = TextFieldStateImpl(
+                state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "",
                     errorTextRes = "Error".desc(),
@@ -126,7 +126,7 @@ private fun Preview() {
                 onValueChange = {}
             )
             TextField(
-                state = TextFieldStateImpl(
+                state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "Text",
                     errorTextRes = "Error".desc(),
@@ -137,7 +137,7 @@ private fun Preview() {
                 onValueChange = {}
             )
             TextField(
-                state = TextFieldStateImpl(
+                state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "",
                     errorTextRes = "Error description".desc(),
@@ -148,7 +148,7 @@ private fun Preview() {
                 onValueChange = {}
             )
             TextField(
-                state = TextFieldStateImpl(
+                state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "Text",
                     errorTextRes = "Error description".desc(),
@@ -171,7 +171,7 @@ private fun PreviewLight() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             TextField(
-                state = TextFieldStateImpl(
+                state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "",
                     errorTextRes = "Error".desc(),
@@ -182,7 +182,7 @@ private fun PreviewLight() {
                 onValueChange = {}
             )
             TextField(
-                state = TextFieldStateImpl(
+                state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "Text",
                     errorTextRes = "Error".desc(),
@@ -193,7 +193,7 @@ private fun PreviewLight() {
                 onValueChange = {}
             )
             TextField(
-                state = TextFieldStateImpl(
+                state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "",
                     errorTextRes = "Error description".desc(),
@@ -204,7 +204,7 @@ private fun PreviewLight() {
                 onValueChange = {}
             )
             TextField(
-                state = TextFieldStateImpl(
+                state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "Text",
                     errorTextRes = "Error description".desc(),

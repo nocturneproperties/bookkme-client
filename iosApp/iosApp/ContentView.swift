@@ -8,12 +8,15 @@ struct ContentView: View {
 	var body: some View {
         NavigationStack(path: $navigationStack.path) {
             Button("Sign Up") {
-                navigationStack.path.append(SignUpDestination())
+                navigationStack.path.append(SignInDestination())
             }
             .navigationDestination(for: SignUpDestination.self) { value in
                 SignUpScreen()
             }
-        }
+            .navigationDestination(for: SignInDestination.self) { value in
+                SignInScreen()
+            }
+        }.environmentObject(navigationStack)
 	}
 }
 

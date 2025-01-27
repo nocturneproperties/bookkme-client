@@ -12,4 +12,17 @@
     <string name="sign_up_email_exist">Account with this email already exist</string>
     <string name="sign_up_passkey_failed">Passkey verification failed</string>
     <string name="sign_up_failed">Sorry, looks like our services is unavailable. Try again later.</string>
+
+    <string name="sign_in_title">Sign in</string>
+    <string name="sign_in_passkey_troubleshoot">Troubleshoot lost or missing passkeys</string>
+    <string name="sign_in_passkey_lost">Lost or stolen device</string>
+    <string name="sign_in_passkey_lost_description">If you lose a device with a passkey, first check if the passkey is synced to your cloud account (e.g., Google, Apple, or other platforms). Use another trusted device to access your account, revoke access for the lost device, and create a new passkey if necessary.</string>
+    <string name="sign_in_passkey_missing">Missing or unavailable passkeys</string>
+    <string name="sign_in_passkey_missing_description">If you have passkeys on your account but aren\'t offered a passkey during sign-in, make sure tha the device with the passkey has the screen lock enabled. If your device\'s screen lock is disabled, you will not be able to use the passkey on that device until you enable the screen lock again. \nYou can recover your passkey with your credential provider, e.g. Google or Apple etc.</string>
+    <string name="sign_in_passkey_button">Sign in with passkey</string>
+    <string name="sign_in_passkey_learn_more_button">Learn more about passkey</string>
+    <string name="sign_in_error_no_passkeys_on_device">No passkeys found on this device</string>
+    <string name="sign_in_error_passkey_verification">Passkey verification failed</string>
+    <string name="sign_in_error_no_account">No account associated with this passkey</string>
+    <string name="sign_in_sign_up_button">Create new account</string>
 </resources>

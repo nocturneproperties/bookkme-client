@@ -3,12 +3,10 @@ package me.bookk.core.presentation
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bookk.core.LogFactory
 import me.bookk.core.presentation.error.ErrorMapper
-import me.bookk.core.presentation.error.PresentationError
 import kotlin.coroutines.CoroutineContext
 import androidx.lifecycle.viewModelScope as frameworkScope
 
@@ -23,13 +21,8 @@ actual abstract class ViewModel actual constructor(
         CoroutineExceptionHandler { _, throwable ->
             handleError(throwable)
         }
-    actual val errorFlow = MutableSharedFlow<PresentationError>()
-
     actual open fun handleError(throwable: Throwable) {
         internalLogger.e(throwable)
-        viewModelScope.launch {
-            errorFlow.emit(mapper.mapToError(throwable))
-        }
     }
 
     actual fun <Output> launch(

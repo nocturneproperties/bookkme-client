@@ -7,11 +7,13 @@ import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationData
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationDataSource
+import me.bookk.feature.platform.domain.api.GetPlatformInformation
 
 internal class CreateAccountImpl(
     private val registrationDataSource: RegistrationDataSource,
     private val deviceDataSource: DeviceDataSource,
-    private val authorizationDataSource: AuthorizationDataSource
+    private val authorizationDataSource: AuthorizationDataSource,
+    private val getPlatformInformation: GetPlatformInformation
 ) : CreateAccount {
 
     override suspend fun invoke(userData: UserData) {
@@ -30,7 +32,7 @@ internal class CreateAccountImpl(
         return RegistrationData(
             deviceInfo = RegistrationData.DeviceInfo(
                 deviceUUID = deviceDataSource.getOrCreateDeviceUUID(),
-                deviceName = deviceDataSource.getDeviceName()
+                deviceName = getPlatformInformation().deviceName
             ),
             userInfo = RegistrationData.UserInfo(
                 id = userId,

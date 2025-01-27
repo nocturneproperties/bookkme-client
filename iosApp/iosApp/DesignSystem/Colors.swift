@@ -28,6 +28,14 @@ class AppColors {
             )
         }
     }
+    static var secondary: Color {
+        get {
+            createColor(
+                dark: DesignSystem.colors().darkSecondaryText,
+                light: DesignSystem.colors().lightSecondaryText
+            )
+        }
+    }
     static var hintText: Color {
         get {
             createColor(
@@ -121,6 +129,14 @@ class AppColors {
             createColor(
                 dark: DesignSystem.colors().error,
                 light: DesignSystem.colors().error
+            )
+        }
+    }
+    static var divider: Color {
+        get {
+            createColor(
+                dark: DesignSystem.colors().darkDivider,
+                light: DesignSystem.colors().lightDivider
             )
         }
     }

@@ -8,6 +8,10 @@
 import shared
 
 class IOSAuthStateFactory:AuthStateFactory {
+    func createSignInState(initData: SignInStateInitData) -> any SignInState {
+        return IOSSignInState(initData: initData)
+    }
+    
     func createSignUpState(initData: SignUpStateInitData) -> any SignUpState {
         return IOSSignUpState(initData: initData)
     }

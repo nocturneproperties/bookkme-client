@@ -9,7 +9,6 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.di)
             implementation(projects.domain.environment.api)
             api(projects.core.domain)
         }

@@ -1,11 +1,17 @@
 package me.bookk.feature.authorization.presentation.factory
 
 import me.bookk.feature.authorization.presentation.AuthStateFactory
+import me.bookk.feature.authorization.presentation.sign_in.AndroidSignInState
+import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
 import me.bookk.feature.authorization.presentation.sign_up.AndroidSignUpState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 
 class AndroidAuthStateFactory : AuthStateFactory {
     override fun createSignUpState(initData: SignUpState.InitData): SignUpState {
         return AndroidSignUpState(initData)
+    }
+
+    override fun createSignInState(initData: SignInState.InitData): SignInState {
+        return AndroidSignInState(initData)
     }
 }

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "${AndroidConfig.ROOT_PACKAGE}.feature.sign_up"
+    namespace = "${AndroidConfig.ROOT_PACKAGE}.feature.authorization"
 }
 
 kotlin {
@@ -15,11 +15,12 @@ kotlin {
             implementation(projects.core.presentation)
             implementation(projects.designsystem)
             implementation(projects.feature.authorization.domain.api)
+            implementation(projects.feature.platform.domain.api)
         }
     }
 }
 
 multiplatformResources {
-    resourcesPackage.set("${AndroidConfig.ROOT_PACKAGE}.feature.sign_up.resources")
-    resourcesClassName.set("SignUpRes")
+    resourcesPackage.set("${AndroidConfig.ROOT_PACKAGE}.feature.authorization.resources")
+    resourcesClassName.set("AuthRes")
 }

@@ -22,8 +22,8 @@ import androidx.compose.ui.window.DialogProperties
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.ButtonState
-import me.bookk.designsystem.uistate.ButtonStateImpl
 
 @Composable
 fun AppDialog(
@@ -140,7 +140,7 @@ private fun Preview() {
         AppDialog(
             title = "Title",
             subtitle = "Subtitle",
-            rightButton = ButtonStateImpl("Action".desc()),
+            rightButton = AndroidButtonState("Action".desc()),
             onDismiss = {}
         )
     }

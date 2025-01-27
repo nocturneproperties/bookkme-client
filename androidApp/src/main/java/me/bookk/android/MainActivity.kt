@@ -13,6 +13,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import me.bookk.designsystem.theme.AppTheme
+import me.bookk.feature.authorization.presentation.navigation.SignInDestination
 import me.bookk.feature.authorization.presentation.navigation.SignUpDestination
 import me.bookk.feature.authorization.presentation.navigation.authGraph
 
@@ -39,8 +40,12 @@ fun NavigationRoot() {
     val controller = rememberNavController()
     NavHost(
         navController = controller,
-        startDestination = SignUpDestination.route
+        startDestination = SignInDestination.route
     ) {
-        authGraph()
+        authGraph(
+            navigateBack = controller::popBackStack,
+            navigateToMainScreen = {},
+            navigateToSignUp = { controller.navigate(SignUpDestination.route) }
+        )
     }
 }

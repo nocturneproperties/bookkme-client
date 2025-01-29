@@ -15,7 +15,7 @@ import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
 import me.bookk.feature.authorization.presentation.sign_in.state.TroubleshootCardData
 
 @Immutable
-class AndroidSignInState private constructor(
+internal class AndroidSignInState private constructor(
     override val appBar: AppBarState,
     override val troubleshootCardStaticData: TroubleshootCardData,
     override val troubleshootView: ViewState,

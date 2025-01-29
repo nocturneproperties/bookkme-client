@@ -15,6 +15,7 @@ import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.domerrors.NotAllowedError
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.credentials.exceptions.publickeycredential.GetPublicKeyCredentialDomException
+import me.bookk.feature.authorization.data.local.PassKeyManager.ChallengeRequest
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import org.json.JSONObject
 
@@ -24,9 +25,9 @@ class AndroidPassKeyManager(
 
     private val credentialManager = CredentialManager.create(context.applicationContext)
 
-    override suspend fun create(jsonChallenge: String): PasskeyVerificationPayload {
+    override suspend fun create(challenge: ChallengeRequest): PasskeyVerificationPayload {
         return runCatching {
-            val omittedPublicKeyObject = JSONObject(jsonChallenge).getJSONObject("publicKey").toString()
+            val omittedPublicKeyObject = JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
             val createPublicKeyCredentialRequest = CreatePublicKeyCredentialRequest(
                 requestJson = omittedPublicKeyObject
             )

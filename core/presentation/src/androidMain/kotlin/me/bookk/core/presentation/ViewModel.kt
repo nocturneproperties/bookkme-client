@@ -3,6 +3,7 @@ package me.bookk.core.presentation
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bookk.core.LogFactory
@@ -49,7 +50,10 @@ actual abstract class ViewModel actual constructor(
         }
     }
 
-    actual open fun clear() {
-        super.onCleared()
+    actual open fun onViewPresented() {
+    }
+
+    actual open fun onViewHidden() {
+        viewModelScope.coroutineContext.cancelChildren()
     }
 }

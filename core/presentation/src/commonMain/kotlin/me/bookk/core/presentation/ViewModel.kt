@@ -13,7 +13,8 @@ expect abstract class ViewModel(
     protected val mapper: ErrorMapper
     protected open val viewModelScopeErrorHandler: CoroutineExceptionHandler
 
-    open fun clear()
+    open fun onViewPresented()
+    open fun onViewHidden()
 
     open fun handleError(throwable: Throwable)
 

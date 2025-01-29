@@ -37,20 +37,18 @@ struct SignInScreen: View {
         .handleErrors(state: uiState.error)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
-            case is SignInNavigationDestinationBack:
+            case is SignInNavigationDestination.Back:
                 navigationStack.path.removeLast()
                 break
-            case is SignInNavigationDestinationToMain:
+            case is SignInNavigationDestination.ToMain:
                 break
-            case is SignInNavigationDestinationToSignUp:
+            case is SignInNavigationDestination.ToSignUp:
                 navigationStack.path.append(SignUpDestination())
                 break
             default: break
             }
         }
-        .onDisappear {
-            signInVM.clear()
-        }
+        .sendLifecycleEventsTo(viewModel: signInVM)
     }
     
 }

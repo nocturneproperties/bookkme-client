@@ -1,6 +1,7 @@
 package me.bookk.core.presentation.navigation
 
-interface NavigationDestination {
-    override fun equals(other: Any?): Boolean
-    override fun hashCode(): Int
+//Cant be an interface, because destinations should conform to Equatable and Hashable for IOs
+abstract class NavigationDestination {
+    abstract override fun equals(other: Any?): Boolean
+    abstract override fun hashCode(): Int
 }

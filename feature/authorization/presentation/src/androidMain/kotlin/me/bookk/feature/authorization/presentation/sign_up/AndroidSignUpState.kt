@@ -14,7 +14,7 @@ import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 
 @Immutable
-class AndroidSignUpState private constructor(
+internal class AndroidSignUpState private constructor(
     override val appBar: AppBarState,
     override val name: TextFieldState,
     override val lastName: TextFieldState,

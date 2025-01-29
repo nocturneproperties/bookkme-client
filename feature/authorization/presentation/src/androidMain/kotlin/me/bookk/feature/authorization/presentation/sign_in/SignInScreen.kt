@@ -46,9 +46,9 @@ import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.feature.authorization.presentation.sign_in.state.Reason
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInEventListener
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
+import me.bookk.feature.authorization.presentation.sign_in.state.TroubleshootCardData
 
 @Composable
 fun SignInScreen(
@@ -165,7 +165,7 @@ private fun PassKeyTroubleshootCard(
 }
 
 @Composable
-private fun ReasonItem(reason: Reason) {
+private fun ReasonItem(reason: TroubleshootCardData.Reason) {
     var isExpanded by remember { mutableStateOf(false) }
     val angle: Float by animateFloatAsState(
         targetValue = if (isExpanded) 90f else 0f,
@@ -195,7 +195,7 @@ private fun ReasonItem(reason: Reason) {
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                 text = reason.description.string(),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = LocalColors.current.SecondaryText
             )
         }

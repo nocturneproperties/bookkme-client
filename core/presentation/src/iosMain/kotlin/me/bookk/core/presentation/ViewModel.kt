@@ -53,7 +53,11 @@ actual abstract class ViewModel actual constructor(
     }
 
     @UsedInSwift
-    actual open fun clear() {
+    actual open fun onViewPresented() {
+    }
+
+    @UsedInSwift
+    actual open fun onViewHidden() {
         viewModelScope.coroutineContext.cancelChildren()
     }
 }

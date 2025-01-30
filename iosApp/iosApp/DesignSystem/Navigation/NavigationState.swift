@@ -11,11 +11,7 @@ import Combine
 
 class IOSNavigationState: NavigationState, ObservableObject {
     @Published
-    var navigationDestination: (any NavigationDestination)? = nil
-    
-    var publisher: AnyPublisher<(any NavigationDestination)?, Never> {
-        $navigationDestination.eraseToAnyPublisher()
-    }
+    var navigationDestination: (NavigationDestination)? = nil
 }
 
 extension shared.NavigationState {

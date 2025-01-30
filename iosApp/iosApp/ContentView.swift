@@ -2,27 +2,31 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
-    
-    @EnvironmentObject var navigationStack: NavigationStackHolder
+
+    @StateObject var bootstrapVM = AuthDiKt.bootstrapVM()
+    @State var initialDestination: BootstrapNavigationDestination? = nil
 	
 	var body: some View {
-        NavigationStack(path: $navigationStack.path) {
-            Button("Sign Up") {
-                navigationStack.path.append(SignInDestination())
+        initialViewFrom(destination: initialDestination)
+            .handleNavigation(state: bootstrapVM.state.navigation) { destination in
+                switch destination {
+                case is BootstrapNavigationDestination:
+                    initialDestination = destination as? BootstrapNavigationDestination
+                    break
+                default: break
+                }
             }
-            .navigationDestination(for: SignUpDestination.self) { value in
-                SignUpScreen()
-            }
-            .navigationDestination(for: SignInDestination.self) { value in
-                SignInScreen()
-            }
-        }.environmentObject(navigationStack)
 	}
-}
-
-struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
-            .environmentObject(NavigationStackHolder())
-	}
+    
+    @ViewBuilder
+    func initialViewFrom(destination: BootstrapNavigationDestination?) -> some View {
+        switch destination {
+        case is BootstrapNavigationDestination.ToMain:
+            MainStack()
+        case is BootstrapNavigationDestination.ToLogin:
+            AuthorizationStack()
+        default:
+            Spacer()
+        }
+    }
 }

@@ -1,7 +1,5 @@
 package me.bookk.feature.authorization.domain.api
 
-import me.bookk.feature.authorization.domain.api.ValidateName.Result
-
 interface ValidateName {
     sealed interface Result {
 
@@ -10,10 +8,10 @@ interface ValidateName {
         sealed interface Invalid : Result {
             data object Length : Result
         }
+
+        val Result.isValid: Boolean
+            get() = this == Valid
     }
 
     fun invoke(name: String): Result
 }
-
-val Result.isValid: Boolean
-    get() = this == Result.Valid

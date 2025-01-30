@@ -60,13 +60,14 @@ struct SignUpScreen: View {
         .padding()
         .navigationTitle(uiState.appBar.title.localized())
         .navigationBarTitleDisplayMode(.large)
+        .sendLifecycleEventsTo(viewModel: signUpVM)
         .handleErrors(state: uiState.error)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
-            case is SignUpNavigationDestinationBack:
+            case is SignUpNavigationDestination.Back:
                 navigationStack.path.removeLast()
                 break
-            case is SignUpNavigationDestinationToMain:
+            case is SignUpNavigationDestination.ToMain:
                 navigationStack.path.append(SignInDestination())
                 break
             default: break
@@ -74,9 +75,6 @@ struct SignUpScreen: View {
         }
         .onAppear {
             focusedField = .name
-        }
-        .onDisappear {
-            signUpVM.clear()
         }
     }
 }

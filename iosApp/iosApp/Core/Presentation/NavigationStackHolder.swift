@@ -13,4 +13,8 @@ public class NavigationStackHolder: ObservableObject {
     @Published
     public var path = NavigationPath()
     
+    init(path: NavigationPath = NavigationPath()) {
+        self.path = path
+    }
+    
 }

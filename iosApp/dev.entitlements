@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>bookkk.me</string>
+		<string>webcredentials:bookkk.me</string>
 	</array>
 </dict>
 </plist>

@@ -10,8 +10,9 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.Error
 import me.bookk.feature.authorization.domain.api.ValidateEmail
+import me.bookk.feature.authorization.domain.api.ValidateEmail.Result.Invalid.Format.isValid
 import me.bookk.feature.authorization.domain.api.ValidateName
-import me.bookk.feature.authorization.domain.api.isValid
+import me.bookk.feature.authorization.domain.api.ValidateName.Result.Invalid.Length.isValid
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpEventListener
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState

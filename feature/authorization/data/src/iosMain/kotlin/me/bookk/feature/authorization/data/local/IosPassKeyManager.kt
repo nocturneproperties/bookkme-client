@@ -17,22 +17,22 @@ import platform.darwin.NSObject
 class IosPassKeyManager : PassKeyManager {
 
     @OptIn(BetaInteropApi::class)
-    override suspend fun create(jsonChallenge: String): PasskeyVerificationPayload =
+    override suspend fun create(challenge: PassKeyManager.ChallengeRequest): PasskeyVerificationPayload =
         suspendCancellableCoroutine {
             val delegate = PasskeyControllerDelegate(it)
             val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
                 relyingPartyIdentifier = "bookkk.me"
             )
             val nsChallenge = NSString
-                .create(string = jsonChallenge)
+                .create(string = challenge.challengeJson)
                 .dataUsingEncoding(encoding = NSUTF8StringEncoding)!!
             val nsUserId = NSString
-                .create(string = "Name")
+                .create(string = challenge.userId)
                 .dataUsingEncoding(encoding = NSUTF8StringEncoding)!!
             val platformKeyRequest =
                 platformProvider.createCredentialRegistrationRequestWithChallenge(
                     challenge = nsChallenge,
-                    name = "challenge.displayName",
+                    name = challenge.userName,
                     userID = nsUserId
                 )
             val authController = ASAuthorizationController(listOf(platformKeyRequest))

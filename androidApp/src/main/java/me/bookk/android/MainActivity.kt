@@ -13,13 +13,22 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import me.bookk.designsystem.theme.AppTheme
+import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
+import me.bookk.feature.authorization.presentation.bootstrap.BootstrapViewModel
+import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
 import me.bookk.feature.authorization.presentation.navigation.SignInDestination
 import me.bookk.feature.authorization.presentation.navigation.SignUpDestination
 import me.bookk.feature.authorization.presentation.navigation.authGraph
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: BootstrapViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition {
+            viewModel.state.navigation.navigationDestination == null
+        }
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
@@ -28,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavigationRoot()
+                    NavigationRoot(viewModel.state)
                 }
             }
         }
@@ -36,16 +45,22 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun NavigationRoot() {
+private fun NavigationRoot(state: BootstrapState) {
     val controller = rememberNavController()
-    NavHost(
-        navController = controller,
-        startDestination = SignInDestination.route
-    ) {
-        authGraph(
-            navigateBack = controller::popBackStack,
-            navigateToMainScreen = {},
-            navigateToSignUp = { controller.navigate(SignUpDestination.route) }
-        )
+    val destination = state.navigation.navigationDestination
+    if (destination != null) {
+        NavHost(
+            navController = controller,
+            startDestination = when (destination) {
+                BootstrapNavigationDestination.ToLogin -> SignInDestination.route
+                BootstrapNavigationDestination.ToMain -> SignUpDestination.route //TODO change to Main when main feature will be in development
+            }
+        ) {
+            authGraph(
+                navigateBack = controller::popBackStack,
+                navigateToMainScreen = {},
+                navigateToSignUp = { controller.navigate(SignUpDestination.route) }
+            )
+        }
     }
 }

@@ -65,7 +65,15 @@ internal class CommonRegistrationDataSource(
 
     override suspend fun createPasskey(challenge: ServerSignUpChallenge): PasskeyVerificationPayload {
         return mapExceptions(
-            action = { passKeyManager.create(challenge.jsonChallengeData) },
+            action = {
+                passKeyManager.create(
+                    PassKeyManager.ChallengeRequest(
+                        userId = challenge.userId,
+                        userName = challenge.displayName,
+                        challengeJson = challenge.jsonChallengeData
+                    )
+                )
+            },
             exceptionMapper = {
                 if (it !is Error.WrappedError) return@mapExceptions it
                 val cause = it.cause

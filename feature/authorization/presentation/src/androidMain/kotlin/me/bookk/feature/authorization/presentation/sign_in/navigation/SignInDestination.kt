@@ -13,7 +13,8 @@ import org.koin.androidx.compose.koinViewModel
 internal fun NavGraphBuilder.signInScreen(
     navigateBack: () -> Unit,
     navigateToMainScreen: () -> Unit,
-    navigateToSignUp: () -> Unit
+    navigateToSignUp: () -> Unit,
+    navigateToTroubleshoot: () -> Unit
 ) {
     composable(route = SignInDestination.route) {
         val viewModel: SignInViewModel = koinViewModel()
@@ -23,7 +24,8 @@ internal fun NavGraphBuilder.signInScreen(
             viewModel = viewModel,
             navigateBack = navigateBack,
             navigateToMainScreen = navigateToMainScreen,
-            navigateToSignUp = navigateToSignUp
+            navigateToSignUp = navigateToSignUp,
+            navigateToTroubleshoot = navigateToTroubleshoot
         )
 
         SignInScreen(
@@ -38,13 +40,15 @@ private fun HandleNavigation(
     viewModel: SignInViewModel,
     navigateBack: () -> Unit,
     navigateToMainScreen: () -> Unit,
-    navigateToSignUp: () -> Unit
+    navigateToSignUp: () -> Unit,
+    navigateToTroubleshoot: () -> Unit
 ) {
     viewModel.uiState.navigation.navigationDestination?.let {
         when (it) {
             SignInNavigationDestination.Back -> navigateBack()
             SignInNavigationDestination.ToMain -> navigateToMainScreen()
             SignInNavigationDestination.ToSignUp -> navigateToSignUp()
+            SignInNavigationDestination.ToTroubleshoot -> navigateToTroubleshoot()
         }
         viewModel.uiState.navigation.navigationDestination = null
     }

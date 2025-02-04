@@ -18,6 +18,7 @@ import me.bookk.feature.authorization.presentation.bootstrap.BootstrapViewModel
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
 import me.bookk.feature.authorization.presentation.navigation.SignInDestination
 import me.bookk.feature.authorization.presentation.navigation.SignUpDestination
+import me.bookk.feature.authorization.presentation.navigation.TroubleshootDestination
 import me.bookk.feature.authorization.presentation.navigation.authGraph
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -59,7 +60,9 @@ private fun NavigationRoot(state: BootstrapState) {
             authGraph(
                 navigateBack = controller::popBackStack,
                 navigateToMainScreen = {},
-                navigateToSignUp = { controller.navigate(SignUpDestination.route) }
+                navigateToSignUp = { controller.navigate(SignUpDestination.route) },
+                navigateToTroubleshoot = { controller.navigate(TroubleshootDestination.route) },
+                navigateToContactSupport = {}
             )
         }
     }

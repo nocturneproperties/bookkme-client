@@ -173,7 +173,6 @@
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
-				7A46FD192D20BD7D0047B838 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -308,24 +307,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
-		};
-		7A46FD192D20BD7D0047B838 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "cd \"$SRCROOT/..\"\n#https://github.com/icerockdev/moko-resources/issues/796\nstr=\"$FRAMEWORK_SEARCH_PATHS\"\nIFS=' ' read -r -a parts <<< \"$str\"\nfor i in \"${parts[@]}\"; do\n    find . -name \"*.bundle\" -exec rsync -r {} \"$i/shared.framework/\" \\;\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

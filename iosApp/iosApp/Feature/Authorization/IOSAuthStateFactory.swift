@@ -8,6 +8,7 @@
 import shared
 
 class IOSAuthStateFactory:AuthStateFactory {
+    
     func createBootstrapState() -> any BootstrapState {
         return IOSBootstrapState()
     }
@@ -18,6 +19,10 @@ class IOSAuthStateFactory:AuthStateFactory {
     
     func createSignUpState(initData: SignUpStateInitData) -> any SignUpState {
         return IOSSignUpState(initData: initData)
+    }
+    
+    func createTroubleshootState(initData: TroubleshootStateInitData) -> any TroubleshootState {
+        return IOSTroubleshootState(initData: initData)
     }
     
 }

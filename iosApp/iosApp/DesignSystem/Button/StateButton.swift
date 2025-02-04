@@ -13,16 +13,18 @@ struct TextButton: View {
     @ObservedObject
     var state: IOSButtonState
     @State
+    var maxWidth: CGFloat? = .infinity
+    @State
     var onClick: () -> Void
     
     var body: some View {
         Button(action: onClick) {
             if (state.isLoading) {
                 ProgressView()
-                    .frame(maxWidth: .infinity, minHeight: 36)
+                    .frame(maxWidth: maxWidth, minHeight: 36)
             } else {
                 Text(state.text.localized())
-                    .frame(maxWidth: .infinity, minHeight: 36)
+                    .frame(maxWidth: maxWidth, minHeight: 36)
             }
         }
         .disabled(!state.isEnabled)

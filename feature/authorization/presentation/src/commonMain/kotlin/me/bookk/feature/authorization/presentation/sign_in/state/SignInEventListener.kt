@@ -5,4 +5,5 @@ interface SignInEventListener {
     fun onSignInClick()
     fun onLearnMoreClick()
     fun onSignUpClick()
+    fun onTroubleshootClick()
 }

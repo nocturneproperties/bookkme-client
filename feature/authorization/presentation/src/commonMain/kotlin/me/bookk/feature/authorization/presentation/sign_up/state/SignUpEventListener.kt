@@ -6,4 +6,5 @@ interface SignUpEventListener {
     fun onLastNameTextChanged(text: String)
     fun onEmailTextChanged(text: String)
     fun onConfirmButtonClick()
+    fun onLearnMoreClick()
 }

@@ -13,14 +13,18 @@ import me.bookk.feature.authorization.domain.api.ValidateEmail
 import me.bookk.feature.authorization.domain.api.ValidateEmail.Result.Invalid.Format.isValid
 import me.bookk.feature.authorization.domain.api.ValidateName
 import me.bookk.feature.authorization.domain.api.ValidateName.Result.Invalid.Length.isValid
+import me.bookk.feature.authorization.presentation.AuthConstants
 import me.bookk.feature.authorization.presentation.AuthStateFactory
+import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpEventListener
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
+import me.bookk.feature.platform.domain.api.OpenUrlPreview
 
 class SignUpViewModel(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
     private val createAccount: CreateAccount,
+    private val openUrlPreview: OpenUrlPreview,
     stateFactory: AuthStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs), SignUpEventListener {
@@ -29,6 +33,10 @@ class SignUpViewModel(
 
     override fun onBackClick() {
         uiState.navigation.navigationDestination = SignUpNavigationDestination.Back
+    }
+
+    override fun onLearnMoreClick() {
+        openUrlPreview(AuthConstants.PASSKEY_INFO_URL)
     }
 
     override fun onFirstNameTextChanged(text: String) {
@@ -130,6 +138,11 @@ class SignUpViewModel(
             nameHint = AuthRes.strings.sign_up_first_name.desc(),
             lastNameHint = AuthRes.strings.sign_up_last_name.desc(),
             emailHint = AuthRes.strings.sign_up_email.desc(),
+            learnMoreButtonText = AuthRes.strings.sign_in_passkey_learn_more_button.desc(),
+            passkeyInfoCardData = PasskeyInfoCardData(
+                title = AuthRes.strings.sign_up_why_no_password_title.desc(),
+                description = AuthRes.strings.sign_up_why_no_password_description.desc()
+            ),
             confirmButtonText = AuthRes.strings.sign_up_create_account_button.desc()
         )
     }

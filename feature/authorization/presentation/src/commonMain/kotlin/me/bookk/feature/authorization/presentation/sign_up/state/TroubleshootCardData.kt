@@ -1,4 +1,4 @@
-package me.bookk.feature.authorization.presentation.sign_in.state
+package me.bookk.feature.authorization.presentation.sign_up.state
 
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc

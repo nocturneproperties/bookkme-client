@@ -22,6 +22,9 @@ struct AuthorizationStack:View {
                 .navigationDestination(for: SignInDestination.self) { value in
                     SignInScreen()
                 }
+                .navigationDestination(for: TroubleshootDestination.self) { value in
+                    TroubleshootScreen()
+                }
         }.environmentObject(navigationStack)
     }
 }

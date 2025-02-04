@@ -20,6 +20,10 @@ class IOSSignUpState: SignUpState {
     
     var confirmButton: any ButtonState
     
+    var learnMoreButton: any ButtonState
+    
+    var passkeyInfoCardData: PasskeyInfoCardData
+    
     var error: any ErrorState
     
     var navigation: any NavigationState
@@ -41,6 +45,8 @@ class IOSSignUpState: SignUpState {
             text: initData.confirmButtonText,
             isEnabled: false
         )
+        passkeyInfoCardData = initData.passkeyInfoCardData
+        learnMoreButton = IOSButtonState(text: initData.learnMoreButtonText)
         error = IOSErrorState()
         navigation = IOSNavigationState()
     }

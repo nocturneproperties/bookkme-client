@@ -22,37 +22,47 @@ struct SignUpScreen: View {
     var body: some View {
         let uiState = signUpVM.uiState
         VStack {
-            StateTextField(state: uiState.name.impl()) { text in
-                signUpVM.onFirstNameTextChanged(text: text)
+            ScrollView {
+                VStack {
+                    StateTextField(state: uiState.name.impl()) { text in
+                        signUpVM.onFirstNameTextChanged(text: text)
+                    }
+                    .focused($focusedField, equals: .name)
+                    .textContentType(.givenName)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        focusedField = .lastName
+                    }
+                    
+                    StateTextField(state: uiState.lastName.impl()) { text in
+                        signUpVM.onLastNameTextChanged(text: text)
+                    }
+                    .focused($focusedField, equals: .lastName)
+                    .textContentType(.familyName)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        focusedField = .email
+                    }
+                    
+                    StateTextField(state: uiState.email.impl()) { text in
+                        signUpVM.onEmailTextChanged(text: text)
+                    }
+                    .autocapitalization(.none)
+                    .focused($focusedField, equals: .email)
+                    .textContentType(.emailAddress)
+                    .keyboardType(.emailAddress)
+                    .submitLabel(.done)
+                    
+                    Spacer()
+                    
+                    PasskeyCard(
+                        learnMoreState: uiState.learnMoreButton.impl(),
+                        cardInfo: uiState.passkeyInfoCardData
+                    ) {
+                        signUpVM.onLearnMoreClick()
+                    }
+                }
             }
-            .focused($focusedField, equals: .name)
-            .textContentType(.givenName)
-            .submitLabel(.next)
-            .onSubmit {
-                focusedField = .lastName
-            }
-            
-            StateTextField(state: uiState.lastName.impl()) { text in
-                signUpVM.onLastNameTextChanged(text: text)
-            }
-            .focused($focusedField, equals: .lastName)
-            .textContentType(.familyName)
-            .submitLabel(.next)
-            .onSubmit {
-                focusedField = .email
-            }
-            
-            StateTextField(state: uiState.email.impl()) { text in
-                signUpVM.onEmailTextChanged(text: text)
-            }
-            .autocapitalization(.none)
-            .focused($focusedField, equals: .email)
-            .textContentType(.emailAddress)
-            .keyboardType(.emailAddress)
-            .submitLabel(.done)
-            
-            Spacer()
-            
             StateButton(state: uiState.confirmButton.impl()) {
                 signUpVM.onConfirmButtonClick()
             }

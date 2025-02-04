@@ -1,42 +1,18 @@
 package me.bookk.feature.authorization.presentation.sign_in
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.resources.compose.painterResource
 import me.bookk.core.presentation.string
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
@@ -48,7 +24,6 @@ import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInEventListener
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
-import me.bookk.feature.authorization.presentation.sign_in.state.TroubleshootCardData
 
 @Composable
 fun SignInScreen(
@@ -62,8 +37,7 @@ fun SignInScreen(
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                size = TopBarSize.MEDIUM,
-                onNavigationIconClick = listener::onBackClick
+                size = TopBarSize.MEDIUM
             )
         },
         content = { paddings ->
@@ -73,7 +47,7 @@ fun SignInScreen(
                     .padding(paddings)
                     .padding(all = 16.dp)
             ) {
-                PassKeyTroubleshootCard(
+                PasskeyInfoCard(
                     state = state,
                     onButtonClick = listener::onLearnMoreClick
                 )
@@ -96,107 +70,43 @@ fun SignInScreen(
                     state = state.signUpButton,
                     onClick = listener::onSignUpClick
                 )
-            }
-        }
-    )
-}
-
-@Composable
-private fun PassKeyTroubleshootCard(
-    state: SignInState,
-    onButtonClick: () -> Unit
-) {
-    AnimatedVisibility(
-        visible = state.troubleshootView.isVisible,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        AppCard(
-            modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.large
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier.padding(
-                        start = 24.dp,
-                        top = 24.dp,
-                        bottom = 24.dp,
-                        end = 16.dp
-                    ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f).padding(end = 16.dp),
-                        style = MaterialTheme.typography.titleMedium,
-                        text = state.troubleshootCardStaticData.title.string()
-                    )
-
-                    Box(
-                        modifier = Modifier.size(48.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            modifier = Modifier.fillMaxSize(),
-                            painter = painterResource(state.troubleshootCardStaticData.icon),
-                            contentDescription = null
-                        )
-                    }
-                }
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(LocalColors.current.Divider)
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state.troubleshootButton,
+                    onClick = listener::onTroubleshootClick
                 )
-                Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                    state.troubleshootCardStaticData.reasons.forEach {
-                        ReasonItem(reason = it)
-                    }
-                    TextButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        state = state.learnMoreButton,
-                        textStyle = MaterialTheme.typography.bodyMedium,
-                        onClick = onButtonClick
-                    )
-                }
             }
         }
-    }
+    )
 }
 
 @Composable
-private fun ReasonItem(reason: TroubleshootCardData.Reason) {
-    var isExpanded by remember { mutableStateOf(false) }
-    val angle: Float by animateFloatAsState(
-        targetValue = if (isExpanded) 90f else 0f,
-        animationSpec = tween(
-            durationMillis = 200,
-            easing = LinearEasing
-        ),
-        label = "ArrowRotationAnimation"
-    )
-    Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
-        Row(
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+private fun PasskeyInfoCard(state: SignInState, onButtonClick: () -> Unit) {
+    AppCard(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column {
             Text(
-                text = reason.title.string(),
-                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(
+                    start = 24.dp,
+                    top = 24.dp,
+                    end = 24.dp,
+                    bottom = 16.dp
+                ),
+                style = MaterialTheme.typography.titleMedium,
+                text = state.passkeyInfoCardData.title.string()
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                modifier = Modifier.rotate(angle),
-                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                contentDescription = null
-            )
-        }
-        AnimatedVisibility(isExpanded) {
             Text(
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                text = reason.description.string(),
+                modifier = Modifier.padding(horizontal = 24.dp),
                 style = MaterialTheme.typography.bodySmall,
+                text = state.passkeyInfoCardData.description.string(),
                 color = LocalColors.current.SecondaryText
+            )
+            TextButton(
+                modifier = Modifier.padding(start = 8.dp),
+                state = state.learnMoreButton,
+                onClick = onButtonClick
             )
         }
     }
@@ -235,5 +145,8 @@ private fun mockListener() = object : SignInEventListener {
     }
 
     override fun onSignUpClick() {
+    }
+
+    override fun onTroubleshootClick() {
     }
 }

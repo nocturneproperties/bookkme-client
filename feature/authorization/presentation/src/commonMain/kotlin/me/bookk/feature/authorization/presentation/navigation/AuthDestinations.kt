@@ -9,3 +9,7 @@ object SignUpDestination : NavigationDestinationDeclaration() {
 object SignInDestination : NavigationDestinationDeclaration() {
     override val route: String = "sign_in"
 }
+
+object TroubleshootDestination : NavigationDestinationDeclaration() {
+    override val route: String = "troubleshoot"
+}

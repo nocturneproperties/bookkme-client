@@ -11,6 +11,7 @@ import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.ErrorState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.TextFieldState
+import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 
 @Immutable
@@ -21,6 +22,8 @@ internal class AndroidSignUpState private constructor(
     override val email: TextFieldState,
     override val confirmButton: ButtonState,
     override val error: ErrorState,
+    override val learnMoreButton: ButtonState,
+    override val passkeyInfoCardData: PasskeyInfoCardData,
     override val navigation: NavigationState<SignUpNavigationDestination>
 ) : SignUpState {
 
@@ -30,6 +33,8 @@ internal class AndroidSignUpState private constructor(
         lastName = AndroidTextFieldState(hint = initData.lastNameHint),
         email = AndroidTextFieldState(hint = initData.emailHint),
         confirmButton = AndroidButtonState(text = initData.confirmButtonText, isEnabled = false),
+        learnMoreButton = AndroidButtonState(text = initData.learnMoreButtonText),
+        passkeyInfoCardData = initData.passkeyInfoCardData,
         error = AndroidErrorState(),
         navigation = AndroidNavigationState<SignUpNavigationDestination>()
     )

@@ -16,10 +16,9 @@ struct SignInScreen: View {
     var body: some View {
         let uiState = signInVM.uiState
         VStack {
-            TroubleshootCard(
+            PasskeyCard(
                 learnMoreState: uiState.learnMoreButton.impl(),
-                troubleshootView: uiState.troubleshootView.impl(),
-                troubleshootInfo: uiState.troubleshootCardStaticData
+                cardInfo: uiState.passkeyInfoCardData
             ) {
                 signInVM.onLearnMoreClick()
             }
@@ -29,6 +28,9 @@ struct SignInScreen: View {
             }
             TextButton(state: uiState.signUpButton.impl()) {
                 signInVM.onSignUpClick()
+            }
+            TextButton(state: uiState.troubleshootButton.impl()) {
+                signInVM.onTroubleshootClick()
             }
         }
         .padding()
@@ -45,92 +47,44 @@ struct SignInScreen: View {
             case is SignInNavigationDestination.ToSignUp:
                 navigationStack.path.append(SignUpDestination())
                 break
+            case is SignInNavigationDestination.ToTroubleshoot:
+                navigationStack.path.append(TroubleshootDestination())
+                break
             default: break
             }
         }
         .sendLifecycleEventsTo(viewModel: signInVM)
     }
-    
 }
 
-struct TroubleshootCard: View {
+struct PasskeyCard: View {
     @ObservedObject
     var learnMoreState: IOSButtonState
     
-    @ObservedObject
-    var troubleshootView: IOSViewState
-    
-    let troubleshootInfo:TroubleshootCardData
+    @State
+    var cardInfo: PasskeyInfoCardData
     
     @State
     var onClick: () -> Void
     
     var body: some View {
-        if (troubleshootView.isVisible) {
-            VStack {
-                HStack {
-                    Text(troubleshootInfo.title.localized())
-                        .font(.body)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                    Image(resource: \.passkey)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 48, height: 48)
-                }
-                Divider()
-                    .background(AppColors.divider)
-                    .padding(.vertical, 8)
-                
-                ForEach(troubleshootInfo.reasons, id: \.id) { reason in
-                    TroubleshootReason(reason: reason)
-                }
-                
-                TextButton(state: learnMoreState) {
-                    onClick()
-                }
-            }
-            .padding(24)
-            .background(AppColors.elevated)
-            .cornerRadius(10)
-        }
-    }
-}
-
-struct TroubleshootReason: View {
-    
-    let reason: TroubleshootCardData.Reason
-    @State
-    var isExpanded: Bool = false
-    
-    var body: some View {
-        VStack {
-            HStack {
-                Text(reason.title.localized())
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                let degrees = isExpanded ? 90.0 : 0.0
-                Image(systemName: "chevron.forward")
-                    .rotationEffect(.degrees(degrees))
-            }
+        VStack(alignment: .leading) {
+            Text(cardInfo.title.localized())
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.headline)
+            Text(cardInfo.description_.localized())
+                .padding(.top, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.caption)
+                .foregroundStyle(AppColors.secondary)
             
-            if (isExpanded) {
-                Text(reason.description_.localized())
-                    .font(.caption)
-                    .foregroundStyle(AppColors.secondary)
-                    .padding(.top, 8)
-                    .padding(.trailing, 8)
-            }
-            
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            withAnimation {
-                isExpanded.toggle()
+            TextButton(state: learnMoreState, maxWidth: nil) {
+                onClick()
             }
         }
-        .padding(.vertical, 8)
+        .padding(24)
+        .background(AppColors.elevated)
+        .cornerRadius(10)
     }
 }
 

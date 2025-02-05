@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -16,10 +17,11 @@ import me.bookk.designsystem.theme.AppTheme
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapViewModel
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
-import me.bookk.feature.authorization.presentation.navigation.SignInDestination
 import me.bookk.feature.authorization.presentation.navigation.SignUpDestination
 import me.bookk.feature.authorization.presentation.navigation.TroubleshootDestination
 import me.bookk.feature.authorization.presentation.navigation.authGraph
+import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
+import me.bookk.feature.dashboard.presentation.navigation.dashboardGraph
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -53,8 +55,8 @@ private fun NavigationRoot(state: BootstrapState) {
         NavHost(
             navController = controller,
             startDestination = when (destination) {
-                BootstrapNavigationDestination.ToLogin -> SignInDestination.route
-                BootstrapNavigationDestination.ToMain -> SignUpDestination.route //TODO change to Main when main feature will be in development
+                BootstrapNavigationDestination.ToLogin -> DashboardDestination.route
+                BootstrapNavigationDestination.ToMain -> DashboardDestination.route
             }
         ) {
             authGraph(
@@ -63,6 +65,11 @@ private fun NavigationRoot(state: BootstrapState) {
                 navigateToSignUp = { controller.navigate(SignUpDestination.route) },
                 navigateToTroubleshoot = { controller.navigate(TroubleshootDestination.route) },
                 navigateToContactSupport = {}
+            )
+            dashboardGraph(
+                appointmentsScreen = { Text("Appointments") },
+                businessScreen = { Text("Business") },
+                settingsScreen = { Text("Settings") }
             )
         }
     }

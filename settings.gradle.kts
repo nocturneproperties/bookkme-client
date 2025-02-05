@@ -47,3 +47,6 @@ include(":feature:platform:data")
 include(":feature:platform:domain:api")
 include(":feature:platform:domain:impl")
 include(":feature:platform:domain:datasource")
+
+//Dashboard
+include(":feature:dashboard:presentation")

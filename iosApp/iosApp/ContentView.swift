@@ -3,7 +3,7 @@ import shared
 
 struct ContentView: View {
 
-    @StateObject var bootstrapVM = AuthDiKt.bootstrapVM()
+	@StateObject var bootstrapVM = IOSAuthDiKt.bootstrapVM()
     @State var initialDestination: BootstrapNavigationDestination? = nil
 	
 	var body: some View {
@@ -22,7 +22,7 @@ struct ContentView: View {
     func initialViewFrom(destination: BootstrapNavigationDestination?) -> some View {
         switch destination {
         case is BootstrapNavigationDestination.ToMain:
-            MainStack()
+			DashboardScreen()
         case is BootstrapNavigationDestination.ToLogin:
             AuthorizationStack()
         default:

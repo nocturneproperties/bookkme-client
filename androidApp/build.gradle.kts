@@ -48,4 +48,5 @@ android {
 dependencies {
     implementation(projects.shared)
     implementation(projects.feature.authorization.presentation)
+    implementation(projects.feature.dashboard.presentation)
 }

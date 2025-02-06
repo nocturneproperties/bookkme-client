@@ -11,7 +11,7 @@ import SwiftUI
 struct SignInScreen: View {
     
     @EnvironmentObject var navigationStack: NavigationStackHolder
-    @StateObject var signInVM: SignInViewModel = AuthDiKt.signInVM()
+	@StateObject var signInVM: SignInViewModel = IOSAuthDiKt.signInVM()
     
     var body: some View {
         let uiState = signInVM.uiState

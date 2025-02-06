@@ -39,6 +39,7 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                     implementation(libs.compose.ui.tooling.preview)
                     implementation(libs.compose.material3)
                     implementation(libs.compose.navigation)
+                    implementation(libs.compose.icons.extended)
                     implementation(libs.androidx.activity.compose)
                     implementation(libs.kotlinx.coroutines.android)
                     implementation(libs.androidx.lifecycle.viewmodel)

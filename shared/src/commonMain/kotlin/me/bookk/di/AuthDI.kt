@@ -5,7 +5,7 @@ import me.bookk.feature.authorization.domain.impl.di.authDomainModule
 import me.bookk.feature.authorization.presentation.di.authPresentationModule
 import org.koin.dsl.module
 
-fun authDiModule() = module {
+internal fun authDiModule() = module {
     includes(
         authPresentationModule(),
         authDomainModule(),

@@ -11,7 +11,7 @@ import SwiftUI
 
 struct TroubleshootScreen: View {
     @EnvironmentObject var navigationStack: NavigationStackHolder
-    @StateObject var troubleshootVM: TroubleshootViewModel = AuthDiKt.troubleshootVM()
+    @StateObject var troubleshootVM: TroubleshootViewModel = IOSAuthDiKt.troubleshootVM()
     
     
     var body: some View {
@@ -97,4 +97,8 @@ struct TroubleshootReason: View {
         }
         .padding(.vertical, 8)
     }
+}
+
+#Preview {
+	TroubleshootScreen()
 }

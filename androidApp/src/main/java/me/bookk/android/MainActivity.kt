@@ -17,6 +17,7 @@ import me.bookk.designsystem.theme.AppTheme
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapViewModel
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
+import me.bookk.feature.authorization.presentation.navigation.SignInDestination
 import me.bookk.feature.authorization.presentation.navigation.SignUpDestination
 import me.bookk.feature.authorization.presentation.navigation.TroubleshootDestination
 import me.bookk.feature.authorization.presentation.navigation.authGraph
@@ -55,7 +56,7 @@ private fun NavigationRoot(state: BootstrapState) {
         NavHost(
             navController = controller,
             startDestination = when (destination) {
-                BootstrapNavigationDestination.ToLogin -> DashboardDestination.route
+                BootstrapNavigationDestination.ToLogin -> SignInDestination.route
                 BootstrapNavigationDestination.ToMain -> DashboardDestination.route
             }
         ) {

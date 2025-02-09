@@ -5,6 +5,7 @@ import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.database.di.databaseModule
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
+import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.presentation.StateFactoryCreator
 import me.bookk.shared.ErrorMapperImpl
 import org.koin.dsl.module
@@ -23,4 +24,5 @@ internal fun coreModule(creator: StateFactoryCreator) = module {
 private fun stateModule() = module {
     factory<AuthStateFactory> { get<StateFactoryCreator>().createAuthFactory() }
     factory<DashboardStateFactory> { get<StateFactoryCreator>().createDashboardFactory() }
+    factory<SettingsStateFactory> { get<StateFactoryCreator>().createSettingsFactory() }
 }

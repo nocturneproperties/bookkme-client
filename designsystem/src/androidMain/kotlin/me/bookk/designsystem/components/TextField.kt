@@ -23,8 +23,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.core.presentation.string
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -63,14 +63,14 @@ fun TextField(
         colors = defaultTextFieldColors(isError = state.isError),
         placeholder = {
             Text(
-                text = state.hint.string(),
+                text = state.hint.localized(),
                 style = MaterialTheme.typography.bodyMedium.copy(background = Color.Transparent)
             )
         },
         supportingText = {
             if (state.isError) {
                 Text(
-                    text = state.errorTextRes?.string().orEmpty(),
+                    text = state.errorTextRes?.localized().orEmpty(),
                     color = LocalColors.current.Error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(vertical = 4.dp)

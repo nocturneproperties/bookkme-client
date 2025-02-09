@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_appearance_title">Appearance</string>
+    <string name="settings_theme_mode_light">Light</string>
+    <string name="settings_theme_mode_dark">Dark</string>
+    <string name="settings_theme_mode_system">System</string>
+    <string name="settings_profile_title">Profile</string>
+    <string name="settings_profile_name">Name</string>
+    <string name="settings_profile_last_name">Last name</string>
+    <string name="settings_profile_email">Email</string>
+    <string name="settings_profile_edit">Edit profile</string>
+    <string name="settings_account_title">Account</string>
+    <string name="settings_account_passkey_label">Passkey</string>
+    <string name="settings_account_logout_label">Log out</string>
+    <string name="settings_account_delete_acc_label">Delete account</string>
+    <string name="settings_support_title">Support</string>
+    <string name="settings_support_contact_label">Contact Us</string>
+    <string name="settings_support_feature_label">Suggest a feature</string>
+    <string name="settings_support_terms_label">Terms of Use</string>
+    <string name="settings_support_privacy_label">Privacy Policy</string>
+    <string name="settings_support_report_label">Report an error</string>
+</resources>

@@ -91,7 +91,7 @@ struct TroubleshootReason: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            withAnimation {
+			withAnimation {
                 isExpanded.toggle()
             }
         }

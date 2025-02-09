@@ -8,6 +8,7 @@
 import shared
 
 class IOSStateFactoryCreator:StateFactoryCreator {
+	
 	func createDashboardFactory() -> any DashboardStateFactory {
 		return IOSDashboardStateFactory()
 	}
@@ -15,5 +16,9 @@ class IOSStateFactoryCreator:StateFactoryCreator {
     func createAuthFactory() -> any AuthStateFactory {
         return IOSAuthStateFactory()
     }
+	
+	func createSettingsFactory() -> any SettingsStateFactory {
+		return IOSSettingsStateFactory()
+	}
     
 }

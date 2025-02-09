@@ -1,0 +1,10 @@
+package me.bookk.feature.settings.presentation.di
+
+import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.module
+
+internal actual fun platformSettingsDiModule(): Module = module {
+    viewModelOf(::SettingsDashboardViewModel)
+}

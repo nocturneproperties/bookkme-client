@@ -17,6 +17,16 @@ struct TextButton: View {
     @State
     var onClick: () -> Void
     
+	init(state: IOSButtonState, maxWidth: CGFloat? = .infinity, onClick: @escaping () -> Void) {
+		self.state = state
+		self.onClick = onClick
+	}
+	
+	init(state: ButtonState, maxWidth: CGFloat? = .infinity, onClick: @escaping () -> Void) {
+		self.state = state.impl()
+		self.onClick = onClick
+	}
+	
     var body: some View {
         Button(action: onClick) {
             if (state.isLoading) {
@@ -37,6 +47,16 @@ struct StateButton: View {
     @State
     var onClick: () -> Void
     
+	init(state: IOSButtonState, onClick: @escaping () -> Void) {
+		self.state = state
+		self.onClick = onClick
+	}
+	
+	init(state: ButtonState, onClick: @escaping () -> Void) {
+		self.state = state.impl()
+		self.onClick = onClick
+	}
+	
     var body: some View {
         Button(action: onClick) {
             if (state.isLoading) {

@@ -6,16 +6,20 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import me.bookk.core.DispatcherProvider
-import me.bookk.database.entity.TempEntity
+import me.bookk.database.dao.UserProfileDao
+import me.bookk.database.entity.UserProfileEntity
 
 @Database(
     entities = [
-        TempEntity::class
+        UserProfileEntity::class
     ],
     version = 1
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
+
+    abstract fun profileDao(): UserProfileDao
+
     companion object {
 
         const val DATABASE_NAME = "bookk_me.db"

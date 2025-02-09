@@ -8,8 +8,17 @@
 
 import shared
 
-class IOSBootstrapState: BootstrapState {
-    
+class IOSBootstrapState: BootstrapState, ObservableObject {
+	
+	@Published
+	var colorScheme: BootstrapStateUIColorScheme = BootstrapStateUIColorScheme.system
+	
     var navigation: any NavigationState = IOSNavigationState()
 
+}
+
+extension BootstrapState {
+	func impl() -> IOSBootstrapState {
+		return self as! IOSBootstrapState
+	}
 }

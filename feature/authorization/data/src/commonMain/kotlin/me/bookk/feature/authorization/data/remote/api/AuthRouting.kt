@@ -42,6 +42,13 @@ internal object AuthRouting {
             @Resource("/account")
             class DeleteAccount(val parent: Auth = Auth())
         }
+
+        @Resource("/user")
+        class User(val parent: Api = Api()) {
+
+            @Resource("/me")
+            class Me(val parent: User = User())
+        }
     }
 
 }

@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.core.presentation.string
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -46,7 +46,7 @@ fun AppTopBar(
                     containerColor = LocalColors.current.Background
                 ),
                 title = {
-                    AppBarTitle(state.title.string(), size)
+                    AppBarTitle(state.title.localized(), size)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -66,7 +66,7 @@ fun AppTopBar(
                     containerColor = LocalColors.current.Background
                 ),
                 title = {
-                    AppBarTitle(state.title.string(), size)
+                    AppBarTitle(state.title.localized(), size)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -86,7 +86,7 @@ fun AppTopBar(
                     containerColor = LocalColors.current.Background
                 ),
                 title = {
-                    AppBarTitle(state.title.string(), size)
+                    AppBarTitle(state.title.localized(), size)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {

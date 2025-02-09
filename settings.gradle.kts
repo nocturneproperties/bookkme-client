@@ -35,6 +35,12 @@ include(":core:presentation")
 include(":domain:environment:api")
 include(":domain:environment:impl")
 
+//Platform
+include(":feature:platform:data")
+include(":feature:platform:domain:api")
+include(":feature:platform:domain:impl")
+include(":feature:platform:domain:datasource")
+
 //Authorization
 include(":feature:authorization:data")
 include(":feature:authorization:domain:api")
@@ -42,11 +48,12 @@ include(":feature:authorization:domain:impl")
 include(":feature:authorization:domain:datasource")
 include(":feature:authorization:presentation")
 
-//Platform
-include(":feature:platform:data")
-include(":feature:platform:domain:api")
-include(":feature:platform:domain:impl")
-include(":feature:platform:domain:datasource")
+//Settings
+include(":feature:settings:data")
+include(":feature:settings:domain:api")
+include(":feature:settings:domain:impl")
+include(":feature:settings:domain:datasource")
+include(":feature:settings:presentation")
 
 //Dashboard
 include(":feature:dashboard:presentation")

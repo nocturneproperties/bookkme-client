@@ -15,7 +15,7 @@ struct SignUpScreen: View {
         case lastName
         case email
     }
-    @EnvironmentObject var navigationStack: NavigationStackHolder
+	@EnvironmentObject var navigationStack: NavigationStackHolder
     @StateObject var signUpVM: SignUpViewModel = IOSAuthDiKt.signUpVM()
     @FocusState private var focusedField: FocusField?
     

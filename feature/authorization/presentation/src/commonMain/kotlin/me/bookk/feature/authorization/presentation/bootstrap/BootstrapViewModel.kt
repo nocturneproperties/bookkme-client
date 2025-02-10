@@ -33,7 +33,7 @@ class BootstrapViewModel(
                 state.navigation.navigationDestination = if (isLoggedIn) {
                     BootstrapNavigationDestination.ToMain
                 } else {
-                    BootstrapNavigationDestination.ToMain
+                    BootstrapNavigationDestination.ToLogin
                 }
             }
         )

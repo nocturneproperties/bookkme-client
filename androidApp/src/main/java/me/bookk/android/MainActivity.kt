@@ -17,6 +17,7 @@ import me.bookk.designsystem.theme.AppTheme
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapViewModel
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
+import me.bookk.feature.authorization.presentation.navigation.AuthNavigation
 import me.bookk.feature.authorization.presentation.navigation.SignInDestination
 import me.bookk.feature.authorization.presentation.navigation.SignUpDestination
 import me.bookk.feature.authorization.presentation.navigation.TroubleshootDestination
@@ -61,11 +62,13 @@ private fun NavigationRoot(state: BootstrapState) {
             }
         ) {
             authGraph(
-                navigateBack = controller::popBackStack,
-                navigateToMainScreen = {},
-                navigateToSignUp = { controller.navigate(SignUpDestination.route) },
-                navigateToTroubleshoot = { controller.navigate(TroubleshootDestination.route) },
-                navigateToContactSupport = {}
+                navigation = AuthNavigation(
+                    navigateBack = controller::popBackStack,
+                    navigateToMainScreen = {},
+                    navigateToSignUp = { controller.navigate(SignUpDestination.route) },
+                    navigateToTroubleshoot = { controller.navigate(TroubleshootDestination.route) },
+                    navigateToContactSupport = {}
+                )
             )
             dashboardGraph(
                 appointmentsScreen = { Text("Appointments") },

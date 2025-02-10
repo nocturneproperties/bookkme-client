@@ -20,7 +20,7 @@ struct TroubleshootScreen: View {
             TroubleshootCard(troubleshootInfo: uiState.troubleshootCardStaticData)
             Spacer()
             StateButton(state: uiState.contactSupportButton.impl()) {
-                troubleshootVM.onContactSupportClick()
+				//navigationStack.path.append()
             }
         }
         .padding()

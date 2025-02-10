@@ -4,7 +4,4 @@ import me.bookk.core.presentation.navigation.NavigationDestination
 
 sealed class SignInNavigationDestination : NavigationDestination() {
     data object ToMain : SignInNavigationDestination()
-    data object ToSignUp : SignInNavigationDestination()
-    data object ToTroubleshoot : SignInNavigationDestination()
-    data object Back : SignInNavigationDestination()
 }

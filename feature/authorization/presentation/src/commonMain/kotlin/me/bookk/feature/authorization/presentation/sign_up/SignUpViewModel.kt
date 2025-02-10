@@ -31,10 +31,6 @@ class SignUpViewModel(
 
     val uiState: SignUpState = stateFactory.createSignUpState(createInitData())
 
-    override fun onBackClick() {
-        uiState.navigation.navigationDestination = SignUpNavigationDestination.Back
-    }
-
     override fun onLearnMoreClick() {
         openUrlPreview(AuthConstants.PASSKEY_INFO_URL)
     }

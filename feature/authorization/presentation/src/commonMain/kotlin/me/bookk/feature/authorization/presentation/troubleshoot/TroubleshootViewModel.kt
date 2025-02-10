@@ -17,14 +17,6 @@ class TroubleshootViewModel(
 
     val uiState = stateFactory.createTroubleshootState(createInitData())
 
-    override fun onBackClick() {
-        uiState.navigation.navigationDestination = TroubleshootNavigationDestination.Back
-    }
-
-    override fun onContactSupportClick() {
-        uiState.navigation.navigationDestination = TroubleshootNavigationDestination.ContactSupport
-    }
-
     companion object {
         fun createInitData(): TroubleshootState.InitData {
             return TroubleshootState.InitData(

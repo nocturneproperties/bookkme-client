@@ -32,14 +32,6 @@ class SignInViewModel(
         openUrlPreview(AuthConstants.PASSKEY_INFO_URL)
     }
 
-    override fun onSignUpClick() {
-        uiState.navigation.navigationDestination = SignInNavigationDestination.ToSignUp
-    }
-
-    override fun onTroubleshootClick() {
-        uiState.navigation.navigationDestination = SignInNavigationDestination.ToTroubleshoot
-    }
-
     override fun onSignInClick() {
         launch(
             launchIn = DispatcherProvider.io,

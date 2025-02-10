@@ -4,6 +4,4 @@ interface SignInEventListener {
     fun onBackClick()
     fun onSignInClick()
     fun onLearnMoreClick()
-    fun onSignUpClick()
-    fun onTroubleshootClick()
 }

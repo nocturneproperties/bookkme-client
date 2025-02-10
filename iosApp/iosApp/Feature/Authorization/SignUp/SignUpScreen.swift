@@ -74,9 +74,6 @@ struct SignUpScreen: View {
         .handleErrors(state: uiState.error)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
-            case is SignUpNavigationDestination.Back:
-                navigationStack.path.removeLast()
-                break
             case is SignUpNavigationDestination.ToMain:
                 navigationStack.path.append(SignInDestination())
                 break

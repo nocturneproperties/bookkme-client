@@ -82,6 +82,15 @@ internal fun UserProfileEntity.toDomain(): UserProfile {
     )
 }
 
+internal fun UserProfile.toRemote(): UserProfileRemote {
+    return UserProfileRemote(
+        id = id,
+        firstName = firstName,
+        lastName = lastName,
+        email = email
+    )
+}
+
 internal fun UserProfile.toDb(): UserProfileEntity {
     return UserProfileEntity(
         id = id,

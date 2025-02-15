@@ -18,7 +18,7 @@ fun AppCard(
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.medium,
     border: BorderStroke? = null,
-    background: Color = LocalColors.current.Elevated,
+    background: Color = LocalColors.current.elevated,
     content: @Composable (ColumnScope.() -> Unit)
 ) {
     Card(

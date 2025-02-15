@@ -17,6 +17,8 @@ kotlin {
             implementation(projects.core)
             implementation(projects.core.domain)
             implementation(projects.core.data)
+            implementation(projects.database)
+            implementation(projects.feature.platform.domain.datasource)
             implementation(projects.feature.platform.domain.datasource)
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.domain.datasource)

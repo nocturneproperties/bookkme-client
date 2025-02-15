@@ -10,7 +10,7 @@ expect abstract class ViewModel(
     vmArgs: VmArgs
 ) {
     protected val viewModelScope: CoroutineScope
-    protected val mapper: ErrorMapper
+    protected val errorMapper: ErrorMapper
     protected open val viewModelScopeErrorHandler: CoroutineExceptionHandler
 
     open fun onViewPresented()
@@ -21,7 +21,7 @@ expect abstract class ViewModel(
     protected fun <Output> launch(
         launchIn: CoroutineContext,
         call: suspend () -> Output,
-        onComplete: suspend (Output) -> Unit,
+        onComplete: (suspend (Output) -> Unit)? = null,
         onError: (suspend (Throwable) -> Unit)? = null,
         onStart: (suspend () -> Unit)? = null,
         onTerminate: (suspend () -> Unit)? = null,

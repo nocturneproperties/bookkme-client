@@ -15,9 +15,9 @@ actual abstract class ViewModel actual constructor(
     vmArgs: VmArgs
 ) : ViewModel() {
 
-    private val internalLogger = LogFactory.forName("ViewModel")
+    private val internalLogger = LogFactory.createLogger("ViewModel")
     protected actual val viewModelScope = frameworkScope
-    protected actual val mapper: ErrorMapper = vmArgs.errorMapper
+    protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper
     protected actual open val viewModelScopeErrorHandler =
         CoroutineExceptionHandler { _, throwable ->
             handleError(throwable)
@@ -29,7 +29,7 @@ actual abstract class ViewModel actual constructor(
     actual fun <Output> launch(
         launchIn: CoroutineContext,
         call: suspend () -> Output,
-        onComplete: suspend (Output) -> Unit,
+        onComplete: (suspend (Output) -> Unit)?,
         onError: (suspend (Throwable) -> Unit)?,
         onStart: (suspend () -> Unit)?,
         onTerminate: (suspend () -> Unit)?,
@@ -41,7 +41,7 @@ actual abstract class ViewModel actual constructor(
                 val result = withContext(launchIn) {
                     call()
                 }
-                onComplete.invoke(result)
+                onComplete?.invoke(result)
             } catch (e: Throwable) {
                 onError?.invoke(e) ?: throw e
             } finally {

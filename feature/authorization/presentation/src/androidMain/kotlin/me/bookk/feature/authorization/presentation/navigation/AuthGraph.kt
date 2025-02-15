@@ -5,14 +5,8 @@ import me.bookk.feature.authorization.presentation.sign_in.navigation.signInScre
 import me.bookk.feature.authorization.presentation.sign_up.navigation.signUpScreen
 import me.bookk.feature.authorization.presentation.troubleshoot.navigation.troubleshootScreen
 
-fun NavGraphBuilder.authGraph(
-    navigateBack: () -> Unit,
-    navigateToMainScreen: () -> Unit,
-    navigateToSignUp: () -> Unit,
-    navigateToContactSupport: () -> Unit,
-    navigateToTroubleshoot: () -> Unit
-) {
-    signUpScreen(navigateBack, navigateToMainScreen)
-    signInScreen(navigateBack, navigateToMainScreen, navigateToSignUp, navigateToTroubleshoot)
-    troubleshootScreen(navigateBack, navigateToContactSupport)
+fun NavGraphBuilder.authGraph(navigation: AuthNavigation) {
+    signUpScreen(navigation)
+    signInScreen(navigation)
+    troubleshootScreen(navigation)
 }

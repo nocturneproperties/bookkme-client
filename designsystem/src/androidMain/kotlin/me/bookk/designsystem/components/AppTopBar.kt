@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.core.presentation.string
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -43,10 +43,10 @@ fun AppTopBar(
             TopAppBar(
                 modifier = modifier,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = LocalColors.current.Background
+                    containerColor = LocalColors.current.background
                 ),
                 title = {
-                    AppBarTitle(state.title.string(), size)
+                    AppBarTitle(state.title.localized(), size)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -63,10 +63,10 @@ fun AppTopBar(
             MediumTopAppBar(
                 modifier = modifier,
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = LocalColors.current.Background
+                    containerColor = LocalColors.current.background
                 ),
                 title = {
-                    AppBarTitle(state.title.string(), size)
+                    AppBarTitle(state.title.localized(), size)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -83,10 +83,10 @@ fun AppTopBar(
             LargeTopAppBar(
                 modifier = modifier,
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = LocalColors.current.Background
+                    containerColor = LocalColors.current.background
                 ),
                 title = {
-                    AppBarTitle(state.title.string(), size)
+                    AppBarTitle(state.title.localized(), size)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {

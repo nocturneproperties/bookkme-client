@@ -33,12 +33,14 @@ struct DashboardTabs: View {
 }
 
 struct DashboardTab: View {
+	
+	@EnvironmentObject var appStack: NavigationStackHolder
 
 	@ObservedObject
 	var state: IOSTabItem
 	
 	var body: some View {
-		Text(state.text.localized())
+		SettingsDashboardView()
 			.tabItem {
 				Label(
 					title: {

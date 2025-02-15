@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.bookk.core.presentation.string
+import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
@@ -22,6 +22,7 @@ import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.feature.authorization.presentation.navigation.LocalNavigation
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInEventListener
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
 
@@ -68,12 +69,12 @@ fun SignInScreen(
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.signUpButton,
-                    onClick = listener::onSignUpClick
+                    onClick = LocalNavigation.current.navigateToSignUp
                 )
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.troubleshootButton,
-                    onClick = listener::onTroubleshootClick
+                    onClick = LocalNavigation.current.navigateToTroubleshoot
                 )
             }
         }
@@ -95,13 +96,13 @@ private fun PasskeyInfoCard(state: SignInState, onButtonClick: () -> Unit) {
                     bottom = 16.dp
                 ),
                 style = MaterialTheme.typography.titleMedium,
-                text = state.passkeyInfoCardData.title.string()
+                text = state.passkeyInfoCardData.title.localized()
             )
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 style = MaterialTheme.typography.bodySmall,
-                text = state.passkeyInfoCardData.description.string(),
-                color = LocalColors.current.SecondaryText
+                text = state.passkeyInfoCardData.description.localized(),
+                color = LocalColors.current.secondaryText
             )
             TextButton(
                 modifier = Modifier.padding(start = 8.dp),
@@ -142,11 +143,5 @@ private fun mockListener() = object : SignInEventListener {
     }
 
     override fun onLearnMoreClick() {
-    }
-
-    override fun onSignUpClick() {
-    }
-
-    override fun onTroubleshootClick() {
     }
 }

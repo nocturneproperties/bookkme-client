@@ -26,11 +26,11 @@ struct SignInScreen: View {
             StateButton(state: uiState.signInButton.impl()) {
                 signInVM.onSignInClick()
             }
-            TextButton(state: uiState.signUpButton.impl()) {
-                signInVM.onSignUpClick()
-            }
+			TextButton(state: uiState.signUpButton.impl()) {
+				navigationStack.path.append(AuthDestination.SignUp())
+			}
             TextButton(state: uiState.troubleshootButton.impl()) {
-                signInVM.onTroubleshootClick()
+				navigationStack.path.append(AuthDestination.Troubleshoot())
             }
         }
         .padding()
@@ -39,16 +39,7 @@ struct SignInScreen: View {
         .handleErrors(state: uiState.error)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
-            case is SignInNavigationDestination.Back:
-                navigationStack.path.removeLast()
-                break
             case is SignInNavigationDestination.ToMain:
-                break
-            case is SignInNavigationDestination.ToSignUp:
-                navigationStack.path.append(SignUpDestination())
-                break
-            case is SignInNavigationDestination.ToTroubleshoot:
-                navigationStack.path.append(TroubleshootDestination())
                 break
             default: break
             }

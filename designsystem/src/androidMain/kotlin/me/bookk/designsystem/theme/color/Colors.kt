@@ -1,10 +1,11 @@
 package me.bookk.designsystem.theme.color
 
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.compose.colorResource
 import me.bookk.designsystem.resources.DesignSystem
 
@@ -18,143 +19,58 @@ object AppColors {
         @Composable
         get() = colorResource(resource = DesignSystem.colors.black)
 
-    object Light : ColorSchemeProvider {
-        override val Background: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightBackground)
-        override val PrimaryText: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightPrimaryText)
-        override val SecondaryText: Color
-            @Composable
-            get() =  colorResource(resource = DesignSystem.colors.lightSecondaryText)
-        override val HintText: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightHintText)
-        override val Elevated: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightElevated)
-        override val Divider: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightDivider)
-        override val ActionText: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightActionText)
-        override val ActionTextDisabled: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightActionTextDisabled)
-        override val Inactive: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightInactive)
-        override val BlurredBackground: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightBlurredBackground)
-        override val Header: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightHeader)
-        override val Success: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightSuccess)
-        override val InactiveToggle: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightInactiveToggle)
-        override val ButtonPrimary: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightButton)
-        override val ButtonActive: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightButtonActive)
-        override val ButtonInactive: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.lightButtonInactive)
-        override val Error: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.error)
 
+    val LightScheme: AppColorScheme
         @Composable
-        override fun toColorScheme(): ColorScheme {
-            return lightColorScheme(
-                background = Background,
-                primary = PrimaryText,
-                secondary = White,
-                error = Error,
-                onPrimary = White,
-                onSecondary = PrimaryText,
-                onBackground = PrimaryText,
-                onSurface = PrimaryText,
-                onError = White,
-                outline = Divider
-            )
-        }
-    }
+        get() = AppColorScheme(
+            background = colorResource(resource = DesignSystem.colors.lightBackground),
+            primaryText = colorResource(resource = DesignSystem.colors.lightPrimaryText),
+            secondaryText = colorResource(resource = DesignSystem.colors.lightSecondaryText),
+            hintText = colorResource(resource = DesignSystem.colors.lightHintText),
+            elevated = colorResource(resource = DesignSystem.colors.lightElevated),
+            divider = colorResource(resource = DesignSystem.colors.lightDivider),
+            actionText = colorResource(resource = DesignSystem.colors.lightActionText),
+            actionTextDisabled = colorResource(resource = DesignSystem.colors.lightActionTextDisabled),
+            inactive = colorResource(resource = DesignSystem.colors.lightInactive),
+            blurredBackground = colorResource(resource = DesignSystem.colors.lightBlurredBackground),
+            header = colorResource(resource = DesignSystem.colors.lightHeader),
+            success = colorResource(resource = DesignSystem.colors.lightSuccess),
+            inactiveToggle = colorResource(resource = DesignSystem.colors.lightInactiveToggle),
+            buttonPrimary = colorResource(resource = DesignSystem.colors.lightButton),
+            buttonActive = colorResource(resource = DesignSystem.colors.lightButtonActive),
+            buttonInactive = colorResource(resource = DesignSystem.colors.lightButtonInactive),
+            error = colorResource(resource = DesignSystem.colors.error)
+        )
 
-    object Dark : ColorSchemeProvider {
-        override val Background: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkBackground)
-        override val PrimaryText: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkPrimaryText)
-        override val SecondaryText: Color
-            @Composable
-            get() =  colorResource(resource = DesignSystem.colors.darkSecondaryText)
-        override val HintText: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkHintText)
-        override val Elevated: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkElevated)
-        override val Divider: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkDivider)
-        override val ActionText: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkActionText)
-        override val ActionTextDisabled: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkActionTextDisabled)
-        override val Inactive: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkInactive)
-        override val BlurredBackground: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkBlurredBackground)
-        override val Header: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkHeader)
-        override val Success: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkSuccess)
-        override val InactiveToggle: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkInactiveToggle)
-        override val ButtonPrimary: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkButton)
-        override val ButtonActive: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkButtonActive)
-        override val ButtonInactive: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.darkButtonInactive)
-        override val Error: Color
-            @Composable
-            get() = colorResource(resource = DesignSystem.colors.error)
-
+    val DarkScheme: AppColorScheme
         @Composable
-        override fun toColorScheme(): ColorScheme {
-            return darkColorScheme(
-                background = Background,
-                primary = PrimaryText,
-                secondary = Black,
-                error = Error,
-                onPrimary = Black,
-                onSecondary = PrimaryText,
-                onBackground = PrimaryText,
-                onSurface = PrimaryText,
-                onError = Black,
-                outline = Divider
-            )
-        }
-    }
+        get() = AppColorScheme(
+            background = colorResource(resource = DesignSystem.colors.darkBackground),
+            primaryText = colorResource(resource = DesignSystem.colors.darkPrimaryText),
+            secondaryText = colorResource(resource = DesignSystem.colors.darkSecondaryText),
+            hintText = colorResource(resource = DesignSystem.colors.darkHintText),
+            elevated = colorResource(resource = DesignSystem.colors.darkElevated),
+            divider = colorResource(resource = DesignSystem.colors.darkDivider),
+            actionText = colorResource(resource = DesignSystem.colors.darkActionText),
+            actionTextDisabled = colorResource(resource = DesignSystem.colors.darkActionTextDisabled),
+            inactive = colorResource(resource = DesignSystem.colors.darkInactive),
+            blurredBackground = colorResource(resource = DesignSystem.colors.darkBlurredBackground),
+            header = colorResource(resource = DesignSystem.colors.darkHeader),
+            success = colorResource(resource = DesignSystem.colors.darkSuccess),
+            inactiveToggle = colorResource(resource = DesignSystem.colors.darkInactiveToggle),
+            buttonPrimary = colorResource(resource = DesignSystem.colors.darkButton),
+            buttonActive = colorResource(resource = DesignSystem.colors.darkButtonActive),
+            buttonInactive = colorResource(resource = DesignSystem.colors.darkButtonInactive),
+            error = colorResource(resource = DesignSystem.colors.error)
+        )
+}
+
+@Composable
+fun animateResource(resource: ColorResource): Color {
+    return animateColor(colorResource(resource = resource))
+}
+
+@Composable
+fun animateColor(color: Color): Color {
+    return animateColorAsState(color, animationSpec = spring(stiffness = Spring.StiffnessLow)).value
 }

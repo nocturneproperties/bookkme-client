@@ -3,7 +3,7 @@ package me.bookk.shared
 import io.ktor.util.logging.KtorSimpleLogger
 import me.bookk.core.Logger
 
-class LoggerImpl(name: String) : Logger {
+internal class LoggerImpl(name: String) : Logger {
     private val logger = KtorSimpleLogger(name)
 
     override fun d(message: String) {

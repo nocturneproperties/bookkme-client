@@ -15,10 +15,10 @@ fun CheckBox(
     modifier: Modifier,
     checked: Boolean,
     colors: CheckboxColors = CheckboxDefaults.colors(
-        checkedColor = LocalColors.current.PrimaryText.copy(alpha = 0.2f),
-        uncheckedColor = LocalColors.current.PrimaryText,
-        disabledCheckedColor = LocalColors.current.Inactive,
-        disabledUncheckedColor = LocalColors.current.Inactive,
+        checkedColor = LocalColors.current.primaryText.copy(alpha = 0.2f),
+        uncheckedColor = LocalColors.current.primaryText,
+        disabledCheckedColor = LocalColors.current.inactive,
+        disabledUncheckedColor = LocalColors.current.inactive,
     ),
     onCheckedChange: (Boolean) -> Unit
 ) {

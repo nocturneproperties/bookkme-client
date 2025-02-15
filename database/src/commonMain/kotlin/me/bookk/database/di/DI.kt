@@ -12,6 +12,6 @@ fun databaseModule() = module {
     single { AppDatabase.create(get()) }
 }
 
-fun daoModule() = module {
-
+internal fun daoModule() = module {
+    factory { get<AppDatabase>().profileDao() }
 }

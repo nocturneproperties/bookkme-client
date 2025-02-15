@@ -29,7 +29,7 @@ fun AnimatedLinearProgress(
         modifier = modifier
             .height(4.dp)
             .background(
-                color = LocalColors.current.Divider,
+                color = LocalColors.current.divider,
                 shape = MaterialTheme.shapes.medium
             )
     ) {
@@ -44,7 +44,7 @@ fun AnimatedLinearProgress(
                 .fillMaxWidth(progressWidth)
                 .background(
                     shape = MaterialTheme.shapes.medium,
-                    color = LocalColors.current.PrimaryText
+                    color = LocalColors.current.primaryText
                 )
         )
     }

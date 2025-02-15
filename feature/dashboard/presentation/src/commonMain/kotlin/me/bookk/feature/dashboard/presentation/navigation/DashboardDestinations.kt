@@ -1,7 +1,6 @@
 package me.bookk.feature.dashboard.presentation.navigation
 
-import me.bookk.core.presentation.navigation.NavigationDestinationDeclaration
+import kotlinx.serialization.Serializable
 
-object DashboardDestination : NavigationDestinationDeclaration() {
-    override val route: String = "dashboard"
-}
+@Serializable
+data object DashboardDestination

@@ -48,6 +48,11 @@ kotlin {
             implementation(projects.feature.platform.data)
             //Dashboard
             api(projects.feature.dashboard.presentation)
+            //Settings
+            implementation(projects.feature.settings.domain.api)
+            implementation(projects.feature.settings.domain.impl)
+            implementation(projects.feature.settings.data)
+            api(projects.feature.settings.presentation)
             // Libs
             implementation(libs.koin.core)
             implementation(libs.ktor.client.negotiation)
@@ -59,8 +64,6 @@ kotlin {
             api(libs.kmm.resources)
         }
         iosMain.dependencies {
-            api(projects.designsystem)
-            api(projects.feature.authorization.presentation)
             implementation(libs.ktor.client.darwin)
         }
 
@@ -82,6 +85,7 @@ kotlin {
             export(projects.designsystem)
             export(projects.feature.authorization.presentation)
             export(projects.feature.dashboard.presentation)
+            export(projects.feature.settings.presentation)
         }
     }
 }

@@ -1,9 +1,11 @@
 package me.bookk.feature.authorization.data.mapping
 
+import me.bookk.database.entity.UserProfileEntity
 import me.bookk.feature.authorization.data.remote.model.PassKeySignUpStartInfo
 import me.bookk.feature.authorization.data.remote.model.RegistrationChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.SignInStartResponse
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
+import me.bookk.feature.authorization.data.remote.model.UserProfileRemote
 import me.bookk.feature.authorization.data.remote.model.VerifyAccountCreationRequest
 import me.bookk.feature.authorization.data.remote.model.VerifySignInRequest
 import me.bookk.feature.authorization.domain.api.CreateAccount
@@ -12,6 +14,7 @@ import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationData
 import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
 import me.bookk.feature.authorization.domain.entity.TokenInfo
+import me.bookk.feature.authorization.domain.entity.UserProfile
 
 internal fun CreateAccount.UserData.toRemote(): PassKeySignUpStartInfo {
     return PassKeySignUpStartInfo(
@@ -67,5 +70,32 @@ internal fun SignInData.toRemote(): VerifySignInRequest {
             deviceName = deviceInfo.deviceName
         ),
         publicKeyCredentialJson = publicKeyCredentialJson
+    )
+}
+
+internal fun UserProfileEntity.toDomain(): UserProfile {
+    return UserProfile(
+        id = id,
+        firstName = firstName,
+        lastName = lastName,
+        email = email
+    )
+}
+
+internal fun UserProfile.toDb(): UserProfileEntity {
+    return UserProfileEntity(
+        id = id,
+        firstName = firstName,
+        lastName = lastName,
+        email = email
+    )
+}
+
+internal fun UserProfileRemote.toDomain(): UserProfile {
+    return UserProfile(
+        id = id,
+        firstName = firstName,
+        lastName = lastName,
+        email = email
     )
 }

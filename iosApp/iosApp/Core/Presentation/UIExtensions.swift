@@ -17,4 +17,10 @@ extension Image {
     }
 }
 
+extension String {
+	func nonEditableBinding() -> Binding<String> {
+		return Binding(get: { self }, set: { _ in })
+	}
+}
+
 

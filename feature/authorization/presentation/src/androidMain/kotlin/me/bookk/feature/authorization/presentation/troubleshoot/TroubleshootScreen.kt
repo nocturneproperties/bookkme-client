@@ -34,8 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.compose.painterResource
-import me.bookk.core.presentation.string
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
@@ -43,6 +43,7 @@ import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.feature.authorization.presentation.navigation.LocalNavigation
 import me.bookk.feature.authorization.presentation.sign_up.state.TroubleshootCardData
 import me.bookk.feature.authorization.presentation.troubleshoot.state.TroubleshootEventListener
 import me.bookk.feature.authorization.presentation.troubleshoot.state.TroubleshootState
@@ -60,7 +61,7 @@ internal fun TroubleshootScreen(
             AppTopBar(
                 state = state.appBar,
                 size = TopBarSize.MEDIUM,
-                onNavigationIconClick = listener::onBackClick
+                onNavigationIconClick = LocalNavigation.current.navigateBack
             )
         },
         content = { paddings ->
@@ -83,7 +84,7 @@ internal fun TroubleshootScreen(
                 ActionButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.contactSupportButton,
-                    onClick = listener::onContactSupportClick
+                    onClick = LocalNavigation.current.navigateToContactSupport
                 )
             }
         }
@@ -111,7 +112,7 @@ private fun PassKeyTroubleshootCard(state: TroubleshootState) {
                         .weight(1f)
                         .padding(end = 16.dp),
                     style = MaterialTheme.typography.titleMedium,
-                    text = state.troubleshootCardStaticData.title.string()
+                    text = state.troubleshootCardStaticData.title.localized()
                 )
 
                 Box(
@@ -129,7 +130,7 @@ private fun PassKeyTroubleshootCard(state: TroubleshootState) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(LocalColors.current.Divider)
+                    .background(LocalColors.current.divider)
             )
             Column(modifier = Modifier.padding(vertical = 8.dp)) {
                 state.troubleshootCardStaticData.reasons.forEach {
@@ -157,7 +158,7 @@ private fun ReasonItem(reason: TroubleshootCardData.Reason) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = reason.title.string(),
+                text = reason.title.localized(),
                 style = MaterialTheme.typography.titleSmall,
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -170,9 +171,9 @@ private fun ReasonItem(reason: TroubleshootCardData.Reason) {
         AnimatedVisibility(isExpanded) {
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                text = reason.description.string(),
+                text = reason.description.localized(),
                 style = MaterialTheme.typography.bodySmall,
-                color = LocalColors.current.SecondaryText
+                color = LocalColors.current.secondaryText
             )
         }
     }
@@ -201,9 +202,4 @@ private fun PreviewLight() {
 }
 
 private fun mockListener() = object : TroubleshootEventListener {
-    override fun onBackClick() {
-    }
-
-    override fun onContactSupportClick() {
-    }
 }

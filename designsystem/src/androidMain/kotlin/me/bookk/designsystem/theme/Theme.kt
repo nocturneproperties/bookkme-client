@@ -1,8 +1,12 @@
 package me.bookk.designsystem.theme
 
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.shapes.AppShapes
 
@@ -12,11 +16,19 @@ fun AppTheme(
     themeMode: ThemeMode = ThemeMode.DARK,
     content: @Composable () -> Unit
 ) {
+    val context = LocalActivity.current as ComponentActivity
+
+    LaunchedEffect(themeMode) {
+        context.enableEdgeToEdge(
+            statusBarStyle = themeMode.systemBarStyle,
+            navigationBarStyle = themeMode.systemBarStyle
+        )
+    }
     CompositionLocalProvider(
-        LocalColors provides themeMode.scheme,
+        LocalColors provides themeMode.scheme.animated(),
     ) {
         MaterialTheme(
-            colorScheme = themeMode.materialTheme,
+            colorScheme = themeMode.materialScheme.animated(),
             shapes = AppShapes
         ) {
             content()

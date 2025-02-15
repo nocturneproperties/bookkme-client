@@ -1,15 +1,12 @@
 package me.bookk.feature.authorization.presentation.navigation
 
-import me.bookk.core.presentation.navigation.NavigationDestinationDeclaration
+import kotlinx.serialization.Serializable
 
-object SignUpDestination : NavigationDestinationDeclaration() {
-    override val route: String = "sign_up"
-}
-
-object SignInDestination : NavigationDestinationDeclaration() {
-    override val route: String = "sign_in"
-}
-
-object TroubleshootDestination : NavigationDestinationDeclaration() {
-    override val route: String = "troubleshoot"
+sealed class AuthDestination {
+    @Serializable
+    data object SignUp : AuthDestination()
+    @Serializable
+    data object SignIn : AuthDestination()
+    @Serializable
+    data object Troubleshoot : AuthDestination()
 }

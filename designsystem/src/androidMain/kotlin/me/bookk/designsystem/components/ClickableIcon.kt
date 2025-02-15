@@ -13,7 +13,7 @@ import me.bookk.designsystem.theme.color.LocalColors
 fun ClickableIcon(
     modifier: Modifier = Modifier,
     icon: Int,
-    tint: Color = LocalColors.current.PrimaryText,
+    tint: Color = LocalColors.current.primaryText,
     onClick: () -> Unit
 ) {
     IconButton(onClick = onClick) {
@@ -30,7 +30,7 @@ fun ClickableIcon(
 fun ClickableIcon(
     modifier: Modifier = Modifier,
     icon: ImageVector,
-    tint: Color = LocalColors.current.PrimaryText,
+    tint: Color = LocalColors.current.primaryText,
     onClick: () -> Unit
 ) {
     IconButton(onClick = onClick) {

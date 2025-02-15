@@ -180,7 +180,7 @@ private fun Preview() {
                 Text(
                     modifier = Modifier
                         .padding(24.dp)
-                        .coloredOverlay(SolidColor(LocalColors.current.ActionText)),
+                        .coloredOverlay(SolidColor(LocalColors.current.actionText)),
                     text = "Text with \"coloredOverlay\" modifier"
                 )
             }

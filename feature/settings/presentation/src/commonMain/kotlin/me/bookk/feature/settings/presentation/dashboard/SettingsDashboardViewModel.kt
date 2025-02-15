@@ -5,6 +5,7 @@ import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.feature.platform.domain.api.OpenUrlPreview
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.presentation.SettingsStateFactory
@@ -18,6 +19,7 @@ import me.bookk.feature.settings.presentation.dashboard.state.SupportSection
 class SettingsDashboardViewModel(
     private val getSettings: GetSettings,
     private val updateColorScheme: UpdateColorScheme,
+    private val openUrl: OpenUrlPreview,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -34,6 +36,14 @@ class SettingsDashboardViewModel(
             call = { updateColorScheme.invoke(scheme.toDomain()) },
             onComplete = { uiState.appearance.colorScheme = scheme }
         )
+    }
+
+    fun showTerms() {
+        openUrl("https://google.com")
+    }
+
+    fun showPolicy() {
+        openUrl("https://google.com")
     }
 
     private fun loadSettings() {

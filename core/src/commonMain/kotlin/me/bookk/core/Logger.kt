@@ -8,7 +8,7 @@ object LogFactory {
         this.logFactory = factory
     }
 
-    fun forName(name: String): Logger {
+    fun createLogger(name: String): Logger {
         return logFactory?.invoke(name)
             ?: throw IllegalStateException("Platform factory is missing")
     }

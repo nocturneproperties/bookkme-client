@@ -16,13 +16,13 @@ struct AuthorizationView: View {
     var body: some View {
         NavigationStack(path: $navigationStack.path) {
             SignInScreen()
-                .navigationDestination(for: SignUpDestination.self) { value in
+				.navigationDestination(for: AuthDestination.SignUp.self) { value in
                     SignUpScreen()
                 }
-                .navigationDestination(for: SignInDestination.self) { value in
+				.navigationDestination(for: AuthDestination.SignIn.self) { value in
                     SignInScreen()
                 }
-                .navigationDestination(for: TroubleshootDestination.self) { value in
+				.navigationDestination(for: AuthDestination.Troubleshoot.self) { value in
                     TroubleshootScreen()
                 }
         }.environmentObject(navigationStack)

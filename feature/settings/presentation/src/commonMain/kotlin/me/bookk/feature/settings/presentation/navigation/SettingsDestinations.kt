@@ -1,31 +1,26 @@
 package me.bookk.feature.settings.presentation.navigation
 
-import me.bookk.core.presentation.navigation.NavigationDestinationDeclaration
+import kotlinx.serialization.Serializable
 
-object SettingsDashboardDestination : NavigationDestinationDeclaration() {
-    override val route: String = "settings.dashboard"
-}
+sealed class SettingsDestination {
+    @Serializable
+    data object Dashboard : SettingsDestination()
 
-object EditProfileDestination : NavigationDestinationDeclaration() {
-    override val route: String = "settings.edit_profile"
-}
+    @Serializable
+    data object EditProfile : SettingsDestination()
 
-object PasskeyDestination : NavigationDestinationDeclaration() {
-    override val route: String = "settings.passkey"
-}
+    @Serializable
+    data object Passkey : SettingsDestination()
 
-object DeleteAccountDestination : NavigationDestinationDeclaration() {
-    override val route: String = "settings.delete_acc"
-}
+    @Serializable
+    data object DeleteAccount : SettingsDestination()
 
-object ContactDestination : NavigationDestinationDeclaration() {
-    override val route: String = "settings.contact_us"
-}
+    @Serializable
+    data object Contact : SettingsDestination()
 
-object SuggestFeatureDestination : NavigationDestinationDeclaration() {
-    override val route: String = "settings.feature"
-}
+    @Serializable
+    data object SuggestFeature : SettingsDestination()
 
-object ReportDestination : NavigationDestinationDeclaration() {
-    override val route: String = "settings.report"
+    @Serializable
+    data object Report : SettingsDestination()
 }

@@ -8,7 +8,7 @@
     <string name="settings_profile_name">Name</string>
     <string name="settings_profile_last_name">Last name</string>
     <string name="settings_profile_email">Email</string>
-    <string name="settings_profile_edit">Edit profile</string>
+    <string name="settings_profile_edit">Edit</string>
     <string name="settings_account_title">Account</string>
     <string name="settings_account_passkey_label">Passkey</string>
     <string name="settings_account_logout_label">Log out</string>

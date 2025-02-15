@@ -18,13 +18,12 @@ struct SettingsDashboardView: View {
 		let uiState = settingsVM.uiState
 		NavigationStack(path: $navigationStack.path) {
 			List {
+				ProfileView(state: uiState.profile)
+					.listRowBackground(AppColors.elevated)
 				Section(uiState.appearance.title.localized()) {
 					AppearanceView(state: uiState.appearance) { scheme in
 						settingsVM.onSchemeSelected(scheme: scheme)
 					}
-				}
-				Section(uiState.profile.title.localized()) {
-					ProfileView(state: uiState.profile)
 				}
 				Section(uiState.account.title.localized()) {
 					AccountView(state: uiState.account)
@@ -33,22 +32,22 @@ struct SettingsDashboardView: View {
 					SupportView(state: uiState.support)
 				}
 			}
-			.navigationDestination(for: EditProfileDestination.self) { _ in
+			.navigationDestination(for: SettingsDestination.EditProfile.self) { _ in
 				
 			}
-			.navigationDestination(for: PasskeyDestination.self) { _ in
+			.navigationDestination(for: SettingsDestination.Passkey.self) { _ in
 				
 			}
-			.navigationDestination(for: DeleteAccountDestination.self) { _ in
+			.navigationDestination(for: SettingsDestination.DeleteAccount.self) { _ in
 				
 			}
-			.navigationDestination(for: ContactDestination.self) { _ in
+			.navigationDestination(for: SettingsDestination.Contact.self) { _ in
 				
 			}
-			.navigationDestination(for: SuggestFeatureDestination.self) { _ in
+			.navigationDestination(for: SettingsDestination.SuggestFeature.self) { _ in
 				
 			}
-			.navigationDestination(for: ReportDestination.self) { _ in
+			.navigationDestination(for: SettingsDestination.Report.self) { _ in
 				
 			}
 		}

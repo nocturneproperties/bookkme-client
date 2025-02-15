@@ -37,10 +37,10 @@ fun ActionButton(
     startContent: (@Composable () -> Unit)? = null,
     endContent: (@Composable () -> Unit)? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = LocalColors.current.ButtonActive,
+        containerColor = LocalColors.current.buttonActive,
         contentColor = AppColors.White,
-        disabledContainerColor = LocalColors.current.ButtonInactive,
-        disabledContentColor = LocalColors.current.ActionTextDisabled
+        disabledContainerColor = LocalColors.current.buttonInactive,
+        disabledContentColor = LocalColors.current.actionTextDisabled
     ),
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     onClick: () -> Unit
@@ -86,9 +86,9 @@ fun TextButton(
     endContent: (@Composable () -> Unit)? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         containerColor = Color.Transparent,
-        contentColor = LocalColors.current.ButtonActive,
+        contentColor = LocalColors.current.buttonActive,
         disabledContainerColor = Color.Transparent,
-        disabledContentColor = LocalColors.current.ActionTextDisabled
+        disabledContentColor = LocalColors.current.actionTextDisabled
     ),
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     onClick: () -> Unit

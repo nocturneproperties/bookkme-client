@@ -14,7 +14,7 @@ internal class CommonSettingsDataSource(
     preferenceProvider: PreferenceProvider
 ) : SettingsDataSource {
 
-    private val preferences = preferenceProvider.get("device_prefs")
+    private val preferences = preferenceProvider.get("settings_prefs")
 
     override suspend fun setColorScheme(scheme: ColorScheme) {
         preferences.set(Key.colorScheme, scheme.id)

@@ -71,7 +71,7 @@ fun TextField(
             if (state.isError) {
                 Text(
                     text = state.errorTextRes?.localized().orEmpty(),
-                    color = LocalColors.current.Error,
+                    color = LocalColors.current.error,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
@@ -84,25 +84,25 @@ fun TextField(
 internal fun defaultTextFieldColors(isError: Boolean): TextFieldColors {
     return OutlinedTextFieldDefaults.colors(
         selectionColors = TextSelectionColors(
-            handleColor = LocalColors.current.ActionText,
-            backgroundColor = LocalColors.current.ActionText.copy(alpha = 0.2f),
+            handleColor = LocalColors.current.actionText,
+            backgroundColor = LocalColors.current.actionText.copy(alpha = 0.2f),
         ),
-        cursorColor = LocalColors.current.ActionText,
-        errorCursorColor = LocalColors.current.Error,
-        disabledTextColor = LocalColors.current.ActionTextDisabled,
-        errorTextColor = LocalColors.current.PrimaryText,
-        disabledContainerColor = LocalColors.current.Elevated,
-        errorContainerColor = LocalColors.current.Elevated,
-        focusedContainerColor = LocalColors.current.Elevated,
-        unfocusedContainerColor = LocalColors.current.Elevated,
-        disabledBorderColor = if (isError) LocalColors.current.Error else Color.Transparent,
-        focusedBorderColor = if (isError) LocalColors.current.Error else LocalColors.current.ActionText,
-        errorBorderColor = LocalColors.current.Error,
-        unfocusedBorderColor = if (isError) LocalColors.current.Error else Color.Transparent,
-        errorPlaceholderColor = LocalColors.current.Error,
-        disabledPlaceholderColor = LocalColors.current.ActionTextDisabled,
-        focusedPlaceholderColor = LocalColors.current.HintText,
-        unfocusedPlaceholderColor = LocalColors.current.HintText
+        cursorColor = LocalColors.current.actionText,
+        errorCursorColor = LocalColors.current.error,
+        disabledTextColor = LocalColors.current.actionTextDisabled,
+        errorTextColor = LocalColors.current.primaryText,
+        disabledContainerColor = LocalColors.current.elevated,
+        errorContainerColor = LocalColors.current.elevated,
+        focusedContainerColor = LocalColors.current.elevated,
+        unfocusedContainerColor = LocalColors.current.elevated,
+        disabledBorderColor = if (isError) LocalColors.current.error else Color.Transparent,
+        focusedBorderColor = if (isError) LocalColors.current.error else LocalColors.current.actionText,
+        errorBorderColor = LocalColors.current.error,
+        unfocusedBorderColor = if (isError) LocalColors.current.error else Color.Transparent,
+        errorPlaceholderColor = LocalColors.current.error,
+        disabledPlaceholderColor = LocalColors.current.actionTextDisabled,
+        focusedPlaceholderColor = LocalColors.current.hintText,
+        unfocusedPlaceholderColor = LocalColors.current.hintText
     )
 }
 

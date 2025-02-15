@@ -21,6 +21,7 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                 apply(libs.plugins.compose.compiler.get().pluginId)
                 apply(libs.plugins.kmm.resources.get().pluginId)
                 apply(libs.plugins.buldconfig.get().pluginId)
+                apply(libs.plugins.kotlin.serialization.get().pluginId)
             }
 
             extensions.getByType<LibraryExtension>().apply {
@@ -48,6 +49,7 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                     implementation(libs.koin.android.compose)
                 }
                 sourceSets.commonMain.dependencies {
+                    implementation(libs.kotlin.serialization)
                     implementation(libs.kmm.resources)
                     implementation(libs.compose.runtime)
                     implementation(libs.koin.core)

@@ -18,23 +18,18 @@ struct ProfileView: View {
 	}
 	
 	var body: some View {
-		HStack {
-			Text(SettingsRes.strings().settings_profile_name.desc().localized())
-				.frame(minWidth: 100, alignment: .leading)
-			Text(state.name.localized())
-		}
-		HStack {
-			Text(SettingsRes.strings().settings_profile_last_name.desc().localized())
-				.frame(minWidth: 100, alignment: .leading)
-			Text(state.lastName.localized())
-		}
-		HStack {
-			Text(SettingsRes.strings().settings_profile_email.desc().localized())
-				.frame(minWidth: 100, alignment: .leading)
+		VStack {
+			Text(state.name.localized() + " " + state.lastName.localized())
+				.font(.title.weight(.bold))
 			Text(state.email.localized())
+				.font(.subheadline)
+				.foregroundStyle(AppColors.secondary)
 		}
-		NavigationLink(value: EditProfileDestination()) {
-			Text(state.editProfile.text.localized())
-		}.foregroundStyle(AppColors.actionText)
+		.frame(maxWidth: .infinity)
+		.toolbar {
+			NavigationLink(value: SettingsDestination.EditProfile()) {
+				Text(state.editProfile.text.localized())
+			}
+		}
 	}
 }

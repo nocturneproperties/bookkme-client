@@ -4,14 +4,13 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.feature.dashboard.presentation.state.DashboardEventListener
 import me.bookk.feature.dashboard.presentation.state.TabItem
 import me.bookk.feature.dashboard.presentation.state.TabItemsState
 
 class DashboardViewModel(
     stateFactory: DashboardStateFactory,
     vmArgs: VmArgs
-) : ViewModel(vmArgs), DashboardEventListener {
+) : ViewModel(vmArgs) {
 
     val uiState = stateFactory.createDashboardState(createInitData())
 

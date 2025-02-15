@@ -33,7 +33,7 @@ fun StateSwitch(
         Switch(
             checked = state.isChecked,
             colors = SwitchDefaults.colors(
-                checkedTrackColor = LocalColors.current.ActionText
+                checkedTrackColor = LocalColors.current.actionText
             ),
             onCheckedChange = onCheckedChange
         )

@@ -27,10 +27,10 @@ struct SignInScreen: View {
                 signInVM.onSignInClick()
             }
 			TextButton(state: uiState.signUpButton.impl()) {
-				navigationStack.path.append(SignUpDestination())
+				navigationStack.path.append(AuthDestination.SignUp())
 			}
             TextButton(state: uiState.troubleshootButton.impl()) {
-				navigationStack.path.append(TroubleshootDestination())
+				navigationStack.path.append(AuthDestination.Troubleshoot())
             }
         }
         .padding()

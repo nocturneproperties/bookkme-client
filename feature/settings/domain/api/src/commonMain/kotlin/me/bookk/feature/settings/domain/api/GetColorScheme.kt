@@ -4,6 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.settings.domain.api.entity.ColorScheme
 
 interface GetColorScheme {
-    suspend fun invoke(): ColorScheme
+    suspend operator fun invoke(): ColorScheme
     fun asFlow(): Flow<ColorScheme>
 }

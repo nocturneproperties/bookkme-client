@@ -130,7 +130,7 @@ private fun PassKeyTroubleshootCard(state: TroubleshootState) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(LocalColors.current.Divider)
+                    .background(LocalColors.current.divider)
             )
             Column(modifier = Modifier.padding(vertical = 8.dp)) {
                 state.troubleshootCardStaticData.reasons.forEach {
@@ -173,7 +173,7 @@ private fun ReasonItem(reason: TroubleshootCardData.Reason) {
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                 text = reason.description.localized(),
                 style = MaterialTheme.typography.bodySmall,
-                color = LocalColors.current.SecondaryText
+                color = LocalColors.current.secondaryText
             )
         }
     }

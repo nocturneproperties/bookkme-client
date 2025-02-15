@@ -19,11 +19,11 @@ struct AccountView:View {
 	}
 	
 	var body: some View {
-		NavigationLink(value: PasskeyDestination()) {
+		NavigationLink(value: SettingsDestination.Passkey()) {
 			Text(state.passkey.text.localized())
 		}
 		Text(state.logout.text.localized())
-		NavigationLink(value: DeleteAccountDestination()) {
+		NavigationLink(value: SettingsDestination.DeleteAccount()) {
 			Text(state.deleteAccount.text.localized())
 		}.foregroundStyle(AppColors.error)
 	}

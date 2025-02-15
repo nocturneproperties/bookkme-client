@@ -16,8 +16,8 @@ import kotlin.coroutines.CoroutineContext
 actual abstract class ViewModel actual constructor(
     vmArgs: VmArgs
 ) {
-    private val internalLogger = LogFactory.forName("ViewModel")
-    protected actual val mapper: ErrorMapper = vmArgs.errorMapper
+    private val internalLogger = LogFactory.createLogger("ViewModel")
+    protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper
     protected actual val viewModelScope = CoroutineScope(SupervisorJob() + DispatcherProvider.main)
     protected actual open val viewModelScopeErrorHandler =
         CoroutineExceptionHandler { _, throwable ->

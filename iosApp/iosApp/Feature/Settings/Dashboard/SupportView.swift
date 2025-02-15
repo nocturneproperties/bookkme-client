@@ -19,19 +19,19 @@ struct SupportView: View {
 	}
 	
 	var body: some View {
-		NavigationLink(value: EditProfileDestination()) {
+		NavigationLink(value: SettingsDestination.Contact()) {
 			Text(state.contact.text.localized())
 		}
-		NavigationLink(value: EditProfileDestination()) {
+		NavigationLink(value: SettingsDestination.SuggestFeature()) {
 			Text(state.feature.text.localized())
 		}
-		NavigationLink(value: EditProfileDestination()) {
+		NavigationLink(value: SettingsDestination.Contact()) {
 			Text(state.terms.text.localized())
 		}
-		NavigationLink(value: EditProfileDestination()) {
+		NavigationLink(value: SettingsDestination.Contact()) {
 			Text(state.policy.text.localized())
 		}
-		NavigationLink(value: EditProfileDestination()) {
+		NavigationLink(value: SettingsDestination.Report()) {
 			Text(state.reportError.text.localized())
 		}.foregroundStyle(AppColors.error)
 	}

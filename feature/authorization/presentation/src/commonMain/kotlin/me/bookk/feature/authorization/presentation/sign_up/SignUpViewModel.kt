@@ -115,7 +115,7 @@ class SignUpViewModel(
                             )
                         )
                     }
-                    else -> throw it
+                    else -> uiState.error.add(errorMapper.mapToError(it))
                 }
             },
             onTerminate = { uiState.confirmButton.isLoading = false },

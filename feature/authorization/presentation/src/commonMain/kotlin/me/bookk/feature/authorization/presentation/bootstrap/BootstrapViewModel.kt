@@ -21,15 +21,16 @@ class BootstrapViewModel(
     val state = stateFactory.createBootstrapState()
 
     init {
-        decideStartDestination()
+        loadStartupInfo()
         observeThemeUpdates()
     }
 
-    private fun decideStartDestination() {
+    private fun loadStartupInfo() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { isUserLoggedIn.invoke() },
-            onComplete = { isLoggedIn ->
+            call = { isUserLoggedIn() to getColorScheme() },
+            onComplete = { (isLoggedIn , scheme) ->
+                state.colorScheme =  UIColorScheme.from(scheme)
                 state.navigation.navigationDestination = if (isLoggedIn) {
                     BootstrapNavigationDestination.ToMain
                 } else {

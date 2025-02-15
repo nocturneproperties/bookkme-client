@@ -1,6 +1,7 @@
 package me.bookk.feature.settings.domain.impl
 
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.authorization.domain.entity.UserProfile
 import me.bookk.feature.settings.domain.api.GetColorScheme
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.entity.Settings
@@ -11,9 +12,13 @@ internal class GetSettingsImpl(
     private val userProfileCRUD: UserProfileCRUD
 ) : GetSettings {
     override suspend fun invoke(): Settings {
-        val profile = userProfileCRUD.get()
+        val profile = runCatching {
+            userProfileCRUD.get()
+        }.getOrElse {
+            UserProfile(0L, "John", "Doe", "email@example.com")
+        }
         return Settings(
-            colorScheme = getColorScheme.invoke(),
+            colorScheme = getColorScheme(),
             profile = SettingsProfile(
                 firstName = profile.firstName,
                 lastName = profile.lastName,

@@ -31,7 +31,6 @@ fun SignInScreen(
     state: SignInState,
     listener: SignInEventListener
 ) {
-    LocalColors
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -103,7 +102,7 @@ private fun PasskeyInfoCard(state: SignInState, onButtonClick: () -> Unit) {
                 modifier = Modifier.padding(horizontal = 24.dp),
                 style = MaterialTheme.typography.bodySmall,
                 text = state.passkeyInfoCardData.description.localized(),
-                color = LocalColors.current.SecondaryText
+                color = LocalColors.current.secondaryText
             )
             TextButton(
                 modifier = Modifier.padding(start = 8.dp),

@@ -1,13 +1,16 @@
 package me.bookk.shared;
 
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.LogFactory
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationError
 import me.bookk.designsystem.resources.DesignSystem
 
 class ErrorMapperImpl : ErrorMapper {
+    private val logger = LogFactory.createLogger("ErrorMapper")
     override fun mapToError(e: Throwable): PresentationError {
+        logger.e(e)
         return when (e) {
             is Error -> when (e) {
                 is Error.UnknownApiError,

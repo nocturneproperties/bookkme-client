@@ -5,6 +5,7 @@ import me.bookk.feature.authorization.presentation.factory.AndroidAuthStateFacto
 import me.bookk.feature.dashboard.presentation.AndroidDashboardStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
+import me.bookk.feature.settings.presentation.factory.AndroidSettingsStateFactory
 import me.bookk.presentation.StateFactoryCreator
 
 class AndroidStateFactoryCreator : StateFactoryCreator {
@@ -17,6 +18,6 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
     }
 
     override fun createSettingsFactory(): SettingsStateFactory {
-        TODO("Not yet implemented")
+        return AndroidSettingsStateFactory()
     }
 }

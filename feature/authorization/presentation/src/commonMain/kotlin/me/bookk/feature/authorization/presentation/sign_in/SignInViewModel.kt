@@ -41,18 +41,20 @@ class SignInViewModel(
                 uiState.navigation.navigationDestination = SignInNavigationDestination.ToMain
             },
             onError = {
-                val message = when (it) {
-                    is SignIn.Error.NoAccountForThisPasskey -> AuthRes.strings.sign_in_error_no_account
-                    is SignIn.Error.PasskeyVerificationFailed -> AuthRes.strings.sign_in_error_passkey_verification
-                    is SignIn.Error.NoCredentialsAvailable -> AuthRes.strings.sign_in_error_no_passkeys_on_device
-                    else -> throw it
-                }.desc()
-                uiState.error.add(
+                val error = if (it is SignIn.Error) {
+                    val message = when (it) {
+                        is SignIn.Error.NoAccountForThisPasskey -> AuthRes.strings.sign_in_error_no_account
+                        is SignIn.Error.PasskeyVerificationFailed -> AuthRes.strings.sign_in_error_passkey_verification
+                        is SignIn.Error.NoCredentialsAvailable -> AuthRes.strings.sign_in_error_no_passkeys_on_device
+                    }.desc()
                     PresentationError.Message(
                         message = message,
                         buttonText = DesignSystem.strings.action_ok.desc()
                     )
-                )
+                } else {
+                    errorMapper.mapToError(it)
+                }
+                uiState.error.add(error)
             },
             onTerminate = { uiState.signInButton.isLoading = false }
         )

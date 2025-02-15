@@ -2,6 +2,7 @@ package me.bookk.feature.authorization.domain.impl
 
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.UserData
+import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
@@ -13,7 +14,8 @@ internal class CreateAccountImpl(
     private val registrationDataSource: RegistrationDataSource,
     private val deviceDataSource: DeviceDataSource,
     private val authorizationDataSource: AuthorizationDataSource,
-    private val getPlatformInformation: GetPlatformInformation
+    private val getPlatformInformation: GetPlatformInformation,
+    private val userProfileCRUD: UserProfileCRUD,
 ) : CreateAccount {
 
     override suspend fun invoke(userData: UserData) {
@@ -22,6 +24,7 @@ internal class CreateAccountImpl(
         val data = createRegistrationData(userData, verificationPayload, challenge.userId)
         val tokenInfo = registrationDataSource.finishRegistration(data)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
+        userProfileCRUD.get()
     }
 
     private suspend fun createRegistrationData(

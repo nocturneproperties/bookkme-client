@@ -74,7 +74,7 @@ struct ColorSchemeItemView<S>: View where S: ShapeStyle {
 				.strokeBorder(
 					schemeExpect == schemeActual ? AppColors.actionText : AppColors.header,
 					lineWidth: schemeExpect == schemeActual ? 4 : 0.5)
-				.frame(width: 75, height: 75)
+				.frame(width: 70, height: 70)
 				.onTapGesture {
 					onSchemeSelected(schemeExpect)
 				}

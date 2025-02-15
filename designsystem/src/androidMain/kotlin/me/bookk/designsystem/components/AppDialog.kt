@@ -32,8 +32,8 @@ fun AppDialog(
     content: (@Composable () -> Unit)? = null,
     rightButton: ButtonState? = null,
     leftButton: ButtonState? = null,
-    rightButtonColor: Color = LocalColors.current.ActionText,
-    leftButtonColor: Color = LocalColors.current.ActionText,
+    rightButtonColor: Color = LocalColors.current.actionText,
+    leftButtonColor: Color = LocalColors.current.actionText,
     onRightButtonClicked: (() -> Unit)? = null,
     onLeftButtonClicked: (() -> Unit)? = null,
     onDismiss: () -> Unit,
@@ -50,14 +50,14 @@ fun AppDialog(
                     Text(
                         text = it,
                         style = MaterialTheme.typography.titleMedium,
-                        color = LocalColors.current.PrimaryText,
+                        color = LocalColors.current.primaryText,
                     )
                 }
                 subtitle?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = LocalColors.current.PrimaryText,
+                        color = LocalColors.current.primaryText,
                     )
                 }
                 content?.invoke()
@@ -101,7 +101,7 @@ fun AppDialogContainer(
         Card(
             shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
-                containerColor = LocalColors.current.Elevated
+                containerColor = LocalColors.current.elevated
             ),
             modifier = Modifier.widthIn(max = 312.dp)
         ) {
@@ -122,7 +122,7 @@ fun AppDialogScreenContainer(
         Card(
             shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
-                containerColor = LocalColors.current.Elevated
+                containerColor = LocalColors.current.elevated
             ),
             modifier = Modifier
                 .fillMaxWidth()

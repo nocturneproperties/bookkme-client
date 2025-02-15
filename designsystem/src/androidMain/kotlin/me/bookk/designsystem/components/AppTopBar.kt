@@ -43,7 +43,7 @@ fun AppTopBar(
             TopAppBar(
                 modifier = modifier,
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = LocalColors.current.Background
+                    containerColor = LocalColors.current.background
                 ),
                 title = {
                     AppBarTitle(state.title.localized(), size)
@@ -63,7 +63,7 @@ fun AppTopBar(
             MediumTopAppBar(
                 modifier = modifier,
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = LocalColors.current.Background
+                    containerColor = LocalColors.current.background
                 ),
                 title = {
                     AppBarTitle(state.title.localized(), size)
@@ -83,7 +83,7 @@ fun AppTopBar(
             LargeTopAppBar(
                 modifier = modifier,
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = LocalColors.current.Background
+                    containerColor = LocalColors.current.background
                 ),
                 title = {
                     AppBarTitle(state.title.localized(), size)

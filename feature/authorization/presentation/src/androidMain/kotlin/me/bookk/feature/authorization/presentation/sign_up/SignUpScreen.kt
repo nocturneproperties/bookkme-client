@@ -123,7 +123,7 @@ private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
                 modifier = Modifier.padding(horizontal = 24.dp),
                 style = MaterialTheme.typography.bodySmall,
                 text = state.passkeyInfoCardData.description.localized(),
-                color = LocalColors.current.SecondaryText
+                color = LocalColors.current.secondaryText
             )
             TextButton(
                 modifier = Modifier.padding(start = 8.dp),

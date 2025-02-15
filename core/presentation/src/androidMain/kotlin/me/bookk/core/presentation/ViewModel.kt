@@ -15,9 +15,9 @@ actual abstract class ViewModel actual constructor(
     vmArgs: VmArgs
 ) : ViewModel() {
 
-    private val internalLogger = LogFactory.forName("ViewModel")
+    private val internalLogger = LogFactory.createLogger("ViewModel")
     protected actual val viewModelScope = frameworkScope
-    protected actual val mapper: ErrorMapper = vmArgs.errorMapper
+    protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper
     protected actual open val viewModelScopeErrorHandler =
         CoroutineExceptionHandler { _, throwable ->
             handleError(throwable)

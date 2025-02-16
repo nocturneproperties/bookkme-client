@@ -10,23 +10,23 @@ import SwiftUI
 import Combine
 import shared
 
-struct ErrorHandler: ViewModifier {
+struct NotificationHandler: ViewModifier {
     
     @ObservedObject
-    var errorState: IOSErrorState
+    var errorState: IOSNotificationState
 
     @State var showAlert: Bool = false
-    @State var data: PresentationErrorMessage? = nil
+	@State var data: PresentationNotificationMessage? = nil
     
     func body(content: Content) -> some View {
         content
             .onReceive(errorState.publisher) { value in
                 switch value {
-                case is PresentationErrorMessage:
-                    data = value as? PresentationErrorMessage
+                case is PresentationNotificationMessage:
+                    data = value as? PresentationNotificationMessage
                     showAlert = true
                     break
-                case is PresentationErrorIgnore:
+				case is PresentationNotificationIgnore:
                     errorState.removeFirst()
                     break
                 default:
@@ -48,7 +48,7 @@ struct ErrorHandler: ViewModifier {
 }
 
 extension View {
-    func handleErrors(state: ErrorState) -> some View {
-        modifier(ErrorHandler(errorState: state.impl()))
+	func handleNotifications(state: PresentationNotificationState) -> some View {
+        modifier(NotificationHandler(errorState: state.impl()))
     }
 }

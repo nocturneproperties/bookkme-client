@@ -49,7 +49,7 @@ class SettingsDashboardViewModel(
     private fun loadSettings() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { getSettings.invoke() },
+            call = { getSettings() },
             onComplete = {
                 uiState.appearance.colorScheme = UIColorScheme.from(it.colorScheme)
                 uiState.profile.name = it.profile.firstName.desc()

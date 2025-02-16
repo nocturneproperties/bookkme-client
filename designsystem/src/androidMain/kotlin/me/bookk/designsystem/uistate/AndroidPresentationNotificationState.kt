@@ -1,0 +1,18 @@
+package me.bookk.designsystem.uistate
+
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.mutableStateListOf
+import me.bookk.core.presentation.error.PresentationNotification
+
+@Immutable
+class AndroidPresentationNotificationState : PresentationNotificationState {
+    override val presentationNotification: MutableList<PresentationNotification> = mutableStateListOf()
+
+    override fun add(error: PresentationNotification) {
+        presentationNotification.add(error)
+    }
+
+    override fun removeFirst() {
+        presentationNotification.removeAt(0)
+    }
+}

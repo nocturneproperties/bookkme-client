@@ -35,7 +35,7 @@ internal class CommonUserProfileDataSource(
     }
 
     override suspend fun updateProfile(userProfile: UserProfile) = mapExceptions {
-        httpClient.put(UserRouting.Api.User.Me) {
+        httpClient.put(UserRouting.Api.User.Me()) {
             setBody(userProfile.toRemote())
         }
         profileDao.update(userProfile.toDb())

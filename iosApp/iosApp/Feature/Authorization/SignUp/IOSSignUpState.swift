@@ -24,7 +24,7 @@ class IOSSignUpState: SignUpState {
     
     var passkeyInfoCardData: PasskeyInfoCardData
     
-    var error: any ErrorState
+    var notification: any PresentationNotificationState
     
     var navigation: any NavigationState
     
@@ -47,7 +47,7 @@ class IOSSignUpState: SignUpState {
         )
         passkeyInfoCardData = initData.passkeyInfoCardData
         learnMoreButton = IOSButtonState(text: initData.learnMoreButtonText)
-        error = IOSErrorState()
+		notification = IOSNotificationState()
         navigation = IOSNavigationState()
     }
 }

@@ -2,6 +2,7 @@ package me.bookk.feature.settings.presentation.editprofile
 
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.settings.resources.SettingsRes
+import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.designsystem.resources.DesignSystem
@@ -10,10 +11,12 @@ import me.bookk.feature.authorization.domain.api.ValidateEmail.Result.Invalid.Fo
 import me.bookk.feature.authorization.domain.api.ValidateName
 import me.bookk.feature.authorization.domain.api.ValidateName.Result.Invalid.Length.isValid
 import me.bookk.feature.settings.domain.api.EditProfile
+import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.editprofile.state.EditProfileState
 
 class EditProfileViewModel(
+    private val getSettings: GetSettings,
     private val editProfile: EditProfile,
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
@@ -21,9 +24,37 @@ class EditProfileViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
+    private enum class Field {
+        NAME,
+        LAST,
+        EMAIL
+    }
+
     val uiState = settingsStateFactory.createEditProfileState(createInitData())
 
+    private val fieldInitialState = mutableMapOf<Field, String>()
+
+    init {
+        loadCurrentUserProfile()
+    }
+
+    private fun loadCurrentUserProfile() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { getSettings() },
+            onComplete = {
+                fieldInitialState[Field.NAME] = it.profile.firstName
+                fieldInitialState[Field.LAST] = it.profile.lastName
+                fieldInitialState[Field.EMAIL] = it.profile.email
+                onFirstNameTextChanged(it.profile.firstName)
+                onLastNameTextChanged(it.profile.lastName)
+                onEmailTextChanged(it.profile.email)
+            }
+        )
+    }
+
     fun onFirstNameTextChanged(text: String) {
+        if (fieldInitialState.isEmpty()) return
         val validationResult = validateName.invoke(text)
         uiState.name.text = text
         uiState.name.isValid = validationResult.isValid
@@ -36,6 +67,7 @@ class EditProfileViewModel(
     }
 
     fun onLastNameTextChanged(text: String) {
+        if (fieldInitialState.isEmpty()) return
         val validationResult = validateName.invoke(text)
         uiState.lastName.text = text
         uiState.lastName.isValid = validationResult.isValid
@@ -48,6 +80,7 @@ class EditProfileViewModel(
     }
 
     fun onEmailTextChanged(text: String) {
+        if (fieldInitialState.isEmpty()) return
         val validationResult = validateEmail.invoke(text)
         uiState.email.text = text
         uiState.email.isValid = validationResult.isValid
@@ -60,13 +93,44 @@ class EditProfileViewModel(
     }
 
     fun onConfirmButtonClick() {
-
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = {
+                uiState.confirmButton.isLoading = true
+                uiState.confirmButton.isEnabled = false
+            },
+            call = {
+                editProfile(
+                    firstName = uiState.name.text,
+                    lastName = uiState.lastName.text,
+                    email = uiState.lastName.text
+                )
+            },
+            onComplete =  {
+                fieldInitialState[Field.NAME] = uiState.name.text
+                fieldInitialState[Field.LAST] = uiState.lastName.text
+                fieldInitialState[Field.EMAIL] = uiState.lastName.text
+                validateButton()
+            },
+            onError = {
+                uiState.notification.add(errorMapper.mapToNotification(it))
+            },
+            onTerminate = {
+                uiState.confirmButton.isLoading = false
+                uiState.confirmButton.isEnabled = true
+            }
+        )
     }
 
     private fun validateButton() {
-        uiState.confirmButton.isEnabled = uiState.name.isValid &&
+        val isChanged = (fieldInitialState[Field.NAME] != uiState.name.text) ||
+                (fieldInitialState[Field.LAST] != uiState.lastName.text) ||
+                (fieldInitialState[Field.EMAIL] != uiState.email.text)
+        uiState.confirmButton.isEnabled = isChanged &&
+                uiState.name.isValid &&
                 uiState.lastName.isValid &&
                 uiState.email.isValid
+
     }
 
     companion object {
@@ -75,7 +139,7 @@ class EditProfileViewModel(
             nameHint = SettingsRes.strings.settings_edit_profile_first_name.desc(),
             lastNameHint = SettingsRes.strings.settings_edit_profile_last_name.desc(),
             emailHint = SettingsRes.strings.settings_edit_profile_email.desc(),
-            confirmButtonText = DesignSystem.strings.action_confirm.desc()
+            confirmButtonText = DesignSystem.strings.action_save.desc()
         )
     }
 }

@@ -17,11 +17,14 @@ class IOSSettingsState: SettingsState {
 	
 	var support: any SupportSection
 	
+	var notification: any PresentationNotificationState
+	
 	init(initData: SettingsStateInitData) {
 		account = IOSAccountSection(initData: initData.account)
 		appearance = IOSAppearanceSection(initData: initData.appearance)
 		profile = IOSProfileSection(initData: initData.profile)
 		support = IOSSupportSection(initData: initData.support)
+		notification = IOSNotificationState()
 	}
 }
 

@@ -10,17 +10,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.feature.settings.presentation.editprofile.state.EditProfileState
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 
 @Composable
 internal fun EditProfileScreen(state: EditProfileState) {
     ObserveNotifications(state = state.notification)
+    HandleNavigation(state.navigation)
     Scaffold(
         topBar = {
             AppTopBar(
@@ -60,6 +63,15 @@ internal fun EditProfileScreen(state: EditProfileState) {
             )
         }
     )
+}
+
+@Composable
+private fun HandleNavigation(navigation: NavigationState<EditProfileNavigationDestination>) {
+    ObserveNavigation(navigation) {
+        when (it) {
+            EditProfileNavigationDestination.Back -> LocalNavigation.current.navigateBack()
+        }
+    }
 }
 
 @Preview

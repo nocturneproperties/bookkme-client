@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition {
-            viewModel.state.navigation.navigationDestination == null
+            viewModel.state.startDestination == null
         }
         super.onCreate(savedInstanceState)
         setContent {
@@ -63,13 +63,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun NavigationRoot(state: BootstrapState) {
     val controller = rememberNavController()
-    val destination = state.navigation.navigationDestination
+    val destination = state.startDestination
     if (destination != null) {
         NavHost(
             navController = controller,
             startDestination = when (destination) {
-                BootstrapNavigationDestination.ToLogin -> AuthDestination.SignIn
-                BootstrapNavigationDestination.ToMain -> DashboardDestination
+                BootstrapNavigationDestination.Login -> AuthDestination.SignIn
+                BootstrapNavigationDestination.Main -> DashboardDestination
             }
         ) {
             authGraph(

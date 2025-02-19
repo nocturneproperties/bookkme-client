@@ -29,12 +29,12 @@ class BootstrapViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { isUserLoggedIn() to getColorScheme() },
-            onComplete = { (isLoggedIn , scheme) ->
-                state.colorScheme =  UIColorScheme.from(scheme)
-                state.navigation.navigationDestination = if (isLoggedIn) {
-                    BootstrapNavigationDestination.ToMain
+            onComplete = { (isLoggedIn, scheme) ->
+                state.colorScheme = UIColorScheme.from(scheme)
+                state.startDestination = if (isLoggedIn) {
+                    BootstrapNavigationDestination.Main
                 } else {
-                    BootstrapNavigationDestination.ToMain
+                    BootstrapNavigationDestination.Login
                 }
             }
         )

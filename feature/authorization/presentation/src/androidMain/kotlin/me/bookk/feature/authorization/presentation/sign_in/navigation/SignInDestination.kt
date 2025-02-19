@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.authorization.presentation.navigation.AuthDestination
 import me.bookk.feature.authorization.presentation.navigation.AuthNavigation
@@ -32,10 +33,9 @@ internal fun NavGraphBuilder.signInScreen(navigation: AuthNavigation) {
 
 @Composable
 private fun HandleNavigation(viewModel: SignInViewModel) {
-    viewModel.uiState.navigation.navigationDestination?.let {
+    ObserveNavigation(viewModel.uiState.navigation) {
         when (it) {
-            SignInNavigationDestination.ToMain -> LocalNavigation.current.navigateToMainScreen()
+            SignInNavigationDestination.Main -> LocalNavigation.current.navigateToMainScreen()
         }
-        viewModel.uiState.navigation.navigationDestination = null
     }
 }

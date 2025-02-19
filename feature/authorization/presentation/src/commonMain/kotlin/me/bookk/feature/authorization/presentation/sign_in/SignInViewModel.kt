@@ -25,7 +25,7 @@ class SignInViewModel(
     val uiState: SignInState = stateFactory.createSignInState(createInitData())
 
     override fun onBackClick() {
-        uiState.navigation.navigationDestination = SignInNavigationDestination.ToMain
+        uiState.navigation.push(SignInNavigationDestination.Main)
     }
 
     override fun onLearnMoreClick() {
@@ -38,7 +38,7 @@ class SignInViewModel(
             onStart = { uiState.signInButton.isLoading = true },
             call = { signIn() },
             onComplete = {
-                uiState.navigation.navigationDestination = SignInNavigationDestination.ToMain
+                uiState.navigation.push(SignInNavigationDestination.Main)
             },
             onError = {
                 val error = if (it is SignIn.Error) {

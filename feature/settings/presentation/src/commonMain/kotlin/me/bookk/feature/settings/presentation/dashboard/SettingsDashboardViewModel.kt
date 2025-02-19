@@ -26,7 +26,7 @@ class SettingsDashboardViewModel(
 
     val uiState = settingsStateFactory.createSettingsState(createInitData())
 
-    init {
+    override fun onViewPresented() {
         loadSettings()
     }
 

@@ -34,7 +34,7 @@ class EditProfileViewModel(
 
     private val fieldInitialState = mutableMapOf<Field, String>()
 
-    init {
+    override fun onViewPresented() {
         loadCurrentUserProfile()
     }
 
@@ -103,21 +103,21 @@ class EditProfileViewModel(
                 editProfile(
                     firstName = uiState.name.text,
                     lastName = uiState.lastName.text,
-                    email = uiState.lastName.text
+                    email = uiState.email.text
                 )
             },
             onComplete =  {
                 fieldInitialState[Field.NAME] = uiState.name.text
                 fieldInitialState[Field.LAST] = uiState.lastName.text
-                fieldInitialState[Field.EMAIL] = uiState.lastName.text
-                validateButton()
+                fieldInitialState[Field.EMAIL] = uiState.email.text
+                uiState.navigation.push(EditProfileNavigationDestination.Back)
             },
             onError = {
                 uiState.notification.add(errorMapper.mapToNotification(it))
             },
             onTerminate = {
                 uiState.confirmButton.isLoading = false
-                uiState.confirmButton.isEnabled = true
+                validateButton()
             }
         )
     }

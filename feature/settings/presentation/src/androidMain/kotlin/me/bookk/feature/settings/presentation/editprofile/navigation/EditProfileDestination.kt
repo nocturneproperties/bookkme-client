@@ -3,6 +3,7 @@ package me.bookk.feature.settings.presentation.editprofile.navigation
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import me.bookk.core.presentation.SendLifecycleEventsTo
 import me.bookk.feature.settings.presentation.editprofile.EditProfileEventListener
 import me.bookk.feature.settings.presentation.editprofile.EditProfileScreen
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
@@ -25,6 +26,7 @@ internal fun NavGraphBuilder.editProfileScreen(navigation: SettingsNavigation) {
                 onSaveClick = viewModel::onConfirmButtonClick
             )
         ) {
+            SendLifecycleEventsTo(viewModel)
             EditProfileScreen(viewModel.uiState)
         }
     }

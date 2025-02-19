@@ -6,6 +6,6 @@ interface PresentationNotificationState {
     //Immutable List is better here because of ObjC/Kotlin interoperability
     val presentationNotification: List<PresentationNotification>
 
-    fun add(error: PresentationNotification)
+    fun add(notification: PresentationNotification)
     fun removeFirst()
 }

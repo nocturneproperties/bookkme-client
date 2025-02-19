@@ -8,8 +8,8 @@ import me.bookk.core.presentation.error.PresentationNotification
 class AndroidPresentationNotificationState : PresentationNotificationState {
     override val presentationNotification: MutableList<PresentationNotification> = mutableStateListOf()
 
-    override fun add(error: PresentationNotification) {
-        presentationNotification.add(error)
+    override fun add(notification: PresentationNotification) {
+        presentationNotification.add(notification)
     }
 
     override fun removeFirst() {

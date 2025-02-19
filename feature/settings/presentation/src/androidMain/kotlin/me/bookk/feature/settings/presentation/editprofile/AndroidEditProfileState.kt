@@ -2,10 +2,12 @@ package me.bookk.feature.settings.presentation.editprofile
 
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
+import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidPresentationNotificationState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.feature.settings.presentation.editprofile.state.EditProfileState
@@ -22,4 +24,5 @@ internal class AndroidEditProfileState(
         isEnabled = false
     )
     override val notification: PresentationNotificationState = AndroidPresentationNotificationState()
+    override val navigation: NavigationState<EditProfileNavigationDestination> = AndroidNavigationState()
 }

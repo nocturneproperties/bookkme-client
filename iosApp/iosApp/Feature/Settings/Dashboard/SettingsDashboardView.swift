@@ -50,7 +50,9 @@ struct SettingsDashboardView: View {
 			.navigationDestination(for: SettingsDestination.Report.self) { _ in
 				
 			}
-		}.environmentObject(navigationStack)
+		}
+		.sendLifecycleEventsTo(viewModel: settingsVM)
+		.environmentObject(navigationStack)
 	}
 }
 

@@ -24,6 +24,7 @@ import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TextField
@@ -140,11 +141,10 @@ private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
 
 @Composable
 private fun HandleNavigation(state: NavigationState<SignUpNavigationDestination>) {
-    state.navigationDestination?.let {
+    ObserveNavigation(state) {
         when (it) {
-            SignUpNavigationDestination.ToMain -> LocalNavigation.current.navigateToMainScreen()
+            SignUpNavigationDestination.Main -> LocalNavigation.current.navigateToMainScreen()
         }
-        state.navigationDestination = null
     }
 }
 

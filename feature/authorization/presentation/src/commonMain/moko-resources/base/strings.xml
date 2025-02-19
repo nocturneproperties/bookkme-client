@@ -11,7 +11,7 @@
     <string name="sign_up_create_account_button">Create</string>
     <string name="sign_up_email_exist">Account with this email already exist</string>
     <string name="sign_up_passkey_failed">Passkey verification failed</string>
-    <string name="sign_up_failed">Sorry, looks like our services is unavailable. Try again later.</string>
+    <string name="sign_up_failed">"Error during account creation, try again later"</string>
     <string name="sign_up_why_no_password_title">Why there is no password field?</string>
     <string name="sign_up_why_no_password_description">We decided to replace passwords with Passkeys, because they use biometric authentication or device-based encryption, making them more resistant to phishing and hacking attempts. Additionally, they streamline the user experience, eliminating the need to remember and manage multiple complex passwords.</string>
 

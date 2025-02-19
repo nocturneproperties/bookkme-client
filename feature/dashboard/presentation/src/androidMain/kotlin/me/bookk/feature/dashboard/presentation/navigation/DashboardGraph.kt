@@ -15,29 +15,11 @@ fun NavGraphBuilder.dashboardGraph(
     composable<DashboardDestination> {
         val viewModel: DashboardViewModel = koinViewModel()
 
-        HandleNavigation(
-            viewModel = viewModel,
-            navigateBack = {}
-        )
-
         DashboardScreen(
             state = viewModel.uiState,
             appointmentsScreen = appointmentsScreen,
             businessScreen = businessScreen,
             settingsScreen = settingsScreen
         )
-    }
-}
-
-@Composable
-private fun HandleNavigation(
-    viewModel: DashboardViewModel,
-    navigateBack: () -> Unit
-) {
-    viewModel.uiState.navigation.navigationDestination?.let {
-        when (it) {
-            else -> navigateBack()
-        }
-        viewModel.uiState.navigation.navigationDestination = null
     }
 }

@@ -85,7 +85,7 @@ class SignUpViewModel(
                 )
             },
             onComplete = {
-                uiState.navigation.navigationDestination = SignUpNavigationDestination.ToMain
+                uiState.navigation.push(SignUpNavigationDestination.Main)
             },
             onError = {
                 when (it) {

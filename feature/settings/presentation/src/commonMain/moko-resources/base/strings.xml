@@ -19,4 +19,12 @@
     <string name="settings_support_terms_label">Terms of Use</string>
     <string name="settings_support_privacy_label">Privacy Policy</string>
     <string name="settings_support_report_label">Report an error</string>
+
+    <string name="settings_edit_profile_title">Edit profile</string>
+    <string name="settings_edit_profile_first_name">First name</string>
+    <string name="settings_edit_profile_first_name_error">Name should be at least 2 characters long</string>
+    <string name="settings_edit_profile_last_name">Last name</string>
+    <string name="settings_edit_profile_last_name_error">Last should be at least 2 characters long</string>
+    <string name="settings_edit_profile_email">Email</string>
+    <string name="settings_edit_profile_email_error">Invalid email format</string>
 </resources>

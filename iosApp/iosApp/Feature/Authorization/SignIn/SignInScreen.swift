@@ -36,7 +36,7 @@ struct SignInScreen: View {
         .padding()
         .navigationTitle(signInVM.uiState.appBar.title.localized())
         .navigationBarTitleDisplayMode(.large)
-        .handleErrors(state: uiState.error)
+		.handleNotifications(state: uiState.notification)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
             case is SignInNavigationDestination.ToMain:

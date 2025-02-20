@@ -14,7 +14,12 @@ struct StateTextField: View {
     @ObservedObject
     var state: IOSTextFieldState
     @State
-    var onTextChanged: (String) -> Void = {_ in }
+    var onTextChanged: (String) -> Void
+	
+	init(state: TextFieldState, onTextChanged: @escaping (String) -> Void) {
+		self.state = state.impl()
+		self.onTextChanged = onTextChanged
+	}
     
     var body: some View {
         VStack {
@@ -80,5 +85,7 @@ struct StateTextField: View {
     @State
     var value: IOSTextFieldState = IOSTextFieldState(enabled: true, errorTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isError: false, isValid: true, maxLength: 20, readOnly: false, text: "Text")
     
-    StateTextField(state: value)
+	StateTextField(state: value) { _ in
+		
+	}
 }

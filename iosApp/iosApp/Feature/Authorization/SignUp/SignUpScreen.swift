@@ -71,7 +71,7 @@ struct SignUpScreen: View {
         .navigationTitle(uiState.appBar.title.localized())
         .navigationBarTitleDisplayMode(.large)
         .sendLifecycleEventsTo(viewModel: signUpVM)
-        .handleErrors(state: uiState.error)
+		.handleNotifications(state: uiState.notification)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
             case is SignUpNavigationDestination.ToMain:

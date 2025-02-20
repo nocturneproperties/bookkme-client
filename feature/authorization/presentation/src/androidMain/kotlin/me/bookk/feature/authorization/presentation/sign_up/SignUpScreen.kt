@@ -24,12 +24,15 @@ import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.ObserveNavigation
+import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.feature.authorization.presentation.navigation.LocalNavigation
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpEventListener
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
@@ -39,6 +42,8 @@ fun SignUpScreen(
     state: SignUpState,
     listener: SignUpEventListener
 ) {
+    HandleNavigation(state = state.navigation)
+    ObserveNotifications(state = state.notification)
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -130,6 +135,15 @@ private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
                 state = state.learnMoreButton,
                 onClick = onButtonClick
             )
+        }
+    }
+}
+
+@Composable
+private fun HandleNavigation(state: NavigationState<SignUpNavigationDestination>) {
+    ObserveNavigation(state) {
+        when (it) {
+            SignUpNavigationDestination.Main -> LocalNavigation.current.navigateToMainScreen()
         }
     }
 }

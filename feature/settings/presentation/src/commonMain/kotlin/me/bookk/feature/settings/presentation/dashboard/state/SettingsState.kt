@@ -4,6 +4,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextState
 import me.bookk.feature.settings.domain.api.entity.ColorScheme
 
@@ -12,6 +13,8 @@ interface SettingsState {
     val profile: ProfileSection
     val account: AccountSection
     val support: SupportSection
+
+    val notification: PresentationNotificationState
 
     class InitData(
         val appearance: AppearanceSection.InitData,

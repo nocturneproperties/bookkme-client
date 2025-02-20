@@ -6,4 +6,7 @@
 
     <string name="action_ok">Ok</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_save">Save</string>
+    <string name="action_send">Seng</string>
 </resources>

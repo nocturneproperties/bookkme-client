@@ -3,13 +3,13 @@ package me.bookk.feature.authorization.presentation.sign_up
 import androidx.compose.runtime.Immutable
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
-import me.bookk.designsystem.uistate.AndroidErrorState
 import me.bookk.designsystem.uistate.AndroidNavigationState
+import me.bookk.designsystem.uistate.AndroidPresentationNotificationState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
-import me.bookk.designsystem.uistate.ErrorState
 import me.bookk.designsystem.uistate.NavigationState
+import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
@@ -21,7 +21,7 @@ internal class AndroidSignUpState private constructor(
     override val lastName: TextFieldState,
     override val email: TextFieldState,
     override val confirmButton: ButtonState,
-    override val error: ErrorState,
+    override val notification: PresentationNotificationState,
     override val learnMoreButton: ButtonState,
     override val passkeyInfoCardData: PasskeyInfoCardData,
     override val navigation: NavigationState<SignUpNavigationDestination>
@@ -35,7 +35,7 @@ internal class AndroidSignUpState private constructor(
         confirmButton = AndroidButtonState(text = initData.confirmButtonText, isEnabled = false),
         learnMoreButton = AndroidButtonState(text = initData.learnMoreButtonText),
         passkeyInfoCardData = initData.passkeyInfoCardData,
-        error = AndroidErrorState(),
+        notification = AndroidPresentationNotificationState(),
         navigation = AndroidNavigationState<SignUpNavigationDestination>()
     )
 }

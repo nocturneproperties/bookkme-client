@@ -9,28 +9,28 @@
 import shared
 import Combine
 
-class IOSErrorState:ErrorState, ObservableObject {
+class IOSNotificationState:PresentationNotificationState, ObservableObject {
     
     @Published
-    var presentationError: [any PresentationError] = []
+    var presentationNotification: [any PresentationNotification] = []
     
-    var publisher: AnyPublisher<any PresentationError, Never> {
-        $presentationError.flatMap(\.publisher)
+    var publisher: AnyPublisher<any PresentationNotification, Never> {
+        $presentationNotification.flatMap(\.publisher)
             .eraseToAnyPublisher()
     }
     
-    func add(error: any PresentationError) {
-        presentationError.append(error)
+    func add(error: any PresentationNotification) {
+        presentationNotification.append(error)
     }
     
     func removeFirst() {
-        presentationError.removeFirst()
+        presentationNotification.removeFirst()
     }
     
 }
 
-extension shared.ErrorState {
-    func impl() -> IOSErrorState {
-        return self as! IOSErrorState
+extension PresentationNotificationState {
+    func impl() -> IOSNotificationState {
+		return self as! IOSNotificationState
     }
 }

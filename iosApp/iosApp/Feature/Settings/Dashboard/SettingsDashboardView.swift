@@ -33,7 +33,7 @@ struct SettingsDashboardView: View {
 				}
 			}
 			.navigationDestination(for: SettingsDestination.EditProfile.self) { _ in
-				
+				EditProfileView()
 			}
 			.navigationDestination(for: SettingsDestination.Passkey.self) { _ in
 				
@@ -51,6 +51,8 @@ struct SettingsDashboardView: View {
 				
 			}
 		}
+		.sendLifecycleEventsTo(viewModel: settingsVM)
+		.environmentObject(navigationStack)
 	}
 }
 

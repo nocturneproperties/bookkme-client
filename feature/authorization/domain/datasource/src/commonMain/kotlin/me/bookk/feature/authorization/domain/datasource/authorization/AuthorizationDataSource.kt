@@ -8,7 +8,7 @@ interface AuthorizationDataSource {
     suspend fun getAccessToken(): String?
     suspend fun getRefreshToken(): String?
     suspend fun refreshToken(refreshToken: String): TokenInfo
-    suspend fun getAuthorizationChallenge(): ServerSignInChallenge
+    suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge
     suspend fun verifyAuthorization(signInData: SignInData): TokenInfo
-    suspend fun requestPasskey(challenge: ServerSignInChallenge): PasskeyVerificationPayload
+    suspend fun requestPasskey(challenge: ServerAuthenticationChallenge): PasskeyVerificationPayload
 }

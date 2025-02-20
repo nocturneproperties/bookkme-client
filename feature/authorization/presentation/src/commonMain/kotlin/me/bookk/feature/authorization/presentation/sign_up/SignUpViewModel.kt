@@ -5,7 +5,7 @@ import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.error.PresentationError.Message
+import me.bookk.core.presentation.error.PresentationNotification.Message
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.Error
@@ -85,7 +85,7 @@ class SignUpViewModel(
                 )
             },
             onComplete = {
-                uiState.navigation.navigationDestination = SignUpNavigationDestination.ToMain
+                uiState.navigation.push(SignUpNavigationDestination.Main)
             },
             onError = {
                 when (it) {
@@ -100,7 +100,7 @@ class SignUpViewModel(
                         uiState.email.errorTextRes = AuthRes.strings.sign_up_email_error.desc()
                     }
                     is Error.PasskeyVerificationFailed -> {
-                        uiState.error.add(
+                        uiState.notification.add(
                             Message(
                                 message = AuthRes.strings.sign_up_passkey_failed.desc(),
                                 buttonText = DesignSystem.strings.action_ok.desc()
@@ -108,14 +108,14 @@ class SignUpViewModel(
                         )
                     }
                     is Error.AccountCreationFailed -> {
-                        uiState.error.add(
+                        uiState.notification.add(
                             Message(
                                 message = AuthRes.strings.sign_up_failed.desc(),
                                 buttonText = DesignSystem.strings.action_ok.desc()
                             )
                         )
                     }
-                    else -> uiState.error.add(errorMapper.mapToError(it))
+                    else -> uiState.notification.add(errorMapper.mapToNotification(it))
                 }
             },
             onTerminate = { uiState.confirmButton.isLoading = false },

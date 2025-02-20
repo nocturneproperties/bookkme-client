@@ -3,11 +3,15 @@ package me.bookk.feature.authorization.data.datasource
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
+import io.ktor.client.plugins.resources.patch
+import io.ktor.client.request.setBody
 import me.bookk.core.data.DataSource
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.feature.authorization.data.mapping.toDb
 import me.bookk.feature.authorization.data.mapping.toDomain
+import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting
+import me.bookk.feature.authorization.data.remote.api.UserRouting
 import me.bookk.feature.authorization.data.remote.model.UserProfileRemote
 import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataSource
 import me.bookk.feature.authorization.domain.entity.UserProfile
@@ -31,6 +35,9 @@ internal class CommonUserProfileDataSource(
     }
 
     override suspend fun updateProfile(userProfile: UserProfile) = mapExceptions {
+        httpClient.patch(UserRouting.Api.User.Me()) {
+            setBody(userProfile.toRemote())
+        }
         profileDao.update(userProfile.toDb())
     }
 

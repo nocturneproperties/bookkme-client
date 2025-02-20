@@ -5,7 +5,7 @@ import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.error.PresentationError
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.authorization.domain.api.SignIn
 import me.bookk.feature.authorization.presentation.AuthConstants
@@ -25,7 +25,7 @@ class SignInViewModel(
     val uiState: SignInState = stateFactory.createSignInState(createInitData())
 
     override fun onBackClick() {
-        uiState.navigation.navigationDestination = SignInNavigationDestination.ToMain
+        uiState.navigation.push(SignInNavigationDestination.Main)
     }
 
     override fun onLearnMoreClick() {
@@ -38,7 +38,7 @@ class SignInViewModel(
             onStart = { uiState.signInButton.isLoading = true },
             call = { signIn() },
             onComplete = {
-                uiState.navigation.navigationDestination = SignInNavigationDestination.ToMain
+                uiState.navigation.push(SignInNavigationDestination.Main)
             },
             onError = {
                 val error = if (it is SignIn.Error) {
@@ -47,14 +47,14 @@ class SignInViewModel(
                         is SignIn.Error.PasskeyVerificationFailed -> AuthRes.strings.sign_in_error_passkey_verification
                         is SignIn.Error.NoCredentialsAvailable -> AuthRes.strings.sign_in_error_no_passkeys_on_device
                     }.desc()
-                    PresentationError.Message(
+                    PresentationNotification.Message(
                         message = message,
                         buttonText = DesignSystem.strings.action_ok.desc()
                     )
                 } else {
-                    errorMapper.mapToError(it)
+                    errorMapper.mapToNotification(it)
                 }
-                uiState.error.add(error)
+                uiState.notification.add(error)
             },
             onTerminate = { uiState.signInButton.isLoading = false }
         )

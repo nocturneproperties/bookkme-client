@@ -22,7 +22,7 @@ class IOSSignInState: SignInState {
     
     var troubleshootButton: any ButtonState
     
-    var error: any ErrorState
+	var notification: any PresentationNotificationState
     
     var navigation: any NavigationState
     
@@ -33,7 +33,7 @@ class IOSSignInState: SignInState {
         troubleshootButton = IOSButtonState(text: initData.troubleshootButtonText)
         signInButton = IOSButtonState(text: initData.signInButtonText)
         signUpButton = IOSButtonState(text: initData.signUpButtonText)
-        error = IOSErrorState()
+		notification = IOSNotificationState()
         navigation = IOSNavigationState()
     }
 }

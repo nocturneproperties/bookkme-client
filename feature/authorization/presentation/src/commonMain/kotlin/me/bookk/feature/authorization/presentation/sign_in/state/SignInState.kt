@@ -3,8 +3,8 @@ package me.bookk.feature.authorization.presentation.sign_in.state
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
-import me.bookk.designsystem.uistate.ErrorState
 import me.bookk.designsystem.uistate.NavigationState
+import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
 import me.bookk.feature.authorization.presentation.sign_in.SignInNavigationDestination
 
@@ -16,7 +16,7 @@ interface SignInState {
     val signUpButton: ButtonState
     val troubleshootButton: ButtonState
 
-    val error: ErrorState
+    val notification: PresentationNotificationState
     val navigation: NavigationState<SignInNavigationDestination>
 
     class InitData(

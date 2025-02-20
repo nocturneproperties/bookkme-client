@@ -18,7 +18,7 @@ internal class CommonDeviceDataSource(
     override suspend fun getOrCreateDeviceUUID(): String {
         var uuid = preferences.get(Key.deviceUUID)
         if (uuid == null) {
-            uuid = Uuid.random().toHexString()
+            uuid = Uuid.random().toString()
             preferences.set(Key.deviceUUID, uuid)
         }
         return uuid

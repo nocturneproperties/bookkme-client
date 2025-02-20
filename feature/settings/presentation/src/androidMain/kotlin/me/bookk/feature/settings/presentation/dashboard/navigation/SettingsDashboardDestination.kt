@@ -3,6 +3,7 @@ package me.bookk.feature.settings.presentation.dashboard.navigation
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import me.bookk.core.presentation.SendLifecycleEventsTo
 import me.bookk.feature.settings.presentation.dashboard.DashboardEventListener
 import me.bookk.feature.settings.presentation.dashboard.LocalDashboardEventListener
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardScreen
@@ -25,6 +26,7 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: SettingsNavigation) {
             LocalNavigation provides navigation,
             LocalDashboardEventListener provides listener
         ) {
+            SendLifecycleEventsTo(viewModel)
             SettingsDashboardScreen(viewModel.uiState)
         }
     }

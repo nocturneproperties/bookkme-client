@@ -1,6 +1,6 @@
 package me.bookk.feature.authorization.domain.datasource.authorization
 
-class ServerSignInChallenge(
+class ServerAuthenticationChallenge(
     val requestId: String,
     val challengeJson: String
 )

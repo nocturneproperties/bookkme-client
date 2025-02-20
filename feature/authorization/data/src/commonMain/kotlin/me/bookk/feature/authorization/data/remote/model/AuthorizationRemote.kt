@@ -7,8 +7,3 @@ class TokenInfoResponse(
     val accessToken: String,
     val refreshToken: String
 )
-
-@Serializable
-class RefreshTokenRemote(
-    val refreshToken: String
-)

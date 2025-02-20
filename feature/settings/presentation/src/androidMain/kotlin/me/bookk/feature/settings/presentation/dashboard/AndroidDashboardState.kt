@@ -6,8 +6,10 @@ import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidButtonState
+import me.bookk.designsystem.uistate.AndroidPresentationNotificationState
 import me.bookk.designsystem.uistate.AndroidTextState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextState
 import me.bookk.feature.settings.presentation.dashboard.state.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.state.AppearanceSection
@@ -23,6 +25,7 @@ internal class AndroidDashboardState(
     override val profile: ProfileSection = AndroidProfileSectionState(initData.profile)
     override val account: AccountSection = AndroidAccountSectionState(initData.account)
     override val support: SupportSection = AndroidSupportState(initData.support)
+    override val notification: PresentationNotificationState = AndroidPresentationNotificationState()
 }
 
 internal class AndroidAppearanceSectionState(

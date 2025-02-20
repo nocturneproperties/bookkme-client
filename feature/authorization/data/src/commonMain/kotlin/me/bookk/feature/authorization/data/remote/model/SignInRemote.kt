@@ -3,16 +3,16 @@ package me.bookk.feature.authorization.data.remote.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-class SignInStartResponse(
+class AuthChallengeResponse(
     val requestId: String,
     val challengeJson: String
 )
 
 @Serializable
-class VerifySignInRequest(
+class VerifyAuthRequest(
     val requestId: String,
-    val deviceInfo: DeviceInfo,
-    val publicKeyCredentialJson: String
+    val publicKeyCredentialJson: String,
+    val deviceInfo: DeviceInfo
 ) {
     @Serializable
     data class DeviceInfo(

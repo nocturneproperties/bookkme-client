@@ -4,7 +4,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
+import io.ktor.client.request.header
 import io.ktor.client.request.setBody
+import io.ktor.http.HttpHeaders
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.entity.Error
 import me.bookk.feature.authorization.data.local.PassKeyManager
@@ -12,12 +14,11 @@ import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting.Api.Auth
 import me.bookk.feature.authorization.data.remote.error.AuthErrorCodes
-import me.bookk.feature.authorization.data.remote.model.RefreshTokenRemote
-import me.bookk.feature.authorization.data.remote.model.SignInStartResponse
+import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
 import me.bookk.feature.authorization.domain.api.SignIn
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
-import me.bookk.feature.authorization.domain.datasource.authorization.ServerSignInChallenge
+import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.TokenInfo
@@ -49,20 +50,20 @@ class CommonAuthorizationDataSource(
 
     override suspend fun refreshToken(refreshToken: String): TokenInfo = mapExceptions {
         val response = httpClient.post(Auth.Refresh()) {
-            setBody(RefreshTokenRemote(refreshToken))
+            header(HttpHeaders.Authorization, "Bearer $refreshToken")
         }
         response.body<TokenInfoResponse>().toDomain()
     }
 
-    override suspend fun getAuthorizationChallenge(): ServerSignInChallenge = mapExceptions {
-        val response = httpClient.get(Auth.SignIn.PassKey.Challenge()) {}
-        response.body<SignInStartResponse>().toDomain()
+    override suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge = mapExceptions {
+        val response = httpClient.get(Auth.PassKey.Challenge()) {}
+        response.body<AuthChallengeResponse>().toDomain()
     }
 
     override suspend fun verifyAuthorization(signInData: SignInData): TokenInfo {
         return mapExceptions(
             action =  {
-                val response = httpClient.post(Auth.SignIn.PassKey.Validate()) {
+                val response = httpClient.post(Auth.SignIn()) {
                     setBody(signInData.toRemote())
                 }
                 response.body<TokenInfoResponse>().toDomain()
@@ -78,7 +79,7 @@ class CommonAuthorizationDataSource(
         )
     }
 
-    override suspend fun requestPasskey(challenge: ServerSignInChallenge): PasskeyVerificationPayload {
+    override suspend fun requestPasskey(challenge: ServerAuthenticationChallenge): PasskeyVerificationPayload {
         return mapExceptions(
             action = { passKeyManager.authorize(challenge.challengeJson) },
             exceptionMapper = {

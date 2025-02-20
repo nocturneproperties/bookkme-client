@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.theme.color.AppColors
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.feature.settings.presentation.dashboard.AppearanceSection
+import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
 import me.bookk.feature.settings.presentation.dashboard.LocalDashboardEventListener
-import me.bookk.feature.settings.presentation.dashboard.state.AppearanceSection
-import me.bookk.feature.settings.presentation.dashboard.state.AppearanceSection.UIColorScheme
 
 @Composable
 internal fun AppearanceSection(state: AppearanceSection) {

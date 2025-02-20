@@ -17,7 +17,6 @@ import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.uistate.NavigationState
-import me.bookk.feature.settings.presentation.editprofile.state.EditProfileState
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 
 @Composable

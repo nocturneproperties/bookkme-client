@@ -11,12 +11,7 @@ import me.bookk.designsystem.uistate.AndroidTextState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextState
-import me.bookk.feature.settings.presentation.dashboard.state.AccountSection
-import me.bookk.feature.settings.presentation.dashboard.state.AppearanceSection
-import me.bookk.feature.settings.presentation.dashboard.state.AppearanceSection.UIColorScheme
-import me.bookk.feature.settings.presentation.dashboard.state.ProfileSection
-import me.bookk.feature.settings.presentation.dashboard.state.SettingsState
-import me.bookk.feature.settings.presentation.dashboard.state.SupportSection
+import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
 
 internal class AndroidDashboardState(
     initData: SettingsState.InitData

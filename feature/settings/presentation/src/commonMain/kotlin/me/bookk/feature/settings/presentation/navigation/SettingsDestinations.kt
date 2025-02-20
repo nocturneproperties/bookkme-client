@@ -16,7 +16,7 @@ sealed class SettingsDestination {
     data object DeleteAccount : SettingsDestination()
 
     @Serializable
-    data object Contact : SettingsDestination()
+    data object ContactUs : SettingsDestination()
 
     @Serializable
     data object SuggestFeature : SettingsDestination()

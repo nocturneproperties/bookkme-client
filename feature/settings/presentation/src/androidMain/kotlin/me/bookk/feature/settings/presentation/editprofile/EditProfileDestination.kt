@@ -1,13 +1,9 @@
-package me.bookk.feature.settings.presentation.editprofile.navigation
+package me.bookk.feature.settings.presentation.editprofile
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import me.bookk.core.presentation.SendLifecycleEventsTo
-import me.bookk.feature.settings.presentation.editprofile.EditProfileEventListener
-import me.bookk.feature.settings.presentation.editprofile.EditProfileScreen
-import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
-import me.bookk.feature.settings.presentation.editprofile.LocalEditProfileEventListener
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 import me.bookk.feature.settings.presentation.navigation.SettingsDestination
 import me.bookk.feature.settings.presentation.navigation.SettingsNavigation

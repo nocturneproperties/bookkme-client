@@ -96,7 +96,7 @@ private fun NavigationRoot(state: BootstrapState) {
                                 navigateToEditProfile = { settingsController.navigate(SettingsDestination.EditProfile) },
                                 navigateToPasskey = {},
                                 navigateToReport = {},
-                                navigateToContact = {},
+                                navigateToContact = { settingsController.navigate(SettingsDestination.ContactUs) },
                                 navigateToSuggestFeature = {},
                                 navigateToDeleteAccount = {}
                             )

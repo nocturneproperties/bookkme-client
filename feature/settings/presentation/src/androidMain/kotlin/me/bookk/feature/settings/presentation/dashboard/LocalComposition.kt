@@ -1,7 +1,7 @@
 package me.bookk.feature.settings.presentation.dashboard
 
 import androidx.compose.runtime.compositionLocalOf
-import me.bookk.feature.settings.presentation.dashboard.state.AppearanceSection.UIColorScheme
+import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
 
 internal class DashboardEventListener(
     val selectScheme: (UIColorScheme) -> Unit,

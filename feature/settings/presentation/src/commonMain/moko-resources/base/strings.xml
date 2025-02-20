@@ -27,4 +27,9 @@
     <string name="settings_edit_profile_last_name_error">Last should be at least 2 characters long</string>
     <string name="settings_edit_profile_email">Email</string>
     <string name="settings_edit_profile_email_error">Invalid email format</string>
+
+    <string name="settings_contact_us_title">Contact us</string>
+    <string name="settings_contact_us_contact_hint">Enter your message here an we will reach out to you via email on your profile</string>
+    <string name="settings_contact_us_include_logs">Include usage logs</string>
+    <string name="settings_contact_us_include_logs_hint">If you are experiencing an issue, include your app usage logs to allow our developers to fix it faster</string>
 </resources>

@@ -47,7 +47,7 @@ fun TextField(
 ) {
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.small,
+        shape = MaterialTheme.shapes.medium,
         value = state.text,
         onValueChange = onValueChange,
         enabled = state.enabled,

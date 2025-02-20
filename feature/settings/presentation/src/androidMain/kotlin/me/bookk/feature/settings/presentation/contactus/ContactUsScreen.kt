@@ -1,0 +1,97 @@
+package me.bookk.feature.settings.presentation.contactus
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.localized
+import me.bookk.designsystem.components.ActionButton
+import me.bookk.designsystem.components.AppCard
+import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.StateSwitch
+import me.bookk.designsystem.components.TextField
+import me.bookk.designsystem.components.TopBarSize
+import me.bookk.designsystem.theme.AppTheme
+import me.bookk.designsystem.theme.ThemeMode
+import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.feature.settings.presentation.navigation.LocalNavigation
+
+@Composable
+internal fun ContactUsScreen(state: ContactUsState) {
+    Scaffold(
+        topBar = {
+            AppTopBar(
+                state = state.appBar,
+                size = TopBarSize.MEDIUM,
+                onNavigationIconClick = LocalNavigation.current.navigateBack
+            )
+        },
+        content = {
+            Column(
+                modifier = Modifier
+                    .padding(it)
+                    .padding(horizontal = 16.dp)
+            ) {
+                TextField(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .requiredHeightIn(min = 150.dp),
+                    state = state.contactField,
+                    onValueChange = LocalContactUsEventListener.current.onTextChanged
+                )
+
+                AppCard {
+                    StateSwitch(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        state = state.includeLogsSwitch,
+                        onCheckedChange = LocalContactUsEventListener.current.onIncludeUsageLogsCheckedChanged
+                    )
+                }
+
+                Text(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = state.logsExplanationText.localized(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = LocalColors.current.secondaryText
+                )
+            }
+        },
+        bottomBar = {
+            Box(modifier = Modifier.padding(all = 24.dp)) {
+                ActionButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state.submitButton,
+                    onClick = LocalContactUsEventListener.current.onSubmitClick
+                )
+            }
+        }
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewDark() {
+    AppTheme(themeMode = ThemeMode.DARK) {
+        ContactUsScreen(
+            state = AndroidContactUsState(ContactUsViewModel.createInitData())
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewLight() {
+    AppTheme(themeMode = ThemeMode.LIGHT) {
+        ContactUsScreen(
+            state = AndroidContactUsState(ContactUsViewModel.createInitData())
+        )
+    }
+}

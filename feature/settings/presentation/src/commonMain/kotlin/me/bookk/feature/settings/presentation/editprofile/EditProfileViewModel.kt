@@ -13,7 +13,6 @@ import me.bookk.feature.authorization.domain.api.ValidateName.Result.Invalid.Len
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.presentation.SettingsStateFactory
-import me.bookk.feature.settings.presentation.editprofile.state.EditProfileState
 
 class EditProfileViewModel(
     private val getSettings: GetSettings,

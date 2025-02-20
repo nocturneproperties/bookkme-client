@@ -1,13 +1,9 @@
-package me.bookk.feature.settings.presentation.dashboard.navigation
+package me.bookk.feature.settings.presentation.dashboard
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import me.bookk.core.presentation.SendLifecycleEventsTo
-import me.bookk.feature.settings.presentation.dashboard.DashboardEventListener
-import me.bookk.feature.settings.presentation.dashboard.LocalDashboardEventListener
-import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardScreen
-import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 import me.bookk.feature.settings.presentation.navigation.SettingsDestination
 import me.bookk.feature.settings.presentation.navigation.SettingsNavigation

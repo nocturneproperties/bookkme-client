@@ -9,29 +9,26 @@ struct BootstrapView: View {
 	
 	var body: some View {
 		ColorSchemeView(state: bootstrapVM.state) {
-			initialViewFrom(destination: initialDestination)
-				.handleNavigation(state: bootstrapVM.state.navigation) { destination in
-					switch destination {
-					case is BootstrapNavigationDestination:
-						initialDestination = destination as? BootstrapNavigationDestination
-						break
-					default: break
-					}
-				}
+			StartDestinationView(state: bootstrapVM.state.impl())
 		}
 	}
-    
-    @ViewBuilder
-    private func initialViewFrom(destination: BootstrapNavigationDestination?) -> some View {
-        switch destination {
-        case is BootstrapNavigationDestination.ToMain:
+}
+
+struct StartDestinationView: View {
+	
+	@ObservedObject
+	var state: IOSBootstrapState
+	
+	var body: some View {
+		switch state.startDestination {
+		case is BootstrapNavigationDestination.Main:
 			DashboardScreen()
-        case is BootstrapNavigationDestination.ToLogin:
-            AuthorizationView()
-        default:
-            Spacer()
-        }
-    }
+		case is BootstrapNavigationDestination.Login:
+			DashboardScreen()
+		default:
+			Spacer()
+		}
+	}
 }
 
 struct ColorSchemeView<Content: View>: View {

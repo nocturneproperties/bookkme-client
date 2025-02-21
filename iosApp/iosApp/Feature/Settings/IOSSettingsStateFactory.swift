@@ -9,11 +9,16 @@
 import shared
 
 class IOSSettingsStateFactory: SettingsStateFactory {
+	
 	func createEditProfileState(initData: EditProfileStateInitData) -> any EditProfileState {
 		return IOSEditProfileState(initData: initData)
 	}
 	
 	func createSettingsState(initData: SettingsStateInitData) -> any SettingsState {
 		return IOSSettingsState(initData: initData)
+	}
+	
+	func createContactUsState(initData: ContactUsStateInitData) -> any ContactUsState {
+		return IOSContactUsState(initData: initData)
 	}
 }

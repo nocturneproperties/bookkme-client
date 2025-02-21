@@ -10,6 +10,7 @@ import shared
 import SwiftUI
 
 class IOSEditProfileState: EditProfileState {
+	
 	var appBar: any AppBarState
 	
 	var name: any TextFieldState
@@ -22,12 +23,15 @@ class IOSEditProfileState: EditProfileState {
 	
 	var notification: any PresentationNotificationState
 	
+	var navigation: any NavigationState
+	
 	init(initData:EditProfileStateInitData) {
 		appBar = IOSAppBarState(title: initData.title)
 		confirmButton = IOSButtonState(text: initData.confirmButtonText, isEnabled: false)
-		email = IOSTextFieldState(hint: initData.emailHint)
-		lastName = IOSTextFieldState(hint: initData.lastNameHint)
-		name = IOSTextFieldState(hint: initData.nameHint)
+		email = IOSTextFieldState(label: initData.emailHint)
+		lastName = IOSTextFieldState(label: initData.lastNameHint)
+		name = IOSTextFieldState(label: initData.nameHint)
 		notification = IOSNotificationState()
+		navigation = IOSNavigationState()
 	}
 }

@@ -19,16 +19,16 @@ struct SupportView: View {
 	}
 	
 	var body: some View {
-		NavigationLink(value: SettingsDestination.Contact()) {
+		NavigationLink(value: SettingsDestination.ContactUs()) {
 			Text(state.contact.text.localized())
 		}
 		NavigationLink(value: SettingsDestination.SuggestFeature()) {
 			Text(state.feature.text.localized())
 		}
-		NavigationLink(value: SettingsDestination.Contact()) {
+		NavigationLink(value: SettingsDestination.ContactUs()) {
 			Text(state.terms.text.localized())
 		}
-		NavigationLink(value: SettingsDestination.Contact()) {
+		NavigationLink(value: SettingsDestination.ContactUs()) {
 			Text(state.policy.text.localized())
 		}
 		NavigationLink(value: SettingsDestination.Report()) {

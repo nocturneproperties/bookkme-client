@@ -11,25 +11,23 @@ import Combine
 import shared
 
 struct NavigationHandler: ViewModifier {
-    
-    @ObservedObject
-    var navigationState: IOSNavigationState
-    @State
-    var handler: (NavigationDestination) -> Void
-    
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: navigationState.navigationDestination, initial: true) { oldValue, newValue in
-                if let destination = newValue {
-                    navigationState.navigationDestination = nil
-                    handler(destination)
-                }
-            }
-    }
+	
+	@ObservedObject
+	var navigationState: IOSNavigationState
+	@State
+	var handler: (NavigationDestination) -> Void
+	
+	func body(content: Content) -> some View {
+		content
+			.onReceive(navigationState.publisher) { destination in
+				handler(destination)
+				navigationState.removeFirst()
+			}
+	}
 }
 
 extension View {
-    func handleNavigation(state: NavigationState, handler: @escaping (NavigationDestination) -> Void) -> some View {
-        return modifier(NavigationHandler(navigationState: state.impl(), handler: handler))
-    }
+	func handleNavigation(state: NavigationState, handler: @escaping (NavigationDestination) -> Void) -> some View {
+		return modifier(NavigationHandler(navigationState: state.impl(), handler: handler))
+	}
 }

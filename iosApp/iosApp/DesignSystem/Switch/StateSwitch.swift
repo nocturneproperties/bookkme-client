@@ -16,7 +16,7 @@ struct StateSwitch: View {
 	
 	let onToggledChanged: (Bool) -> Void
 	
-	init(state: SwitchState, onToggledChanged: @escaping (Bool) -> Void = { _ in }) {
+	init(state: SwitchState, onToggledChanged: @escaping (Bool) -> Void) {
 		self.state = state.impl()
 		self.onToggledChanged = onToggledChanged
 	}

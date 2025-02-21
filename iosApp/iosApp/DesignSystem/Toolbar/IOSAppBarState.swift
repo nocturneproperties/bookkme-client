@@ -9,8 +9,10 @@
 import shared
 
 class IOSAppBarState: IOSViewState, AppBarState {
+	@Published
     var subtitle: (any StringDesc)?
     
+	@Published
     var title: any StringDesc
     
     init(title: any StringDesc, subtitle: (any StringDesc)? = nil, isVisible: Bool = true) {

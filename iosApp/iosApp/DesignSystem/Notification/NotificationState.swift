@@ -19,8 +19,8 @@ class IOSNotificationState:PresentationNotificationState, ObservableObject {
             .eraseToAnyPublisher()
     }
     
-    func add(error: any PresentationNotification) {
-        presentationNotification.append(error)
+    func add(notification: any PresentationNotification) {
+        presentationNotification.append(notification)
     }
     
     func removeFirst() {

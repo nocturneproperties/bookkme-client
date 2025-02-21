@@ -39,7 +39,7 @@ struct SignInScreen: View {
 		.handleNotifications(state: uiState.notification)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
-            case is SignInNavigationDestination.ToMain:
+            case is SignInNavigationDestination.Main:
                 break
             default: break
             }

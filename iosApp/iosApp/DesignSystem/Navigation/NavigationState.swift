@@ -10,8 +10,21 @@ import shared
 import Combine
 
 class IOSNavigationState: NavigationState, ObservableObject {
-    @Published
-    var navigationDestination: (NavigationDestination)? = nil
+	@Published
+	var navigationDestination: [NavigationDestination] = []
+	
+	var publisher: AnyPublisher<NavigationDestination, Never> {
+		$navigationDestination.flatMap(\.publisher)
+			.eraseToAnyPublisher()
+	}
+	
+	func push(destination: NavigationDestination) {
+		navigationDestination.append(destination)
+	}
+	
+	func removeFirst() {
+		navigationDestination.removeFirst()
+	}
 }
 
 extension shared.NavigationState {

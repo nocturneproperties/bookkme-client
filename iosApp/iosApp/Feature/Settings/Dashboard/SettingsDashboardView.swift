@@ -41,14 +41,8 @@ struct SettingsDashboardView: View {
 			.navigationDestination(for: SettingsDestination.DeleteAccount.self) { _ in
 				
 			}
-			.navigationDestination(for: SettingsDestination.Contact.self) { _ in
-				
-			}
-			.navigationDestination(for: SettingsDestination.SuggestFeature.self) { _ in
-				
-			}
-			.navigationDestination(for: SettingsDestination.Report.self) { _ in
-				
+			.navigationDestination(for: SettingsDestination.ContactUs.self) { _ in
+				ContactUsView()
 			}
 		}
 		.sendLifecycleEventsTo(viewModel: settingsVM)

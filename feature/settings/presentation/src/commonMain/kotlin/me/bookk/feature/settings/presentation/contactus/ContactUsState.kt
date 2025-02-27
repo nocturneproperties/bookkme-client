@@ -3,6 +3,7 @@ package me.bookk.feature.settings.presentation.contactus
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.SwitchState
 import me.bookk.designsystem.uistate.TextFieldState
 
@@ -13,6 +14,8 @@ interface ContactUsState {
     val includeLogsSwitch: SwitchState
     val logsExplanationText: StringDesc
     val submitButton: ButtonState
+
+    val notifications: PresentationNotificationState
 
     data class InitData(
         val title: StringDesc,

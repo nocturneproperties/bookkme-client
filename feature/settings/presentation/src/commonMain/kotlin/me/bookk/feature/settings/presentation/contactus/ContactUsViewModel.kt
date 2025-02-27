@@ -2,12 +2,15 @@ package me.bookk.feature.settings.presentation.contactus
 
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.settings.resources.SettingsRes
+import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.feature.settings.domain.api.SendContactForm
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 
 class ContactUsViewModel(
+    private val sendContactForm: SendContactForm,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -15,7 +18,26 @@ class ContactUsViewModel(
     val uiState = settingsStateFactory.createContactUsState(createInitData())
 
     fun onSubmitClick() {
-
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = {
+                uiState.submitButton.isEnabled = false
+                uiState.submitButton.isLoading = true
+            },
+            call = {
+                sendContactForm(
+                    text = uiState.contactField.text,
+                    includeLogs = uiState.includeLogsSwitch.isChecked
+                )
+            },
+            onError = {
+                uiState.notifications.add(errorMapper.mapToNotification(it))
+            },
+            onTerminate = {
+                uiState.submitButton.isEnabled = true
+                uiState.submitButton.isLoading = false
+            },
+        )
     }
 
     fun onContactTextChanged(text: String) {

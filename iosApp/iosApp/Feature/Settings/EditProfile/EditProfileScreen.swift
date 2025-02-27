@@ -9,7 +9,7 @@
 import SwiftUI
 import shared
 
-struct EditProfileView: View {
+struct EditProfileScreen: View {
 	
 	@StateObject var navigationStack = NavigationStackHolder()
 	@StateObject var viewModel = IOSSettingsDiKt.editProfileVM()
@@ -28,6 +28,7 @@ struct EditProfileView: View {
 			}
 			Spacer()
 		}
+		.sendLifecycleEventsTo(viewModel: viewModel)
 		.padding()
 		.navigationTitle(state.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)

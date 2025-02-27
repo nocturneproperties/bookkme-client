@@ -40,7 +40,7 @@ struct DashboardTab: View {
 	var state: IOSTabItem
 	
 	var body: some View {
-		SettingsDashboardView()
+		SettingsDashboardScreen()
 			.tabItem {
 				Label(
 					title: {

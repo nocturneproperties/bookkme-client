@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.bookk.kmm.library)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -15,6 +16,7 @@ kotlin {
             implementation(projects.feature.platform.domain.datasource)
             implementation(projects.feature.settings.domain.api)
             implementation(projects.feature.settings.domain.datasource)
+            implementation(libs.ktor.client.resources)
         }
     }
 }

@@ -16,6 +16,7 @@ import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.StateSwitch
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.TopBarSize
@@ -26,6 +27,7 @@ import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 
 @Composable
 internal fun ContactUsScreen(state: ContactUsState) {
+    ObserveNotifications(state.notifications)
     Scaffold(
         topBar = {
             AppTopBar(

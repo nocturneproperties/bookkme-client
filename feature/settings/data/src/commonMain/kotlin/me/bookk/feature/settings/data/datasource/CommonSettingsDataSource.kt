@@ -1,18 +1,25 @@
 package me.bookk.feature.settings.data.datasource
 
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.resources.post
+import io.ktor.client.request.setBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import me.bookk.core.data.DataSource
 import me.bookk.feature.platform.domain.datasource.PreferenceProvider
 import me.bookk.feature.platform.domain.datasource.Preferences
 import me.bookk.feature.platform.domain.datasource.get
 import me.bookk.feature.platform.domain.datasource.getFlow
 import me.bookk.feature.platform.domain.datasource.set
+import me.bookk.feature.settings.data.remote.api.UserRouting
+import me.bookk.feature.settings.data.remote.model.ContactFormRemote
 import me.bookk.feature.settings.domain.api.entity.ColorScheme
 import me.bookk.feature.settings.domain.datasource.SettingsDataSource
 
 internal class CommonSettingsDataSource(
+    private val httpClient: HttpClient,
     preferenceProvider: PreferenceProvider
-) : SettingsDataSource {
+) : DataSource(), SettingsDataSource {
 
     private val preferences = preferenceProvider.get("settings_prefs")
 
@@ -28,6 +35,14 @@ internal class CommonSettingsDataSource(
         return preferences
             .getFlow(Key.colorScheme)
             .map { ColorScheme.from(it) }
+    }
+
+    override suspend fun sendContactForm(text: String, logs: String?) {
+        mapExceptions {
+            httpClient.post(UserRouting.Api.User.ContactUs()) {
+                setBody(ContactFormRemote(text, logs))
+            }
+        }
     }
 
     private object Key {

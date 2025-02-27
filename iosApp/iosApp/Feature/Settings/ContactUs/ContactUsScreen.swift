@@ -9,7 +9,7 @@
 import shared
 import SwiftUI
 
-struct ContactUsView: View {
+struct ContactUsScreen: View {
 	
 	@StateObject
 	var viewModel = IOSSettingsDiKt.contactUsVM()
@@ -40,5 +40,7 @@ struct ContactUsView: View {
 		.padding()
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
+		.sendLifecycleEventsTo(viewModel: viewModel)
+		.handleNotifications(state: uiState.notifications)
 	}
 }

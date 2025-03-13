@@ -8,7 +8,7 @@ import me.bookk.designsystem.uistate.PresentationNotificationState
 
 @Composable
 fun ObserveNotifications(state: PresentationNotificationState) {
-    state.presentationNotification.forEach { notification ->
+    state.presentationNotification.firstOrNull()?.let { notification ->
         when (notification) {
             is PresentationNotification.Message -> {
                 AppDialog(

@@ -5,6 +5,7 @@ import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.ResponseException
 import io.ktor.utils.io.CancellationException
+import me.bookk.core.data.BuildKonfig
 import me.bookk.core.data.BusinessServerError
 import me.bookk.core.domain.entity.Error
 
@@ -29,6 +30,10 @@ suspend fun Throwable.toDomain(): Error {
             }
         }
 
-        else -> Error.WrappedError(message.orEmpty(), this)
+        else -> if (BuildKonfig.DEBUG) {
+            Error.WrappedError(message.orEmpty(), this)
+        } else {
+            Error.Unknown(this)
+        }
     }
 }

@@ -6,7 +6,7 @@ import me.bookk.designsystem.uistate.NavigationState
 
 @Composable
 fun <T : NavigationDestination> ObserveNavigation(state: NavigationState<T>, action: @Composable (T) -> Unit) {
-    state.navigationDestination.forEach { destination ->
+    state.navigationDestination.firstOrNull()?.let { destination ->
         action(destination)
         state.removeFirst()
     }

@@ -9,7 +9,7 @@
 import shared
 
 class IOSContactUsState: ContactUsState {
-	
+
 	var appBar: any AppBarState
 	
 	var contactField: any TextFieldState
@@ -22,6 +22,8 @@ class IOSContactUsState: ContactUsState {
 	
 	var notifications: any PresentationNotificationState
 	
+	var navigation: any NavigationState
+	
 	init(initData: ContactUsStateInitData) {
 		appBar = IOSAppBarState(title: initData.title)
 		contactField = IOSTextFieldState(hint: initData.contactHint)
@@ -29,5 +31,6 @@ class IOSContactUsState: ContactUsState {
 		logsExplanationText = initData.includeLogsExplanation
 		submitButton = IOSButtonState(text: initData.submitButtonText, isEnabled: false)
 		notifications = IOSNotificationState()
+		navigation = IOSNavigationState()
 	}
 }

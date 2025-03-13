@@ -14,6 +14,9 @@ struct ContactUsScreen: View {
 	@StateObject
 	var viewModel = IOSSettingsDiKt.contactUsVM()
 	
+	@EnvironmentObject
+	var navigationStack: NavigationStackHolder
+	
 	var body: some View {
 		let uiState = viewModel.uiState
 		VStack {
@@ -42,5 +45,14 @@ struct ContactUsScreen: View {
 		.navigationBarTitleDisplayMode(.large)
 		.sendLifecycleEventsTo(viewModel: viewModel)
 		.handleNotifications(state: uiState.notifications)
+		.handleNavigation(state: uiState.navigation) { destination in
+			switch destination {
+			case is ContactUsNavigationDestination.Back:
+				navigationStack.path.removeLast()
+				break
+			default:
+				break
+			}
+		}
 	}
 }

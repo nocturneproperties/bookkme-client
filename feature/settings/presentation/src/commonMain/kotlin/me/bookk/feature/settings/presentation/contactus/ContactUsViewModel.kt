@@ -30,6 +30,9 @@ class ContactUsViewModel(
                     includeLogs = uiState.includeLogsSwitch.isChecked
                 )
             },
+            onComplete = {
+                uiState.navigation.push(ContactUsNavigationDestination.Back)
+            },
             onError = {
                 uiState.notifications.add(errorMapper.mapToNotification(it))
             },

@@ -17,10 +17,4 @@ sealed class SettingsDestination {
 
     @Serializable
     data object ContactUs : SettingsDestination()
-
-    @Serializable
-    data object SuggestFeature : SettingsDestination()
-
-    @Serializable
-    data object Report : SettingsDestination()
 }

@@ -7,4 +7,6 @@ interface SettingsDataSource {
     suspend fun setColorScheme(scheme: ColorScheme)
     suspend fun getColorScheme(): ColorScheme
     fun getColorSchemeFlow(): Flow<ColorScheme>
+
+    suspend fun sendContactForm(text: String, logs: String?)
 }

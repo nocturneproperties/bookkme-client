@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.feature.settings.presentation.dashboard.state.ProfileSection
+import me.bookk.feature.settings.presentation.dashboard.ProfileSection
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 
 @Composable

@@ -11,6 +11,9 @@ import shared
 class IOSBootstrapState: BootstrapState, ObservableObject {
 	
 	@Published
+	var startDestination: BootstrapNavigationDestination? = nil
+	
+	@Published
 	var colorScheme: BootstrapStateUIColorScheme = BootstrapStateUIColorScheme.system
 	
     var navigation: any NavigationState = IOSNavigationState()

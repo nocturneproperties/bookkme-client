@@ -41,7 +41,7 @@ class SignInViewModel(
                 uiState.navigation.push(SignInNavigationDestination.Main)
             },
             onError = {
-                val error = if (it is SignIn.Error) {
+                val message = if (it is SignIn.Error) {
                     val message = when (it) {
                         is SignIn.Error.NoAccountForThisPasskey -> AuthRes.strings.sign_in_error_no_account
                         is SignIn.Error.PasskeyVerificationFailed -> AuthRes.strings.sign_in_error_passkey_verification
@@ -54,7 +54,7 @@ class SignInViewModel(
                 } else {
                     errorMapper.mapToNotification(it)
                 }
-                uiState.notification.add(error)
+                uiState.notification.add(message)
             },
             onTerminate = { uiState.signInButton.isLoading = false }
         )

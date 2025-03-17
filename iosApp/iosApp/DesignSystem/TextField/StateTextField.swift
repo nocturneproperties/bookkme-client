@@ -13,11 +13,14 @@ struct StateTextField: View {
     
     @ObservedObject
     var state: IOSTextFieldState
+	@State
+	var isEditor:Bool = false
     @State
     var onTextChanged: (String) -> Void
 	
-	init(state: TextFieldState, onTextChanged: @escaping (String) -> Void) {
+	init(state: TextFieldState, textEditor: Bool = false, onTextChanged: @escaping (String) -> Void) {
 		self.state = state.impl()
+		self.isEditor = textEditor
 		self.onTextChanged = onTextChanged
 	}
     
@@ -35,13 +38,16 @@ struct StateTextField: View {
                                     onTextChanged(String(text.prefix(Int(state.maxLength)))) }
                                 }
                             }
-                    )
+                    ),
+					axis: isEditor ? .vertical : .horizontal
                 )
                 .font(Font.system(.body))
                 .disabled(!state.enabled)
             } label: {
-                Text(state.hint.localized())
-                    .frame(minWidth: 100, alignment: .leading)
+				if (!state.label.localized().isEmpty) {
+					Text(state.label.localized())
+						.frame(minWidth: 100, alignment: .leading)
+				}
             }
             .padding(.horizontal)
             .padding(.vertical, 12)

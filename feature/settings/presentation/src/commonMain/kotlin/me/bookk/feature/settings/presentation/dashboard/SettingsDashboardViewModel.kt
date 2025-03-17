@@ -9,12 +9,7 @@ import me.bookk.feature.platform.domain.api.OpenUrlPreview
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.presentation.SettingsStateFactory
-import me.bookk.feature.settings.presentation.dashboard.state.AccountSection
-import me.bookk.feature.settings.presentation.dashboard.state.AppearanceSection
-import me.bookk.feature.settings.presentation.dashboard.state.AppearanceSection.UIColorScheme
-import me.bookk.feature.settings.presentation.dashboard.state.ProfileSection
-import me.bookk.feature.settings.presentation.dashboard.state.SettingsState
-import me.bookk.feature.settings.presentation.dashboard.state.SupportSection
+import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
 
 class SettingsDashboardViewModel(
     private val getSettings: GetSettings,

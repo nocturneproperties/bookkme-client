@@ -15,6 +15,8 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
     var errorTextRes: (any StringDesc)?
     @Published
     var hint: any StringDesc
+	@Published
+	var label: any StringDesc
     @Published
     var isError: Bool
     @Published
@@ -30,6 +32,7 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
         enabled: Bool = true,
         errorTextRes: (any StringDesc)? = nil,
         hint: any StringDesc = RawStringDesc(string: ""),
+		label: any StringDesc = RawStringDesc(string: ""),
         isError: Bool = false,
         isValid: Bool = false,
         maxLength: Int32 = Int32.max,
@@ -45,6 +48,7 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
         self.maxLength = maxLength
         self.readOnly = readOnly
         self.text = text
+		self.label = label
         super.init(isVisible: isVisible)
     }
     

@@ -32,7 +32,6 @@ import me.bookk.feature.settings.presentation.dashboard.section.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.section.AppearanceSection
 import me.bookk.feature.settings.presentation.dashboard.section.ProfileSection
 import me.bookk.feature.settings.presentation.dashboard.section.SupportSection
-import me.bookk.feature.settings.presentation.dashboard.state.SettingsState
 
 @Composable
 internal fun SettingsDashboardScreen(state: SettingsState) {

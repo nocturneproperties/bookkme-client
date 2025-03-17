@@ -12,6 +12,7 @@ import dev.icerock.moko.resources.desc.desc
 class AndroidTextFieldState(
     hint: StringDesc = "".desc(),
     text: String = "",
+    label: StringDesc = "".desc(),
     errorTextRes: StringDesc? = null,
     isError: Boolean = false,
     enabled: Boolean = true,
@@ -21,6 +22,7 @@ class AndroidTextFieldState(
     isVisible: Boolean = true
 ) : AndroidViewState(isVisible), TextFieldState {
     override var hint: StringDesc by mutableStateOf(hint)
+    override var label: StringDesc by mutableStateOf(label)
     override var text: String by mutableStateOf(text)
     override var errorTextRes: StringDesc? by mutableStateOf(errorTextRes)
     override var isError: Boolean by mutableStateOf(isError)

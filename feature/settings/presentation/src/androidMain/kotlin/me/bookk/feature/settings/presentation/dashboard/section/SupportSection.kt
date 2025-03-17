@@ -15,7 +15,7 @@ import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.settings.presentation.dashboard.LocalDashboardEventListener
 import me.bookk.feature.settings.presentation.dashboard.SectionItem
-import me.bookk.feature.settings.presentation.dashboard.state.SupportSection
+import me.bookk.feature.settings.presentation.dashboard.SupportSection
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 
 @Composable

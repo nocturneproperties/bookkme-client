@@ -33,13 +33,13 @@ class IOSSignUpState: SignUpState {
             title: initData.title
         )
         name = IOSTextFieldState(
-            hint: initData.nameHint
+            label: initData.nameHint
         )
         lastName = IOSTextFieldState(
-            hint: initData.lastNameHint
+			label: initData.lastNameHint
         )
         email = IOSTextFieldState(
-            hint: initData.emailHint
+			label: initData.emailHint
         )
         confirmButton = IOSButtonState(
             text: initData.confirmButtonText,

@@ -9,7 +9,7 @@
 import SwiftUI
 import shared
 
-struct AuthorizationView: View {
+struct AuthorizationRoot: View {
     
     @StateObject var navigationStack = NavigationStackHolder()
     

@@ -74,7 +74,7 @@ struct SignUpScreen: View {
 		.handleNotifications(state: uiState.notification)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
-            case is SignUpNavigationDestination.ToMain:
+            case is SignUpNavigationDestination.Main:
 				navigationStack.path.append(AuthDestination.SignIn())
                 break
             default: break

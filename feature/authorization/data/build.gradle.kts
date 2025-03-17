@@ -19,7 +19,6 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.database)
             implementation(projects.feature.platform.domain.datasource)
-            implementation(projects.feature.platform.domain.datasource)
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.domain.datasource)
             implementation(libs.ktor.client.resources)

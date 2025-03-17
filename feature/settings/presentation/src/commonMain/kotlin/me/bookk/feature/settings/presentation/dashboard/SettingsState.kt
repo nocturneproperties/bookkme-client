@@ -1,4 +1,4 @@
-package me.bookk.feature.settings.presentation.dashboard.state
+package me.bookk.feature.settings.presentation.dashboard
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc

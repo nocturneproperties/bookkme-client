@@ -32,8 +32,13 @@ class ErrorMapperImpl : ErrorMapper {
                     message = e.message.orEmpty().desc(),
                     buttonText = DesignSystem.strings.action_ok.desc()
                 )
+                is Error.Unknown -> PresentationNotification.Message(
+                    message = DesignSystem.strings.error_unexpected.desc(),
+                    buttonText = DesignSystem.strings.action_ok.desc()
+                )
                 is Error.Cancelled,
                 is Error.Ignore -> PresentationNotification.Ignore
+
             }
 
             else -> PresentationNotification.Message(

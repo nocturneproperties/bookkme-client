@@ -9,7 +9,7 @@
 import SwiftUI
 import shared
 
-struct SettingsDashboardView: View {
+struct SettingsDashboardScreen: View {
 	
 	@StateObject var navigationStack = NavigationStackHolder()
 	@StateObject var settingsVM = IOSSettingsDiKt.settingsVM()
@@ -33,7 +33,7 @@ struct SettingsDashboardView: View {
 				}
 			}
 			.navigationDestination(for: SettingsDestination.EditProfile.self) { _ in
-				EditProfileView()
+				EditProfileScreen()
 			}
 			.navigationDestination(for: SettingsDestination.Passkey.self) { _ in
 				
@@ -41,14 +41,8 @@ struct SettingsDashboardView: View {
 			.navigationDestination(for: SettingsDestination.DeleteAccount.self) { _ in
 				
 			}
-			.navigationDestination(for: SettingsDestination.Contact.self) { _ in
-				
-			}
-			.navigationDestination(for: SettingsDestination.SuggestFeature.self) { _ in
-				
-			}
-			.navigationDestination(for: SettingsDestination.Report.self) { _ in
-				
+			.navigationDestination(for: SettingsDestination.ContactUs.self) { _ in
+				ContactUsScreen()
 			}
 		}
 		.sendLifecycleEventsTo(viewModel: settingsVM)
@@ -57,5 +51,5 @@ struct SettingsDashboardView: View {
 }
 
 #Preview {
-	SettingsDashboardView()
+	SettingsDashboardScreen()
 }

@@ -1,5 +1,9 @@
 package me.bookk.feature.dashboard.presentation
 
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -69,7 +73,9 @@ internal fun DashboardScreen(
             NavHost(
                 modifier = Modifier.padding(it),
                 navController = navController,
-                startDestination = BottomNavDestination.Home
+                startDestination = BottomNavDestination.Home,
+                enterTransition = { scaleIn(initialScale = 0.98f, animationSpec = spring(stiffness = Spring.StiffnessHigh)) },
+                exitTransition = { ExitTransition.None }
             ) {
                 composable<BottomNavDestination.Home> {
                     appointmentsScreen()

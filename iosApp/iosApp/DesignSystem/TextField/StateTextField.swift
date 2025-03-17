@@ -45,7 +45,7 @@ struct StateTextField: View {
                 .disabled(!state.enabled)
             } label: {
 				if (!state.label.localized().isEmpty) {
-					Text(state.hint.localized())
+					Text(state.label.localized())
 						.frame(minWidth: 100, alignment: .leading)
 				}
             }

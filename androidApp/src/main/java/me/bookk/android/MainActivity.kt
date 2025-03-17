@@ -3,6 +3,10 @@ package me.bookk.android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -70,7 +74,11 @@ private fun NavigationRoot(state: BootstrapState) {
             startDestination = when (destination) {
                 BootstrapNavigationDestination.Login -> AuthDestination.SignIn
                 BootstrapNavigationDestination.Main -> DashboardDestination
-            }
+            },
+            enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
+            exitTransition = { scaleOut(targetScale = 0.95f) },
+            popEnterTransition = { slideIntoContainer(SlideDirection.End, tween(400)) },
+            popExitTransition = { scaleOut(targetScale = 0.95f) }
         ) {
             authGraph(
                 navigation = AuthNavigation(
@@ -88,7 +96,11 @@ private fun NavigationRoot(state: BootstrapState) {
                     val settingsController = rememberNavController()
                     NavHost(
                         navController = settingsController,
-                        startDestination = SettingsDestination.Dashboard
+                        startDestination = SettingsDestination.Dashboard,
+                        enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
+                        exitTransition = { scaleOut(targetScale = 0.92f) },
+                        popEnterTransition = { scaleIn(initialScale = 0.92f) },
+                        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
                     ) {
                         settingsGraph(
                             navigation = SettingsNavigation(

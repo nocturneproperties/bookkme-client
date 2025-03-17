@@ -32,4 +32,9 @@
     <string name="settings_contact_us_contact_hint">Enter your message here an we will reach out to you via email on your profile</string>
     <string name="settings_contact_us_include_logs">Include usage logs</string>
     <string name="settings_contact_us_include_logs_hint">If you are experiencing an issue, include your app usage logs to allow our developers to fix it faster</string>
+
+    <string name="settings_delete_account_title">Delete account</string>
+    <string name="settings_delete_account_confirmation">I understand that deleting account will result in a permanent loss and I won’t be able to restore my account</string>
+    <string name="settings_delete_account_confirmation_switch">Agree</string>
+    <string name="settings_delete_account_confirmation_button">Delete</string>
 </resources>

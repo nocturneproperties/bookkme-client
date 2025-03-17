@@ -10,6 +10,7 @@ class SettingsNavigation(
     val navigateToContact: () -> Unit,
     val navigateToSuggestFeature: () -> Unit,
     val navigateToReport: () -> Unit,
+    val navigateToSignIn: () -> Unit
 )
 
 internal val LocalNavigation = compositionLocalOf {
@@ -21,5 +22,6 @@ internal val LocalNavigation = compositionLocalOf {
         navigateToContact = {},
         navigateToSuggestFeature = {},
         navigateToReport = {},
+        navigateToSignIn = {}
     )
 }

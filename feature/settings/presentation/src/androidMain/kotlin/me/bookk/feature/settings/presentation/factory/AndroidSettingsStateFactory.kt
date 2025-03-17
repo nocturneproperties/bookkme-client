@@ -1,6 +1,8 @@
 package me.bookk.feature.settings.presentation.factory
 
 import me.bookk.feature.settings.presentation.SettingsStateFactory
+import me.bookk.feature.settings.presentation.accdelete.AndroidDeleteAccountState
+import me.bookk.feature.settings.presentation.accdelete.DeleteAccountState
 import me.bookk.feature.settings.presentation.contactus.AndroidContactUsState
 import me.bookk.feature.settings.presentation.contactus.ContactUsState
 import me.bookk.feature.settings.presentation.dashboard.AndroidDashboardState
@@ -19,5 +21,9 @@ class AndroidSettingsStateFactory : SettingsStateFactory {
 
     override fun createContactUsState(initData: ContactUsState.InitData): ContactUsState {
         return AndroidContactUsState(initData)
+    }
+
+    override fun createDeleteAccountState(initData: DeleteAccountState.InitData): DeleteAccountState {
+        return AndroidDeleteAccountState(initData)
     }
 }

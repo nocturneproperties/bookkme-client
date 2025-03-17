@@ -110,7 +110,8 @@ private fun NavigationRoot(state: BootstrapState) {
                                 navigateToReport = {},
                                 navigateToContact = { settingsController.navigate(SettingsDestination.ContactUs) },
                                 navigateToSuggestFeature = {},
-                                navigateToDeleteAccount = {}
+                                navigateToDeleteAccount = { settingsController.navigate(SettingsDestination.DeleteAccount) },
+                                navigateToSignIn = {}
                             )
                         )
                     }

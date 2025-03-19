@@ -37,4 +37,5 @@
     <string name="settings_delete_account_confirmation">I understand that deleting account will result in a permanent loss and I won’t be able to restore my account</string>
     <string name="settings_delete_account_confirmation_switch">Agree</string>
     <string name="settings_delete_account_confirmation_button">Delete</string>
+    <string name="settings_delete_account_success_message">Account deleted successfully</string>
 </resources>

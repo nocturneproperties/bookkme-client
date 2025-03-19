@@ -21,13 +21,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.icerock.moko.resources.compose.localized
 import kotlinx.serialization.Serializable
@@ -47,11 +52,25 @@ internal sealed class BottomNavDestination {
 
     @Serializable
     data object Settings : BottomNavDestination()
+
+    companion object {
+
+        private inline fun <reified T : Any> NavDestination?.hasRoute(): Boolean {
+            return this?.hierarchy?.any { it.hasRoute(T::class) } == true
+        }
+
+        fun idFrom(destination: NavDestination?): TabItem.Id? {
+            if (destination.hasRoute<Home>()) return TabItem.Id.HOME
+            if (destination.hasRoute<Business>()) return TabItem.Id.BUSINESS
+            if (destination.hasRoute<Settings>()) return TabItem.Id.SETTINGS
+            return null
+        }
+    }
 }
 
 private fun getDestinationForId(item: TabItem.Id): BottomNavDestination {
     return when (item) {
-        TabItem.Id.APPOINTMENTS -> BottomNavDestination.Home
+        TabItem.Id.HOME -> BottomNavDestination.Home
         TabItem.Id.BUSINESS -> BottomNavDestination.Business
         TabItem.Id.SETTINGS -> BottomNavDestination.Settings
     }
@@ -65,6 +84,7 @@ internal fun DashboardScreen(
     settingsScreen: @Composable () -> Unit
 ) {
     val navController = rememberNavController()
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -74,7 +94,12 @@ internal fun DashboardScreen(
                 modifier = Modifier.padding(it),
                 navController = navController,
                 startDestination = BottomNavDestination.Home,
-                enterTransition = { scaleIn(initialScale = 0.98f, animationSpec = spring(stiffness = Spring.StiffnessHigh)) },
+                enterTransition = {
+                    scaleIn(
+                        initialScale = 0.98f,
+                        animationSpec = spring(stiffness = Spring.StiffnessHigh)
+                    )
+                },
                 exitTransition = { ExitTransition.None }
             ) {
                 composable<BottomNavDestination.Home> {
@@ -100,9 +125,7 @@ internal fun DashboardScreen(
                             selected = item.id == state.tabItems.selectedItemId,
                             label = { Text(item.text.localized()) },
                             icon = { Icon(item.id.asIcon(), contentDescription = null) },
-                            onClick = {
-                                state.tabItems.selectedItemId = item.id
-                            },
+                            onClick = { state.tabItems.selectedItemId = item.id },
                             colors = NavigationBarItemDefaults.colors(
                                 indicatorColor = Color.Transparent,
                                 selectedIconColor = LocalColors.current.actionText,
@@ -112,6 +135,12 @@ internal fun DashboardScreen(
                             )
                         )
                     }
+                }
+            }
+            LaunchedEffect(currentBackStackEntry) {
+                val currentDestination = currentBackStackEntry?.destination
+                BottomNavDestination.idFrom(currentDestination)?.let {
+                    state.tabItems.selectedItemId = it
                 }
             }
             LaunchedEffect(state.tabItems.selectedItemId) {
@@ -129,7 +158,7 @@ internal fun DashboardScreen(
 
 private fun TabItem.Id.asIcon(): ImageVector {
     return when (this) {
-        TabItem.Id.APPOINTMENTS -> Icons.Filled.CalendarViewDay
+        TabItem.Id.HOME -> Icons.Filled.CalendarViewDay
         TabItem.Id.BUSINESS -> Icons.Filled.Business
         TabItem.Id.SETTINGS -> Icons.Filled.Settings
     }

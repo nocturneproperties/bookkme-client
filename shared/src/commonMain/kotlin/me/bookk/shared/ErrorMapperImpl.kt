@@ -15,7 +15,6 @@ class ErrorMapperImpl : ErrorMapper {
             is Error -> when (e) {
                 is Error.UnknownApiError,
                 is Error.BadRequest,
-                is Error.Unauthorized,
                 is Error.InternalServerError -> PresentationNotification.Message(
                     message = DesignSystem.strings.error_server.desc(),
                     buttonText = DesignSystem.strings.action_ok.desc()
@@ -38,7 +37,7 @@ class ErrorMapperImpl : ErrorMapper {
                 )
                 is Error.Cancelled,
                 is Error.Ignore -> PresentationNotification.Ignore
-
+                is Error.Unauthorized -> PresentationNotification.Unauthorized
             }
 
             else -> PresentationNotification.Message(

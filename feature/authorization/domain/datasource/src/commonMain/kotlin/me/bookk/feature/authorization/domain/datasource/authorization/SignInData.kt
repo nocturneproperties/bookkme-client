@@ -5,7 +5,6 @@ class SignInData(
     val deviceInfo: DeviceInfo,
     val publicKeyCredentialJson: String
 ) {
-
     class DeviceInfo(
         val deviceUUID: String,
         val deviceName: String,

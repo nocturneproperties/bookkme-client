@@ -23,7 +23,7 @@ interface TabItem {
         val badgeText: StringDesc? = null
     )
     enum class Id {
-        APPOINTMENTS,
+        HOME,
         BUSINESS,
         SETTINGS
     }

@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,10 +12,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import me.bookk.core.presentation.LocalUnauthorizedHandler
+import me.bookk.core.presentation.UnauthorizedHandler
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
@@ -27,9 +30,7 @@ import me.bookk.feature.authorization.presentation.navigation.AuthNavigation
 import me.bookk.feature.authorization.presentation.navigation.authGraph
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
 import me.bookk.feature.dashboard.presentation.navigation.dashboardGraph
-import me.bookk.feature.settings.presentation.navigation.SettingsDestination
-import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
-import me.bookk.feature.settings.presentation.navigation.settingsGraph
+import me.bookk.feature.settings.presentation.dashboard.SettingsTab
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -67,55 +68,41 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun NavigationRoot(state: BootstrapState) {
     val controller = rememberNavController()
+    val unauthorizedHandler =
+        remember { UnauthorizedHandler { controller.navigate(AuthDestination.SignIn) { popUpTo(0) } } }
+    val authNavigation = remember {
+        AuthNavigation(
+            navigateBack = controller::popBackStack,
+            navigateToMainScreen = {
+                controller.navigate(DashboardDestination) { popUpTo(0) }
+            },
+            navigateToSignUp = { controller.navigate(AuthDestination.SignUp) },
+            navigateToTroubleshoot = { controller.navigate(AuthDestination.Troubleshoot) },
+            navigateToContactSupport = {}
+        )
+    }
     val destination = state.startDestination
     if (destination != null) {
-        NavHost(
-            navController = controller,
-            startDestination = when (destination) {
-                BootstrapNavigationDestination.Login -> AuthDestination.SignIn
-                BootstrapNavigationDestination.Main -> DashboardDestination
-            },
-            enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
-            exitTransition = { scaleOut(targetScale = 0.95f) },
-            popEnterTransition = { slideIntoContainer(SlideDirection.End, tween(400)) },
-            popExitTransition = { scaleOut(targetScale = 0.95f) }
-        ) {
-            authGraph(
-                navigation = AuthNavigation(
-                    navigateBack = controller::popBackStack,
-                    navigateToMainScreen = { controller.navigate(DashboardDestination) },
-                    navigateToSignUp = { controller.navigate(AuthDestination.SignUp) },
-                    navigateToTroubleshoot = { controller.navigate(AuthDestination.Troubleshoot) },
-                    navigateToContactSupport = {}
+
+        CompositionLocalProvider(LocalUnauthorizedHandler provides unauthorizedHandler) {
+            NavHost(
+                navController = controller,
+                startDestination = when (destination) {
+                    BootstrapNavigationDestination.Login -> AuthDestination.SignIn
+                    BootstrapNavigationDestination.Main -> DashboardDestination
+                },
+                enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
+                exitTransition = { scaleOut(targetScale = 0.95f) },
+                popEnterTransition = { slideIntoContainer(SlideDirection.End, tween(400)) },
+                popExitTransition = { scaleOut(targetScale = 0.95f) }
+            ) {
+                authGraph(navigation = authNavigation)
+                dashboardGraph(
+                    appointmentsTab = { Text("Appointments") },
+                    businessTab = { Text("Business") },
+                    settingsTab = { SettingsTab() }
                 )
-            )
-            dashboardGraph(
-                appointmentsScreen = { Text("Appointments") },
-                businessScreen = { Text("Business") },
-                settingsScreen = {
-                    val settingsController = rememberNavController()
-                    NavHost(
-                        navController = settingsController,
-                        startDestination = SettingsDestination.Dashboard,
-                        enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
-                        exitTransition = { scaleOut(targetScale = 0.92f) },
-                        popEnterTransition = { scaleIn(initialScale = 0.92f) },
-                        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
-                    ) {
-                        settingsGraph(
-                            navigation = SettingsNavigation(
-                                navigateBack = { settingsController.popBackStack() },
-                                navigateToEditProfile = { settingsController.navigate(SettingsDestination.EditProfile) },
-                                navigateToPasskey = {},
-                                navigateToReport = {},
-                                navigateToContact = { settingsController.navigate(SettingsDestination.ContactUs) },
-                                navigateToSuggestFeature = {},
-                                navigateToDeleteAccount = {}
-                            )
-                        )
-                    }
-                }
-            )
+            }
         }
     }
 }

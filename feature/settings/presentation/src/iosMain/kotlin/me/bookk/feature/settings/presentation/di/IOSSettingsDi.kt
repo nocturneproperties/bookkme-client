@@ -1,6 +1,7 @@
 package me.bookk.feature.settings.presentation.di
 
 import me.bookk.core.UsedInSwift
+import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.contactus.ContactUsViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
@@ -13,6 +14,7 @@ internal actual fun platformSettingsDiModule(): Module = module {
     factoryOf(::SettingsDashboardViewModel)
     factoryOf(::EditProfileViewModel)
     factoryOf(::ContactUsViewModel)
+    factoryOf(::DeleteAccountViewModel)
 }
 
 @UsedInSwift
@@ -22,4 +24,7 @@ fun settingsVM(): SettingsDashboardViewModel = KoinPlatform.getKoin().get()
 fun editProfileVM(): EditProfileViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
-fun contactUsVM():ContactUsViewModel = KoinPlatform.getKoin().get()
+fun contactUsVM(): ContactUsViewModel = KoinPlatform.getKoin().get()
+
+@UsedInSwift
+fun deleteAccVM(): DeleteAccountViewModel = KoinPlatform.getKoin().get()

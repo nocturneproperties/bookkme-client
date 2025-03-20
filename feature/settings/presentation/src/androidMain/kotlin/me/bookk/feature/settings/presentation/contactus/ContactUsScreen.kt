@@ -1,6 +1,5 @@
 package me.bookk.feature.settings.presentation.contactus
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -73,13 +72,14 @@ internal fun ContactUsScreen(state: ContactUsState) {
             }
         },
         bottomBar = {
-            Box(modifier = Modifier.padding(all = 24.dp)) {
-                ActionButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = state.submitButton,
-                    onClick = LocalContactUsEventListener.current.onSubmitClick
-                )
-            }
+            ActionButton(
+                modifier = Modifier
+                    .padding(bottom = 24.dp)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                state = state.submitButton,
+                onClick = LocalContactUsEventListener.current.onSubmitClick
+            )
         }
     )
 }

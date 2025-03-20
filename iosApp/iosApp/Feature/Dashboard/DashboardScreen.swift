@@ -57,7 +57,7 @@ struct DashboardTab: View {
 
 private func iconFrom(id: TabItemId) -> String {
 	return switch id {
-	case TabItemId.appointments:
+	case TabItemId.home:
 		"calendar.day.timeline.left"
 	case TabItemId.business:
 		"point.3.connected.trianglepath.dotted"

@@ -8,18 +8,18 @@ import me.bookk.feature.dashboard.presentation.DashboardViewModel
 import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.dashboardGraph(
-    appointmentsScreen: @Composable () -> Unit,
-    businessScreen: @Composable () -> Unit,
-    settingsScreen: @Composable () -> Unit
+    appointmentsTab: @Composable () -> Unit,
+    businessTab: @Composable () -> Unit,
+    settingsTab: @Composable () -> Unit
 ) {
     composable<DashboardDestination> {
         val viewModel: DashboardViewModel = koinViewModel()
 
         DashboardScreen(
             state = viewModel.uiState,
-            appointmentsScreen = appointmentsScreen,
-            businessScreen = businessScreen,
-            settingsScreen = settingsScreen
+            appointmentsScreen = appointmentsTab,
+            businessScreen = businessTab,
+            settingsScreen = settingsTab
         )
     }
 }

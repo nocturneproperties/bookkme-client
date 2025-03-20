@@ -2,6 +2,7 @@ package me.bookk.designsystem.components
 
 import androidx.compose.runtime.Composable
 import dev.icerock.moko.resources.compose.localized
+import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.PresentationNotificationState
@@ -18,6 +19,17 @@ fun ObserveNotifications(state: PresentationNotificationState) {
                     onRightButtonClicked = { state.removeFirst() },
                     onDismiss = { state.removeFirst() },
                 )
+            }
+
+            is PresentationNotification.GlobalMessage -> {
+                state.removeFirst()
+                return
+            }
+
+            PresentationNotification.Unauthorized -> {
+                LocalUnauthorizedHandler.current.onUnauthorized()
+                state.removeFirst()
+                return
             }
 
             PresentationNotification.Ignore -> {

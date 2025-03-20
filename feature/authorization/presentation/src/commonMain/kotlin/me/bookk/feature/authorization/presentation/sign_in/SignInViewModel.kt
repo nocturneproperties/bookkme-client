@@ -7,6 +7,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.feature.authorization.domain.api.PasskeyVerification
 import me.bookk.feature.authorization.domain.api.SignIn
 import me.bookk.feature.authorization.presentation.AuthConstants
 import me.bookk.feature.authorization.presentation.AuthStateFactory
@@ -41,11 +42,11 @@ class SignInViewModel(
                 uiState.navigation.push(SignInNavigationDestination.Main)
             },
             onError = {
-                val message = if (it is SignIn.Error) {
+                val message = if (it is PasskeyVerification.Error) {
                     val message = when (it) {
-                        is SignIn.Error.NoAccountForThisPasskey -> AuthRes.strings.sign_in_error_no_account
-                        is SignIn.Error.PasskeyVerificationFailed -> AuthRes.strings.sign_in_error_passkey_verification
-                        is SignIn.Error.NoCredentialsAvailable -> AuthRes.strings.sign_in_error_no_passkeys_on_device
+                        is PasskeyVerification.Error.NoAccountForThisPasskey -> AuthRes.strings.sign_in_error_no_account
+                        is PasskeyVerification.Error.PasskeyVerificationFailed -> AuthRes.strings.sign_in_error_passkey_verification
+                        is PasskeyVerification.Error.NoCredentialsAvailable -> AuthRes.strings.sign_in_error_no_passkeys_on_device
                     }.desc()
                     PresentationNotification.Message(
                         message = message,

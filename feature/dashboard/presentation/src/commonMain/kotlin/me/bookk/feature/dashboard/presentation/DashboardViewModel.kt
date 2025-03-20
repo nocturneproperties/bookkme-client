@@ -16,10 +16,10 @@ class DashboardViewModel(
 
     companion object {
         fun createInitData() = TabItemsState.InitData(
-            selectedItemId = TabItem.Id.APPOINTMENTS,
+            selectedItemId = TabItem.Id.HOME,
             tabInitData = listOf(
                 TabItem.InitData(
-                    id = TabItem.Id.APPOINTMENTS,
+                    id = TabItem.Id.HOME,
                     text = DashboardRes.strings.dashboard_item_appointments.desc()
                 ),
                 TabItem.InitData(

@@ -13,31 +13,34 @@ import shared
 struct NotificationHandler: ViewModifier {
     
     @ObservedObject
-    var errorState: IOSNotificationState
+    var notificationState: IOSNotificationState
 
     @State var showAlert: Bool = false
 	@State var data: PresentationNotificationMessage? = nil
     
     func body(content: Content) -> some View {
         content
-            .onReceive(errorState.publisher) { value in
+			.onReceive(notificationState.$presentationNotification.flatMap(\.publisher)) { value in
                 switch value {
                 case is PresentationNotificationMessage:
                     data = value as? PresentationNotificationMessage
                     showAlert = true
                     break
 				case is PresentationNotificationIgnore:
-                    errorState.removeFirst()
+					notificationState.removeFirst()
                     break
+				case is PresentationNotificationGlobalMessage:
+					notificationState.removeFirst()
+					break
                 default:
-                    errorState.removeFirst()
+					notificationState.removeFirst()
                     break
                 }
             }
             .alert(data?.title?.localized() ?? "", isPresented: $showAlert, presenting: data) { error in
                 Button(role: .cancel) {
                     showAlert = false
-                    errorState.removeFirst()
+					notificationState.removeFirst()
                 } label: {
                     Text(error.buttonText.localized())
                 }
@@ -49,6 +52,6 @@ struct NotificationHandler: ViewModifier {
 
 extension View {
 	func handleNotifications(state: PresentationNotificationState) -> some View {
-        modifier(NotificationHandler(errorState: state.impl()))
+        modifier(NotificationHandler(notificationState: state.impl()))
     }
 }

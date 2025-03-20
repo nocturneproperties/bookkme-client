@@ -9,6 +9,8 @@ import io.ktor.client.request.header
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 import io.ktor.util.AttributeKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.entity.Error
 import me.bookk.feature.authorization.data.local.PassKeyManager
@@ -28,6 +30,7 @@ import me.bookk.feature.authorization.domain.entity.TokenInfo
 import me.bookk.feature.platform.domain.datasource.PreferenceProvider
 import me.bookk.feature.platform.domain.datasource.Preferences
 import me.bookk.feature.platform.domain.datasource.get
+import me.bookk.feature.platform.domain.datasource.getFlow
 import me.bookk.feature.platform.domain.datasource.set
 
 class CommonAuthorizationDataSource(
@@ -38,6 +41,10 @@ class CommonAuthorizationDataSource(
 
     private val preferences = preferenceProvider.get("authorization_prefs")
 
+    init {
+        runBlocking { saveAuthorizationTokens(TokenInfo("sda", "sad")) }
+    }
+
     override suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?) {
         preferences.set(Key.accessToken, tokenInfo?.accessToken)
         preferences.set(Key.refreshToken, tokenInfo?.refreshToken)
@@ -45,6 +52,10 @@ class CommonAuthorizationDataSource(
 
     override suspend fun getAccessToken(): String? {
         return preferences.get(Key.accessToken)
+    }
+
+    override fun getAccessTokenFlow(): Flow<String?> {
+       return preferences.getFlow(Key.accessToken)
     }
 
     override suspend fun getRefreshToken(): String? {

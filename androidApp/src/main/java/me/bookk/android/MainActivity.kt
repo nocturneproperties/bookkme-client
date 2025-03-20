@@ -100,13 +100,7 @@ private fun NavigationRoot(state: BootstrapState) {
                 dashboardGraph(
                     appointmentsTab = { Text("Appointments") },
                     businessTab = { Text("Business") },
-                    settingsTab = {
-                        SettingsTab(
-                            navigateToSignIn = {
-                                controller.navigate(AuthDestination.SignIn) { popUpTo(0) }
-                            }
-                        )
-                    }
+                    settingsTab = { SettingsTab() }
                 )
             }
         }

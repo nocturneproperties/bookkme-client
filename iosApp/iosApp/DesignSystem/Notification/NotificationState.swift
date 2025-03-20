@@ -9,7 +9,7 @@
 import shared
 import Combine
 
-class IOSNotificationState:PresentationNotificationState, ObservableObject {
+class IOSNotificationState: PresentationNotificationState, ObservableObject {
     
     @Published
     var presentationNotification: [any PresentationNotification] = []
@@ -20,11 +20,15 @@ class IOSNotificationState:PresentationNotificationState, ObservableObject {
     }
     
     func add(notification: any PresentationNotification) {
-        presentationNotification.append(notification)
+		self.presentationNotification.append(notification)
     }
     
+	//DispatchQueue.main.async is used to allow changes to published value from within the onReceive. It moves execution to next ui loop pass.
+	//Looks like value inside published property does not updated until all observers have been notified.
     func removeFirst() {
-        presentationNotification.removeFirst()
+		DispatchQueue.main.async {
+			self.presentationNotification.removeFirst()
+		}
     }
     
 }

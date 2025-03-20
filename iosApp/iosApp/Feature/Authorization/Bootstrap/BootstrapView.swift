@@ -3,7 +3,6 @@ import shared
 
 struct BootstrapView: View {
 
-	@StateObject var navigationStack = NavigationStackHolder()
 	@StateObject var bootstrapVM = IOSAuthDiKt.bootstrapVM()
     @State var initialDestination: BootstrapNavigationDestination? = nil
 	
@@ -24,7 +23,7 @@ struct StartDestinationView: View {
 		case is BootstrapNavigationDestination.Main:
 			DashboardScreen()
 		case is BootstrapNavigationDestination.Login:
-			DashboardScreen()
+			AuthorizationRoot()
 		default:
 			Spacer()
 		}

@@ -19,7 +19,7 @@ struct NavigationHandler: ViewModifier {
 	
 	func body(content: Content) -> some View {
 		content
-			.onReceive(navigationState.publisher) { destination in
+			.onReceive(navigationState.$navigationDestination.flatMap(\.publisher)) { destination in
 				handler(destination)
 				navigationState.removeFirst()
 			}

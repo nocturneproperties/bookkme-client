@@ -12,9 +12,7 @@ import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
 import me.bookk.feature.settings.presentation.navigation.settingsGraph
 
 @Composable
-fun SettingsTab(
-    navigateToSignIn: () -> Unit
-) {
+fun SettingsTab {
     val settingsController = rememberNavController()
     NavHost(
         navController = settingsController,
@@ -31,15 +29,12 @@ fun SettingsTab(
                     settingsController.navigate(SettingsDestination.EditProfile)
                 },
                 navigateToPasskey = {},
-                navigateToReport = {},
                 navigateToContact = {
                     settingsController.navigate(SettingsDestination.ContactUs)
                 },
-                navigateToSuggestFeature = {},
                 navigateToDeleteAccount = {
                     settingsController.navigate(SettingsDestination.DeleteAccount)
-                },
-                navigateToSignIn = navigateToSignIn
+                }
             )
         )
     }

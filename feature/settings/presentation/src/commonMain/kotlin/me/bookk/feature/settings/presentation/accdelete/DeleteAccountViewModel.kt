@@ -29,7 +29,6 @@ class DeleteAccountViewModel(
             call = { deleteAccount() },
             onComplete = {
                 uiState.notifications.add(GlobalMessage(SettingsRes.strings.settings_delete_account_success_message.desc()))
-                uiState.navigation.push(DeleteAccountNavigationDestination.SignIn)
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
             onTerminate = { uiState.deleteButton.isLoading = false }

@@ -9,7 +9,7 @@
 import shared
 
 class IOSSettingsStateFactory: SettingsStateFactory {
-	
+
 	func createEditProfileState(initData: EditProfileStateInitData) -> any EditProfileState {
 		return IOSEditProfileState(initData: initData)
 	}
@@ -20,5 +20,9 @@ class IOSSettingsStateFactory: SettingsStateFactory {
 	
 	func createContactUsState(initData: ContactUsStateInitData) -> any ContactUsState {
 		return IOSContactUsState(initData: initData)
+	}
+	
+	func createDeleteAccountState(initData: DeleteAccountStateInitData) -> any DeleteAccountState {
+		return IOSDeleteAccountState(initData: initData)
 	}
 }

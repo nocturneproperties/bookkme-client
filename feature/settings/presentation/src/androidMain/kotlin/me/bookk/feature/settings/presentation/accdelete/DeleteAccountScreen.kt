@@ -15,7 +15,6 @@ import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
-import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.StateSwitch
 import me.bookk.designsystem.components.TopBarSize
@@ -26,11 +25,6 @@ import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 @Composable
 internal fun DeleteAccountScreen(state: DeleteAccountState) {
     ObserveNotifications(state.notifications)
-    ObserveNavigation(state.navigation) {
-        when (it) {
-            DeleteAccountNavigationDestination.SignIn -> LocalNavigation.current.navigateToSignIn()
-        }
-    }
     Scaffold(
         topBar = {
             AppTopBar(

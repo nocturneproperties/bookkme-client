@@ -40,11 +40,6 @@ internal fun SupportSection(state: SupportSection) {
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
-                text = state.feature.text.localized(),
-                onClick = LocalNavigation.current.navigateToSuggestFeature
-            )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            SectionItem(
                 text = state.terms.text.localized(),
                 onClick = LocalDashboardEventListener.current.showTerms
             )

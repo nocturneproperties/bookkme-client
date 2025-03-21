@@ -1,6 +1,7 @@
 package me.bookk.di
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -28,28 +29,33 @@ internal fun networkModule() = module {
             expectSuccess = true
             install(Logging) {
                 logger = KtorLogger.DEFAULT
-                level = LogLevel.ALL
+                level = if (BuildKonfig.DEBUG) {
+                    LogLevel.ALL
+                } else {
+                    LogLevel.NONE
+                }
             }
             install(ContentNegotiation) {
                 protobuf(ProtoBuf { encodeDefaults = true })
             }
             install(Resources)
+            install(HttpTimeout) {
+                requestTimeoutMillis = 5000
+            }
             install(Auth) {
                 bearer {
                     loadTokens {
-                        val tokens = get<GetTokenInfo>().invoke()
-                        if (tokens != null) {
-                            BearerTokens(tokens.accessToken, tokens.refreshToken)
-                        } else {
-                            null
+                        get<GetTokenInfo>().invoke()?.let {
+                            BearerTokens(it.accessToken, it.refreshToken)
                         }
                     }
                     refreshTokens {
-                        val tokens = get<GetTokenInfo>().invoke() ?: return@refreshTokens null
-                        runCatching {
-                            val refresh = get<RefreshToken>().invoke(tokens.refreshToken)
-                            BearerTokens(refresh.accessToken, refresh.refreshToken)
-                        }.getOrNull()
+                        get<GetTokenInfo>().invoke()?.let {
+                            runCatching {
+                                val refresh = get<RefreshToken>().invoke(it.refreshToken)
+                                BearerTokens(refresh.accessToken, refresh.refreshToken)
+                            }.getOrNull()
+                        }
                     }
                 }
             }

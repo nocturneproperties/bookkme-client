@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -35,6 +36,7 @@ import me.bookk.feature.settings.presentation.dashboard.section.SupportSection
 
 @Composable
 internal fun SettingsDashboardScreen(state: SettingsState) {
+    ObserveNotifications(state.notification)
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()

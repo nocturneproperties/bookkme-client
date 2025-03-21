@@ -20,22 +20,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.error.ButtonDescriptor
+import me.bookk.core.presentation.error.ButtonDescriptor.ActionType
+import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.AndroidButtonState
-import me.bookk.designsystem.uistate.ButtonState
 
 @Composable
 fun AppDialog(
     title: String? = null,
     subtitle: String? = null,
     content: (@Composable () -> Unit)? = null,
-    rightButton: ButtonState? = null,
-    leftButton: ButtonState? = null,
-    rightButtonColor: Color = LocalColors.current.actionText,
-    leftButtonColor: Color = LocalColors.current.actionText,
-    onRightButtonClicked: (() -> Unit)? = null,
-    onLeftButtonClicked: (() -> Unit)? = null,
+    buttonDescriptors: List<ButtonDescriptor>,
     onDismiss: () -> Unit,
 ) {
     AppDialogContainer(onDismiss) {
@@ -67,23 +64,19 @@ fun AppDialog(
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                leftButton?.let {
-                    ActionButton(
-                        onClick = { onLeftButtonClicked?.invoke() },
-                        state = it,
+                buttonDescriptors.forEach {
+                    TextButton(
+                        onClick = {
+                            it.onClick.invoke()
+                            onDismiss()
+                        },
+                        state = AndroidButtonState(text = it.text),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,
-                            contentColor = leftButtonColor,
-                        )
-                    )
-                }
-                rightButton?.let {
-                    ActionButton(
-                        onClick = { onRightButtonClicked?.invoke() },
-                        state = it,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = rightButtonColor,
+                            contentColor = when (it.actionType) {
+                                ActionType.POSITIVE -> LocalColors.current.actionText
+                                ActionType.NEGATIVE -> LocalColors.current.error
+                            },
                         )
                     )
                 }
@@ -140,7 +133,16 @@ private fun Preview() {
         AppDialog(
             title = "Title",
             subtitle = "Subtitle",
-            rightButton = AndroidButtonState("Action".desc()),
+            buttonDescriptors = listOf(
+                ButtonDescriptor(
+                    text = DesignSystem.strings.action_cancel.desc(),
+                    actionType = ActionType.POSITIVE
+                ),
+                ButtonDescriptor(
+                    text = DesignSystem.strings.action_confirm.desc(),
+                    actionType = ActionType.NEGATIVE
+                )
+            ),
             onDismiss = {}
         )
     }

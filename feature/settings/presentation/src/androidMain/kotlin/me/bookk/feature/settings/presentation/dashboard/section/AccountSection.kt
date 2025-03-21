@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.settings.presentation.dashboard.AccountSection
+import me.bookk.feature.settings.presentation.dashboard.LocalDashboardEventListener
 import me.bookk.feature.settings.presentation.dashboard.SectionItem
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 
@@ -40,7 +41,7 @@ internal fun AccountSection(state: AccountSection) {
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
                 text = state.logout.text.localized(),
-                onClick = {}
+                onClick = LocalDashboardEventListener.current.performLogout
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(

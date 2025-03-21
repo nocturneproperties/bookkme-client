@@ -14,4 +14,5 @@ interface AuthorizationDataSource {
     suspend fun verifyAuthorization(signInData: SignInData): TokenInfo
     suspend fun requestPasskey(challenge: ServerAuthenticationChallenge): PasskeyVerificationPayload
     suspend fun deleteAccount(request: DeleteAccountRequest)
+    suspend fun logOut()
 }

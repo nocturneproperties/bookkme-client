@@ -15,7 +15,8 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: SettingsNavigation) {
         val listener = DashboardEventListener(
             showTerms = viewModel::showTerms,
             showPolicy = viewModel::showPolicy,
-            selectScheme = viewModel::onSchemeSelected
+            selectScheme = viewModel::onSchemeSelected,
+            performLogout = viewModel::onLogOutClick
         )
 
         CompositionLocalProvider(

@@ -10,7 +10,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 import io.ktor.util.AttributeKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.runBlocking
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.entity.Error
 import me.bookk.feature.authorization.data.local.PassKeyManager
@@ -40,10 +39,6 @@ class CommonAuthorizationDataSource(
 ) : AuthorizationDataSource, DataSource() {
 
     private val preferences = preferenceProvider.get("authorization_prefs")
-
-    init {
-        runBlocking { saveAuthorizationTokens(TokenInfo("sda", "sad")) }
-    }
 
     override suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?) {
         preferences.set(Key.accessToken, tokenInfo?.accessToken)
@@ -131,6 +126,10 @@ class CommonAuthorizationDataSource(
                 }
             }
         )
+    }
+
+    override suspend fun logOut() {
+        return mapExceptions { httpClient.delete(Auth.SignOut()) }
     }
 
     private object Key {

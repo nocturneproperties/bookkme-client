@@ -26,7 +26,9 @@ struct SettingsDashboardScreen: View {
 					}
 				}
 				Section(uiState.account.title.localized()) {
-					AccountView(state: uiState.account)
+					AccountView(state: uiState.account) {
+						settingsVM.onLogOutClick()
+					}
 				}
 				Section(uiState.support.title.localized()) {
 					SupportView(state: uiState.support)
@@ -46,6 +48,7 @@ struct SettingsDashboardScreen: View {
 			}
 		}
 		.sendLifecycleEventsTo(viewModel: settingsVM)
+		.handleNotifications(state: uiState.notification)
 		.environmentObject(navigationStack)
 	}
 }

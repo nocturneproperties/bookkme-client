@@ -5,6 +5,7 @@ import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification.Message
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.authorization.domain.api.CreateAccount
@@ -103,7 +104,9 @@ class SignUpViewModel(
                         uiState.notification.add(
                             Message(
                                 message = AuthRes.strings.sign_up_passkey_failed.desc(),
-                                buttonText = DesignSystem.strings.action_ok.desc()
+                                buttons = listOf(
+                                    ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()),
+                                )
                             )
                         )
                     }
@@ -111,7 +114,9 @@ class SignUpViewModel(
                         uiState.notification.add(
                             Message(
                                 message = AuthRes.strings.sign_up_failed.desc(),
-                                buttonText = DesignSystem.strings.action_ok.desc()
+                                buttons = listOf(
+                                    ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()),
+                                )
                             )
                         )
                     }

@@ -5,8 +5,12 @@ import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ButtonDescriptor
+import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.platform.domain.api.OpenUrlPreview
 import me.bookk.feature.settings.domain.api.GetSettings
+import me.bookk.feature.settings.domain.api.LogOut
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
@@ -15,6 +19,7 @@ class SettingsDashboardViewModel(
     private val getSettings: GetSettings,
     private val updateColorScheme: UpdateColorScheme,
     private val openUrl: OpenUrlPreview,
+    private val logOut: LogOut,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -39,6 +44,34 @@ class SettingsDashboardViewModel(
 
     fun showPolicy() {
         openUrl("https://google.com")
+    }
+
+    fun onLogOutClick() {
+        uiState.notification.add(
+            PresentationNotification.Message(
+                title = SettingsRes.strings.settings_account_logout_label.desc(),
+                message = SettingsRes.strings.settings_account_logout_message.desc(),
+                buttons = listOf(
+                    ButtonDescriptor(
+                        text = DesignSystem.strings.action_cancel.desc(),
+                        actionType = ButtonDescriptor.ActionType.POSITIVE
+                    ),
+                    ButtonDescriptor(
+                        text = DesignSystem.strings.action_confirm.desc(),
+                        actionType = ButtonDescriptor.ActionType.NEGATIVE,
+                        onClick = ::logout
+                    )
+                ),
+            )
+        )
+    }
+
+    private fun logout() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { logOut() },
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
+        )
     }
 
     private fun loadSettings() {

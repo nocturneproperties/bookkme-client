@@ -12,7 +12,7 @@ import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
 import me.bookk.feature.settings.presentation.navigation.settingsGraph
 
 @Composable
-fun SettingsTab {
+fun SettingsTab() {
     val settingsController = rememberNavController()
     NavHost(
         navController = settingsController,

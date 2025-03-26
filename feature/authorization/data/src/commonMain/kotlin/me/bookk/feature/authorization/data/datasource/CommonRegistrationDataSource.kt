@@ -28,7 +28,7 @@ internal class CommonRegistrationDataSource(
     override suspend fun getSignUpPasskeyChallenge(userData: UserData): ServerSignUpChallenge {
         return mapExceptions(
             action = {
-                val response = client.post(Auth.SignUp.PassKey.Challenge()) {
+                val response = client.post(Auth.PassKey.SignUpChallenge()) {
                     setBody(userData.toRemote())
                 }
                 response.body<RegistrationChallengeResponse>().toDomain()
@@ -46,7 +46,7 @@ internal class CommonRegistrationDataSource(
     override suspend fun finishRegistration(data: RegistrationData): TokenInfo {
         return mapExceptions(
             action = {
-                val response = client.post(Auth.SignUp.PassKey.Validate()) {
+                val response = client.post(Auth.SignUp()) {
                     setBody(data.toRemote())
                 }
                 response.body<TokenInfoResponse>().toDomain()
@@ -68,7 +68,7 @@ internal class CommonRegistrationDataSource(
             action = {
                 passKeyManager.create(
                     PassKeyManager.ChallengeRequest(
-                        userId = challenge.userId,
+                        userId = challenge.requestId,
                         userName = challenge.displayName,
                         challengeJson = challenge.jsonChallengeData
                     )

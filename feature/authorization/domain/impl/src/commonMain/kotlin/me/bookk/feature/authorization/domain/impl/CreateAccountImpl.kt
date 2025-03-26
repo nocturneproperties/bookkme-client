@@ -21,24 +21,25 @@ internal class CreateAccountImpl(
     override suspend fun invoke(userData: UserData) {
         val challenge = registrationDataSource.getSignUpPasskeyChallenge(userData)
         val verificationPayload = registrationDataSource.createPasskey(challenge)
-        val data = createRegistrationData(userData, verificationPayload, challenge.userId)
+        val data = createRegistrationData(userData, verificationPayload, challenge.requestId)
         val tokenInfo = registrationDataSource.finishRegistration(data)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
-        userProfileCRUD.get()
+        userProfileCRUD.updateFromRemote()
+        authorizationDataSource.setAuthorizationStatus(true)
     }
 
     private suspend fun createRegistrationData(
         userData: UserData,
         payload: PasskeyVerificationPayload,
-        userId: String
+        requestId: String
     ): RegistrationData {
         return RegistrationData(
+            requestId = requestId,
             deviceInfo = RegistrationData.DeviceInfo(
                 deviceUUID = deviceDataSource.getOrCreateDeviceUUID(),
                 deviceName = getPlatformInformation().deviceName
             ),
             userInfo = RegistrationData.UserInfo(
-                id = userId,
                 name = userData.firstName,
                 lastName = userData.lastName,
                 email = userData.email

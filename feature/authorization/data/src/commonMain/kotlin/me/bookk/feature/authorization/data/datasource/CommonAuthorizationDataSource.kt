@@ -10,6 +10,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 import io.ktor.util.AttributeKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.entity.Error
 import me.bookk.feature.authorization.data.local.PassKeyManager
@@ -49,8 +50,8 @@ class CommonAuthorizationDataSource(
         return preferences.get(Key.accessToken)
     }
 
-    override fun getAccessTokenFlow(): Flow<String?> {
-       return preferences.getFlow(Key.accessToken)
+    override fun getIsAuthorizedFlow(): Flow<Boolean> {
+        return preferences.getFlow(Key.authorized).map { it ?: false }
     }
 
     override suspend fun getRefreshToken(): String? {
@@ -66,14 +67,15 @@ class CommonAuthorizationDataSource(
         response.body<TokenInfoResponse>().toDomain()
     }
 
-    override suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge = mapExceptions {
-        val response = httpClient.get(Auth.PassKey.Challenge()) {}
-        response.body<AuthChallengeResponse>().toDomain()
-    }
+    override suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge =
+        mapExceptions {
+            val response = httpClient.get(Auth.PassKey.SignInChallenge()) {}
+            response.body<AuthChallengeResponse>().toDomain()
+        }
 
     override suspend fun verifyAuthorization(signInData: SignInData): TokenInfo {
         return mapExceptions(
-            action =  {
+            action = {
                 val response = httpClient.post(Auth.SignIn()) {
                     setBody(signInData.toRemote())
                 }
@@ -84,6 +86,7 @@ class CommonAuthorizationDataSource(
                     AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> PasskeyVerification.Error.NoAccountForThisPasskey
                     AuthErrorCodes.VERIFICATION_FAILED,
                     AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> PasskeyVerification.Error.PasskeyVerificationFailed
+
                     else -> it
                 }
             }
@@ -101,6 +104,7 @@ class CommonAuthorizationDataSource(
                     PassKeyManager.Error.CredentialsMissing -> PasskeyVerification.Error.NoCredentialsAvailable
                     PassKeyManager.Error.Infrastructure,
                     PassKeyManager.Error.Unknown -> PasskeyVerification.Error.PasskeyVerificationFailed
+
                     PassKeyManager.Error.UserCancelled -> Error.Ignore(cause)
                 }
             }
@@ -110,7 +114,7 @@ class CommonAuthorizationDataSource(
     override suspend fun deleteAccount(request: DeleteAccountRequest) {
         return mapExceptions(
             action = {
-                httpClient.delete(Auth.DeleteAccount()) {
+                httpClient.delete(Auth.Account()) {
                     setBody(request.toRemote())
                 }
             },
@@ -122,6 +126,7 @@ class CommonAuthorizationDataSource(
                     PassKeyManager.Error.CredentialsMissing -> PasskeyVerification.Error.NoCredentialsAvailable
                     PassKeyManager.Error.Infrastructure,
                     PassKeyManager.Error.Unknown -> PasskeyVerification.Error.PasskeyVerificationFailed
+
                     PassKeyManager.Error.UserCancelled -> Error.Ignore(cause)
                 }
             }
@@ -132,8 +137,13 @@ class CommonAuthorizationDataSource(
         return mapExceptions { httpClient.delete(Auth.SignOut()) }
     }
 
+    override suspend fun setAuthorizationStatus(isAuthorized: Boolean) {
+        preferences.set(Key.authorized, isAuthorized)
+    }
+
     private object Key {
         val accessToken = Preferences.Key<String>("access_token")
         val refreshToken = Preferences.Key<String>("refresh_token")
+        val authorized = Preferences.Key<Boolean>("authorized")
     }
 }

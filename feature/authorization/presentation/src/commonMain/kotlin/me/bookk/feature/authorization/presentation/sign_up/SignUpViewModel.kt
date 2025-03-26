@@ -85,9 +85,6 @@ class SignUpViewModel(
                     )
                 )
             },
-            onComplete = {
-                uiState.navigation.push(SignUpNavigationDestination.Main)
-            },
             onError = {
                 when (it) {
                     is Error.EmailAlreadyExist -> {

@@ -30,8 +30,8 @@ internal class CommonUserProfileDataSource(
             .toDomain()
     }
 
-    override suspend fun insertProfile(profile: UserProfile) = mapExceptions {
-        profileDao.insert(profile.toDb())
+    override suspend fun upsertProfile(profile: UserProfile) = mapExceptions {
+        profileDao.upsert(profile.toDb())
     }
 
     override suspend fun updateProfile(userProfile: UserProfile) = mapExceptions {

@@ -20,9 +20,11 @@ import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.shared.BuildKonfig
 import org.koin.dsl.module
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import io.ktor.client.plugins.logging.Logger as KtorLogger
 
-@OptIn(ExperimentalSerializationApi::class)
+@OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
 internal fun networkModule() = module {
     single {
         HttpClient {
@@ -61,6 +63,7 @@ internal fun networkModule() = module {
             }
 
             defaultRequest {
+                headers["Idempotency-Key"] = Uuid.random().toHexString()
                 url(BuildKonfig.BASE_URL)
                 contentType(ContentType.Application.ProtoBuf)
             }

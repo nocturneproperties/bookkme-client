@@ -20,7 +20,8 @@ internal class SignInImpl(
             createSignInData(challenge.requestId, payload.jsonPayload)
         )
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
-        userProfileCRUD.get()
+        userProfileCRUD.updateFromRemote()
+        authorizationDataSource.setAuthorizationStatus(true)
     }
 
     private suspend fun createSignInData(requestId: String, publicCredJson: String): SignInData {

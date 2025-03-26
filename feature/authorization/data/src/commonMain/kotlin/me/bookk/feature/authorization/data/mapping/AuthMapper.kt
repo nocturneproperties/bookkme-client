@@ -28,7 +28,7 @@ internal fun CreateAccount.UserData.toRemote(): PassKeySignUpStartInfo {
 
 internal fun RegistrationChallengeResponse.toDomain(): ServerSignUpChallenge {
     return ServerSignUpChallenge(
-        userId = userId,
+        requestId = requestId,
         displayName = displayName,
         jsonChallengeData = challenge
     )
@@ -43,12 +43,12 @@ internal fun TokenInfoResponse.toDomain(): TokenInfo {
 
 internal fun RegistrationData.toRemote(): VerifyAccountCreationRequest {
     return VerifyAccountCreationRequest(
+        requestId = requestId,
         deviceInfo = VerifyAccountCreationRequest.DeviceInfo(
             deviceName = deviceInfo.deviceName,
             deviceUUID = deviceInfo.deviceUUID
         ),
         userInfo = VerifyAccountCreationRequest.UserInfo(
-            userId = userInfo.id,
             name = userInfo.name,
             lastName = userInfo.lastName,
             email = userInfo.email

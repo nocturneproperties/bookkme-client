@@ -7,7 +7,7 @@ import me.bookk.feature.authorization.domain.entity.TokenInfo
 interface AuthorizationDataSource {
     suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?)
     suspend fun getAccessToken(): String?
-    fun getAccessTokenFlow(): Flow<String?>
+    fun getIsAuthorizedFlow(): Flow<Boolean>
     suspend fun getRefreshToken(): String?
     suspend fun refreshToken(refreshToken: String): TokenInfo
     suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge
@@ -15,4 +15,5 @@ interface AuthorizationDataSource {
     suspend fun requestPasskey(challenge: ServerAuthenticationChallenge): PasskeyVerificationPayload
     suspend fun deleteAccount(request: DeleteAccountRequest)
     suspend fun logOut()
+    suspend fun setAuthorizationStatus(isAuthorized: Boolean)
 }

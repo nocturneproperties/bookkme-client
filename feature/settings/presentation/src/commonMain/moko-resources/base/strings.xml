@@ -42,4 +42,10 @@
     <string name="settings_delete_account_confirmation_switch">Agree</string>
     <string name="settings_delete_account_confirmation_button">Delete</string>
     <string name="settings_delete_account_success_message">Account deleted successfully</string>
+
+    <string name="settings_passkey_title">Passkey</string>
+    <string name="settings_passkey_add_button">Add a passkey</string>
+    <string name="settings_passkey_added_on_format">Added on %s</string>
+    <string name="settings_passkey_delete_dialog_title">Delete passkey</string>
+    <string name="settings_passkey_delete_dialog_message">Remove ‘%s’ passkey? You won’t be able to login with this passkey anymore.</string>
 </resources>

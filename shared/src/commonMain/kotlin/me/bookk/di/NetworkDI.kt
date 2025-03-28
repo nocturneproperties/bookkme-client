@@ -16,34 +16,42 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.protobuf.protobuf
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
+import me.bookk.core.data.HttpClientType
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.shared.BuildKonfig
+import org.koin.core.qualifier.named
+import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import io.ktor.client.plugins.logging.Logger as KtorLogger
 
-@OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
 internal fun networkModule() = module {
-    single {
-        HttpClient {
-            expectSuccess = true
-            install(Logging) {
-                logger = KtorLogger.DEFAULT
-                level = if (BuildKonfig.DEBUG) {
-                    LogLevel.ALL
-                } else {
-                    LogLevel.NONE
-                }
+    single { buildClient(installAuth = true) }
+    factory(named(HttpClientType.NO_AUTH)) { buildClient(installAuth = false) }
+}
+
+@OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
+private fun Scope.buildClient(installAuth: Boolean): HttpClient {
+    return HttpClient {
+        expectSuccess = true
+        install(Logging) {
+            logger = KtorLogger.DEFAULT
+            level = if (BuildKonfig.DEBUG) {
+                LogLevel.ALL
+            } else {
+                LogLevel.NONE
             }
-            install(ContentNegotiation) {
-                protobuf(ProtoBuf { encodeDefaults = true })
-            }
-            install(Resources)
-            install(HttpTimeout) {
-                requestTimeoutMillis = 5000
-            }
+        }
+        install(ContentNegotiation) {
+            protobuf(ProtoBuf { encodeDefaults = true })
+        }
+        install(Resources)
+        install(HttpTimeout) {
+            requestTimeoutMillis = 5000
+        }
+        if (installAuth) {
             install(Auth) {
                 bearer {
                     loadTokens {
@@ -61,12 +69,12 @@ internal fun networkModule() = module {
                     }
                 }
             }
+        }
 
-            defaultRequest {
-                headers["Idempotency-Key"] = Uuid.random().toHexString()
-                url(BuildKonfig.BASE_URL)
-                contentType(ContentType.Application.ProtoBuf)
-            }
+        defaultRequest {
+            headers["Idempotency-Key"] = Uuid.random().toHexString()
+            url(BuildKonfig.BASE_URL)
+            contentType(ContentType.Application.ProtoBuf)
         }
     }
 }

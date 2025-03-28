@@ -1,6 +1,7 @@
 package me.bookk.feature.authorization.data.local
 
 import kotlinx.coroutines.CancellableContinuation
+import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import platform.AuthenticationServices.ASAuthorization
 import platform.AuthenticationServices.ASAuthorizationController

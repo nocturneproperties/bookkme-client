@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.data.di
 
+import me.bookk.core.data.HttpClientType
 import me.bookk.feature.authorization.data.datasource.CommonAuthorizationDataSource
 import me.bookk.feature.authorization.data.datasource.CommonDeviceDataSource
 import me.bookk.feature.authorization.data.datasource.CommonRegistrationDataSource
@@ -10,6 +11,7 @@ import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataS
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationDataSource
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -17,8 +19,14 @@ internal expect fun authDataPlatformModule(): Module
 
 fun authDataModule() = module {
     includes(authDataPlatformModule())
+    single<AuthorizationDataSource> {
+        CommonAuthorizationDataSource(
+            get(),
+            get(named(HttpClientType.NO_AUTH)),
+            get()
+        )
+    }
     singleOf(::CommonRegistrationDataSource) bind RegistrationDataSource::class
     singleOf(::CommonDeviceDataSource) bind DeviceDataSource::class
-    singleOf(::CommonAuthorizationDataSource) bind AuthorizationDataSource::class
     singleOf(::CommonUserProfileDataSource) bind UserProfileDataSource::class
 }

@@ -28,7 +28,9 @@ fun SettingsTab() {
                 navigateToEditProfile = {
                     settingsController.navigate(SettingsDestination.EditProfile)
                 },
-                navigateToPasskey = {},
+                navigateToPasskey = {
+                    settingsController.navigate(SettingsDestination.Passkey)
+                },
                 navigateToContact = {
                     settingsController.navigate(SettingsDestination.ContactUs)
                 },

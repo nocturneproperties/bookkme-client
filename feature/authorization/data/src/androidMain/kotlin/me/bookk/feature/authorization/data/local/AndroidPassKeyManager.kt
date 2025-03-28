@@ -15,7 +15,8 @@ import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.domerrors.NotAllowedError
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import androidx.credentials.exceptions.publickeycredential.GetPublicKeyCredentialDomException
-import me.bookk.feature.authorization.data.local.PassKeyManager.ChallengeRequest
+import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
+import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager.ChallengeRequest
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import org.json.JSONObject
 

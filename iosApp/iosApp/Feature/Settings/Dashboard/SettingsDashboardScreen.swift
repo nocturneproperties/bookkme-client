@@ -38,7 +38,7 @@ struct SettingsDashboardScreen: View {
 				EditProfileScreen()
 			}
 			.navigationDestination(for: SettingsDestination.Passkey.self) { _ in
-				
+				PasskeyScreen()
 			}
 			.navigationDestination(for: SettingsDestination.DeleteAccount.self) { _ in
 				DeleteAccountScreen()

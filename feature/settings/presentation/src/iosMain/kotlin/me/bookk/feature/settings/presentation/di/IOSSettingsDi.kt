@@ -16,6 +16,7 @@ internal actual fun platformSettingsDiModule(): Module = module {
     factoryOf(::EditProfileViewModel)
     factoryOf(::ContactUsViewModel)
     factoryOf(::DeleteAccountViewModel)
+    factoryOf(::PasskeyViewModel)
 }
 
 @UsedInSwift

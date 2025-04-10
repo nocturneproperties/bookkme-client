@@ -4,6 +4,7 @@ import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.DispatcherProvider
+import me.bookk.core.UsedInSwift
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -75,6 +76,28 @@ class PasskeyViewModel(
         )
     }
 
+    @UsedInSwift
+    fun onDeletePasskeyList(itemList: List<PasskeyItem>) {
+        uiState.notification.add(
+            PresentationNotification.Message(
+                title = SettingsRes.strings.settings_passkey_delete_dialog_title.desc(),
+                message = SettingsRes.strings.settings_passkey_delete_dialog_message.format(
+                    itemList.joinToString { it.title }
+                ),
+                buttons = listOf(
+                    ButtonDescriptor(
+                        text = DesignSystem.strings.action_cancel.desc(),
+                    ),
+                    ButtonDescriptor(
+                        text = DesignSystem.strings.action_confirm.desc(),
+                        actionType = ButtonDescriptor.ActionType.NEGATIVE,
+                        onClick = { deletePasskeyByIdList(itemList.map { it.id }) }
+                    )
+                )
+            )
+        )
+    }
+
     fun getPasskeyList() {
         launch(
             launchIn = DispatcherProvider.io,
@@ -91,6 +114,20 @@ class PasskeyViewModel(
             launchIn = DispatcherProvider.io,
             call = {
                 deletePasskey(id)
+                getAvailablePasskeys()
+            },
+            onComplete = ::updatePasskeyList,
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
+        )
+    }
+
+    private fun deletePasskeyByIdList(ids: List<Long>) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = {
+                ids.forEach { id ->
+                    deletePasskey(id)
+                }
                 getAvailablePasskeys()
             },
             onComplete = ::updatePasskeyList,

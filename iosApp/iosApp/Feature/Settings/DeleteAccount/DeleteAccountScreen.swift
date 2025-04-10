@@ -42,3 +42,7 @@ struct DeleteAccountScreen: View {
 		.handleNotifications(state: uiState.notifications)
 	}
 }
+
+#Preview {
+	DeleteAccountScreen()
+}

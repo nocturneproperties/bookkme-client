@@ -19,7 +19,6 @@ struct NotificationHandler: ViewModifier {
 	@State var data: PresentationNotificationMessage? = nil
     
     func body(content: Content) -> some View {
-		NSDate
         content
 			.onReceive(notificationState.$presentationNotification.flatMap(\.publisher)) { value in
                 switch value {

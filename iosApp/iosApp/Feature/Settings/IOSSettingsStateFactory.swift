@@ -9,7 +9,7 @@
 import shared
 
 class IOSSettingsStateFactory: SettingsStateFactory {
-
+	
 	func createEditProfileState(initData: EditProfileStateInitData) -> any EditProfileState {
 		return IOSEditProfileState(initData: initData)
 	}
@@ -24,5 +24,9 @@ class IOSSettingsStateFactory: SettingsStateFactory {
 	
 	func createDeleteAccountState(initData: DeleteAccountStateInitData) -> any DeleteAccountState {
 		return IOSDeleteAccountState(initData: initData)
+	}
+	
+	func createPasskeyState(initData: PasskeyStateInitData) -> any PasskeyState {
+		return IOSPasskeyState(initData: initData)
 	}
 }

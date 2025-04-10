@@ -14,6 +14,7 @@ import io.ktor.client.plugins.resources.Resources
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.protobuf.protobuf
+import io.ktor.util.PlatformUtils
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import me.bookk.core.data.HttpClientType
@@ -72,8 +73,15 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
         }
 
         defaultRequest {
-            headers["Idempotency-Key"] = Uuid.random().toHexString()
-            url(BuildKonfig.BASE_URL)
+            if (installAuth) {
+                headers["Idempotency-Key"] = Uuid.random().toHexString()
+            }
+            val baseUrl = if (PlatformUtils.IS_JVM && BuildKonfig.VARIANT == "dev") {
+                "https://10.0.2.2/api"
+            } else {
+                BuildKonfig.BASE_URL
+            }
+            url(baseUrl)
             contentType(ContentType.Application.ProtoBuf)
         }
     }

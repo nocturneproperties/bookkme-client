@@ -72,6 +72,40 @@ struct StateButton: View {
     }
 }
 
+struct IconButton: View {
+	@ObservedObject
+	var state: IOSButtonState
+	@State
+	var maxWidth: CGFloat? = .infinity
+	@State
+	var icon: String
+	@State
+	var onClick: () -> Void
+	
+	init(state: IOSButtonState, maxWidth: CGFloat? = .infinity, icon: String, onClick: @escaping () -> Void) {
+		self.state = state
+		self.onClick = onClick
+		self.icon = icon
+	}
+	
+	init(state: ButtonState, maxWidth: CGFloat? = .infinity, icon: String, onClick: @escaping () -> Void) {
+		self.state = state.impl()
+		self.icon = icon
+		self.onClick = onClick
+	}
+	
+	var body: some View {
+		Button(action: onClick) {
+			if (state.isLoading) {
+				ProgressView()
+			} else {
+				Image(systemName: icon)
+			}
+		}
+		.disabled(!state.isEnabled)
+	}
+}
+
 #Preview {
     
     @Previewable

@@ -22,6 +22,7 @@ kotlin {
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.domain.datasource)
             implementation(libs.ktor.client.resources)
+            implementation(libs.ktor.client.auth)
         }
     }
 }

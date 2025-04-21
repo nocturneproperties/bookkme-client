@@ -26,6 +26,7 @@ internal class SignInImpl(
         val payload = authorizeWithPasskey(challenge)
         val tokenInfo = verifyAuthorization(challenge, payload)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
+        authorizationDataSource.invalidateClientTokens()
         userProfileCRUD.updateFromRemote()
         authorizationDataSource.setAuthorizationStatus(true)
     }

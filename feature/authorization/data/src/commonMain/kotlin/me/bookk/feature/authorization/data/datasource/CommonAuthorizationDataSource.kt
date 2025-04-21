@@ -2,6 +2,8 @@ package me.bookk.feature.authorization.data.datasource
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.auth.authProvider
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
@@ -104,6 +106,10 @@ class CommonAuthorizationDataSource(
 
     override suspend fun setAuthorizationStatus(isAuthorized: Boolean) {
         preferences.set(Key.authorized, isAuthorized)
+    }
+
+    override suspend fun invalidateClientTokens() {
+        httpClient.authProvider<BearerAuthProvider>()?.clearToken()
     }
 
     private object Key {

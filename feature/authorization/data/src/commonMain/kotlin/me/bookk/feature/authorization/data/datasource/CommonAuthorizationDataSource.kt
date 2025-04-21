@@ -79,7 +79,7 @@ class CommonAuthorizationDataSource(
 
     override suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge =
         mapExceptions {
-            val response = httpClient.get(Auth.PassKey.SignInChallenge()) {}
+            val response = httpClient.get(Auth.PassKey.SignInChallenge())
             response.body<AuthChallengeResponse>().toDomain()
         }
 

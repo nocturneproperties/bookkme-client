@@ -1,8 +1,10 @@
 package me.bookk.feature.business.presentation.navigation
 
 import androidx.navigation.NavGraphBuilder
-import me.bookk.feature.authorization.presentation.navigation.AuthNavigation
+import me.bookk.feature.business.presentation.create.createBusinessScreen
+import me.bookk.feature.business.presentation.loading.loaderScreen
 
-fun NavGraphBuilder.businessGraph(navigation: AuthNavigation) {
-
+fun NavGraphBuilder.businessGraph(navigation: BusinessNavigation) {
+    createBusinessScreen(navigation)
+    loaderScreen()
 }

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="create_business_title">Create business</string>
+    <string name="create_business_name_hint">Enter business name</string>
+    <string name="create_business_name_supporting">Enter name you’d like to be seen by your clients</string>
+    <string name="create_business_features">Features</string>
+    <string name="create_business_feature_appointments_title">Appointments</string>
+    <string name="create_business_feature_appointments_description">Your clients can book time for consultations or personal services. By scheduling in advance, they can avoid calling you.</string>
 </resources>

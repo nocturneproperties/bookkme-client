@@ -28,9 +28,10 @@ import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapStat
 import me.bookk.feature.authorization.presentation.navigation.AuthDestination
 import me.bookk.feature.authorization.presentation.navigation.AuthNavigation
 import me.bookk.feature.authorization.presentation.navigation.authGraph
+import me.bookk.feature.business.presentation.BusinessTab
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
 import me.bookk.feature.dashboard.presentation.navigation.dashboardGraph
-import me.bookk.feature.settings.presentation.dashboard.SettingsTab
+import me.bookk.feature.settings.presentation.SettingsTab
 import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -71,8 +72,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun NavigationRoot(state: BootstrapState) {
     val controller = rememberNavController()
-    val unauthorizedHandler =
-        remember { UnauthorizedHandler { controller.navigate(AuthDestination.SignIn) { popUpTo(0) } } }
+    val unauthorizedHandler = remember {
+        UnauthorizedHandler { controller.navigate(AuthDestination.SignIn) { popUpTo(0) } }
+    }
     val authNavigation = remember {
         AuthNavigation(
             navigateBack = controller::popBackStack,
@@ -101,7 +103,7 @@ private fun NavigationRoot(state: BootstrapState) {
                 authGraph(navigation = authNavigation)
                 dashboardGraph(
                     appointmentsTab = { Text("Appointments") },
-                    businessTab = { Text("Business") },
+                    businessTab = { BusinessTab() },
                     settingsTab = { SettingsTab() }
                 )
             }

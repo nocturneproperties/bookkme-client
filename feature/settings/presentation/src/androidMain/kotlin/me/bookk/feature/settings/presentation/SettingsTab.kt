@@ -1,4 +1,4 @@
-package me.bookk.feature.settings.presentation.dashboard
+package me.bookk.feature.settings.presentation
 
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.core.tween

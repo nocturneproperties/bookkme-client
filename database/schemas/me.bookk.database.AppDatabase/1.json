@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3e6bd8ec38361cebabaa18f2ae588825",
+    "identityHash": "017229a0804dc3dd768898d4cfd35805",
     "entities": [
       {
         "tableName": "user_profile",
@@ -39,11 +39,35 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "business",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3e6bd8ec38361cebabaa18f2ae588825')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '017229a0804dc3dd768898d4cfd35805')"
     ]
   }
 }

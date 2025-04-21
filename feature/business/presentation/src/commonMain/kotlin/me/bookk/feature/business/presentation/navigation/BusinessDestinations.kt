@@ -4,5 +4,11 @@ import kotlinx.serialization.Serializable
 
 sealed class BusinessDestination {
     @Serializable
-    data object Example : BusinessDestination()
+    data object BlockingProgress : BusinessDestination()
+
+    @Serializable
+    data object Create : BusinessDestination()
+
+    @Serializable
+    data object Dashboard : BusinessDestination()
 }

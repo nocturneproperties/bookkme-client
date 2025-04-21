@@ -11,20 +11,20 @@ data class PassKeySignUpStartInfo(
 
 @Serializable
 class RegistrationChallengeResponse(
+    val requestId: String,
     val challenge: String,
-    val displayName: String,
-    val userId: String
+    val displayName: String
 )
 
 @Serializable
 class VerifyAccountCreationRequest(
+    val requestId: String,
     val deviceInfo: DeviceInfo,
     val userInfo: UserInfo,
     val publicKeyCredentialJson: String
 ) {
     @Serializable
     class UserInfo(
-        val userId: String,
         val name: String,
         val lastName: String,
         val email: String

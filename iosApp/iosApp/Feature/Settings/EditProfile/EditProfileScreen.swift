@@ -39,3 +39,7 @@ struct EditProfileScreen: View {
 		}
 	}
 }
+
+#Preview {
+	EditProfileScreen()
+}

@@ -37,28 +37,24 @@ fun AppDialog(
 ) {
     AppDialogContainer(onDismiss) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                title?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = LocalColors.current.primaryText,
-                    )
-                }
-                subtitle?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = LocalColors.current.primaryText,
-                    )
-                }
-                content?.invoke()
+            title?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = LocalColors.current.primaryText,
+                )
             }
+            subtitle?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = LocalColors.current.secondaryText,
+                )
+            }
+            content?.invoke()
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),

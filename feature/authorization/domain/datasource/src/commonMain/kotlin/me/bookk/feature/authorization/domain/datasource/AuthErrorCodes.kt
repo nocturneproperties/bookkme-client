@@ -1,4 +1,4 @@
-package me.bookk.feature.authorization.data.remote.error
+package me.bookk.feature.authorization.domain.datasource
 
 object AuthErrorCodes {
     const val EMAIL_EXIST = 1

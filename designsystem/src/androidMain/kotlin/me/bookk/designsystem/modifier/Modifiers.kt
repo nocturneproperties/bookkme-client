@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.scale
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
@@ -109,6 +110,33 @@ fun Modifier.coloredOverlay(
                 drawRect(brush, blendMode = BlendMode.SrcAtop)
             }
         }
+}
+
+@Composable
+fun Modifier.coloredOverlay(
+    brushProvider: (IntSize) -> Brush
+): Modifier {
+    var brush by remember { mutableStateOf<Brush>(SolidColor(Color.Transparent)) }
+    return onGloballyPositioned { brush = brushProvider(it.size) }
+        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+        .drawWithCache {
+            onDrawWithContent {
+                drawContent()
+                drawRect(brush, blendMode = BlendMode.SrcAtop)
+            }
+        }
+}
+
+@Composable
+fun Modifier.bottomShadow(offset: Dp, color: Color): Modifier {
+    val pxOffset = with(LocalDensity.current) { offset.toPx() }
+    return coloredOverlay {
+        Brush.verticalGradient(
+            startY = (it.height - pxOffset).coerceAtLeast(0f),
+            endY = it.height.toFloat(),
+            colorStops = arrayOf(0f to Color.Transparent, 1f to color)
+        )
+    }
 }
 
 fun Modifier.shimmerBackground(

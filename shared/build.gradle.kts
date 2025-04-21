@@ -12,7 +12,7 @@ android {
 
 buildkonfigExtend {
     forFlavour(ProductFlavour.DEV) {
-        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://10.0.2.2/api", const = true)
+        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://local.bookkk.me/api", const = true)
     }
     forFlavour(ProductFlavour.STAGE) {
         buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://bookkk.me/api", const = true)

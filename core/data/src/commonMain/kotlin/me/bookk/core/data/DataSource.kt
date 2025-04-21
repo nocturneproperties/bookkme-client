@@ -8,8 +8,7 @@ import me.bookk.core.domain.entity.Error
 abstract class DataSource {
 
     suspend fun <T> mapExceptions(
-        businessExceptionMapper: ((Error.BusinessError) -> Throwable)? = null,
-        exceptionMapper: (Error) -> Throwable = { it },
+        exceptionMapper: ((Error) -> Throwable)? = null,
         finally: (() -> Unit)? = null,
         action: suspend () -> T
     ): T {
@@ -17,11 +16,7 @@ abstract class DataSource {
             action()
         } catch (e: Exception) {
             val domainError = e.toDomain()
-            if (businessExceptionMapper != null && domainError is Error.BusinessError) {
-                throw businessExceptionMapper.invoke(domainError)
-            } else {
-                throw exceptionMapper(domainError)
-            }
+            throw (exceptionMapper?.invoke(domainError) ?: domainError)
         } finally {
             finally?.invoke()
         }

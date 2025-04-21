@@ -72,14 +72,6 @@ struct SignUpScreen: View {
         .navigationBarTitleDisplayMode(.large)
         .sendLifecycleEventsTo(viewModel: signUpVM)
 		.handleNotifications(state: uiState.notification)
-        .handleNavigation(state: uiState.navigation) { navigation in
-            switch navigation {
-            case is SignUpNavigationDestination.Main:
-				navigationStack.path.append(AuthDestination.SignIn())
-                break
-            default: break
-            }
-        }
         .onAppear {
             focusedField = .name
         }

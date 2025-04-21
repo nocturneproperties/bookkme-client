@@ -1,6 +1,4 @@
-package me.bookk.feature.authorization.data.local
-
-import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
+package me.bookk.feature.authorization.domain.datasource.registration
 
 interface PassKeyManager {
     suspend fun create(challenge: ChallengeRequest): PasskeyVerificationPayload

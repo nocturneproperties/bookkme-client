@@ -1,14 +1,20 @@
 package me.bookk.feature.settings.domain.impl.di
 
+import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.DeletePasskey
 import me.bookk.feature.settings.domain.api.EditProfile
+import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
 import me.bookk.feature.settings.domain.api.GetColorScheme
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.LogOut
 import me.bookk.feature.settings.domain.api.SendContactForm
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
+import me.bookk.feature.settings.domain.impl.CreateNewPasskeyImpl
 import me.bookk.feature.settings.domain.impl.DeleteAccountImpl
+import me.bookk.feature.settings.domain.impl.DeletePasskeyImpl
 import me.bookk.feature.settings.domain.impl.EditProfileImpl
+import me.bookk.feature.settings.domain.impl.GetAvailablePasskeysImpl
 import me.bookk.feature.settings.domain.impl.GetColorSchemeImpl
 import me.bookk.feature.settings.domain.impl.GetSettingsImpl
 import me.bookk.feature.settings.domain.impl.LogOutImpl
@@ -26,4 +32,7 @@ fun settingsDomainModule() = module {
     factoryOf(::SendContactFormImpl) bind SendContactForm::class
     factoryOf(::DeleteAccountImpl) bind DeleteAccount::class
     factoryOf(::LogOutImpl) bind LogOut::class
+    factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
+    factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class
+    factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class
 }

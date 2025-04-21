@@ -31,6 +31,7 @@ import me.bookk.feature.authorization.presentation.navigation.authGraph
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
 import me.bookk.feature.dashboard.presentation.navigation.dashboardGraph
 import me.bookk.feature.settings.presentation.dashboard.SettingsTab
+import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -43,22 +44,24 @@ class MainActivity : ComponentActivity() {
         }
         super.onCreate(savedInstanceState)
         setContent {
-            AppTheme(
-                themeMode = when (viewModel.state.colorScheme) {
-                    BootstrapState.UIColorScheme.DARK -> ThemeMode.DARK
-                    BootstrapState.UIColorScheme.LIGHT -> ThemeMode.LIGHT
-                    BootstrapState.UIColorScheme.SYSTEM -> if (isSystemInDarkTheme()) {
-                        ThemeMode.DARK
-                    } else {
-                        ThemeMode.LIGHT
+            KoinAndroidContext {
+                AppTheme(
+                    themeMode = when (viewModel.state.colorScheme) {
+                        BootstrapState.UIColorScheme.DARK -> ThemeMode.DARK
+                        BootstrapState.UIColorScheme.LIGHT -> ThemeMode.LIGHT
+                        BootstrapState.UIColorScheme.SYSTEM -> if (isSystemInDarkTheme()) {
+                            ThemeMode.DARK
+                        } else {
+                            ThemeMode.LIGHT
+                        }
                     }
-                }
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
-                    NavigationRoot(viewModel.state)
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        NavigationRoot(viewModel.state)
+                    }
                 }
             }
         }
@@ -83,7 +86,6 @@ private fun NavigationRoot(state: BootstrapState) {
     }
     val destination = state.startDestination
     if (destination != null) {
-
         CompositionLocalProvider(LocalUnauthorizedHandler provides unauthorizedHandler) {
             NavHost(
                 navController = controller,

@@ -5,6 +5,7 @@ import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.contactus.ContactUsViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
+import me.bookk.feature.settings.presentation.passkey.PasskeyViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -15,6 +16,7 @@ internal actual fun platformSettingsDiModule(): Module = module {
     factoryOf(::EditProfileViewModel)
     factoryOf(::ContactUsViewModel)
     factoryOf(::DeleteAccountViewModel)
+    factoryOf(::PasskeyViewModel)
 }
 
 @UsedInSwift
@@ -28,3 +30,6 @@ fun contactUsVM(): ContactUsViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun deleteAccVM(): DeleteAccountViewModel = KoinPlatform.getKoin().get()
+
+@UsedInSwift
+fun passkeyVM(): PasskeyViewModel = KoinPlatform.getKoin().get()

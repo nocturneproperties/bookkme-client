@@ -21,9 +21,11 @@ struct ProfileView: View {
 		VStack {
 			Text(state.name.localized() + " " + state.lastName.localized())
 				.font(.title.weight(.bold))
+				.transition(.opacity)
 			Text(state.email.localized())
 				.font(.subheadline)
 				.foregroundStyle(AppColors.secondary)
+				.transition(.opacity)
 		}
 		.frame(maxWidth: .infinity)
 		.toolbar {

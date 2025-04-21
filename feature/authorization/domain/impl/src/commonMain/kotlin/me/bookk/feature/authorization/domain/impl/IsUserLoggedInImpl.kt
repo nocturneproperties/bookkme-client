@@ -1,7 +1,6 @@
 package me.bookk.feature.authorization.domain.impl
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 
@@ -13,7 +12,6 @@ internal class IsUserLoggedInImpl(
     }
 
     override fun asFlow(): Flow<Boolean> {
-        return authorizationDataSource.getAccessTokenFlow()
-            .map { it != null }
+        return authorizationDataSource.getIsAuthorizedFlow()
     }
 }

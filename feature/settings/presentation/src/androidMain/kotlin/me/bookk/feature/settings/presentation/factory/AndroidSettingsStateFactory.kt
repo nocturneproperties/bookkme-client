@@ -9,6 +9,8 @@ import me.bookk.feature.settings.presentation.dashboard.AndroidDashboardState
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
 import me.bookk.feature.settings.presentation.editprofile.AndroidEditProfileState
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
+import me.bookk.feature.settings.presentation.passkey.AndroidPasskeyState
+import me.bookk.feature.settings.presentation.passkey.PasskeyState
 
 class AndroidSettingsStateFactory : SettingsStateFactory {
     override fun createSettingsState(initData: SettingsState.InitData): SettingsState {
@@ -25,5 +27,9 @@ class AndroidSettingsStateFactory : SettingsStateFactory {
 
     override fun createDeleteAccountState(initData: DeleteAccountState.InitData): DeleteAccountState {
         return AndroidDeleteAccountState(initData)
+    }
+
+    override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState {
+        return AndroidPasskeyState(initData)
     }
 }

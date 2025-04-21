@@ -9,5 +9,6 @@ internal class LogOutImpl(
     override suspend fun invoke() {
         runCatching { authorizationDataSource.logOut() }
         authorizationDataSource.saveAuthorizationTokens(null)
+        authorizationDataSource.setAuthorizationStatus(false)
     }
 }

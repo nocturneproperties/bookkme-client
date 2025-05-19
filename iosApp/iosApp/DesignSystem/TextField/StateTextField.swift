@@ -75,11 +75,12 @@ struct StateTextField: View {
             )
             
             .cornerRadius(10)
-            if let error = state.errorTextRes {
-                Text(error.localized())
+            if let supportingText = state.supportingTextRes {
+                Text(supportingText.localized())
                     .frame(maxWidth: .infinity, alignment: .leading)
+					.font(.footnote)
                     .scaledToFit()
-                    .foregroundStyle(AppColors.error)
+					.foregroundStyle(state.isError ? AppColors.error : AppColors.secondary)
             }
         }
     }
@@ -89,7 +90,7 @@ struct StateTextField: View {
     
     @Previewable
     @State
-    var value: IOSTextFieldState = IOSTextFieldState(enabled: true, errorTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isError: false, isValid: true, maxLength: 20, readOnly: false, text: "Text")
+	var value: IOSTextFieldState = IOSTextFieldState(enabled: true, supportingTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isError: false, isValid: true, maxLength: 20, readOnly: false, text: "Text")
     
 	StateTextField(state: value) { _ in
 		

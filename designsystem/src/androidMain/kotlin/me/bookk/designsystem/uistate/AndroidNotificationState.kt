@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import me.bookk.core.presentation.error.PresentationNotification
 
 @Immutable
-class AndroidPresentationNotificationState : PresentationNotificationState {
+class AndroidNotificationState : PresentationNotificationState {
     override val presentationNotification: MutableList<PresentationNotification> = mutableStateListOf()
 
     override fun add(notification: PresentationNotification) {

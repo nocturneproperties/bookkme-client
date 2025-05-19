@@ -3,7 +3,7 @@ package me.bookk.feature.settings.presentation.editprofile
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidNavigationState
-import me.bookk.designsystem.uistate.AndroidPresentationNotificationState
+import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
@@ -22,6 +22,6 @@ internal class AndroidEditProfileState(
         text = initData.confirmButtonText,
         isEnabled = false
     )
-    override val notification: PresentationNotificationState = AndroidPresentationNotificationState()
+    override val notification: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<EditProfileNavigationDestination> = AndroidNavigationState()
 }

@@ -7,7 +7,8 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import me.bookk.feature.business.presentation.bootstrap.BootstrapViewModel
+import me.bookk.designsystem.components.ObserveNotifications
+import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.businessGraph
 import org.koin.androidx.compose.koinViewModel
@@ -15,7 +16,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun BusinessTab() {
     val businessController = rememberNavController()
-    val viewModel: BootstrapViewModel = koinViewModel()
+    val viewModel: BusinessBootstrapViewModel = koinViewModel()
+    ObserveNotifications(viewModel.uiState.notification)
     NavHost(
         navController = businessController,
         startDestination = viewModel.uiState.startDestination,

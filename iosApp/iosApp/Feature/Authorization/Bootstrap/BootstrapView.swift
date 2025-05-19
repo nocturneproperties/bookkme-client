@@ -19,14 +19,16 @@ struct StartDestinationView: View {
 	var state: IOSBootstrapState
 	
 	var body: some View {
-		switch state.startDestination {
-		case is BootstrapNavigationDestination.Main:
-			DashboardScreen()
-		case is BootstrapNavigationDestination.Login:
-			AuthorizationRoot()
-		default:
-			Spacer()
-		}
+		ZStack {
+			switch state.startDestination {
+			case is BootstrapNavigationDestination.Main:
+				DashboardScreen()
+			case is BootstrapNavigationDestination.Login:
+				AuthorizationRoot()
+			default:
+				Spacer()
+			}
+		}.animation(.default, value: state.startDestination)
 	}
 }
 

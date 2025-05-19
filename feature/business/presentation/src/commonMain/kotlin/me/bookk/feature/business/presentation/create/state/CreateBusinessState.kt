@@ -17,6 +17,7 @@ interface CreateBusinessState {
         val title: StringDesc,
         val hint: StringDesc,
         val supportingText: StringDesc,
-        val buttonText: StringDesc
+        val buttonText: StringDesc,
+        val maxNameLength: Int
     )
 }

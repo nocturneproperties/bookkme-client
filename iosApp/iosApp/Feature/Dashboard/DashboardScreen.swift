@@ -33,14 +33,12 @@ struct DashboardTabs: View {
 }
 
 struct DashboardTab: View {
-	
-	@EnvironmentObject var appStack: NavigationStackHolder
 
 	@ObservedObject
 	var state: IOSTabItem
 	
 	var body: some View {
-		SettingsDashboardScreen()
+		screenFromId(id: state.id)
 			.tabItem {
 				Label(
 					title: {
@@ -51,6 +49,20 @@ struct DashboardTab: View {
 					}
 				)
 			}.badge(state.badgeText?.localized())
+	}
+	
+	@ViewBuilder
+	private func screenFromId(id: TabItemId) -> some View {
+		switch id {
+		case .home:
+			SettingsDashboardScreen()
+		case .business:
+			BusinessTab()
+		case .settings:
+			SettingsDashboardScreen()
+		default:
+			fatalError("Unsupported tab \(state.id)")
+		}
 	}
 
 }

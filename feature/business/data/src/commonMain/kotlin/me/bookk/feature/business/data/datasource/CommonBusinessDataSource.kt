@@ -29,8 +29,12 @@ internal class CommonBusinessDataSource(
             .toDomain()
     }
 
+    override suspend fun clearBusinessTable() = mapExceptions {
+        businessDao.clear()
+    }
+
     override suspend fun saveBusinessInDB(business: Business) {
-        mapExceptions { businessDao.insertBusiness(business.toLocal()) }
+        mapExceptions { businessDao.upsertBusiness(business.toLocal()) }
     }
 
     override fun observeBusinessDBChanges(): Flow<Business?> {

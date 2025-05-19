@@ -20,4 +20,7 @@ abstract class BusinessDao {
 
     @Upsert
     abstract suspend fun upsertBusiness(entity: BusinessEntity)
+
+    @Query("delete from business")
+    abstract suspend fun clear()
 }

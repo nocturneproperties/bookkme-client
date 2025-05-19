@@ -68,10 +68,10 @@ fun TextField(
             )
         },
         supportingText = {
-            if (state.isError) {
+            state.supportingTextRes?.let { supportingTextRes ->
                 Text(
-                    text = state.errorTextRes?.localized().orEmpty(),
-                    color = LocalColors.current.error,
+                    text = supportingTextRes.localized(),
+                    color = if (state.isError) LocalColors.current.error else LocalColors.current.secondaryText,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
@@ -118,7 +118,7 @@ private fun Preview() {
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "",
-                    errorTextRes = "Error".desc(),
+                    supportingTextRes = "Error".desc(),
                     isError = false,
                     enabled = true,
                     readOnly = false
@@ -129,7 +129,7 @@ private fun Preview() {
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "Text",
-                    errorTextRes = "Error".desc(),
+                    supportingTextRes = "Error".desc(),
                     isError = false,
                     enabled = true,
                     readOnly = false
@@ -140,7 +140,7 @@ private fun Preview() {
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "",
-                    errorTextRes = "Error description".desc(),
+                    supportingTextRes = "Error description".desc(),
                     isError = true,
                     enabled = true,
                     readOnly = false
@@ -151,7 +151,7 @@ private fun Preview() {
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "Text",
-                    errorTextRes = "Error description".desc(),
+                    supportingTextRes = "Error description".desc(),
                     isError = true,
                     enabled = true,
                     readOnly = false
@@ -174,7 +174,7 @@ private fun PreviewLight() {
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "",
-                    errorTextRes = "Error".desc(),
+                    supportingTextRes = "Error".desc(),
                     isError = false,
                     enabled = true,
                     readOnly = false
@@ -185,7 +185,7 @@ private fun PreviewLight() {
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "Text",
-                    errorTextRes = "Error".desc(),
+                    supportingTextRes = "Error".desc(),
                     isError = false,
                     enabled = true,
                     readOnly = false
@@ -196,7 +196,7 @@ private fun PreviewLight() {
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "",
-                    errorTextRes = "Error description".desc(),
+                    supportingTextRes = "Error description".desc(),
                     isError = true,
                     enabled = true,
                     readOnly = false
@@ -207,7 +207,7 @@ private fun PreviewLight() {
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
                     text = "Text",
-                    errorTextRes = "Error description".desc(),
+                    supportingTextRes = "Error description".desc(),
                     isError = true,
                     enabled = true,
                     readOnly = false

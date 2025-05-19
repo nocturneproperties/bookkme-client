@@ -13,7 +13,7 @@ class AndroidTextFieldState(
     hint: StringDesc = "".desc(),
     text: String = "",
     label: StringDesc = "".desc(),
-    errorTextRes: StringDesc? = null,
+    supportingTextRes: StringDesc? = null,
     isError: Boolean = false,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -24,7 +24,7 @@ class AndroidTextFieldState(
     override var hint: StringDesc by mutableStateOf(hint)
     override var label: StringDesc by mutableStateOf(label)
     override var text: String by mutableStateOf(text)
-    override var errorTextRes: StringDesc? by mutableStateOf(errorTextRes)
+    override var supportingTextRes: StringDesc? by mutableStateOf(supportingTextRes)
     override var isError: Boolean by mutableStateOf(isError)
     override var enabled: Boolean by mutableStateOf(enabled)
     override var readOnly: Boolean by mutableStateOf(readOnly)

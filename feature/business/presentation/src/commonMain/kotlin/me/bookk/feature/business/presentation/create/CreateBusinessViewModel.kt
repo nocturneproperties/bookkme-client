@@ -26,15 +26,23 @@ class CreateBusinessViewModel(
     fun onCreateClick() {
         launch(
             launchIn = DispatcherProvider.io,
+            onStart = {
+                uiState.createBtn.isEnabled = false
+                uiState.createBtn.isLoading = true
+            },
             call = { createBusiness(uiState.name.text) },
             onComplete = {
                 /**
-                 * @see me.bookk.feature.business.presentation.bootstrap.BootstrapViewModel
+                 * @see me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
                  * After successful business creation bootstrap will change root destination resulting
                  * in screen stack change
                  * */
             },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
+            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
+            onTerminate = {
+                uiState.createBtn.isEnabled = true
+                uiState.createBtn.isLoading = false
+            }
         )
     }
 
@@ -44,7 +52,8 @@ class CreateBusinessViewModel(
                 title = BusinessRes.strings.create_business_title.desc(),
                 hint = BusinessRes.strings.create_business_name_hint.desc(),
                 supportingText = BusinessRes.strings.create_business_name_supporting.desc(),
-                buttonText = DesignSystem.strings.action_create.desc()
+                buttonText = DesignSystem.strings.action_create.desc(),
+                maxNameLength = 512
             )
         }
     }

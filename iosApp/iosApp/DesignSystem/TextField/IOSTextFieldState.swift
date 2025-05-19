@@ -12,7 +12,7 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
     @Published
     var enabled: Bool
     @Published
-    var errorTextRes: (any StringDesc)?
+    var supportingTextRes: (any StringDesc)?
     @Published
     var hint: any StringDesc
 	@Published
@@ -30,7 +30,7 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
     
     init(
         enabled: Bool = true,
-        errorTextRes: (any StringDesc)? = nil,
+        supportingTextRes: (any StringDesc)? = nil,
         hint: any StringDesc = RawStringDesc(string: ""),
 		label: any StringDesc = RawStringDesc(string: ""),
         isError: Bool = false,
@@ -41,7 +41,7 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
         isVisible: Bool = true
     ) {
         self.enabled = enabled
-        self.errorTextRes = errorTextRes
+        self.supportingTextRes = supportingTextRes
         self.hint = hint
         self.isError = isError
         self.isValid = isValid

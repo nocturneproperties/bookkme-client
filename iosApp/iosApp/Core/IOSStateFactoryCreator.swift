@@ -7,7 +7,7 @@
 //
 import shared
 
-class IOSStateFactoryCreator:StateFactoryCreator {
+class IOSStateFactoryCreator: StateFactoryCreator {
 	
 	func createDashboardFactory() -> any DashboardStateFactory {
 		return IOSDashboardStateFactory()
@@ -19,6 +19,10 @@ class IOSStateFactoryCreator:StateFactoryCreator {
 	
 	func createSettingsFactory() -> any SettingsStateFactory {
 		return IOSSettingsStateFactory()
+	}
+	
+	func createBusinessFactory() -> any BusinessStateFactory {
+		return IOSBusinessStateFactory()
 	}
     
 }

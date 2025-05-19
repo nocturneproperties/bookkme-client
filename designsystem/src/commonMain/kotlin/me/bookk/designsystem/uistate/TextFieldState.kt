@@ -6,7 +6,7 @@ interface TextFieldState : ViewState {
     var hint: StringDesc
     var label: StringDesc
     var text: String
-    var errorTextRes: StringDesc?
+    var supportingTextRes: StringDesc?
     var isError: Boolean
     var isValid: Boolean
     var enabled: Boolean

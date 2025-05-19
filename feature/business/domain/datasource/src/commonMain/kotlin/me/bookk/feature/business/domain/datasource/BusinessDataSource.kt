@@ -5,6 +5,7 @@ import me.bookk.feature.business.domain.api.entity.Business
 
 interface BusinessDataSource {
     suspend fun createBusiness(name: String): Business
+    suspend fun clearBusinessTable()
     suspend fun saveBusinessInDB(business: Business)
     suspend fun getBusinessFromRemote(): Business?
     fun observeBusinessDBChanges(): Flow<Business?>

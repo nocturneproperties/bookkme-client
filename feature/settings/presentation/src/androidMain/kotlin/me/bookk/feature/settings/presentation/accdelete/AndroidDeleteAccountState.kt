@@ -4,7 +4,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidNavigationState
-import me.bookk.designsystem.uistate.AndroidPresentationNotificationState
+import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidSwitchState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
@@ -19,6 +19,6 @@ class AndroidDeleteAccountState(
     override val confirmationMessage: StringDesc = initData.confirmationMessage
     override val confirmationSwitch: SwitchState = AndroidSwitchState(initData.switchMessage, isChecked = false)
     override val deleteButton: ButtonState = AndroidButtonState(text = initData.buttonMessage, isEnabled = false)
-    override val notifications: PresentationNotificationState = AndroidPresentationNotificationState()
+    override val notifications: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<DeleteAccountNavigationDestination> = AndroidNavigationState()
 }

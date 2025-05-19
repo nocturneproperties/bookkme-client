@@ -12,6 +12,7 @@ import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.TokenInfo
+import me.bookk.feature.business.domain.api.RefreshBusinessInfo
 import me.bookk.feature.platform.domain.api.GetPlatformInformation
 
 internal class SignInImpl(
@@ -19,7 +20,8 @@ internal class SignInImpl(
     private val authorizationDataSource: AuthorizationDataSource,
     private val getPlatformInformation: GetPlatformInformation,
     private val userProfileCRUD: UserProfileCRUD,
-    private val passKeyManager: PassKeyManager
+    private val passKeyManager: PassKeyManager,
+    private val refreshBusiness: RefreshBusinessInfo
 ) : SignIn {
     override suspend fun invoke() {
         val challenge = authorizationDataSource.getAuthorizationChallenge()
@@ -28,6 +30,7 @@ internal class SignInImpl(
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
         authorizationDataSource.invalidateClientTokens()
         userProfileCRUD.updateFromRemote()
+        runCatching { refreshBusiness() }
         authorizationDataSource.setAuthorizationStatus(true)
     }
 
@@ -44,6 +47,7 @@ internal class SignInImpl(
                 AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> SignIn.Error.NoAccountForThisPasskey
                 AuthErrorCodes.VERIFICATION_FAILED,
                 AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> SignIn.Error.PasskeyVerificationFailed
+
                 else -> it
             }
         }.getOrThrow()

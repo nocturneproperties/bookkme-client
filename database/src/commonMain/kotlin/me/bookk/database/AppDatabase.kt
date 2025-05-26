@@ -6,12 +6,15 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import me.bookk.core.DispatcherProvider
+import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.UserProfileDao
+import me.bookk.database.entity.BusinessEntity
 import me.bookk.database.entity.UserProfileEntity
 
 @Database(
     entities = [
-        UserProfileEntity::class
+        UserProfileEntity::class,
+        BusinessEntity::class
     ],
     version = 1
 )
@@ -19,6 +22,7 @@ import me.bookk.database.entity.UserProfileEntity
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun profileDao(): UserProfileDao
+    abstract fun businessDao(): BusinessDao
 
     companion object {
 

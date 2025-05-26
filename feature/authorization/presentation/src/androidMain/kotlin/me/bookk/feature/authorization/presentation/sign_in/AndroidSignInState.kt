@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidNavigationState
-import me.bookk.designsystem.uistate.AndroidPresentationNotificationState
+import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
@@ -31,7 +31,7 @@ internal class AndroidSignInState private constructor(
         signInButton = AndroidButtonState(text = initData.signInButtonText),
         signUpButton = AndroidButtonState(text = initData.signUpButtonText),
         troubleshootButton = AndroidButtonState(text = initData.troubleshootButtonText),
-        notification = AndroidPresentationNotificationState(),
+        notification = AndroidNotificationState(),
         navigation = AndroidNavigationState<SignInNavigationDestination>()
     )
 }

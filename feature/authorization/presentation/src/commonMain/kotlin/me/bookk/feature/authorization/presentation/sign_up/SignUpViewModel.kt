@@ -41,7 +41,7 @@ class SignUpViewModel(
         uiState.name.text = text
         uiState.name.isValid = validationResult.isValid
         uiState.name.isError = !validationResult.isValid
-        uiState.name.errorTextRes = when (validationResult) {
+        uiState.name.supportingTextRes = when (validationResult) {
             ValidateName.Result.Invalid.Length -> AuthRes.strings.sign_up_first_name_error.desc()
             ValidateName.Result.Valid -> null
         }
@@ -53,7 +53,7 @@ class SignUpViewModel(
         uiState.lastName.text = text
         uiState.lastName.isValid = validationResult.isValid
         uiState.lastName.isError = !validationResult.isValid
-        uiState.lastName.errorTextRes = when (validationResult) {
+        uiState.lastName.supportingTextRes = when (validationResult) {
             ValidateName.Result.Invalid.Length -> AuthRes.strings.sign_up_last_name_error.desc()
             ValidateName.Result.Valid -> null
         }
@@ -65,7 +65,7 @@ class SignUpViewModel(
         uiState.email.text = text
         uiState.email.isValid = validationResult.isValid
         uiState.email.isError = !validationResult.isValid
-        uiState.email.errorTextRes = when (validationResult) {
+        uiState.email.supportingTextRes = when (validationResult) {
             ValidateEmail.Result.Invalid.Format -> AuthRes.strings.sign_up_email_error.desc()
             ValidateEmail.Result.Valid -> null
         }
@@ -90,12 +90,12 @@ class SignUpViewModel(
                     is Error.EmailAlreadyExist -> {
                         uiState.email.isError = true
                         uiState.email.isValid = false
-                        uiState.email.errorTextRes = AuthRes.strings.sign_up_email_exist.desc()
+                        uiState.email.supportingTextRes = AuthRes.strings.sign_up_email_exist.desc()
                     }
                     is Error.InvalidEmailFormat -> {
                         uiState.email.isError = true
                         uiState.email.isValid = false
-                        uiState.email.errorTextRes = AuthRes.strings.sign_up_email_error.desc()
+                        uiState.email.supportingTextRes = AuthRes.strings.sign_up_email_error.desc()
                     }
                     is Error.PasskeyVerificationFailed -> {
                         uiState.notification.add(

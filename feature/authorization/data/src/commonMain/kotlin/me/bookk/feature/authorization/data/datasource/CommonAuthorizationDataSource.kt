@@ -2,6 +2,8 @@ package me.bookk.feature.authorization.data.datasource
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.auth.authProvider
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
@@ -38,14 +40,15 @@ class CommonAuthorizationDataSource(
 
     init {
         if (!PlatformUtils.IS_JVM) {
-            val access =
-                "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra2subWUiLCJpc3MiOiJjb20uYm9va2suc2VydmVyIiwianRpIjoiZGI1YTFmYjAtNWQwNy00OTdiLWI2ZjMtMjhiNWZkOWRlZTdhIiwiYXV0aF9pZCI6MywidXNlcl9pZCI6MywiZGV2aWNlX2lkIjo4LCJpYXQiOjE3NDQzMDgxMjgsIm5iZiI6MTc0NDMwODEyOCwiZXhwIjoxNzQ0MzExNzI4fQ.dHq5FBi6n1Y87Vfd8HyEmGUMGDkhpNYcINSYh9i-nlBzb-_j2FoQIDWVppv-_9wQFodoaq98y-vb-QPU3O8RvK5WlIpCLX4BD-DYL8d2eb1Ms3Ls7yzli1x73tNlnWGL4_v_MbjW9BkHrHOvrJyEJ8T-tHuquejUtC5trnEehzEwnRaRHtRDTDKUAd2dYajGajVBrnxapvxPkQXJkUdwFJ67WDj1Kkt23RJDx2tPN-FrJ27_naWlN90Fi5wPZ6mOVfk0E-jHrR5HlDw7RfLtw-eSdGPThFitjwdfi71kSTOcezfflZiTqH5db1-M1GTK5XVTq-i89jalKbfluOjxEA"
-            val refresh =
-                "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra2subWUiLCJpc3MiOiJjb20uYm9va2suc2VydmVyLnJlZnJlc2giLCJqdGkiOiIyMmE3ZTA3Ny02ZjFkLTRhMTMtYWJjMi1kYTJjMzU2M2E3ODQiLCJkZXZpY2VfaWQiOjgsImlhdCI6MTc0NDMwODEyOCwibmJmIjoxNzQ0MzA4MTI4LCJleHAiOjE3NDQzOTQ1Mjh9.eRoxakH2TDnooUncF5QY9msg26Mi8HKxnSd4nmGLWexONQJazLosjqUUDfNgD6U9w8WpfkVy-Q1wojgNOlMAPQ-msYbOjcdmk0BS3SLdA53Vtr33p9WNXaCITtvJyBkaSyDHGge-NUb-zm95gAouw-48GpVYxiBjhPbYhy1tEGtEWHc6LoxAzlHD7p1cSJVhL7M5SPSo3Ac-i1hMD_Wp5CWDtpzQlzxjEN2xexJUeFTqv1TxhEl1ReUjDMGGxTepfdu8PE5uYK8osgAH3th7bO3K10m_ZTJQqd5FF0BYiJi5hNkj9SGrFNpPdRwhSGdFaUNFtu400ReGyJix-GOkrw"
             runBlocking {
                 if (getRefreshToken() == null) {
+                    val refresh =
+                        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra2subWUiLCJpc3MiOiJjb20uYm9va2suc2VydmVyLnJlZnJlc2giLCJqdGkiOiI2NDNkMDljYjM0MDA0YjZlOTgxOWU0MzUwNWVjOTk1ZSIsImRldmljZV9pZCI6MTYsImlhdCI6MTc0NzY5MDAyNiwibmJmIjoxNzQ3NjkwMDI2LCJleHAiOjE3NDgyOTQ4MjZ9.CI6801U7JIZrQqz28yjCEuXjEM4AmrxffSYFziz3EqLhRmxSCtNXZ_76Lhif_1VUzvzs0jziPZFRSW6Ii36VBYKNQ35mO7_rKjJKksTZoWKM3u7otE3WoXo_dbs0OcyEfP5F-auRWASaHBHuSbRLkekhfbHnD9jOs7rd4EDg9143nFEfa0cJxzSO-zzW09h2WqULOA8i9vUE0nlULmBR8nxahtiaUVxmcHUR0bXouH3NDGV6y6m7zHCmQy5c7a0_CbyqU2GhxHnlDSC-GDngwXyef8vqX3vP0bBeJBuAKkS_vwHUTCNTZrjGPPYQW1p1uVTLS_w18QG4pfwycSnPjg"
+                    val access =
+                        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra2subWUiLCJpc3MiOiJjb20uYm9va2suc2VydmVyIiwianRpIjoiZWNiNzBjZjQyNzg3NDQyM2FjMjQ1MjAxMDFmN2QzNzQiLCJhdXRoX2lkIjo0LCJ1c2VyX2lkIjo0LCJkZXZpY2VfaWQiOjE2LCJpYXQiOjE3NDc2OTAwMjYsIm5iZiI6MTc0NzY5MDAyNiwiZXhwIjoxNzQ3NjkwMzI2fQ.JKmiXNRYQA7QCW-EjvsCpvAWW8XxhWW8HdzotluGrAYByp5A4jQsIYv-dTjyUYPl3ag2jnE0igId3oU7_c1iUZ9FbCdELrKZe-wtQB7oKVRPgyryRLbMtjrasQdCJzQCm1lOEeELiMGeUbWh4ADwykfYM24pIfl_59IhRvSBDiHx6lbo4yFO7mJBRC5M3w3CbA5LXb7CeVO3yUn2BVizTmyaQgJthxjs-I7etixOD4_pUWdivD_tSwjIyq3htiO-jFETtwwC8eXUumRf29sfALpnQsS98nt9o8YxE5QmzcLSKU9oUsWBVy6Q629DmZSBVAZb7yzYOG_cjTPbCllgwQ"
                     saveAuthorizationTokens(TokenInfo(access, refresh))
                     setAuthorizationStatus(true)
+                    invalidateClientTokens()
                 }
             }
         }
@@ -77,7 +80,7 @@ class CommonAuthorizationDataSource(
 
     override suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge =
         mapExceptions {
-            val response = httpClient.get(Auth.PassKey.SignInChallenge()) {}
+            val response = httpClient.get(Auth.PassKey.SignInChallenge())
             response.body<AuthChallengeResponse>().toDomain()
         }
 
@@ -104,6 +107,10 @@ class CommonAuthorizationDataSource(
 
     override suspend fun setAuthorizationStatus(isAuthorized: Boolean) {
         preferences.set(Key.authorized, isAuthorized)
+    }
+
+    override suspend fun invalidateClientTokens() {
+        httpClient.authProvider<BearerAuthProvider>()?.clearToken()
     }
 
     private object Key {

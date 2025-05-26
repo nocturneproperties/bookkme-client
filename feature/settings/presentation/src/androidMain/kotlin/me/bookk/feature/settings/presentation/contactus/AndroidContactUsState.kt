@@ -5,7 +5,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidNavigationState
-import me.bookk.designsystem.uistate.AndroidPresentationNotificationState
+import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidSwitchState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AppBarState
@@ -25,6 +25,6 @@ internal class AndroidContactUsState(
     override val logsExplanationText: StringDesc = initData.includeLogsExplanation
     override val submitButton: ButtonState = AndroidButtonState(text = initData.submitButtonText, isEnabled = false)
 
-    override val notifications: PresentationNotificationState = AndroidPresentationNotificationState()
+    override val notifications: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<ContactUsNavigationDestination> = AndroidNavigationState()
 }

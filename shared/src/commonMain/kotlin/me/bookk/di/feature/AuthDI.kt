@@ -1,4 +1,4 @@
-package me.bookk.di
+package me.bookk.di.feature
 
 import me.bookk.feature.authorization.data.di.authDataModule
 import me.bookk.feature.authorization.domain.impl.di.authDomainModule

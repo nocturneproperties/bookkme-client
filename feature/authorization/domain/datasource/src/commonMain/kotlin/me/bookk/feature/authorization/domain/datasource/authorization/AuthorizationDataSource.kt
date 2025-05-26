@@ -14,4 +14,5 @@ interface AuthorizationDataSource {
     suspend fun deleteAccount(request: DeleteAccountRequest)
     suspend fun logOut()
     suspend fun setAuthorizationStatus(isAuthorized: Boolean)
+    suspend fun invalidateClientTokens()
 }

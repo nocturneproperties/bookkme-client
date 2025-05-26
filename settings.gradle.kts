@@ -57,3 +57,10 @@ include(":feature:settings:presentation")
 
 //Dashboard
 include(":feature:dashboard:presentation")
+
+//Business
+include(":feature:business:data")
+include(":feature:business:domain:api")
+include(":feature:business:domain:impl")
+include(":feature:business:domain:datasource")
+include(":feature:business:presentation")

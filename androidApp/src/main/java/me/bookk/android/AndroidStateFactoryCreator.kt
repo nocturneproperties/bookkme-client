@@ -2,6 +2,8 @@ package me.bookk.android
 
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.factory.AndroidAuthStateFactory
+import me.bookk.feature.business.presentation.BusinessStateFactory
+import me.bookk.feature.business.presentation.factory.AndroidBusinessStateFactory
 import me.bookk.feature.dashboard.presentation.AndroidDashboardStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
@@ -19,5 +21,9 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
 
     override fun createSettingsFactory(): SettingsStateFactory {
         return AndroidSettingsStateFactory()
+    }
+
+    override fun createBusinessFactory(): BusinessStateFactory {
+        return AndroidBusinessStateFactory()
     }
 }

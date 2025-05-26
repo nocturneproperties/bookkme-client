@@ -31,6 +31,7 @@ internal class CreateAccountImpl(
         val data = createRegistrationData(userData, verificationPayload, challenge.requestId)
         val tokenInfo = finishRegistration(data)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
+        authorizationDataSource.invalidateClientTokens()
         userProfileCRUD.updateFromRemote()
         authorizationDataSource.setAuthorizationStatus(true)
     }

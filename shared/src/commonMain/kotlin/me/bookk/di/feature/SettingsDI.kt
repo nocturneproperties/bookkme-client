@@ -1,4 +1,4 @@
-package me.bookk.di
+package me.bookk.di.feature
 
 import me.bookk.feature.settings.data.di.settingsDataModule
 import me.bookk.feature.settings.domain.impl.di.settingsDomainModule

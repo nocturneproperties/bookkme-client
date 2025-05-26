@@ -58,7 +58,7 @@ class EditProfileViewModel(
         uiState.name.text = text
         uiState.name.isValid = validationResult.isValid
         uiState.name.isError = !validationResult.isValid
-        uiState.name.errorTextRes = when (validationResult) {
+        uiState.name.supportingTextRes = when (validationResult) {
             ValidateName.Result.Invalid.Length -> SettingsRes.strings.settings_edit_profile_first_name_error.desc()
             ValidateName.Result.Valid -> null
         }
@@ -71,7 +71,7 @@ class EditProfileViewModel(
         uiState.lastName.text = text
         uiState.lastName.isValid = validationResult.isValid
         uiState.lastName.isError = !validationResult.isValid
-        uiState.lastName.errorTextRes = when (validationResult) {
+        uiState.lastName.supportingTextRes = when (validationResult) {
             ValidateName.Result.Invalid.Length -> SettingsRes.strings.settings_edit_profile_last_name_error.desc()
             ValidateName.Result.Valid -> null
         }
@@ -84,7 +84,7 @@ class EditProfileViewModel(
         uiState.email.text = text
         uiState.email.isValid = validationResult.isValid
         uiState.email.isError = !validationResult.isValid
-        uiState.email.errorTextRes = when (validationResult) {
+        uiState.email.supportingTextRes = when (validationResult) {
             ValidateEmail.Result.Invalid.Format -> SettingsRes.strings.settings_edit_profile_email_error.desc()
             ValidateEmail.Result.Valid -> null
         }

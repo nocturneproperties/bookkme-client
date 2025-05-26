@@ -53,6 +53,11 @@ kotlin {
             implementation(projects.feature.settings.domain.impl)
             implementation(projects.feature.settings.data)
             api(projects.feature.settings.presentation)
+            //Business
+            implementation(projects.feature.business.domain.api)
+            implementation(projects.feature.business.domain.impl)
+            implementation(projects.feature.business.data)
+            api(projects.feature.business.presentation)
             // Libs
             implementation(libs.koin.core)
             implementation(libs.ktor.client.negotiation)
@@ -66,7 +71,6 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
-
     }
     listOf(
         iosX64(),
@@ -86,6 +90,7 @@ kotlin {
             export(projects.feature.authorization.presentation)
             export(projects.feature.dashboard.presentation)
             export(projects.feature.settings.presentation)
+            export(projects.feature.business.presentation)
         }
     }
 }

@@ -1,4 +1,4 @@
-package me.bookk.di
+package me.bookk.di.feature
 
 import me.bookk.feature.dashboard.presentation.di.dashboardPresentationModule
 import org.koin.dsl.module

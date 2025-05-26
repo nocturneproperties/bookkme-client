@@ -22,7 +22,7 @@ abstract class DataSource {
         }
     }
 
-    fun <T> Flow<T>.handleErrors(): Flow<T> {
+    fun <T> Flow<T>.mapErrors(): Flow<T> {
         return catch { e ->
             throw e.toDomain()
         }

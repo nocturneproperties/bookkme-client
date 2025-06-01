@@ -24,8 +24,8 @@ import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardState
-import me.bookk.feature.business.presentation.dashboard.state.Section
 
 @Composable
 internal fun DashboardScreen(
@@ -48,7 +48,7 @@ internal fun DashboardScreen(
 }
 
 @Composable
-private fun DashboardSection(item: Section) {
+private fun DashboardSection(item: BusinessDashboardSection) {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -89,7 +89,7 @@ private fun PreviewDark() {
         DashboardScreen(
             state = AndroidDashboardState(BusinessDashboardViewModel.createInitData()).apply {
                 appBar.title = "Business name".desc()
-                updateSections(listOf(Section.Business(), Section.Appointments(), Section.Shop()))
+                updateSections(listOf(BusinessDashboardSection.Business(), BusinessDashboardSection.Appointments(), BusinessDashboardSection.Shop()))
             }
         )
     }
@@ -102,7 +102,7 @@ private fun PreviewLight() {
         DashboardScreen(
             state = AndroidDashboardState(BusinessDashboardViewModel.createInitData()).apply {
                 appBar.title = "Business name".desc()
-                updateSections(listOf(Section.Business(), Section.Appointments(), Section.Shop()))
+                updateSections(listOf(BusinessDashboardSection.Business(), BusinessDashboardSection.Appointments(), BusinessDashboardSection.Shop()))
             }
         )
     }

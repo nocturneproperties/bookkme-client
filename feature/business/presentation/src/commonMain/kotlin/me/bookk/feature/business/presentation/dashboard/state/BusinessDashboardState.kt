@@ -8,12 +8,12 @@ import me.bookk.feature.business.presentation.dashboard.DashboardNavigationDesti
 interface BusinessDashboardState {
 
     val appBar: AppBarState
-    val sections: List<Section>
+    val sections: List<BusinessDashboardSection>
 
     val notifications: PresentationNotificationState
     val navigation: NavigationState<DashboardNavigationDestination>
 
-    fun updateSections(sections: List<Section>)
+    fun updateSections(sections: List<BusinessDashboardSection>)
 
     class InitData
 }

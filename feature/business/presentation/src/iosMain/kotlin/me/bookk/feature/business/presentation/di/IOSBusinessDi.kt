@@ -20,3 +20,6 @@ fun createBusinessVM(): CreateBusinessViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun businessBootstrapVM(): BusinessBootstrapViewModel = KoinPlatform.getKoin().get()
+
+@UsedInSwift
+fun businessDashboardVM(): BusinessDashboardViewModel = KoinPlatform.getKoin().get()

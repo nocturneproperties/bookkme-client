@@ -7,9 +7,49 @@
 //
 
 import SwiftUI
+import shared
 
 struct BusinessDashboardScreen: View {
+	
+	@StateObject var viewModel: BusinessDashboardViewModel = IOSBusinessDiKt.businessDashboardVM()
+	
 	var body: some View {
-		Text("BusinessDashboardScreen")
+		VStack {
+			BusinessDashboardScreenContent(state: viewModel.uiState)
+		}
+		.withNavigationBar(state: viewModel.uiState.appBar)
+		.navigationBarTitleDisplayMode(.inline)
+		.handleNotifications(state: viewModel.uiState.notifications)
+		.sendLifecycleEventsTo(viewModel: viewModel)
+		.handleNavigation(state: viewModel.uiState.navigation) { navigation in
+			
+		}
 	}
+}
+
+struct BusinessDashboardScreenContent: View {
+	
+	@ObservedObject var state: IOSBusinessDashboardState
+	
+	init(state: BusinessDashboardState) {
+		self.state = state.impl()
+	}
+	
+	var body: some View {
+		List {
+			ForEach(state.sections, id: \.self) { sectionModel in
+				Section(sectionModel.title.localized()) {
+					ForEach(sectionModel.items, id: \.self) { itemModel in
+						NavigationLink(value: itemModel.navigation) {
+							Text(itemModel.text.localized())
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#Preview {
+	BusinessDashboardScreen()
 }

@@ -21,3 +21,9 @@ class IOSAppBarState: IOSViewState, AppBarState {
         super.init(isVisible: isVisible)
     }
 }
+
+extension shared.AppBarState {
+	func impl() -> IOSAppBarState {
+		return self as! IOSAppBarState
+	}
+}

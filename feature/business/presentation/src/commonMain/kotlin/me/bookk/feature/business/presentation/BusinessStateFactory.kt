@@ -7,6 +7,6 @@ import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardS
 interface BusinessStateFactory {
     fun createBootstrapState(initData: BusinessBootstrapState.InitData): BusinessBootstrapState
     fun createBusinessState(initData: CreateBusinessState.InitData): CreateBusinessState
-    fun createDashboardState(initData: BusinessDashboardState.InitData): BusinessDashboardState
+    fun createBusinessDashboardState(initData: BusinessDashboardState.InitData): BusinessDashboardState
 
 }

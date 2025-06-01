@@ -11,9 +11,8 @@ import me.bookk.feature.business.domain.api.GetAvailableDashboardFeatures
 import me.bookk.feature.business.domain.api.ObserveBusinessChanges
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.BusinessStateFactory
+import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardState
-import me.bookk.feature.business.presentation.dashboard.state.DashboardUIItem
-import me.bookk.feature.business.presentation.dashboard.state.Section
 
 class BusinessDashboardViewModel(
     private val observeBusinessChanges: ObserveBusinessChanges,
@@ -22,15 +21,11 @@ class BusinessDashboardViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
-    val uiState = stateFactory.createDashboardState(createInitData())
+    val uiState = stateFactory.createBusinessDashboardState(createInitData())
 
     init {
         loadFeatures()
         observeBusiness()
-    }
-
-    fun onItemClick(item: DashboardUIItem) {
-        uiState.navigation.push(item.navigation)
     }
 
     private fun observeBusiness() {
@@ -48,13 +43,13 @@ class BusinessDashboardViewModel(
             onComplete = { features ->
                 val sectionList = buildList {
                     if (features.contains(DashboardFeature.BUSINESS)) {
-                        add(Section.Business())
+                        add(BusinessDashboardSection.Business())
                     }
                     if (features.contains(DashboardFeature.APPOINTMENTS)) {
-                        add(Section.Appointments())
+                        add(BusinessDashboardSection.Appointments())
                     }
                     if (features.contains(DashboardFeature.SHOP)) {
-                        add(Section.Shop())
+                        add(BusinessDashboardSection.Shop())
                     }
                 }
                 uiState.updateSections(sectionList)

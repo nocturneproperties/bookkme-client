@@ -11,4 +11,16 @@ sealed class BusinessDestination {
 
     @Serializable
     data object Dashboard : BusinessDestination()
+
+    @Serializable
+    data object Employees : BusinessDestination()
+
+    @Serializable
+    data object Clients : BusinessDestination()
+
+    @Serializable
+    data object Analytics : BusinessDestination()
+
+    @Serializable
+    data object Settings : BusinessDestination()
 }

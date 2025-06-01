@@ -10,7 +10,7 @@ abstract class DashboardUIItem(
     val navigation: DashboardNavigationDestination
 )
 
-sealed class Section(
+sealed class BusinessDashboardSection(
     val title: StringDesc,
     val items: List<DashboardUIItem>
 ) {
@@ -21,7 +21,7 @@ sealed class Section(
             Analytics,
             Settings
         )
-    ) : Section(BusinessRes.strings.business_dashboard_business.desc(), items) {
+    ) : BusinessDashboardSection(BusinessRes.strings.business_dashboard_business.desc(), items) {
         data object Employees : DashboardUIItem(
             BusinessRes.strings.business_dashboard_employees.desc(),
             DashboardNavigationDestination.Employees
@@ -49,7 +49,7 @@ sealed class Section(
             History,
             Settings,
         )
-    ) : Section(BusinessRes.strings.business_dashboard_appointments.desc(), items) {
+    ) : BusinessDashboardSection(BusinessRes.strings.business_dashboard_appointments.desc(), items) {
         data object Services : DashboardUIItem(
             BusinessRes.strings.business_dashboard_services.desc(),
             DashboardNavigationDestination.Services
@@ -73,7 +73,7 @@ sealed class Section(
             Warehouse,
             Orders
         )
-    ): Section(BusinessRes.strings.business_dashboard_shop.desc(), items) {
+    ): BusinessDashboardSection(BusinessRes.strings.business_dashboard_shop.desc(), items) {
         data object Assortment : DashboardUIItem(
             BusinessRes.strings.business_dashboard_assortment.desc(),
             DashboardNavigationDestination.Assortment

@@ -1,8 +1,8 @@
-import me.bookk.build_src.constants.AndroidConfig
+import build_src.constants.AndroidConfig
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.bookk.android.application)
+    alias(libs.plugins.convention.android.application)
 }
 
 val keystoreProperties = file("keystore.properties").inputStream().use {

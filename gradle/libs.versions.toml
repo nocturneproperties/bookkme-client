@@ -3,10 +3,10 @@ local-plugin-version = "1.0"
 agp = "8.7.3"
 kotlin = "2.1.0"
 compose-runtime = "1.7.1"
-androidx-activityCompose = "1.10.0"
+androidx-activity = "1.10.1"
 androidx-lifecycle = "2.8.7"
 androidx-core = "1.15.0"
-androidx-credentials = "1.5.0-rc01"
+androidx-credentials = "1.5.0"
 coroutines = "1.9.0"
 firebase = "33.7.0"
 appDistribution = "5.0.0"
@@ -21,11 +21,11 @@ kmm-resources-graphics = "0.24.5"
 datetime = "0.6.1"
 coil = "2.6.0"
 slf4jSimple = "2.0.16"
-room = "2.7.0"
-sqlite = "2.5.0"
-compose-navigation = "2.8.5"
+room = "2.7.1"
+sqlite = "2.5.1"
+compose-navigation = "2.9.0"
 ksp = "2.1.0-1.0.29"
-preferences = "1.1.1"
+preferences = "1.1.6"
 okio = "3.9.1"
 build-konfig = "0.15.2"
 json-serialization = "1.7.3"
@@ -34,9 +34,10 @@ json-serialization = "1.7.3"
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }
 androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
+androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "preferences" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidx-credentials" }
 androidx-credentials-compat = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidx-credentials" }
@@ -47,7 +48,7 @@ kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-j
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-compose-bom = { module = "androidx.compose:compose-bom", version = "2024.12.01" }
+compose-bom = { module = "androidx.compose:compose-bom", version = "2025.05.00" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
@@ -94,11 +95,11 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
-bookk-android-application = { id = "me.bookk.android.application", version.ref = "local-plugin-version" }
-bookk-kmm-library = { id = "me.bookk.kmm.library", version.ref = "local-plugin-version" }
-bookk-kmm-library-compose = { id = "me.bookk.kmm.library.compose", version.ref = "local-plugin-version" }
-bookk-kmm-database = { id = "me.bookk.kmm.library.database", version.ref = "local-plugin-version" }
-bookk-kotlin-library = { id = "me.bookk.kotlin.library", version.ref = "local-plugin-version" }
+convention-android-application = { id = "convention.android.application", version.ref = "local-plugin-version" }
+convention-kmm-library = { id = "convention.kmm.library", version.ref = "local-plugin-version" }
+convention-kmm-library-compose = { id = "convention.kmm.library.compose", version.ref = "local-plugin-version" }
+convention-kmm-database = { id = "convention.kmm.library.database", version.ref = "local-plugin-version" }
+convention-kotlin-library = { id = "convention.kotlin.library", version.ref = "local-plugin-version" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }

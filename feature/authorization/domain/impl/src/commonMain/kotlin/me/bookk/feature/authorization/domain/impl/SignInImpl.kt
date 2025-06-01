@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.domain.impl
 
+import library.device.api.DeviceFacade
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.domain.entity.businessOrThrow
 import me.bookk.feature.authorization.domain.api.SignIn
@@ -13,12 +14,11 @@ import me.bookk.feature.authorization.domain.datasource.registration.PassKeyMana
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 import me.bookk.feature.business.domain.api.RefreshBusinessInfo
-import me.bookk.feature.platform.domain.api.GetPlatformInformation
 
 internal class SignInImpl(
     private val deviceDataSource: DeviceDataSource,
     private val authorizationDataSource: AuthorizationDataSource,
-    private val getPlatformInformation: GetPlatformInformation,
+    private val deviceFacade: DeviceFacade,
     private val userProfileCRUD: UserProfileCRUD,
     private val passKeyManager: PassKeyManager,
     private val refreshBusiness: RefreshBusinessInfo
@@ -69,7 +69,7 @@ internal class SignInImpl(
             requestId = requestId,
             deviceInfo = SignInData.DeviceInfo(
                 deviceUUID = deviceDataSource.getOrCreateDeviceUUID(),
-                deviceName = getPlatformInformation().deviceName
+                deviceName = deviceFacade.getDeviceName()
             ),
             publicKeyCredentialJson = publicCredJson
         )

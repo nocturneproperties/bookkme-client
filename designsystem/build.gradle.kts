@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bookk.kmm.library.compose)
+    alias(libs.plugins.convention.kmm.library.compose)
 }
 
 android {
@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.presentation)
-            implementation(projects.domain.environment.api)
+            implementation(projects.environment.api)
         }
     }
 }

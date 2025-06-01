@@ -1,0 +1,12 @@
+package library.files.impl.di
+
+import library.cache.api.FileProvider
+import library.files.impl.AndroidFileProvider
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
+
+internal actual fun platformFilesModule(): Module = module {
+    factoryOf(::AndroidFileProvider) bind FileProvider::class
+}

@@ -1,8 +1,8 @@
+import build_src.constants.ProductFlavour
 import com.codingfeline.buildkonfig.compiler.FieldSpec
-import me.bookk.build_src.constants.ProductFlavour
 
 plugins {
-    alias(libs.plugins.bookk.kmm.library)
+    alias(libs.plugins.convention.kmm.library)
     alias(libs.plugins.kmm.resources)
 }
 
@@ -42,10 +42,17 @@ kotlin {
             implementation(projects.feature.authorization.domain.impl)
             implementation(projects.feature.authorization.data)
             api(projects.feature.authorization.presentation)
-            //Platform
-            implementation(projects.feature.platform.domain.api)
-            implementation(projects.feature.platform.domain.impl)
-            implementation(projects.feature.platform.data)
+            //Library
+            implementation(projects.library.device.api)
+            implementation(projects.library.device.impl)
+            implementation(projects.library.cache.api)
+            implementation(projects.library.cache.impl)
+            implementation(projects.library.permissions.api)
+            implementation(projects.library.permissions.impl)
+            implementation(projects.library.files.api)
+            implementation(projects.library.files.impl)
+            implementation(projects.library.credentials.api)
+            implementation(projects.library.credentials.impl)
             //Dashboard
             api(projects.feature.dashboard.presentation)
             //Settings

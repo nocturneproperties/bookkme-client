@@ -15,7 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
-import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
@@ -26,7 +25,6 @@ import me.bookk.feature.business.presentation.create.state.CreateBusinessState
 internal fun CreateBusinessScreen(
     state: CreateBusinessState
 ) {
-    ObserveNotifications(state.notifications)
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()

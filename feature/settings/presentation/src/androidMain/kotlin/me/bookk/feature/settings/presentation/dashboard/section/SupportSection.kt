@@ -12,9 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
+import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.settings.presentation.dashboard.LocalDashboardEventListener
-import me.bookk.feature.settings.presentation.dashboard.SectionItem
 import me.bookk.feature.settings.presentation.dashboard.SupportSection
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 

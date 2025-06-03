@@ -30,22 +30,26 @@ include(":core")
 include(":core:data")
 include(":core:domain")
 include(":core:presentation")
+include(":environment:api")
+include(":environment:impl")
 
-//Domain
-include(":domain:environment:api")
-include(":domain:environment:impl")
-
-//Platform
-include(":feature:platform:data")
-include(":feature:platform:domain:api")
-include(":feature:platform:domain:impl")
-include(":feature:platform:domain:datasource")
+//Library
+include(":library:cache:api")
+include(":library:cache:impl")
+include(":library:credentials:api")
+include(":library:credentials:impl")
+include(":library:permissions:api")
+include(":library:permissions:impl")
+include(":library:files:api")
+include(":library:files:impl")
+include(":library:device:api")
+include(":library:device:impl")
 
 //Authorization
 include(":feature:authorization:data")
+include(":feature:authorization:data:source")
 include(":feature:authorization:domain:api")
 include(":feature:authorization:domain:impl")
-include(":feature:authorization:domain:datasource")
 include(":feature:authorization:presentation")
 
 //Settings
@@ -60,7 +64,7 @@ include(":feature:dashboard:presentation")
 
 //Business
 include(":feature:business:data")
+include(":feature:business:data:source")
 include(":feature:business:domain:api")
 include(":feature:business:domain:impl")
-include(":feature:business:domain:datasource")
 include(":feature:business:presentation")

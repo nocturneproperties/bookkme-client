@@ -6,4 +6,17 @@
     <string name="create_business_features">Features</string>
     <string name="create_business_feature_appointments_title">Appointments</string>
     <string name="create_business_feature_appointments_description">Your clients can book time for consultations or personal services. By scheduling in advance, they can avoid calling you.</string>
+
+    <string name="business_dashboard_business">Business</string>
+    <string name="business_dashboard_employees">Employees</string>
+    <string name="business_dashboard_clients">Clients</string>
+    <string name="business_dashboard_analytics">Analytics</string>
+    <string name="business_dashboard_settings">Settings</string>
+    <string name="business_dashboard_appointments">Appointments</string>
+    <string name="business_dashboard_services">Services</string>
+    <string name="business_dashboard_history">History</string>
+    <string name="business_dashboard_shop">Shop</string>
+    <string name="business_dashboard_assortment">Assortment</string>
+    <string name="business_dashboard_warehouse">Warehouse</string>
+    <string name="business_dashboard_orders">Orders</string>
 </resources>

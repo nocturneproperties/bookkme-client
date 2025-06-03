@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bookk.kmm.library)
+    alias(libs.plugins.convention.kmm.library)
 }
 
 android {
@@ -12,7 +12,7 @@ kotlin {
             implementation(projects.core)
             implementation(projects.core.domain)
             implementation(projects.feature.business.domain.api)
-            implementation(projects.feature.business.domain.datasource)
+            implementation(projects.feature.business.data.source)
         }
     }
 }

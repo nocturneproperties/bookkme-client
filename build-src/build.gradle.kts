@@ -26,28 +26,28 @@ dependencies {
 gradlePlugin {
     plugins {
         register("androidApp") {
-            id = "me.bookk.android.application"
-            implementationClass = "me.bookk.AndroidApplicationConventionPlugin"
+            id = "convention.android.application"
+            implementationClass = "build_src.AndroidApplicationConventionPlugin"
             version = "1.0"
         }
         register("kmmLibrary") {
-            id = "me.bookk.kmm.library"
-            implementationClass = "me.bookk.KMMLibraryConventionPlugin"
+            id = "convention.kmm.library"
+            implementationClass = "build_src.KMMLibraryConventionPlugin"
             version = "1.0"
         }
         register("kmmComposeLibrary") {
-            id = "me.bookk.kmm.library.compose"
-            implementationClass = "me.bookk.KMMComposeLibraryConventionPlugin"
+            id = "convention.kmm.library.compose"
+            implementationClass = "build_src.KMMComposeLibraryConventionPlugin"
             version = "1.0"
         }
         register("kotlinLibrary") {
-            id = "me.bookk.kotlin.library"
-            implementationClass = "me.bookk.KotlinLibraryConventionPlugin"
+            id = "convention.kotlin.library"
+            implementationClass = "build_src.KotlinLibraryConventionPlugin"
             version = "1.0"
         }
         register("kmmDatabase") {
-            id = "me.bookk.kmm.library.database"
-            implementationClass = "me.bookk.KMMDatabaseConventionPlugin"
+            id = "convention.kmm.library.database"
+            implementationClass = "build_src.KMMDatabaseConventionPlugin"
             version = "1.0"
         }
     }

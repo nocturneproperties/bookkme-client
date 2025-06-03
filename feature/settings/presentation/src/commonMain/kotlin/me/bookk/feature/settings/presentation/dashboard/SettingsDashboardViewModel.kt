@@ -1,6 +1,7 @@
 package me.bookk.feature.settings.presentation.dashboard
 
 import dev.icerock.moko.resources.desc.desc
+import library.device.api.DeviceFacade
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -8,7 +9,6 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
-import me.bookk.feature.platform.domain.api.OpenUrlPreview
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.LogOut
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
@@ -18,7 +18,7 @@ import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColo
 class SettingsDashboardViewModel(
     private val getSettings: GetSettings,
     private val updateColorScheme: UpdateColorScheme,
-    private val openUrl: OpenUrlPreview,
+    private val deviceFacade: DeviceFacade,
     private val logOut: LogOut,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs
@@ -39,11 +39,11 @@ class SettingsDashboardViewModel(
     }
 
     fun showTerms() {
-        openUrl("https://google.com")
+        deviceFacade.openUrlPreview("https://google.com")
     }
 
     fun showPolicy() {
-        openUrl("https://google.com")
+        deviceFacade.openUrlPreview("https://google.com")
     }
 
     fun onLogOutClick() {

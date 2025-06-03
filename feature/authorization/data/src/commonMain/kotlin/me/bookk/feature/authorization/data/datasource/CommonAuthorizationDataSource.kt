@@ -13,6 +13,11 @@ import io.ktor.util.PlatformUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import library.cache.api.PreferenceProvider
+import library.cache.api.Preferences
+import library.cache.api.get
+import library.cache.api.getFlow
+import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
@@ -24,11 +29,6 @@ import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAcco
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
 import me.bookk.feature.authorization.domain.entity.TokenInfo
-import me.bookk.feature.platform.domain.datasource.PreferenceProvider
-import me.bookk.feature.platform.domain.datasource.Preferences
-import me.bookk.feature.platform.domain.datasource.get
-import me.bookk.feature.platform.domain.datasource.getFlow
-import me.bookk.feature.platform.domain.datasource.set
 
 class CommonAuthorizationDataSource(
     private val httpClient: HttpClient,

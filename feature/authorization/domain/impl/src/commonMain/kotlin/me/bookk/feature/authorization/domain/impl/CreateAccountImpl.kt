@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.domain.impl
 
+import library.device.api.DeviceFacade
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.domain.entity.businessOrThrow
 import me.bookk.feature.authorization.domain.api.CreateAccount
@@ -14,13 +15,12 @@ import me.bookk.feature.authorization.domain.datasource.registration.Registratio
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
 import me.bookk.feature.authorization.domain.entity.TokenInfo
-import me.bookk.feature.platform.domain.api.GetPlatformInformation
 
 internal class CreateAccountImpl(
     private val registrationDataSource: RegistrationDataSource,
     private val deviceDataSource: DeviceDataSource,
     private val authorizationDataSource: AuthorizationDataSource,
-    private val getPlatformInformation: GetPlatformInformation,
+    private val deviceFacade: DeviceFacade,
     private val userProfileCRUD: UserProfileCRUD,
     private val passKeyManager: PassKeyManager
 ) : CreateAccount {
@@ -86,7 +86,7 @@ internal class CreateAccountImpl(
             requestId = requestId,
             deviceInfo = RegistrationData.DeviceInfo(
                 deviceUUID = deviceDataSource.getOrCreateDeviceUUID(),
-                deviceName = getPlatformInformation().deviceName
+                deviceName = deviceFacade.getDeviceName()
             ),
             userInfo = RegistrationData.UserInfo(
                 name = userData.firstName,

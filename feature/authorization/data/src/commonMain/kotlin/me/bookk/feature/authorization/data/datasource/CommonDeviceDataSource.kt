@@ -1,10 +1,10 @@
 package me.bookk.feature.authorization.data.datasource
 
+import library.cache.api.PreferenceProvider
+import library.cache.api.Preferences
+import library.cache.api.get
+import library.cache.api.set
 import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
-import me.bookk.feature.platform.domain.datasource.PreferenceProvider
-import me.bookk.feature.platform.domain.datasource.Preferences
-import me.bookk.feature.platform.domain.datasource.get
-import me.bookk.feature.platform.domain.datasource.set
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

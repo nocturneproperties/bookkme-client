@@ -1,0 +1,3 @@
+package library.credentials.api
+
+interface CredentialManager

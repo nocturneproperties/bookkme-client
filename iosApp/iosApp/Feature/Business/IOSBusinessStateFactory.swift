@@ -9,11 +9,16 @@
 import shared
 
 class IOSBusinessStateFactory: BusinessStateFactory {
+	
 	func createBootstrapState(initData: BusinessBootstrapStateInitData) -> any BusinessBootstrapState {
 		return IOSBusinessBootstrapState(initData: initData)
 	}
 	
 	func createBusinessState(initData: CreateBusinessStateInitData) -> any CreateBusinessState {
 		return IOSCreateBusinessState(initData: initData)
+	}
+	
+	func createBusinessDashboardState(initData: BusinessDashboardStateInitData) -> any BusinessDashboardState {
+		return IOSBusinessDashboardState(initData: initData)
 	}
 }

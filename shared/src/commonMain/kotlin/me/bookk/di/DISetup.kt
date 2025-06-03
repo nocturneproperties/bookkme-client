@@ -4,7 +4,6 @@ import me.bookk.core.LogFactory
 import me.bookk.di.feature.authDiModule
 import me.bookk.di.feature.businessDiModule
 import me.bookk.di.feature.dashboardDiModule
-import me.bookk.di.feature.platformDiModule
 import me.bookk.di.feature.settingsDiModule
 import me.bookk.presentation.StateFactoryCreator
 import me.bookk.shared.LoggerImpl
@@ -27,7 +26,7 @@ fun initDI(creator: StateFactoryCreator) {
 
 private fun KoinApplication.installModules(creator: StateFactoryCreator) = modules(
     coreModule(creator),
-    platformDiModule(),
+    libraryModule(),
     authDiModule(),
     dashboardDiModule(),
     settingsDiModule(),

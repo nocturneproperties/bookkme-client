@@ -12,10 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
+import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.settings.presentation.dashboard.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.LocalDashboardEventListener
-import me.bookk.feature.settings.presentation.dashboard.SectionItem
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 
 @Composable
@@ -33,7 +33,12 @@ internal fun AccountSection(state: AccountSection) {
             color = LocalColors.current.header
         )
 
-        Column(modifier = Modifier.background(LocalColors.current.elevated, shape = MaterialTheme.shapes.medium)) {
+        Column(
+            modifier = Modifier.background(
+                LocalColors.current.elevated,
+                shape = MaterialTheme.shapes.medium
+            )
+        ) {
             SectionItem(
                 text = state.passkey.text.localized(),
                 onClick = LocalNavigation.current.navigateToPasskey

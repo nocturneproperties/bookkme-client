@@ -8,5 +8,5 @@ import me.bookk.feature.business.presentation.loading.loaderScreen
 fun NavGraphBuilder.businessGraph(navigation: BusinessNavigation) {
     createBusinessScreen(navigation)
     loaderScreen()
-    dashboardScreen()
+    dashboardScreen(navigation)
 }

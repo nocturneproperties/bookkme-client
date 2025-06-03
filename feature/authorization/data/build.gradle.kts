@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bookk.kmm.library)
+    alias(libs.plugins.convention.kmm.library)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -18,9 +18,9 @@ kotlin {
             implementation(projects.core.domain)
             implementation(projects.core.data)
             implementation(projects.database)
-            implementation(projects.feature.platform.domain.datasource)
             implementation(projects.feature.authorization.domain.api)
-            implementation(projects.feature.authorization.domain.datasource)
+            implementation(projects.feature.authorization.data.source)
+            implementation(projects.library.cache.api)
             implementation(libs.ktor.client.resources)
             implementation(libs.ktor.client.auth)
         }

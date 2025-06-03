@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
+import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.businessGraph
 import org.koin.androidx.compose.koinViewModel
@@ -28,7 +29,16 @@ fun BusinessTab() {
     ) {
         businessGraph(
             navigation = BusinessNavigation(
-                navigateBack = { businessController.popBackStack() }
+                toAnalytics = { businessController.navigate(BusinessDestination.Analytics) },
+                toClients = { businessController.navigate(BusinessDestination.Clients) },
+                toEmployees = { businessController.navigate(BusinessDestination.Employees) },
+                toBusinessSettings = { businessController.navigate(BusinessDestination.Settings) },
+                toAppointmentSettings = {},
+                toAppointmentHistory = {},
+                toAppointmentServices = {},
+                toShopOrders = {},
+                toShopAssortment = {},
+                toShopWarehouse = {}
             )
         )
     }

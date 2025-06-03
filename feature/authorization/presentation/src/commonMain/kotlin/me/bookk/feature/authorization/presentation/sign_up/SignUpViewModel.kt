@@ -1,6 +1,7 @@
 package me.bookk.feature.authorization.presentation.sign_up
 
 import dev.icerock.moko.resources.desc.desc
+import library.device.api.DeviceFacade
 import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -19,13 +20,12 @@ import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpEventListener
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
-import me.bookk.feature.platform.domain.api.OpenUrlPreview
 
 class SignUpViewModel(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
     private val createAccount: CreateAccount,
-    private val openUrlPreview: OpenUrlPreview,
+    private val deviceFacade: DeviceFacade,
     stateFactory: AuthStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs), SignUpEventListener {
@@ -33,7 +33,7 @@ class SignUpViewModel(
     val uiState: SignUpState = stateFactory.createSignUpState(createInitData())
 
     override fun onLearnMoreClick() {
-        openUrlPreview(AuthConstants.PASSKEY_INFO_URL)
+        deviceFacade.openUrlPreview(AuthConstants.PASSKEY_INFO_URL)
     }
 
     override fun onFirstNameTextChanged(text: String) {

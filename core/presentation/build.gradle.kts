@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bookk.kmm.library.compose)
+    alias(libs.plugins.convention.kmm.library.compose)
 }
 
 android {

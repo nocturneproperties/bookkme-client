@@ -1,7 +1,7 @@
-import me.bookk.build_src.constants.AndroidConfig
+import build_src.constants.AndroidConfig
 
 plugins {
-    alias(libs.plugins.bookk.kmm.library.compose)
+    alias(libs.plugins.convention.kmm.library.compose)
 }
 
 android {

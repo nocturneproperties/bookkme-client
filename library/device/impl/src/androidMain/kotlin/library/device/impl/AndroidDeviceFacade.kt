@@ -3,8 +3,8 @@ package library.device.impl
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import library.device.api.DeviceFacade
 
 class AndroidDeviceFacade(
@@ -24,8 +24,13 @@ class AndroidDeviceFacade(
     }
 
     override fun openUrlPreview(url: String) {
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        val browserIntent = Intent(Intent.ACTION_VIEW, url.toUri())
             .addFlags(FLAG_ACTIVITY_NEW_TASK)
-        appContext.startActivity(browserIntent)
+        runCatching { appContext.startActivity(browserIntent) }
+    }
+
+    override fun openMapAt(lat: Double, lng: Double) {
+        val geoUrl = "geo:$lat,$lng?z=15"
+        openUrlPreview(geoUrl)
     }
 }

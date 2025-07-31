@@ -19,4 +19,21 @@
     <string name="business_dashboard_assortment">Assortment</string>
     <string name="business_dashboard_warehouse">Warehouse</string>
     <string name="business_dashboard_orders">Orders</string>
+
+    <string name="business_settings_title">Business settings</string>
+    <string name="business_settings_name_title">Name</string>
+    <string name="business_settings_name_hint">Business name</string>
+    <string name="business_settings_description_title">Description</string>
+    <string name="business_settings_description_hint">Short description</string>
+    <string name="business_settings_location_title">Location</string>
+    <string name="business_settings_location_hint">Business location</string>
+    <string name="business_settings_location_supporting">This location helps to find your location on maps app</string>
+    <string name="business_settings_address_title">Address</string>
+    <string name="business_settings_address_hint">Enter address</string>
+    <string name="business_settings_currency_title">Currency</string>
+    <string name="business_settings_socials_title">Socials</string>
+    <string name="business_settings_instagram_hint">Instagram tag</string>
+    <string name="business_settings_viber_hint">Viber number</string>
+    <string name="business_settings_telegram_hint">Telegram tag</string>
+    <string name="business_settings_location_test">Test location on map</string>
 </resources>

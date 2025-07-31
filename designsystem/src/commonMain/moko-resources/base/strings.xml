@@ -3,6 +3,7 @@
     <string name="error_no_internet">Oops! It seems you're offline. Please check your internet connection and try again.</string>
     <string name="error_server">Our server ran into an issue. We're on it! Please refresh or come back shortly.</string>
     <string name="error_unexpected">Unexpected error. Contact support if needed.</string>
+    <string name="error_empty">Can\'t be empty</string>
 
     <string name="action_cancel">Cancel</string>
     <string name="action_confirm">Confirm</string>

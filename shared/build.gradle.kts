@@ -53,6 +53,8 @@ kotlin {
             implementation(projects.library.files.impl)
             implementation(projects.library.credentials.api)
             implementation(projects.library.credentials.impl)
+            implementation(projects.library.money.api)
+            implementation(projects.library.money.impl)
             //Dashboard
             api(projects.feature.dashboard.presentation)
             //Settings

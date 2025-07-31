@@ -15,6 +15,7 @@ kotlin {
             implementation(projects.core.presentation)
             implementation(projects.designsystem)
             implementation(projects.feature.business.domain.api)
+            implementation(projects.library.device.api)
         }
     }
 }

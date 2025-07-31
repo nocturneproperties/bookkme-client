@@ -4,6 +4,7 @@ import me.bookk.core.UsedInSwift
 import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
 import me.bookk.feature.business.presentation.create.CreateBusinessViewModel
 import me.bookk.feature.business.presentation.dashboard.BusinessDashboardViewModel
+import me.bookk.feature.business.presentation.settings.BusinessSettingsViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -13,6 +14,7 @@ internal actual fun platformBusinessDiModule(): Module = module {
     factoryOf(::CreateBusinessViewModel)
     factoryOf(::BusinessBootstrapViewModel)
     factoryOf(::BusinessDashboardViewModel)
+    factoryOf(::BusinessSettingsViewModel)
 }
 
 @UsedInSwift
@@ -23,3 +25,6 @@ fun businessBootstrapVM(): BusinessBootstrapViewModel = KoinPlatform.getKoin().g
 
 @UsedInSwift
 fun businessDashboardVM(): BusinessDashboardViewModel = KoinPlatform.getKoin().get()
+
+@UsedInSwift
+fun businessSettingsVM(): BusinessSettingsViewModel = KoinPlatform.getKoin().get()

@@ -6,11 +6,11 @@ import kotlin.math.roundToLong
 
 /**
  * Class created to avoid floating point operations and gain predictable money calculations.
- * Value represented as long with precision up to 5 decimal places.
+ * Value represented as long in cents.
  *
- * 12525000 = 125.25
- * 23000000 = 230.00
- * 123123212345 = 1231232.12345
+ * 12525 = 125.25
+ * 23000 = 230.00
+ * 123123212 = 1231232.12
  * */
 
 data class Money(
@@ -73,7 +73,7 @@ data class Money(
     }
 
     companion object {
-        private const val PRECISION = 5
+        private const val PRECISION = 2
         private val PRECISION_MULTIPLIER = 10.0.pow(PRECISION).roundToLong()
 
         private fun Float.asPreciseLong(): Long {

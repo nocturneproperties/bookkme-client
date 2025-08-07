@@ -34,7 +34,7 @@ class MoneyTest {
     fun doubleConstructor() {
         val money = Money(125.84, Money.SupportedCurrency.UAH)
 
-        assertEquals(12584000, money.value)
+        assertEquals(12584, money.value)
         assertEquals(Money.SupportedCurrency.UAH, money.currency)
     }
 
@@ -42,14 +42,14 @@ class MoneyTest {
     fun floatConstructor() {
         val money = Money(12312321.99, Money.SupportedCurrency.UAH)
 
-        assertEquals(1231232199000, money.value)
+        assertEquals(1231232199, money.value)
         assertEquals(Money.SupportedCurrency.UAH, money.currency)
     }
 
     @Test
     fun timesDouble() {
         val money = Money(12322.75, Money.SupportedCurrency.UAH)
-        val expected = Money(1544656.7125, Money.SupportedCurrency.UAH)
+        val expected = Money(1544656.71, Money.SupportedCurrency.UAH)
         val result = money * 125.35
 
         assertEquals(expected, result)
@@ -58,7 +58,7 @@ class MoneyTest {
     @Test
     fun timesFloat() {
         val money = Money(12322.75, Money.SupportedCurrency.UAH)
-        val expected = Money(928272.7575, Money.SupportedCurrency.UAH)
+        val expected = Money(928272.75, Money.SupportedCurrency.UAH)
         val result = money * 75.33f
 
         assertEquals(expected, result)
@@ -67,7 +67,7 @@ class MoneyTest {
     @Test
     fun divDouble() {
         val money = Money(12322.75, Money.SupportedCurrency.UAH)
-        val expected = Money(163.58356, Money.SupportedCurrency.UAH)
+        val expected = Money(163.58, Money.SupportedCurrency.UAH)
         val result = money / 75.33
 
         assertEquals(expected, result)
@@ -76,13 +76,9 @@ class MoneyTest {
     @Test
     fun divFloat() {
         val money = Money(12322.75, Money.SupportedCurrency.UAH)
-        val expected = Money(163.58356, Money.SupportedCurrency.UAH)
+        val expected = Money(163.58, Money.SupportedCurrency.UAH)
         val result = money / 75.33f
 
         assertEquals(expected, result)
-    }
-
-    @Test
-    fun testToString() {
     }
 }

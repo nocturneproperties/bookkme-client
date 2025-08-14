@@ -5,14 +5,14 @@ import kotlinx.coroutines.flow.onEach
 import me.bookk.core.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.feature.business.domain.api.ObserveBusinessChanges
+import me.bookk.feature.business.domain.api.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.RefreshBusinessInfo
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapState.InitData
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 
 class BusinessBootstrapViewModel(
-    private val observeBusinessChanges: ObserveBusinessChanges,
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
     private val refreshBusinessInfo: RefreshBusinessInfo,
     stateFactory: BusinessStateFactory,
     vmArgs: VmArgs
@@ -30,7 +30,7 @@ class BusinessBootstrapViewModel(
             call = { refreshBusinessInfo() },
             onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
-        observeBusinessChanges()
+        observeDashboardBusinessChanges()
             .onEach { business ->
                 uiState.startDestination = if (business == null) {
                     BusinessDestination.Create

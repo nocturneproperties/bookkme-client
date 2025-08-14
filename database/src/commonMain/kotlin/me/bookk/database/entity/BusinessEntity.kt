@@ -9,5 +9,15 @@ import androidx.room.PrimaryKey
 class BusinessEntity(
     @PrimaryKey
     val id: Long,
-    val name: String
+    val name: String,
+    val description: String,
+    val address: String,
+    val locationLat: Double?,
+    val locationLng: Double?,
+    val currencyCode: String,
+    val phone: String?,
+    val insta: String?,
+    val viber: String?,
+    val whatsApp: String?,
+    val telegram: String?
 )

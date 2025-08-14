@@ -61,7 +61,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        NavigationRoot(viewModel.state)
+                        NavigationRoot(
+                            state = viewModel.state,
+                            onUnauthorized = viewModel::logOut
+                        )
                     }
                 }
             }
@@ -70,11 +73,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun NavigationRoot(state: BootstrapState) {
+private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHandler) {
     val controller = rememberNavController()
-    val unauthorizedHandler = remember {
-        UnauthorizedHandler { controller.navigate(AuthDestination.SignIn) { popUpTo(0) } }
-    }
     val authNavigation = remember {
         AuthNavigation(
             navigateBack = controller::popBackStack,
@@ -88,7 +88,7 @@ private fun NavigationRoot(state: BootstrapState) {
     }
     val destination = state.startDestination
     if (destination != null) {
-        CompositionLocalProvider(LocalUnauthorizedHandler provides unauthorizedHandler) {
+        CompositionLocalProvider(LocalUnauthorizedHandler provides onUnauthorized) {
             NavHost(
                 navController = controller,
                 startDestination = when (destination) {

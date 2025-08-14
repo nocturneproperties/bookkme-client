@@ -27,6 +27,10 @@ internal actual class CurrencyImpl actual constructor(
 
     private val symbol = fittingLocales.firstOrNull()?.currencySymbol.orEmpty()
 
+    override fun code(): String {
+        return code
+    }
+
     override fun format(value: Long): String {
         val doubleValue = value / 100.0
         return formatter.stringFromNumber(NSNumber.numberWithDouble(doubleValue)).orEmpty()

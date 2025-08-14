@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.onEach
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.feature.business.domain.api.GetAvailableDashboardFeatures
-import me.bookk.feature.business.domain.api.ObserveBusinessChanges
+import me.bookk.feature.business.domain.api.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardState
 
 class BusinessDashboardViewModel(
-    private val observeBusinessChanges: ObserveBusinessChanges,
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
     private val getAvailableDashboardFeatures: GetAvailableDashboardFeatures,
     stateFactory: BusinessStateFactory,
     vmArgs: VmArgs
@@ -29,7 +29,7 @@ class BusinessDashboardViewModel(
     }
 
     private fun observeBusiness() {
-        observeBusinessChanges()
+        observeDashboardBusinessChanges()
             .onEach { business ->
                 uiState.appBar.title = business?.name.orEmpty().desc()
             }
@@ -53,7 +53,8 @@ class BusinessDashboardViewModel(
                     }
                 }
                 uiState.updateSections(sectionList)
-            }
+            },
+            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
         )
     }
 

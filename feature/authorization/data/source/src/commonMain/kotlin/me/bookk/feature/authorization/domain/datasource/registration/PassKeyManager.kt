@@ -10,10 +10,10 @@ interface PassKeyManager {
         val challengeJson: String,
     )
 
-    sealed class Error : Exception() {
+    sealed class Error(override val cause: Throwable? = null) : Exception() {
         data object UserCancelled : Error()
         data object CredentialsMissing : Error()
-        data object Unknown : Error()
+        data class Unknown(override val cause: Throwable?) : Error(cause)
         data object Infrastructure : Error()
     }
 }

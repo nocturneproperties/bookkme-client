@@ -13,6 +13,10 @@ internal actual class CurrencyImpl actual constructor(
         currency = AndroidCurrency.getInstance(currencyUnit.code)
     }
 
+    override fun code(): String {
+        return currencyUnit.code
+    }
+
     override fun format(value: Long): String {
         val doubleValue = value / (10 * currencyUnit.decimalPlaces)
         return formatter.format(doubleValue)

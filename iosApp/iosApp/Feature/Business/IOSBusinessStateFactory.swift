@@ -21,4 +21,8 @@ class IOSBusinessStateFactory: BusinessStateFactory {
 	func createBusinessDashboardState(initData: BusinessDashboardStateInitData) -> any BusinessDashboardState {
 		return IOSBusinessDashboardState(initData: initData)
 	}
+	
+	func createBusinessSettingsState(initData: BusinessSettingsStateInitData) -> any BusinessSettingsState {
+		<#code#>
+	}
 }

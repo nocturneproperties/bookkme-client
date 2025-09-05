@@ -6,6 +6,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import me.bookk.database.entity.BusinessEntity
+import kotlin.uuid.Uuid
 
 @Dao
 abstract class BusinessDao {
@@ -13,7 +14,7 @@ abstract class BusinessDao {
     abstract suspend fun queryBusiness(): BusinessEntity?
 
     @Query("select * from business where id = :businessId")
-    abstract fun observeBusiness(businessId: Long): Flow<BusinessEntity?>
+    abstract fun observeBusiness(businessId: Uuid): Flow<BusinessEntity?>
 
     @Insert
     abstract suspend fun insertBusiness(entity: BusinessEntity)

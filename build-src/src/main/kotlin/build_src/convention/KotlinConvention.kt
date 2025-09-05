@@ -31,6 +31,9 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     iosArm64()
     iosSimulatorArm64()
 
+    sourceSets.all {
+        languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+    }
     sourceSets.androidMain.dependencies {
         implementation(project.libs.kotlinx.coroutines.android)
     }

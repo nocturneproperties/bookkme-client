@@ -16,6 +16,7 @@ import me.bookk.feature.settings.domain.api.entity.Passkey
 import me.bookk.feature.settings.domain.datasource.passkey.ClientSignUpResult
 import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSource
 import me.bookk.feature.settings.domain.datasource.passkey.ServerSignUpChallenge
+import kotlin.uuid.Uuid
 
 internal class PasskeySettingsDataSourceImpl(
     private val httpClient: HttpClient
@@ -28,7 +29,7 @@ internal class PasskeySettingsDataSourceImpl(
         }
     }
 
-    override suspend fun deletePasskey(id: Long) {
+    override suspend fun deletePasskey(id: Uuid) {
         mapExceptions {
             httpClient.delete(AuthRouting.Api.Auth.PassKey.Id(id = id))
         }

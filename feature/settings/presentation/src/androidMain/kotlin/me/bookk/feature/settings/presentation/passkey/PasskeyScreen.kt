@@ -36,6 +36,7 @@ import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
+import kotlin.uuid.Uuid
 
 @Composable
 internal fun PasskeyScreen(state: PasskeyState) {
@@ -156,7 +157,7 @@ private fun mockPasskeys() = buildList {
     repeat(10) {
         add(
             PasskeyState.PasskeyItem(
-                id = it.toLong(),
+                id = Uuid.random(),
                 title = "Passkey name",
                 isBackedUp = false,
                 isDeletable = true,

@@ -15,6 +15,7 @@ import me.bookk.feature.authorization.data.remote.api.UserRouting
 import me.bookk.feature.authorization.data.remote.model.UserProfileRemote
 import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataSource
 import me.bookk.feature.authorization.domain.entity.UserProfile
+import kotlin.uuid.Uuid
 
 internal class CommonUserProfileDataSource(
     private val profileDao: UserProfileDao,
@@ -41,7 +42,7 @@ internal class CommonUserProfileDataSource(
         profileDao.update(userProfile.toDb())
     }
 
-    override suspend fun deleteProfile(id: Long) = mapExceptions {
-        TODO("Not yet implemented")
+    override suspend fun deleteProfile(id: Uuid) = mapExceptions {
+        profileDao.deleteById(id)
     }
 }

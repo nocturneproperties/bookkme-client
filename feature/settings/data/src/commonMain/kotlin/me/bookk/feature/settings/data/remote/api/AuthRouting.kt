@@ -1,6 +1,7 @@
 package me.bookk.feature.settings.data.remote.api
 
 import io.ktor.resources.Resource
+import kotlin.uuid.Uuid
 
 internal object AuthRouting {
     @Resource("api")
@@ -17,7 +18,7 @@ internal object AuthRouting {
                 class AddFinish(val parent: PassKey = PassKey())
 
                 @Resource("{id}")
-                class Id(val parent: PassKey = PassKey(), val id: Long)
+                class Id(val parent: PassKey = PassKey(), val id: Uuid)
             }
         }
     }

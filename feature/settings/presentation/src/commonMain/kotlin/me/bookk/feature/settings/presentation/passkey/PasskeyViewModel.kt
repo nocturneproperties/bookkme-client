@@ -17,6 +17,7 @@ import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
 import me.bookk.feature.settings.domain.api.entity.Passkey
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.passkey.PasskeyState.PasskeyItem
+import kotlin.uuid.Uuid
 
 class PasskeyViewModel(
     private val deletePasskey: DeletePasskey,
@@ -109,7 +110,7 @@ class PasskeyViewModel(
         )
     }
 
-    private fun deletePasskeyById(id: Long) {
+    private fun deletePasskeyById(id: Uuid) {
         launch(
             launchIn = DispatcherProvider.io,
             call = {
@@ -121,7 +122,7 @@ class PasskeyViewModel(
         )
     }
 
-    private fun deletePasskeyByIdList(ids: List<Long>) {
+    private fun deletePasskeyByIdList(ids: List<Uuid>) {
         launch(
             launchIn = DispatcherProvider.io,
             call = {

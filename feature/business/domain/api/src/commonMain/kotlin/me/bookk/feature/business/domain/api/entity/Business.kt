@@ -1,9 +1,10 @@
 package me.bookk.feature.business.domain.api.entity
 
 import library.money.api.Currency
+import kotlin.uuid.Uuid
 
 class Business(
-    val id: Long,
+    val id: Uuid,
     val name: String,
     val description: String,
     val address: String,

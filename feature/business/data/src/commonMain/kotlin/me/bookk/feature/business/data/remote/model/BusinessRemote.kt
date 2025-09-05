@@ -2,10 +2,11 @@ package me.bookk.feature.business.data.remote.model
 
 import kotlinx.serialization.Serializable
 import me.bookk.feature.business.domain.api.entity.Business
+import kotlin.uuid.Uuid
 
 @Serializable
 class BusinessRemote(
-    val id: Long,
+    val id: Uuid,
     val name: String,
     val description: String,
     val address: String,

@@ -50,7 +50,9 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
         }
         install(Resources)
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000
+            connectTimeoutMillis = 5000
+            requestTimeoutMillis = 20000
+            socketTimeoutMillis = 20000
         }
         if (installAuth) {
             install(Auth) {

@@ -24,6 +24,7 @@ import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
+import kotlin.uuid.Uuid
 
 internal class CommonBusinessDataSource(
     private val httpClient: HttpClient,
@@ -54,7 +55,7 @@ internal class CommonBusinessDataSource(
         mapExceptions { businessDao.upsertBusiness(businesses.map { it.toLocal() }) }
     }
 
-    override fun observeBusinessDBChanges(businessId: Long): Flow<Business?> {
+    override fun observeBusinessDBChanges(businessId: Uuid): Flow<Business?> {
         return businessDao.observeBusiness(businessId)
             .map { it?.toDomain() }
             .mapErrors()
@@ -66,19 +67,20 @@ internal class CommonBusinessDataSource(
             .toUserBusinesses()
     }
 
-    override suspend fun saveDashboardBusinessId(id: Long) {
-        preferences.set(Key.dashboardId, id)
+    override suspend fun saveDashboardBusinessId(id: Uuid) {
+        preferences.set(Key.dashboardId, id.toString())
     }
 
-    override suspend fun getDashboardBusinessId(): Long {
-        return preferences.get(Key.dashboardId) ?: -1
+    override suspend fun getDashboardBusinessId(): Uuid? {
+        return preferences.get(Key.dashboardId)?.let { Uuid.parse(it) }
     }
 
-    override fun getDashboardBusinessIdFlow(): Flow<Long> {
-        return preferences.getFlow(Key.dashboardId).map { it ?: -1 }
+    override fun getDashboardBusinessIdFlow(): Flow<Uuid?> {
+        return preferences.getFlow(Key.dashboardId)
+            .map { it?.let { Uuid.parse(it) } }
     }
 
     private object Key {
-        val dashboardId = Preferences.Key<Long>("dashboard_id")
+        val dashboardId = Preferences.Key<String>("dashboard_id")
     }
 }

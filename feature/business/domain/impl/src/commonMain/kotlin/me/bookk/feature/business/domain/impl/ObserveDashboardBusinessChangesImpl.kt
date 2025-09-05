@@ -3,6 +3,7 @@ package me.bookk.feature.business.domain.impl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import me.bookk.feature.business.domain.api.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
@@ -14,6 +15,12 @@ internal class ObserveDashboardBusinessChangesImpl(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(): Flow<Business?> {
         return businessDataSource.getDashboardBusinessIdFlow()
-            .flatMapLatest { businessDataSource.observeBusinessDBChanges(it) }
+            .flatMapLatest { id ->
+                if (id != null) {
+                    businessDataSource.observeBusinessDBChanges(id)
+                } else {
+                    flowOf(null)
+                }
+            }
     }
 }

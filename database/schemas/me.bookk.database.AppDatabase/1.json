@@ -2,16 +2,16 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "87b08f3decb123baf6a15a96aa23d8bf",
+    "identityHash": "e42d074629d638627bfcdd7d82d9f7b3",
     "entities": [
       {
         "tableName": "user_profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `email` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `email` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -42,12 +42,12 @@
       },
       {
         "tableName": "business",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `address` TEXT NOT NULL, `locationLat` REAL, `locationLng` REAL, `currencyCode` TEXT NOT NULL, `phone` TEXT, `insta` TEXT, `viber` TEXT, `whatsApp` TEXT, `telegram` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `address` TEXT NOT NULL, `locationLat` REAL, `locationLng` REAL, `currencyCode` TEXT NOT NULL, `phone` TEXT, `insta` TEXT, `viber` TEXT, `whatsApp` TEXT, `telegram` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -120,7 +120,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '87b08f3decb123baf6a15a96aa23d8bf')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e42d074629d638627bfcdd7d82d9f7b3')"
     ]
   }
 }

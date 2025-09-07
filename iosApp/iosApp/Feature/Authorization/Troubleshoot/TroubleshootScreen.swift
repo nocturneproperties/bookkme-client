@@ -15,7 +15,18 @@ struct TroubleshootScreen: View {
     
     
     var body: some View {
-		BusinessSettingsScreen()
+        let uiState = troubleshootVM.uiState
+        VStack {
+            TroubleshootCard(troubleshootInfo: uiState.troubleshootCardStaticData)
+            Spacer()
+            StateButton(state: uiState.contactSupportButton.impl()) {
+				//navigationStack.path.append()
+            }
+        }
+		.sendLifecycleEventsTo(viewModel: troubleshootVM)
+        .padding()
+        .navigationTitle(troubleshootVM.uiState.appBar.title.localized())
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 

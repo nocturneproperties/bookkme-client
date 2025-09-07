@@ -13,17 +13,21 @@ struct TextButton: View {
     @ObservedObject
     var state: IOSButtonState
     @State
-    var maxWidth: CGFloat? = .infinity
+    var maxWidth: CGFloat = .infinity
+	@State
+	var textAlignment: Alignment = .center
     @State
     var onClick: () -> Void
     
-	init(state: IOSButtonState, maxWidth: CGFloat? = .infinity, onClick: @escaping () -> Void) {
+	init(state: IOSButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: @escaping () -> Void) {
 		self.state = state
+		self.textAlignment = textAlignment
 		self.onClick = onClick
 	}
 	
-	init(state: ButtonState, maxWidth: CGFloat? = .infinity, onClick: @escaping () -> Void) {
+	init(state: ButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: @escaping () -> Void) {
 		self.state = state.impl()
+		self.textAlignment = textAlignment
 		self.onClick = onClick
 	}
 	
@@ -34,7 +38,7 @@ struct TextButton: View {
                     .frame(maxWidth: maxWidth, minHeight: 36)
             } else {
                 Text(state.text.localized())
-                    .frame(maxWidth: maxWidth, minHeight: 36)
+					.frame(maxWidth: maxWidth, minHeight: 36, alignment: textAlignment)
             }
         }
         .disabled(!state.isEnabled)

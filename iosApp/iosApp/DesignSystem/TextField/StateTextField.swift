@@ -14,7 +14,7 @@ struct StateTextField: View {
     @ObservedObject
     var state: IOSTextFieldState
 	@State
-	var isEditor:Bool = false
+	var isEditor: Bool = false
     @State
     var onTextChanged: (String) -> Void
 	
@@ -27,8 +27,8 @@ struct StateTextField: View {
     var body: some View {
         VStack {
 			HStack {
-				if (state.startIcon == nil) {
-					Image(systemName: "key.fill")
+				if (state.startIcon != nil) {
+					Image(uiImage: state.startIcon!.toUIImage()!)
 						.frame(width: 24, height: 24)
 				}
 				LabeledContent {
@@ -55,8 +55,7 @@ struct StateTextField: View {
 					}
 				}
 			}
-			.padding(.leading, state.startIcon == nil ? 12 : 6)
-			.padding(.trailing)
+			.padding(.horizontal, 12)
             .padding(.vertical, 12)
             .background(AppColors.elevated)
             .overlay(

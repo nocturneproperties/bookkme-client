@@ -74,6 +74,9 @@ class BusinessSettingsViewModel(
             instagramHint = BusinessRes.strings.business_settings_instagram_hint.desc(),
             viberHint = BusinessRes.strings.business_settings_viber_hint.desc(),
             telegramHint = BusinessRes.strings.business_settings_telegram_hint.desc(),
+            telegramIcon = DesignSystem.images.telegram,
+            viberIcon = DesignSystem.images.viber,
+            instaIcon = DesignSystem.images.instagram
         )
     }
 }

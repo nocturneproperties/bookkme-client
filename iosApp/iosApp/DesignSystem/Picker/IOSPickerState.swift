@@ -9,7 +9,11 @@
 import shared
 import SwiftUI
 
-class IOSPickerState<T:PickerPresentation>: PickerFieldState, ObservableObject {
+class IOSPickerState: PickerFieldState, ObservableObject, NativeStateRepresentation {
+	typealias SwiftType = IOSPickerState
+	
+	typealias KotlinType = PickerFieldState
+	
 	
 	@Published
 	var options: [PickerPresentation]
@@ -26,8 +30,8 @@ class IOSPickerState<T:PickerPresentation>: PickerFieldState, ObservableObject {
 }
 
 extension PickerFieldState {
-	func impl<T:PickerPresentation>() -> IOSPickerState<T> {
-		return self as! IOSPickerState<T>
+	func impl() -> IOSPickerState {
+		return self as! IOSPickerState
 	}
 }
 

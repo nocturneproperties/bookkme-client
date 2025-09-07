@@ -9,20 +9,20 @@
 import SwiftUI
 import shared
 
-struct StatePicker<T:PickerPresentation>: View {
+struct StatePicker<T: PickerPresentation>: View {
 	
 	@ObservedObject
-	var state: IOSPickerState<T>
+	var state: IOSPickerState
 	
 	@State
 	var onOptionPicked: (T) -> Void
 	
-	init (state: IOSPickerState<T>, onOptionPicked: @escaping (PickerPresentation) -> Void) {
-		self.state = state
+	init (state: PickerFieldState, onOptionPicked: @escaping (T) -> Void) {
+		self.state = state.impl()
 		self.onOptionPicked = onOptionPicked
 	}
 	var body: some View {
-		List{
+		LabeledContent {
 			Picker(
 				state.text.localized(),
 				selection: Binding(
@@ -36,7 +36,15 @@ struct StatePicker<T:PickerPresentation>: View {
 					Text(option.displayName.localized()).tag(option)
 				}
 			}
+			.pickerStyle(.automatic)
+		} label : {
+			Text(state.text.localized())
+				.frame(minWidth: 100, alignment: .leading)
 		}
+		.padding(.horizontal)
+		.frame(maxWidth: .infinity, minHeight: 48)
+		.background(AppColors.elevated)
+		.cornerRadius(10)
 	}
 }
 

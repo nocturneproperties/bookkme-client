@@ -9,7 +9,13 @@
 import shared
 import SwiftUI
 
-class IOSBusinessSettingsState: BusinessSettingsState, ObservableObject {
+class IOSBusinessSettingsState: BusinessSettingsState, ObservableObject, NativeStateRepresentation {
+	
+	typealias SwiftType = IOSBusinessSettingsState
+	
+	typealias KotlinType = BusinessSettingsState
+	
+	
 	var appBar: any AppBarState
 	
 	var address: any TextFieldState
@@ -40,14 +46,14 @@ class IOSBusinessSettingsState: BusinessSettingsState, ObservableObject {
 		let selectedItem = CurrencyUI(pickerItemId: 0, displayName: RawStringDesc(string: ""), domainValue: "")
 		self.currency = IOSPickerState(options: [selectedItem], selectedItem: selectedItem)
 		self.description_ = IOSTextFieldState(hint: initData.descriptionHint)
-		self.instagram = IOSTextFieldState(hint: initData.instagramHint)
+		self.instagram = IOSTextFieldState(hint: initData.instagramHint, startIcon: initData.instaIcon)
 		self.location = IOSTextFieldState(hint: initData.locationHint)
 		self.name = IOSTextFieldState(hint: initData.nameHint)
 		self.notifications = IOSNotificationState()
 		self.save = IOSButtonState(text: initData.saveButtonText)
-		self.telegram = IOSTextFieldState(hint: initData.telegramHint)
+		self.telegram = IOSTextFieldState(hint: initData.telegramHint, startIcon: initData.telegramIcon)
 		self.testLocation = IOSButtonState(text: initData.testLocationText)
-		self.viber = IOSTextFieldState(hint: initData.viberHint)
+		self.viber = IOSTextFieldState(hint: initData.viberHint, startIcon: initData.viberIcon)
 	}
 	
 }

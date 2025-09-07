@@ -1,5 +1,6 @@
 package me.bookk.feature.business.presentation.settings.state
 
+import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
@@ -34,6 +35,9 @@ interface BusinessSettingsState {
         val locationSupporting: StringDesc,
         val instagramHint: StringDesc,
         val viberHint: StringDesc,
-        val telegramHint: StringDesc
+        val telegramHint: StringDesc,
+        val instaIcon: ImageResource,
+        val viberIcon: ImageResource,
+        val telegramIcon: ImageResource
     )
 }

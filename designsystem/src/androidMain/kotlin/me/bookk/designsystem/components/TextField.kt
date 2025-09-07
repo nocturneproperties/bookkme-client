@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
+import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -76,7 +78,10 @@ fun TextField(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
-        }
+        },
+        leadingIcon = state.startIcon?.let {
+            { Icon(painterResource(it), contentDescription = null) }
+        },
     )
 }
 
@@ -114,6 +119,16 @@ private fun Preview() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            TextField(
+                state = AndroidTextFieldState(
+                    hint = "Type here...".desc(),
+                    text = "",
+                    isError = false,
+                    enabled = true,
+                    readOnly = false
+                ),
+                onValueChange = {}
+            )
             TextField(
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
@@ -170,6 +185,16 @@ private fun PreviewLight() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            TextField(
+                state = AndroidTextFieldState(
+                    hint = "Type here...".desc(),
+                    text = "",
+                    isError = false,
+                    enabled = true,
+                    readOnly = false
+                ),
+                onValueChange = {}
+            )
             TextField(
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),

@@ -26,30 +26,37 @@ struct StateTextField: View {
     
     var body: some View {
         VStack {
-            LabeledContent {
-                TextField(
-                    state.hint.localized(),
-                    text: Binding<String>(
-                        get: { state.text },
-                        set: { text in
-                            withAnimation {
-                                let newValue = String(text.prefix(Int(state.maxLength)))
-                                if (newValue != state.text) {
-                                    onTextChanged(String(text.prefix(Int(state.maxLength)))) }
-                                }
-                            }
-                    ),
-					axis: isEditor ? .vertical : .horizontal
-                )
-                .font(Font.system(.body))
-                .disabled(!state.enabled)
-            } label: {
-				if (!state.label.localized().isEmpty) {
-					Text(state.label.localized())
-						.frame(minWidth: 100, alignment: .leading)
+			HStack {
+				if (state.startIcon == nil) {
+					Image(systemName: "key.fill")
+						.frame(width: 24, height: 24)
 				}
-            }
-            .padding(.horizontal)
+				LabeledContent {
+					TextField(
+						state.hint.localized(),
+						text: Binding<String>(
+							get: { state.text },
+							set: { text in
+								withAnimation {
+									let newValue = String(text.prefix(Int(state.maxLength)))
+									if (newValue != state.text) {
+										onTextChanged(String(text.prefix(Int(state.maxLength)))) }
+								}
+							}
+						),
+						axis: isEditor ? .vertical : .horizontal
+					)
+					.font(Font.system(.body))
+					.disabled(!state.enabled)
+				} label: {
+					if (!state.label.localized().isEmpty) {
+						Text(state.label.localized())
+							.frame(minWidth: 100, alignment: .leading)
+					}
+				}
+			}
+			.padding(.leading, state.startIcon == nil ? 12 : 6)
+			.padding(.trailing)
             .padding(.vertical, 12)
             .background(AppColors.elevated)
             .overlay(

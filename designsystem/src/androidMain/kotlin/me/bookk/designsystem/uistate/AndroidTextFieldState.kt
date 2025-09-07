@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 
@@ -13,6 +14,7 @@ class AndroidTextFieldState(
     hint: StringDesc = "".desc(),
     text: String = "",
     label: StringDesc = "".desc(),
+    startIcon: ImageResource? = null,
     supportingTextRes: StringDesc? = null,
     isError: Boolean = false,
     enabled: Boolean = true,
@@ -24,6 +26,7 @@ class AndroidTextFieldState(
     override var hint: StringDesc by mutableStateOf(hint)
     override var label: StringDesc by mutableStateOf(label)
     override var text: String by mutableStateOf(text)
+    override var startIcon: ImageResource? by mutableStateOf(startIcon)
     override var supportingTextRes: StringDesc? by mutableStateOf(supportingTextRes)
     override var isError: Boolean by mutableStateOf(isError)
     override var enabled: Boolean by mutableStateOf(enabled)

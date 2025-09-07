@@ -8,7 +8,7 @@
 import shared
 
 class IOSTextFieldState: IOSViewState, TextFieldState {
-    
+
     @Published
     var enabled: Bool
     @Published
@@ -27,6 +27,8 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
     var readOnly: Bool
     @Published
     var text: String
+	@Published
+	var startIcon: ImageResource?
     
     init(
         enabled: Bool = true,
@@ -38,7 +40,8 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
         maxLength: Int32 = Int32.max,
         readOnly: Bool = false,
         text: String = "",
-        isVisible: Bool = true
+        isVisible: Bool = true,
+		startIcon: ImageResource? = nil
     ) {
         self.enabled = enabled
         self.supportingTextRes = supportingTextRes
@@ -49,6 +52,7 @@ class IOSTextFieldState: IOSViewState, TextFieldState {
         self.readOnly = readOnly
         self.text = text
 		self.label = label
+		self.startIcon = startIcon
         super.init(isVisible: isVisible)
     }
     

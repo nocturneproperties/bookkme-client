@@ -40,7 +40,7 @@ class BootstrapViewModel(
             .distinctUntilChanged()
             .flowOn(DispatcherProvider.io)
             .onEach { isLoggedIn ->
-                state.startDestination = if (isLoggedIn) {
+                state.startDestination = if (!isLoggedIn) {
                     BootstrapNavigationDestination.Main
                 } else {
                     BootstrapNavigationDestination.Login

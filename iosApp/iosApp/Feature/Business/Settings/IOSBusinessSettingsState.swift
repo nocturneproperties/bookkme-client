@@ -1,0 +1,53 @@
+//
+//  IOSBusinessSettingsState.swift
+//  iosApp
+//
+//  Created by BookkMe on 06.09.2025.
+//  Copyright © 2025 BookkMe. All rights reserved.
+//
+
+import shared
+import SwiftUI
+
+class IOSBusinessSettingsState: BusinessSettingsState, ObservableObject {
+	var appBar: any AppBarState
+	
+	var address: any TextFieldState
+	
+	var currency: any PickerFieldState
+	
+	var description_: any TextFieldState
+	
+	var instagram: any TextFieldState
+	
+	var location: any TextFieldState
+	
+	var name: any TextFieldState
+	
+	var notifications: any PresentationNotificationState
+	
+	var save: any ButtonState
+	
+	var telegram: any TextFieldState
+	
+	var testLocation: any ButtonState
+	
+	var viber: any TextFieldState
+	
+	init(initData: BusinessSettingsStateInitData) {
+		self.appBar = IOSAppBarState(title: initData.title)
+		self.address = IOSTextFieldState(hint: initData.addressHint)
+		let selectedItem = CurrencyUI(pickerItemId: 0, displayName: RawStringDesc(string: ""), domainValue: "")
+		self.currency = IOSPickerState(options: [selectedItem], selectedItem: selectedItem)
+		self.description_ = IOSTextFieldState(hint: initData.descriptionHint)
+		self.instagram = IOSTextFieldState(hint: initData.instagramHint)
+		self.location = IOSTextFieldState(hint: initData.locationHint)
+		self.name = IOSTextFieldState(hint: initData.nameHint)
+		self.notifications = IOSNotificationState()
+		self.save = IOSButtonState(text: initData.saveButtonText)
+		self.telegram = IOSTextFieldState(hint: initData.telegramHint)
+		self.testLocation = IOSButtonState(text: initData.testLocationText)
+		self.viber = IOSTextFieldState(hint: initData.viberHint)
+	}
+	
+}

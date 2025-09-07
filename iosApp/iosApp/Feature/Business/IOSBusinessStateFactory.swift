@@ -23,6 +23,6 @@ class IOSBusinessStateFactory: BusinessStateFactory {
 	}
 	
 	func createBusinessSettingsState(initData: BusinessSettingsStateInitData) -> any BusinessSettingsState {
-		<#code#>
+		return IOSBusinessSettingsState(initData: initData)
 	}
 }

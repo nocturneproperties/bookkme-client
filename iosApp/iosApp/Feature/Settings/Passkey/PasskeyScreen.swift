@@ -95,7 +95,7 @@ private struct PasskeyView: View {
 
 #Preview {
 	PasskeyView(item: PasskeyStatePasskeyItem(
-		id: 1,
+		id: KotlinUuid.companion.random(),
 		title: "Title",
 		isDeletable: true,
 		isBackedUp: true,

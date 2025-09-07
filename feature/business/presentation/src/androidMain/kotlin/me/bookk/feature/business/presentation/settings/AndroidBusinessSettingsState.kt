@@ -34,8 +34,8 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
         text = initData.testLocationText,
     )
     override val currency: PickerFieldState<CurrencyUI> = AndroidPickerFieldState(
-        selectedItem = CurrencyUI("", "".desc()),
-        items = listOf(CurrencyUI("", "".desc()))
+        selectedItem = CurrencyUI(0, "".desc(), ""),
+        items = listOf(CurrencyUI(0, "".desc(), ""))
     )
     override val address: TextFieldState = AndroidTextFieldState(
         hint = initData.addressHint

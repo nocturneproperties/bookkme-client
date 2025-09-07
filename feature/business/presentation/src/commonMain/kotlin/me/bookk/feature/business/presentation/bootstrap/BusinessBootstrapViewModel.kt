@@ -32,11 +32,12 @@ class BusinessBootstrapViewModel(
         )
         observeDashboardBusinessChanges()
             .onEach { business ->
-                uiState.startDestination = if (business == null) {
-                    BusinessDestination.Create
-                } else {
-                    BusinessDestination.Dashboard
-                }
+                uiState.startDestination = BusinessDestination.Dashboard
+//                uiState.startDestination = if (business == null) {
+//                    BusinessDestination.Create
+//                } else {
+//                    BusinessDestination.Dashboard
+//                }
             }
             .launchIn(viewModelScope)
     }

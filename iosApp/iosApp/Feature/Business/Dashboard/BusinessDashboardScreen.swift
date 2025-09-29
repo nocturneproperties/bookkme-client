@@ -16,7 +16,6 @@ struct BusinessDashboardScreen: View {
 	var body: some View {
 		VStack {
 			BusinessDashboardScreenContent(state: viewModel.uiState)
-			Text(0.01, format: .currency(code: "GBP"))
 		}
 		.withNavigationBar(state: viewModel.uiState.appBar)
 		.navigationBarTitleDisplayMode(.inline)

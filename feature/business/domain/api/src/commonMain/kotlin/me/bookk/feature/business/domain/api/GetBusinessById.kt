@@ -1,7 +1,8 @@
 package me.bookk.feature.business.domain.api
 
 import me.bookk.feature.business.domain.api.entity.Business
+import kotlin.uuid.Uuid
 
 interface GetBusinessById {
-    suspend fun invoke(id: Long): Business
+    suspend operator fun invoke(id: Uuid): Business
 }

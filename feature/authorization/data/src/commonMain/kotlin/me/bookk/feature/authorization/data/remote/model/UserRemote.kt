@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-class UserProfileRemote(
+internal class UserProfileRemote(
     val id: Uuid,
     val firstName: String,
     val lastName: String,

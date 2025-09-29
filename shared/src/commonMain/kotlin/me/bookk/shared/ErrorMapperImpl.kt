@@ -38,6 +38,10 @@ class ErrorMapperImpl : ErrorMapper {
                     message = DesignSystem.strings.error_unexpected.desc(),
                     buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
                 )
+                Error.InvalidApplicationState -> PresentationNotification.Message(
+                    message = DesignSystem.strings.error_unexpected.desc(),
+                    buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+                )
                 is Error.Cancelled,
                 is Error.Ignore -> PresentationNotification.Ignore
                 is Error.Unauthorized -> PresentationNotification.Unauthorized

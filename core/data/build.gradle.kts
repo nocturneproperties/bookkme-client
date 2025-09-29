@@ -10,8 +10,10 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.ktor.client.core)
-            implementation(projects.core.domain)
+            api(libs.ktor.client.core)
+            api(libs.ktor.client.mock)
+            api(libs.ktor.client.protobuf)
+            api(projects.core.domain)
         }
     }
 }

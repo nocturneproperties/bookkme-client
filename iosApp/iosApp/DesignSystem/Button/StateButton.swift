@@ -13,7 +13,7 @@ struct TextButton: View {
     @ObservedObject
     var state: IOSButtonState
     @State
-    var maxWidth: CGFloat = .infinity
+	var maxWidth: CGFloat?
 	@State
 	var textAlignment: Alignment = .center
     @State
@@ -23,24 +23,28 @@ struct TextButton: View {
 		self.state = state
 		self.textAlignment = textAlignment
 		self.onClick = onClick
+		self.maxWidth = maxWidth
 	}
 	
 	init(state: ButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: @escaping () -> Void) {
 		self.state = state.impl()
 		self.textAlignment = textAlignment
 		self.onClick = onClick
+		self.maxWidth = maxWidth
 	}
 	
     var body: some View {
         Button(action: onClick) {
-            if (state.isLoading) {
-                ProgressView()
-                    .frame(maxWidth: maxWidth, minHeight: 36)
-            } else {
-                Text(state.text.localized())
-					.frame(maxWidth: maxWidth, minHeight: 36, alignment: textAlignment)
-            }
+			ZStack {
+				ProgressView()
+					.opacity(state.isLoading ? 1 : 0)
+				Text(state.text.localized())
+					.frame(alignment: textAlignment)
+					.opacity(state.isLoading ? 0 : 1)
+			}
+			.animation(.default, value: state.isLoading)
         }
+		.frame(maxWidth: maxWidth, minHeight: 36)
         .disabled(!state.isEnabled)
     }
 }
@@ -119,5 +123,8 @@ struct IconButton: View {
         StateButton(state: value) {
             
         }
+		TextButton(state: value) {
+			
+		}
     }
 }

@@ -14,7 +14,8 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
         val viewModel: BusinessDashboardViewModel = koinViewModel()
         val listener = DashboardEventListener(
             onItemClicked = {
-                when (it.navigation) {
+                val navItem = it.navigation
+                when (navItem) {
                     DashboardNavigationDestination.Analytics -> navigation.toAnalytics()
                     DashboardNavigationDestination.AppointmentSettings -> navigation.toAppointmentSettings()
                     DashboardNavigationDestination.Assortment -> navigation.toShopAssortment()
@@ -23,7 +24,7 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
                     DashboardNavigationDestination.History -> navigation.toAppointmentHistory()
                     DashboardNavigationDestination.Orders -> navigation.toShopOrders()
                     DashboardNavigationDestination.Services -> navigation.toAppointmentServices()
-                    DashboardNavigationDestination.Settings -> navigation.toBusinessSettings()
+                    is DashboardNavigationDestination.Settings -> navigation.toBusinessSettings(navItem.id)
                     DashboardNavigationDestination.Warehouse -> navigation.toShopWarehouse()
                 }
             }

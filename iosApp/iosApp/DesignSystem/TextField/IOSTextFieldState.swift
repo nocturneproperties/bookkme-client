@@ -7,7 +7,11 @@
 //
 import shared
 
-class IOSTextFieldState: IOSViewState, TextFieldState {
+class IOSTextFieldState: IOSViewState, TextFieldState, NativeStateRepresentation {
+	
+	typealias SwiftType = IOSTextFieldState
+	
+	typealias KotlinType = TextFieldState
 
     @Published
     var enabled: Bool

@@ -17,6 +17,14 @@ struct BusinessTab: View {
 		NavigationStack(path: $navigationStack.path) {
 			BusinessStartDestinationView(state: bootstrapVM.uiState)
 				.handleNotifications(state: bootstrapVM.uiState.notification)
+				.navigationDestination(for: DashboardNavigationDestination.self) { type in
+					switch type {
+					case is DashboardNavigationDestination.Settings:
+						BusinessSettingsScreen(id: (type as! DashboardNavigationDestination.Settings).id)
+					default:
+						ProgressView()
+					}
+				}
 		}
 	}
 }

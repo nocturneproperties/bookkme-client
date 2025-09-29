@@ -1,6 +1,7 @@
 package me.bookk.di
 
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -18,6 +19,7 @@ import io.ktor.util.PlatformUtils
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import me.bookk.core.data.HttpClientType
+import me.bookk.data.mock.MockedBackend
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.shared.BuildKonfig
@@ -35,7 +37,7 @@ internal fun networkModule() = module {
 
 @OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
 private fun Scope.buildClient(installAuth: Boolean): HttpClient {
-    return HttpClient {
+    val config: HttpClientConfig<*>.() -> Unit = {
         expectSuccess = true
         install(Logging) {
             logger = KtorLogger.DEFAULT
@@ -86,5 +88,10 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
             url(baseUrl)
             contentType(ContentType.Application.ProtoBuf)
         }
+    }
+    return if (BuildKonfig.VARIANT.startsWith("mock")) {
+        HttpClient(MockedBackend.engine, config)
+    } else {
+        HttpClient(config)
     }
 }

@@ -14,7 +14,7 @@ buildkonfigExtend {
     forFlavour(ProductFlavour.DEV) {
         buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://local.bookkk.me/api", const = true)
     }
-    forFlavour(ProductFlavour.STAGE) {
+    forFlavour(ProductFlavour.MOCK) {
         buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://bookkk.me/api", const = true)
     }
     forFlavour(ProductFlavour.PROD) {
@@ -33,6 +33,7 @@ kotlin {
             //Core
             implementation(projects.database)
             implementation(projects.core.data)
+            implementation(projects.environment.api)
             api(projects.core)
             api(projects.core.domain)
             api(projects.core.presentation)
@@ -53,7 +54,7 @@ kotlin {
             implementation(projects.library.files.impl)
             implementation(projects.library.credentials.api)
             implementation(projects.library.credentials.impl)
-            implementation(projects.library.money.api)
+            api(projects.library.money.api)
             implementation(projects.library.money.impl)
             //Dashboard
             api(projects.feature.dashboard.presentation)
@@ -69,6 +70,7 @@ kotlin {
             api(projects.feature.business.presentation)
             // Libs
             implementation(libs.koin.core)
+            implementation(libs.ktor.client.mock)
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.client.protobuf)
             implementation(libs.ktor.client.logging)
@@ -100,6 +102,7 @@ kotlin {
             export(projects.feature.dashboard.presentation)
             export(projects.feature.settings.presentation)
             export(projects.feature.business.presentation)
+            export(projects.library.money.api)
         }
     }
 }

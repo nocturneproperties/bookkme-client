@@ -19,6 +19,7 @@ interface BusinessSettingsState {
     val telegram: TextFieldState
     val viber: TextFieldState
 
+    val pickLocation: ButtonState
     val testLocation: ButtonState
     val save: ButtonState
 
@@ -38,6 +39,7 @@ interface BusinessSettingsState {
         val telegramHint: StringDesc,
         val instaIcon: ImageResource,
         val viberIcon: ImageResource,
-        val telegramIcon: ImageResource
+        val telegramIcon: ImageResource,
+        val pickLocationText: StringDesc
     )
 }

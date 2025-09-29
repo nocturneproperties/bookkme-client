@@ -20,16 +20,15 @@ internal fun BusinessRemote.toDomain(): Business {
             )
         },
         currency = CurrencyFactory.forCode(currencyCode),
-        socials = socials.map(BusinessRemote.Social::toDomain).toSet()
+        socials = socials.map(BusinessRemote.Social::toDomain).associateBy { it.kind }
     )
 }
 
-internal fun BusinessRemote.Social.toDomain():Business.Social {
+internal fun BusinessRemote.Social.toDomain(): Business.Social {
     return Business.Social(
         kind = kind.domainKind,
         value = value
     )
-
 }
 
 internal fun Business.toLocal(): BusinessEntity {
@@ -41,11 +40,11 @@ internal fun Business.toLocal(): BusinessEntity {
         locationLat = location?.lat,
         locationLng = location?.lng,
         currencyCode = currency.code(),
-        phone = socials.firstOrNull { it.kind == Business.SocialKind.PHONE }?.value,
-        insta = socials.firstOrNull { it.kind == Business.SocialKind.INSTAGRAM }?.value,
-        viber = socials.firstOrNull { it.kind == Business.SocialKind.VIBER }?.value,
-        whatsApp = socials.firstOrNull { it.kind == Business.SocialKind.WHATSAPP }?.value,
-        telegram = socials.firstOrNull { it.kind == Business.SocialKind.TELEGRAM }?.value
+        phone = socials[Business.SocialKind.PHONE]?.value,
+        insta = socials[Business.SocialKind.INSTAGRAM]?.value,
+        viber = socials[Business.SocialKind.VIBER]?.value,
+        whatsApp = socials[Business.SocialKind.WHATSAPP]?.value,
+        telegram = socials[Business.SocialKind.TELEGRAM]?.value
     )
 }
 
@@ -59,19 +58,43 @@ internal fun BusinessEntity.toDomain(): Business {
             Business.Location(locationLat!!, locationLng!!)
         } else null,
         currency = CurrencyFactory.forCode(currencyCode),
-        socials = setOf(
+        socials = listOf(
             Business.Social(Business.SocialKind.PHONE, phone),
             Business.Social(Business.SocialKind.INSTAGRAM, insta),
             Business.Social(Business.SocialKind.VIBER, viber),
             Business.Social(Business.SocialKind.WHATSAPP, whatsApp),
             Business.Social(Business.SocialKind.TELEGRAM, telegram)
-        )
+        ).associateBy { it.kind }
     )
 }
 
-internal fun UserBusinessesRemote.toUserBusinesses():UserBusinessInfo {
+internal fun UserBusinessesRemote.toUserBusinesses(): UserBusinessInfo {
     return UserBusinessInfo(
         dashboardId = dashboardId,
         businesses = businesses.map(BusinessRemote::toDomain)
+    )
+}
+
+internal fun Business.toRemote(): BusinessRemote {
+    return BusinessRemote(
+        id = id,
+        name = name,
+        description = description,
+        address = address,
+        location = location?.let {
+            BusinessRemote.Location(
+                lat = it.lat,
+                lng = it.lng
+            )
+        },
+        currencyCode = currency.code(),
+        socials = socials.values.map { it.toRemote() }
+    )
+}
+
+internal fun Business.Social.toRemote(): BusinessRemote.Social {
+    return BusinessRemote.Social(
+        kind = BusinessRemote.SocialKind.entries.first { it.domainKind == kind },
+        value = value
     )
 }

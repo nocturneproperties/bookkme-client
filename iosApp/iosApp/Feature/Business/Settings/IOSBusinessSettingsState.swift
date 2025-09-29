@@ -38,22 +38,25 @@ class IOSBusinessSettingsState: BusinessSettingsState, ObservableObject, NativeS
 	
 	var testLocation: any ButtonState
 	
+	var pickLocation: any ButtonState
+	
 	var viber: any TextFieldState
 	
 	init(initData: BusinessSettingsStateInitData) {
 		self.appBar = IOSAppBarState(title: initData.title)
 		self.address = IOSTextFieldState(hint: initData.addressHint)
-		let selectedItem = CurrencyUI(pickerItemId: 0, displayName: RawStringDesc(string: ""), domainValue: "")
+		let selectedItem = CurrencyUI(pickerItemId: 0, displayName: RawStringDesc(string: ""), domainValue: Money.SupportedCurrency.usd)
 		self.currency = IOSPickerState(options: [selectedItem], selectedItem: selectedItem)
 		self.description_ = IOSTextFieldState(hint: initData.descriptionHint)
 		self.instagram = IOSTextFieldState(hint: initData.instagramHint, startIcon: initData.instaIcon)
-		self.location = IOSTextFieldState(hint: initData.locationHint)
+		self.location = IOSTextFieldState(hint: initData.locationHint, readOnly: true)
 		self.name = IOSTextFieldState(hint: initData.nameHint)
 		self.notifications = IOSNotificationState()
-		self.save = IOSButtonState(text: initData.saveButtonText)
+		self.save = IOSButtonState(text: initData.saveButtonText, isEnabled: false)
 		self.telegram = IOSTextFieldState(hint: initData.telegramHint, startIcon: initData.telegramIcon)
 		self.testLocation = IOSButtonState(text: initData.testLocationText)
 		self.viber = IOSTextFieldState(hint: initData.viberHint, startIcon: initData.viberIcon)
+		self.pickLocation = IOSButtonState(text: initData.pickLocationText)
 	}
 	
 }

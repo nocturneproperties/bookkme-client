@@ -5,6 +5,7 @@ import me.bookk.feature.business.presentation.create.CreateBusinessViewModel
 import me.bookk.feature.business.presentation.dashboard.BusinessDashboardViewModel
 import me.bookk.feature.business.presentation.settings.BusinessSettingsViewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -12,5 +13,5 @@ internal actual fun platformBusinessDiModule(): Module = module {
     viewModelOf(::CreateBusinessViewModel)
     viewModelOf(::BusinessBootstrapViewModel)
     viewModelOf(::BusinessDashboardViewModel)
-    viewModelOf(::BusinessSettingsViewModel)
+    viewModel { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get()) }
 }

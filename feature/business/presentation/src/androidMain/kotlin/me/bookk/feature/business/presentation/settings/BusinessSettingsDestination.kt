@@ -4,16 +4,19 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import me.bookk.core.presentation.SendLifecycleEventsTo
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.LocalNavigation
 import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
     composable<BusinessDestination.Settings> {
-        val viewModel: BusinessSettingsViewModel = koinViewModel()
+        val entry = it.toRoute<BusinessDestination.Settings>()
+        val viewModel: BusinessSettingsViewModel = koinViewModel(parameters = { parametersOf(entry.id) })
         val backPressOwner = LocalOnBackPressedDispatcherOwner.current
         val listener = BusinessSettingsEventListener(
             onNameChanged = viewModel::onNameChanged,

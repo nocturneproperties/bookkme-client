@@ -22,4 +22,6 @@ interface PickerFieldState<T : PickerPresentation> {
     var text: StringDesc
     val options: List<T>
     var selectedItem: T
+
+    fun replaceOptions(options: List<T>)
 }

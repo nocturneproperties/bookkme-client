@@ -10,17 +10,20 @@ import shared
 
 struct BusinessSettingsScreen: View {
 	
-	@StateObject
-	var viewModel: BusinessSettingsViewModel = IOSBusinessDiKt.businessSettingsVM()
+	@StateObject var viewModel: BusinessSettingsViewModel
+	
+	init(id: shared.KotlinUuid) {
+		self._viewModel = StateObject(wrappedValue: IOSBusinessDiKt.businessSettingsVM(id: id))
+	}
 	
 	var body: some View {
-		BusinessSettingsContent(state: viewModel.uiState)
+		BusinessSettingsContent(viewModel: viewModel)
 			.withNavigationBar(state: viewModel.uiState.appBar)
 			.handleNotifications(state: viewModel.uiState.notifications)
 			.sendLifecycleEventsTo(viewModel: viewModel)
 			.toolbar {
 				TextButton(state: viewModel.uiState.save) {
-					
+					viewModel.onSaveClick()
 				}
 			}
 	}
@@ -30,100 +33,75 @@ struct BusinessSettingsContent: View {
 	@ObservedObject
 	var state: IOSBusinessSettingsState
 	
-	init(state: BusinessSettingsState) {
-		self.state = IOSBusinessSettingsState.cast(kotlinState: state)
+	@ObservedObject
+	var viewModel: BusinessSettingsViewModel
+	
+	init(viewModel: BusinessSettingsViewModel) {
+		self.state = IOSBusinessSettingsState.cast(kotlinState: viewModel.uiState)
+		self.viewModel = viewModel
 	}
 	
 	var body: some View {
-		VStack {
-			PlainList {
-				Section {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 16) {
+				VStack(alignment: .leading) {
+					Header(text: BusinessRes.strings().business_settings_name_title.desc().localized())
 					StateTextField(state: state.name) { text in
-						
+						viewModel.onNameChanged(name: text)
 					}
-				} header: {
-					Text(BusinessRes.strings().business_settings_name_title.desc().localized())
-						.textCase(.uppercase)
-						.padding(.leading)
 				}
-				.listRowInsets(EdgeInsets())
-				.listRowSeparator(.hidden)
-				Section{
+				VStack(alignment: .leading) {
+					Header(text: BusinessRes.strings().business_settings_description_title.desc().localized())
 					StateTextField(state: state.description_, textEditor: true) { text in
-						
+						viewModel.onDescriptionChanged(description: text)
 					}
-					.fixedSize(horizontal: false, vertical: true)
 					.lineLimit(3, reservesSpace: true)
-				} header: {
-					Text(BusinessRes.strings().business_settings_description_title.desc().localized())
-						.textCase(.uppercase)
-						.padding(.leading)
 				}
-				.listRowInsets(EdgeInsets())
-				.listRowSeparator(.hidden)
-				Section {
-					StateTextField(state: state.location) { text in
+				VStack(alignment: .leading) {
+					Header(text: BusinessRes.strings().business_settings_location_title.desc().localized())
+					HStack(spacing: 0) {
+						StateTextField(state: state.location) { text in
+						}
 						
+						TextButton(state: state.pickLocation, maxWidth: nil) {
+							viewModel.onPickLocationClicked()
+						}.padding(.horizontal)
 					}
 					TextButton(state: state.testLocation, textAlignment: .leading) {
-						
+						viewModel.onTestLocationClick()
 					}
-					.padding(.top, 8)
-					.foregroundColor(.accentColor)
-				} header: {
-					Text(BusinessRes.strings().business_settings_location_title.desc().localized())
-						.textCase(.uppercase)
-						.padding(.leading)
 				}
-				.buttonStyle(.plain)
-				.listRowInsets(EdgeInsets())
-				.listRowSeparator(.hidden)
-				.listRowBackground(Color.clear)
-				Section {
+				VStack(alignment: .leading) {
+					Header(text: BusinessRes.strings().business_settings_address_title.desc().localized())
 					StateTextField(state: state.address) { text in
-						
+						viewModel.onAddressChanged(address: text)
 					}
-				} header: {
-					Text(BusinessRes.strings().business_settings_address_title.desc().localized())
-						.textCase(.uppercase)
-						.padding(.leading)
 				}
-				.listRowInsets(EdgeInsets())
-				.listRowSeparator(.hidden)
-				Section {
+				VStack(alignment: .leading) {
+					Header(text: BusinessRes.strings().business_settings_currency_title.desc().localized())
 					StatePicker<CurrencyUI>(state: state.currency) { option in
-						
-					}
-				} header: {
-					Text(BusinessRes.strings().business_settings_currency_title.desc().localized())
-						.textCase(.uppercase)
-						.padding(.leading)
+						viewModel.onCurrencySelected(currencyUI: option)
+					}.pickerStyle(.menu)
 				}
-				.listRowInsets(EdgeInsets())
-				.listRowSeparator(.hidden)
-				Section {
+				VStack(alignment: .leading) {
+					Header(text: BusinessRes.strings().business_settings_socials_title.desc().localized())
 					StateTextField(state: state.instagram) { text in
-						
+						viewModel.onInstagramChanged(insta: text)
 					}
 					StateTextField(state: state.telegram) { text in
-						
+						viewModel.onTelegramChanged(telegram: text)
 					}
 					StateTextField(state: state.viber) { text in
-						
+						viewModel.onViberChanged(viber: text)
 					}
-				} header: {
-					Text(BusinessRes.strings().business_settings_socials_title.desc().localized())
-						.textCase(.uppercase)
-						.padding(.leading)
 				}
-				.listRowInsets(EdgeInsets())
-			}
+			}.padding()
 		}
 	}
 }
 
 #Preview {
 	NavigationStack {
-		BusinessSettingsScreen()
+		BusinessSettingsScreen(id: shared.KotlinUuid.companion.random())
 	}
 }

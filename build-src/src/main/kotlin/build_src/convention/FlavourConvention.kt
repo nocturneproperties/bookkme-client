@@ -12,7 +12,7 @@ fun CommonExtension<*, *, *, *, *, *>.applyFlavourConvention() {
             dimension = "type"
         }
 
-        create(ProductFlavour.STAGE.title) {
+        create(ProductFlavour.MOCK.title) {
             dimension = "type"
         }
 
@@ -31,9 +31,9 @@ fun ApplicationExtension.applyFlavourConvention() {
             applicationIdSuffix = ".${ProductFlavour.DEV.title}"
         }
 
-        create(ProductFlavour.STAGE.title) {
+        create(ProductFlavour.MOCK.title) {
             dimension = "type"
-            applicationIdSuffix = ".${ProductFlavour.STAGE.title}"
+            applicationIdSuffix = ".${ProductFlavour.MOCK.title}"
         }
 
         create(ProductFlavour.PROD.title) {

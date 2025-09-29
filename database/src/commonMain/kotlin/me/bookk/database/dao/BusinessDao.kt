@@ -10,8 +10,8 @@ import kotlin.uuid.Uuid
 
 @Dao
 abstract class BusinessDao {
-    @Query("select * from business limit 1")
-    abstract suspend fun queryBusiness(): BusinessEntity?
+    @Query("select * from business where id = :id")
+    abstract suspend fun queryBusiness(id: Uuid): BusinessEntity?
 
     @Query("select * from business where id = :businessId")
     abstract fun observeBusiness(businessId: Uuid): Flow<BusinessEntity?>

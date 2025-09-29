@@ -34,7 +34,8 @@ class SettingsDashboardViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { updateColorScheme.invoke(scheme.toDomain()) },
-            onComplete = { uiState.appearance.colorScheme = scheme }
+            onComplete = { uiState.appearance.colorScheme = scheme },
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
     }
 
@@ -83,7 +84,8 @@ class SettingsDashboardViewModel(
                 uiState.profile.name = it.profile.firstName.desc()
                 uiState.profile.lastName = it.profile.lastName.desc()
                 uiState.profile.email = it.profile.email.desc()
-            }
+            },
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
     }
 

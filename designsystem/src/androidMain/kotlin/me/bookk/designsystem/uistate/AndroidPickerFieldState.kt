@@ -21,4 +21,9 @@ class AndroidPickerFieldState<T : PickerPresentation>(
 
     override var selectedItem: T by mutableStateOf(selectedItem)
 
+    override fun replaceOptions(options: List<T>) {
+        this.options.clear()
+        this.options.addAll(options)
+    }
+
 }

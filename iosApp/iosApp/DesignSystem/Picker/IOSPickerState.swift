@@ -27,6 +27,10 @@ class IOSPickerState: PickerFieldState, ObservableObject, NativeStateRepresentat
 		self.selectedItem = selectedItem
 		self.text = text
 	}
+	
+	func replaceOptions(options: [PickerPresentation]) {
+		self.options = options
+	}
 }
 
 extension PickerFieldState {

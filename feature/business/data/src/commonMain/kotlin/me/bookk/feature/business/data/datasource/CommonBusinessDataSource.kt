@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
+import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,6 +17,7 @@ import me.bookk.core.data.DataSource
 import me.bookk.database.dao.BusinessDao
 import me.bookk.feature.business.data.mapping.toDomain
 import me.bookk.feature.business.data.mapping.toLocal
+import me.bookk.feature.business.data.mapping.toRemote
 import me.bookk.feature.business.data.mapping.toUserBusinesses
 import me.bookk.feature.business.data.remote.api.BusinessRouting
 import me.bookk.feature.business.data.remote.model.BusinessRemote
@@ -43,6 +45,14 @@ internal class CommonBusinessDataSource(
                 .toDomain()
         }
 
+    override suspend fun updateBusiness(business: Business) {
+        mapExceptions {
+            httpClient.put(BusinessRouting.Api.Business.Id(id = business.id.toString())) {
+                setBody(business.toRemote())
+            }
+        }
+    }
+
     override suspend fun clearBusinessTable() = mapExceptions {
         businessDao.clear()
     }
@@ -65,6 +75,10 @@ internal class CommonBusinessDataSource(
         httpClient.get(BusinessRouting.Api.Business())
             .body<UserBusinessesRemote>()
             .toUserBusinesses()
+    }
+
+    override suspend fun getBusinessById(id: Uuid): Business? {
+        return businessDao.queryBusiness(id)?.toDomain()
     }
 
     override suspend fun saveDashboardBusinessId(id: Uuid) {

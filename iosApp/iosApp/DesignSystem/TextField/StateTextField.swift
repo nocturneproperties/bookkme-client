@@ -19,7 +19,7 @@ struct StateTextField: View {
     var onTextChanged: (String) -> Void
 	
 	init(state: TextFieldState, textEditor: Bool = false, onTextChanged: @escaping (String) -> Void) {
-		self.state = state.impl()
+		self.state = IOSTextFieldState.cast(kotlinState: state)
 		self.isEditor = textEditor
 		self.onTextChanged = onTextChanged
 	}
@@ -47,7 +47,7 @@ struct StateTextField: View {
 						axis: isEditor ? .vertical : .horizontal
 					)
 					.font(Font.system(.body))
-					.disabled(!state.enabled)
+					.disabled(!state.enabled || state.readOnly)
 				} label: {
 					if (!state.label.localized().isEmpty) {
 						Text(state.label.localized())
@@ -55,7 +55,7 @@ struct StateTextField: View {
 					}
 				}
 			}
-			.padding(.horizontal, 12)
+			.padding(.horizontal, 8)
             .padding(.vertical, 12)
             .background(AppColors.elevated)
             .overlay(
@@ -87,6 +87,7 @@ struct StateTextField: View {
 					.font(.footnote)
                     .scaledToFit()
 					.foregroundStyle(state.isError ? AppColors.error : AppColors.secondary)
+					.padding(.leading)
             }
         }
     }

@@ -50,7 +50,11 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
         hint = initData.viberHint
     )
     override val save: ButtonState = AndroidButtonState(
-        text = initData.saveButtonText
+        text = initData.saveButtonText,
+        isEnabled = false
+    )
+    override val pickLocation: ButtonState = AndroidButtonState(
+        text = initData.pickLocationText
     )
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()

@@ -1,6 +1,7 @@
 package me.bookk.feature.business.presentation.navigation
 
 import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
 
 sealed class BusinessDestination {
     @Serializable
@@ -22,5 +23,5 @@ sealed class BusinessDestination {
     data object Analytics : BusinessDestination()
 
     @Serializable
-    data object Settings : BusinessDestination()
+    data class Settings(val id: Uuid) : BusinessDestination()
 }

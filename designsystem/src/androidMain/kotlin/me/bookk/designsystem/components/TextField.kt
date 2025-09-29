@@ -2,6 +2,7 @@ package me.bookk.designsystem.components
 
 import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,9 +47,12 @@ fun TextField(
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
+    trailingIcon: (@Composable () -> Unit)? = null
 ) {
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .animateContentSize(),
         shape = MaterialTheme.shapes.medium,
         value = state.text,
         onValueChange = onValueChange,
@@ -69,8 +73,8 @@ fun TextField(
                 style = MaterialTheme.typography.bodyMedium.copy(background = Color.Transparent)
             )
         },
-        supportingText = {
-            state.supportingTextRes?.let { supportingTextRes ->
+        supportingText = state.supportingTextRes?.let { supportingTextRes ->
+            {
                 Text(
                     text = supportingTextRes.localized(),
                     color = if (state.isError) LocalColors.current.error else LocalColors.current.secondaryText,
@@ -79,6 +83,7 @@ fun TextField(
                 )
             }
         },
+        trailingIcon = trailingIcon,
         leadingIcon = state.startIcon?.let {
             { Icon(painterResource(it), contentDescription = null) }
         },

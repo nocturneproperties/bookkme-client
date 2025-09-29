@@ -36,6 +36,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.icerock.moko.resources.compose.localized
 import kotlinx.serialization.Serializable
+import me.bookk.designsystem.action.HideFromIme
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -114,26 +115,28 @@ internal fun DashboardScreen(
             }
         },
         bottomBar = {
-            Column {
-                HorizontalDivider(color = LocalColors.current.divider)
-                NavigationBar(
-                    modifier = Modifier,
-                    containerColor = LocalColors.current.background
-                ) {
-                    state.tabItems.items.forEach { item ->
-                        NavigationBarItem(
-                            selected = item.id == state.tabItems.selectedItemId,
-                            label = { Text(item.text.localized()) },
-                            icon = { Icon(item.id.asIcon(), contentDescription = null) },
-                            onClick = { state.tabItems.selectedItemId = item.id },
-                            colors = NavigationBarItemDefaults.colors(
-                                indicatorColor = Color.Transparent,
-                                selectedIconColor = LocalColors.current.actionText,
-                                unselectedIconColor = LocalColors.current.inactive,
-                                selectedTextColor = LocalColors.current.actionText,
-                                unselectedTextColor = LocalColors.current.inactive
+            HideFromIme {
+                Column {
+                    HorizontalDivider(color = LocalColors.current.divider)
+                    NavigationBar(
+                        modifier = Modifier,
+                        containerColor = LocalColors.current.background
+                    ) {
+                        state.tabItems.items.forEach { item ->
+                            NavigationBarItem(
+                                selected = item.id == state.tabItems.selectedItemId,
+                                label = { Text(item.text.localized()) },
+                                icon = { Icon(item.id.asIcon(), contentDescription = null) },
+                                onClick = { state.tabItems.selectedItemId = item.id },
+                                colors = NavigationBarItemDefaults.colors(
+                                    indicatorColor = Color.Transparent,
+                                    selectedIconColor = LocalColors.current.actionText,
+                                    unselectedIconColor = LocalColors.current.inactive,
+                                    selectedTextColor = LocalColors.current.actionText,
+                                    unselectedTextColor = LocalColors.current.inactive
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

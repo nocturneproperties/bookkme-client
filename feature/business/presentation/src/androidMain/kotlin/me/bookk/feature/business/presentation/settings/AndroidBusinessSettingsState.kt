@@ -2,6 +2,7 @@ package me.bookk.feature.business.presentation.settings
 
 import androidx.compose.runtime.Immutable
 import dev.icerock.moko.resources.desc.desc
+import library.money.api.Money
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidNotificationState
@@ -27,26 +28,28 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
     )
     override val location: TextFieldState = AndroidTextFieldState(
         hint = initData.locationHint,
-        supportingTextRes = initData.locationSupporting,
         readOnly = true
     )
     override val testLocation: ButtonState = AndroidButtonState(
         text = initData.testLocationText,
     )
     override val currency: PickerFieldState<CurrencyUI> = AndroidPickerFieldState(
-        selectedItem = CurrencyUI(0, "".desc(), ""),
-        items = listOf(CurrencyUI(0, "".desc(), ""))
+        selectedItem = CurrencyUI(0, "".desc(), Money.SupportedCurrency.EUR),
+        items = listOf(CurrencyUI(0, "".desc(), Money.SupportedCurrency.EUR))
     )
     override val address: TextFieldState = AndroidTextFieldState(
         hint = initData.addressHint
     )
     override val instagram: TextFieldState = AndroidTextFieldState(
+        startIcon = initData.instaIcon,
         hint = initData.instagramHint
     )
     override val telegram: TextFieldState = AndroidTextFieldState(
+        startIcon = initData.telegramIcon,
         hint = initData.telegramHint
     )
     override val viber: TextFieldState = AndroidTextFieldState(
+        startIcon = initData.viberIcon,
         hint = initData.viberHint
     )
     override val save: ButtonState = AndroidButtonState(

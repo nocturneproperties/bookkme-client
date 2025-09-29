@@ -10,6 +10,9 @@ import me.bookk.core.UsedInSwift
 abstract class PickerPresentation {
     abstract val pickerItemId: Long
     abstract val displayName: StringDesc
+
+    abstract override fun hashCode(): Int
+    abstract override fun equals(other: Any?): Boolean
 }
 
 @UsedInSwift

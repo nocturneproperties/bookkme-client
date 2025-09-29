@@ -181,7 +181,6 @@ class BusinessSettingsViewModel(
             descriptionHint = BusinessRes.strings.business_settings_description_hint.desc(),
             addressHint = BusinessRes.strings.business_settings_address_hint.desc(),
             locationHint = BusinessRes.strings.business_settings_location_hint.desc(),
-            locationSupporting = BusinessRes.strings.business_settings_location_supporting.desc(),
             instagramHint = BusinessRes.strings.business_settings_instagram_hint.desc(),
             viberHint = BusinessRes.strings.business_settings_viber_hint.desc(),
             telegramHint = BusinessRes.strings.business_settings_telegram_hint.desc(),

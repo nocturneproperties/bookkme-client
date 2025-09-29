@@ -33,7 +33,6 @@ interface BusinessSettingsState {
         val descriptionHint: StringDesc,
         val addressHint: StringDesc,
         val locationHint: StringDesc,
-        val locationSupporting: StringDesc,
         val instagramHint: StringDesc,
         val viberHint: StringDesc,
         val telegramHint: StringDesc,

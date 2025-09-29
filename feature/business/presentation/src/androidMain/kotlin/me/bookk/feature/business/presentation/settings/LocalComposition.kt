@@ -12,8 +12,8 @@ internal class BusinessSettingsEventListener(
     val onInstagramChanged: (String) -> Unit,
     val onTelegramChanged: (String) -> Unit,
     val onViberChanged: (String) -> Unit,
-    val onLocationChanged: (Double, Double) -> Unit,
     val onTestLocationClick: () -> Unit,
+    val onPickLocationClick: () -> Unit,
     val onSaveClick: () -> Unit,
 )
 
@@ -28,7 +28,7 @@ internal val LocalBusinessSettingsEventListener = compositionLocalOf {
         onInstagramChanged = {},
         onSaveClick = {},
         onTestLocationClick = {},
-        onLocationChanged = { _, _ -> },
+        onPickLocationClick = {},
         onBackClick = {}
     )
 }

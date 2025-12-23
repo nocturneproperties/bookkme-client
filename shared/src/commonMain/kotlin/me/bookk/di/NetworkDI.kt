@@ -2,6 +2,7 @@ package me.bookk.di
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -12,12 +13,14 @@ import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.resources.Resources
+import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.protobuf.protobuf
-import io.ktor.util.PlatformUtils
+import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
+import library.device.api.DeviceFacade
 import me.bookk.core.data.HttpClientType
 import me.bookk.data.mock.MockedBackend
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
@@ -56,6 +59,13 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
             requestTimeoutMillis = 20000
             socketTimeoutMillis = 20000
         }
+        install(HttpRequestRetry) {
+            retryOnServerErrors(maxRetries = 5)
+            retryOnExceptionIf { _, cause ->
+                cause is IOException
+            }
+            exponentialDelay()
+        }
         if (installAuth) {
             install(Auth) {
                 bearer {
@@ -77,15 +87,15 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
         }
 
         defaultRequest {
+            if (BuildKonfig.DEBUG) {
+                header("X-Debug", true)
+            }
+            header("X-App-Version", BuildKonfig.VERSION_NAME)
+            header("X-Platform", get<DeviceFacade>().getPlatformName())
             if (installAuth) {
                 headers["Idempotency-Key"] = Uuid.random().toHexString()
             }
-            val baseUrl = if (PlatformUtils.IS_JVM && BuildKonfig.VARIANT == "dev") {
-                "https://10.0.2.2/api"
-            } else {
-                BuildKonfig.BASE_URL
-            }
-            url(baseUrl)
+            url(BuildKonfig.BASE_URL)
             contentType(ContentType.Application.ProtoBuf)
         }
     }

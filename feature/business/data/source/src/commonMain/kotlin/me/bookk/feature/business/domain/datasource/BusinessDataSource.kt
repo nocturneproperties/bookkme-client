@@ -13,7 +13,7 @@ interface BusinessDataSource {
     suspend fun saveBusinessListInDB(businesses: List<Business>)
     suspend fun getBusinessesFromRemote(): UserBusinessInfo
     suspend fun getBusinessById(id: Uuid): Business?
-    suspend fun saveDashboardBusinessId(id: Uuid)
+    suspend fun saveDashboardBusinessId(id: Uuid?)
     suspend fun getDashboardBusinessId(): Uuid?
     fun getDashboardBusinessIdFlow(): Flow<Uuid?>
     fun observeBusinessDBChanges(businessId: Uuid): Flow<Business?>

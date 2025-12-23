@@ -9,12 +9,15 @@ import me.bookk.core.DispatcherProvider
 import me.bookk.core.LogFactory
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.business.domain.api.GetBusinessById
 import me.bookk.feature.business.domain.api.UpdateBusiness
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.Business.Social
+import me.bookk.feature.business.domain.api.entity.Business.SocialKind
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.settings.state.BusinessSettingsState
 import me.bookk.feature.business.presentation.settings.state.CurrencyUI
@@ -56,9 +59,9 @@ class BusinessSettingsViewModel(
                     currencyUI.domainValue == Money.SupportedCurrency.valueOf(it.currency.code())
                 }
                 uiState.currency.text = BusinessRes.strings.business_settings_currency_label.desc()
-                uiState.instagram.text = it.socials[Business.SocialKind.INSTAGRAM]?.value.orEmpty()
-                uiState.telegram.text = it.socials[Business.SocialKind.TELEGRAM]?.value.orEmpty()
-                uiState.viber.text = it.socials[Business.SocialKind.VIBER]?.value.orEmpty()
+                uiState.instagram.text = it.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
+                uiState.telegram.text = it.socials[SocialKind.TELEGRAM]?.value.orEmpty()
+                uiState.viber.text = it.socials[SocialKind.VIBER]?.value.orEmpty()
                 uiState.description.isValid = true
                 uiState.location.isValid = true
                 uiState.address.isValid = true
@@ -85,16 +88,22 @@ class BusinessSettingsViewModel(
                         location = businessLocation,
                         currency = CurrencyFactory.forCode(uiState.currency.selectedItem.domainValue.name),
                         socials = listOf(
-                            Business.Social(Business.SocialKind.INSTAGRAM, uiState.instagram.text),
-                            Business.Social(Business.SocialKind.VIBER, uiState.viber.text),
-                            Business.Social(Business.SocialKind.TELEGRAM, uiState.telegram.text)
+                            Social(SocialKind.INSTAGRAM, uiState.instagram.text),
+                            Social(SocialKind.VIBER, uiState.viber.text),
+                            Social(SocialKind.TELEGRAM, uiState.telegram.text)
                         ).associateBy { it.kind }
                     )
                 )
             },
-            onComplete = {},
+            onComplete = {
+                referenceBusiness = it
+                uiState.notifications.add(GlobalMessage(BusinessRes.strings.business_settings_updated.desc()))
+            },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = { uiState.save.stopLoading() }
+            onTerminate = {
+                uiState.save.stopLoading()
+                invalidateSaveState()
+            }
         )
     }
 
@@ -164,11 +173,10 @@ class BusinessSettingsViewModel(
         val isChanged = uiState.name.text != referenceBusiness.name ||
                 uiState.description.text != referenceBusiness.description ||
                 uiState.address.text != referenceBusiness.address ||
-                uiState.location.text != referenceBusiness.location?.toString() ||
-                uiState.instagram.text != referenceBusiness.socials[Business.SocialKind.INSTAGRAM]?.value ||
-                uiState.telegram.text != referenceBusiness.socials[Business.SocialKind.TELEGRAM]?.value ||
-                uiState.viber.text != referenceBusiness.socials[Business.SocialKind.VIBER]?.value
-        logger.i("$isAllFieldsValid $isChanged")
+                uiState.location.text != referenceBusiness.location?.toString().orEmpty() ||
+                uiState.instagram.text != referenceBusiness.socials[SocialKind.INSTAGRAM]?.value ||
+                uiState.telegram.text != referenceBusiness.socials[SocialKind.TELEGRAM]?.value ||
+                uiState.viber.text != referenceBusiness.socials[SocialKind.VIBER]?.value
         uiState.save.isEnabled = isAllFieldsValid && isChanged
     }
 

@@ -7,7 +7,7 @@ import me.bookk.feature.business.domain.datasource.BusinessDataSource
 internal class UpdateBusinessImpl(
     private val businessDataSource: BusinessDataSource
 ) : UpdateBusiness {
-    override suspend fun invoke(model: Business.Update) {
+    override suspend fun invoke(model: Business.Update): Business {
         val currentBusiness = requireNotNull(businessDataSource.getBusinessById(model.id))
         val newBusiness = currentBusiness.copy(
             name = model.name,
@@ -19,5 +19,6 @@ internal class UpdateBusinessImpl(
         )
         businessDataSource.updateBusiness(newBusiness)
         businessDataSource.saveBusinessInDB(newBusiness)
+        return newBusiness
     }
 }

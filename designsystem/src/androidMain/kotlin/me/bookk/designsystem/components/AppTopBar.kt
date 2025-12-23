@@ -3,6 +3,7 @@ package me.bookk.designsystem.components
 import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +37,7 @@ fun AppTopBar(
     modifier: Modifier = Modifier,
     state: AppBarState,
     size: TopBarSize,
+    actions: @Composable RowScope.() -> Unit = {},
     onNavigationIconClick: (() -> Unit)? = null
 ) {
     when (size) {
@@ -45,6 +47,7 @@ fun AppTopBar(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = LocalColors.current.background
                 ),
+                actions = actions,
                 title = {
                     AppBarTitle(state.title.localized(), size)
                 },
@@ -65,6 +68,7 @@ fun AppTopBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = LocalColors.current.background
                 ),
+                actions = actions,
                 title = {
                     AppBarTitle(state.title.localized(), size)
                 },
@@ -85,6 +89,7 @@ fun AppTopBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = LocalColors.current.background
                 ),
+                actions = actions,
                 title = {
                     AppBarTitle(state.title.localized(), size)
                 },

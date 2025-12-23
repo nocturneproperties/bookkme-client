@@ -81,8 +81,8 @@ internal class CommonBusinessDataSource(
         return businessDao.queryBusiness(id)?.toDomain()
     }
 
-    override suspend fun saveDashboardBusinessId(id: Uuid) {
-        preferences.set(Key.dashboardId, id.toString())
+    override suspend fun saveDashboardBusinessId(id: Uuid?) {
+        preferences.set(Key.dashboardId, id?.toString())
     }
 
     override suspend fun getDashboardBusinessId(): Uuid? {

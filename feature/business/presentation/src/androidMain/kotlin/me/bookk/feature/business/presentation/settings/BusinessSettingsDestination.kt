@@ -17,9 +17,12 @@ import kotlin.reflect.typeOf
 import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
-    composable<BusinessDestination.Settings>(typeMap = mapOf(typeOf<Uuid>() to UuidNavType)) {
+    composable<BusinessDestination.Settings>(
+        typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
+    ) {
         val entry = it.toRoute<BusinessDestination.Settings>()
-        val viewModel: BusinessSettingsViewModel = koinViewModel(parameters = { parametersOf(entry.id) })
+        val viewModel: BusinessSettingsViewModel =
+            koinViewModel(parameters = { parametersOf(entry.id) })
         val backPressOwner = LocalOnBackPressedDispatcherOwner.current
         val listener = BusinessSettingsEventListener(
             onNameChanged = viewModel::onNameChanged,

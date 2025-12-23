@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,7 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.PickerField
@@ -37,6 +35,12 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
             AppTopBar(
                 state = state.appBar,
                 size = TopBarSize.SMALL,
+                actions = {
+                    TextButton(
+                        state = state.save,
+                        onClick = LocalBusinessSettingsEventListener.current.onSaveClick
+                    )
+                },
                 onNavigationIconClick = LocalBusinessSettingsEventListener.current.onBackClick
             )
         },
@@ -50,7 +54,8 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                     modifier = Modifier
                         .padding(it)
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Column {
@@ -76,7 +81,6 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                                 onValueChange = {}
                             )
                             TextButton(
-                                modifier = Modifier.padding(bottom = 16.dp),
                                 state = state.pickLocation,
                                 onClick = LocalBusinessSettingsEventListener.current.onPickLocationClick
                             )
@@ -119,15 +123,6 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                     }
                 }
             }
-        },
-        bottomBar = {
-            ActionButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 24.dp),
-                state = state.save,
-                onClick = LocalBusinessSettingsEventListener.current.onSaveClick
-            )
         }
     )
 }

@@ -9,17 +9,23 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.UnauthorizedHandler
+import me.bookk.designsystem.components.DefaultSnackbarProvider
+import me.bookk.designsystem.components.LocalSnackbarProvider
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
@@ -88,7 +94,14 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
     }
     val destination = state.startDestination
     if (destination != null) {
-        CompositionLocalProvider(LocalUnauthorizedHandler provides onUnauthorized) {
+        val snackBarState = remember { SnackbarHostState() }
+        val snackBarScope = rememberCoroutineScope()
+        val snackbarProvider = remember { DefaultSnackbarProvider(snackBarScope, snackBarState) }
+
+        CompositionLocalProvider(
+            LocalUnauthorizedHandler provides onUnauthorized,
+            LocalSnackbarProvider provides snackbarProvider
+        ) {
             NavHost(
                 navController = controller,
                 startDestination = when (destination) {
@@ -107,6 +120,9 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                     settingsTab = { SettingsTab() }
                 )
             }
+        }
+        SnackbarHost(hostState = snackBarState) {
+            Snackbar(it)
         }
     }
 }

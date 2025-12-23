@@ -11,8 +11,27 @@ sealed interface PresentationNotification {
 
     //Message that displayed on top of everything even if you navigate between screens
     data class GlobalMessage(
-        val text: StringDesc
-    ) : PresentationNotification
+        val text: StringDesc,
+        val state: State = State.SUCCESS,
+        val duration: Duration = Duration.SHORT,
+        val actionText: StringDesc? = null,
+        val onActionClick: (() -> Unit)? = null,
+    ) : PresentationNotification {
+
+        val id: String = Uuid.random().toHexString()
+
+        enum class State {
+            ERROR,
+            SUCCESS,
+            INFO
+        }
+
+        enum class Duration {
+            SHORT,
+            LONG,
+            INDEFINITE
+        }
+    }
 
     data class Message(
         val title: StringDesc? = null,

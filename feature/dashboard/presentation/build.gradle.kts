@@ -1,11 +1,11 @@
-import build_src.constants.AndroidConfig
+import build_src.constants.ApplicationConfig
 
 plugins {
     alias(libs.plugins.convention.kmm.library.compose)
 }
 
 android {
-    namespace = "${AndroidConfig.ROOT_PACKAGE}.feature.dashboard"
+    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.dashboard"
 }
 
 kotlin {
@@ -19,6 +19,6 @@ kotlin {
 }
 
 multiplatformResources {
-    resourcesPackage.set("${AndroidConfig.ROOT_PACKAGE}.feature.dashboard.resources")
+    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.feature.dashboard.resources")
     resourcesClassName.set("DashboardRes")
 }

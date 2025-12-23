@@ -1,11 +1,11 @@
-import build_src.constants.AndroidConfig
+import build_src.constants.ApplicationConfig
 
 plugins {
     alias(libs.plugins.convention.kmm.library.compose)
 }
 
 android {
-    namespace = "${AndroidConfig.ROOT_PACKAGE}.feature.authorization"
+    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.authorization"
 }
 
 kotlin {
@@ -22,6 +22,6 @@ kotlin {
 }
 
 multiplatformResources {
-    resourcesPackage.set("${AndroidConfig.ROOT_PACKAGE}.feature.authorization.resources")
+    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.feature.authorization.resources")
     resourcesClassName.set("AuthRes")
 }

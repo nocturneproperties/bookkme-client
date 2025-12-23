@@ -1,15 +1,15 @@
 package build_src.convention
 
-import build_src.constants.AndroidConfig
+import build_src.constants.ApplicationConfig
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import java.io.File
 
 internal fun LibraryExtension.applyConvention(project: Project, useCompose: Boolean) {
-    compileSdk = AndroidConfig.COMPILE_SDK
+    compileSdk = ApplicationConfig.COMPILE_SDK
     defaultConfig {
-        minSdk = AndroidConfig.MIN_SDK
+        minSdk = ApplicationConfig.MIN_SDK
 
         consumerProguardFiles.add(File(project.projectDir, "consumer-rules.pro"))
     }

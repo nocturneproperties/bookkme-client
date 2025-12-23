@@ -12,13 +12,13 @@ android {
 
 buildkonfigExtend {
     forFlavour(ProductFlavour.DEV) {
-        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://local.bookkk.me/api", const = true)
+        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://local.bookkme.app/api", const = true)
     }
     forFlavour(ProductFlavour.MOCK) {
-        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://bookkk.me/api", const = true)
+        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://bookkme.app/api", const = true)
     }
     forFlavour(ProductFlavour.PROD) {
-        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://bookkk.me/api", const = true)
+        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "https://bookkme.app/api", const = true)
     }
 }
 

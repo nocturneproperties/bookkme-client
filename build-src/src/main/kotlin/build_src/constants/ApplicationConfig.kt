@@ -1,6 +1,6 @@
 package build_src.constants
 
-object AndroidConfig {
+object ApplicationConfig {
     const val MIN_SDK = 28
     const val COMPILE_SDK = 35
 

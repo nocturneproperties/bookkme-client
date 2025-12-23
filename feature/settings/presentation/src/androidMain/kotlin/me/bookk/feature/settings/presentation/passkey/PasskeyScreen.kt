@@ -25,11 +25,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.PullToRefresh
+import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
@@ -46,7 +46,13 @@ internal fun PasskeyScreen(state: PasskeyState) {
             AppTopBar(
                 state = state.appBar,
                 size = TopBarSize.MEDIUM,
-                onNavigationIconClick = LocalNavigation.current.navigateBack
+                onNavigationIconClick = LocalNavigation.current.navigateBack,
+                actions = {
+                    TextButton(
+                        state = state.addPasskeyButton,
+                        onClick = LocalPasskeyEventListener.current.onAddPasskeyClick
+                    )
+                }
             )
         },
         content = { paddings ->
@@ -63,6 +69,7 @@ internal fun PasskeyScreen(state: PasskeyState) {
                 ) {
                     LazyColumn(
                         modifier = Modifier
+                            .fillMaxSize()
                             .padding(top = 8.dp)
                             .bottomShadow(64.dp, LocalColors.current.background),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -74,15 +81,6 @@ internal fun PasskeyScreen(state: PasskeyState) {
                     }
                 }
             }
-        },
-        bottomBar = {
-            ActionButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                state = state.addPasskeyButton,
-                onClick = LocalPasskeyEventListener.current.onAddPasskeyClick
-            )
         }
     )
 }

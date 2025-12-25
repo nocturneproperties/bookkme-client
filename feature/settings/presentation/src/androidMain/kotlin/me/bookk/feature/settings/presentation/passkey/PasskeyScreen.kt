@@ -25,17 +25,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.PullToRefresh
+import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
+import kotlin.uuid.Uuid
 
 @Composable
 internal fun PasskeyScreen(state: PasskeyState) {
@@ -45,7 +46,13 @@ internal fun PasskeyScreen(state: PasskeyState) {
             AppTopBar(
                 state = state.appBar,
                 size = TopBarSize.MEDIUM,
-                onNavigationIconClick = LocalNavigation.current.navigateBack
+                onNavigationIconClick = LocalNavigation.current.navigateBack,
+                actions = {
+                    TextButton(
+                        state = state.addPasskeyButton,
+                        onClick = LocalPasskeyEventListener.current.onAddPasskeyClick
+                    )
+                }
             )
         },
         content = { paddings ->
@@ -62,6 +69,7 @@ internal fun PasskeyScreen(state: PasskeyState) {
                 ) {
                     LazyColumn(
                         modifier = Modifier
+                            .fillMaxSize()
                             .padding(top = 8.dp)
                             .bottomShadow(64.dp, LocalColors.current.background),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -73,15 +81,6 @@ internal fun PasskeyScreen(state: PasskeyState) {
                     }
                 }
             }
-        },
-        bottomBar = {
-            ActionButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                state = state.addPasskeyButton,
-                onClick = LocalPasskeyEventListener.current.onAddPasskeyClick
-            )
         }
     )
 }
@@ -156,7 +155,7 @@ private fun mockPasskeys() = buildList {
     repeat(10) {
         add(
             PasskeyState.PasskeyItem(
-                id = it.toLong(),
+                id = Uuid.random(),
                 title = "Passkey name",
                 isBackedUp = false,
                 isDeletable = true,

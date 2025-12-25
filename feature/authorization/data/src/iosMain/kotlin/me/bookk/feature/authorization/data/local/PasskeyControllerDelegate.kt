@@ -47,7 +47,7 @@ class PasskeyControllerDelegate(
                 ASAuthorizationErrorFailed,
                 ASAuthorizationErrorNotHandled -> PassKeyManager.Error.Infrastructure
 
-                else -> PassKeyManager.Error.Unknown
+                else -> PassKeyManager.Error.Unknown(Throwable(didCompleteWithError.code.toString()))
             }
             continuation.cancel(error)
         }

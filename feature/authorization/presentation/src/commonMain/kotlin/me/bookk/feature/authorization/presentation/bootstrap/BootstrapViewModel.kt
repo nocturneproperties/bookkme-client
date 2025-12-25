@@ -11,10 +11,12 @@ import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState.UIColorScheme
 import me.bookk.feature.settings.domain.api.GetColorScheme
+import me.bookk.feature.settings.domain.api.LogOut
 
 class BootstrapViewModel(
     private val isUserLoggedIn: IsUserLoggedIn,
     private val getColorScheme: GetColorScheme,
+    private val logOut: LogOut,
     stateFactory: AuthStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -24,6 +26,13 @@ class BootstrapViewModel(
     init {
         observeAuthorizationStatus()
         observeThemeUpdates()
+    }
+
+    fun logOut() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { logOut.invoke() }
+        )
     }
 
     private fun observeAuthorizationStatus() {

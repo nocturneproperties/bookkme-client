@@ -1,11 +1,11 @@
-import build_src.constants.AndroidConfig
+import build_src.constants.ApplicationConfig
 
 plugins {
     alias(libs.plugins.convention.kmm.library.compose)
 }
 
 android {
-    namespace = "${AndroidConfig.ROOT_PACKAGE}.feature.business"
+    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.business"
 }
 
 kotlin {
@@ -15,11 +15,12 @@ kotlin {
             implementation(projects.core.presentation)
             implementation(projects.designsystem)
             implementation(projects.feature.business.domain.api)
+            implementation(projects.library.device.api)
         }
     }
 }
 
 multiplatformResources {
-    resourcesPackage.set("${AndroidConfig.ROOT_PACKAGE}.feature.business.resources")
+    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.feature.business.resources")
     resourcesClassName.set("BusinessRes")
 }

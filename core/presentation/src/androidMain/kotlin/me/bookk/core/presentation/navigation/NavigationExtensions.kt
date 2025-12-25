@@ -1,4 +1,4 @@
-package me.bookk.core.presentation
+package me.bookk.core.presentation.navigation
 
 import android.content.Context
 import android.content.Intent

@@ -11,7 +11,7 @@ coroutines = "1.9.0"
 firebase = "33.7.0"
 appDistribution = "5.0.0"
 crashlytics = "3.0.2"
-google-services = "4.4.2"
+google-services = "4.4.3"
 koin = "4.0.0"
 ktor = "3.0.1"
 logback = "1.5.6"
@@ -21,19 +21,20 @@ kmm-resources-graphics = "0.24.5"
 datetime = "0.6.1"
 coil = "2.6.0"
 slf4jSimple = "2.0.16"
-room = "2.7.1"
-sqlite = "2.5.1"
-compose-navigation = "2.9.0"
+room = "2.7.2"
+sqlite = "2.5.2"
+compose-navigation = "2.9.2"
 ksp = "2.1.0-1.0.29"
-preferences = "1.1.6"
+preferences = "1.1.7"
 okio = "3.9.1"
-build-konfig = "0.15.2"
+build-konfig = "0.16.0"
 json-serialization = "1.7.3"
+money = "2.0.2"
 
 [libraries]
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }
-androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
+androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
@@ -43,7 +44,9 @@ androidx-credentials = { module = "androidx.credentials:credentials", version.re
 androidx-credentials-compat = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidx-credentials" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-multiplatform-gradlePlugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+test-koin = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+test-mock = { module = "io.mockk:mockk", version = "1.14.5" }
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "json-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -64,9 +67,9 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 firebase-crashlytics-gradlePlugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "crashlytics" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-android-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
@@ -86,6 +89,7 @@ simplelogger-slf4j = { module = "org.slf4j:slf4j-simple", version.ref = "slf4jSi
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 buildkonfig-gradlePlugin = { module = "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin", version.ref = "build-konfig" }
 buildkonfig-compiler = { module = "com.codingfeline.buildkonfig:buildkonfig-compiler", version.ref = "build-konfig" }
+joda-money = { module = "org.joda:joda-money", version.ref = "money" }
 
 [plugins]
 android-room = { id = "androidx.room", version.ref = "room" }
@@ -94,7 +98,6 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 convention-android-application = { id = "convention.android.application", version.ref = "local-plugin-version" }
 convention-kmm-library = { id = "convention.kmm.library", version.ref = "local-plugin-version" }
 convention-kmm-library-compose = { id = "convention.kmm.library.compose", version.ref = "local-plugin-version" }

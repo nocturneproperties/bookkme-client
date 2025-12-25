@@ -31,6 +31,10 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     iosArm64()
     iosSimulatorArm64()
 
+    sourceSets.all {
+        languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+        languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+    }
     sourceSets.androidMain.dependencies {
         implementation(project.libs.kotlinx.coroutines.android)
     }
@@ -41,7 +45,7 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
         implementation(project.libs.okio)
     }
     sourceSets.commonTest.dependencies {
-        implementation(project.libs.kotlin.test)
-        implementation(project.libs.koin.test)
+        implementation(project.libs.test.kotlin)
+        implementation(project.libs.test.koin)
     }
 }

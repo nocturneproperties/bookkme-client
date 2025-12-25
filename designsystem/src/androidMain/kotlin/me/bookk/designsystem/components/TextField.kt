@@ -2,6 +2,7 @@ package me.bookk.designsystem.components
 
 import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -24,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
+import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -44,9 +47,12 @@ fun TextField(
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
+    trailingIcon: (@Composable () -> Unit)? = null
 ) {
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .animateContentSize(),
         shape = MaterialTheme.shapes.medium,
         value = state.text,
         onValueChange = onValueChange,
@@ -67,8 +73,8 @@ fun TextField(
                 style = MaterialTheme.typography.bodyMedium.copy(background = Color.Transparent)
             )
         },
-        supportingText = {
-            state.supportingTextRes?.let { supportingTextRes ->
+        supportingText = state.supportingTextRes?.let { supportingTextRes ->
+            {
                 Text(
                     text = supportingTextRes.localized(),
                     color = if (state.isError) LocalColors.current.error else LocalColors.current.secondaryText,
@@ -76,7 +82,11 @@ fun TextField(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
-        }
+        },
+        trailingIcon = trailingIcon,
+        leadingIcon = state.startIcon?.let {
+            { Icon(painterResource(it), contentDescription = null) }
+        },
     )
 }
 
@@ -114,6 +124,16 @@ private fun Preview() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            TextField(
+                state = AndroidTextFieldState(
+                    hint = "Type here...".desc(),
+                    text = "",
+                    isError = false,
+                    enabled = true,
+                    readOnly = false
+                ),
+                onValueChange = {}
+            )
             TextField(
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),
@@ -170,6 +190,16 @@ private fun PreviewLight() {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            TextField(
+                state = AndroidTextFieldState(
+                    hint = "Type here...".desc(),
+                    text = "",
+                    isError = false,
+                    enabled = true,
+                    readOnly = false
+                ),
+                onValueChange = {}
+            )
             TextField(
                 state = AndroidTextFieldState(
                     hint = "Type here...".desc(),

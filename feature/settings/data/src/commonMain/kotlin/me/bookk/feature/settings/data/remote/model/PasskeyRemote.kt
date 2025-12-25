@@ -2,10 +2,11 @@ package me.bookk.feature.settings.data.remote.model
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
 
 @Serializable
 class PasskeyRemote(
-    val id: Long,
+    val id: Uuid,
     val name: String,
     val createdAt: Instant,
     val lastUsedAt: Instant,

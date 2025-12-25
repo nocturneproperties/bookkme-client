@@ -4,6 +4,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.feature.business.presentation.dashboard.DashboardNavigationDestination
+import kotlin.uuid.Uuid
 
 abstract class DashboardUIItem(
     val text: StringDesc,
@@ -15,11 +16,12 @@ sealed class BusinessDashboardSection(
     val items: List<DashboardUIItem>
 ) {
     class Business(
+        id: Uuid,
         items: List<DashboardUIItem> = listOf(
             Employees,
             Clients,
             Analytics,
-            Settings
+            Settings(id)
         )
     ) : BusinessDashboardSection(BusinessRes.strings.business_dashboard_business.desc(), items) {
         data object Employees : DashboardUIItem(
@@ -37,9 +39,9 @@ sealed class BusinessDashboardSection(
             DashboardNavigationDestination.Analytics
         )
 
-        data object Settings : DashboardUIItem(
+        class Settings(id: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_settings.desc(),
-            DashboardNavigationDestination.Settings
+            DashboardNavigationDestination.Settings(id)
         )
     }
 
@@ -49,7 +51,10 @@ sealed class BusinessDashboardSection(
             History,
             Settings,
         )
-    ) : BusinessDashboardSection(BusinessRes.strings.business_dashboard_appointments.desc(), items) {
+    ) : BusinessDashboardSection(
+        BusinessRes.strings.business_dashboard_appointments.desc(),
+        items
+    ) {
         data object Services : DashboardUIItem(
             BusinessRes.strings.business_dashboard_services.desc(),
             DashboardNavigationDestination.Services
@@ -73,7 +78,7 @@ sealed class BusinessDashboardSection(
             Warehouse,
             Orders
         )
-    ): BusinessDashboardSection(BusinessRes.strings.business_dashboard_shop.desc(), items) {
+    ) : BusinessDashboardSection(BusinessRes.strings.business_dashboard_shop.desc(), items) {
         data object Assortment : DashboardUIItem(
             BusinessRes.strings.business_dashboard_assortment.desc(),
             DashboardNavigationDestination.Assortment

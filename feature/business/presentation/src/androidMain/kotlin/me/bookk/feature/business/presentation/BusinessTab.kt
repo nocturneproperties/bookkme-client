@@ -32,7 +32,7 @@ fun BusinessTab() {
                 toAnalytics = { businessController.navigate(BusinessDestination.Analytics) },
                 toClients = { businessController.navigate(BusinessDestination.Clients) },
                 toEmployees = { businessController.navigate(BusinessDestination.Employees) },
-                toBusinessSettings = { businessController.navigate(BusinessDestination.Settings) },
+                toBusinessSettings = { businessController.navigate(BusinessDestination.Settings(it)) },
                 toAppointmentSettings = {},
                 toAppointmentHistory = {},
                 toAppointmentServices = {},

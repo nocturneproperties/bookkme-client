@@ -1,9 +1,11 @@
 package build_src.convention
 
+import build_src.constants.ApplicationConfig
 import build_src.constants.ProductFlavour
 import build_src.tools.getCurrentVariant
 import com.android.build.gradle.LibraryExtension
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.codingfeline.buildkonfig.gradle.BuildKonfigExtension
 import com.codingfeline.buildkonfig.gradle.TargetConfigDsl
@@ -29,6 +31,8 @@ fun BuildKonfigExtension.applyConvention(target: Project) {
                     const = true
                 )
                 buildConfigField(STRING, "VARIANT", variant.name, const = true)
+                buildConfigField(STRING, "VERSION_NAME", ApplicationConfig.VERSION_NAME, const = true)
+                buildConfigField(INT, "VERSION_CODE", ApplicationConfig.VERSION_CODE.toString(), const = true)
 
                 extender.extenders
                     .filter { variant.name.contains(it.key.title) }

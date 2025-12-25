@@ -1,15 +1,15 @@
-import build_src.constants.AndroidConfig
+import build_src.constants.ApplicationConfig
 
 plugins {
     alias(libs.plugins.convention.kmm.library.compose)
 }
 
 android {
-    namespace = "${AndroidConfig.ROOT_PACKAGE}.feature.settings"
+    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.settings"
 }
 
 multiplatformResources {
-    resourcesPackage.set("${AndroidConfig.ROOT_PACKAGE}.feature.settings.resources")
+    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.feature.settings.resources")
     resourcesClassName.set("SettingsRes")
 }
 

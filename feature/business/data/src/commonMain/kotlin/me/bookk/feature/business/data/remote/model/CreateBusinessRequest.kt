@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal class CreateBusinessRequest(
-    val name: String
+    val name: String,
+    val currencyCode: String
 )

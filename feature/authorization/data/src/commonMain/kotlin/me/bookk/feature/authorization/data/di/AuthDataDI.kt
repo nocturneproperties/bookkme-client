@@ -1,10 +1,12 @@
 package me.bookk.feature.authorization.data.di
 
 import me.bookk.core.data.HttpClientType
+import me.bookk.core.data.mock.RoutingMock
 import me.bookk.feature.authorization.data.datasource.CommonAuthorizationDataSource
 import me.bookk.feature.authorization.data.datasource.CommonDeviceDataSource
 import me.bookk.feature.authorization.data.datasource.CommonRegistrationDataSource
 import me.bookk.feature.authorization.data.datasource.CommonUserProfileDataSource
+import me.bookk.feature.authorization.data.remote.mock.UserRoutingMock
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataSource
@@ -29,4 +31,5 @@ fun authDataModule() = module {
     singleOf(::CommonRegistrationDataSource) bind RegistrationDataSource::class
     singleOf(::CommonDeviceDataSource) bind DeviceDataSource::class
     singleOf(::CommonUserProfileDataSource) bind UserProfileDataSource::class
+    singleOf(::UserRoutingMock) bind RoutingMock::class
 }

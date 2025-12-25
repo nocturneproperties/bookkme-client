@@ -1,4 +1,4 @@
-import build_src.constants.AndroidConfig
+import build_src.constants.ApplicationConfig
 import java.util.Properties
 
 plugins {
@@ -12,12 +12,12 @@ val keystoreProperties = file("keystore.properties").inputStream().use {
 }
 
 android {
-    namespace = AndroidConfig.ROOT_PACKAGE
+    namespace = ApplicationConfig.ROOT_PACKAGE
 
     defaultConfig {
-        applicationId = AndroidConfig.ROOT_PACKAGE
-        versionCode = AndroidConfig.VERSION_CODE
-        versionName = AndroidConfig.VERSION_NAME
+        applicationId = ApplicationConfig.ROOT_PACKAGE
+        versionCode = ApplicationConfig.VERSION_CODE
+        versionName = ApplicationConfig.VERSION_NAME
     }
 
     signingConfigs {

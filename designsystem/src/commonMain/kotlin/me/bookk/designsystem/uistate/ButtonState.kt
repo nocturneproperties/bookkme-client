@@ -7,3 +7,13 @@ interface ButtonState : ViewState {
     var isLoading: Boolean
     var isEnabled: Boolean
 }
+
+fun ButtonState.startLoading() {
+    isLoading = true
+    isEnabled = false
+}
+
+fun ButtonState.stopLoading() {
+    isLoading = false
+    isEnabled = true
+}

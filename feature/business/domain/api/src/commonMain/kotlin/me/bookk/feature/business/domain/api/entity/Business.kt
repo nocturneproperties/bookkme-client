@@ -1,6 +1,46 @@
 package me.bookk.feature.business.domain.api.entity
 
-class Business(
-    val id: Long,
-    val name: String
-)
+import library.money.api.Currency
+import kotlin.uuid.Uuid
+
+data class Business(
+    val id: Uuid,
+    val name: String,
+    val description: String,
+    val address: String,
+    val location: Location?,
+    val currency: Currency,
+    val socials: Map<SocialKind, Social>
+) {
+    data class Update(
+        val id: Uuid,
+        val name: String,
+        val description: String,
+        val address: String,
+        val location: Location?,
+        val currency: Currency,
+        val socials: Map<SocialKind, Social>
+    )
+
+    data class Location(
+        val lat: Double,
+        val lng: Double
+    ) {
+        override fun toString(): String {
+            return "$lat, $lng"
+        }
+    }
+
+    data class Social(
+        val kind: SocialKind,
+        val value: String?
+    )
+
+    enum class SocialKind {
+        PHONE,
+        INSTAGRAM,
+        TELEGRAM,
+        VIBER,
+        WHATSAPP
+    }
+}

@@ -38,9 +38,6 @@ class SignInViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.signInButton.isLoading = true },
             call = { signIn() },
-            onComplete = {
-                uiState.navigation.push(SignInNavigationDestination.Main)
-            },
             onError = {
                 val message = if (it is SignIn.Error) {
                     val message = when (it) {

@@ -44,6 +44,8 @@ include(":library:files:api")
 include(":library:files:impl")
 include(":library:device:api")
 include(":library:device:impl")
+include(":library:money:api")
+include(":library:money:impl")
 
 //Authorization
 include(":feature:authorization:data")

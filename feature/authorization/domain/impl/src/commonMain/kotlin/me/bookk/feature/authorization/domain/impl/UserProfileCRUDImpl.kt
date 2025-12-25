@@ -3,6 +3,7 @@ package me.bookk.feature.authorization.domain.impl
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataSource
 import me.bookk.feature.authorization.domain.entity.UserProfile
+import kotlin.uuid.Uuid
 
 internal class UserProfileCRUDImpl(
     private val userProfileDataSource: UserProfileDataSource
@@ -27,7 +28,7 @@ internal class UserProfileCRUDImpl(
         }
     }
 
-    override suspend fun delete(id: Long) {
+    override suspend fun delete(id: Uuid) {
         userProfileDataSource.deleteProfile(id)
     }
 }

@@ -8,6 +8,9 @@ android {
 
 kotlin {
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.androidx.core)
+        }
         commonMain.dependencies {
             implementation(projects.core)
             implementation(projects.core.domain)

@@ -1,6 +1,7 @@
 package me.bookk.designsystem.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.error.PresentationNotification
@@ -20,7 +21,19 @@ fun ObserveNotifications(state: PresentationNotificationState) {
             }
 
             is PresentationNotification.GlobalMessage -> {
-                state.removeFirst()
+                val text = notification.text.localized()
+                val label = notification.actionText?.localized()
+                val provider = LocalSnackbarProvider.current
+                LaunchedEffect(notification.id) {
+                    provider.showSnackbar(
+                        text = text,
+                        actionLabel = label,
+                        state = notification.state,
+                        duration = notification.duration,
+                        onActionClick = notification.onActionClick
+                    )
+                    state.removeFirst()
+                }
                 return
             }
 

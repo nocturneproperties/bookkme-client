@@ -34,6 +34,8 @@ enum class ThemeMode {
             val currentScheme = scheme
             return when (this) {
                 LIGHT -> lightColorScheme(
+                    onSurfaceVariant = currentScheme.primaryText,
+                    surfaceContainerLow = currentScheme.background,
                     background = currentScheme.background,
                     primary = currentScheme.primaryText,
                     secondary = AppColors.White,
@@ -48,6 +50,8 @@ enum class ThemeMode {
                 )
 
                 DARK -> darkColorScheme(
+                    onSurfaceVariant = currentScheme.primaryText,
+                    surfaceContainerLow = currentScheme.background,
                     background = currentScheme.background,
                     primary = currentScheme.primaryText,
                     secondary = AppColors.Black,

@@ -5,6 +5,7 @@ import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.RefreshState
+import kotlin.uuid.Uuid
 
 interface PasskeyState {
 
@@ -25,7 +26,7 @@ interface PasskeyState {
     fun replacePasskeyList(items: List<PasskeyItem>)
 
     data class PasskeyItem(
-        val id: Long,
+        val id: Uuid,
         val title: String,
         val isDeletable: Boolean,
         val isBackedUp: Boolean,

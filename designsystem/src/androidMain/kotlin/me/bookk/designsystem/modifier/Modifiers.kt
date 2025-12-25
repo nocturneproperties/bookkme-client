@@ -128,13 +128,25 @@ fun Modifier.coloredOverlay(
 }
 
 @Composable
-fun Modifier.bottomShadow(offset: Dp, color: Color): Modifier {
+fun Modifier.topShadow(offset: Dp, colorFrom: Color, colorTo: Color = Color.Transparent): Modifier {
+    val pxOffset = with(LocalDensity.current) { offset.toPx() }
+    return coloredOverlay {
+        Brush.verticalGradient(
+            startY = 0f,
+            endY = pxOffset,
+            colorStops = arrayOf(0f to colorFrom, 1f to colorTo)
+        )
+    }
+}
+
+@Composable
+fun Modifier.bottomShadow(offset: Dp, colorTo: Color, colorFrom: Color = Color.Transparent): Modifier {
     val pxOffset = with(LocalDensity.current) { offset.toPx() }
     return coloredOverlay {
         Brush.verticalGradient(
             startY = (it.height - pxOffset).coerceAtLeast(0f),
             endY = it.height.toFloat(),
-            colorStops = arrayOf(0f to Color.Transparent, 1f to color)
+            colorStops = arrayOf(0f to colorFrom, 1f to colorTo)
         )
     }
 }

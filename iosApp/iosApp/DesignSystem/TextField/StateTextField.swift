@@ -14,42 +14,48 @@ struct StateTextField: View {
     @ObservedObject
     var state: IOSTextFieldState
 	@State
-	var isEditor:Bool = false
+	var isEditor: Bool = false
     @State
     var onTextChanged: (String) -> Void
 	
 	init(state: TextFieldState, textEditor: Bool = false, onTextChanged: @escaping (String) -> Void) {
-		self.state = state.impl()
+		self.state = IOSTextFieldState.cast(kotlinState: state)
 		self.isEditor = textEditor
 		self.onTextChanged = onTextChanged
 	}
     
     var body: some View {
         VStack {
-            LabeledContent {
-                TextField(
-                    state.hint.localized(),
-                    text: Binding<String>(
-                        get: { state.text },
-                        set: { text in
-                            withAnimation {
-                                let newValue = String(text.prefix(Int(state.maxLength)))
-                                if (newValue != state.text) {
-                                    onTextChanged(String(text.prefix(Int(state.maxLength)))) }
-                                }
-                            }
-                    ),
-					axis: isEditor ? .vertical : .horizontal
-                )
-                .font(Font.system(.body))
-                .disabled(!state.enabled)
-            } label: {
-				if (!state.label.localized().isEmpty) {
-					Text(state.label.localized())
-						.frame(minWidth: 100, alignment: .leading)
+			HStack {
+				if (state.startIcon != nil) {
+					Image(uiImage: state.startIcon!.toUIImage()!)
+						.frame(width: 24, height: 24)
 				}
-            }
-            .padding(.horizontal)
+				LabeledContent {
+					TextField(
+						state.hint.localized(),
+						text: Binding<String>(
+							get: { state.text },
+							set: { text in
+								withAnimation {
+									let newValue = String(text.prefix(Int(state.maxLength)))
+									if (newValue != state.text) {
+										onTextChanged(String(text.prefix(Int(state.maxLength)))) }
+								}
+							}
+						),
+						axis: isEditor ? .vertical : .horizontal
+					)
+					.font(Font.system(.body))
+					.disabled(!state.enabled || state.readOnly)
+				} label: {
+					if (!state.label.localized().isEmpty) {
+						Text(state.label.localized())
+							.frame(minWidth: 100, alignment: .leading)
+					}
+				}
+			}
+			.padding(.horizontal, 8)
             .padding(.vertical, 12)
             .background(AppColors.elevated)
             .overlay(
@@ -81,6 +87,7 @@ struct StateTextField: View {
 					.font(.footnote)
                     .scaledToFit()
 					.foregroundStyle(state.isError ? AppColors.error : AppColors.secondary)
+					.padding(.leading)
             }
         }
     }

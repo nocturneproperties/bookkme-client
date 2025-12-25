@@ -4,8 +4,10 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
+import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import me.bookk.core.DispatcherProvider
+import me.bookk.database.converter.UuidConverter
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.database.entity.BusinessEntity
@@ -18,6 +20,7 @@ import me.bookk.database.entity.UserProfileEntity
     ],
     version = 1
 )
+@TypeConverters(UuidConverter::class)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
 

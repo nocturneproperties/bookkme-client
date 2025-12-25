@@ -11,7 +11,9 @@ import me.bookk.designsystem.resources.DesignSystem
 class ErrorMapperImpl : ErrorMapper {
     private val logger = LogFactory.createLogger("ErrorMapper")
     override fun mapToNotification(e: Throwable): PresentationNotification {
-        logger.e(e)
+        if (BuildKonfig.DEBUG) {
+            logger.e(e)
+        }
         return when (e) {
             is Error -> when (e) {
                 is Error.UnknownApiError,
@@ -33,6 +35,10 @@ class ErrorMapperImpl : ErrorMapper {
                     buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
                 )
                 is Error.Unknown -> PresentationNotification.Message(
+                    message = DesignSystem.strings.error_unexpected.desc(),
+                    buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+                )
+                Error.InvalidApplicationState -> PresentationNotification.Message(
                     message = DesignSystem.strings.error_unexpected.desc(),
                     buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
                 )

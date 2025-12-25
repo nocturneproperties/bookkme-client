@@ -24,4 +24,9 @@ class IosDeviceFacade : DeviceFacade {
             )
         }
     }
+
+    override fun openMapAt(lat: Double, lng: Double) {
+        val url = "http://maps.apple.com/?ll=$lat,$lng&z=15"
+        openUrlPreview(url)
+    }
 }

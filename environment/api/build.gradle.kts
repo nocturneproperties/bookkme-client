@@ -12,9 +12,5 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             api(projects.core.domain)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.koin.test)
-        }
     }
 }

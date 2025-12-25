@@ -15,6 +15,7 @@ interface BusinessSettingsState {
     val location: TextFieldState
     val address: TextFieldState
     val currency: PickerFieldState<CurrencyUI>
+    val phone: TextFieldState
     val instagram: TextFieldState
     val telegram: TextFieldState
     val viber: TextFieldState
@@ -33,6 +34,8 @@ interface BusinessSettingsState {
         val descriptionHint: StringDesc,
         val addressHint: StringDesc,
         val locationHint: StringDesc,
+        val phoneIcon: ImageResource,
+        val phoneHint: StringDesc,
         val instagramHint: StringDesc,
         val viberHint: StringDesc,
         val telegramHint: StringDesc,

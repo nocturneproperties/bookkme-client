@@ -33,6 +33,7 @@
     <string name="business_settings_currency_title">Currency</string>
     <string name="business_settings_currency_label">Account currency</string>
     <string name="business_settings_socials_title">Socials</string>
+    <string name="business_settings_phone_hint">Contact phone number</string>
     <string name="business_settings_instagram_hint">Instagram tag</string>
     <string name="business_settings_viber_hint">Viber number</string>
     <string name="business_settings_telegram_hint">Telegram tag</string>

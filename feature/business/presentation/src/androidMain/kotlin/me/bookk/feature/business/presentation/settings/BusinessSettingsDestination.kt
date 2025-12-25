@@ -21,8 +21,7 @@ internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
         typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
     ) {
         val entry = it.toRoute<BusinessDestination.Settings>()
-        val viewModel: BusinessSettingsViewModel =
-            koinViewModel(parameters = { parametersOf(entry.id) })
+        val viewModel: BusinessSettingsViewModel = koinViewModel { parametersOf(entry.id) }
         val backPressOwner = LocalOnBackPressedDispatcherOwner.current
         val listener = BusinessSettingsEventListener(
             onNameChanged = viewModel::onNameChanged,
@@ -35,6 +34,7 @@ internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
             onInstagramChanged = viewModel::onInstagramChanged,
             onPickLocationClick = viewModel::onPickLocationClicked,
             onTestLocationClick = viewModel::onTestLocationClick,
+            onPhoneChanged = viewModel::onPhoneChanged,
             onBackClick = { backPressOwner?.onBackPressedDispatcher?.onBackPressed() }
         )
 

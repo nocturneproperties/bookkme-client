@@ -40,6 +40,10 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
     override val address: TextFieldState = AndroidTextFieldState(
         hint = initData.addressHint
     )
+    override val phone: TextFieldState = AndroidTextFieldState(
+        startIcon = initData.phoneIcon,
+        hint = initData.phoneHint
+    )
     override val instagram: TextFieldState = AndroidTextFieldState(
         startIcon = initData.instaIcon,
         hint = initData.instagramHint

@@ -11,6 +11,8 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.resources.asPhone
+import me.bookk.designsystem.resources.toOneLine
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.business.domain.api.GetBusinessById
@@ -62,6 +64,7 @@ class BusinessSettingsViewModel(
                 uiState.instagram.text = it.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
                 uiState.telegram.text = it.socials[SocialKind.TELEGRAM]?.value.orEmpty()
                 uiState.viber.text = it.socials[SocialKind.VIBER]?.value.orEmpty()
+                uiState.phone.text = it.socials[SocialKind.PHONE]?.value.orEmpty()
                 uiState.description.isValid = true
                 uiState.location.isValid = true
                 uiState.address.isValid = true
@@ -69,6 +72,7 @@ class BusinessSettingsViewModel(
                 uiState.viber.isValid = true
                 uiState.telegram.isValid = true
                 uiState.name.isValid = true
+                uiState.phone.isValid = true
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
         )
@@ -82,15 +86,16 @@ class BusinessSettingsViewModel(
                 updateBusiness(
                     Business.Update(
                         id = referenceBusiness.id,
-                        name = uiState.name.text,
-                        description = uiState.description.text,
-                        address = uiState.address.text,
+                        name = uiState.name.text.trim(),
+                        description = uiState.description.text.trim(),
+                        address = uiState.address.text.trim(),
                         location = businessLocation,
                         currency = CurrencyFactory.forCode(uiState.currency.selectedItem.domainValue.name),
                         socials = listOf(
-                            Social(SocialKind.INSTAGRAM, uiState.instagram.text),
-                            Social(SocialKind.VIBER, uiState.viber.text),
-                            Social(SocialKind.TELEGRAM, uiState.telegram.text)
+                            Social(SocialKind.PHONE, uiState.phone.text.trim()),
+                            Social(SocialKind.INSTAGRAM, uiState.instagram.text.trim()),
+                            Social(SocialKind.VIBER, uiState.viber.text.trim()),
+                            Social(SocialKind.TELEGRAM, uiState.telegram.text.trim())
                         ).associateBy { it.kind }
                     )
                 )
@@ -114,8 +119,9 @@ class BusinessSettingsViewModel(
     }
 
     fun onNameChanged(name: String) {
-        uiState.name.text = name
-        uiState.name.isValid = name.isNotBlank()
+        val formatted = name.toOneLine()
+        uiState.name.text = formatted
+        uiState.name.isValid = formatted.isNotBlank()
         uiState.name.isError = !uiState.name.isValid
         uiState.name.supportingTextRes =
             DesignSystem.strings.error_empty.desc().takeIf { uiState.name.isError }
@@ -134,7 +140,7 @@ class BusinessSettingsViewModel(
     }
 
     fun onAddressChanged(address: String) {
-        uiState.address.text = address
+        uiState.address.text = address.toOneLine()
         invalidateSaveState()
     }
 
@@ -143,18 +149,23 @@ class BusinessSettingsViewModel(
         invalidateSaveState()
     }
 
+    fun onPhoneChanged(phone: String) {
+        uiState.phone.text = phone.asPhone()
+        invalidateSaveState()
+    }
+
     fun onInstagramChanged(insta: String) {
-        uiState.instagram.text = insta
+        uiState.instagram.text = insta.toOneLine()
         invalidateSaveState()
     }
 
     fun onTelegramChanged(telegram: String) {
-        uiState.telegram.text = telegram
+        uiState.telegram.text = telegram.toOneLine()
         invalidateSaveState()
     }
 
     fun onViberChanged(viber: String) {
-        uiState.viber.text = viber
+        uiState.viber.text = viber.toOneLine()
         invalidateSaveState()
     }
 
@@ -167,6 +178,7 @@ class BusinessSettingsViewModel(
                 uiState.description.isValid &&
                 uiState.address.isValid &&
                 uiState.location.isValid &&
+                uiState.phone.isValid &&
                 uiState.instagram.isValid &&
                 uiState.telegram.isValid &&
                 uiState.viber.isValid
@@ -176,7 +188,8 @@ class BusinessSettingsViewModel(
                 uiState.location.text != referenceBusiness.location?.toString().orEmpty() ||
                 uiState.instagram.text != referenceBusiness.socials[SocialKind.INSTAGRAM]?.value ||
                 uiState.telegram.text != referenceBusiness.socials[SocialKind.TELEGRAM]?.value ||
-                uiState.viber.text != referenceBusiness.socials[SocialKind.VIBER]?.value
+                uiState.viber.text != referenceBusiness.socials[SocialKind.VIBER]?.value ||
+                uiState.phone.text != referenceBusiness.socials[SocialKind.PHONE]?.value
         uiState.save.isEnabled = isAllFieldsValid && isChanged
     }
 
@@ -189,6 +202,8 @@ class BusinessSettingsViewModel(
             descriptionHint = BusinessRes.strings.business_settings_description_hint.desc(),
             addressHint = BusinessRes.strings.business_settings_address_hint.desc(),
             locationHint = BusinessRes.strings.business_settings_location_hint.desc(),
+            phoneIcon = DesignSystem.images.phone,
+            phoneHint = BusinessRes.strings.business_settings_phone_hint.desc(),
             instagramHint = BusinessRes.strings.business_settings_instagram_hint.desc(),
             viberHint = BusinessRes.strings.business_settings_viber_hint.desc(),
             telegramHint = BusinessRes.strings.business_settings_telegram_hint.desc(),

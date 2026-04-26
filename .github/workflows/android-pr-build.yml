@@ -1,0 +1,35 @@
+name: Android Pull Request Verification
+on:
+  pull_request:
+    branches: [ development ]
+    types: [ edited, synchronize, ready_for_review ]
+
+jobs:
+  build:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: self-hosted
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: '9.2.0'
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Import Secrets
+        run: |
+          echo -n "${{ secrets.ANDROID_KEYSTORE_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/keystore.properties
+          echo -n "${{ secrets.ANDROID_SERVICEACC_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/serviceaccount.json
+
+      - name: Build
+        run: |
+          ./gradlew assembleDevDebug

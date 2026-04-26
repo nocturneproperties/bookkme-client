@@ -2,7 +2,7 @@ import build_src.constants.ApplicationConfig
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.convention.android.application)
+    id(libs.plugins.convention.android.application.get().pluginId)
 }
 
 val keystoreProperties = file("keystore.properties").inputStream().use {

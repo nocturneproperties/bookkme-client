@@ -1,7 +1,6 @@
 package build_src
 
 import build_src.convention.applyConvention
-import build_src.convention.applyFlavourConvention
 import build_src.tools.libs
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
@@ -23,7 +22,6 @@ class KMMDatabaseConventionPlugin : Plugin<Project> {
 
             extensions.getByType<LibraryExtension>().apply {
                 applyConvention(target, useCompose = false)
-                applyFlavourConvention()
             }
             extensions.getByType<KotlinMultiplatformExtension>().apply {
                 applyConvention(target)

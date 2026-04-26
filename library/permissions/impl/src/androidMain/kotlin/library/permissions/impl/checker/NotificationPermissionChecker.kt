@@ -10,9 +10,9 @@ import library.permissions.api.PermissionType
 internal actual class NotificationPermissionChecker : AndroidPermissionChecker(),
     PermissionChecker {
 
-    override val type: PermissionType = PermissionType.NOTIFICATIONS
+    actual override val type: PermissionType = PermissionType.NOTIFICATIONS
 
-    override suspend fun requestPermission(): Boolean {
+    actual override suspend fun requestPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             check(Manifest.permission.POST_NOTIFICATIONS)
         } else {
@@ -20,7 +20,7 @@ internal actual class NotificationPermissionChecker : AndroidPermissionChecker()
         }
     }
 
-    override suspend fun hasPermission(): Boolean {
+    actual override suspend fun hasPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
                 awaitActivity(),

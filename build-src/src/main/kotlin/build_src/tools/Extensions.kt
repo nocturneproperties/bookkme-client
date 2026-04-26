@@ -15,17 +15,23 @@ fun ApplicationBuildType.firebaseCrashlytics(configuration: CrashlyticsExtension
     (this as ExtensionAware).configure(configuration)
 }
 
-fun Project.getCurrentVariant(): String {
-    val tskReqStr = gradle.startParameter.taskNames.toString()
-    val patternStr = when {
-        tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"
-        tskReqStr.contains("bundle") -> "(?<=bundle)\\w*?(?=Aar)"
-        tskReqStr.contains("assemble") -> "(?<=assemble)\\w*"
-        else -> "(?<=check)\\w*?(?=Manifest)"
-    }
+fun Project.isIosBuild(): Boolean {
+    return gradle.startParameter.taskNames.any { it.contains("ForXcode") }
+}
 
-    val pattern = Regex(patternStr)
-    return (pattern.find(tskReqStr)?.value ?: System.getenv("KOTLIN_FRAMEWORK_FLAVOUR").orEmpty())
+fun Project.getCurrentVariant(): String {
+    return System.getenv("KOTLIN_FRAMEWORK_FLAVOUR").orEmpty()
+        .ifBlank {
+            val tskReqStr = gradle.startParameter.taskNames.toString()
+            val patternStr = when {
+                tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"
+                tskReqStr.contains("bundle") -> "(?<=bundle)\\w*?(?=Aar)"
+                tskReqStr.contains("assemble") -> "(?<=assemble)\\w*"
+                else -> "(?<=check)\\w*?(?=Manifest)"
+            }
+            Regex(patternStr).find(tskReqStr)?.value.orEmpty()
+        }
+        .ifBlank { properties["buildkonfig.flavor"]?.toString().orEmpty() }
         .replaceFirstChar { it.lowercase(Locale.getDefault()) }
 }
 
@@ -33,8 +39,7 @@ fun Project.findStringProperty(key: String, fileName: String): String {
     val propertiesFile = project.rootProject.file(fileName)
     val properties = Properties()
     properties.load(propertiesFile.inputStream())
-    return properties.getProperty(key)?.toString()
-        ?: throw GradleException("$key not found in $fileName")
+    return properties.getProperty(key) ?: throw GradleException("$key not found in $fileName")
 }
 
 val Project.libs: LibrariesForLibs

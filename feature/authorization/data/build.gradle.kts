@@ -1,10 +1,22 @@
+import build_src.tools.getCurrentVariant
+import build_src.tools.libs
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
-    alias(libs.plugins.convention.kmm.library)
+    id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
+    alias(libs.plugins.buldconfig)
     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "me.bookk.feature.authorization.data"
+}
+
+buildkonfig {
+    packageName = "me.bookk.feature.authorization.data"
+    defaultConfigs {
+        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
+    }
 }
 
 kotlin {

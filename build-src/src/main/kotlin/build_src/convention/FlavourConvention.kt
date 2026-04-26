@@ -2,42 +2,17 @@ package build_src.convention
 
 import build_src.constants.ProductFlavour
 import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.CommonExtension
+import java.io.File
 
-fun CommonExtension<*, *, *, *, *, *>.applyFlavourConvention() {
+fun ApplicationExtension.applyFlavourConvention(projectDir: File) {
     flavorDimensions.add("type")
 
     productFlavors {
-        create(ProductFlavour.DEV.title) {
-            dimension = "type"
-        }
-
-        create(ProductFlavour.MOCK.title) {
-            dimension = "type"
-        }
-
-        create(ProductFlavour.PROD.title) {
-            dimension = "type"
-        }
-    }
-}
-
-fun ApplicationExtension.applyFlavourConvention() {
-    flavorDimensions.add("type")
-
-    productFlavors {
-        create(ProductFlavour.DEV.title) {
-            dimension = "type"
-            applicationIdSuffix = ".${ProductFlavour.DEV.title}"
-        }
-
-        create(ProductFlavour.MOCK.title) {
-            dimension = "type"
-            applicationIdSuffix = ".${ProductFlavour.MOCK.title}"
-        }
-
-        create(ProductFlavour.PROD.title) {
-            dimension = "type"
+        ProductFlavour.entries.forEach {
+            create(it.title) {
+                dimension = "type"
+                applicationIdSuffix = ".${it.title}"
+            }
         }
     }
 }

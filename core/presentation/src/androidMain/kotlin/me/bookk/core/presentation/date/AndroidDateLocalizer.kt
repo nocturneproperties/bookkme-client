@@ -7,10 +7,10 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toJavaInstant
 import me.bookk.core.presentation.date.DateLocalizer.Style
 import java.time.Instant
 import java.util.Date
+import kotlin.time.toJavaInstant
 
 class AndroidDateLocalizer(context: Context) : DateLocalizer {
 

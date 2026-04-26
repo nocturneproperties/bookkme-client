@@ -1,5 +1,6 @@
 package library.money.impl
 
+import android.icu.text.DecimalFormatSymbols
 import android.icu.text.NumberFormat
 import library.money.api.Currency
 import org.joda.money.CurrencyUnit
@@ -13,20 +14,28 @@ internal actual class CurrencyImpl actual constructor(
         currency = AndroidCurrency.getInstance(currencyUnit.code)
     }
 
-    override fun code(): String {
+    actual override fun code(): String {
         return currencyUnit.code
     }
 
-    override fun format(value: Long): String {
-        val doubleValue = value / (10 * currencyUnit.decimalPlaces)
+    actual override fun format(value: Long): String {
+        var divider = 1
+        repeat(currencyUnit.decimalPlaces) {
+            divider *= 10
+        }
+        val doubleValue = value / divider.toDouble()
         return formatter.format(doubleValue)
     }
 
-    override fun symbol(): String {
+    actual override fun symbol(): String {
         return currencyUnit.symbol
     }
 
-    override fun asString(): String {
+    actual override fun decimalSeparator(): Char {
+        return DecimalFormatSymbols.getInstance().decimalSeparator
+    }
+
+    actual override fun asString(): String {
         return "${currencyUnit.code} (${currencyUnit.symbol})"
     }
 }

@@ -7,9 +7,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.bookk.core.DispatcherProvider
 import me.bookk.core.LogFactory
 import me.bookk.core.UsedInSwift
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.error.ErrorMapper
 import kotlin.coroutines.CoroutineContext
 

@@ -1,4 +1,4 @@
-package me.bookk.core
+package me.bookk.core.coroutine
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

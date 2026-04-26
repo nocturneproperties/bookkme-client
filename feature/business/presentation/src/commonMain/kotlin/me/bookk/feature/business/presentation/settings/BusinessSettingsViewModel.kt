@@ -5,8 +5,8 @@ import library.device.api.DeviceFacade
 import library.money.api.CurrencyFactory
 import library.money.api.Money
 import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.core.DispatcherProvider
 import me.bookk.core.LogFactory
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage

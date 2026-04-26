@@ -1,7 +1,7 @@
 import build_src.constants.ApplicationConfig
 
 plugins {
-    alias(libs.plugins.convention.kmm.library.compose)
+    id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
 android {

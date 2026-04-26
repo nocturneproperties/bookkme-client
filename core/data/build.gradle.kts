@@ -1,10 +1,26 @@
+import build_src.tools.getCurrentVariant
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
+
 plugins {
-    alias(libs.plugins.convention.kmm.library)
+    id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
+    alias(libs.plugins.buldconfig)
     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "me.bookk.core.data"
+}
+
+buildkonfig {
+    packageName = "me.bookk.core.data"
+    defaultConfigs {
+        buildConfigField(
+            BOOLEAN,
+            "DEBUG",
+            getCurrentVariant().contains("debug", ignoreCase = true).toString(),
+            const = true
+        )
+    }
 }
 
 kotlin {

@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import me.bookk.core.DispatcherProvider
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.database.converter.UuidConverter
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.UserProfileDao

@@ -7,6 +7,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 
 dependencyResolutionManagement {
     repositories {
@@ -46,6 +49,8 @@ include(":library:device:api")
 include(":library:device:impl")
 include(":library:money:api")
 include(":library:money:impl")
+include(":library:biometry:api")
+include(":library:biometry:impl")
 
 //Authorization
 include(":feature:authorization:data")

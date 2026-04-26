@@ -27,7 +27,7 @@ class MoneyTest {
         val money = Money(10000, Money.SupportedCurrency.EUR)
 
         assertEquals(10000, money.value)
-        assertEquals(Money.SupportedCurrency.EUR, money.currency)
+        assertEquals(Money.SupportedCurrency.EUR, money.currencyType)
     }
 
     @Test
@@ -35,7 +35,7 @@ class MoneyTest {
         val money = Money(125.84, Money.SupportedCurrency.UAH)
 
         assertEquals(12584, money.value)
-        assertEquals(Money.SupportedCurrency.UAH, money.currency)
+        assertEquals(Money.SupportedCurrency.UAH, money.currencyType)
     }
 
     @Test
@@ -43,7 +43,7 @@ class MoneyTest {
         val money = Money(12312321.99, Money.SupportedCurrency.UAH)
 
         assertEquals(1231232199, money.value)
-        assertEquals(Money.SupportedCurrency.UAH, money.currency)
+        assertEquals(Money.SupportedCurrency.UAH, money.currencyType)
     }
 
     @Test

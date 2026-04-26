@@ -40,11 +40,6 @@ gradlePlugin {
             implementationClass = "build_src.KMMComposeLibraryConventionPlugin"
             version = "1.0"
         }
-        register("kotlinLibrary") {
-            id = "convention.kotlin.library"
-            implementationClass = "build_src.KotlinLibraryConventionPlugin"
-            version = "1.0"
-        }
         register("kmmDatabase") {
             id = "convention.kmm.library.database"
             implementationClass = "build_src.KMMDatabaseConventionPlugin"

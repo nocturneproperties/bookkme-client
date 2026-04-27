@@ -11,7 +11,7 @@ import SwiftUI
 
 struct TroubleshootScreen: View {
     @EnvironmentObject var navigationStack: NavigationStackHolder
-    @StateObject var troubleshootVM: TroubleshootViewModel = IOSAuthDiKt.troubleshootVM()
+    @StateViewModel var troubleshootVM: TroubleshootViewModel = IOSAuthDiKt.troubleshootVM()
     
     
     var body: some View {

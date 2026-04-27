@@ -20,7 +20,7 @@ internal class AndroidContactUsState(
     initData: ContactUsState.InitData
 ) : ContactUsState {
     override val appBar: AppBarState = AndroidAppBarState(title = initData.title)
-    override val contactField: TextFieldState = AndroidTextFieldState(hint = initData.contactHint)
+    override val contactField: TextFieldState = AndroidTextFieldState(label = initData.contactHint)
     override val includeLogsSwitch: SwitchState = AndroidSwitchState(text = initData.usageLogsText, isChecked = false)
     override val logsExplanationText: StringDesc = initData.includeLogsExplanation
     override val submitButton: ButtonState = AndroidButtonState(text = initData.submitButtonText, isEnabled = false)

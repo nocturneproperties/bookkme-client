@@ -11,7 +11,7 @@ import shared
 
 struct PasskeyScreen: View {
 	
-	@StateObject
+	@StateViewModel
 	var viewModel: PasskeyViewModel = IOSSettingsDiKt.passkeyVM()
 	
 	var body: some View {
@@ -34,11 +34,9 @@ struct PasskeyScreen: View {
 
 private struct PasskeyContent: View {
 	
-	@ObservedObject
-	var state: IOSPasskeyState
+	let state: IOSPasskeyState
 	
-	@ObservedObject
-	var viewModel: PasskeyViewModel
+	let viewModel: PasskeyViewModel
 	
 	init(state: PasskeyState, viewModel: PasskeyViewModel) {
 		self.state = state.impl()

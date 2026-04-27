@@ -9,7 +9,9 @@
 import shared
 import SwiftUI
 
-class IOSPasskeyState: PasskeyState, ObservableObject {
+@MainActor
+@Observable
+class IOSPasskeyState: @MainActor PasskeyState {
 	
 	var addPasskeyButton: any ButtonState
 	
@@ -19,7 +21,6 @@ class IOSPasskeyState: PasskeyState, ObservableObject {
 	
 	var refresh: any RefreshState
 	
-	@Published
 	var passkeys: [PasskeyStatePasskeyItem]
 	
 	init(initData: PasskeyStateInitData) {

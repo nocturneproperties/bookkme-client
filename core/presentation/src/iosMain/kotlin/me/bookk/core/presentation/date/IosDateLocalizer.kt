@@ -1,51 +1,62 @@
 package me.bookk.core.presentation.date
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toNSDate
-import me.bookk.core.presentation.date.DateLocalizer.Style
 import platform.Foundation.NSDateFormatter
-import platform.Foundation.NSDateFormatterLongStyle
-import platform.Foundation.NSDateFormatterMediumStyle
-import platform.Foundation.NSDateFormatterNoStyle
-import platform.Foundation.NSDateFormatterShortStyle
-import platform.Foundation.NSDateFormatterStyle
+import platform.Foundation.NSLocale
+import platform.Foundation.NSTimeZone
+import platform.Foundation.currentLocale
+import platform.Foundation.localTimeZone
 
-class IosDateLocalizer : DateLocalizer {
+class IosDateLocalizer: DateLocalizer {
 
-    private val format = NSDateFormatter()
-
-    override fun format(date: LocalDateTime, dateStyle: Style, timeStyle: Style): String {
-        format.dateStyle = dateStyle.toNSStyle()
-        format.timeStyle = timeStyle.toNSStyle()
-        val nsDate = date.toInstant(TimeZone.currentSystemDefault()).toNSDate()
-        return format.stringFromDate(nsDate)
-    }
-
-    override fun format(date: LocalDate, style: Style): String {
-        format.dateStyle = style.toNSStyle()
-        format.timeStyle = NSDateFormatterNoStyle
-        val nsDate = date.atStartOfDayIn(TimeZone.currentSystemDefault()).toNSDate()
-        return format.stringFromDate(nsDate)
-    }
-
-    override fun format(time: LocalTime, style: Style): String {
-        format.dateStyle = NSDateFormatterNoStyle
-        format.timeStyle = style.toNSStyle()
-        val nsDate = Instant.fromEpochMilliseconds(time.toMillisecondOfDay().toLong()).toNSDate()
-        return format.stringFromDate(nsDate)
-    }
-
-    private fun Style.toNSStyle(): NSDateFormatterStyle {
-        return when (this) {
-            Style.SHORT -> NSDateFormatterShortStyle
-            Style.MEDIUM -> NSDateFormatterMediumStyle
-            Style.LONG -> NSDateFormatterLongStyle
+    private fun DateStyle.nativeFormat(): IOSFormatters {
+        val dateFormatter = NSDateFormatter().apply {
+            locale = NSLocale.currentLocale
+            timeZone = NSTimeZone.localTimeZone
+            dateModifier()
         }
+        val sameYearDateFormatter = NSDateFormatter().apply {
+            locale = NSLocale.currentLocale
+            timeZone = NSTimeZone.localTimeZone
+            sameYearDateModifier()
+        }
+        val dateTimeFormatter = NSDateFormatter().apply {
+            locale = NSLocale.currentLocale
+            timeZone = NSTimeZone.localTimeZone
+            dateTimeModifier()
+        }
+        val sameYearDateTimeFormatter = NSDateFormatter().apply {
+            locale = NSLocale.currentLocale
+            timeZone = NSTimeZone.localTimeZone
+            sameYearDateTimeModifier()
+        }
+        val timeFormatter = NSDateFormatter().apply {
+            locale = NSLocale.currentLocale
+            timeZone = NSTimeZone.localTimeZone
+            timeModifier()
+        }
+        return IOSFormatters(
+            date = dateFormatter,
+            dateTime = dateTimeFormatter,
+            dateSameYear = sameYearDateFormatter,
+            dateTimeSameYear = sameYearDateTimeFormatter,
+            time = timeFormatter
+        )
+    }
+
+    override fun forStyle(dateStyle: DateStyle): DateLocalizer.Formatter {
+        return IOSDateFormatter(dateStyle.nativeFormat())
+    }
+
+    override fun strict(pattern: String, respectUserSettings: Boolean): DateLocalizer.Formatter {
+        val formatter = NSDateFormatter().apply {
+            locale = NSLocale(localeIdentifier = "en_US_POSIX")
+            timeZone = NSTimeZone.localTimeZone
+            if (respectUserSettings) {
+                matchToUserPreferences(pattern)
+            } else {
+                dateFormat = pattern
+            }
+        }
+        return IOSDateFormatter(IOSFormatters(formatter, formatter, formatter, formatter, formatter))
     }
 }

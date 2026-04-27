@@ -15,9 +15,9 @@ internal class AndroidEditProfileState(
     initData: EditProfileState.InitData
 ) : EditProfileState {
     override val appBar: AppBarState = AndroidAppBarState(title = initData.title)
-    override val name: TextFieldState = AndroidTextFieldState(hint = initData.nameHint)
-    override val lastName: TextFieldState = AndroidTextFieldState(hint = initData.lastNameHint)
-    override val email: TextFieldState = AndroidTextFieldState(hint = initData.emailHint)
+    override val name: TextFieldState = AndroidTextFieldState(label = initData.nameHint)
+    override val lastName: TextFieldState = AndroidTextFieldState(label = initData.lastNameHint)
+    override val email: TextFieldState = AndroidTextFieldState(label = initData.emailHint)
     override val confirmButton: ButtonState = AndroidButtonState(
         text = initData.confirmButtonText,
         isEnabled = false

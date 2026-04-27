@@ -10,7 +10,7 @@ import SwiftUI
 import shared
 
 struct TextButton: View {
-    @ObservedObject
+    @Bindable
     var state: IOSButtonState
     @State
 	var maxWidth: CGFloat?
@@ -19,17 +19,17 @@ struct TextButton: View {
     @State
     var onClick: () -> Void
     
-	init(state: IOSButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: @escaping () -> Void) {
+	init(state: IOSButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
 		self.state = state
 		self.textAlignment = textAlignment
-		self.onClick = onClick
+		self.onClick = onClick ?? state.onClick ?? {}
 		self.maxWidth = maxWidth
 	}
 	
-	init(state: ButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: @escaping () -> Void) {
+	init(state: ButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
 		self.state = state.impl()
 		self.textAlignment = textAlignment
-		self.onClick = onClick
+		self.onClick = onClick ?? state.onClick ?? {}
 		self.maxWidth = maxWidth
 	}
 	
@@ -50,7 +50,7 @@ struct TextButton: View {
 }
 
 struct StateButton: View {
-    @ObservedObject
+	@Bindable
     var state: IOSButtonState
     @State
     var onClick: () -> Void
@@ -81,7 +81,7 @@ struct StateButton: View {
 }
 
 struct IconButton: View {
-	@ObservedObject
+	@Bindable
 	var state: IOSButtonState
 	@State
 	var maxWidth: CGFloat? = .infinity

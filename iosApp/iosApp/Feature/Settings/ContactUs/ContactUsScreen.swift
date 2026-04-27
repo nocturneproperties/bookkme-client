@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ContactUsScreen: View {
 	
-	@StateObject
+	@StateViewModel
 	var viewModel = IOSSettingsDiKt.contactUsVM()
 	
 	@EnvironmentObject

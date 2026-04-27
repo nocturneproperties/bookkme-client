@@ -9,24 +9,35 @@
 import shared
 import SwiftUI
 
-class IOSPickerState: PickerFieldState, ObservableObject, NativeStateRepresentation {
+@Observable
+@MainActor
+class IOSPickerState: IOSViewState, @MainActor PickerFieldState, NativeStateRepresentation {
+	
 	typealias SwiftType = IOSPickerState
 	
 	typealias KotlinType = PickerFieldState
 	
-	
-	@Published
+	var onItemPicked: (PickerPresentation?) -> Void
 	var options: [PickerPresentation]
-	@Published
-	var selectedItem: PickerPresentation
-	@Published
-	var text: StringDesc
+	var pickerTitle: any StringDesc
+	var pickerType: PickerFieldStatePickerType = PickerFieldStatePickerType.bottomSheet
+	var selectedItem: PickerPresentation? = nil
+	var textField: any TextFieldState
 	
-	init(options: [PickerPresentation], selectedItem: PickerPresentation, text: StringDesc = RawStringDesc(string: "")) {
+	init(
+		pickerTitle: any StringDesc = RawStringDesc(string: ""),
+		options: [PickerPresentation] = [],
+		pickerType: PickerFieldStatePickerType = PickerFieldStatePickerType.bottomSheet,
+		textField: any TextFieldState,
+		onItemPicked: @escaping (PickerPresentation?) -> Void = {_ in },
+	) {
+		self.onItemPicked = onItemPicked
 		self.options = options
-		self.selectedItem = selectedItem
-		self.text = text
+		self.pickerTitle = pickerTitle
+		self.pickerType = pickerType
+		self.textField = textField
 	}
+	
 	
 	func replaceOptions(options: [PickerPresentation]) {
 		self.options = options

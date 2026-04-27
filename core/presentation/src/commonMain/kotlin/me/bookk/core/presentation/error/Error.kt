@@ -51,6 +51,7 @@ class ButtonDescriptor(
 
     enum class ActionType {
         POSITIVE,
-        NEGATIVE
+        NEGATIVE,
+        CANCEL
     }
 }

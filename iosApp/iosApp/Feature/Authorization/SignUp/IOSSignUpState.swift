@@ -8,7 +8,9 @@
 
 import shared
 
-class IOSSignUpState: SignUpState {
+@MainActor
+@Observable
+class IOSSignUpState: @MainActor SignUpState {
     
     var appBar: any AppBarState
     

@@ -8,7 +8,9 @@
 
 import shared
 
-class IOSCreateBusinessState: CreateBusinessState {
+@MainActor
+@Observable
+class IOSCreateBusinessState: @MainActor CreateBusinessState {
 	
 	var appBar: any AppBarState
 	

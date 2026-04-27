@@ -11,7 +11,6 @@ import shared
 
 struct ViewLifecycleNotifier: ViewModifier {
     
-    @ObservedObject
     var viewModel: shared.ViewModel
     
     func body(content: Content) -> some View {

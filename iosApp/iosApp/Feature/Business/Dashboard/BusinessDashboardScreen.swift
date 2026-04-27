@@ -11,7 +11,7 @@ import shared
 
 struct BusinessDashboardScreen: View {
 	
-	@StateObject var viewModel: BusinessDashboardViewModel = IOSBusinessDiKt.businessDashboardVM()
+	@StateViewModel var viewModel: BusinessDashboardViewModel = IOSBusinessDiKt.businessDashboardVM()
 	
 	var body: some View {
 		VStack {
@@ -29,7 +29,7 @@ struct BusinessDashboardScreen: View {
 
 struct BusinessDashboardScreenContent: View {
 	
-	@ObservedObject var state: IOSBusinessDashboardState
+	let state: IOSBusinessDashboardState
 	
 	init(state: BusinessDashboardState) {
 		self.state = state.impl()

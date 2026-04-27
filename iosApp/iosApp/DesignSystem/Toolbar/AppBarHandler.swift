@@ -11,8 +11,6 @@ import shared
 
 struct AppBarHandler: ViewModifier {
 	
-	
-	@ObservedObject
 	var appBarState: IOSAppBarState
 	
 	func body(content: Content) -> some View {

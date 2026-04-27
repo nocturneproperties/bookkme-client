@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.TextField
-import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.feature.business.presentation.create.state.CreateBusinessState
@@ -29,7 +28,7 @@ internal fun CreateBusinessScreen(
         modifier = Modifier
             .systemBarsPadding()
             .imePadding(),
-        topBar = { AppTopBar(state = state.appBar, size = TopBarSize.MEDIUM) },
+        topBar = { AppTopBar(state = state.appBar) },
         content = {
             Column(
                 modifier = Modifier

@@ -11,9 +11,8 @@ import shared
 
 struct StateSwitch: View {
 	
-	@ObservedObject
+	@Bindable
 	var state: IOSSwitchState
-	
 	let onToggledChanged: (Bool) -> Void
 	
 	init(state: SwitchState, onToggledChanged: @escaping (Bool) -> Void) {
@@ -22,9 +21,12 @@ struct StateSwitch: View {
 	}
 	
 	var body: some View {
-		Toggle(state.text.localized(), isOn: $state.isChecked)
-			.onChange(of: state.isChecked, initial: false) { _, newValue in
+		Toggle(state.text.localized(), isOn: Binding(
+			get: { state.isChecked },
+			set: { newValue in
+				state.isChecked = newValue
 				onToggledChanged(newValue)
 			}
+		))
 	}
 }

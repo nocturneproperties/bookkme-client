@@ -20,7 +20,6 @@ import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.SectionItem
-import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -33,7 +32,7 @@ internal fun DashboardScreen(
     state: BusinessDashboardState
 ) {
     Scaffold(
-        topBar = { AppTopBar(state = state.appBar, size = TopBarSize.SMALL) },
+        topBar = { AppTopBar(state = state.appBar) },
         content = {
             LazyColumn(
                 modifier = Modifier.padding(it),

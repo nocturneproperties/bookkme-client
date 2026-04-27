@@ -11,6 +11,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.presentation)
             implementation(projects.environment.api)
+            implementation(projects.library.money.api)
         }
     }
 }

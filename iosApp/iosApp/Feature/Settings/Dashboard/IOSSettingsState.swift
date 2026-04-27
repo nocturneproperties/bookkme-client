@@ -8,7 +8,8 @@
 
 import shared
 
-class IOSSettingsState: SettingsState {
+@MainActor
+class IOSSettingsState: @MainActor SettingsState {
 	var account: any AccountSection
 	
 	var appearance: any AppearanceSection
@@ -28,9 +29,10 @@ class IOSSettingsState: SettingsState {
 	}
 }
 
-class IOSAccountSection: AccountSection, ObservableObject {
+@MainActor
+@Observable
+class IOSAccountSection: @MainActor AccountSection {
 	
-	@Published
 	var title: any StringDesc
 	
 	var deleteAccount: any TextState
@@ -54,10 +56,11 @@ extension AccountSection {
 	}
 }
 
-class IOSAppearanceSection: AppearanceSection, ObservableObject {
-	@Published
+@Observable
+@MainActor
+class IOSAppearanceSection: @MainActor AppearanceSection {
+	
 	var title: any StringDesc
-	@Published
 	var colorScheme: AppearanceSectionUIColorScheme
 	
 	
@@ -73,15 +76,13 @@ extension AppearanceSection {
 	}
 }
 
-class IOSProfileSection: ProfileSection, ObservableObject {
+@MainActor
+@Observable
+class IOSProfileSection: @MainActor ProfileSection {
 	
-	@Published
 	var title: any StringDesc
-	@Published
 	var email: any StringDesc
-	@Published
 	var lastName: any StringDesc
-	@Published
 	var name: any StringDesc
 	
 	var editProfile: any ButtonState
@@ -102,8 +103,9 @@ extension ProfileSection {
 	}
 }
 
-class IOSSupportSection: SupportSection, ObservableObject {
-	@Published
+@MainActor
+@Observable
+class IOSSupportSection: @MainActor SupportSection {
 	var title: any StringDesc
 	
 	var contact: any TextState

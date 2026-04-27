@@ -30,7 +30,6 @@ import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.TextButton
-import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -45,7 +44,6 @@ internal fun PasskeyScreen(state: PasskeyState) {
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                size = TopBarSize.MEDIUM,
                 onNavigationIconClick = LocalNavigation.current.navigateBack,
                 actions = {
                     TextButton(

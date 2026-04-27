@@ -12,16 +12,18 @@ import shared
 
 struct NavigationHandler: ViewModifier {
 	
-	@ObservedObject
+	@Bindable
 	var navigationState: IOSNavigationState
 	@State
 	var handler: (NavigationDestination) -> Void
 	
 	func body(content: Content) -> some View {
 		content
-			.onReceive(navigationState.$navigationDestination.flatMap(\.publisher)) { destination in
-				handler(destination)
-				navigationState.removeFirst()
+			.onChange(of: navigationState.navigationDestination.count) {
+				if let first = navigationState.navigationDestination.first {
+					handler(first)
+					navigationState.removeFirst()
+				}
 			}
 	}
 }

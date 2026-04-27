@@ -13,6 +13,7 @@ import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.resources.toOneLine
+import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.business.domain.api.GetBusinessById
@@ -60,7 +61,7 @@ class BusinessSettingsViewModel(
                 uiState.currency.selectedItem = uiState.currency.options.first { currencyUI ->
                     currencyUI.domainValue == Money.SupportedCurrency.valueOf(it.currency.code())
                 }
-                uiState.currency.text = BusinessRes.strings.business_settings_currency_label.desc()
+                uiState.currency.textField.label = BusinessRes.strings.business_settings_currency_label.desc()
                 uiState.instagram.text = it.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
                 uiState.telegram.text = it.socials[SocialKind.TELEGRAM]?.value.orEmpty()
                 uiState.viber.text = it.socials[SocialKind.VIBER]?.value.orEmpty()
@@ -90,7 +91,7 @@ class BusinessSettingsViewModel(
                         description = uiState.description.text.trim(),
                         address = uiState.address.text.trim(),
                         location = businessLocation,
-                        currency = CurrencyFactory.forCode(uiState.currency.selectedItem.domainValue.name),
+                        currency = CurrencyFactory.forCode(uiState.currency.selectedItem!!.domainValue.name),
                         socials = listOf(
                             Social(SocialKind.PHONE, uiState.phone.text.trim()),
                             Social(SocialKind.INSTAGRAM, uiState.instagram.text.trim()),
@@ -122,9 +123,8 @@ class BusinessSettingsViewModel(
         val formatted = name.toOneLine()
         uiState.name.text = formatted
         uiState.name.isValid = formatted.isNotBlank()
-        uiState.name.isError = !uiState.name.isValid
-        uiState.name.supportingTextRes =
-            DesignSystem.strings.error_empty.desc().takeIf { uiState.name.isError }
+        uiState.name.validationState = if (!uiState.name.isValid) ValidationState.ERROR else ValidationState.DEFAULT
+        uiState.name.supportingTextRes = DesignSystem.strings.error_empty.desc().takeIf { !uiState.name.isValid }
         invalidateSaveState()
     }
 

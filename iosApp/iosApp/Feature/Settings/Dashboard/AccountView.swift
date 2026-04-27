@@ -11,8 +11,7 @@ import shared
 
 struct AccountView: View {
 	
-	@ObservedObject
-	var state: IOSAccountSection
+	let state: IOSAccountSection
 	
 	var logoutClick: () -> Void
 	

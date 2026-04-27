@@ -12,8 +12,7 @@ import shared
 
 struct AppearanceView: View {
 	
-	@ObservedObject
-	var state: IOSAppearanceSection
+	let state: IOSAppearanceSection
 	
 	let onSchemeSelected: (AppearanceSectionUIColorScheme) -> Void
 	

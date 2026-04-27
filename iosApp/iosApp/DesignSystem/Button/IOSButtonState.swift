@@ -7,18 +7,29 @@
 //
 import shared
 
-class IOSButtonState: IOSViewState, ButtonState {
-    @Published
+@MainActor
+@Observable
+class IOSButtonState: IOSViewState, @MainActor ButtonState {
+
     var isEnabled: Bool
-    @Published
     var isLoading: Bool
-    @Published
     var text: any StringDesc
+	var icon: ImageResource?
+	var onClick: (() -> Void)?
     
-    init(text: any StringDesc, isEnabled: Bool = true, isLoading: Bool = false, isVisible: Bool = true) {
+	init(
+		text: any StringDesc,
+		isEnabled: Bool = true,
+		isLoading: Bool = false,
+		icon: ImageResource? = nil,
+		onClick: (() -> Void)? = nil,
+		isVisible: Bool = true
+	) {
         self.isEnabled = isEnabled
         self.isLoading = isLoading
         self.text = text
+		self.icon = icon
+		self.onClick = onClick
         super.init(isVisible: isVisible)
     }
 }

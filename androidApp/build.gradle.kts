@@ -1,4 +1,5 @@
 import build_src.constants.ApplicationConfig
+import build_src.tools.libs
 import java.util.Properties
 
 plugins {
@@ -47,4 +48,21 @@ android {
 
 dependencies {
     implementation(projects.shared)
+    implementation(libs.androidx.splash)
+
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.android.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.androidx.core)
+    implementation(libs.compose.ui)
+    debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.navigation)
+    implementation(libs.androidx.activity.compose)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 }

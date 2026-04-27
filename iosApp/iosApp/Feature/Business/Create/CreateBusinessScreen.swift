@@ -11,7 +11,7 @@ import shared
 
 struct CreateBusinessScreen: View {
 	
-	@StateObject var viewModel = IOSBusinessDiKt.createBusinessVM()
+	@StateViewModel var viewModel = IOSBusinessDiKt.createBusinessVM()
 	
 	var body: some View {
 		let uiState = viewModel.uiState

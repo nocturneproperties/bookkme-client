@@ -12,7 +12,7 @@ import shared
 struct EditProfileScreen: View {
 	
 	@StateObject var navigationStack = NavigationStackHolder()
-	@StateObject var viewModel = IOSSettingsDiKt.editProfileVM()
+	@StateViewModel var viewModel = IOSSettingsDiKt.editProfileVM()
 	
 	var body: some View {
 		let state = viewModel.uiState

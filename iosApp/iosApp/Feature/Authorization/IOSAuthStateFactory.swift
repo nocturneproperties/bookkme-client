@@ -7,7 +7,8 @@
 //
 import shared
 
-class IOSAuthStateFactory:AuthStateFactory {
+@MainActor
+class IOSAuthStateFactory: @MainActor AuthStateFactory {
     
     func createBootstrapState() -> any BootstrapState {
         return IOSBootstrapState()

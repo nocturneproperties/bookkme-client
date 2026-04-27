@@ -8,7 +8,9 @@
 
 import shared
 
-class IOSDeleteAccountState: DeleteAccountState {
+@MainActor
+@Observable
+class IOSDeleteAccountState: @MainActor DeleteAccountState {
 	var appBar: any AppBarState
 	
 	var confirmationMessage: any StringDesc

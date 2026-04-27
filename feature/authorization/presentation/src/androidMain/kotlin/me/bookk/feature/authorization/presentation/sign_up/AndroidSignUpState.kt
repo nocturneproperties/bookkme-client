@@ -29,9 +29,9 @@ internal class AndroidSignUpState private constructor(
 
     constructor(initData: SignUpState.InitData) : this(
         appBar = AndroidAppBarState(title = initData.title),
-        name = AndroidTextFieldState(hint = initData.nameHint),
-        lastName = AndroidTextFieldState(hint = initData.lastNameHint),
-        email = AndroidTextFieldState(hint = initData.emailHint),
+        name = AndroidTextFieldState(label = initData.nameHint),
+        lastName = AndroidTextFieldState(label = initData.lastNameHint),
+        email = AndroidTextFieldState(label = initData.emailHint),
         confirmButton = AndroidButtonState(text = initData.confirmButtonText, isEnabled = false),
         learnMoreButton = AndroidButtonState(text = initData.learnMoreButtonText),
         passkeyInfoCardData = initData.passkeyInfoCardData,

@@ -17,7 +17,7 @@ internal class AndroidCreateBusinessState(
 ) : CreateBusinessState {
     override val appBar: AppBarState = AndroidAppBarState(initData.title)
     override val name: TextFieldState = AndroidTextFieldState(
-        hint = initData.hint,
+        label = initData.hint,
         supportingTextRes = initData.supportingText,
         maxLength = initData.maxNameLength
     )

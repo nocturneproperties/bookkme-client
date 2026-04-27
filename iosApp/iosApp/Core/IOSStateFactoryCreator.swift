@@ -7,7 +7,8 @@
 //
 import shared
 
-class IOSStateFactoryCreator: StateFactoryCreator {
+@MainActor
+class IOSStateFactoryCreator: @MainActor StateFactoryCreator {
 	
 	func createDashboardFactory() -> any DashboardStateFactory {
 		return IOSDashboardStateFactory()

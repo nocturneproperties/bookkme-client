@@ -9,10 +9,8 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.setBody
-import io.ktor.util.PlatformUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -38,22 +36,6 @@ class CommonAuthorizationDataSource(
 ) : AuthorizationDataSource, DataSource() {
 
     private val preferences = preferenceProvider.get("authorization_prefs")
-
-    init {
-        if (!PlatformUtils.IS_JVM) {
-            runBlocking {
-                if (getRefreshToken() == null) {
-                    val refresh =
-                        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra2subWUiLCJpc3MiOiJjb20uYm9va2suc2VydmVyLnJlZnJlc2giLCJqdGkiOiI2NDNkMDljYjM0MDA0YjZlOTgxOWU0MzUwNWVjOTk1ZSIsImRldmljZV9pZCI6MTYsImlhdCI6MTc0NzY5MDAyNiwibmJmIjoxNzQ3NjkwMDI2LCJleHAiOjE3NDgyOTQ4MjZ9.CI6801U7JIZrQqz28yjCEuXjEM4AmrxffSYFziz3EqLhRmxSCtNXZ_76Lhif_1VUzvzs0jziPZFRSW6Ii36VBYKNQ35mO7_rKjJKksTZoWKM3u7otE3WoXo_dbs0OcyEfP5F-auRWASaHBHuSbRLkekhfbHnD9jOs7rd4EDg9143nFEfa0cJxzSO-zzW09h2WqULOA8i9vUE0nlULmBR8nxahtiaUVxmcHUR0bXouH3NDGV6y6m7zHCmQy5c7a0_CbyqU2GhxHnlDSC-GDngwXyef8vqX3vP0bBeJBuAKkS_vwHUTCNTZrjGPPYQW1p1uVTLS_w18QG4pfwycSnPjg"
-                    val access =
-                        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra2subWUiLCJpc3MiOiJjb20uYm9va2suc2VydmVyIiwianRpIjoiZWNiNzBjZjQyNzg3NDQyM2FjMjQ1MjAxMDFmN2QzNzQiLCJhdXRoX2lkIjo0LCJ1c2VyX2lkIjo0LCJkZXZpY2VfaWQiOjE2LCJpYXQiOjE3NDc2OTAwMjYsIm5iZiI6MTc0NzY5MDAyNiwiZXhwIjoxNzQ3NjkwMzI2fQ.JKmiXNRYQA7QCW-EjvsCpvAWW8XxhWW8HdzotluGrAYByp5A4jQsIYv-dTjyUYPl3ag2jnE0igId3oU7_c1iUZ9FbCdELrKZe-wtQB7oKVRPgyryRLbMtjrasQdCJzQCm1lOEeELiMGeUbWh4ADwykfYM24pIfl_59IhRvSBDiHx6lbo4yFO7mJBRC5M3w3CbA5LXb7CeVO3yUn2BVizTmyaQgJthxjs-I7etixOD4_pUWdivD_tSwjIyq3htiO-jFETtwwC8eXUumRf29sfALpnQsS98nt9o8YxE5QmzcLSKU9oUsWBVy6Q629DmZSBVAZb7yzYOG_cjTPbCllgwQ"
-                    saveAuthorizationTokens(TokenInfo(access, refresh))
-                    setAuthorizationStatus(true)
-                    invalidateClientTokens()
-                }
-            }
-        }
-    }
 
     override suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?) {
         preferences.set(Key.accessToken, tokenInfo?.accessToken)

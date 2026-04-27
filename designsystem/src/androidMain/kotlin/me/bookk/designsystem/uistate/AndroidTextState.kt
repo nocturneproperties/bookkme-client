@@ -10,7 +10,7 @@ import dev.icerock.moko.resources.desc.desc
 @Immutable
 class AndroidTextState(
     text: StringDesc = "".desc(),
-    isVisible: Boolean = false,
+    isVisible: Boolean = true,
     isHighlighted: Boolean = false,
 ) : AndroidViewState(isVisible), TextState {
     override var text: StringDesc by mutableStateOf(text)

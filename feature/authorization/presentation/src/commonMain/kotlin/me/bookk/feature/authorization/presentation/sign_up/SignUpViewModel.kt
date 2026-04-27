@@ -9,6 +9,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification.Message
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.Error
 import me.bookk.feature.authorization.domain.api.ValidateEmail
@@ -40,7 +41,7 @@ class SignUpViewModel(
         val validationResult = validateName.invoke(text)
         uiState.name.text = text
         uiState.name.isValid = validationResult.isValid
-        uiState.name.isError = !validationResult.isValid
+        uiState.name.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
         uiState.name.supportingTextRes = when (validationResult) {
             ValidateName.Result.Invalid.Length -> AuthRes.strings.sign_up_first_name_error.desc()
             ValidateName.Result.Valid -> null
@@ -52,7 +53,7 @@ class SignUpViewModel(
         val validationResult = validateName.invoke(text)
         uiState.lastName.text = text
         uiState.lastName.isValid = validationResult.isValid
-        uiState.lastName.isError = !validationResult.isValid
+        uiState.lastName.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
         uiState.lastName.supportingTextRes = when (validationResult) {
             ValidateName.Result.Invalid.Length -> AuthRes.strings.sign_up_last_name_error.desc()
             ValidateName.Result.Valid -> null
@@ -64,7 +65,7 @@ class SignUpViewModel(
         val validationResult = validateEmail.invoke(text)
         uiState.email.text = text
         uiState.email.isValid = validationResult.isValid
-        uiState.email.isError = !validationResult.isValid
+        uiState.email.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
         uiState.email.supportingTextRes = when (validationResult) {
             ValidateEmail.Result.Invalid.Format -> AuthRes.strings.sign_up_email_error.desc()
             ValidateEmail.Result.Valid -> null
@@ -88,12 +89,12 @@ class SignUpViewModel(
             onError = {
                 when (it) {
                     is Error.EmailAlreadyExist -> {
-                        uiState.email.isError = true
+                        uiState.email.validationState = ValidationState.ERROR
                         uiState.email.isValid = false
                         uiState.email.supportingTextRes = AuthRes.strings.sign_up_email_exist.desc()
                     }
                     is Error.InvalidEmailFormat -> {
-                        uiState.email.isError = true
+                        uiState.email.validationState = ValidationState.ERROR
                         uiState.email.isValid = false
                         uiState.email.supportingTextRes = AuthRes.strings.sign_up_email_error.desc()
                     }

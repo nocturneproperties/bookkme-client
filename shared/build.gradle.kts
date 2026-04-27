@@ -1,7 +1,8 @@
+import build_src.constants.ApplicationConfig
 import build_src.constants.ProductFlavour
 import build_src.tools.getCurrentVariant
-import com.codingfeline.buildkonfig.compiler.FieldSpec
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
@@ -16,17 +17,24 @@ android {
 buildkonfig {
     packageName = "me.bookk.shared"
     defaultConfigs {
-        buildConfigField(FieldSpec.Type.STRING, "BASE_URL", "", const = true)
+        buildConfigField(STRING, "BASE_URL", "", const = true)
         buildConfigField(
             BOOLEAN,
             "DEBUG",
             getCurrentVariant().contains("debug", ignoreCase = true).toString(),
             const = true
         )
+        buildConfigField(
+            STRING,
+            "VERSION_NAME",
+            ApplicationConfig.VERSION_NAME,
+            const = true
+        )
+        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
     }
     defaultConfigs(ProductFlavour.DEV.name) {
         buildConfigField(
-            FieldSpec.Type.STRING,
+            STRING,
             "BASE_URL",
             "https://local.bookkme.app/api",
             const = true
@@ -34,7 +42,7 @@ buildkonfig {
     }
     defaultConfigs(ProductFlavour.PROD.name) {
         buildConfigField(
-            FieldSpec.Type.STRING,
+            STRING,
             "BASE_URL",
             "https://bookkme.app/api",
             const = true

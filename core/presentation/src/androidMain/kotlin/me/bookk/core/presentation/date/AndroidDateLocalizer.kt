@@ -1,41 +1,35 @@
 package me.bookk.core.presentation.date
 
-import android.content.Context
-import android.text.format.DateFormat
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import me.bookk.core.presentation.date.DateLocalizer.Style
-import java.time.Instant
-import java.util.Date
-import kotlin.time.toJavaInstant
+import me.bookk.core.android.AndroidActivityAware
+import java.time.format.DateTimeFormatter
 
-class AndroidDateLocalizer(context: Context) : DateLocalizer {
+internal class AndroidDateLocalizer : AndroidActivityAware(), DateLocalizer {
 
-    private val short = DateFormat.getDateFormat(context)
-    private val medium = DateFormat.getMediumDateFormat(context)
-    private val long = DateFormat.getLongDateFormat(context)
-
-    private val timeFormat = DateFormat.getTimeFormat(context)
-
-    override fun format(date: LocalDateTime, dateStyle: Style, timeStyle: Style): String {
-        return "${format(date.date, dateStyle)} ${format(date.time, timeStyle)}"
+    private fun DateStyle.nativeFormat(): AndroidFormatters {
+        return AndroidFormatters(
+            dateTime = DateTimeFormatter.ofPattern(dateTimePattern.matchToUserPreferences()),
+            dateTimeSameYear = DateTimeFormatter.ofPattern(sameYearDateTimePattern.matchToUserPreferences()),
+            date = DateTimeFormatter.ofPattern(datePattern.matchToUserPreferences()),
+            dateSameYear = DateTimeFormatter.ofPattern(sameYearDatePattern.matchToUserPreferences()),
+            time = DateTimeFormatter.ofPattern(timePattern.matchToUserPreferences())
+        )
     }
 
-    override fun format(date: LocalDate, style: Style): String {
-        val jvmInstant = date.atStartOfDayIn(TimeZone.currentSystemDefault())
-        val legacyDate = Date.from(jvmInstant.toJavaInstant())
-        return when (style) {
-            Style.SHORT -> short.format(legacyDate)
-            Style.MEDIUM -> medium.format(legacyDate)
-            Style.LONG -> long.format(legacyDate)
-        }
+    override fun forStyle(dateStyle: DateStyle): DateLocalizer.Formatter {
+        return AndroidDateFormatter(dateStyle.nativeFormat())
     }
 
-    override fun format(time: LocalTime, style: Style): String {
-        val legacyDate = Date.from(Instant.ofEpochMilli(time.toMillisecondOfDay().toLong()))
-        return timeFormat.format(legacyDate)
+    override fun strict(pattern: String, respectUserSettings: Boolean): DateLocalizer.Formatter {
+        val changedPattern = if (respectUserSettings) pattern.matchToUserPreferences() else pattern
+        val formatter = DateTimeFormatter.ofPattern(changedPattern)
+        return AndroidDateFormatter(
+            AndroidFormatters(
+                dateTime = formatter,
+                dateTimeSameYear = formatter,
+                date = formatter,
+                dateSameYear = formatter,
+                time = formatter
+            )
+        )
     }
 }

@@ -1,6 +1,5 @@
 package me.bookk.designsystem.action
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
@@ -17,6 +16,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 
+private enum class ImeMoveDirection(val value: Int) {
+    UP(1),
+    DOWN(-1),
+    STATIC(0)
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun keyboardMovingDirection(): State<Int> {
@@ -26,9 +31,9 @@ fun keyboardMovingDirection(): State<Int> {
     val isImeVisible = WindowInsets.isImeVisible
     LaunchedEffect(imeBottom, isImeVisible) {
         state.intValue = when {
-            isImeVisible && lastImeBottom.intValue < imeBottom -> 1
-            isImeVisible && lastImeBottom.intValue > imeBottom -> -1
-            else -> 0
+            isImeVisible && lastImeBottom.intValue < imeBottom -> ImeMoveDirection.UP.value
+            isImeVisible && lastImeBottom.intValue > imeBottom -> ImeMoveDirection.DOWN.value
+            else -> ImeMoveDirection.STATIC.value
         }
         lastImeBottom.intValue = imeBottom
     }
@@ -36,14 +41,14 @@ fun keyboardMovingDirection(): State<Int> {
 }
 
 fun isKeyboardMovingDownOrInvisible(state: Int): Boolean {
-    return state != 1
+    return state != ImeMoveDirection.UP.value
 }
 
 @Composable
 fun HideFromIme(content: @Composable () -> Unit) {
     val direction by keyboardMovingDirection()
     AnimatedVisibility(
-        visible = isKeyboardMovingDownOrInvisible(direction).also { Log.d("ADD", it.toString()) },
+        visible = isKeyboardMovingDownOrInvisible(direction),
         enter = expandVertically(animationSpec = spring()),
         exit = shrinkVertically(animationSpec = spring()),
     ) {

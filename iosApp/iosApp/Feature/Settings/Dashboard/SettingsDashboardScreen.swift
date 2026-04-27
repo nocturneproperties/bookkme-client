@@ -12,7 +12,7 @@ import shared
 struct SettingsDashboardScreen: View {
 	
 	@StateObject var navigationStack = NavigationStackHolder()
-	@StateObject var settingsVM = IOSSettingsDiKt.settingsVM()
+	@StateViewModel var settingsVM = IOSSettingsDiKt.settingsVM()
 	
 	var body: some View {
 		let uiState = settingsVM.uiState

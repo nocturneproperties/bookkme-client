@@ -11,17 +11,21 @@ import shared
 
 struct StateTextField: View {
     
-    @ObservedObject
+    @Bindable
     var state: IOSTextFieldState
 	@State
 	var isEditor: Bool = false
     @State
     var onTextChanged: (String) -> Void
 	
-	init(state: TextFieldState, textEditor: Bool = false, onTextChanged: @escaping (String) -> Void) {
+	init(
+		state: TextFieldState,
+		textEditor: Bool = false,
+		onTextChanged: ((String) -> Void)? = nil
+	) {
 		self.state = IOSTextFieldState.cast(kotlinState: state)
 		self.isEditor = textEditor
-		self.onTextChanged = onTextChanged
+		self.onTextChanged = onTextChanged ?? state.onTextChanged ?? {_ in}
 	}
     
     var body: some View {
@@ -59,7 +63,7 @@ struct StateTextField: View {
             .padding(.vertical, 12)
             .background(AppColors.elevated)
             .overlay(
-                state.isError ?
+				state.validationState == ValidationState.error ?
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(
                         AppColors.error,
@@ -86,7 +90,7 @@ struct StateTextField: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 					.font(.footnote)
                     .scaledToFit()
-					.foregroundStyle(state.isError ? AppColors.error : AppColors.secondary)
+					.foregroundStyle(state.validationState == ValidationState.error ? AppColors.error : AppColors.secondary)
 					.padding(.leading)
             }
         }
@@ -97,7 +101,7 @@ struct StateTextField: View {
     
     @Previewable
     @State
-	var value: IOSTextFieldState = IOSTextFieldState(enabled: true, supportingTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isError: false, isValid: true, maxLength: 20, readOnly: false, text: "Text")
+	var value: IOSTextFieldState = IOSTextFieldState(enabled: true, supportingTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isValid: true, maxLength: 20, readOnly: false, text: "Text")
     
 	StateTextField(state: value) { _ in
 		

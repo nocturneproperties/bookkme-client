@@ -11,7 +11,7 @@ import SwiftUI
 
 struct DeleteAccountScreen: View {
 	
-	@StateObject
+	@StateViewModel
 	var viewModel = IOSSettingsDiKt.deleteAccVM()
 	
 	@EnvironmentObject

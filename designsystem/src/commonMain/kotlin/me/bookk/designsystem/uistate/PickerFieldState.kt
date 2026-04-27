@@ -8,8 +8,9 @@ import me.bookk.core.UsedInSwift
  * instance is the same by property values but the instance is not the same as in options list
  **/
 abstract class PickerPresentation {
-    abstract val pickerItemId: Long
+    abstract val pickerItemId: String
     abstract val displayName: StringDesc
+    open val displayIconUrl: String? = null
 
     abstract override fun hashCode(): Int
     abstract override fun equals(other: Any?): Boolean
@@ -17,14 +18,23 @@ abstract class PickerPresentation {
 
 @UsedInSwift
 data class MinimalPickerPresentation(
-    override val pickerItemId: Long,
-    override val displayName: StringDesc
+    override val pickerItemId: String,
+    override val displayName: StringDesc,
 ) : PickerPresentation()
 
-interface PickerFieldState<T : PickerPresentation> {
-    var text: StringDesc
+interface PickerFieldState<T : PickerPresentation> : ViewState {
+    val textField: TextFieldState
+    var pickerType: PickerType
+    var pickerTitle: StringDesc
     val options: List<T>
-    var selectedItem: T
+    var selectedItem: T?
+    var onItemPicked: (T?) -> Unit
 
     fun replaceOptions(options: List<T>)
+
+    enum class PickerType {
+        BOTTOM_SHEET,
+        SCREEN
+    }
+
 }

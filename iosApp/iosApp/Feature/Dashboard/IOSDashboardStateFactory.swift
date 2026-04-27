@@ -7,7 +7,8 @@
 //
 import shared
 
-class IOSDashboardStateFactory: DashboardStateFactory {
+@MainActor
+class IOSDashboardStateFactory: @MainActor DashboardStateFactory {
 	func createDashboardState(initData: TabItemsStateInitData) -> any DashboardState {
 		return IOSDashboardState(initData: initData)
 	}

@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import me.bookk.core.android.AndroidActivityAware
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.UnauthorizedHandler
 import me.bookk.designsystem.action.isKeyboardMovingDownOrInvisible
@@ -50,8 +50,8 @@ import me.bookk.feature.business.presentation.BusinessTab
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
 import me.bookk.feature.dashboard.presentation.navigation.dashboardGraph
 import me.bookk.feature.settings.presentation.SettingsTab
-import org.koin.androidx.compose.KoinAndroidContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.mp.KoinPlatform
 
 class MainActivity : ComponentActivity() {
 
@@ -62,28 +62,28 @@ class MainActivity : ComponentActivity() {
             viewModel.state.startDestination == null
         }
         super.onCreate(savedInstanceState)
+        KoinPlatform.getKoin().getAll<AndroidActivityAware>()
+            .forEach { it.attachActivity(this) }
         setContent {
-            KoinAndroidContext {
-                AppTheme(
-                    themeMode = when (viewModel.state.colorScheme) {
-                        BootstrapState.UIColorScheme.DARK -> ThemeMode.DARK
-                        BootstrapState.UIColorScheme.LIGHT -> ThemeMode.LIGHT
-                        BootstrapState.UIColorScheme.SYSTEM -> if (isSystemInDarkTheme()) {
-                            ThemeMode.DARK
-                        } else {
-                            ThemeMode.LIGHT
-                        }
+            AppTheme(
+                themeMode = when (viewModel.state.colorScheme) {
+                    BootstrapState.UIColorScheme.DARK -> ThemeMode.DARK
+                    BootstrapState.UIColorScheme.LIGHT -> ThemeMode.LIGHT
+                    BootstrapState.UIColorScheme.SYSTEM -> if (isSystemInDarkTheme()) {
+                        ThemeMode.DARK
+                    } else {
+                        ThemeMode.LIGHT
                     }
+                }
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        NavigationRoot(
-                            state = viewModel.state,
-                            onUnauthorized = viewModel::logOut
-                        )
-                    }
+                    NavigationRoot(
+                        state = viewModel.state,
+                        onUnauthorized = viewModel::logOut
+                    )
                 }
             }
         }
@@ -122,9 +122,19 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                     BootstrapNavigationDestination.Main -> DashboardDestination
                 },
                 enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
-                exitTransition = { scaleOut(targetScale = 0.95f) },
-                popEnterTransition = { slideIntoContainer(SlideDirection.End, tween(400)) },
-                popExitTransition = { scaleOut(targetScale = 0.95f) }
+                exitTransition = {
+                    slideOutOfContainer(
+                        SlideDirection.Start,
+                        tween(400),
+                        targetOffset = { (it * 0.2).toInt() })
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        SlideDirection.End,
+                        tween(400),
+                        initialOffset = { (it * 0.2).toInt() })
+                },
+                popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
             ) {
                 authGraph(navigation = authNavigation)
                 dashboardGraph(

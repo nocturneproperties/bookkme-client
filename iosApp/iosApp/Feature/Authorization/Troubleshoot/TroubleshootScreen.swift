@@ -44,7 +44,7 @@ struct TroubleshootCard: View {
                     .font(.body)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
-                Image(resource: \.passkey)
+				Image(resource: AuthRes.images().passkey)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 48, height: 48)

@@ -35,7 +35,7 @@ struct BusinessSettingsContent: View {
 	let viewModel: BusinessSettingsViewModel
 	
 	init(viewModel: BusinessSettingsViewModel) {
-		self.state = IOSBusinessSettingsState.cast(kotlinState: viewModel.uiState)
+		self.state = IOSBusinessSettingsState.cast(viewModel.uiState)
 		self.viewModel = viewModel
 	}
 	

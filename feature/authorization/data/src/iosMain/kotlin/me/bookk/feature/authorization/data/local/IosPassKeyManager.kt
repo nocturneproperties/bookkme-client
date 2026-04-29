@@ -22,7 +22,7 @@ class IosPassKeyManager : PassKeyManager {
         suspendCancellableCoroutine {
             val delegate = PasskeyControllerDelegate(it)
             val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
-                relyingPartyIdentifier = "bookkk.me"
+                relyingPartyIdentifier = "bookkme.app"
             )
             val nsChallenge = NSString
                 .create(string = challenge.challengeJson)
@@ -48,7 +48,27 @@ class IosPassKeyManager : PassKeyManager {
             authController.performRequests()
         }
 
-    override suspend fun authorize(jsonChallenge: String): PasskeyVerificationPayload {
-        TODO("Not yet implemented")
+    override suspend fun authorize(jsonChallenge: String): PasskeyVerificationPayload = suspendCancellableCoroutine {
+        val delegate = PasskeyControllerDelegate(it)
+        val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
+            relyingPartyIdentifier = "bookkme.app"
+        )
+        val nsChallenge = NSString
+            .create(string = jsonChallenge)
+            .dataUsingEncoding(encoding = NSUTF8StringEncoding)!!
+
+        val platformKeyRequest = platformProvider.createCredentialAssertionRequestWithChallenge(
+            challenge = nsChallenge
+        )
+        val authController = ASAuthorizationController(listOf(platformKeyRequest))
+        authController.delegate = delegate
+        authController.presentationContextProvider =
+            object : ASAuthorizationControllerPresentationContextProvidingProtocol, NSObject() {
+                override fun presentationAnchorForAuthorizationController(
+                    controller: ASAuthorizationController
+                ): ASPresentationAnchor =
+                    requireNotNull(UIApplication.sharedApplication.keyWindow)
+            }
+        authController.performRequests()
     }
 }

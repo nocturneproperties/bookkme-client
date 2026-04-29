@@ -23,7 +23,7 @@ struct StateTextField: View {
 		textEditor: Bool = false,
 		onTextChanged: ((String) -> Void)? = nil
 	) {
-		self.state = IOSTextFieldState.cast(kotlinState: state)
+		self.state = IOSTextFieldState.cast(state)
 		self.isEditor = textEditor
 		self.onTextChanged = onTextChanged ?? state.onTextChanged ?? {_ in}
 	}

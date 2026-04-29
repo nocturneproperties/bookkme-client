@@ -20,8 +20,7 @@ fun Project.isIosBuild(): Boolean {
 }
 
 fun Project.getCurrentVariant(): String {
-    return System.getenv("KOTLIN_FRAMEWORK_FLAVOUR").orEmpty()
-        .ifBlank {
+    return run {
             val tskReqStr = gradle.startParameter.taskNames.toString()
             val patternStr = when {
                 tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"

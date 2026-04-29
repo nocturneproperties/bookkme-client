@@ -18,9 +18,11 @@ struct AuthorizationRoot: View {
             SignInScreen()
 				.navigationDestination(for: AuthDestination.SignUp.self) { value in
                     SignUpScreen()
+						.id(11)
                 }
 				.navigationDestination(for: AuthDestination.SignIn.self) { value in
                     SignInScreen()
+						.id(12)
                 }
 				.navigationDestination(for: AuthDestination.Troubleshoot.self) { value in
                     TroubleshootScreen()

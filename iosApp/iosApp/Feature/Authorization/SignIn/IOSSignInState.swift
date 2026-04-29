@@ -10,7 +10,11 @@ import shared
 
 @MainActor
 @Observable
-class IOSSignInState: @MainActor SignInState {
+class IOSSignInState: @MainActor SignInState, NativeStateRepresentation {
+	typealias SwiftType = IOSSignInState
+	
+	typealias KotlinType = SignInState
+	
    
     var appBar: any AppBarState
     

@@ -26,6 +26,10 @@ actual abstract class ViewModel actual constructor(
             handleError(throwable)
         }
 
+    init {
+        internalLogger.i("Init called $this")
+    }
+
     actual open fun handleError(throwable: Throwable) {
         internalLogger.e(throwable)
     }

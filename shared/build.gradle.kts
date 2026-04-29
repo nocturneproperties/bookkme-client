@@ -14,6 +14,10 @@ android {
     namespace = "me.bookk.shared"
 }
 
+afterEvaluate {
+    println(property("buildkonfig.flavor"))
+}
+
 buildkonfig {
     packageName = "me.bookk.shared"
     defaultConfigs {
@@ -32,7 +36,7 @@ buildkonfig {
         )
         buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
     }
-    defaultConfigs(ProductFlavour.DEV.name) {
+    defaultConfigs(ProductFlavour.DEV.title + "Debug") {
         buildConfigField(
             STRING,
             "BASE_URL",
@@ -40,7 +44,15 @@ buildkonfig {
             const = true
         )
     }
-    defaultConfigs(ProductFlavour.PROD.name) {
+    defaultConfigs(ProductFlavour.DEV.title + "Release") {
+        buildConfigField(
+            STRING,
+            "BASE_URL",
+            "https://local.bookkme.app/api",
+            const = true
+        )
+    }
+    defaultConfigs(ProductFlavour.PROD.title + "Release") {
         buildConfigField(
             STRING,
             "BASE_URL",

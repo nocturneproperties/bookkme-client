@@ -7,19 +7,29 @@ import shared
 import SwiftUI
 
 @propertyWrapper
-class StateViewModel<Value: ViewModel>: DynamicProperty {
-    @State private var value: Value
+struct StateViewModel<Value: ViewModel>: DynamicProperty {
+    @StateObject private var value: DeinitWrapper<Value>
 
-    init(wrappedValue: Value) {
-        self._value = State(initialValue: wrappedValue)
+    init(wrappedValue: @autoclosure @escaping () -> Value) {
+        self._value = StateObject(wrappedValue: DeinitWrapper(wrappedValue()))
     }
 
     var wrappedValue: Value {
-        get { value }
-        set { value = newValue }
+		get { value.viewModel }
+		nonmutating set { value.viewModel = newValue }
     }
-    
-    deinit {
-        value.onCleared()
-    }
+}
+
+
+
+private class DeinitWrapper<Value: ViewModel>: ObservableObject {
+	var viewModel: Value
+	
+	init(_ value: Value) {
+		self.viewModel = value
+	}
+	
+	deinit {
+		viewModel.onCleared()
+	}
 }

@@ -34,8 +34,7 @@ struct SignInScreen: View {
             }
         }
         .padding()
-        .navigationTitle(signInVM.uiState.appBar.title.localized())
-        .navigationBarTitleDisplayMode(.large)
+		.withNavigationBar(state: signInVM.uiState.appBar)
 		.handleNotifications(state: uiState.notification)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {

@@ -10,72 +10,74 @@ import SwiftUI
 import shared
 
 struct SignUpScreen: View {
-    private enum FocusField {
-        case name
-        case lastName
-        case email
-    }
 	@EnvironmentObject var navigationStack: NavigationStackHolder
     @StateViewModel var signUpVM: SignUpViewModel = IOSAuthDiKt.signUpVM()
-    @FocusState private var focusedField: FocusField?
     
     var body: some View {
         let uiState = signUpVM.uiState
-        VStack {
-            ScrollView {
-                VStack {
-                    StateTextField(state: uiState.name.impl()) { text in
-                        signUpVM.onFirstNameTextChanged(text: text)
-                    }
-                    .focused($focusedField, equals: .name)
-                    .textContentType(.givenName)
-                    .submitLabel(.next)
-                    .onSubmit {
-                        focusedField = .lastName
-                    }
-                    
-                    StateTextField(state: uiState.lastName.impl()) { text in
-                        signUpVM.onLastNameTextChanged(text: text)
-                    }
-                    .focused($focusedField, equals: .lastName)
-                    .textContentType(.familyName)
-                    .submitLabel(.next)
-                    .onSubmit {
-                        focusedField = .email
-                    }
-                    
-                    StateTextField(state: uiState.email.impl()) { text in
-                        signUpVM.onEmailTextChanged(text: text)
-                    }
-                    .autocapitalization(.none)
-                    .focused($focusedField, equals: .email)
-                    .textContentType(.emailAddress)
-                    .keyboardType(.emailAddress)
-                    .submitLabel(.done)
-                    
-                    Spacer()
-                    
-                    PasskeyCard(
-                        learnMoreState: uiState.learnMoreButton.impl(),
-                        cardInfo: uiState.passkeyInfoCardData
-                    ) {
-                        signUpVM.onLearnMoreClick()
-                    }
-                }
-            }
-            StateButton(state: uiState.confirmButton.impl()) {
-                signUpVM.onConfirmButtonClick()
-            }
-        }
-        .padding()
-        .navigationTitle(uiState.appBar.title.localized())
-        .navigationBarTitleDisplayMode(.large)
-        .sendLifecycleEventsTo(viewModel: signUpVM)
-		.handleNotifications(state: uiState.notification)
-        .onAppear {
-            focusedField = .name
-        }
+		ScrollView {
+			SignUpScreenContent(signUpVM: signUpVM)
+				.padding()
+				.withNavigationBar(state: signUpVM.uiState.appBar)
+				.sendLifecycleEventsTo(viewModel: signUpVM)
+				.handleNotifications(state: uiState.notification)
+		}
     }
+}
+
+struct SignUpScreenContent:View {
+	private enum FocusField {
+		case name
+		case lastName
+		case email
+	}
+	@FocusState private var focusedField: FocusField?
+	var signUpVM: SignUpViewModel
+	
+	var body: some View {
+		let uiState = signUpVM.uiState
+		VStack {
+			StateTextField(state: uiState.name.impl()) { text in
+				signUpVM.onFirstNameTextChanged(text: text)
+			}
+			.focused($focusedField, equals: .name)
+			.textContentType(.givenName)
+			.submitLabel(.next)
+			.onSubmit {
+				focusedField = .lastName
+			}
+			
+			StateTextField(state: uiState.lastName.impl()) { text in
+				signUpVM.onLastNameTextChanged(text: text)
+			}
+			.focused($focusedField, equals: .lastName)
+			.textContentType(.familyName)
+			.submitLabel(.next)
+			.onSubmit {
+				focusedField = .email
+			}
+			
+			StateTextField(state: uiState.email.impl()) { text in
+				signUpVM.onEmailTextChanged(text: text)
+			}
+			.autocapitalization(.none)
+			.focused($focusedField, equals: .email)
+			.textContentType(.emailAddress)
+			.keyboardType(.emailAddress)
+			.submitLabel(.done)
+			
+			PasskeyCard(
+				learnMoreState: uiState.learnMoreButton.impl(),
+				cardInfo: uiState.passkeyInfoCardData
+			) {
+				signUpVM.onLearnMoreClick()
+			}
+			Spacer(minLength: 20)
+			StateButton(state: uiState.confirmButton.impl()) {
+				signUpVM.onConfirmButtonClick()
+			}
+		}
+	}
 }
 
 #Preview {

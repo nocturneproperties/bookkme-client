@@ -9,6 +9,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification.Message
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.Error
@@ -31,7 +32,12 @@ class SignUpViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs), SignUpEventListener {
 
-    val uiState: SignUpState = stateFactory.createSignUpState(createInitData())
+    val uiState: SignUpState = stateFactory.createSignUpState(createInitData()).apply {
+        name.isValid = false
+        lastName.isValid = false
+        email.isValid = false
+        email.inputType = InputType.EMAIL
+    }
 
     override fun onLearnMoreClick() {
         deviceFacade.openUrlPreview(AuthConstants.PASSKEY_INFO_URL)

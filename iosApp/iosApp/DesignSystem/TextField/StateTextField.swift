@@ -18,6 +18,25 @@ struct StateTextField: View {
     @State
     var onTextChanged: (String) -> Void
 	
+	private var keyboardType: UIKeyboardType {
+		switch state.inputType {
+		case .digit:
+			return .numberPad
+		case .decimal:
+			return .decimalPad
+		case .ascii:
+			return .asciiCapable
+		case .email:
+			return .emailAddress
+		case .phone:
+			return .phonePad
+		case .password:
+			return .asciiCapable
+		default:
+			return .default
+		}
+	}
+	
 	init(
 		state: TextFieldState,
 		textEditor: Bool = false,
@@ -50,6 +69,7 @@ struct StateTextField: View {
 						),
 						axis: isEditor ? .vertical : .horizontal
 					)
+					.keyboardType(keyboardType)
 					.font(Font.system(.body))
 					.disabled(!state.enabled || state.readOnly)
 				} label: {

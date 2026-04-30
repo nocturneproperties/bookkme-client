@@ -6,4 +6,6 @@ interface Currency {
     fun symbol(): String
     fun decimalSeparator(): Char
     fun asString(): String
+    override fun equals(other: Any?): Boolean
+    override fun hashCode(): Int
 }

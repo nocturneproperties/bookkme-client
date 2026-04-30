@@ -40,4 +40,14 @@ internal actual class CurrencyImpl actual constructor(
         return "$code ($symbol)"
     }
 
+    actual override fun equals(other: Any?): Boolean {
+        if (other == null) return false
+        if (other !is CurrencyImpl) return false
+        return other.code() == code()
+    }
+
+    actual override fun hashCode(): Int {
+        return code().hashCode()
+    }
+
 }

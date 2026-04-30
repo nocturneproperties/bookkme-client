@@ -81,21 +81,12 @@ data class Money(
     }
 
     enum class SupportedCurrency(val code: String) {
+        UAH("UAH"),
         USD("USD"),
         EUR("EUR"),
-        UAH("UAH"),
+        PLN("PLN"),
         CZK("CZK"),
-        GBP("GBP"),
-        KWD("KWD"),
-        FALLBACK("EUR");
-
-        companion object {
-
-            fun get(matcher: String?): SupportedCurrency {
-                matcher ?: return FALLBACK
-                return entries.firstOrNull { matcher.contains(it.code) } ?: FALLBACK
-            }
-        }
+        GBP("GBP");
     }
 
     companion object {

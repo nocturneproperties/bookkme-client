@@ -8,4 +8,6 @@ internal expect class CurrencyImpl(code: String) : Currency {
     override fun symbol(): String
     override fun decimalSeparator(): Char
     override fun asString(): String
+    override fun equals(other: Any?): Boolean
+    override fun hashCode(): Int
 }

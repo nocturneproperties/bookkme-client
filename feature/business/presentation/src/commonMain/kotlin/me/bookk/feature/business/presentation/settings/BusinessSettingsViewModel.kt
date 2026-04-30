@@ -146,6 +146,7 @@ class BusinessSettingsViewModel(
 
     fun onCurrencySelected(currencyUI: CurrencyUI) {
         uiState.currency.selectedItem = currencyUI
+        uiState.currency.textField.updateText(currencyUI.displayName)
         invalidateSaveState()
     }
 
@@ -185,6 +186,7 @@ class BusinessSettingsViewModel(
         val isChanged = uiState.name.text != referenceBusiness.name ||
                 uiState.description.text != referenceBusiness.description ||
                 uiState.address.text != referenceBusiness.address ||
+                uiState.currency.selectedItem?.domainValue?.code != referenceBusiness.currency.code() ||
                 uiState.location.text != referenceBusiness.location?.toString().orEmpty() ||
                 uiState.instagram.text != referenceBusiness.socials[SocialKind.INSTAGRAM]?.value ||
                 uiState.telegram.text != referenceBusiness.socials[SocialKind.TELEGRAM]?.value ||

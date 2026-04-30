@@ -60,8 +60,8 @@ class BusinessSettingsViewModel(
                 uiState.currency.replaceOptions(Money.SupportedCurrency.entries.toCurrencyUI())
                 uiState.currency.selectedItem = uiState.currency.options.first { currencyUI ->
                     currencyUI.domainValue == Money.SupportedCurrency.valueOf(it.currency.code())
-                }
-                uiState.currency.textField.label = BusinessRes.strings.business_settings_currency_label.desc()
+                }.also { uiState.currency.textField.updateText(it.displayName) }
+                uiState.currency.textField.placeholder = BusinessRes.strings.business_settings_currency_label.desc()
                 uiState.instagram.text = it.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
                 uiState.telegram.text = it.socials[SocialKind.TELEGRAM]?.value.orEmpty()
                 uiState.viber.text = it.socials[SocialKind.VIBER]?.value.orEmpty()

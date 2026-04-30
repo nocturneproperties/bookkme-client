@@ -22,41 +22,40 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
     BusinessSettingsState {
     override val appBar: AppBarState = AndroidAppBarState(initData.title, size = TopBarSize.SMALL)
     override val name: TextFieldState = AndroidTextFieldState(
-        label = initData.nameHint
+        placeholder = initData.nameHint
     )
     override val description: TextFieldState = AndroidTextFieldState(
-        label = initData.descriptionHint
+        placeholder = initData.descriptionHint
     )
     override val location: TextFieldState = AndroidTextFieldState(
-        label = initData.locationHint,
+        placeholder = initData.locationHint,
         readOnly = true
     )
     override val testLocation: ButtonState = AndroidButtonState(
         text = initData.testLocationText,
     )
     override val currency: PickerFieldState<CurrencyUI> = AndroidPickerFieldState(
-        textFieldState = AndroidTextFieldState(),
         selectedItem = CurrencyUI("0", "".desc(), Money.SupportedCurrency.EUR),
         items = listOf(CurrencyUI("0", "".desc(), Money.SupportedCurrency.EUR))
     )
     override val address: TextFieldState = AndroidTextFieldState(
-        label = initData.addressHint
+        placeholder = initData.addressHint
     )
     override val phone: TextFieldState = AndroidTextFieldState(
         startIcon = initData.phoneIcon,
-        label = initData.phoneHint
+        placeholder = initData.phoneHint
     )
     override val instagram: TextFieldState = AndroidTextFieldState(
         startIcon = initData.instaIcon,
-        label = initData.instagramHint
+        placeholder = initData.instagramHint
     )
     override val telegram: TextFieldState = AndroidTextFieldState(
         startIcon = initData.telegramIcon,
-        label = initData.telegramHint
+        placeholder = initData.telegramHint
     )
     override val viber: TextFieldState = AndroidTextFieldState(
         startIcon = initData.viberIcon,
-        label = initData.viberHint
+        placeholder = initData.viberHint
     )
     override val save: ButtonState = AndroidButtonState(
         text = initData.saveButtonText,

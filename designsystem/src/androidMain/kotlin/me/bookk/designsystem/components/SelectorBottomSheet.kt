@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,8 +36,8 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.uistate.AndroidButtonState
-import me.bookk.designsystem.uistate.AndroidRadioButtonState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,28 +101,29 @@ fun <T> StandardSelectorItem(
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = LocalColors.current.background
+            containerColor = LocalColors.current.elevated
         ),
         onClick = onClick
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon(Modifier.size(40.dp))
             val text = stringify(item)
-            RadioButton(
-                modifier = Modifier.padding(2.dp),
-                textStyle = MaterialTheme.typography.bodyLarge,
-                onClick = onClick,
-                state = remember {
-                    AndroidRadioButtonState(
-                        isSelected = isSelected,
-                        text = text.desc()
-                    )
-                }
+            Text(
+                text = text,
+                modifier = Modifier.padding(2.dp).weight(1f),
+                style = MaterialTheme.typography.bodyLarge.primary(),
             )
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    tint = LocalColors.current.actionText,
+                    contentDescription = "Selected icon"
+                )
+            }
         }
     }
 }
@@ -139,7 +144,7 @@ fun <T> StandardElevatedSelectorItem(
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = LocalColors.current.background
+            containerColor = LocalColors.current.elevated
         ),
         onClick = onClick
     ) {
@@ -152,16 +157,18 @@ fun <T> StandardElevatedSelectorItem(
         ) {
             icon(Modifier.size(40.dp))
             val text = stringify(item)
-            RadioButton(
-                modifier = Modifier.padding(2.dp),
-                textStyle = MaterialTheme.typography.bodyLarge,
-                state = remember {
-                    AndroidRadioButtonState(
-                        isSelected = isSelected,
-                        text = text.desc()
-                    )
-                }
+            Text(
+                text = text,
+                modifier = Modifier.padding(2.dp).weight(1f),
+                style = MaterialTheme.typography.bodyLarge.primary(),
             )
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    tint = LocalColors.current.actionText,
+                    contentDescription = "Selected icon"
+                )
+            }
         }
     }
 }

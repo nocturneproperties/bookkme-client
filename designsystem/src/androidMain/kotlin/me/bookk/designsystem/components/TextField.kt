@@ -81,7 +81,7 @@ fun TextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     onValueChange: (String) -> Unit = { state.onTextChanged?.invoke(it) },
-    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    textStyle: TextStyle = MaterialTheme.typography.bodyLarge.primary(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     singleLine: Boolean = false,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
@@ -135,7 +135,7 @@ fun TextField(
                                     text = it,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                    style = MaterialTheme.typography.bodyLarge.copy(
                                         fontSize = animatedTextSize.sp
                                     )
                                 )
@@ -146,7 +146,7 @@ fun TextField(
                                 {
                                     Text(
                                         text = it,
-                                        style = MaterialTheme.typography.bodyMedium.secondary()
+                                        style = MaterialTheme.typography.bodyLarge.secondary()
                                     )
                                 }
                             },

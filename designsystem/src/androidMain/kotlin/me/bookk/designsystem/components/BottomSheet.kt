@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import me.bookk.designsystem.theme.typography.primary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,7 +30,7 @@ fun DesignSystemBottomSheet(
         modifier = modifier,
         sheetState = sheetState,
         properties = ModalBottomSheetProperties(),
-        onDismissRequest = onDismiss
+        onDismissRequest = onDismiss,
     ) {
         Column(
             modifier = Modifier
@@ -41,7 +42,7 @@ fun DesignSystemBottomSheet(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge.primary()
             )
             content()
         }

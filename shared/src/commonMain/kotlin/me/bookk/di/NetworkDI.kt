@@ -94,13 +94,13 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
                     refreshTokens {
                         val tokenAccessor = get<GetTokenInfo>()
                         val currentToken = tokenAccessor() ?: return@refreshTokens null
-                        refreshLogger.d("Start refreshing from: ${response.request.url}")
+                        refreshLogger.d("Start refreshing from: ${response.request.url}, token: $currentToken")
                         refreshMutex.withLock {
                             refreshLogger.d("Entered lock from: ${response.request.url}")
                             val tokensAfterLock = tokenAccessor()
                             if (currentToken != tokensAfterLock && tokensAfterLock != null) {
-                                refreshLogger.d("Tokens already refreshed: ${response.request.url}")
-                                BearerTokens(tokensAfterLock.accessToken, null)
+                                refreshLogger.d("Tokens already refreshed: ${response.request.url}, token: $tokensAfterLock")
+                                BearerTokens(tokensAfterLock.accessToken, tokensAfterLock.refreshToken)
                             } else {
                                 runCatching {
                                     val refresh = get<RefreshToken>().invoke(currentToken.refreshToken)

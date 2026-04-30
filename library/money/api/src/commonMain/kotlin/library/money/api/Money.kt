@@ -90,6 +90,7 @@ data class Money(
         FALLBACK("EUR");
 
         companion object {
+
             fun get(matcher: String?): SupportedCurrency {
                 matcher ?: return FALLBACK
                 return entries.firstOrNull { matcher.contains(it.code) } ?: FALLBACK

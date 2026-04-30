@@ -27,7 +27,6 @@ import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.AndroidPickerFieldState
-import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.MinimalPickerPresentation
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PickerFieldState.PickerType
@@ -159,7 +158,6 @@ private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         PickerField(
             AndroidPickerFieldState(
-                textFieldState = AndroidTextFieldState(placeholder = "Example hint".desc()),
                 items = listOf(
                     MinimalPickerPresentation(
                         "1",
@@ -171,7 +169,9 @@ private fun PreviewDark() {
                     )
                 ),
                 selectedItem = null
-            )
+            ).apply {
+                textField.placeholder = "Example hint".desc()
+            }
         )
     }
 }
@@ -183,10 +183,6 @@ private fun PreviewLight() {
         AppTheme(themeMode = ThemeMode.LIGHT) {
             PickerField(
                 AndroidPickerFieldState(
-                    textFieldState = AndroidTextFieldState(
-                        placeholder = "Example hint".desc(),
-                        text = "Test1"
-                    ),
                     items = listOf(
                         MinimalPickerPresentation(
                             "1",
@@ -201,7 +197,10 @@ private fun PreviewLight() {
                         "1",
                         "Test1".desc()
                     )
-                )
+                ).apply {
+                    textField.placeholder = "Example hint".desc()
+                    textField.text = "Test1"
+                }
             )
         }
     }

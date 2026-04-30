@@ -14,10 +14,6 @@ android {
     namespace = "me.bookk.shared"
 }
 
-afterEvaluate {
-    println(property("buildkonfig.flavor"))
-}
-
 buildkonfig {
     packageName = "me.bookk.shared"
     defaultConfigs {
@@ -91,8 +87,8 @@ kotlin {
             implementation(projects.library.permissions.impl)
             implementation(projects.library.files.api)
             implementation(projects.library.files.impl)
-            implementation(projects.library.credentials.api)
-            implementation(projects.library.credentials.impl)
+            api(projects.library.credentials.api)
+            api(projects.library.credentials.impl)
             api(projects.library.money.api)
             implementation(projects.library.money.impl)
             //Dashboard

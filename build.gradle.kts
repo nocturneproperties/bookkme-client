@@ -18,3 +18,23 @@ plugins {
     alias(libs.plugins.buldconfig).apply(false)
     alias(libs.plugins.kmm.resources).apply(false)
 }
+val flavor = run {
+    val tskReqStr = gradle.startParameter.taskNames.toString()
+    val patternStr = when {
+        tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"
+        tskReqStr.contains("bundle") -> "(?<=bundle)\\w*?(?=Aar)"
+        tskReqStr.contains("assemble") -> "(?<=assemble)\\w*"
+        else -> "(?<=check)\\w*?(?=Manifest)"
+    }
+
+    Regex(patternStr).find(tskReqStr)?.value
+        .orEmpty()
+        .replaceFirstChar { it.lowercase() }
+}
+
+allprojects {
+    val prop = properties["buildkonfig.flavor"]
+    if (flavor.isNotBlank() && (prop == null || prop == "any")) {
+        setProperty("buildkonfig.flavor", flavor)
+    }
+}

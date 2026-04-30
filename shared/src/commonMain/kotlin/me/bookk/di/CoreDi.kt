@@ -1,6 +1,7 @@
 package me.bookk.di
 
 import kotlinx.coroutines.CoroutineScope
+import library.credentials.di.CredentialModuleFactory
 import me.bookk.core.coroutine.createApplicationScope
 import me.bookk.core.presentation.di.presentationCoreModule
 import me.bookk.core.presentation.error.ErrorMapper
@@ -33,4 +34,5 @@ private fun stateModule() = module {
     factory<DashboardStateFactory> { get<StateFactoryCreator>().createDashboardFactory() }
     factory<SettingsStateFactory> { get<StateFactoryCreator>().createSettingsFactory() }
     factory<BusinessStateFactory> { get<StateFactoryCreator>().createBusinessFactory() }
+    factory<CredentialModuleFactory> { get<StateFactoryCreator>().createCredentialModuleFactory() }
 }

@@ -11,7 +11,7 @@ import SwiftUI
 
 struct TroubleshootScreen: View {
     @EnvironmentObject var navigationStack: NavigationStackHolder
-    @StateObject var troubleshootVM: TroubleshootViewModel = IOSAuthDiKt.troubleshootVM()
+    @StateViewModel var troubleshootVM: TroubleshootViewModel = IOSAuthDiKt.troubleshootVM()
     
     
     var body: some View {
@@ -27,6 +27,7 @@ struct TroubleshootScreen: View {
         .padding()
         .navigationTitle(troubleshootVM.uiState.appBar.title.localized())
         .navigationBarTitleDisplayMode(.large)
+		.background(AppColors.background)
     }
 }
 
@@ -44,7 +45,7 @@ struct TroubleshootCard: View {
                     .font(.body)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
-                Image(resource: \.passkey)
+				Image(resource: AuthRes.images().passkey)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 48, height: 48)

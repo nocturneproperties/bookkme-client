@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.convention.kmm.library.compose)
+    id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
 android {
@@ -11,6 +11,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.presentation)
             implementation(projects.environment.api)
+            implementation(projects.library.money.api)
         }
     }
 }

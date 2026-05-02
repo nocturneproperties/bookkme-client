@@ -24,7 +24,6 @@ import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.PickerField
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TextField
-import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -37,7 +36,6 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                size = TopBarSize.SMALL,
                 actions = {
                     TextButton(
                         state = state.save,

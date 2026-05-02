@@ -9,7 +9,9 @@
 import shared
 import SwiftUI
 
-class IOSBusinessDashboardState: BusinessDashboardState, ObservableObject {
+@MainActor
+@Observable
+class IOSBusinessDashboardState: @MainActor BusinessDashboardState {
 	
 	var appBar: any AppBarState
 	
@@ -17,7 +19,6 @@ class IOSBusinessDashboardState: BusinessDashboardState, ObservableObject {
 	
 	var notifications: any PresentationNotificationState
 	
-	@Published
 	var sections: [BusinessDashboardSection] = []
 	
 	init(initData: BusinessDashboardStateInitData) {

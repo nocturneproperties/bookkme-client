@@ -14,7 +14,7 @@ protocol NativeStateRepresentation {
 }
 
 extension NativeStateRepresentation where Self == SwiftType {
-	static func cast(kotlinState: KotlinType) -> SwiftType {
+	static func cast(_ kotlinState: KotlinType) -> SwiftType {
 		return kotlinState as! SwiftType
 	}
 }

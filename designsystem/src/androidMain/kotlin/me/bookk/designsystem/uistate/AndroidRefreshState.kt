@@ -8,4 +8,5 @@ import androidx.compose.runtime.setValue
 @Immutable
 class AndroidRefreshState : RefreshState {
     override var isRefreshing: Boolean by mutableStateOf(false)
+    override var onRefresh: () -> Unit by mutableStateOf({})
 }

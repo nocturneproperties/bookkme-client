@@ -8,7 +8,8 @@
 
 import shared
 
-class IOSBusinessStateFactory: BusinessStateFactory {
+@MainActor
+class IOSBusinessStateFactory: @MainActor BusinessStateFactory {
 	
 	func createBootstrapState(initData: BusinessBootstrapStateInitData) -> any BusinessBootstrapState {
 		return IOSBusinessBootstrapState(initData: initData)

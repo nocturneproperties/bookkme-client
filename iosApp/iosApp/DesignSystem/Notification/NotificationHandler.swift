@@ -12,7 +12,7 @@ import shared
 
 struct NotificationHandler: ViewModifier {
     
-    @ObservedObject
+    @Bindable
     var notificationState: IOSNotificationState
 
     @State var showAlert: Bool = false
@@ -20,22 +20,24 @@ struct NotificationHandler: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-			.onReceive(notificationState.$presentationNotification.flatMap(\.publisher)) { value in
-                switch value {
-                case is PresentationNotificationMessage:
-                    data = value as? PresentationNotificationMessage
-                    showAlert = true
-                    break
-				case is PresentationNotificationIgnore:
-					notificationState.removeFirst()
-                    break
-				case is PresentationNotificationGlobalMessage:
-					notificationState.removeFirst()
-					break
-                default:
-					notificationState.removeFirst()
-                    break
-                }
+			.onChange(of: notificationState.presentationNotification.count) {
+				if let value = notificationState.presentationNotification.first {
+					switch value {
+					case is PresentationNotificationMessage:
+						data = value as? PresentationNotificationMessage
+						showAlert = true
+						break
+					case is PresentationNotificationIgnore:
+						notificationState.removeFirst()
+						break
+					case is PresentationNotificationGlobalMessage:
+						notificationState.removeFirst()
+						break
+					default:
+						notificationState.removeFirst()
+						break
+					}
+				}
             }
             .alert(data?.title?.localized() ?? "", isPresented: $showAlert, presenting: data) { message in
 				alertButtons(buttons: message.buttons)

@@ -17,7 +17,6 @@ import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.StateSwitch
-import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
@@ -29,7 +28,6 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                size = TopBarSize.MEDIUM,
                 onNavigationIconClick = LocalNavigation.current.navigateBack
             )
         },

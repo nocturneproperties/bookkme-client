@@ -1,7 +1,7 @@
 package me.bookk.feature.settings.data.remote.model
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Serializable

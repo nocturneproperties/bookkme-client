@@ -1,6 +1,6 @@
 package me.bookk.feature.authorization.domain.entity
 
-class TokenInfo(
+data class TokenInfo(
     val accessToken: String,
     val refreshToken: String
 )

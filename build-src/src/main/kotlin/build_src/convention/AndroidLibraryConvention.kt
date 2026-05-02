@@ -11,7 +11,10 @@ internal fun LibraryExtension.applyConvention(project: Project, useCompose: Bool
     defaultConfig {
         minSdk = ApplicationConfig.MIN_SDK
 
-        consumerProguardFiles.add(File(project.projectDir, "consumer-rules.pro"))
+        val consumerRules = File(project.projectDir, "consumer-rules.pro")
+        if (consumerRules.exists()) {
+            consumerProguardFiles.add(consumerRules)
+        }
     }
     buildFeatures {
         compose = useCompose

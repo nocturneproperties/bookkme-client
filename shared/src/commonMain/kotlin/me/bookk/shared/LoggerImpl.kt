@@ -1,24 +1,28 @@
 package me.bookk.shared
 
-import io.ktor.util.logging.KtorSimpleLogger
+import io.github.aakira.napier.Napier
 import me.bookk.core.Logger
+import io.ktor.client.plugins.logging.Logger as KtorLogger
 
-internal class LoggerImpl(name: String) : Logger {
-    private val logger = KtorSimpleLogger(name)
+internal class LoggerImpl(private val name: String) : Logger, KtorLogger {
 
     override fun d(message: String) {
-        logger.debug(message)
+        Napier.d(message, tag = name)
     }
 
     override fun e(throwable: Throwable) {
-        logger.error("No message", throwable)
+        Napier.e("Failed: ", throwable, tag = name)
     }
 
     override fun e(message: String, throwable: Throwable) {
-        logger.error("No message", throwable)
+        Napier.e(message, throwable, tag = name)
     }
 
     override fun i(message: String) {
-        logger.info(message)
+        Napier.i(message, tag = name)
+    }
+
+    override fun log(message: String) {
+        i(message)
     }
 }

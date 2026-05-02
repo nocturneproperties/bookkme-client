@@ -11,7 +11,7 @@ import shared
 
 struct DashboardScreen: View {
 	
-	@StateObject
+	@StateViewModel
 	var dashboardVM = IOSDashboardDiKt.dashboardVM()
 	
 	var body: some View {
@@ -20,11 +20,14 @@ struct DashboardScreen: View {
 }
 struct DashboardTabs: View {
 	
-	@ObservedObject
+	@Bindable
 	var tabsState: IOSTabItemsState
 	
 	var body: some View {
-		TabView(selection: $tabsState.selectedItemId) {
+		TabView(selection: Binding(
+			get: { tabsState.selectedItemId },
+			set: { tabsState.selectedItemId = $0 }
+		)) {
 			ForEach(tabsState.items, id:\.id) { state in
 				DashboardTab(state: state.impl())
 			}
@@ -34,7 +37,6 @@ struct DashboardTabs: View {
 
 struct DashboardTab: View {
 
-	@ObservedObject
 	var state: IOSTabItem
 	
 	var body: some View {

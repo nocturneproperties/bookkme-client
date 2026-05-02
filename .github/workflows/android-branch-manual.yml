@@ -1,0 +1,87 @@
+name: Android Manual Distribute
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Distribution environment"
+        required: true
+        type: choice
+        options: [ Dev, Stage, Prod ]
+        default: Dev
+      cache:
+        description: "Use latest artifact"
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    concurrency:
+      group: android-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    timeout-minutes: 30
+    steps:
+      - name: Set dynamic variables
+        run: |
+          version_code=$(date +%y%j%H%M)
+          clean_ref=${GITHUB_REF#refs/heads/}
+          clean_ref=${clean_ref//\//_}
+          echo "CLEAN_REF=${clean_ref}" >> $GITHUB_ENV
+          echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: '9.2.0'
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: false
+
+      - name: Detect Required Secrets
+        run: |
+          echo "KEYSTORE_SECRET_NAME=ANDROID_KEYSTORE_FILE" >> ${GITHUB_ENV}
+          echo "SERVICEACC_SECRET_NAME=ANDROID_SERVICEACC_FILE" >> ${GITHUB_ENV}
+
+      - name: Import Secrets
+        run: |
+          env_name=${{ inputs.environment }}
+          env_lowercased=$(echo -n "${env_name,,}")
+          echo "ENV_NAME=${env_lowercased}" >> ${GITHUB_ENV}
+          echo -n "${{ secrets[env.KEYSTORE_SECRET_NAME] }}" | base64 --decode > ${{ github.workspace }}/androidApp/configuration/keystore.properties
+          echo -n "${{ secrets[env.SERVICEACC_SECRET_NAME] }}" | base64 --decode > ${{ github.workspace }}/androidApp/configuration/serviceaccount.json
+
+      - name: Download Artifacts
+        id: download
+        if: inputs.cache
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: android-${{ env.CLEAN_REF }}-${{env.ENV_NAME}}
+          path: ${{ github.workspace }}/androidApp/build/outputs/apk/${{env.ENV_NAME}}/release/*.apk
+
+      - name: Assemble
+        id: assemble
+        if: ${{ !inputs.cache || steps.download.outcome != 'success' }}
+        run: ./gradlew assemble${{ inputs.environment }}Release
+
+      - name: Upload artifact
+        if: steps.assemble.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ env.CLEAN_REF }}-${{env.ENV_NAME}}
+          path: ${{ github.workspace }}/androidApp/build/outputs/apk/${{env.ENV_NAME}}/release/*.apk
+          overwrite: true
+          retention-days: 5
+
+      - name: Distribute
+        if: ${{ steps.download.outcome == 'success' || steps.assemble.outcome == 'success' }}
+        run: ./gradlew appDistributionUpload${{ inputs.environment }}Release

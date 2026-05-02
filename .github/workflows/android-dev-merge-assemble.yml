@@ -1,0 +1,53 @@
+name: Android Develop Auto-assemble
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  build:
+    runs-on: self-hosted
+    concurrency:
+      group: android-develop
+      cancel-in-progress: true
+    timeout-minutes: 20
+
+    steps:
+      - name: Set dynamic variables
+        run: |
+          version_code=$(date +%y%j%H%M)
+          clean_ref=${GITHUB_REF#refs/heads/}
+          clean_ref=${clean_ref//\//_}
+          echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
+          echo "CLEAN_REF=${clean_ref}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: '9.2.0'
+          cache-read-only: false
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Import Secrets
+        run: |
+          echo -n "${{ secrets.ANDROID_KEYSTORE_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/keystore.properties
+          echo -n "${{ secrets.ANDROID_SERVICEACC_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/serviceaccount.json
+
+      - name: Build
+        run: ./gradlew assembleDemoDevRelease
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ env.CLEAN_REF }}-dev
+          path: ${{ github.workspace }}/androidApp/build/outputs/apk/dev/release/*.apk
+          overwrite: true
+          retention-days: 5

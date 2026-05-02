@@ -8,7 +8,9 @@
 
 import shared
 
-class IOSContactUsState: ContactUsState {
+@MainActor
+@Observable
+class IOSContactUsState: @MainActor ContactUsState {
 
 	var appBar: any AppBarState
 	

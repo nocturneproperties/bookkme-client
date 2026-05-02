@@ -11,7 +11,7 @@ import shared
 
 struct StateText: View {
 	
-	@ObservedObject
+	@Bindable
 	var state: IOSTextState
 	
 	init(state: TextState) {

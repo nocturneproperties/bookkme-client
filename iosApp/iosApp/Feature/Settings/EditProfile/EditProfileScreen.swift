@@ -12,7 +12,7 @@ import shared
 struct EditProfileScreen: View {
 	
 	@StateObject var navigationStack = NavigationStackHolder()
-	@StateObject var viewModel = IOSSettingsDiKt.editProfileVM()
+	@StateViewModel var viewModel = IOSSettingsDiKt.editProfileVM()
 	
 	var body: some View {
 		let state = viewModel.uiState
@@ -31,6 +31,7 @@ struct EditProfileScreen: View {
 		.sendLifecycleEventsTo(viewModel: viewModel)
 		.handleNotifications(state: state.notification)
 		.padding()
+		.background(AppColors.background)
 		.navigationTitle(state.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.toolbar {

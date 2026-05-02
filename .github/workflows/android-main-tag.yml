@@ -1,0 +1,56 @@
+name: Android Release
+on:
+  push:
+    tags:
+      - '*-v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    runs-on: self-hosted
+    concurrency:
+      group: android-release-${{ github.ref }}
+      cancel-in-progress: false
+    timeout-minutes: 20
+
+    steps:
+      - name: Set dynamic variables
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          VERSION_CODE=$(date +%y%j%H%M)
+          IFS="-" read -r release_version <<< "$TAG_NAME"
+          echo "BUILD_VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "BUILD_VERSION=$TAG_NAME >> $GITHUB_ENV
+      - uses: actions/checkout@v6
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: '9.2.0'
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Detect Required Secrets
+        run: |
+          echo "KEYSTORE_SECRET_NAME=ANDROID_KEYSTORE_FILE" >> ${GITHUB_ENV}
+          echo "SERVICEACC_SECRET_NAME=ANDROID_SERVICEACC_FILE" >> ${GITHUB_ENV}
+
+      - name: Import Secrets
+        run: |
+          echo -n "${{ secrets.ANDROID_KEYSTORE_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/keystore.properties
+          echo -n "${{ secrets.ANDROID_SERVICEACC_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/serviceaccount.json
+
+      - name: Build
+        run: ./gradlew assembleDemoDevRelease
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-prod-release
+          path: ${{ github.workspace }}/androidApp/build/outputs/apk/prod/release/*.apk
+          overwrite: true
+          retention-days: 5

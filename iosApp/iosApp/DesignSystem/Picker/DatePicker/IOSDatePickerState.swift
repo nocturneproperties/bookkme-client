@@ -1,0 +1,48 @@
+//
+//  IOSDatePickerState.swift
+//  iosApp
+//
+//  Created by Dmytro Akulinin on 06.02.2026.
+//  Copyright © 2026 ValthSolutions. All rights reserved.
+//
+
+import shared
+import SwiftUI
+import Observation
+
+@MainActor
+@Observable
+final class IOSDatePickerState: IOSViewState, @MainActor DatePickerState, NativeStateRepresentation {
+
+    typealias SwiftType = IOSDatePickerState
+    typealias KotlinType = DatePickerState
+
+    var textField: any TextFieldState
+    var maxDate: LocalDate?
+    var minDate: LocalDate?
+    var onDatePicked: ((LocalDate) -> Void)?
+    var pickedDate: LocalDate?
+
+    init(
+        textField: (any TextFieldState)? = nil,
+        maxDate: LocalDate? = nil,
+        minDate: LocalDate? = nil,
+        onDatePicked: ((LocalDate) -> Void)? = nil,
+        pickedDate: LocalDate? = nil
+    ) {
+        self.textField = textField ?? IOSTextFieldState()
+        self.maxDate = maxDate
+        self.minDate = minDate
+        self.onDatePicked = onDatePicked
+        self.pickedDate = pickedDate
+    }
+}
+
+extension DatePickerState {
+    func impl() -> IOSDatePickerState {
+        guard let state = self as? IOSDatePickerState else {
+            preconditionFailure("DatePickerState is not IOSDatePickerState")
+        }
+        return state
+    }
+}

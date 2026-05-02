@@ -8,7 +8,8 @@
 
 import shared
 
-class IOSSettingsStateFactory: SettingsStateFactory {
+@MainActor
+class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
 	
 	func createEditProfileState(initData: EditProfileStateInitData) -> any EditProfileState {
 		return IOSEditProfileState(initData: initData)

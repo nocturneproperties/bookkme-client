@@ -10,14 +10,15 @@ import shared
 
 struct BusinessSettingsScreen: View {
 	
-	@StateObject var viewModel: BusinessSettingsViewModel
+	@StateViewModel var viewModel: BusinessSettingsViewModel
 	
 	init(id: shared.KotlinUuid) {
-		self._viewModel = StateObject(wrappedValue: IOSBusinessDiKt.businessSettingsVM(id: id))
+		self._viewModel = StateViewModel(wrappedValue: IOSBusinessDiKt.businessSettingsVM(id: id))
 	}
 	
 	var body: some View {
 		BusinessSettingsContent(viewModel: viewModel)
+			.background(AppColors.background)
 			.withNavigationBar(state: viewModel.uiState.appBar)
 			.handleNotifications(state: viewModel.uiState.notifications)
 			.sendLifecycleEventsTo(viewModel: viewModel)
@@ -30,14 +31,12 @@ struct BusinessSettingsScreen: View {
 }
 
 struct BusinessSettingsContent: View {
-	@ObservedObject
-	var state: IOSBusinessSettingsState
 	
-	@ObservedObject
-	var viewModel: BusinessSettingsViewModel
+	let state: IOSBusinessSettingsState
+	let viewModel: BusinessSettingsViewModel
 	
 	init(viewModel: BusinessSettingsViewModel) {
-		self.state = IOSBusinessSettingsState.cast(kotlinState: viewModel.uiState)
+		self.state = IOSBusinessSettingsState.cast(viewModel.uiState)
 		self.viewModel = viewModel
 	}
 	
@@ -79,9 +78,9 @@ struct BusinessSettingsContent: View {
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_currency_title.desc().localized())
-					StatePicker<CurrencyUI>(state: state.currency) { option in
-						viewModel.onCurrencySelected(currencyUI: option)
-					}.pickerStyle(.menu)
+					PickerField(state: state.currency) { option in
+						viewModel.onCurrencySelected(currencyUI: option as! CurrencyUI)
+					}
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_socials_title.desc().localized())

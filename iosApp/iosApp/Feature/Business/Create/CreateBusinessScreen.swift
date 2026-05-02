@@ -11,7 +11,7 @@ import shared
 
 struct CreateBusinessScreen: View {
 	
-	@StateObject var viewModel = IOSBusinessDiKt.createBusinessVM()
+	@StateViewModel var viewModel = IOSBusinessDiKt.createBusinessVM()
 	
 	var body: some View {
 		let uiState = viewModel.uiState
@@ -33,5 +33,6 @@ struct CreateBusinessScreen: View {
 		}
 		.handleNotifications(state: uiState.notifications)
 		.sendLifecycleEventsTo(viewModel: viewModel)
+		.background(AppColors.background)
 	}
 }

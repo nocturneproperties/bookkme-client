@@ -11,7 +11,7 @@ import shared
 
 struct BusinessTab: View {
 	@StateObject var navigationStack = NavigationStackHolder()
-	@StateObject var bootstrapVM = IOSBusinessDiKt.businessBootstrapVM()
+	@StateViewModel var bootstrapVM = IOSBusinessDiKt.businessBootstrapVM()
 	
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
@@ -31,8 +31,7 @@ struct BusinessTab: View {
 
 struct BusinessStartDestinationView: View {
 	
-	@ObservedObject
-	var state: IOSBusinessBootstrapState
+	let state: IOSBusinessBootstrapState
 	
 	init(state: BusinessBootstrapState) {
 		self.state = state.impl()

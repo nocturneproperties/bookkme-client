@@ -1,5 +1,6 @@
 package library.money.api
 
+import kotlinx.serialization.Serializable
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.roundToLong
@@ -13,10 +14,13 @@ import kotlin.math.roundToLong
  * 123123212 = 1231232.12
  * */
 
+@Serializable
 data class Money(
     val value: Long,
-    val currency: SupportedCurrency,
+    val currencyType: SupportedCurrency,
 ) {
+
+    val currency: Currency = CurrencyFactory.forCode(currencyType.code)
 
     constructor(
         value: Double,
@@ -28,48 +32,61 @@ data class Money(
         currency: SupportedCurrency
     ) : this(value.asPreciseLong(), currency)
 
-    private val platformCurrency: Currency = CurrencyFactory.forCode(currency.name)
-
     operator fun times(times: Int): Money {
-        return Money(value * times, currency)
+        return Money(value * times, currencyType)
     }
 
     operator fun times(times: Float): Money {
         val multiplier = times.asPreciseLong()
         val result = value * multiplier / PRECISION_MULTIPLIER
-        return Money(result, currency)
+        return Money(result, currencyType)
     }
 
     operator fun times(times: Double): Money {
         val multiplier = times.asPreciseLong()
         val result = value * multiplier / PRECISION_MULTIPLIER
-        return Money(result, currency)
+        return Money(result, currencyType)
     }
 
     operator fun div(div: Int): Money {
-        return Money(value / div, currency)
+        return Money(value / div, currencyType)
     }
 
     operator fun div(div: Float): Money {
         val divider = div.asPreciseLong()
         val result = floor(value / divider.toDouble() * PRECISION_MULTIPLIER).toLong()
-        return Money(result, currency)
+        return Money(result, currencyType)
     }
 
     operator fun div(div: Double): Money {
         val divider = div.asPreciseLong()
         val result = floor(value / divider.toDouble() * PRECISION_MULTIPLIER).toLong()
-        return Money(result, currency)
+        return Money(result, currencyType)
     }
 
     override fun toString(): String {
-        return platformCurrency.format(value)
+        return currency.format(value)
     }
 
-    enum class SupportedCurrency {
-        USD,
-        EUR,
-        UAH
+    fun valueToString(): String {
+        return currency.format(value)
+            .replace(currency.symbol(), "")
+            .trim()
+    }
+
+    fun valueToStringWithoutAmountSeparation(): String {
+        val separators = ",."
+        return valueToString()
+            .filter { it.isDigit() || it in separators }
+    }
+
+    enum class SupportedCurrency(val code: String) {
+        UAH("UAH"),
+        USD("USD"),
+        EUR("EUR"),
+        PLN("PLN"),
+        CZK("CZK"),
+        GBP("GBP");
     }
 
     companion object {

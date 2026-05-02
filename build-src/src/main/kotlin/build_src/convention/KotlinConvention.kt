@@ -1,21 +1,18 @@
 package build_src.convention
 
+import build_src.tools.isIosBuild
 import build_src.tools.libs
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-
-internal fun KotlinJvmProjectExtension.applyConvention() {
-    jvmToolchain(21)
-}
 
 internal fun KotlinAndroidProjectExtension.applyConvention() {
     jvmToolchain(21)
 }
 
 internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
+    @Suppress("DEPRECATION")
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
@@ -32,8 +29,19 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     iosSimulatorArm64()
 
     sourceSets.all {
-        languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+        if (project.path.endsWith("data") || project.path.endsWith("presentation")) {
+            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+        }
+        if (project.isIosBuild()) {
+            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
+        } else {
+            if (project.path.endsWith("designsystem") || project.path.endsWith("presentation")) {
+                languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+            }
+        }
         languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+        languageSettings.optIn("kotlinx.coroutines.FlowPreview")
+        languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
     }
     sourceSets.androidMain.dependencies {
         implementation(project.libs.kotlinx.coroutines.android)

@@ -4,12 +4,13 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.bookk.core.DispatcherProvider
 import me.bookk.core.LogFactory
 import me.bookk.core.UsedInSwift
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.error.ErrorMapper
 import kotlin.coroutines.CoroutineContext
 
@@ -17,6 +18,7 @@ actual abstract class ViewModel actual constructor(
     vmArgs: VmArgs
 ) {
     private val internalLogger = LogFactory.createLogger("ViewModel")
+    private val activeJobs = mutableMapOf<String, Job>()
     protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper
     protected actual val viewModelScope = CoroutineScope(SupervisorJob() + DispatcherProvider.main)
     protected actual open val viewModelScopeErrorHandler =
@@ -24,20 +26,37 @@ actual abstract class ViewModel actual constructor(
             handleError(throwable)
         }
 
+    init {
+        internalLogger.i("Init called $this")
+    }
+
     actual open fun handleError(throwable: Throwable) {
         internalLogger.e(throwable)
     }
 
     actual fun <Output> launch(
+        key: String?,
+        launchBehaviour: LaunchBehaviour,
         launchIn: CoroutineContext,
         call: suspend () -> Output,
         onComplete: (suspend (Output) -> Unit)?,
         onError: (suspend (Throwable) -> Unit)?,
         onStart: (suspend () -> Unit)?,
         onTerminate: (suspend () -> Unit)?,
-    ): Job {
+    ): Job? {
+        val activeJob = when (launchBehaviour) {
+            LaunchBehaviour.DropLatest -> {
+                if (key != null && activeJobs[key]?.isActive == true) return null
+                null
+            }
+
+            LaunchBehaviour.DropOldest -> {
+                activeJobs[key]
+            }
+        }
         return viewModelScope.launch(viewModelScopeErrorHandler) {
             try {
+                activeJob?.cancelAndJoin()
                 onStart?.invoke()
 
                 val result = withContext(launchIn) {
@@ -49,6 +68,10 @@ actual abstract class ViewModel actual constructor(
             } finally {
                 onTerminate?.invoke()
             }
+        }.also {
+            if (key != null) {
+                activeJobs[key] = it
+            }
         }
     }
 
@@ -58,6 +81,11 @@ actual abstract class ViewModel actual constructor(
 
     @UsedInSwift
     actual open fun onViewHidden() {
-        viewModelScope.coroutineContext.cancelChildren()
+    }
+
+    @UsedInSwift
+    actual fun onCleared() {
+        internalLogger.i("On clear called $this")
+        viewModelScope.cancel()
     }
 }

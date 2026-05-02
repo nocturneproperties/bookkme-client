@@ -8,16 +8,27 @@
 
 import shared
 
-class IOSRefreshState: RefreshState, ObservableObject {
+@MainActor
+@Observable
+class IOSRefreshState: @MainActor RefreshState {
 	
-	@Published
 	var isRefreshing: Bool = false
+	var onRefresh: () -> Void
+	
+	init(isRefreshing: Bool = false, onRefresh: @escaping () -> Void = {}) {
+		self.isRefreshing = isRefreshing
+		self.onRefresh = onRefresh
+	}
 	
 	func awaitRefresh() async {
-		var iterator = $isRefreshing.values.dropFirst().makeAsyncIterator()
-		var isLoading = true
-		while (isLoading != false) {
-			isLoading = await iterator.next() ?? false
+		await withCheckedContinuation { continuation in
+			withObservationTracking({
+				_ = isRefreshing
+			}) {
+				Task { @MainActor in
+					continuation.resume()
+				}
+			}
 		}
 	}
 }

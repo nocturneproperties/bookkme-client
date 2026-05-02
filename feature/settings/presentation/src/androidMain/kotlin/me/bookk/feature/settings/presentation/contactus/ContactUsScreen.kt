@@ -19,7 +19,6 @@ import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.StateSwitch
 import me.bookk.designsystem.components.TextField
-import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -37,7 +36,6 @@ internal fun ContactUsScreen(state: ContactUsState) {
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                size = TopBarSize.MEDIUM,
                 onNavigationIconClick = LocalNavigation.current.navigateBack
             )
         },

@@ -13,9 +13,9 @@ import kotlin.coroutines.suspendCoroutine
 internal actual class NotificationPermissionChecker : PermissionChecker {
     private val notificationCenter = UNUserNotificationCenter.currentNotificationCenter()
 
-    override val type: PermissionType = PermissionType.NOTIFICATIONS
+    actual override val type: PermissionType = PermissionType.NOTIFICATIONS
 
-    override suspend fun requestPermission(): Boolean = suspendCoroutine {
+    actual override suspend fun requestPermission(): Boolean = suspendCoroutine {
         notificationCenter
             .requestAuthorizationWithOptions(
                 UNAuthorizationOptionAlert or
@@ -26,7 +26,7 @@ internal actual class NotificationPermissionChecker : PermissionChecker {
             }
     }
 
-    override suspend fun hasPermission(): Boolean = suspendCoroutine {
+    actual override suspend fun hasPermission(): Boolean = suspendCoroutine {
         notificationCenter.getNotificationSettingsWithCompletionHandler { settings ->
             it.resume(settings?.authorizationStatus == UNAuthorizationStatusAuthorized)
         }

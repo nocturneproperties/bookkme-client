@@ -9,7 +9,9 @@
 import shared
 import SwiftUI
 
-class IOSDashboardState: DashboardState {
+@MainActor
+@Observable
+class IOSDashboardState: @MainActor DashboardState {
 	var navigation: any NavigationState
 	
 	var tabItems: any TabItemsState
@@ -20,13 +22,14 @@ class IOSDashboardState: DashboardState {
 	}
 }
 
-class IOSTabItemsState: TabItemsState, ObservableObject {
-	@Published
+@MainActor
+@Observable
+class IOSTabItemsState: @MainActor TabItemsState {
+	
 	var items: [any TabItem]
-	@Published
 	var selectedItemId: TabItemId
 	
-	init(initData:TabItemsStateInitData) {
+	init(initData: TabItemsStateInitData) {
 		selectedItemId = initData.selectedItemId
 		items = initData.tabInitData.map { initData in
 			IOSTabItem(initData: initData)
@@ -34,12 +37,12 @@ class IOSTabItemsState: TabItemsState, ObservableObject {
 	}
 }
 
-class IOSTabItem: TabItem, ObservableObject {
+@MainActor
+@Observable
+class IOSTabItem: @MainActor TabItem {
 	
 	var id: TabItemId
-	@Published
 	var text: any StringDesc
-	@Published
 	var badgeText: (any StringDesc)?
 	
 	init(initData:TabItemInitData) {

@@ -8,12 +8,11 @@
 
 import shared
 
-class IOSBootstrapState: BootstrapState, ObservableObject {
+@MainActor
+@Observable
+class IOSBootstrapState: @MainActor BootstrapState {
 	
-	@Published
 	var startDestination: BootstrapNavigationDestination? = nil
-	
-	@Published
 	var colorScheme: BootstrapStateUIColorScheme = BootstrapStateUIColorScheme.system
 	
     var navigation: any NavigationState = IOSNavigationState()

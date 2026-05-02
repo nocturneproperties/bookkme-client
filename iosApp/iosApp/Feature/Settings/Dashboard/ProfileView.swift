@@ -10,8 +10,7 @@ import shared
 
 struct ProfileView: View {
 	
-	@ObservedObject
-	var state: IOSProfileSection
+	let state: IOSProfileSection
 	
 	init(state: ProfileSection) {
 		self.state = state.impl()

@@ -7,7 +7,8 @@
 //
 import shared
 
-class IOSStateFactoryCreator: StateFactoryCreator {
+@MainActor
+class IOSStateFactoryCreator: @MainActor StateFactoryCreator {
 	
 	func createDashboardFactory() -> any DashboardStateFactory {
 		return IOSDashboardStateFactory()
@@ -25,4 +26,7 @@ class IOSStateFactoryCreator: StateFactoryCreator {
 		return IOSBusinessStateFactory()
 	}
     
+	func createCredentialModuleFactory() -> any CredentialModuleFactory {
+		return IOSCredentialFactory()
+	}
 }

@@ -13,48 +13,49 @@ import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.business.presentation.settings.state.BusinessSettingsState
 import me.bookk.feature.business.presentation.settings.state.CurrencyUI
 
 @Immutable
 internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.InitData) :
     BusinessSettingsState {
-    override val appBar: AppBarState = AndroidAppBarState(initData.title)
+    override val appBar: AppBarState = AndroidAppBarState(initData.title, size = TopBarSize.SMALL)
     override val name: TextFieldState = AndroidTextFieldState(
-        hint = initData.nameHint
+        placeholder = initData.nameHint
     )
     override val description: TextFieldState = AndroidTextFieldState(
-        hint = initData.descriptionHint
+        placeholder = initData.descriptionHint
     )
     override val location: TextFieldState = AndroidTextFieldState(
-        hint = initData.locationHint,
+        placeholder = initData.locationHint,
         readOnly = true
     )
     override val testLocation: ButtonState = AndroidButtonState(
         text = initData.testLocationText,
     )
     override val currency: PickerFieldState<CurrencyUI> = AndroidPickerFieldState(
-        selectedItem = CurrencyUI(0, "".desc(), Money.SupportedCurrency.EUR),
-        items = listOf(CurrencyUI(0, "".desc(), Money.SupportedCurrency.EUR))
+        selectedItem = CurrencyUI("0", "".desc(), Money.SupportedCurrency.EUR),
+        items = listOf(CurrencyUI("0", "".desc(), Money.SupportedCurrency.EUR))
     )
     override val address: TextFieldState = AndroidTextFieldState(
-        hint = initData.addressHint
+        placeholder = initData.addressHint
     )
     override val phone: TextFieldState = AndroidTextFieldState(
         startIcon = initData.phoneIcon,
-        hint = initData.phoneHint
+        placeholder = initData.phoneHint
     )
     override val instagram: TextFieldState = AndroidTextFieldState(
         startIcon = initData.instaIcon,
-        hint = initData.instagramHint
+        placeholder = initData.instagramHint
     )
     override val telegram: TextFieldState = AndroidTextFieldState(
         startIcon = initData.telegramIcon,
-        hint = initData.telegramHint
+        placeholder = initData.telegramHint
     )
     override val viber: TextFieldState = AndroidTextFieldState(
         startIcon = initData.viberIcon,
-        hint = initData.viberHint
+        placeholder = initData.viberHint
     )
     override val save: ButtonState = AndroidButtonState(
         text = initData.saveButtonText,

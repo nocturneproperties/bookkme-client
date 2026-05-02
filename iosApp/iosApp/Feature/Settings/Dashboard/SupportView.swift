@@ -11,8 +11,7 @@ import shared
 
 struct SupportView: View {
 	
-	@ObservedObject
-	var state: IOSSupportSection
+	let state: IOSSupportSection
 	
 	init(state: SupportSection) {
 		self.state = state.impl()

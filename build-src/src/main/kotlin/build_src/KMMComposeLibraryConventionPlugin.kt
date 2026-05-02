@@ -1,10 +1,8 @@
 package build_src
 
 import build_src.convention.applyConvention
-import build_src.convention.applyFlavourConvention
 import build_src.tools.libs
 import com.android.build.gradle.LibraryExtension
-import com.codingfeline.buildkonfig.gradle.BuildKonfigExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
@@ -20,24 +18,21 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                 apply(libs.plugins.kotlin.multiplatform.get().pluginId)
                 apply(libs.plugins.compose.compiler.get().pluginId)
                 apply(libs.plugins.kmm.resources.get().pluginId)
-                apply(libs.plugins.buldconfig.get().pluginId)
                 apply(libs.plugins.kotlin.serialization.get().pluginId)
             }
 
             extensions.getByType<LibraryExtension>().apply {
                 applyConvention(target, useCompose = true)
-                applyFlavourConvention()
             }
-            extensions.getByType<BuildKonfigExtension>().applyConvention(target)
             extensions.getByType<KotlinMultiplatformExtension>().apply {
                 applyConvention(target)
 
                 sourceSets.androidMain.dependencies {
                     implementation(libs.androidx.core)
                     implementation(libs.compose.coil)
+                    implementation(libs.compose.coil.svg)
+                    implementation(libs.compose.coil.network.okhttp)
                     implementation(libs.compose.ui)
-                    implementation(libs.compose.ui.tooling)
-                    implementation(libs.compose.ui.tooling.preview)
                     implementation(libs.compose.material3)
                     implementation(libs.compose.navigation)
                     implementation(libs.compose.icons.extended)
@@ -57,6 +52,8 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
+                add("debugImplementation", libs.compose.ui.tooling)
+                add("implementation", libs.compose.ui.tooling.preview)
                 add("implementation", platform(libs.compose.bom))
             }
         }

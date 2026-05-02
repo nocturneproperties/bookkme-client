@@ -8,13 +8,15 @@
 import shared
 import SwiftUI
 
-extension ViewModel:@retroactive ObservableObject {
-}
-
 extension Image {
-    init(resource: KeyPath<AuthRes.images, shared.ImageResource>) {
-        self.init(uiImage: AuthRes.images()[keyPath: resource].toUIImage()!)
-    }
+	init(resource: shared.ImageResource?) {
+		guard let uiImage = resource?.toUIImage() else {
+			print("Warning: Couldn't convert ImageResource to UIImage")
+			self.init(uiImage: UIImage())
+			return
+		}
+		self.init(uiImage: uiImage)
+	}
 }
 
 extension String {

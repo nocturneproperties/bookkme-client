@@ -8,7 +8,9 @@
 
 import shared
 
-class IOSTroubleshootState: TroubleshootState {
+@MainActor
+@Observable
+class IOSTroubleshootState: @MainActor TroubleshootState {
     var appBar: any AppBarState
     
     var contactSupportButton: any ButtonState

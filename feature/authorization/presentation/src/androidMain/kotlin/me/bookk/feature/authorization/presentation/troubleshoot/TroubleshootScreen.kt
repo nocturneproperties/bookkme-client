@@ -39,7 +39,6 @@ import dev.icerock.moko.resources.compose.painterResource
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
-import me.bookk.designsystem.components.TopBarSize
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -60,7 +59,6 @@ internal fun TroubleshootScreen(
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                size = TopBarSize.MEDIUM,
                 onNavigationIconClick = LocalNavigation.current.navigateBack
             )
         },

@@ -7,58 +7,64 @@
 //
 import shared
 
-class IOSTextFieldState: IOSViewState, TextFieldState, NativeStateRepresentation {
+@Observable
+@MainActor
+class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRepresentation {
 	
 	typealias SwiftType = IOSTextFieldState
 	
 	typealias KotlinType = TextFieldState
 
-    @Published
     var enabled: Bool
-    @Published
     var supportingTextRes: (any StringDesc)?
-    @Published
     var hint: any StringDesc
-	@Published
 	var label: any StringDesc
-    @Published
-    var isError: Bool
-    @Published
+    var validationState: ValidationState
     var isValid: Bool
-    @Published
     var maxLength: Int32
-    @Published
     var readOnly: Bool
-    @Published
     var text: String
-	@Published
 	var startIcon: ImageResource?
+	var endIcon: ImageResource?
+	var inputType: InputType
+	var onTextChanged: ((String) -> Void)?
+	var placeholder: any StringDesc
     
-    init(
-        enabled: Bool = true,
-        supportingTextRes: (any StringDesc)? = nil,
-        hint: any StringDesc = RawStringDesc(string: ""),
+	init(
+		enabled: Bool = true,
+		supportingTextRes: (any StringDesc)? = nil,
+		hint: any StringDesc = RawStringDesc(string: ""),
 		label: any StringDesc = RawStringDesc(string: ""),
-        isError: Bool = false,
-        isValid: Bool = false,
-        maxLength: Int32 = Int32.max,
-        readOnly: Bool = false,
-        text: String = "",
-        isVisible: Bool = true,
-		startIcon: ImageResource? = nil
-    ) {
-        self.enabled = enabled
-        self.supportingTextRes = supportingTextRes
-        self.hint = hint
-        self.isError = isError
-        self.isValid = isValid
-        self.maxLength = maxLength
-        self.readOnly = readOnly
-        self.text = text
+		validationState: ValidationState = ValidationState.default_,
+		isValid: Bool = true,
+		maxLength: Int32 = Int32.max,
+		readOnly: Bool = false,
+		text: String = "",
+		startIcon: ImageResource? = nil,
+		endIcon: ImageResource? = nil,
+		inputType: InputType = InputType.text,
+		onTextChanged: ((String) -> Void)? = nil,
+		placeholder: any StringDesc = RawStringDesc(string: "")
+	) {
+		self.enabled = enabled
+		self.supportingTextRes = supportingTextRes
+		self.hint = hint
 		self.label = label
+		self.validationState = validationState
+		self.isValid = isValid
+		self.maxLength = maxLength
+		self.readOnly = readOnly
+		self.text = text
 		self.startIcon = startIcon
-        super.init(isVisible: isVisible)
-    }
+		self.endIcon = endIcon
+		self.inputType = inputType
+		self.onTextChanged = onTextChanged
+		self.placeholder = placeholder
+	}
+	
+	func updateText(desc: (any StringDesc)?) {
+		text = desc?.localized() ?? ""
+	}
     
 }
 

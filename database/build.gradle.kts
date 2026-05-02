@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.convention.kmm.database)
+    id(libs.plugins.convention.kmm.database.get().pluginId)
 }
 
 android {

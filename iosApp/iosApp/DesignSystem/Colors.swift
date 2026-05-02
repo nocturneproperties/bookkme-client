@@ -48,7 +48,7 @@ class AppColors {
         get {
             createColor(
                 dark: DesignSystem.colors().darkElevated,
-                light: DesignSystem.colors().white
+                light: DesignSystem.colors().lightElevated
             )
         }
     }

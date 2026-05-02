@@ -13,7 +13,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import library.cache.api.FileProvider
+import library.files.api.FileProvider
 import kotlin.reflect.KClass
 import library.cache.api.Preferences as AppPreferences
 

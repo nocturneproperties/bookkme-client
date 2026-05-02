@@ -9,14 +9,16 @@
 import shared
 import SwiftUI
 
-class IOSViewState: ViewState, ObservableObject {
-    
-    @Published
-    var isVisible: Bool
-    
-    init(isVisible: Bool = true) {
-        self.isVisible = isVisible
-    }
+@MainActor
+@Observable
+class IOSViewState: @MainActor ViewState, @MainActor Identifiable {
+	var id: String
+	var isVisible: Bool
+	
+	init(isVisible: Bool = true) {
+		self.isVisible = isVisible
+		self.id = UUID().uuidString
+	}
 }
 
 extension shared.ViewState {

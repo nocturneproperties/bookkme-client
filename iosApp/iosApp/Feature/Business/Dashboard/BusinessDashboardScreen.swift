@@ -11,7 +11,7 @@ import shared
 
 struct BusinessDashboardScreen: View {
 	
-	@StateObject var viewModel: BusinessDashboardViewModel = IOSBusinessDiKt.businessDashboardVM()
+	@StateViewModel var viewModel: BusinessDashboardViewModel = IOSBusinessDiKt.businessDashboardVM()
 	
 	var body: some View {
 		VStack {
@@ -22,14 +22,14 @@ struct BusinessDashboardScreen: View {
 		.handleNotifications(state: viewModel.uiState.notifications)
 		.sendLifecycleEventsTo(viewModel: viewModel)
 		.handleNavigation(state: viewModel.uiState.navigation) { navigation in
-			
 		}
+		.background(AppColors.background)
 	}
 }
 
 struct BusinessDashboardScreenContent: View {
 	
-	@ObservedObject var state: IOSBusinessDashboardState
+	let state: IOSBusinessDashboardState
 	
 	init(state: BusinessDashboardState) {
 		self.state = state.impl()

@@ -9,8 +9,10 @@
 import shared
 import Combine
 
-class IOSNavigationState: NavigationState, ObservableObject {
-	@Published
+@Observable
+@MainActor
+class IOSNavigationState: @MainActor NavigationState {
+	
 	var navigationDestination: [NavigationDestination] = []
 	
 	func push(destination: NavigationDestination) {

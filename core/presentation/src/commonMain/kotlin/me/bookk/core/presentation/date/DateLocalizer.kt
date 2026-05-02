@@ -5,13 +5,20 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 
 interface DateLocalizer {
-    fun format(date: LocalDateTime, dateStyle: Style, timeStyle: Style): String
-    fun format(date: LocalDate, style: Style): String
-    fun format(time: LocalTime, style: Style): String
 
-    enum class Style {
-        SHORT,
-        MEDIUM,
-        LONG
+    interface Formatter {
+        fun format(date: LocalDateTime, relative: Boolean = false): String
+        fun format(date: LocalDate, relative: Boolean = false): String
+        fun format(time: LocalTime): String
     }
+
+    fun forStyle(dateStyle: DateStyle): Formatter
+    fun strict(pattern: String, respectUserSettings: Boolean = false): Formatter
+}
+
+expect enum class DateStyle {
+    SHORT,
+    MEDIUM,
+    LONG,
+    D_MMM_YYYY_RELATIVE,
 }

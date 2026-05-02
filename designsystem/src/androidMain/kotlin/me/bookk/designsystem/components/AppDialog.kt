@@ -72,6 +72,7 @@ fun AppDialog(
                             contentColor = when (it.actionType) {
                                 ActionType.POSITIVE -> LocalColors.current.actionText
                                 ActionType.NEGATIVE -> LocalColors.current.error
+                                ActionType.CANCEL -> LocalColors.current.actionText
                             },
                         )
                     )
@@ -132,11 +133,15 @@ private fun Preview() {
             buttonDescriptors = listOf(
                 ButtonDescriptor(
                     text = DesignSystem.strings.action_cancel.desc(),
-                    actionType = ActionType.POSITIVE
+                    actionType = ActionType.NEGATIVE
                 ),
                 ButtonDescriptor(
                     text = DesignSystem.strings.action_confirm.desc(),
-                    actionType = ActionType.NEGATIVE
+                    actionType = ActionType.POSITIVE
+                ),
+                ButtonDescriptor(
+                    text = DesignSystem.strings.action_cancel.desc(),
+                    actionType = ActionType.CANCEL
                 )
             ),
             onDismiss = {}

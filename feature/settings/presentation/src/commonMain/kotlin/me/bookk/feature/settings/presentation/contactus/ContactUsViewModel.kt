@@ -2,7 +2,7 @@ package me.bookk.feature.settings.presentation.contactus
 
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.settings.resources.SettingsRes
-import me.bookk.core.DispatcherProvider
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.designsystem.resources.DesignSystem

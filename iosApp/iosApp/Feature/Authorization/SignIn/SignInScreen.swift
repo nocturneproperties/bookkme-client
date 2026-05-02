@@ -11,7 +11,7 @@ import SwiftUI
 struct SignInScreen: View {
     
     @EnvironmentObject var navigationStack: NavigationStackHolder
-	@StateObject var signInVM: SignInViewModel = IOSAuthDiKt.signInVM()
+	@StateViewModel var signInVM: SignInViewModel = IOSAuthDiKt.signInVM()
 	
     var body: some View {
         let uiState = signInVM.uiState
@@ -34,8 +34,8 @@ struct SignInScreen: View {
             }
         }
         .padding()
-        .navigationTitle(signInVM.uiState.appBar.title.localized())
-        .navigationBarTitleDisplayMode(.large)
+		.background(AppColors.background)
+		.withNavigationBar(state: signInVM.uiState.appBar)
 		.handleNotifications(state: uiState.notification)
         .handleNavigation(state: uiState.navigation) { navigation in
             switch navigation {
@@ -49,8 +49,8 @@ struct SignInScreen: View {
 }
 
 struct PasskeyCard: View {
-    @ObservedObject
-    var learnMoreState: IOSButtonState
+	
+    let learnMoreState: IOSButtonState
     
     @State
     var cardInfo: PasskeyInfoCardData

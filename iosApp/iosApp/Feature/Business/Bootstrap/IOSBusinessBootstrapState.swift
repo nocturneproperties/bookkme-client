@@ -8,9 +8,10 @@
 
 import shared
 
-class IOSBusinessBootstrapState: BusinessBootstrapState, ObservableObject {
+@MainActor
+@Observable
+class IOSBusinessBootstrapState: @MainActor BusinessBootstrapState {
 	
-	@Published
 	var startDestination: BusinessDestination
 	
 	var notification: any PresentationNotificationState

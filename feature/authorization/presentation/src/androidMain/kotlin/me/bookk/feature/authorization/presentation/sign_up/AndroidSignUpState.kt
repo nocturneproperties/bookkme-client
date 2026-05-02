@@ -29,13 +29,13 @@ internal class AndroidSignUpState private constructor(
 
     constructor(initData: SignUpState.InitData) : this(
         appBar = AndroidAppBarState(title = initData.title),
-        name = AndroidTextFieldState(hint = initData.nameHint),
-        lastName = AndroidTextFieldState(hint = initData.lastNameHint),
-        email = AndroidTextFieldState(hint = initData.emailHint),
+        name = AndroidTextFieldState(placeholder = initData.nameHint),
+        lastName = AndroidTextFieldState(placeholder = initData.lastNameHint),
+        email = AndroidTextFieldState(placeholder = initData.emailHint),
         confirmButton = AndroidButtonState(text = initData.confirmButtonText, isEnabled = false),
         learnMoreButton = AndroidButtonState(text = initData.learnMoreButtonText),
         passkeyInfoCardData = initData.passkeyInfoCardData,
         notification = AndroidNotificationState(),
-        navigation = AndroidNavigationState<SignUpNavigationDestination>()
+        navigation = AndroidNavigationState()
     )
 }

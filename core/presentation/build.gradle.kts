@@ -1,9 +1,11 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
-    alias(libs.plugins.convention.kmm.library.compose)
+    id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
 android {
-    namespace = "me.bookk.core.presentation"
+    namespace = "${ApplicationConfig.ROOT_PACKAGE}.core.presentation"
 }
 
 kotlin {
@@ -12,4 +14,9 @@ kotlin {
             implementation(projects.core)
         }
     }
+}
+
+multiplatformResources {
+    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.core.presentation")
+    resourcesClassName.set("CorePresentation")
 }

@@ -1,8 +1,8 @@
 package library.cache.impl
 
-import library.cache.api.FileProvider
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
+import library.files.api.FileProvider
 
 
 internal class PreferenceProviderImpl(

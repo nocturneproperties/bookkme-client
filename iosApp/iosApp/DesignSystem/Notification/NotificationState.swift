@@ -9,15 +9,11 @@
 import shared
 import Combine
 
-class IOSNotificationState: PresentationNotificationState, ObservableObject {
+@MainActor
+@Observable
+class IOSNotificationState: @MainActor PresentationNotificationState {
     
-    @Published
     var presentationNotification: [any PresentationNotification] = []
-    
-    var publisher: AnyPublisher<any PresentationNotification, Never> {
-        $presentationNotification.flatMap(\.publisher)
-            .eraseToAnyPublisher()
-    }
     
     func add(notification: any PresentationNotification) {
 		self.presentationNotification.append(notification)

@@ -8,21 +8,26 @@
 
 import shared
 
-class IOSSwitchState: IOSViewState, SwitchState {
+@MainActor
+@Observable
+final class IOSSwitchState: IOSViewState, @MainActor SwitchState {
 	
-	@Published
 	var isChecked: Bool
-	@Published
 	var text: any StringDesc
 	
 	init(text: any StringDesc, isChecked: Bool) {
 		self.isChecked = isChecked
 		self.text = text
+		super.init(isVisible: true)
 	}
 }
 
 extension SwitchState {
 	func impl() -> IOSSwitchState {
-		return self as! IOSSwitchState
+		guard let state = self as? IOSSwitchState else {
+			preconditionFailure("SwitchState is not IOSSwitchState")
+		}
+		return state
 	}
 }
+

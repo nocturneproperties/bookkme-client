@@ -11,17 +11,40 @@ import shared
 
 struct StateTextField: View {
     
-    @ObservedObject
+    @Bindable
     var state: IOSTextFieldState
 	@State
 	var isEditor: Bool = false
     @State
     var onTextChanged: (String) -> Void
 	
-	init(state: TextFieldState, textEditor: Bool = false, onTextChanged: @escaping (String) -> Void) {
-		self.state = IOSTextFieldState.cast(kotlinState: state)
+	private var keyboardType: UIKeyboardType {
+		switch state.inputType {
+		case .digit:
+			return .numberPad
+		case .decimal:
+			return .decimalPad
+		case .ascii:
+			return .asciiCapable
+		case .email:
+			return .emailAddress
+		case .phone:
+			return .phonePad
+		case .password:
+			return .asciiCapable
+		default:
+			return .default
+		}
+	}
+	
+	init(
+		state: TextFieldState,
+		textEditor: Bool = false,
+		onTextChanged: ((String) -> Void)? = nil
+	) {
+		self.state = IOSTextFieldState.cast(state)
 		self.isEditor = textEditor
-		self.onTextChanged = onTextChanged
+		self.onTextChanged = onTextChanged ?? state.onTextChanged ?? {_ in}
 	}
     
     var body: some View {
@@ -46,6 +69,7 @@ struct StateTextField: View {
 						),
 						axis: isEditor ? .vertical : .horizontal
 					)
+					.keyboardType(keyboardType)
 					.font(Font.system(.body))
 					.disabled(!state.enabled || state.readOnly)
 				} label: {
@@ -59,7 +83,7 @@ struct StateTextField: View {
             .padding(.vertical, 12)
             .background(AppColors.elevated)
             .overlay(
-                state.isError ?
+				state.validationState == ValidationState.error ?
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(
                         AppColors.error,
@@ -86,7 +110,7 @@ struct StateTextField: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 					.font(.footnote)
                     .scaledToFit()
-					.foregroundStyle(state.isError ? AppColors.error : AppColors.secondary)
+					.foregroundStyle(state.validationState == ValidationState.error ? AppColors.error : AppColors.secondary)
 					.padding(.leading)
             }
         }
@@ -97,9 +121,11 @@ struct StateTextField: View {
     
     @Previewable
     @State
-	var value: IOSTextFieldState = IOSTextFieldState(enabled: true, supportingTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isError: false, isValid: true, maxLength: 20, readOnly: false, text: "Text")
+	var value: IOSTextFieldState = IOSTextFieldState(enabled: true, supportingTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isValid: true, maxLength: 20, readOnly: false, text: "Text")
     
-	StateTextField(state: value) { _ in
-		
-	}
+	VStack {
+		StateTextField(state: value) { _ in
+			
+		}.padding()
+	}.background(AppColors.background)
 }

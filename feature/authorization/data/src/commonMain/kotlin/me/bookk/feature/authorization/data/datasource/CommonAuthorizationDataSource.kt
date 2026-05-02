@@ -19,6 +19,7 @@ import library.cache.api.get
 import library.cache.api.getFlow
 import library.cache.api.set
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.feature.authorization.data.BuildKonfig
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
@@ -35,7 +36,7 @@ class CommonAuthorizationDataSource(
     private val httpClient: HttpClient,
     private val noAuthHttpClient: HttpClient,
     preferenceProvider: PreferenceProvider
-) : AuthorizationDataSource, DataSource() {
+) : AuthorizationDataSource, DataSource(), LogOutAction {
 
     private val preferences = preferenceProvider.get("authorization_prefs")
 
@@ -44,9 +45,9 @@ class CommonAuthorizationDataSource(
             runBlocking {
                 if (getRefreshToken() == null) {
                     val refresh =
-                        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra2subWUiLCJpc3MiOiJjb20uYm9va2suc2VydmVyLnJlZnJlc2giLCJqdGkiOiI2NDNkMDljYjM0MDA0YjZlOTgxOWU0MzUwNWVjOTk1ZSIsImRldmljZV9pZCI6MTYsImlhdCI6MTc0NzY5MDAyNiwibmJmIjoxNzQ3NjkwMDI2LCJleHAiOjE3NDgyOTQ4MjZ9.CI6801U7JIZrQqz28yjCEuXjEM4AmrxffSYFziz3EqLhRmxSCtNXZ_76Lhif_1VUzvzs0jziPZFRSW6Ii36VBYKNQ35mO7_rKjJKksTZoWKM3u7otE3WoXo_dbs0OcyEfP5F-auRWASaHBHuSbRLkekhfbHnD9jOs7rd4EDg9143nFEfa0cJxzSO-zzW09h2WqULOA8i9vUE0nlULmBR8nxahtiaUVxmcHUR0bXouH3NDGV6y6m7zHCmQy5c7a0_CbyqU2GhxHnlDSC-GDngwXyef8vqX3vP0bBeJBuAKkS_vwHUTCNTZrjGPPYQW1p1uVTLS_w18QG4pfwycSnPjg"
+                        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra21lLmFwcCIsImlzcyI6ImNvbS5ib29ray5zZXJ2ZXIucmVmcmVzaCIsImp0aSI6ImExNmVkNjNiLTgzYjktNGMwOC04NDFhLWExNDc5YzM4MzJlZSIsImRldmljZV9pZCI6IjFmOGM4ZDA1LTU4YzctNDdjYi1iM2ZiLTUwNWJkNGFiZDAwYiIsImlhdCI6MTc3NzY1OTIwMSwibmJmIjoxNzc3NjU5MjAxLCJleHAiOjE3NzgyNjQwMDF9.a_Mf3czhZukMQTFXv_C6dT1qVIuYichC5t4lYIi2kpZorX2vRw6DlY8lidFyN1n8cB-uIMuaaWVh2cUU2PBYGS52dsvdLf_taCZeSNxP13-w1-Q7IY03ljofeQGJHE6j-F8GKQf_0jYsQc4QXz1ml_OJumPS_Xo_T-5myz1QUO8WFbJ_RrPnkb1DYYQ10w9FQAj_MzHK7h9ukLodfQLUKVsCqMAbaOoyEtIz8DsTa9oOLBTrA6JrO_VfAshyi5jQDyHOLwC7wR7Ynq2k-Z8XW3_B3oHMizptmx5ZH4qpeNOU7IsdVMrn8D34iz5MZyCQ17IK2VZKGov3x-pvunl3Iw"
                     val access =
-                        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra2subWUiLCJpc3MiOiJjb20uYm9va2suc2VydmVyIiwianRpIjoiZWNiNzBjZjQyNzg3NDQyM2FjMjQ1MjAxMDFmN2QzNzQiLCJhdXRoX2lkIjo0LCJ1c2VyX2lkIjo0LCJkZXZpY2VfaWQiOjE2LCJpYXQiOjE3NDc2OTAwMjYsIm5iZiI6MTc0NzY5MDAyNiwiZXhwIjoxNzQ3NjkwMzI2fQ.JKmiXNRYQA7QCW-EjvsCpvAWW8XxhWW8HdzotluGrAYByp5A4jQsIYv-dTjyUYPl3ag2jnE0igId3oU7_c1iUZ9FbCdELrKZe-wtQB7oKVRPgyryRLbMtjrasQdCJzQCm1lOEeELiMGeUbWh4ADwykfYM24pIfl_59IhRvSBDiHx6lbo4yFO7mJBRC5M3w3CbA5LXb7CeVO3yUn2BVizTmyaQgJthxjs-I7etixOD4_pUWdivD_tSwjIyq3htiO-jFETtwwC8eXUumRf29sfALpnQsS98nt9o8YxE5QmzcLSKU9oUsWBVy6Q629DmZSBVAZb7yzYOG_cjTPbCllgwQ"
+                        "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJib29ra21lLmFwcCIsImlzcyI6ImNvbS5ib29ray5zZXJ2ZXIiLCJqdGkiOiIwNDI5MGIzYS1hODUwLTQwMzgtYjcyNy01MDU1YjdmYzNlMmYiLCJhdXRoX2lkIjoiOTk2NWQ4ZjYtOWM2ZS00ZTY4LTg3YjMtMWRjNDc3ODJkZjg2IiwidXNlcl9pZCI6IjA5NDU0ZjZkLTY3ZTUtNDhiOS1iNzhjLTdmMWZkYmMwNjM4MCIsImRldmljZV9pZCI6IjFmOGM4ZDA1LTU4YzctNDdjYi1iM2ZiLTUwNWJkNGFiZDAwYiIsImlhdCI6MTc3NzY1OTIwMSwibmJmIjoxNzc3NjU5MjAxLCJleHAiOjE3Nzc2NTk1MDF9.AbOuaEx9ybyTnp5hpJ4fT9tEDQ-dLQE8DHKMPE4fi4nJxrWgsfbqhCrpGsFKHZgP8bRcdat7HYpMabngdDvjxSS1ZHOlPzb3_F5vbSQElFfMMt3IFQpFJrveYb7Sv4-spsuf9xNe5lGaZU-IuJbGDmyt-47Tax_5GGM_9FybRAGO3PonxrZXhLM25Gbdk5CkSBXr5DsRVBq8KCEMQY2SaTXWuz12NZzqjSa4eUwg6bdc2HrwsuxcZ9uuNGZu3mEdgge5crEB6O7DhIWnqDaOwUOJP0L_yIGLljBmkmkPPqTzoTpbdXbaf_PlN_zKupUhf8gtyEnXnAXIXPdSVKU3hA"
                     saveAuthorizationTokens(TokenInfo(access, refresh))
                     setAuthorizationStatus(true)
                     invalidateClientTokens()
@@ -54,7 +55,6 @@ class CommonAuthorizationDataSource(
             }
         }
     }
-
     override suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?) {
         preferences.set(Key.accessToken, tokenInfo?.accessToken)
         preferences.set(Key.refreshToken, tokenInfo?.refreshToken)
@@ -108,8 +108,10 @@ class CommonAuthorizationDataSource(
         }
     }
 
-    override suspend fun logOut() {
-        return mapExceptions { httpClient.delete(Auth.SignOut()) }
+    override suspend fun doOnLogOut() {
+        saveAuthorizationTokens(null)
+        setAuthorizationStatus(false)
+        mapExceptions { httpClient.delete(Auth.SignOut()) }
     }
 
     override suspend fun setAuthorizationStatus(isAuthorized: Boolean) {

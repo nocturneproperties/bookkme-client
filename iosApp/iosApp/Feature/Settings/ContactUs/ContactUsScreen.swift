@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ContactUsScreen: View {
 	
-	@StateObject
+	@StateViewModel
 	var viewModel = IOSSettingsDiKt.contactUsVM()
 	
 	@EnvironmentObject
@@ -41,6 +41,7 @@ struct ContactUsScreen: View {
 			.padding(.bottom, 24)
 		}
 		.padding()
+		.background(AppColors.background)
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.sendLifecycleEventsTo(viewModel: viewModel)

@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.nativePaint
 import androidx.compose.ui.graphics.scale
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -63,7 +64,7 @@ fun Modifier.drawShadow(
 
         drawIntoCanvas { canvas ->
             val paint = Paint()
-            val frameworkPaint = paint.asFrameworkPaint()
+            val frameworkPaint = paint.nativePaint
             frameworkPaint.color = transparentColor
             frameworkPaint.setShadowLayer(
                 blurRadius.toPx(),

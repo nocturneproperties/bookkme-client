@@ -8,18 +8,28 @@
 
 import shared
 
-class IOSAppBarState: IOSViewState, AppBarState {
-	@Published
-    var subtitle: (any StringDesc)?
-    
-	@Published
-    var title: any StringDesc
-    
-    init(title: any StringDesc, subtitle: (any StringDesc)? = nil, isVisible: Bool = true) {
-        self.subtitle = subtitle
-        self.title = title
-        super.init(isVisible: isVisible)
-    }
+@Observable
+@MainActor
+final class IOSAppBarState: @MainActor IOSViewState, @MainActor AppBarState {
+		
+	var title: any StringDesc
+	var subtitle: (any StringDesc)?
+	var actions: any ListState
+	var size_: TopBarSize
+	var onBackClick: (() -> Void)?
+	
+	init(
+		title: any StringDesc = RawStringDesc(string: ""),
+		subtitle: (any StringDesc)? = nil,
+		isVisible: Bool = true,
+		size: TopBarSize = .large,
+	) {
+		self.subtitle = subtitle
+		self.title = title
+		self.actions = IOSListState<AppBarAction>()
+		self.size_ = size
+		super.init(isVisible: isVisible)
+	}
 }
 
 extension shared.AppBarState {

@@ -3,11 +3,12 @@ package me.bookk.feature.settings.presentation.passkey
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import me.bookk.android.feature.settings.resources.SettingsRes
-import me.bookk.core.DispatcherProvider
 import me.bookk.core.UsedInSwift
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
+import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
@@ -137,17 +138,18 @@ class PasskeyViewModel(
     }
 
     private fun updatePasskeyList(passkeys: List<Passkey>) {
-        uiState.replacePasskeyList(passkeys.map { it.toViewItem(passkeys.size) })
+        val localized = dateLocalizer.forStyle(DateStyle.MEDIUM)
+        uiState.replacePasskeyList(passkeys.map { it.toViewItem(localized, passkeys.size) })
     }
 
-    private fun Passkey.toViewItem(totalItemCount: Int): PasskeyItem {
+    private fun Passkey.toViewItem(formatter: DateLocalizer.Formatter, totalItemCount: Int): PasskeyItem {
         return PasskeyItem(
             id = id,
             title = name,
             isBackedUp = isBackedUp,
             isDeletable = totalItemCount > 1,
             addedOn = SettingsRes.strings.settings_passkey_added_on_format.format(
-                dateLocalizer.format(createdAt.date, DateLocalizer.Style.MEDIUM)
+                formatter.format(createdAt.date)
             )
         )
     }

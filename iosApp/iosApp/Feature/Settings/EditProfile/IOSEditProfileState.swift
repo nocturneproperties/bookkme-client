@@ -9,7 +9,9 @@
 import shared
 import SwiftUI
 
-class IOSEditProfileState: EditProfileState {
+@MainActor
+@Observable
+class IOSEditProfileState: @MainActor EditProfileState {
 	
 	var appBar: any AppBarState
 	

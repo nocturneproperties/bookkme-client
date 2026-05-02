@@ -1,6 +1,6 @@
 package library.files.impl.di
 
-import library.cache.api.FileProvider
+import library.files.api.FileProvider
 import library.files.impl.AndroidFileProvider
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf

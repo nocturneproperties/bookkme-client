@@ -3,7 +3,7 @@ import shared
 
 struct BootstrapView: View {
 
-	@StateObject var bootstrapVM = IOSAuthDiKt.bootstrapVM()
+	@StateViewModel var bootstrapVM = IOSAuthDiKt.bootstrapVM()
     @State var initialDestination: BootstrapNavigationDestination? = nil
 	
 	var body: some View {
@@ -15,8 +15,7 @@ struct BootstrapView: View {
 
 struct StartDestinationView: View {
 	
-	@ObservedObject
-	var state: IOSBootstrapState
+	let state: IOSBootstrapState
 	
 	var body: some View {
 		ZStack {
@@ -34,8 +33,7 @@ struct StartDestinationView: View {
 
 struct ColorSchemeView<Content: View>: View {
 	
-	@ObservedObject
-	var state: IOSBootstrapState
+	let state: IOSBootstrapState
 	
 	@ViewBuilder
 	let content: Content

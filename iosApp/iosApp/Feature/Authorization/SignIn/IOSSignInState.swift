@@ -8,7 +8,13 @@
 
 import shared
 
-class IOSSignInState: SignInState {
+@MainActor
+@Observable
+class IOSSignInState: @MainActor SignInState, NativeStateRepresentation {
+	typealias SwiftType = IOSSignInState
+	
+	typealias KotlinType = SignInState
+	
    
     var appBar: any AppBarState
     

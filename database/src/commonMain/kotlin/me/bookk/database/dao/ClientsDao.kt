@@ -1,5 +1,6 @@
 package me.bookk.database.dao
 
+import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Update
@@ -7,6 +8,7 @@ import androidx.room.Upsert
 import me.bookk.database.entity.ClientEntity
 import kotlin.uuid.Uuid
 
+@Dao
 abstract class ClientsDao {
     @Query("select * from client where businessId = :businessId")
     abstract suspend fun getClients(businessId: String): List<ClientEntity>

@@ -17,7 +17,7 @@ interface AppBarState : ViewState {
 }
 
 class AppBarAction(
-    val icon: ImageResource,
-    val contentDescription: StringDesc?,
+    val icon: ImageResource? = null,
+    val contentDescription: StringDesc,
     val onClick: () -> Unit
 )

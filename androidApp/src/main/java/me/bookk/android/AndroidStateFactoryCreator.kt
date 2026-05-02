@@ -5,7 +5,9 @@ import library.credentials.impl.AndroidCredentialFactory
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.factory.AndroidAuthStateFactory
 import me.bookk.feature.business.presentation.BusinessStateFactory
+import me.bookk.feature.business.presentation.ClientsStateFactory
 import me.bookk.feature.business.presentation.factory.AndroidBusinessStateFactory
+import me.bookk.feature.business.presentation.factory.AndroidClientsStateFactory
 import me.bookk.feature.dashboard.presentation.AndroidDashboardStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
@@ -31,5 +33,9 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
 
     override fun createCredentialModuleFactory(): CredentialModuleFactory {
         return AndroidCredentialFactory()
+    }
+
+    override fun createClientsFactory(): ClientsStateFactory {
+        return AndroidClientsStateFactory()
     }
 }

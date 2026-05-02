@@ -40,4 +40,6 @@
     <string name="business_settings_location_test">Test location on map</string>
     <string name="business_settings_location_pick">Pick</string>
     <string name="business_settings_updated">Settings updated</string>
+
+    <string name="business_clients_title">Clients</string>
 </resources>

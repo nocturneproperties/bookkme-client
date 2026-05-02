@@ -28,6 +28,7 @@ import me.bookk.designsystem.html
 import me.bookk.designsystem.painter
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
+import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -41,11 +42,18 @@ fun AppTopBar(
     actions: @Composable RowScope.() -> Unit = {
         state.actions.items.forEach {
             IconButton(onClick = it.onClick) {
-                Icon(
-                    painter = it.icon.painter(),
-                    contentDescription = it.contentDescription?.localized(),
-                    tint = colors.actionIconContentColor
-                )
+                if (it.icon != null) {
+                    Icon(
+                        painter = it.icon.painter(),
+                        contentDescription = it.contentDescription.localized(),
+                        tint = colors.actionIconContentColor
+                    )
+                } else {
+                    Text(
+                        it.contentDescription.localized(),
+                        style = MaterialTheme.typography.bodyLarge.active()
+                    )
+                }
             }
         }
     },

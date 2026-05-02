@@ -1,8 +1,8 @@
 package library.biometry.impl.di
 
-import eu.advapay.mobilebank.core.android.AndroidActivityAware
 import library.biometry.api.Biometry
 import library.biometry.impl.AndroidBiometry
+import me.bookk.core.android.AndroidActivityAware
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.binds

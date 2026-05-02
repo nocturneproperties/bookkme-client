@@ -34,6 +34,7 @@ struct SignInScreen: View {
             }
         }
         .padding()
+		.background(AppColors.background)
 		.withNavigationBar(state: signInVM.uiState.appBar)
 		.handleNotifications(state: uiState.notification)
         .handleNavigation(state: uiState.navigation) { navigation in

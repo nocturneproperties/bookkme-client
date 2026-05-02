@@ -1,14 +1,14 @@
 package me.bookk.feature.settings.domain.impl
 
-import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.feature.settings.domain.api.LogOut
 
 internal class LogOutImpl(
-    private val authorizationDataSource: AuthorizationDataSource
+    private val logOutActors: List<LogOutAction>
 ) : LogOut {
     override suspend fun invoke() {
-        runCatching { authorizationDataSource.logOut() }
-        authorizationDataSource.saveAuthorizationTokens(null)
-        authorizationDataSource.setAuthorizationStatus(false)
+        runCatching {
+            logOutActors.forEach { it.doOnLogOut() }
+        }
     }
 }

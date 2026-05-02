@@ -28,14 +28,14 @@ class IOSPickerState: IOSViewState, @MainActor PickerFieldState, NativeStateRepr
 		pickerTitle: any StringDesc = RawStringDesc(string: ""),
 		options: [PickerPresentation] = [],
 		pickerType: PickerFieldStatePickerType = PickerFieldStatePickerType.bottomSheet,
-		textField: any TextFieldState,
+		textField: (any TextFieldState)? = nil,
 		onItemPicked: @escaping (PickerPresentation?) -> Void = {_ in },
 	) {
 		self.onItemPicked = onItemPicked
 		self.options = options
 		self.pickerTitle = pickerTitle
 		self.pickerType = pickerType
-		self.textField = textField
+		self.textField = textField ?? IOSTextFieldState(readOnly: true)
 	}
 	
 	

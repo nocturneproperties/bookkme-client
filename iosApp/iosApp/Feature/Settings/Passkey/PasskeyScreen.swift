@@ -15,20 +15,12 @@ struct PasskeyScreen: View {
 	var viewModel: PasskeyViewModel = IOSSettingsDiKt.passkeyVM()
 	
 	var body: some View {
-		VStack(spacing: 0) {
-			PasskeyContent(state: viewModel.uiState, viewModel: viewModel)
-		}
-		.sendLifecycleEventsTo(viewModel: viewModel)
-		.handleNotifications(state: viewModel.uiState.notification)
-		.navigationTitle(viewModel.uiState.appBar.title.localized())
-		.navigationBarTitleDisplayMode(.large)
-		.toolbar {
-			ToolbarItem(placement: .topBarTrailing) {
-				IconButton(state: viewModel.uiState.addPasskeyButton, icon: "plus") {
-					viewModel.onAddPasskeyClick()
-				}
-			}
-		}
+		PasskeyContent(state: viewModel.uiState, viewModel: viewModel)
+			.sendLifecycleEventsTo(viewModel: viewModel)
+			.handleNotifications(state: viewModel.uiState.notification)
+			.navigationTitle(viewModel.uiState.appBar.title.localized())
+			.navigationBarTitleDisplayMode(.large)
+			.background(AppColors.background)
 	}
 }
 
@@ -44,8 +36,6 @@ private struct PasskeyContent: View {
 	}
 	
 	var body: some View {
-		Text(" ")
-			.font(.footnote)//This is stupid but it works. Without this line progressView will be above navigationBarTitle an refresh animation will glitch
 		List(state.passkeys, id: \.id) { passkey in
 			PasskeyView(item: passkey)
 				.swipeActions {
@@ -54,6 +44,13 @@ private struct PasskeyContent: View {
 							viewModel.onDeletePasskeyClick(passkeyItem: passkey)
 						}
 						.tint(AppColors.error)
+					}
+				}
+				.toolbar {
+					ToolbarItem(placement: .topBarTrailing) {
+						IconButton(state: viewModel.uiState.addPasskeyButton, icon: "plus") {
+							viewModel.onAddPasskeyClick()
+						}
 					}
 				}
 		}

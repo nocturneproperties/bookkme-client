@@ -31,6 +31,7 @@ struct EditProfileScreen: View {
 		.sendLifecycleEventsTo(viewModel: viewModel)
 		.handleNotifications(state: state.notification)
 		.padding()
+		.background(AppColors.background)
 		.navigationTitle(state.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.toolbar {

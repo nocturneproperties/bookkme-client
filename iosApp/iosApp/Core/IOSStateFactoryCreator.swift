@@ -26,4 +26,7 @@ class IOSStateFactoryCreator: @MainActor StateFactoryCreator {
 		return IOSBusinessStateFactory()
 	}
     
+	func createCredentialModuleFactory() -> any CredentialModuleFactory {
+		return IOSCredentialFactory()
+	}
 }

@@ -48,7 +48,7 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 	init(initData: BusinessSettingsStateInitData) {
 		self.appBar = IOSAppBarState(title: initData.title)
 		self.address = IOSTextFieldState(hint: initData.addressHint)
-		self.currency = IOSPickerState(textField: IOSTextFieldState())
+		self.currency = IOSPickerState()
 		self.description_ = IOSTextFieldState(hint: initData.descriptionHint)
 		self.instagram = IOSTextFieldState(hint: initData.instagramHint, startIcon: initData.instaIcon)
 		self.location = IOSTextFieldState(hint: initData.locationHint, readOnly: true)

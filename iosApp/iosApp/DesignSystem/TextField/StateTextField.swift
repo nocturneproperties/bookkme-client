@@ -123,7 +123,9 @@ struct StateTextField: View {
     @State
 	var value: IOSTextFieldState = IOSTextFieldState(enabled: true, supportingTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isValid: true, maxLength: 20, readOnly: false, text: "Text")
     
-	StateTextField(state: value) { _ in
-		
-	}
+	VStack {
+		StateTextField(state: value) { _ in
+			
+		}.padding()
+	}.background(AppColors.background)
 }

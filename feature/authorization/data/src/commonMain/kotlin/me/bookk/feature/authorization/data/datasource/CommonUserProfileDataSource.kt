@@ -6,6 +6,7 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.patch
 import io.ktor.client.request.setBody
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.feature.authorization.data.mapping.toDb
 import me.bookk.feature.authorization.data.mapping.toDomain
@@ -20,7 +21,7 @@ import kotlin.uuid.Uuid
 internal class CommonUserProfileDataSource(
     private val profileDao: UserProfileDao,
     private val httpClient: HttpClient
-) : DataSource(), UserProfileDataSource {
+) : DataSource(), UserProfileDataSource, LogOutAction {
     override suspend fun getProfileFromDatabase(): UserProfile? = mapExceptions {
         profileDao.queryProfile()?.toDomain()
     }
@@ -44,5 +45,9 @@ internal class CommonUserProfileDataSource(
 
     override suspend fun deleteProfile(id: Uuid) = mapExceptions {
         profileDao.deleteById(id)
+    }
+
+    override suspend fun doOnLogOut() {
+        profileDao.clear()
     }
 }

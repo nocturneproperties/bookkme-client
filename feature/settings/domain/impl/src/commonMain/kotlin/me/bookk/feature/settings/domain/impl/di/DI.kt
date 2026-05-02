@@ -31,7 +31,7 @@ fun settingsDomainModule() = module {
     factoryOf(::EditProfileImpl) bind EditProfile::class
     factoryOf(::SendContactFormImpl) bind SendContactForm::class
     factoryOf(::DeleteAccountImpl) bind DeleteAccount::class
-    factoryOf(::LogOutImpl) bind LogOut::class
+    factory { LogOutImpl(getAll()) } bind LogOut::class
     factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
     factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class
     factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class

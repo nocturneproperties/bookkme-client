@@ -27,6 +27,7 @@ struct TroubleshootScreen: View {
         .padding()
         .navigationTitle(troubleshootVM.uiState.appBar.title.localized())
         .navigationBarTitleDisplayMode(.large)
+		.background(AppColors.background)
     }
 }
 

@@ -41,6 +41,7 @@ struct ContactUsScreen: View {
 			.padding(.bottom, 24)
 		}
 		.padding()
+		.background(AppColors.background)
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.sendLifecycleEventsTo(viewModel: viewModel)

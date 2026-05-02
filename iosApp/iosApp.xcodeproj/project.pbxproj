@@ -55,6 +55,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		447C73FF2FA3BD2300E7A0B1 /* Library */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Library;
+			sourceTree = "<group>";
+		};
 		7A3BCD1F2D1CB4410067DABB /* DesignSystem */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = DesignSystem;
@@ -128,6 +133,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				447C73FF2FA3BD2300E7A0B1 /* Library */,
 				7A46FD2D2D2328E60047B838 /* Data */,
 				7A3BCD792D1DCDC40067DABB /* Core */,
 				7A3BCD212D1CB4590067DABB /* Feature */,
@@ -166,6 +172,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				447C73FF2FA3BD2300E7A0B1 /* Library */,
 				7A3BCD1F2D1CB4410067DABB /* DesignSystem */,
 				7A3BCD212D1CB4590067DABB /* Feature */,
 				7A3BCD792D1DCDC40067DABB /* Core */,
@@ -191,6 +198,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				447C73FF2FA3BD2300E7A0B1 /* Library */,
 				7A3BCD1F2D1CB4410067DABB /* DesignSystem */,
 				7A3BCD212D1CB4590067DABB /* Feature */,
 				7A3BCD792D1DCDC40067DABB /* Core */,

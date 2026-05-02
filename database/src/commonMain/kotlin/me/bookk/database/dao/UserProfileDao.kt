@@ -25,4 +25,7 @@ abstract class UserProfileDao {
 
     @Query("delete from user_profile where id = :profileId")
     abstract suspend fun deleteById(profileId: Uuid)
+
+    @Query("delete from user_profile")
+    abstract suspend fun clear()
 }

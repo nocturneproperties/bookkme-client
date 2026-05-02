@@ -1,11 +1,11 @@
 package library.biometry.impl
 
-import eu.advapay.mobilebank.core.domain.logout.LogOutAction
 import library.biometry.api.BiometryOptManager
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
 import library.cache.api.set
+import me.bookk.core.domain.logout.LogOutAction
 
 class CommonBiometryOptManager(
     preferenceProvider: PreferenceProvider

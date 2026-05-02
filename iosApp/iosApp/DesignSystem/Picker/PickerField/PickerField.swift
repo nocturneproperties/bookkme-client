@@ -96,8 +96,8 @@ private struct PickerBottomSheet: View {
     }
 
     private enum Layout {
-        static let rowHeight: CGFloat = 56
-        static let buttonHeight: CGFloat = 56
+        static let rowHeight: CGFloat = 48
+        static let buttonHeight: CGFloat = 48
         static let headerHeight: CGFloat = 24
 
         static let topPadding: CGFloat = 16
@@ -127,23 +127,29 @@ private struct PickerBottomSheet: View {
         VStack(alignment: .leading, spacing: 0) {
             header
             ScrollView {
-                LazyVStack(spacing: 0) {
+                LazyVStack(spacing: 8) {
                     ForEach(options, id: \.pickerItemId) { option in
                         Button(action: {
                             selectedOptionId = option.pickerItemId
                         }) {
-                            HStack(spacing: 12) {
+                            HStack {
                                 Text(capitalizedItemTitle(option.displayName.localized()))
 									.font(.body)
                                     .multilineTextAlignment(.leading)
                                 Spacer(minLength: 0)
+								if (selectedOptionId == option.pickerItemId) {
+									Image(systemName: "checkmark")
+										.foregroundStyle(AppColors.actionText)
+								}
                             }
                             .padding(.leading, Layout.horizontalPadding)
                             .padding(.trailing, Layout.rowTrailingPadding)
-                            .frame(maxWidth: .infinity, minHeight: Layout.rowHeight, alignment: .leading)
-                            .contentShape(Rectangle())
+							.frame(maxWidth: .infinity, minHeight: Layout.rowHeight, maxHeight: .infinity, alignment: .leading)
+							.background(AppColors.elevated,
+										in: RoundedRectangle(cornerRadius: 12))
+							.padding(.horizontal)
                         }
-                        .buttonStyle(.plain)
+						.buttonStyle(.plain)
                     }
                 }
             }
@@ -164,7 +170,7 @@ private struct PickerBottomSheet: View {
             .padding(.bottom, Layout.bottomPadding)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(AppColors.elevated.ignoresSafeArea())
+        .background(AppColors.background.ignoresSafeArea())
     }
 
     private var header: some View {
@@ -175,13 +181,6 @@ private struct PickerBottomSheet: View {
                 .lineLimit(1)
 
             Spacer(minLength: 0)
-
-            Button(action: { dismiss() }) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundStyle(AppColors.primary)
-            }
-            .buttonStyle(.plain)
         }
         .frame(minHeight: Layout.headerHeight)
         .padding(.top, Layout.topPadding)

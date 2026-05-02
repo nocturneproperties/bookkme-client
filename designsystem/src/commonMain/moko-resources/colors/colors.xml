@@ -5,11 +5,11 @@
     <color name="error">#FF3B30</color>
 
     <!--Light-->
-    <color name="lightBackground">#FFFFFF</color>
+    <color name="lightBackground">#F2F2F7</color>
     <color name="lightPrimaryText">#000000</color>
     <color name="lightSecondaryText">#737373</color>
     <color name="lightHintText">#BFBFC1</color>
-    <color name="lightElevated">#F3F3F3</color>
+    <color name="lightElevated">#FFFFFF</color>
     <color name="lightDivider">#dedee0</color>
     <color name="lightActionTextDisabled">#C4C4C7</color>
     <color name="lightActionText">#0A84FF</color>

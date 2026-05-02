@@ -1,8 +1,8 @@
 package library.biometry.impl.di
 
-import eu.advapay.mobilebank.core.domain.logout.LogOutAction
 import library.biometry.api.BiometryOptManager
 import library.biometry.impl.CommonBiometryOptManager
+import me.bookk.core.domain.logout.LogOutAction
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.binds

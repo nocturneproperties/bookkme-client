@@ -21,7 +21,7 @@ struct SignUpScreen: View {
 				.withNavigationBar(state: signUpVM.uiState.appBar)
 				.sendLifecycleEventsTo(viewModel: signUpVM)
 				.handleNotifications(state: uiState.notification)
-		}
+		}.background(AppColors.background)
     }
 }
 

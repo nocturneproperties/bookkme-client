@@ -33,5 +33,6 @@ struct CreateBusinessScreen: View {
 		}
 		.handleNotifications(state: uiState.notifications)
 		.sendLifecycleEventsTo(viewModel: viewModel)
+		.background(AppColors.background)
 	}
 }

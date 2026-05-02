@@ -36,6 +36,7 @@ struct DeleteAccountScreen: View {
 			}.padding(.bottom, 16)
 		}
 		.padding()
+		.background(AppColors.background)
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.sendLifecycleEventsTo(viewModel: viewModel)

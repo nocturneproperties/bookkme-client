@@ -12,7 +12,6 @@ interface AuthorizationDataSource {
     suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge
     suspend fun verifyAuthorization(signInData: SignInData): TokenInfo
     suspend fun deleteAccount(request: DeleteAccountRequest)
-    suspend fun logOut()
     suspend fun setAuthorizationStatus(isAuthorized: Boolean)
     suspend fun invalidateClientTokens()
 }

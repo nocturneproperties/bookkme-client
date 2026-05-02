@@ -22,8 +22,8 @@ struct BusinessDashboardScreen: View {
 		.handleNotifications(state: viewModel.uiState.notifications)
 		.sendLifecycleEventsTo(viewModel: viewModel)
 		.handleNavigation(state: viewModel.uiState.navigation) { navigation in
-			
 		}
+		.background(AppColors.background)
 	}
 }
 

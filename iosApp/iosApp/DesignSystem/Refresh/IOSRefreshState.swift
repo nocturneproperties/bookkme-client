@@ -21,15 +21,15 @@ class IOSRefreshState: @MainActor RefreshState {
 	}
 	
 	func awaitRefresh() async {
-		var isLoading = true
-		withObservationTracking({
-			_ = isRefreshing
-		}) {
-			Task { @MainActor in
-				isLoading = self.isRefreshing
+		await withCheckedContinuation { continuation in
+			withObservationTracking({
+				_ = isRefreshing
+			}) {
+				Task { @MainActor in
+					continuation.resume()
+				}
 			}
 		}
-		while (isLoading) {}
 	}
 }
 

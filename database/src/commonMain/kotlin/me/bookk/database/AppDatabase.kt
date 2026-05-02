@@ -1,5 +1,6 @@
 package me.bookk.database
 
+import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -9,16 +10,22 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.database.converter.UuidConverter
 import me.bookk.database.dao.BusinessDao
+import me.bookk.database.dao.ClientsDao
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.database.entity.BusinessEntity
+import me.bookk.database.entity.ClientEntity
 import me.bookk.database.entity.UserProfileEntity
 
 @Database(
     entities = [
         UserProfileEntity::class,
-        BusinessEntity::class
+        BusinessEntity::class,
+        ClientEntity::class
     ],
-    version = 1
+    version = 2,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
 )
 @TypeConverters(UuidConverter::class)
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -26,6 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun profileDao(): UserProfileDao
     abstract fun businessDao(): BusinessDao
+    abstract fun clientDao(): ClientsDao
 
     companion object {
 

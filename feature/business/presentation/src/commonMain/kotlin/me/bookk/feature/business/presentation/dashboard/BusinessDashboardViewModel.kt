@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.onEach
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.feature.business.domain.api.GetAvailableDashboardFeatures
-import me.bookk.feature.business.domain.api.ObserveDashboardBusinessChanges
+import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
+import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardSection

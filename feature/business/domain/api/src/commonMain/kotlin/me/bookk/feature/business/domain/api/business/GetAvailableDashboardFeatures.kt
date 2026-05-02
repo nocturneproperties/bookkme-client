@@ -1,4 +1,4 @@
-package me.bookk.feature.business.domain.api
+package me.bookk.feature.business.domain.api.business
 
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 

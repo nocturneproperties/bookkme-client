@@ -47,7 +47,7 @@ internal class CommonBusinessDataSource(
 
     override suspend fun updateBusiness(business: Business) {
         mapExceptions {
-            httpClient.put(BusinessRouting.Api.Business.Id(id = business.id.toString())) {
+            httpClient.put(BusinessRouting.Api.Business.Id(id = business.id)) {
                 setBody(business.toRemote())
             }
         }

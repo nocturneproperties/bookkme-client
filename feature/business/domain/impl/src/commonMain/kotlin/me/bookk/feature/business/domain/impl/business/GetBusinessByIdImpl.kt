@@ -1,7 +1,7 @@
-package me.bookk.feature.business.domain.impl
+package me.bookk.feature.business.domain.impl.business
 
 import me.bookk.core.domain.entity.Error
-import me.bookk.feature.business.domain.api.GetBusinessById
+import me.bookk.feature.business.domain.api.business.GetBusinessById
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
 import kotlin.uuid.Uuid

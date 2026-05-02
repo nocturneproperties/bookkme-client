@@ -6,7 +6,7 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.designsystem.resources.DesignSystem
-import me.bookk.feature.business.domain.api.CreateBusiness
+import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.create.state.CreateBusinessState
 

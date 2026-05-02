@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.onEach
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.feature.business.domain.api.ObserveDashboardBusinessChanges
-import me.bookk.feature.business.domain.api.RefreshBusinessInfo
+import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
+import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapState.InitData
 import me.bookk.feature.business.presentation.navigation.BusinessDestination

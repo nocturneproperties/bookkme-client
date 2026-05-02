@@ -1,6 +1,6 @@
-package me.bookk.feature.business.domain.impl
+package me.bookk.feature.business.domain.impl.business
 
-import me.bookk.feature.business.domain.api.GetAvailableDashboardFeatures
+import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 
 internal class GetAvailableDashboardFeaturesImpl : GetAvailableDashboardFeatures {

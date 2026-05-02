@@ -1,6 +1,6 @@
-package me.bookk.feature.business.domain.impl
+package me.bookk.feature.business.domain.impl.business
 
-import me.bookk.feature.business.domain.api.UpdateBusiness
+import me.bookk.feature.business.domain.api.business.UpdateBusiness
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
 

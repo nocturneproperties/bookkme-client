@@ -13,7 +13,7 @@ import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.TokenInfo
-import me.bookk.feature.business.domain.api.RefreshBusinessInfo
+import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 
 internal class SignInImpl(
     private val deviceDataSource: DeviceDataSource,

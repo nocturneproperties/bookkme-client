@@ -12,7 +12,11 @@ import SwiftUI
 
 @Observable
 @MainActor
-class IOSListState<T>: @MainActor ListState {
+class IOSListState<T>: @MainActor ListState, NativeStateRepresentation {
+	typealias SwiftType = IOSListState<T>
+	
+	typealias KotlinType = ListState
+	
     
     var typedItems: [T] = []
     var items: [Any] { typedItems }

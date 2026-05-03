@@ -28,7 +28,7 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
                     DashboardNavigationDestination.Analytics -> navigation.toAnalytics()
                     DashboardNavigationDestination.AppointmentSettings -> navigation.toAppointmentSettings()
                     DashboardNavigationDestination.Assortment -> navigation.toShopAssortment()
-                    DashboardNavigationDestination.Clients -> navigation.toClients()
+                    is DashboardNavigationDestination.Clients -> navigation.toClients(navItem.id)
                     DashboardNavigationDestination.Employees -> navigation.toEmployees()
                     DashboardNavigationDestination.History -> navigation.toAppointmentHistory()
                     DashboardNavigationDestination.Orders -> navigation.toShopOrders()

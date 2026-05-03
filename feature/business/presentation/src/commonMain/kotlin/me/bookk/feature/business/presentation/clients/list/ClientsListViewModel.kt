@@ -77,6 +77,7 @@ class ClientsListViewModel(
                 )
             )
         )
+        appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakSelfClosure { vm, value -> vm.onSearchQueryChanged(value) }
         refreshState.onRefresh = weakSelfClosure { it.loadClients() }

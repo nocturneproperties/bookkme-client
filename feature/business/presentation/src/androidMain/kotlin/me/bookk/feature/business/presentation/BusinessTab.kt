@@ -30,7 +30,7 @@ fun BusinessTab() {
         businessGraph(
             navigation = BusinessNavigation(
                 toAnalytics = { businessController.navigate(BusinessDestination.Analytics) },
-                toClients = { businessController.navigate(BusinessDestination.Clients) },
+                toClients = { businessController.navigate(BusinessDestination.Clients(it)) },
                 toEmployees = { businessController.navigate(BusinessDestination.Employees) },
                 toBusinessSettings = { businessController.navigate(BusinessDestination.Settings(it)) },
                 toAppointmentSettings = {},

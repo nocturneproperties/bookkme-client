@@ -20,8 +20,13 @@ struct ClientsListScreen: View {
 	
 	var body: some View {
 		let uiState = IOSClientsListState.cast(viewModel.uiState)
+		let listState = IOSListState<ClientSection>.cast(uiState.clientsList)
 		ScrollView {
-			ContactListContent(uiState: uiState)
+			ListGroup(listState: listState) { section in
+				ContactSection(section: section)
+					.transition(.opacity)
+					.animation(.easeInOut, value: uiState.clientsList.items.count)
+			}
 		}
 		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
 		.searchable(
@@ -35,35 +40,6 @@ struct ClientsListScreen: View {
 		.handleNavigation(uiState.navigation) { destination in
 			
 		}
-	}
-}
-
-struct ContactListContent: View {
-	
-	var uiState: IOSClientsListState
-	
-	var body: some View {
-		Group {
-			if (!uiState.clientsList.items.isEmpty) {
-				LazyVStack {
-					ForEach(uiState.clientsList.items(ClientSection.self)) { section in
-						ContactSection(section: section)
-							.transition(.opacity)
-							.animation(.easeInOut, value: uiState.clientsList.items.count)
-					}
-				}
-			} else if let emptyState = uiState.clientsList.emptyState, !uiState.clientsList.isInitialLoading {
-				EmptyView(state: emptyState)
-			} else {
-				ProgressView()
-			}
-		}
-		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
-		.searchable(
-			text: uiState.searchField.binding(),
-			placement: .navigationBarDrawer(displayMode: .always),
-			prompt: uiState.searchField.placeholder.localized()
-		)
 	}
 }
 	

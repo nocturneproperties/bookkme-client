@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.designsystem.components.AppTopBar
@@ -60,7 +61,7 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Column {
-                        Header(BusinessRes.strings.business_settings_name_title.desc())
+                        Header(BusinessRes.strings.business_settings_name_title.desc().localized())
                         TextField(
                             state = state.name,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -68,7 +69,7 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                         )
                     }
                     Column {
-                        Header(BusinessRes.strings.business_settings_description_title.desc())
+                        Header(BusinessRes.strings.business_settings_description_title.desc().localized())
                         TextField(
                             state = state.description,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -76,7 +77,7 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                         )
                     }
                     Column {
-                        Header(BusinessRes.strings.business_settings_location_title.desc())
+                        Header(BusinessRes.strings.business_settings_location_title.desc().localized())
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             TextField(
                                 modifier = Modifier.weight(1f),
@@ -95,7 +96,7 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                         )
                     }
                     Column {
-                        Header(BusinessRes.strings.business_settings_address_title.desc())
+                        Header(BusinessRes.strings.business_settings_address_title.desc().localized())
                         TextField(
                             state = state.address,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -103,14 +104,14 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                         )
                     }
                     Column {
-                        Header(BusinessRes.strings.business_settings_currency_title.desc())
+                        Header(BusinessRes.strings.business_settings_currency_title.desc().localized())
                         PickerField(
                             state = state.currency,
                             onItemPicked = LocalBusinessSettingsEventListener.current.onCurrencySelected
                         )
                     }
                     Column {
-                        Header(BusinessRes.strings.business_settings_socials_title.desc())
+                        Header(BusinessRes.strings.business_settings_socials_title.desc().localized())
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             TextField(
                                 state = state.phone,

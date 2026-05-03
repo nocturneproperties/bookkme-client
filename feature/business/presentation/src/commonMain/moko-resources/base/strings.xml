@@ -42,4 +42,5 @@
     <string name="business_settings_updated">Settings updated</string>
 
     <string name="business_clients_title">Clients</string>
+    <string name="business_clients_empty">You have no clients at the moment</string>
 </resources>

@@ -19,7 +19,7 @@ sealed class BusinessDashboardSection(
         id: Uuid,
         items: List<DashboardUIItem> = listOf(
             Employees,
-            Clients,
+            Clients(id),
             Analytics,
             Settings(id)
         )
@@ -29,9 +29,9 @@ sealed class BusinessDashboardSection(
             DashboardNavigationDestination.Employees
         )
 
-        data object Clients : DashboardUIItem(
+        data class Clients(val id: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_clients.desc(),
-            DashboardNavigationDestination.Clients
+            DashboardNavigationDestination.Clients(id)
         )
 
         data object Analytics : DashboardUIItem(

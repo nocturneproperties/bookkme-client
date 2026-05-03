@@ -28,8 +28,8 @@ struct EditProfileScreen: View {
 			}
 			Spacer()
 		}
-		.sendLifecycleEventsTo(viewModel: viewModel)
-		.handleNotifications(state: state.notification)
+		.sendLifecycleEventsTo(viewModel)
+		.handleNotifications(state.notification)
 		.padding()
 		.background(AppColors.background)
 		.navigationTitle(state.appBar.title.localized())

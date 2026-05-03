@@ -23,7 +23,7 @@ struct TroubleshootScreen: View {
 				//navigationStack.path.append()
             }
         }
-		.sendLifecycleEventsTo(viewModel: troubleshootVM)
+		.sendLifecycleEventsTo(troubleshootVM)
         .padding()
         .navigationTitle(troubleshootVM.uiState.appBar.title.localized())
         .navigationBarTitleDisplayMode(.large)

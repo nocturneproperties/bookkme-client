@@ -35,16 +35,16 @@ struct SignInScreen: View {
         }
         .padding()
 		.background(AppColors.background)
-		.withNavigationBar(state: signInVM.uiState.appBar)
-		.handleNotifications(state: uiState.notification)
-        .handleNavigation(state: uiState.navigation) { navigation in
+		.withNavigationBar(signInVM.uiState.appBar)
+		.handleNotifications(uiState.notification)
+        .handleNavigation(uiState.navigation) { navigation in
             switch navigation {
             case is SignInNavigationDestination.Main:
                 break
             default: break
             }
         }
-        .sendLifecycleEventsTo(viewModel: signInVM)
+        .sendLifecycleEventsTo(signInVM)
     }
 }
 

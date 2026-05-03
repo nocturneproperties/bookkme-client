@@ -63,7 +63,7 @@ struct NotificationHandler: ViewModifier {
 }
 
 extension View {
-	func handleNotifications(state: PresentationNotificationState) -> some View {
+	func handleNotifications(_ state: PresentationNotificationState) -> some View {
         modifier(NotificationHandler(notificationState: state.impl()))
     }
 }

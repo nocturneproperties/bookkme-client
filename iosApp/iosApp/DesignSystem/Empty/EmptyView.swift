@@ -1,0 +1,26 @@
+//
+//  EmptyView.swift
+//  iosApp
+//
+//  Created by BookkMe on 03.05.2026.
+//  Copyright © 2026 BookkMe. All rights reserved.
+//
+
+import SwiftUI
+import shared
+
+struct EmptyView: View {
+	
+	var state: EmptyState
+	
+	var body: some View {
+		ZStack(alignment: .center) {
+			VStack(alignment: .center) {
+				Image(resource: state.image)
+				Text(state.label.localized())
+					.font(.subheadline)
+					.foregroundStyle(AppColors.secondary)
+			}.frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
+		}
+	}
+}

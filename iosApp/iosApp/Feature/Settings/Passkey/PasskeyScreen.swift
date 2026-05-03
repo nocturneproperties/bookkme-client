@@ -16,8 +16,8 @@ struct PasskeyScreen: View {
 	
 	var body: some View {
 		PasskeyContent(state: viewModel.uiState, viewModel: viewModel)
-			.sendLifecycleEventsTo(viewModel: viewModel)
-			.handleNotifications(state: viewModel.uiState.notification)
+			.sendLifecycleEventsTo(viewModel)
+			.handleNotifications(viewModel.uiState.notification)
 			.navigationTitle(viewModel.uiState.appBar.title.localized())
 			.navigationBarTitleDisplayMode(.large)
 			.background(AppColors.background)

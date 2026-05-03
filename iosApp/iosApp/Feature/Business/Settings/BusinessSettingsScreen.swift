@@ -19,9 +19,9 @@ struct BusinessSettingsScreen: View {
 	var body: some View {
 		BusinessSettingsContent(viewModel: viewModel)
 			.background(AppColors.background)
-			.withNavigationBar(state: viewModel.uiState.appBar)
-			.handleNotifications(state: viewModel.uiState.notifications)
-			.sendLifecycleEventsTo(viewModel: viewModel)
+			.withNavigationBar(viewModel.uiState.appBar)
+			.handleNotifications(viewModel.uiState.notifications)
+			.sendLifecycleEventsTo(viewModel)
 			.toolbar {
 				TextButton(state: viewModel.uiState.save) {
 					viewModel.onSaveClick()

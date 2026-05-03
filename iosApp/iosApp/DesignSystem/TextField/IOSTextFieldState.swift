@@ -6,6 +6,7 @@
 //  Copyright © 2024 BookkMe. All rights reserved.
 //
 import shared
+import SwiftUI
 
 @Observable
 @MainActor
@@ -24,8 +25,8 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
     var maxLength: Int32
     var readOnly: Bool
     var text: String
-	var startIcon: ImageResource?
-	var endIcon: ImageResource?
+	var startIcon: shared.ImageResource?
+	var endIcon: shared.ImageResource?
 	var inputType: InputType
 	var onTextChanged: ((String) -> Void)?
 	var placeholder: any StringDesc
@@ -40,8 +41,8 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 		maxLength: Int32 = Int32.max,
 		readOnly: Bool = false,
 		text: String = "",
-		startIcon: ImageResource? = nil,
-		endIcon: ImageResource? = nil,
+		startIcon: shared.ImageResource? = nil,
+		endIcon: shared.ImageResource? = nil,
 		inputType: InputType = InputType.text,
 		onTextChanged: ((String) -> Void)? = nil,
 		placeholder: any StringDesc = RawStringDesc(string: "")
@@ -72,4 +73,15 @@ extension shared.TextFieldState {
     func impl() -> IOSTextFieldState {
         return self as! IOSTextFieldState
     }
+	
+	func binding() -> Binding<String> {
+		return Binding(
+			get: {
+				return self.text
+			},
+			set: {
+				self.onTextChanged?($0)
+			}
+		)
+	}
 }

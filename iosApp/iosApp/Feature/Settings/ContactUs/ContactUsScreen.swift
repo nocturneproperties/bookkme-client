@@ -44,9 +44,9 @@ struct ContactUsScreen: View {
 		.background(AppColors.background)
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
-		.sendLifecycleEventsTo(viewModel: viewModel)
-		.handleNotifications(state: uiState.notifications)
-		.handleNavigation(state: uiState.navigation) { destination in
+		.sendLifecycleEventsTo(viewModel)
+		.handleNotifications(uiState.notifications)
+		.handleNavigation(uiState.navigation) { destination in
 			switch destination {
 			case is ContactUsNavigationDestination.Back:
 				navigationStack.path.removeLast()

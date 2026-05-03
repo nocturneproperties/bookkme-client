@@ -2,6 +2,7 @@ package me.bookk.feature.business.presentation.di
 
 import me.bookk.core.UsedInSwift
 import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
+import me.bookk.feature.business.presentation.clients.list.ClientsListArgs
 import me.bookk.feature.business.presentation.clients.list.ClientsListViewModel
 import me.bookk.feature.business.presentation.create.CreateBusinessViewModel
 import me.bookk.feature.business.presentation.dashboard.BusinessDashboardViewModel
@@ -17,7 +18,7 @@ internal actual fun platformBusinessDiModule(): Module = module {
     factoryOf(::CreateBusinessViewModel)
     factoryOf(::BusinessBootstrapViewModel)
     factoryOf(::BusinessDashboardViewModel)
-    factoryOf(::ClientsListViewModel)
+    factory { ClientsListViewModel(get(), it.get(), get(), get()) }
     factory { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get()) }
 }
 
@@ -31,7 +32,9 @@ fun businessBootstrapVM(): BusinessBootstrapViewModel = KoinPlatform.getKoin().g
 fun businessDashboardVM(): BusinessDashboardViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
-fun businessSettingsVM(id: Uuid): BusinessSettingsViewModel = KoinPlatform.getKoin().get(parameters = { parametersOf(id) })
+fun businessSettingsVM(id: Uuid): BusinessSettingsViewModel =
+    KoinPlatform.getKoin().get(parameters = { parametersOf(id) })
 
 @UsedInSwift
-fun clientsListVM(): ClientsListViewModel = KoinPlatform.getKoin().get()
+fun clientsListVM(id: Uuid): ClientsListViewModel =
+    KoinPlatform.getKoin().get(parameters = { parametersOf(ClientsListArgs(id)) })

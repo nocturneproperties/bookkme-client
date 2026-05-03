@@ -8,6 +8,7 @@
 
 import shared
 import Observation
+import SwiftUI
 
 @Observable
 @MainActor
@@ -25,18 +26,24 @@ class IOSListState<T>: @MainActor ListState {
     }
     
     func append(list: [Any]) {
-        typedItems.append(contentsOf: list as! [T])
-        isInitialLoading = false
+		withAnimation {
+			typedItems.append(contentsOf: list as! [T])
+			isInitialLoading = false
+		}
     }
     
     func clear() {
-        typedItems.removeAll()
-        isInitialLoading = false
+		withAnimation {
+			typedItems.removeAll()
+			isInitialLoading = false
+		}
     }
     
     func replace(list: [Any]) {
-        typedItems = list as! [T]
-        isInitialLoading = false
+		withAnimation {
+			typedItems = list as! [T]
+			isInitialLoading = false
+		}
     }
 }
 

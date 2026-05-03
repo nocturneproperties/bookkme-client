@@ -25,11 +25,30 @@ struct AppBarHandler: ViewModifier {
 		}
 	}
 	
+	var actions: some View {
+		HStack {
+			ForEach(appBarState.actions.items(AppBarAction.self), id: \.self) { action in
+				Button(action: action.onClick) {
+					if let icon = action.icon {
+						Image(resource: icon)
+							.renderingMode(.template)
+							.foregroundStyle(AppColors.actionText)
+							.frame(width: 44, height: 44)
+					} else {
+						Text(action.contentDescription.localized())
+					}
+				}
+				.accessibilityLabel(action.contentDescription.localized())
+				.buttonStyle(.plain)
+			}
+		}
+	}
+	
 	func body(content: Content) -> some View {
 		content
 			.navigationBarBackButtonHidden(true)
-			.navigationBarTitleDisplayMode(displayMode)
 			.navigationTitle(appBarState.title.localized())
+			.navigationBarTitleDisplayMode(displayMode)
 			.toolbar {
 				ToolbarItem(placement: .navigation) {
 					Button {
@@ -40,18 +59,7 @@ struct AppBarHandler: ViewModifier {
 				}
 				if (!appBarState.actions.items.isEmpty) {
 					ToolbarItem(placement: .topBarTrailing) {
-						HStack {
-							ForEach(appBarState.actions.items(AppBarAction.self), id: \.self) { action in
-								Button(action: action.onClick) {
-									Image(resource: action.icon)
-										.renderingMode(.template)
-										.foregroundStyle(AppColors.actionText)
-										.frame(width: 44, height: 44)
-								}
-								.accessibilityLabel(action.contentDescription?.localized() ?? "")
-								.buttonStyle(.plain)
-							}
-						}
+						actions
 					}
 				}
 			}
@@ -59,7 +67,7 @@ struct AppBarHandler: ViewModifier {
 }
 
 extension View {
-	func withNavigationBar(state: AppBarState) -> some View {
+	func withNavigationBar(_ state: AppBarState) -> some View {
 		return modifier(AppBarHandler(appBarState: state.impl()))
 	}
 }

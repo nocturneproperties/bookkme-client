@@ -29,7 +29,7 @@ struct NavigationHandler: ViewModifier {
 }
 
 extension View {
-	func handleNavigation(state: NavigationState, handler: @escaping (NavigationDestination) -> Void) -> some View {
+	func handleNavigation(_ state: NavigationState, handler: @escaping (NavigationDestination) -> Void) -> some View {
 		return modifier(NavigationHandler(navigationState: state.impl(), handler: handler))
 	}
 }

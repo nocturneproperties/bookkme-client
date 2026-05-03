@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.onEach
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
@@ -27,6 +28,7 @@ class BusinessDashboardViewModel(
 
     init {
         observeBusiness()
+        uiState.appBar.size = TopBarSize.SMALL
     }
 
     private fun observeBusiness() {

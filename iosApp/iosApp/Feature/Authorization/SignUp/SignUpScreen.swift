@@ -18,9 +18,9 @@ struct SignUpScreen: View {
 		ScrollView {
 			SignUpScreenContent(signUpVM: signUpVM)
 				.padding()
-				.withNavigationBar(state: signUpVM.uiState.appBar)
-				.sendLifecycleEventsTo(viewModel: signUpVM)
-				.handleNotifications(state: uiState.notification)
+				.withNavigationBar(signUpVM.uiState.appBar)
+				.sendLifecycleEventsTo(signUpVM)
+				.handleNotifications(uiState.notification)
 		}.background(AppColors.background)
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -121,9 +122,14 @@ private fun AppBarTitle(text: String, size: TopBarSize, color: Color) {
         TopBarSize.SMALL -> MaterialTheme.typography.headlineSmall
         TopBarSize.LARGE -> MaterialTheme.typography.headlineLarge
     }
+    val weight = when (size) {
+        TopBarSize.SMALL -> FontWeight.Normal
+        TopBarSize.LARGE -> FontWeight.Bold
+    }
     Text(
         text = text,
         style = style,
+        fontWeight = weight,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
         color = color

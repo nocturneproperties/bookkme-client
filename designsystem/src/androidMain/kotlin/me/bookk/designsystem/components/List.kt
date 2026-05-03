@@ -20,6 +20,9 @@ fun <T> List(
         when {
             state.items.isNotEmpty() -> {
                 items(state.items, key = idProvider, itemContent = itemContent)
+                state.loadMore?.let { loadMore ->
+                    item { loadMore() }
+                }
             }
 
             state.isInitialLoading -> {

@@ -49,7 +49,8 @@ class EditProfileViewModel(
                 onFirstNameTextChanged(it.profile.firstName)
                 onLastNameTextChanged(it.profile.lastName)
                 onEmailTextChanged(it.profile.email)
-            }
+            },
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
     }
 
@@ -58,7 +59,8 @@ class EditProfileViewModel(
         val validationResult = validateName.invoke(text)
         uiState.name.text = text
         uiState.name.isValid = validationResult.isValid
-        uiState.name.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
+        uiState.name.validationState =
+            if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
         uiState.name.supportingTextRes = when (validationResult) {
             ValidateName.Result.Invalid.Length -> SettingsRes.strings.settings_edit_profile_first_name_error.desc()
             ValidateName.Result.Valid -> null
@@ -71,7 +73,8 @@ class EditProfileViewModel(
         val validationResult = validateName.invoke(text)
         uiState.lastName.text = text
         uiState.lastName.isValid = validationResult.isValid
-        uiState.lastName.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
+        uiState.lastName.validationState =
+            if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
         uiState.lastName.supportingTextRes = when (validationResult) {
             ValidateName.Result.Invalid.Length -> SettingsRes.strings.settings_edit_profile_last_name_error.desc()
             ValidateName.Result.Valid -> null
@@ -84,7 +87,8 @@ class EditProfileViewModel(
         val validationResult = validateEmail.invoke(text)
         uiState.email.text = text
         uiState.email.isValid = validationResult.isValid
-        uiState.email.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
+        uiState.email.validationState =
+            if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
         uiState.email.supportingTextRes = when (validationResult) {
             ValidateEmail.Result.Invalid.Format -> SettingsRes.strings.settings_edit_profile_email_error.desc()
             ValidateEmail.Result.Valid -> null
@@ -106,7 +110,7 @@ class EditProfileViewModel(
                     email = uiState.email.text
                 )
             },
-            onComplete =  {
+            onComplete = {
                 fieldInitialState[Field.NAME] = uiState.name.text
                 fieldInitialState[Field.LAST] = uiState.lastName.text
                 fieldInitialState[Field.EMAIL] = uiState.email.text

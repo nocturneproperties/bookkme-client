@@ -26,7 +26,7 @@ expect abstract class ViewModel(
         launchIn: CoroutineContext,
         call: suspend () -> Output,
         onComplete: (suspend (Output) -> Unit)? = null,
-        onError: (suspend (Throwable) -> Unit)? = null,
+        onError: (suspend (Throwable) -> Unit),
         onStart: (suspend () -> Unit)? = null,
         onTerminate: (suspend () -> Unit)? = null,
     ): Job?

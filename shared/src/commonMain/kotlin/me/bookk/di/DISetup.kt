@@ -35,4 +35,5 @@ private fun KoinApplication.installModules(creator: StateFactoryCreator) = modul
     dashboardDiModule(),
     settingsDiModule(),
     businessDiModule()
+    exampleDiModule()
 )

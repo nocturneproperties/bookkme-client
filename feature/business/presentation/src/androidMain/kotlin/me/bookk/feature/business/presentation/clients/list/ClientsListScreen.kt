@@ -1,7 +1,6 @@
 package me.bookk.feature.business.presentation.clients.list
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +12,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.Header
@@ -62,16 +63,24 @@ private fun ClientSectionItem(modifier: Modifier, section: ClientSection) {
             Header(modifier = Modifier.padding(horizontal = 16.dp), text = section.header)
             HorizontalDivider(color = LocalColors.current.divider)
         }
-        Column(Modifier.padding(horizontal = 16.dp)) {
-            section.items.forEach {
-                Box(modifier = Modifier.height(48.dp), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = it.fullName,
-                        style = MaterialTheme.typography.bodyLarge.primary()
-                    )
-                }
-                HorizontalDivider(color = LocalColors.current.divider.copy(alpha = 0.5f))
+        section.items.forEach {
+            TextButton(
+                modifier = Modifier
+                    .height(48.dp)
+                    .fillMaxWidth(),
+                onClick = { section.onItemClick(it) },
+                shape = RectangleShape
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    text = it.fullName,
+                    style = MaterialTheme.typography.bodyLarge.primary(),
+                    textAlign = TextAlign.Start
+                )
             }
+            HorizontalDivider(color = LocalColors.current.divider.copy(alpha = 0.5f))
         }
     }
 }

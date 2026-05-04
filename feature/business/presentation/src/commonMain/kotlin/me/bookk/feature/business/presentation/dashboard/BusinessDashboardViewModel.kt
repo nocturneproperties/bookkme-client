@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retry
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
@@ -34,11 +35,15 @@ class BusinessDashboardViewModel(
     private fun observeBusiness() {
         observeDashboardBusinessChanges()
             .filterNotNull()
+            .flowOn(DispatcherProvider.io)
             .onEach { business ->
                 uiState.appBar.title = business.name.desc()
                 loadFeatures(business.id)
             }
-            .flowOn(DispatcherProvider.io)
+            .retry {
+                uiState.notifications.add(errorMapper.mapToNotification(it))
+                true
+            }
             .launchIn(viewModelScope)
     }
 

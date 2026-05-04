@@ -40,7 +40,7 @@ actual abstract class ViewModel actual constructor(
         launchIn: CoroutineContext,
         call: suspend () -> Output,
         onComplete: (suspend (Output) -> Unit)?,
-        onError: (suspend (Throwable) -> Unit)?,
+        onError: (suspend (Throwable) -> Unit),
         onStart: (suspend () -> Unit)?,
         onTerminate: (suspend () -> Unit)?,
     ): Job? {

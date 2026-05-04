@@ -11,6 +11,7 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.business.domain.api.client.GetClientsList
+import me.bookk.feature.business.domain.api.entity.Client
 import me.bookk.feature.business.presentation.ClientsStateFactory
 import me.bookk.feature.business.presentation.clients.list.ClientsListDestination.AddClient
 
@@ -41,17 +42,23 @@ class ClientsListViewModel(
                         ClientSection(
                             id = entry.key,
                             header = entry.key,
-                            items = entry.value
+                            items = entry.value,
+                            onItemClick = weakSelfClosure { vm, client -> vm.onClientClick(client) }
                         )
                     }
                 items = grouped
                 uiState.clientsList.replace(grouped)
             },
+            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
             onTerminate = {
                 uiState.refreshState.isRefreshing = false
                 uiState.clientsList.isInitialLoading = false
             }
         )
+    }
+
+    private fun onClientClick(client: Client) {
+        uiState.navigation.push(ClientsListDestination.ClientDetails(client.id))
     }
 
     private fun onSearchQueryChanged(query: String) {
@@ -77,7 +84,8 @@ class ClientsListViewModel(
                 )
             )
         )
-        appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
+        appBar.onBackClick =
+            weakSelfClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakSelfClosure { vm, value -> vm.onSearchQueryChanged(value) }
         refreshState.onRefresh = weakSelfClosure { it.loadClients() }

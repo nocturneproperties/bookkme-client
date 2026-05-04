@@ -31,7 +31,8 @@ class BootstrapViewModel(
     fun logOut() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { logOut.invoke() }
+            call = { logOut.invoke() },
+            onError = { /*NOOP*/ }
         )
     }
 

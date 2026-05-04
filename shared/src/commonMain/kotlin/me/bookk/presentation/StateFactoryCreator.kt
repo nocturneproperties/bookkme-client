@@ -14,4 +14,5 @@ interface StateFactoryCreator {
     fun createBusinessFactory(): BusinessStateFactory
     fun createCredentialModuleFactory(): CredentialModuleFactory
     fun createClientsFactory(): ClientsStateFactory
+    fun createExampleFactory(): ExampleStateFactory
 }

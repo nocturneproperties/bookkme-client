@@ -38,7 +38,16 @@ struct ClientsListScreen: View {
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(uiState.notifications)
 		.handleNavigation(uiState.navigation) { destination in
-			
+			switch destination {
+			case let destination as ClientsListDestination.ClientDetails:
+				navigationStack.push(BusinessDestination.ClientDetails(id: destination.clientId))
+			case let destination as ClientsListDestination.AddClient:
+				navigationStack.push(BusinessDestination.CreateClient(businessId: destination.businessId))
+			case is ClientsListDestination.Back:
+				navigationStack.popLast()
+			default:
+				break
+			}
 		}
 	}
 }
@@ -52,7 +61,7 @@ struct ContactSection: View {
 			ForEach(section.items, id: \.id) { client in
 				VStack {
 					Button {
-						
+						section.onItemClick(client)
 					} label: {
 						Text(client.fullName)
 							.font(.body)

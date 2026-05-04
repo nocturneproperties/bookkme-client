@@ -27,6 +27,7 @@ struct BusinessTab: View {
 						ProgressView()
 					}
 				}
+				.environmentObject(navigationStack)
 		}
 	}
 }

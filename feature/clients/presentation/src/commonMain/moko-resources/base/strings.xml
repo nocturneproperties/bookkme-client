@@ -2,4 +2,12 @@
 <resources>
     <string name="clients_title">Clients</string>
     <string name="clients_empty">You have no clients at the moment</string>
+
+    <string name="clients_create_title">Add client</string>
+    <string name="clients_create_name">Name</string>
+    <string name="clients_create_name_placeholder">John</string>
+    <string name="clients_create_last_name">Last name</string>
+    <string name="clients_create_last_name_placeholder">Doe</string>
+    <string name="clients_create_phone">Phone</string>
+    <string name="clients_create_phone_placeholder">2025550123</string>
 </resources>

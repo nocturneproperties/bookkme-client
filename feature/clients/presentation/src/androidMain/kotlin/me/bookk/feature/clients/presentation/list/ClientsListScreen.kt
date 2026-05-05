@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.List
+import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
@@ -48,8 +49,10 @@ fun ClientsListScreen(state: ClientsListState) {
                     .padding(pv)
                     .fillMaxSize()
             ) {
-                List(state.clientsList, idProvider = ClientSection::id) {
-                    ClientSectionItem(Modifier.animateItem(), it)
+                PullToRefresh(state.refreshState) {
+                    List(state.clientsList, idProvider = ClientSection::id) {
+                        ClientSectionItem(Modifier.animateItem(), it)
+                    }
                 }
             }
         }

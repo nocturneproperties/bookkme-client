@@ -21,6 +21,7 @@ internal class CommonClientsDataSource(
     private val httpClient: HttpClient,
     private val clientsDao: ClientsDao
 ) : DataSource(), ClientsDataSource {
+
     override suspend fun getClients(businessId: Uuid): List<Client> {
         return mapExceptions {
             httpClient.get(Api.Clients(businessId = businessId))

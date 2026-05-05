@@ -15,8 +15,8 @@ import me.bookk.designsystem.uistate.RefreshState
 @Composable
 fun PullToRefresh(
     state: RefreshState,
-    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
+    onRefresh: () -> Unit = state.onRefresh,
     contentAlignment: Alignment = Alignment.TopStart,
     content: @Composable BoxScope.() -> Unit
 ) {

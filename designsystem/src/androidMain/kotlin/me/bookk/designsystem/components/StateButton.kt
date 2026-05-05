@@ -43,7 +43,7 @@ fun ActionButton(
         disabledContentColor = LocalColors.current.actionTextDisabled
     ),
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    onClick: () -> Unit
+    onClick: () -> Unit = state.onClick ?: {}
 ) {
     Button(
         modifier = modifier.heightIn(min = 48.dp),

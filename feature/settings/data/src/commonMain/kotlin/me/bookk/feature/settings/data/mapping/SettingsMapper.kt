@@ -6,8 +6,8 @@ import me.bookk.feature.settings.data.remote.model.AddPasskeyRequest
 import me.bookk.feature.settings.data.remote.model.PasskeyRemote
 import me.bookk.feature.settings.data.remote.model.RegistrationChallengeResponse
 import me.bookk.feature.settings.domain.api.entity.Passkey
+import me.bookk.feature.settings.domain.datasource.passkey.AddPasskeyChallenge
 import me.bookk.feature.settings.domain.datasource.passkey.ClientSignUpResult
-import me.bookk.feature.settings.domain.datasource.passkey.ServerSignUpChallenge
 
 internal fun PasskeyRemote.toDomain(): Passkey {
     return Passkey(
@@ -19,12 +19,13 @@ internal fun PasskeyRemote.toDomain(): Passkey {
     )
 }
 
-internal fun RegistrationChallengeResponse.toDomain(): ServerSignUpChallenge {
-    return ServerSignUpChallenge(
+internal fun RegistrationChallengeResponse.toDomain(): AddPasskeyChallenge {
+    return AddPasskeyChallenge(
         requestId = requestId,
         displayName = displayName,
         jsonChallengeData = challengeJson,
-        challenge = challenge
+        challenge = challenge,
+        userHandle = userHandle
     )
 }
 

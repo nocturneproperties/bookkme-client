@@ -46,13 +46,13 @@ private struct PasskeyContent: View {
 						.tint(AppColors.error)
 					}
 				}
-				.toolbar {
-					ToolbarItem(placement: .topBarTrailing) {
-						IconButton(state: viewModel.uiState.addPasskeyButton, icon: "plus") {
-							viewModel.onAddPasskeyClick()
-						}
-					}
+		}
+		.toolbar {
+			ToolbarItem(placement: .topBarTrailing) {
+				IconButton(state: viewModel.uiState.addPasskeyButton, icon: "plus") {
+					viewModel.onAddPasskeyClick()
 				}
+			}
 		}
 		.refreshable {
 			viewModel.getPasskeyList()

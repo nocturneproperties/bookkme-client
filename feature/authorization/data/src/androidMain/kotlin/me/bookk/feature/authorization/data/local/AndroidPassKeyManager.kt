@@ -15,7 +15,7 @@ import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.domerrors.NotAllowedError
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
-import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager.ChallengeRequest
+import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager.CreationRequest
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import org.json.JSONObject
 
@@ -25,7 +25,7 @@ class AndroidPassKeyManager(
 
     private val credentialManager = CredentialManager.create(context.applicationContext)
 
-    override suspend fun create(challenge: ChallengeRequest): PasskeyVerificationPayload {
+    override suspend fun create(challenge: CreationRequest): PasskeyVerificationPayload {
         return runCatching {
             val omittedPublicKeyObject =
                 JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
@@ -45,26 +45,26 @@ class AndroidPassKeyManager(
             }
         }.recoverCatching {
             throw when (it) {
-                is CreateCredentialCancellationException -> PassKeyManager.Error.UserCancelled
+                is CreateCredentialCancellationException -> PassKeyManager.Error.UserCancelled()
                 is CreatePublicKeyCredentialDomException -> when (it.domError) {
-                    is NotAllowedError -> PassKeyManager.Error.UserCancelled
-                    else -> PassKeyManager.Error.Infrastructure
+                    is NotAllowedError -> PassKeyManager.Error.UserCancelled()
+                    else -> PassKeyManager.Error.Infrastructure()
                 }
 
                 is CreateCredentialInterruptedException,
-                is CreateCredentialProviderConfigurationException -> PassKeyManager.Error.Infrastructure
+                is CreateCredentialProviderConfigurationException -> PassKeyManager.Error.Infrastructure()
 
                 else -> PassKeyManager.Error.Unknown(it)
             }
         }.getOrThrow()
     }
 
-    override suspend fun authorize(jsonChallenge: String): PasskeyVerificationPayload {
+    override suspend fun authorize(challenge: PassKeyManager.AuthorizationRequest): PasskeyVerificationPayload {
         return runCatching {
-            val omittedPublicKeyObject =
-                JSONObject(jsonChallenge).getJSONObject("publicKey").toString()
+            val publicKeyObject =
+                JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
             val getPublicKeyCredentialOption = GetPublicKeyCredentialOption(
-                requestJson = omittedPublicKeyObject
+                requestJson = publicKeyObject
             )
             val request = GetCredentialRequest(listOf(getPublicKeyCredentialOption))
             val result = credentialManager.getCredential(
@@ -81,8 +81,8 @@ class AndroidPassKeyManager(
             }
         }.recoverCatching {
             throw when (it) {
-                is NoCredentialException -> PassKeyManager.Error.CredentialsMissing
-                is GetCredentialCancellationException -> PassKeyManager.Error.UserCancelled
+                is NoCredentialException -> PassKeyManager.Error.CredentialsMissing()
+                is GetCredentialCancellationException -> PassKeyManager.Error.UserCancelled()
                 else -> PassKeyManager.Error.Unknown(it)
             }
         }.getOrThrow()

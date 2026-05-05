@@ -1,4 +1,4 @@
-package library.cache.impl
+package library.cache.impl.preferences
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
@@ -42,6 +42,16 @@ internal class PreferencesImpl(
                 prefs[key.toAndroidX(cls)] = value
             }
         }
+    }
+
+    override suspend fun <T : Any> remove(key: AppPreferences.Key<T>, cls: KClass<T>) {
+        dataStore.edit { prefs ->
+            prefs.remove(key.toAndroidX(cls))
+        }
+    }
+
+    override suspend fun clear() {
+        dataStore.edit { it.clear() }
     }
 
     @Suppress("UNCHECKED_CAST")

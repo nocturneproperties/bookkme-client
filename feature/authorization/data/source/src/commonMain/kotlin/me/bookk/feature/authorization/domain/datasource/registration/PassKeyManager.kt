@@ -1,19 +1,25 @@
 package me.bookk.feature.authorization.domain.datasource.registration
 
 interface PassKeyManager {
-    suspend fun create(challenge: ChallengeRequest): PasskeyVerificationPayload
-    suspend fun authorize(jsonChallenge: String): PasskeyVerificationPayload
+    suspend fun create(challenge: CreationRequest): PasskeyVerificationPayload
+    suspend fun authorize(challenge: AuthorizationRequest): PasskeyVerificationPayload
 
-    data class ChallengeRequest(
+    data class CreationRequest(
         val userId: String,
         val userName: String,
         val challengeJson: String,
+        val challenge: String
+    )
+
+    data class AuthorizationRequest(
+        val challengeJson: String,
+        val challenge: String
     )
 
     sealed class Error(override val cause: Throwable? = null) : Exception() {
-        data object UserCancelled : Error()
-        data object CredentialsMissing : Error()
+        class UserCancelled : Error()
+        class CredentialsMissing : Error()
         data class Unknown(override val cause: Throwable?) : Error(cause)
-        data object Infrastructure : Error()
+        class Infrastructure : Error()
     }
 }

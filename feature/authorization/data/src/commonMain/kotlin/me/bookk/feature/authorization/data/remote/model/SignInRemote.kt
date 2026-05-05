@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 class AuthChallengeResponse(
     val requestId: String,
-    val challengeJson: String
+    val challengeJson: String,
+    val challenge: String
 )
 
 @Serializable

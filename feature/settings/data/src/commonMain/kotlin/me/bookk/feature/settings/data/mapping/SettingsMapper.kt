@@ -23,7 +23,8 @@ internal fun RegistrationChallengeResponse.toDomain(): ServerSignUpChallenge {
     return ServerSignUpChallenge(
         requestId = requestId,
         displayName = displayName,
-        jsonChallengeData = challenge
+        jsonChallengeData = challengeJson,
+        challenge = challenge
     )
 }
 

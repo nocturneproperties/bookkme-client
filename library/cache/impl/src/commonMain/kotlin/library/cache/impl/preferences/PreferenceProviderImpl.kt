@@ -1,4 +1,4 @@
-package library.files.impl.preferences
+package library.cache.impl.preferences
 
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences

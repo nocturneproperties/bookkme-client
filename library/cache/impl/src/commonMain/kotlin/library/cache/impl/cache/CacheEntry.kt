@@ -1,4 +1,4 @@
-package library.files.impl.cache
+package library.cache.impl.cache
 
 import kotlin.time.Duration
 import kotlin.time.TimeSource

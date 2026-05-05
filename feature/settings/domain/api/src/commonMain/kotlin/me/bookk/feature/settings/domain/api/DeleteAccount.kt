@@ -4,6 +4,6 @@ interface DeleteAccount {
     suspend operator fun invoke()
 
     sealed class Error : Throwable() {
-        data object AccountVerificationFailed : Error()
+        class AccountVerificationFailed : Error()
     }
 }

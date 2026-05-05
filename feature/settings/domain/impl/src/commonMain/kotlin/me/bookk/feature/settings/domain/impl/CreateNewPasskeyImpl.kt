@@ -30,16 +30,17 @@ internal class CreateNewPasskeyImpl(
     private suspend fun createPasskeyFrom(challenge: ServerSignUpChallenge): PasskeyVerificationPayload {
         return runCatching {
             passKeyManager.create(
-                PassKeyManager.ChallengeRequest(
+                PassKeyManager.CreationRequest(
                     userId = challenge.requestId,
                     userName = challenge.displayName,
-                    challengeJson = challenge.jsonChallengeData
+                    challengeJson = challenge.jsonChallengeData,
+                    challenge = challenge.challenge
                 )
             )
         }.getOrElse {
             throw when (it) {
-                PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                else -> CreateNewPasskey.Error.AccountCreationFailed
+                is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
+                else -> CreateNewPasskey.Error.AccountCreationFailed()
             }
         }
     }

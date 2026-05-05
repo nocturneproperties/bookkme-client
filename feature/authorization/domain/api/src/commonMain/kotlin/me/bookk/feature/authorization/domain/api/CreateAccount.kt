@@ -10,9 +10,9 @@ interface CreateAccount {
     suspend operator fun invoke(userData: UserData)
 
     sealed class Error : Throwable() {
-        data object EmailAlreadyExist : Error()
-        data object InvalidEmailFormat : Error()
-        data object PasskeyVerificationFailed : Error()
-        data object AccountCreationFailed : Error()
+        class EmailAlreadyExist : Error()
+        class InvalidEmailFormat : Error()
+        class PasskeyVerificationFailed : Error()
+        class AccountCreationFailed : Error()
     }
 }

@@ -3,8 +3,8 @@ package me.bookk.feature.authorization.domain.impl
 import library.device.api.DeviceFacade
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.domain.entity.businessOrThrow
+import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.SignIn
-import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
@@ -13,24 +13,22 @@ import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.TokenInfo
-import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 
 internal class SignInImpl(
     private val deviceDataSource: DeviceDataSource,
     private val authorizationDataSource: AuthorizationDataSource,
     private val deviceFacade: DeviceFacade,
-    private val userProfileCRUD: UserProfileCRUD,
     private val passKeyManager: PassKeyManager,
-    private val refreshBusiness: RefreshBusinessInfo
+    private val initialAppDataFetch: InitialAppDataFetch
 ) : SignIn {
+
     override suspend fun invoke() {
         val challenge = authorizationDataSource.getAuthorizationChallenge()
         val payload = authorizeWithPasskey(challenge)
         val tokenInfo = verifyAuthorization(challenge, payload)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
         authorizationDataSource.invalidateClientTokens()
-        userProfileCRUD.updateFromRemote()
-        runCatching { refreshBusiness() }
+        initialAppDataFetch()
         authorizationDataSource.setAuthorizationStatus(true)
     }
 
@@ -44,9 +42,9 @@ internal class SignInImpl(
             )
         }.recoverCatching {
             throw when (it.businessOrThrow().errorCode) {
-                AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> SignIn.Error.NoAccountForThisPasskey
+                AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> SignIn.Error.NoAccountForThisPasskey()
                 AuthErrorCodes.VERIFICATION_FAILED,
-                AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> SignIn.Error.PasskeyVerificationFailed
+                AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> SignIn.Error.PasskeyVerificationFailed()
 
                 else -> it
             }
@@ -54,12 +52,12 @@ internal class SignInImpl(
     }
 
     private suspend fun authorizeWithPasskey(challenge: ServerAuthenticationChallenge): PasskeyVerificationPayload {
-        return runCatching { passKeyManager.authorize(challenge.challengeJson) }
+        return runCatching { passKeyManager.authorize(PassKeyManager.AuthorizationRequest(challenge.challengeJson, challenge.challenge)) }
             .recoverCatching {
                 throw when (it) {
-                    PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                    PassKeyManager.Error.CredentialsMissing -> SignIn.Error.NoCredentialsAvailable
-                    else -> SignIn.Error.PasskeyVerificationFailed
+                    is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
+                    is PassKeyManager.Error.CredentialsMissing -> SignIn.Error.NoCredentialsAvailable()
+                    else -> SignIn.Error.PasskeyVerificationFailed()
                 }
             }.getOrThrow()
     }

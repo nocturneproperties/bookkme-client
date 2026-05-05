@@ -4,8 +4,8 @@ interface SignIn {
     suspend operator fun invoke()
 
     sealed class Error : Throwable() {
-        data object NoCredentialsAvailable : Error()
-        data object NoAccountForThisPasskey : Error()
-        data object PasskeyVerificationFailed : Error()
+        class NoCredentialsAvailable : Error()
+        class NoAccountForThisPasskey : Error()
+        class PasskeyVerificationFailed : Error()
     }
 }

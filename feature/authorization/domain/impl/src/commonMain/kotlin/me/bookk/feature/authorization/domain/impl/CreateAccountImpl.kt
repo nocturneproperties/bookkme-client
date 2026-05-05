@@ -1,11 +1,12 @@
 package me.bookk.feature.authorization.domain.impl
 
 import library.device.api.DeviceFacade
+import me.bookk.core.LogFactory
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.domain.entity.businessOrThrow
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.UserData
-import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
@@ -21,9 +22,11 @@ internal class CreateAccountImpl(
     private val deviceDataSource: DeviceDataSource,
     private val authorizationDataSource: AuthorizationDataSource,
     private val deviceFacade: DeviceFacade,
-    private val userProfileCRUD: UserProfileCRUD,
-    private val passKeyManager: PassKeyManager
+    private val passKeyManager: PassKeyManager,
+    private val initialAppDataFetch: InitialAppDataFetch
 ) : CreateAccount {
+
+    private val logger = LogFactory.createLogger("CreateAccountImpl")
 
     override suspend fun invoke(userData: UserData) {
         val challenge = obtainRegistrationChallenge(userData)
@@ -32,7 +35,7 @@ internal class CreateAccountImpl(
         val tokenInfo = finishRegistration(data)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
         authorizationDataSource.invalidateClientTokens()
-        userProfileCRUD.updateFromRemote()
+        initialAppDataFetch()
         authorizationDataSource.setAuthorizationStatus(true)
     }
 
@@ -40,10 +43,10 @@ internal class CreateAccountImpl(
         return runCatching { registrationDataSource.finishRegistration(data) }
             .getOrElse {
                 throw when (it.businessOrThrow().errorCode) {
-                    AuthErrorCodes.USER_ALREADY_EXIST -> CreateAccount.Error.EmailAlreadyExist
-                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> CreateAccount.Error.InvalidEmailFormat
-                    AuthErrorCodes.VERIFICATION_FAILED -> CreateAccount.Error.PasskeyVerificationFailed
-                    AuthErrorCodes.ACCOUNT_CREATION_FAILED -> CreateAccount.Error.AccountCreationFailed
+                    AuthErrorCodes.USER_ALREADY_EXIST -> CreateAccount.Error.EmailAlreadyExist()
+                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> CreateAccount.Error.InvalidEmailFormat()
+                    AuthErrorCodes.VERIFICATION_FAILED -> CreateAccount.Error.PasskeyVerificationFailed()
+                    AuthErrorCodes.ACCOUNT_CREATION_FAILED -> CreateAccount.Error.AccountCreationFailed()
                     else -> it
                 }
             }
@@ -53,8 +56,8 @@ internal class CreateAccountImpl(
         return runCatching { registrationDataSource.getSignUpPasskeyChallenge(userData) }
             .getOrElse {
                 throw when (it.businessOrThrow().errorCode) {
-                    AuthErrorCodes.EMAIL_EXIST -> CreateAccount.Error.EmailAlreadyExist
-                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> CreateAccount.Error.InvalidEmailFormat
+                    AuthErrorCodes.EMAIL_EXIST -> CreateAccount.Error.EmailAlreadyExist()
+                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> CreateAccount.Error.InvalidEmailFormat()
                     else -> it
                 }
             }
@@ -63,16 +66,18 @@ internal class CreateAccountImpl(
     private suspend fun createPasskeyFrom(challenge: ServerSignUpChallenge): PasskeyVerificationPayload {
         return runCatching {
             passKeyManager.create(
-                PassKeyManager.ChallengeRequest(
-                    userId = challenge.requestId,
+                PassKeyManager.CreationRequest(
+                    userId = challenge.userHandle,
                     userName = challenge.displayName,
-                    challengeJson = challenge.jsonChallengeData
+                    challengeJson = challenge.jsonChallengeData,
+                    challenge = challenge.challenge
                 )
             )
         }.getOrElse {
+            logger.e(it)
             throw when (it) {
-                PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                else -> CreateAccount.Error.AccountCreationFailed
+                is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
+                else -> CreateAccount.Error.AccountCreationFailed()
             }
         }
     }

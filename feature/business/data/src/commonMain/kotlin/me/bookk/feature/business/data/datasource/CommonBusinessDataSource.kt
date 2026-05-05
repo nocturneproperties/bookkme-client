@@ -14,6 +14,7 @@ import library.cache.api.get
 import library.cache.api.getFlow
 import library.cache.api.set
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.BusinessDao
 import me.bookk.feature.business.data.mapping.toDomain
 import me.bookk.feature.business.data.mapping.toLocal
@@ -32,7 +33,7 @@ internal class CommonBusinessDataSource(
     private val httpClient: HttpClient,
     private val businessDao: BusinessDao,
     preferenceProvider: PreferenceProvider
-) : DataSource(), BusinessDataSource {
+) : DataSource(), BusinessDataSource, LogOutAction {
 
     private val preferences = preferenceProvider.get("business_prefs")
 
@@ -92,6 +93,10 @@ internal class CommonBusinessDataSource(
     override fun getDashboardBusinessIdFlow(): Flow<Uuid?> {
         return preferences.getFlow(Key.dashboardId)
             .map { it?.let { Uuid.parse(it) } }
+    }
+
+    override suspend fun doOnLogOut() {
+        preferences.clear()
     }
 
     private object Key {

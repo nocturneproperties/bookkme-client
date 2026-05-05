@@ -1,4 +1,4 @@
-package library.files.impl.cache
+package library.cache.impl.cache
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

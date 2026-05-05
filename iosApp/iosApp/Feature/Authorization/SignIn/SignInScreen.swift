@@ -23,13 +23,13 @@ struct SignInScreen: View {
                 signInVM.onLearnMoreClick()
             }
             Spacer()
-            StateButton(state: uiState.signInButton.impl()) {
+            StateButton(uiState.signInButton.impl()) {
                 signInVM.onSignInClick()
             }
-			TextButton(state: uiState.signUpButton.impl()) {
+			TextButton(uiState.signUpButton.impl()) {
 				navigationStack.path.append(AuthDestination.SignUp())
 			}
-            TextButton(state: uiState.troubleshootButton.impl()) {
+            TextButton(uiState.troubleshootButton.impl()) {
 				navigationStack.path.append(AuthDestination.Troubleshoot())
             }
         }
@@ -69,7 +69,7 @@ struct PasskeyCard: View {
                 .font(.caption)
                 .foregroundStyle(AppColors.secondary)
             
-            TextButton(state: learnMoreState, maxWidth: nil) {
+            TextButton(learnMoreState, maxWidth: nil) {
                 onClick()
             }
         }

@@ -71,15 +71,17 @@ class CreateClientViewModel(
         appBar.onBackClick = weakSelfClosure {
             it.uiState.navigation.push(CreateClientDestination.Back)
         }
-
+        name.isValid = false
         name.label = ClientsRes.strings.clients_create_name.desc()
         name.placeholder = ClientsRes.strings.clients_create_name_placeholder.desc()
         name.inputType = InputType.TEXT
         name.onTextChanged = weakSelfClosure { vm, text -> vm.onNameChanged(text) }
+        lastName.isValid = false
         lastName.label = ClientsRes.strings.clients_create_last_name.desc()
         lastName.placeholder = ClientsRes.strings.clients_create_last_name_placeholder.desc()
         lastName.inputType = InputType.TEXT
         lastName.onTextChanged = weakSelfClosure { vm, text -> vm.onLastNameChanged(text) }
+        phone.isValid = false
         phone.label = ClientsRes.strings.clients_create_phone.desc()
         phone.placeholder = ClientsRes.strings.clients_create_phone_placeholder.desc()
         phone.inputType = InputType.PHONE

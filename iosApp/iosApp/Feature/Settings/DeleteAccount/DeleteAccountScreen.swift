@@ -31,7 +31,7 @@ struct DeleteAccountScreen: View {
 			.background(AppColors.elevated)
 			.clipShape(RoundedRectangle(cornerRadius: 10))
 			Spacer()
-			StateButton(state: uiState.deleteButton) {
+			StateButton(uiState.deleteButton) {
 				viewModel.onDeleteClick()
 			}.padding(.bottom, 16)
 		}

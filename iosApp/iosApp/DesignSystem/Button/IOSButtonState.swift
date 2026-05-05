@@ -18,7 +18,7 @@ class IOSButtonState: IOSViewState, @MainActor ButtonState {
 	var onClick: (() -> Void)?
     
 	init(
-		text: any StringDesc,
+		text: any StringDesc = RawStringDesc(string: ""),
 		isEnabled: Bool = true,
 		isLoading: Bool = false,
 		icon: ImageResource? = nil,

@@ -19,7 +19,7 @@ struct TroubleshootScreen: View {
         VStack {
             TroubleshootCard(troubleshootInfo: uiState.troubleshootCardStaticData)
             Spacer()
-            StateButton(state: uiState.contactSupportButton.impl()) {
+            StateButton(uiState.contactSupportButton.impl()) {
 				//navigationStack.path.append()
             }
         }

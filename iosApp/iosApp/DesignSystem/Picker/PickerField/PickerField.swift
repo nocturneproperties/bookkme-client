@@ -25,7 +25,7 @@ struct PickerField: View {
     @State private var isSheetPresented = false
     @State private var isScreenPresented = false
 
-    init(state: PickerFieldState, onItemPicked: ((PickerPresentation) -> Void)? = nil) {
+    init(_ state: PickerFieldState, onItemPicked: ((PickerPresentation) -> Void)? = nil) {
         let impl = state.impl()
         self.state = impl
         self.onItemPicked = onItemPicked ?? { option in
@@ -40,7 +40,7 @@ struct PickerField: View {
 
     var body: some View {
         if state.isVisible {
-            StateTextField(state: state.textField)
+            StateTextField(state.textField)
                 .contentShape(Rectangle())
                 .simultaneousGesture(TapGesture().onEnded {
                     guard state.textField.enabled else { return }
@@ -158,7 +158,7 @@ private struct PickerBottomSheet: View {
             .frame(maxHeight: listHeight, alignment: .top)
             .clipped()
             StateButton(
-                state: IOSButtonState(
+                IOSButtonState(
                     text: DesignSystem.strings.shared.action_continue.desc(),
                     isEnabled: selectedOptionId != nil
                 ),
@@ -240,7 +240,7 @@ private struct PickerBottomSheet: View {
     )
 
 	VStack(spacing: 16) {
-        PickerField(state: value) { option in
+        PickerField(value) { option in
             value.selectedItem = option
             value.textField.updateText(desc: option.displayName)
         }
@@ -269,7 +269,7 @@ private struct PickerBottomSheet: View {
     )
 
 	VStack(spacing: 16) {
-        PickerField(state: value) { option in
+        PickerField(value) { option in
             value.selectedItem = option
             value.textField.updateText(desc: option.displayName)
         }

@@ -20,7 +20,7 @@ struct ContactUsScreen: View {
 	var body: some View {
 		let uiState = viewModel.uiState
 		VStack {
-			StateTextField(state: uiState.contactField, textEditor: true) { text in
+			StateTextField(uiState.contactField, textEditor: true) { text in
 				viewModel.onContactTextChanged(text: text)
 			}
 			.lineLimit(5...10)
@@ -35,7 +35,7 @@ struct ContactUsScreen: View {
 				.font(.footnote)
 				.foregroundStyle(AppColors.secondary)
 			Spacer()
-			StateButton(state: uiState.submitButton) {
+			StateButton(uiState.submitButton) {
 				viewModel.onSubmitClick()
 			}
 			.padding(.bottom, 24)

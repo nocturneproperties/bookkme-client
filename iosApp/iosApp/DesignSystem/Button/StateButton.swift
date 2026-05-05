@@ -19,14 +19,14 @@ struct TextButton: View {
     @State
     var onClick: () -> Void
     
-	init(state: IOSButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
+	init(_ state: IOSButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
 		self.state = state
 		self.textAlignment = textAlignment
 		self.onClick = onClick ?? state.onClick ?? {}
 		self.maxWidth = maxWidth
 	}
 	
-	init(state: ButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
+	init(_ state: ButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
 		self.state = state.impl()
 		self.textAlignment = textAlignment
 		self.onClick = onClick ?? state.onClick ?? {}
@@ -55,14 +55,14 @@ struct StateButton: View {
     @State
     var onClick: () -> Void
     
-	init(state: IOSButtonState, onClick: @escaping () -> Void) {
+	init(_ state: IOSButtonState, onClick: (() -> Void)? = nil) {
 		self.state = state
-		self.onClick = onClick
+		self.onClick = onClick ?? state.onClick ?? {}
 	}
 	
-	init(state: ButtonState, onClick: @escaping () -> Void) {
+	init(_ state: ButtonState, onClick: (() -> Void)? = nil) {
 		self.state = state.impl()
-		self.onClick = onClick
+		self.onClick = onClick ?? state.onClick ?? {}
 	}
 	
     var body: some View {
@@ -120,10 +120,10 @@ struct IconButton: View {
     @State
     var value: IOSButtonState = IOSButtonState(text: RawStringDesc(string: "Button"))
     VStack {
-        StateButton(state: value) {
+        StateButton(value) {
             
         }
-		TextButton(state: value) {
+		TextButton(value) {
 			
 		}
     }

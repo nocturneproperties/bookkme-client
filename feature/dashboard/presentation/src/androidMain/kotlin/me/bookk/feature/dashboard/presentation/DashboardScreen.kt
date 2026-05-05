@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -92,7 +93,9 @@ internal fun DashboardScreen(
             .imePadding(),
         content = {
             NavHost(
-                modifier = Modifier.padding(it),
+                modifier = Modifier
+                    .padding(it)
+                    .fillMaxSize(),
                 navController = navController,
                 startDestination = BottomNavDestination.Home,
                 enterTransition = {

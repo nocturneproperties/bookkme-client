@@ -75,3 +75,10 @@ include(":feature:business:data:source")
 include(":feature:business:domain:api")
 include(":feature:business:domain:impl")
 include(":feature:business:presentation")
+
+//Clients
+include(":feature:clients:data")
+include(":feature:clients:data:source")
+include(":feature:clients:domain:api")
+include(":feature:clients:domain:impl")
+include(":feature:clients:presentation")

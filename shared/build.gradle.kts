@@ -105,6 +105,11 @@ kotlin {
             implementation(projects.feature.business.domain.impl)
             implementation(projects.feature.business.data)
             api(projects.feature.business.presentation)
+            //Clients
+            implementation(projects.feature.clients.domain.api)
+            implementation(projects.feature.clients.domain.impl)
+            implementation(projects.feature.clients.data)
+            api(projects.feature.clients.presentation)
             // Libs
             implementation(libs.koin.core)
             implementation(libs.ktor.client.mock)
@@ -141,6 +146,7 @@ kotlin {
             export(projects.feature.dashboard.presentation)
             export(projects.feature.settings.presentation)
             export(projects.feature.business.presentation)
+            export(projects.feature.clients.presentation)
             export(projects.library.money.api)
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)

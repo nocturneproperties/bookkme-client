@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
-feature_name=example
-feature_capital=Example
+feature_name=clients
+feature_capital=Clients
 root_package="me/bookk"
 root_package_dotted="me.bookk"
 export ROOT_PACKAGE=$root_package_dotted
@@ -64,8 +64,8 @@ cat >> ../../shared/src/commonMain/kotlin/${root_package}/presentation/StateFact
 }
 EOF
 #Insert state factory method implementation
-sed '$d' ../../androidApp/src/main/java/${root_package}/android/AndroidStateFactoryCreator.kt > tmp && mv tmp androidApp/src/main/java/${root_package}/android/AndroidStateFactoryCreator.kt
-cat >> ../../androidApp/src/main/java/${root_package}/android/AndroidStateFactoryCreator.kt << EOF
+sed '$d' ../../androidApp/src/main/kotlin/${root_package}/android/AndroidStateFactoryCreator.kt > tmp && mv tmp ../../androidApp/src/main/kotlin/${root_package}/android/AndroidStateFactoryCreator.kt
+cat >> ../../androidApp/src/main/kotlin/${root_package}/android/AndroidStateFactoryCreator.kt << EOF
     override fun create${feature_capital}Factory(): ${feature_capital}StateFactory {
         return Android${feature_capital}StateFactory()
     }
@@ -92,8 +92,8 @@ class IOS${feature_capital}StateFactory: @MainActor ${feature_capital}StateFacto
 }
 EOF
 #Insert state factory to the base factory
-sed '$d' ../../iosApp/iosApp/IOSStateFactoryCreator.swift > tmp && mv tmp ../../iosApp/iosApp/IOSStateFactoryCreator.swift
-cat >> ../../iosApp/iosApp/IOSStateFactoryCreator.swift << EOF
+sed '$d' ../../iosApp/iosApp/Core/IOSStateFactoryCreator.swift > tmp && mv tmp ../../iosApp/iosApp/Core/IOSStateFactoryCreator.swift
+cat >> ../../iosApp/iosApp/Core/IOSStateFactoryCreator.swift << EOF
 	func create${feature_capital}Factory() -> any ${feature_capital}StateFactory {
 		return IOS${feature_capital}StateFactory()
 	}

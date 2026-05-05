@@ -64,7 +64,7 @@ actual abstract class ViewModel actual constructor(
                 }
                 onComplete?.invoke(result)
             } catch (e: Throwable) {
-                onError?.invoke(e) ?: throw e
+                onError.invoke(e)
             } finally {
                 onTerminate?.invoke()
             }

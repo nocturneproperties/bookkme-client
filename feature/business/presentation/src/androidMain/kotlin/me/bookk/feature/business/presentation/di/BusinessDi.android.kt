@@ -1,7 +1,6 @@
 package me.bookk.feature.business.presentation.di
 
 import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
-import me.bookk.feature.business.presentation.clients.list.ClientsListViewModel
 import me.bookk.feature.business.presentation.create.CreateBusinessViewModel
 import me.bookk.feature.business.presentation.dashboard.BusinessDashboardViewModel
 import me.bookk.feature.business.presentation.settings.BusinessSettingsViewModel
@@ -14,6 +13,5 @@ internal actual fun platformBusinessDiModule(): Module = module {
     viewModelOf(::CreateBusinessViewModel)
     viewModelOf(::BusinessBootstrapViewModel)
     viewModelOf(::BusinessDashboardViewModel)
-    viewModel { ClientsListViewModel(get(), it.get(), get(), get()) }
     viewModel { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get()) }
 }

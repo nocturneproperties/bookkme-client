@@ -17,15 +17,6 @@ sealed class BusinessDestination {
     data object Employees : BusinessDestination()
 
     @Serializable
-    data class Clients(val id: Uuid) : BusinessDestination()
-
-    @Serializable
-    data class ClientDetails(val id: Uuid) : BusinessDestination()
-
-    @Serializable
-    data class CreateClient(val businessId: Uuid) : BusinessDestination()
-
-    @Serializable
     data object Analytics : BusinessDestination()
 
     @Serializable

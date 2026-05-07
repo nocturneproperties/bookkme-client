@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -42,14 +43,16 @@ fun AppTopBar(
     colors: TopAppBarColors = topBarDefaultColors(),
     actions: @Composable RowScope.() -> Unit = {
         state.actions.items.forEach {
-            IconButton(onClick = it.onClick) {
-                if (it.icon != null) {
+            if (it.icon != null) {
+                IconButton(onClick = it.onClick) {
                     Icon(
                         painter = it.icon.painter(),
                         contentDescription = it.contentDescription.localized(),
                         tint = colors.actionIconContentColor
                     )
-                } else {
+                }
+            } else {
+                TextButton(onClick = it.onClick) {
                     Text(
                         it.contentDescription.localized(),
                         style = MaterialTheme.typography.bodyLarge.active()

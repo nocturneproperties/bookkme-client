@@ -5,4 +5,5 @@ import kotlin.uuid.Uuid
 
 interface GetClientsList {
     suspend operator fun invoke(businessId: Uuid): List<Client>
+    suspend fun cached(businessId: Uuid, onResultAvailable: suspend (List<Client>) -> Unit)
 }

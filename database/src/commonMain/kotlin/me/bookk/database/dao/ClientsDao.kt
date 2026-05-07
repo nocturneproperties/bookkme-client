@@ -11,7 +11,10 @@ import kotlin.uuid.Uuid
 @Dao
 abstract class ClientsDao {
     @Query("select * from client where businessId = :businessId")
-    abstract suspend fun getClients(businessId: String): List<ClientEntity>
+    abstract suspend fun getClients(businessId: Uuid): List<ClientEntity>
+
+    @Query("select * from client where id = :id")
+    abstract suspend fun getById(id: Uuid): ClientEntity
 
     @Upsert
     abstract suspend fun upsert(client: ClientEntity)

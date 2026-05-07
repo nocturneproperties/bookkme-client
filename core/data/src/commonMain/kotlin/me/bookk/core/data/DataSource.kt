@@ -2,8 +2,13 @@ package me.bookk.core.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import me.bookk.core.LogFactory
 import me.bookk.core.data.map.toDomain
 import me.bookk.core.domain.entity.Error
+
+private val dataErrorLogger by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+    LogFactory.createLogger("DataLayerExceptions")
+}
 
 abstract class DataSource {
 
@@ -15,6 +20,7 @@ abstract class DataSource {
         return try {
             action()
         } catch (e: Exception) {
+            dataErrorLogger.e(e)
             val domainError = e.toDomain()
             throw (exceptionMapper?.invoke(domainError) ?: domainError)
         } finally {

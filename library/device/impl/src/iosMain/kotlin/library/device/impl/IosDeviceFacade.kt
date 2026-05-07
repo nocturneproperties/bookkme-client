@@ -29,4 +29,12 @@ class IosDeviceFacade : DeviceFacade {
         val url = "http://maps.apple.com/?ll=$lat,$lng&z=15"
         openUrlPreview(url)
     }
+
+    override fun dial(number: String) {
+        openUrlPreview("tel:$number")
+    }
+
+    override fun mail(email: String) {
+        openUrlPreview("mailto:$email")
+    }
 }

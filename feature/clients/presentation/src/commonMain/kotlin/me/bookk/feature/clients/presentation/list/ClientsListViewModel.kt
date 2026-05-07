@@ -39,10 +39,10 @@ class ClientsListViewModel(
     }
 
     private fun loadClients() {
-        launch(
+        launchCached(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.refreshState.isRefreshing = true },
-            call = { getClientsList(args.businessId) },
+            call = { getClientsList.cached(args.businessId, it) },
             onComplete = {
                 val grouped = it
                     .sortedBy { it.name.trim() }

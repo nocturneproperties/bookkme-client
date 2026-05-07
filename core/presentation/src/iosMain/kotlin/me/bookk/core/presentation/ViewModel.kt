@@ -75,6 +75,46 @@ actual abstract class ViewModel actual constructor(
         }
     }
 
+    actual fun <Output> launchCached(
+        key: String?,
+        launchBehaviour: LaunchBehaviour,
+        launchIn: CoroutineContext,
+        call: suspend (suspend (Output) -> Unit) -> Unit,
+        onComplete: (suspend (Output) -> Unit),
+        onError: (suspend (Throwable) -> Unit),
+        onStart: (suspend () -> Unit)?,
+        onTerminate: (suspend () -> Unit)?,
+    ): Job? {
+        val activeJob = when (launchBehaviour) {
+            LaunchBehaviour.DropLatest -> {
+                if (key != null && activeJobs[key]?.isActive == true) return null
+                null
+            }
+
+            LaunchBehaviour.DropOldest -> {
+                activeJobs[key]
+            }
+        }
+        return viewModelScope.launch(viewModelScopeErrorHandler) {
+            try {
+                activeJob?.cancelAndJoin()
+                onStart?.invoke()
+
+                withContext(launchIn) {
+                    call(onComplete)
+                }
+            } catch (e: Throwable) {
+                onError.invoke(e)
+            } finally {
+                onTerminate?.invoke()
+            }
+        }.also {
+            if (key != null) {
+                activeJobs[key] = it
+            }
+        }
+    }
+
     @UsedInSwift
     actual open fun onViewPresented() {
     }

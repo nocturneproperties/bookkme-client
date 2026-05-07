@@ -30,6 +30,19 @@ internal class CommonClientsDataSource(
         }
     }
 
+    override suspend fun getClientsFromDb(businessId: Uuid): List<Client> {
+        return mapExceptions {
+            clientsDao.getClients(businessId)
+                .map { it.toDomain() }
+        }
+    }
+
+    override suspend fun getClient(id: Uuid): Client {
+        return mapExceptions {
+            clientsDao.getById(id).toDomain()
+        }
+    }
+
     override suspend fun createClient(client: Client): Client {
         return mapExceptions {
             httpClient.post(Api.Clients(businessId = client.businessId)) {
@@ -52,5 +65,9 @@ internal class CommonClientsDataSource(
 
     override suspend fun deleteClientInDb(id: Uuid) {
         mapExceptions { clientsDao.deleteById(id) }
+    }
+
+    override suspend fun deleteClientsInDb() {
+        mapExceptions { clientsDao.clear() }
     }
 }

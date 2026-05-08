@@ -2,6 +2,8 @@ package me.bookk.feature.clients.domain.impl
 
 import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.clients.domain.api.entity.ClientEvent
+import me.bookk.feature.clients.domain.api.entity.clientEvents
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 
 internal class DeleteClientImpl(
@@ -10,5 +12,6 @@ internal class DeleteClientImpl(
     override suspend fun invoke(client: Client) {
         clientsDataSource.deleteClient(client.businessId, client.id)
         clientsDataSource.deleteClientInDb(client.id)
+        clientEvents.emit(ClientEvent.Deleted(client))
     }
 }

@@ -11,6 +11,7 @@ internal fun Client.toRemote(): ClientRemote {
         name = name,
         lastName = lastName,
         phone = phone,
+        email = email,
         userId = (this as? Client.Integrated)?.userId
     )
 }
@@ -22,6 +23,7 @@ internal fun ClientRemote.toDomain(businessId: Uuid): Client {
             name = name,
             lastName = lastName,
             phone = phone,
+            email = email,
             businessId = businessId,
         )
 
@@ -30,6 +32,7 @@ internal fun ClientRemote.toDomain(businessId: Uuid): Client {
             name = name,
             lastName = lastName,
             phone = phone,
+            email = email,
             businessId = businessId,
             userId = userId
         )
@@ -42,6 +45,7 @@ internal fun Client.toDbEntity(): ClientEntity {
         name = name,
         lastName = lastName,
         phone = phone,
+        email = email,
         businessId = businessId,
         userId = (this as? Client.Integrated)?.userId
     )
@@ -54,6 +58,7 @@ internal fun ClientEntity.toDomain(): Client {
             name = name,
             lastName = lastName,
             phone = phone,
+            email = email,
             businessId = businessId,
         )
 
@@ -62,6 +67,7 @@ internal fun ClientEntity.toDomain(): Client {
             name = name,
             lastName = lastName,
             phone = phone,
+            email = email,
             businessId = businessId,
             userId = userId
         )

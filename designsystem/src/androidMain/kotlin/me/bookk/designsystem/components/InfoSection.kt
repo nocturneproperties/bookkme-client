@@ -23,12 +23,10 @@ import me.bookk.designsystem.uistate.simple.InfoLine
 fun InfoSection(line: InfoLine, modifier: Modifier = Modifier) {
     val content: @Composable ColumnScope.() -> Unit = {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            HorizontalDivider(
-                Modifier.padding(top = 4.dp),
-                color = LocalColors.current.divider
-            )
             Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 8.dp),
                 text = line.title.localized(),
                 style = MaterialTheme.typography.bodyLarge.secondary()
             )

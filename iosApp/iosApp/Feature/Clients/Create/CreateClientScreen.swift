@@ -24,6 +24,7 @@ struct CreateClientScreen: View {
 			StateTextField(uiState.name)
 			StateTextField(uiState.lastName)
 			StateTextField(uiState.phone)
+			StateTextField(uiState.email)
 			StateButton(uiState.submit)
 				.padding(.top, 20)
 			Spacer()

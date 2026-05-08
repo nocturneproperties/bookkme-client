@@ -1,7 +1,7 @@
-package me.bookk.feature.authorization.domain.impl
+package library.validation.impl
 
-import me.bookk.feature.authorization.domain.api.ValidateName
-import me.bookk.feature.authorization.domain.api.ValidateName.Result
+import library.validation.api.ValidateName
+import library.validation.api.ValidateName.Result
 
 internal class ValidateNameImpl : ValidateName {
     override fun invoke(name: String): Result {

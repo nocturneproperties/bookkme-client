@@ -7,6 +7,7 @@ sealed interface Client {
     val name: String
     val lastName: String
     val phone: String
+    val email: String
     val businessId: Uuid
     val fullName: String
 
@@ -15,6 +16,7 @@ sealed interface Client {
         override val name: String,
         override val lastName: String,
         override val phone: String,
+        override val email: String,
         override val businessId: Uuid
     ) : Client {
         override val fullName: String = "$name $lastName"
@@ -25,6 +27,7 @@ sealed interface Client {
         override val name: String,
         override val lastName: String,
         override val phone: String,
+        override val email: String,
         override val businessId: Uuid,
         val userId: Uuid
     ) : Client {

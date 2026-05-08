@@ -21,12 +21,10 @@ struct ClientsListScreen: View {
 	var body: some View {
 		let uiState = IOSClientsListState.cast(viewModel.uiState)
 		let listState = IOSListState<ClientSection>.cast(uiState.clientsList)
-		ScrollView {
-			ListGroup(listState: listState) { section in
-				ContactSection(section: section)
-					.transition(.opacity)
-					.animation(.easeInOut, value: uiState.clientsList.items.count)
-			}
+		ListGroup(listState: listState) { section in
+			ContactSection(section: section)
+				.transition(.opacity)
+				.animation(.easeInOut, value: uiState.clientsList.items.count)
 		}
 		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
 		.searchable(
@@ -63,19 +61,22 @@ struct ContactSection: View {
 					Button {
 						section.onItemClick(client)
 					} label: {
-						Text(client.fullName)
-							.font(.body)
-							.padding(.horizontal)
-							.frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
-							.contentShape(Rectangle())
-						Spacer()
+						VStack {
+							Spacer()
+							Text(client.fullName)
+								.font(.body)
+								.padding(.horizontal)
+								.frame(maxWidth: .infinity, minHeight: 44, alignment: .init(horizontal: .leading, vertical: .center))
+								.contentShape(Rectangle())
+							Spacer()
+						}
 					}
 					.buttonStyle(.plain)
 					
 					Divider()
 						.padding(.leading)
 						.background(AppColors.divider)
-				}
+				}.listRowSeparator(.hidden)
 			}
 		} header: {
 			VStack {
@@ -83,12 +84,12 @@ struct ContactSection: View {
 					.fontWeight(.medium)
 					.foregroundStyle(AppColors.header)
 					.padding(.horizontal)
-					.frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+					.frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .center))
 				
 				Divider()
 					.padding(.leading)
 					.background(AppColors.divider)
 			}.background(AppColors.background)
-		}
+		}.listRowInsets(EdgeInsets())
 	}
 }

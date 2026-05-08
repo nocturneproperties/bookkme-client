@@ -16,4 +16,8 @@ class IOSClientsStateFactory: @MainActor ClientsStateFactory {
 	func createClientState() -> any CreateClientState {
 		return IOSCreateClientState()
 	}
+	
+	func createClientDetailsState() -> any ClientDetailsState {
+		return IOSClientDetailsState()
+	}
 }

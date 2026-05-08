@@ -1,16 +1,16 @@
 package me.bookk.feature.settings.presentation.editprofile
 
 import dev.icerock.moko.resources.desc.desc
+import library.validation.api.ValidateEmail
+import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
+import library.validation.api.ValidateName
+import library.validation.api.ValidateName.Result.Invalid.Length.isValid
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.ValidationState
-import me.bookk.feature.authorization.domain.api.ValidateEmail
-import me.bookk.feature.authorization.domain.api.ValidateEmail.Result.Invalid.Format.isValid
-import me.bookk.feature.authorization.domain.api.ValidateName
-import me.bookk.feature.authorization.domain.api.ValidateName.Result.Invalid.Length.isValid
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.presentation.SettingsStateFactory

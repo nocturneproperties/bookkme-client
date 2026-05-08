@@ -18,7 +18,7 @@ struct BusinessTab: View {
 			BusinessStartDestinationView(state: bootstrapVM.uiState)
 				.handleNotifications(bootstrapVM.uiState.notification)
 				.navigationDestination(for: ClientsDestinations.ClientDetails.self) { type in
-					CreateClientScreen(businessId: type.id)
+					ClientDetailsScreen(id: type.id)
 				}
 				.navigationDestination(for: ClientsDestinations.CreateClient.self) { type in
 					CreateClientScreen(businessId: type.businessId)

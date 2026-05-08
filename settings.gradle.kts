@@ -51,6 +51,8 @@ include(":library:money:api")
 include(":library:money:impl")
 include(":library:biometry:api")
 include(":library:biometry:impl")
+include(":library:validation:api")
+include(":library:validation:impl")
 
 //Authorization
 include(":feature:authorization:data")

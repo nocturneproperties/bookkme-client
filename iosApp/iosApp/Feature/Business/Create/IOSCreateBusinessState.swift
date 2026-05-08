@@ -23,7 +23,7 @@ class IOSCreateBusinessState: @MainActor CreateBusinessState {
 	init(initData: CreateBusinessStateInitData) {
 		appBar = IOSAppBarState(title: initData.title)
 		createBtn = IOSButtonState(text: initData.buttonText, isEnabled: false)
-		name = IOSTextFieldState(supportingTextRes: initData.supportingText, hint: initData.hint)
+		name = IOSTextFieldState(supportingTextRes: initData.supportingText, placeholder: initData.hint)
 		notifications = IOSNotificationState()
 	}
 	

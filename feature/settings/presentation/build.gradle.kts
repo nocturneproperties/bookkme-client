@@ -20,7 +20,7 @@ kotlin {
             implementation(projects.core.presentation)
             implementation(projects.designsystem)
             implementation(projects.feature.settings.domain.api)
-            implementation(projects.feature.authorization.domain.api)
+            implementation(projects.library.validation.api)
             implementation(projects.library.device.api)
         }
     }

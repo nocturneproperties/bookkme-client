@@ -9,6 +9,6 @@ import org.koin.dsl.module
 
 internal actual fun platformClientsDiModule(): Module = module {
     viewModel { ClientsListViewModel(get(), it.get(), get(), get()) }
-    viewModel { CreateClientViewModel(it.get(), get(), get(), get()) }
+    viewModel { CreateClientViewModel(it.get(), get(), get(), get(), get(),get()) }
     viewModel { ClientDetailsViewModel(it.get(), get(), get(), get(), get(), get()) }
 }

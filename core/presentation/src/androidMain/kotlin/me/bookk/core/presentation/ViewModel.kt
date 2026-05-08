@@ -116,6 +116,7 @@ actual abstract class ViewModel actual constructor(
     }
 
     actual override fun onCleared() {
+        internalLogger.i("On clear called $this")
         super.onCleared()
     }
 }

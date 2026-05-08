@@ -31,10 +31,10 @@ class IosDeviceFacade : DeviceFacade {
     }
 
     override fun dial(number: String) {
-        openUrlPreview("tel:$number")
+        openUrlPreview("tel://$number")
     }
 
     override fun mail(email: String) {
-        openUrlPreview("mailto:$email")
+        openUrlPreview("mailto://$email")
     }
 }

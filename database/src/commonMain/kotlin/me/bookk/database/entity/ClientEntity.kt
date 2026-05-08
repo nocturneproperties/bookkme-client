@@ -1,5 +1,6 @@
 package me.bookk.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
@@ -23,6 +24,8 @@ class ClientEntity(
     val name: String,
     val lastName: String,
     val phone: String,
+    @ColumnInfo(defaultValue = "")
+    val email: String,
     val businessId: Uuid,
     val userId: Uuid?
 )

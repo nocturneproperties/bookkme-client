@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.designsystem)
             implementation(projects.feature.clients.domain.api)
             implementation(projects.library.device.api)
+            implementation(projects.library.validation.api)
         }
     }
 }

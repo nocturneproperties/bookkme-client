@@ -12,7 +12,7 @@ internal class CreateClientImpl(
     override suspend fun invoke(client: Client): Client {
         return clientsDataSource.createClient(client).also {
             clientsDataSource.saveClientsInDb(listOf(it))
-            clientEvents.send(ClientEvent.Created(it))
+            clientEvents.emit(ClientEvent.Created(it))
         }
     }
 }

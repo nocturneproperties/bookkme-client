@@ -15,10 +15,11 @@ class IOSCreateClientState: @MainActor CreateClientState {
 	var appBar: any AppBarState
 	var lastName: any TextFieldState
 	var name: any TextFieldState
+	var phone: any TextFieldState
+	var email: any TextFieldState
+	var submit: any ButtonState
 	var navigation: any NavigationState
 	var notifications: any PresentationNotificationState
-	var phone: any TextFieldState
-	var submit: any ButtonState
 	
 	init() {
 		appBar = IOSAppBarState()
@@ -27,6 +28,7 @@ class IOSCreateClientState: @MainActor CreateClientState {
 		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()
 		phone = IOSTextFieldState()
+		email = IOSTextFieldState()
 		submit = IOSButtonState()
 	}
 	

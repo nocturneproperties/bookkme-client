@@ -26,21 +26,24 @@ struct AppBarHandler: ViewModifier {
 	}
 	
 	var actions: some View {
-		HStack {
-			ForEach(appBarState.actions.items(AppBarAction.self), id: \.self) { action in
-				Button(action: action.onClick) {
-					if let icon = action.icon {
+		ForEach(appBarState.actions.items(AppBarAction.self), id: \.self) { action in
+			Button(action: action.onClick) {
+				if let icon = action.icon {
+					Label(title: {}, icon: {
 						Image(resource: icon)
 							.renderingMode(.template)
 							.foregroundStyle(AppColors.actionText)
 							.frame(width: 44, height: 44)
-					} else {
+					})
+					.frame(maxHeight: .infinity)
+				} else {
+					Label(title: {
 						Text(action.contentDescription.localized())
-					}
+					}, icon: {})
+					.frame(maxHeight: .infinity)
 				}
-				.accessibilityLabel(action.contentDescription.localized())
-				.buttonStyle(.plain)
 			}
+			.accessibilityLabel(action.contentDescription.localized())
 		}
 	}
 	

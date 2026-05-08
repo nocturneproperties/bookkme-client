@@ -19,11 +19,13 @@ struct ListGroup<T, Content: View>:View where T:AnyObject, T:Identifiable {
 	var body: some View {
 		Group {
 			if (!listState.items.isEmpty) {
-				LazyVStack {
+				List {
 					ForEach(listState.typedItems) { item in
 						content(item)
+							.listRowSeparator(.hidden)
 					}
 				}
+				.listStyle(.plain)
 			} else if let emptyState = listState.emptyState, !listState.isInitialLoading {
 				EmptyView(state: emptyState)
 			} else {

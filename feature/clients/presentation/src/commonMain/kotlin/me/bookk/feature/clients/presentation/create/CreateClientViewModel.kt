@@ -1,6 +1,10 @@
 package me.bookk.feature.clients.presentation.create
 
 import dev.icerock.moko.resources.desc.desc
+import library.validation.api.ValidateEmail
+import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
+import library.validation.api.ValidateName
+import library.validation.api.ValidateName.Result.Invalid.Length.isValid
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -18,6 +22,8 @@ import kotlin.uuid.Uuid
 class CreateClientViewModel(
     private val businessId: Uuid,
     private val createClient: CreateClient,
+    private val validateName: ValidateName,
+    private val validateEmail: ValidateEmail,
     stateFactory: ClientsStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -26,7 +32,7 @@ class CreateClientViewModel(
 
     private fun onNameChanged(text: String) {
         uiState.name.text = text
-        uiState.name.isValid = text.length > 1
+        uiState.name.isValid = validateName(text).isValid
         invalidateButton()
     }
 
@@ -37,8 +43,14 @@ class CreateClientViewModel(
     }
 
     private fun onPhoneChanged(text: String) {
-        uiState.phone.text = text
+        uiState.phone.text = text.filter { it.isDigit() || it == '+' }
         uiState.phone.isValid = text.length > 4
+        invalidateButton()
+    }
+
+    private fun onEmailChanged(text: String) {
+        uiState.email.text = text
+        uiState.email.isValid = text.isEmpty() || validateEmail(text).isValid
         invalidateButton()
     }
 
@@ -48,6 +60,7 @@ class CreateClientViewModel(
             name = uiState.name.text,
             lastName = uiState.lastName.text,
             phone = uiState.phone.text,
+            email = uiState.email.text,
             businessId = businessId
         )
         launch(
@@ -63,7 +76,8 @@ class CreateClientViewModel(
     private fun invalidateButton() {
         uiState.submit.isEnabled = uiState.name.isValid &&
                 uiState.lastName.isValid &&
-                uiState.phone.isValid
+                uiState.phone.isValid &&
+                uiState.email.isValid
     }
 
     private fun CreateClientState.setup(): CreateClientState {
@@ -86,6 +100,11 @@ class CreateClientViewModel(
         phone.placeholder = ClientsRes.strings.clients_create_phone_placeholder.desc()
         phone.inputType = InputType.PHONE
         phone.onTextChanged = weakSelfClosure { vm, text -> vm.onPhoneChanged(text) }
+        email.isValid = true
+        email.label = ClientsRes.strings.clients_create_email.desc()
+        email.placeholder = ClientsRes.strings.clients_create_email_placeholder.desc()
+        email.inputType = InputType.EMAIL
+        email.onTextChanged = weakSelfClosure { vm, text -> vm.onEmailChanged(text) }
 
         submit.isEnabled = false
         submit.text = DesignSystem.strings.action_create.desc()

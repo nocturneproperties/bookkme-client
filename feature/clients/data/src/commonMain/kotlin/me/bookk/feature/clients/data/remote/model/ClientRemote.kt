@@ -9,5 +9,6 @@ internal class ClientRemote(
     val name: String,
     val lastName: String,
     val phone: String,
+    val email: String,
     val userId: Uuid?,
 )

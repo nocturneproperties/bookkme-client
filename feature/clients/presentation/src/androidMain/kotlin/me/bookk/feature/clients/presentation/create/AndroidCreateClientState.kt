@@ -16,6 +16,7 @@ internal class AndroidCreateClientState : CreateClientState {
     override val name: TextFieldState = AndroidTextFieldState()
     override val lastName: TextFieldState = AndroidTextFieldState()
     override val phone: TextFieldState = AndroidTextFieldState()
+    override val email: TextFieldState = AndroidTextFieldState()
     override val submit: ButtonState = AndroidButtonState()
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()

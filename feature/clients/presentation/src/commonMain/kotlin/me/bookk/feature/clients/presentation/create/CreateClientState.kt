@@ -11,6 +11,7 @@ interface CreateClientState {
     val name: TextFieldState
     val lastName: TextFieldState
     val phone: TextFieldState
+    val email: TextFieldState
 
     val submit: ButtonState
 

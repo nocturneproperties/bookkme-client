@@ -1,17 +1,17 @@
-package me.bookk.feature.authorization.domain.api
+package library.validation.api
 
-interface ValidateEmail {
+interface ValidateName {
     sealed interface Result {
 
         data object Valid : Result
 
         sealed interface Invalid : Result {
-            data object Format : Result
+            data object Length : Result
         }
 
         val Result.isValid: Boolean
             get() = this == Valid
     }
 
-    fun invoke(email: String): Result
+    operator fun invoke(name: String): Result
 }

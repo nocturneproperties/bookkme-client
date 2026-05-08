@@ -18,7 +18,6 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 
     var enabled: Bool
     var supportingTextRes: (any StringDesc)?
-    var hint: any StringDesc
 	var label: any StringDesc
     var validationState: ValidationState
     var isValid: Bool
@@ -34,7 +33,7 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 	init(
 		enabled: Bool = true,
 		supportingTextRes: (any StringDesc)? = nil,
-		hint: any StringDesc = RawStringDesc(string: ""),
+		placeholder: any StringDesc = RawStringDesc(string: ""),
 		label: any StringDesc = RawStringDesc(string: ""),
 		validationState: ValidationState = ValidationState.default_,
 		isValid: Bool = true,
@@ -44,12 +43,10 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 		startIcon: shared.ImageResource? = nil,
 		endIcon: shared.ImageResource? = nil,
 		inputType: InputType = InputType.text,
-		onTextChanged: ((String) -> Void)? = nil,
-		placeholder: any StringDesc = RawStringDesc(string: "")
+		onTextChanged: ((String) -> Void)? = nil
 	) {
 		self.enabled = enabled
 		self.supportingTextRes = supportingTextRes
-		self.hint = hint
 		self.label = label
 		self.validationState = validationState
 		self.isValid = isValid

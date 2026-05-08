@@ -41,6 +41,10 @@ fun CreateClientScreen(state: CreateClientState) {
                 )
                 TextField(
                     state.phone,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                )
+                TextField(
+                    state.email,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
                 )
             }

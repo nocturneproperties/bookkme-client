@@ -73,11 +73,6 @@ kotlin {
             api(projects.core.domain)
             api(projects.core.presentation)
             api(projects.designsystem)
-            //Auth
-            implementation(projects.feature.authorization.domain.api)
-            implementation(projects.feature.authorization.domain.impl)
-            implementation(projects.feature.authorization.data)
-            api(projects.feature.authorization.presentation)
             //Library
             implementation(projects.library.device.api)
             implementation(projects.library.device.impl)
@@ -87,12 +82,19 @@ kotlin {
             implementation(projects.library.permissions.impl)
             implementation(projects.library.files.api)
             implementation(projects.library.files.impl)
+            implementation(projects.library.validation.api)
+            implementation(projects.library.validation.impl)
             api(projects.library.credentials.api)
             api(projects.library.credentials.impl)
             api(projects.library.money.api)
             api(projects.library.biometry.api)
             implementation(projects.library.biometry.impl)
             implementation(projects.library.money.impl)
+            //Auth
+            implementation(projects.feature.authorization.domain.api)
+            implementation(projects.feature.authorization.domain.impl)
+            implementation(projects.feature.authorization.data)
+            api(projects.feature.authorization.presentation)
             //Dashboard
             api(projects.feature.dashboard.presentation)
             //Settings

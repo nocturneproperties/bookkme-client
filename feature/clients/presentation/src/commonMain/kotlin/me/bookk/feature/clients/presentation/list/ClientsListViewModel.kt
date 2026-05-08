@@ -3,7 +3,6 @@ package me.bookk.feature.clients.presentation.list
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.retry
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
@@ -34,7 +33,9 @@ class ClientsListViewModel(
         loadClients()
         listenFor<ClientEvent.Created>()
             .onEach { loadClients() }
-            .retry()
+            .launchIn(viewModelScope)
+        listenFor<ClientEvent.Deleted>()
+            .onEach { loadClients() }
             .launchIn(viewModelScope)
     }
 

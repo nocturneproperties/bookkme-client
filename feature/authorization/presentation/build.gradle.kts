@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.settings.domain.api)
             implementation(projects.library.device.api)
+            implementation(projects.library.validation.api)
         }
     }
 }

@@ -13,9 +13,9 @@ import me.bookk.feature.settings.data.remote.api.AuthRouting
 import me.bookk.feature.settings.data.remote.model.PasskeyRemote
 import me.bookk.feature.settings.data.remote.model.RegistrationChallengeResponse
 import me.bookk.feature.settings.domain.api.entity.Passkey
+import me.bookk.feature.settings.domain.datasource.passkey.AddPasskeyChallenge
 import me.bookk.feature.settings.domain.datasource.passkey.ClientSignUpResult
 import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSource
-import me.bookk.feature.settings.domain.datasource.passkey.ServerSignUpChallenge
 import kotlin.uuid.Uuid
 
 internal class PasskeySettingsDataSourceImpl(
@@ -35,7 +35,7 @@ internal class PasskeySettingsDataSourceImpl(
         }
     }
 
-    override suspend fun getRegistrationChallengeForNewPasskey(): ServerSignUpChallenge {
+    override suspend fun getRegistrationChallengeForNewPasskey(): AddPasskeyChallenge {
         return mapExceptions {
             httpClient.get(AuthRouting.Api.Auth.PassKey.AddChallenge())
                 .body<RegistrationChallengeResponse>()

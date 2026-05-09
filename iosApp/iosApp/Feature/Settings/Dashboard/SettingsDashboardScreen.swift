@@ -47,8 +47,8 @@ struct SettingsDashboardScreen: View {
 				ContactUsScreen()
 			}
 		}
-		.sendLifecycleEventsTo(viewModel: settingsVM)
-		.handleNotifications(state: uiState.notification)
+		.sendLifecycleEventsTo(settingsVM)
+		.handleNotifications(uiState.notification)
 		.environmentObject(navigationStack)
 	}
 }

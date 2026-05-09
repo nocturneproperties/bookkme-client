@@ -12,11 +12,21 @@ struct Header : View {
 	@State
 	var text: String = ""
 	
+	@State
+	var discardDefaultPadding: Bool = false
+	
 	var body: some View {
-		Text(text)
-			.font(.footnote)
-			.textCase(.uppercase)
-			.foregroundStyle(AppColors.header)
-			.padding(.leading)
+		if (discardDefaultPadding) {
+			Text(text)
+				.font(.footnote)
+				.textCase(.uppercase)
+				.foregroundStyle(AppColors.header)
+		} else {
+			Text(text)
+				.font(.footnote)
+				.textCase(.uppercase)
+				.foregroundStyle(AppColors.header)
+				.padding(.leading)
+		}
 	}
 }

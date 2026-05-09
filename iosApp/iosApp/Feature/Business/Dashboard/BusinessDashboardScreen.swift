@@ -17,13 +17,11 @@ struct BusinessDashboardScreen: View {
 		VStack {
 			BusinessDashboardScreenContent(state: viewModel.uiState)
 		}
-		.withNavigationBar(state: viewModel.uiState.appBar)
-		.navigationBarTitleDisplayMode(.inline)
-		.handleNotifications(state: viewModel.uiState.notifications)
-		.sendLifecycleEventsTo(viewModel: viewModel)
-		.handleNavigation(state: viewModel.uiState.navigation) { navigation in
+		.withNavigationBar(viewModel.uiState.appBar)
+		.handleNotifications(viewModel.uiState.notifications)
+		.sendLifecycleEventsTo(viewModel)
+		.handleNavigation(viewModel.uiState.navigation) { navigation in
 		}
-		.background(AppColors.background)
 	}
 }
 

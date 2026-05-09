@@ -23,28 +23,28 @@ struct SignInScreen: View {
                 signInVM.onLearnMoreClick()
             }
             Spacer()
-            StateButton(state: uiState.signInButton.impl()) {
+            StateButton(uiState.signInButton.impl()) {
                 signInVM.onSignInClick()
             }
-			TextButton(state: uiState.signUpButton.impl()) {
+			TextButton(uiState.signUpButton.impl()) {
 				navigationStack.path.append(AuthDestination.SignUp())
 			}
-            TextButton(state: uiState.troubleshootButton.impl()) {
+            TextButton(uiState.troubleshootButton.impl()) {
 				navigationStack.path.append(AuthDestination.Troubleshoot())
             }
         }
         .padding()
 		.background(AppColors.background)
-		.withNavigationBar(state: signInVM.uiState.appBar)
-		.handleNotifications(state: uiState.notification)
-        .handleNavigation(state: uiState.navigation) { navigation in
+		.withNavigationBar(signInVM.uiState.appBar)
+		.handleNotifications(uiState.notification)
+        .handleNavigation(uiState.navigation) { navigation in
             switch navigation {
             case is SignInNavigationDestination.Main:
                 break
             default: break
             }
         }
-        .sendLifecycleEventsTo(viewModel: signInVM)
+        .sendLifecycleEventsTo(signInVM)
     }
 }
 
@@ -69,7 +69,7 @@ struct PasskeyCard: View {
                 .font(.caption)
                 .foregroundStyle(AppColors.secondary)
             
-            TextButton(state: learnMoreState, maxWidth: nil) {
+            TextButton(learnMoreState, maxWidth: nil) {
                 onClick()
             }
         }

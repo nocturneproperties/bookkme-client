@@ -34,7 +34,7 @@ actual abstract class ViewModel actual constructor(
         launchIn: CoroutineContext,
         call: suspend () -> Output,
         onComplete: (suspend (Output) -> Unit)?,
-        onError: (suspend (Throwable) -> Unit)?,
+        onError: (suspend (Throwable) -> Unit),
         onStart: (suspend () -> Unit)?,
         onTerminate: (suspend () -> Unit)?,
     ): Job? {
@@ -58,7 +58,47 @@ actual abstract class ViewModel actual constructor(
                 }
                 onComplete?.invoke(result)
             } catch (e: Throwable) {
-                onError?.invoke(e) ?: throw e
+                onError.invoke(e)
+            } finally {
+                onTerminate?.invoke()
+            }
+        }.also {
+            if (key != null) {
+                activeJobs[key] = it
+            }
+        }
+    }
+
+    actual fun <Output> launchCached(
+        key: String?,
+        launchBehaviour: LaunchBehaviour,
+        launchIn: CoroutineContext,
+        call: suspend (suspend (Output) -> Unit) -> Unit,
+        onComplete: (suspend (Output) -> Unit),
+        onError: (suspend (Throwable) -> Unit),
+        onStart: (suspend () -> Unit)?,
+        onTerminate: (suspend () -> Unit)?,
+    ): Job? {
+        val activeJob = when (launchBehaviour) {
+            LaunchBehaviour.DropLatest -> {
+                if (key != null && activeJobs[key]?.isActive == true) return null
+                null
+            }
+
+            LaunchBehaviour.DropOldest -> {
+                activeJobs[key]
+            }
+        }
+        return viewModelScope.launch(viewModelScopeErrorHandler) {
+            try {
+                activeJob?.cancelAndJoin()
+                onStart?.invoke()
+
+                withContext(launchIn) {
+                    call(onComplete)
+                }
+            } catch (e: Throwable) {
+                onError.invoke(e)
             } finally {
                 onTerminate?.invoke()
             }
@@ -76,6 +116,7 @@ actual abstract class ViewModel actual constructor(
     }
 
     actual override fun onCleared() {
+        internalLogger.i("On clear called $this")
         super.onCleared()
     }
 }

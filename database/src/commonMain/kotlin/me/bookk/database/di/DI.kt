@@ -15,4 +15,5 @@ fun databaseModule() = module {
 internal fun daoModule() = module {
     factory { get<AppDatabase>().profileDao() }
     factory { get<AppDatabase>().businessDao() }
+    factory { get<AppDatabase>().clientDao() }
 }

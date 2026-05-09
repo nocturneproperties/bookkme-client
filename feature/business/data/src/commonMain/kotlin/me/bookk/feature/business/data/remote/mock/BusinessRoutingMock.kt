@@ -65,7 +65,7 @@ private class GetBusinessesHandler : MockRequestHandler {
 private class UpdateBusinessesHandler : MockRequestHandler {
     override val method: HttpMethod = HttpMethod.Put
     override val path: String
-        get() = href(ResourcesFormat(), BusinessRouting.Api.Business.Id(id = mockBusiness.id.toString()))
+        get() = href(ResourcesFormat(), BusinessRouting.Api.Business.Id(id = mockBusiness.id))
 
     override suspend fun handle(
         scope: MockRequestHandleScope,

@@ -31,7 +31,7 @@ struct DeleteAccountScreen: View {
 			.background(AppColors.elevated)
 			.clipShape(RoundedRectangle(cornerRadius: 10))
 			Spacer()
-			StateButton(state: uiState.deleteButton) {
+			StateButton(uiState.deleteButton) {
 				viewModel.onDeleteClick()
 			}.padding(.bottom, 16)
 		}
@@ -39,8 +39,8 @@ struct DeleteAccountScreen: View {
 		.background(AppColors.background)
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
-		.sendLifecycleEventsTo(viewModel: viewModel)
-		.handleNotifications(state: uiState.notifications)
+		.sendLifecycleEventsTo(viewModel)
+		.handleNotifications(uiState.notifications)
 	}
 }
 

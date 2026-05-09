@@ -5,11 +5,13 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retry
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.feature.business.domain.api.GetAvailableDashboardFeatures
-import me.bookk.feature.business.domain.api.ObserveDashboardBusinessChanges
+import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
+import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardSection
@@ -27,16 +29,21 @@ class BusinessDashboardViewModel(
 
     init {
         observeBusiness()
+        uiState.appBar.size = TopBarSize.SMALL
     }
 
     private fun observeBusiness() {
         observeDashboardBusinessChanges()
             .filterNotNull()
+            .flowOn(DispatcherProvider.io)
             .onEach { business ->
                 uiState.appBar.title = business.name.desc()
                 loadFeatures(business.id)
             }
-            .flowOn(DispatcherProvider.io)
+            .retry {
+                uiState.notifications.add(errorMapper.mapToNotification(it))
+                true
+            }
             .launchIn(viewModelScope)
     }
 

@@ -1,0 +1,8 @@
+package ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.data.di
+
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
+
+fun ${FEATURE_NAME}DataModule() = module {
+}

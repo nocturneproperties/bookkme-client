@@ -51,6 +51,8 @@ include(":library:money:api")
 include(":library:money:impl")
 include(":library:biometry:api")
 include(":library:biometry:impl")
+include(":library:validation:api")
+include(":library:validation:impl")
 
 //Authorization
 include(":feature:authorization:data")
@@ -75,3 +77,10 @@ include(":feature:business:data:source")
 include(":feature:business:domain:api")
 include(":feature:business:domain:impl")
 include(":feature:business:presentation")
+
+//Clients
+include(":feature:clients:data")
+include(":feature:clients:data:source")
+include(":feature:clients:domain:api")
+include(":feature:clients:domain:impl")
+include(":feature:clients:presentation")

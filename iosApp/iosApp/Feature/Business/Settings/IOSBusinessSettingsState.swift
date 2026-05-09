@@ -47,19 +47,19 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 	
 	init(initData: BusinessSettingsStateInitData) {
 		self.appBar = IOSAppBarState(title: initData.title)
-		self.address = IOSTextFieldState(hint: initData.addressHint)
+		self.address = IOSTextFieldState(placeholder: initData.addressHint)
 		self.currency = IOSPickerState()
-		self.description_ = IOSTextFieldState(hint: initData.descriptionHint)
-		self.instagram = IOSTextFieldState(hint: initData.instagramHint, startIcon: initData.instaIcon)
-		self.location = IOSTextFieldState(hint: initData.locationHint, readOnly: true)
-		self.name = IOSTextFieldState(hint: initData.nameHint)
+		self.description_ = IOSTextFieldState(placeholder: initData.descriptionHint)
+		self.instagram = IOSTextFieldState(placeholder: initData.instagramHint, startIcon: initData.instaIcon)
+		self.location = IOSTextFieldState(placeholder: initData.locationHint, readOnly: true)
+		self.name = IOSTextFieldState(placeholder: initData.nameHint)
 		self.notifications = IOSNotificationState()
 		self.save = IOSButtonState(text: initData.saveButtonText, isEnabled: false)
-		self.telegram = IOSTextFieldState(hint: initData.telegramHint, startIcon: initData.telegramIcon)
+		self.telegram = IOSTextFieldState(placeholder: initData.telegramHint, startIcon: initData.telegramIcon)
 		self.testLocation = IOSButtonState(text: initData.testLocationText)
-		self.viber = IOSTextFieldState(hint: initData.viberHint, startIcon: initData.viberIcon)
+		self.viber = IOSTextFieldState(placeholder: initData.viberHint, startIcon: initData.viberIcon)
 		self.pickLocation = IOSButtonState(text: initData.pickLocationText)
-		self.phone = IOSTextFieldState(hint: initData.phoneHint, startIcon: initData.phoneIcon)
+		self.phone = IOSTextFieldState(placeholder: initData.phoneHint, startIcon: initData.phoneIcon)
 	}
 	
 }

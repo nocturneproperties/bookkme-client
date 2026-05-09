@@ -17,9 +17,6 @@ sealed class BusinessDestination {
     data object Employees : BusinessDestination()
 
     @Serializable
-    data object Clients : BusinessDestination()
-
-    @Serializable
     data object Analytics : BusinessDestination()
 
     @Serializable

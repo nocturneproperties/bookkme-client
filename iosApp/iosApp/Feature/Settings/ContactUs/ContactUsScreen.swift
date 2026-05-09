@@ -20,7 +20,7 @@ struct ContactUsScreen: View {
 	var body: some View {
 		let uiState = viewModel.uiState
 		VStack {
-			StateTextField(state: uiState.contactField, textEditor: true) { text in
+			StateTextField(uiState.contactField, textEditor: true) { text in
 				viewModel.onContactTextChanged(text: text)
 			}
 			.lineLimit(5...10)
@@ -35,7 +35,7 @@ struct ContactUsScreen: View {
 				.font(.footnote)
 				.foregroundStyle(AppColors.secondary)
 			Spacer()
-			StateButton(state: uiState.submitButton) {
+			StateButton(uiState.submitButton) {
 				viewModel.onSubmitClick()
 			}
 			.padding(.bottom, 24)
@@ -44,9 +44,9 @@ struct ContactUsScreen: View {
 		.background(AppColors.background)
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
-		.sendLifecycleEventsTo(viewModel: viewModel)
-		.handleNotifications(state: uiState.notifications)
-		.handleNavigation(state: uiState.navigation) { destination in
+		.sendLifecycleEventsTo(viewModel)
+		.handleNotifications(uiState.notifications)
+		.handleNavigation(uiState.navigation) { destination in
 			switch destination {
 			case is ContactUsNavigationDestination.Back:
 				navigationStack.path.removeLast()

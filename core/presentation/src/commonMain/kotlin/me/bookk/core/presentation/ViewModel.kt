@@ -26,7 +26,18 @@ expect abstract class ViewModel(
         launchIn: CoroutineContext,
         call: suspend () -> Output,
         onComplete: (suspend (Output) -> Unit)? = null,
-        onError: (suspend (Throwable) -> Unit)? = null,
+        onError: (suspend (Throwable) -> Unit),
+        onStart: (suspend () -> Unit)? = null,
+        onTerminate: (suspend () -> Unit)? = null,
+    ): Job?
+
+    protected fun <Output> launchCached(
+        key: String? = null,
+        launchBehaviour: LaunchBehaviour = LaunchBehaviour.DropOldest,
+        launchIn: CoroutineContext,
+        call: suspend (suspend (Output) -> Unit) -> Unit,
+        onComplete: (suspend (Output) -> Unit),
+        onError: (suspend (Throwable) -> Unit),
         onStart: (suspend () -> Unit)? = null,
         onTerminate: (suspend () -> Unit)? = null,
     ): Job?
@@ -50,7 +61,7 @@ enum class LaunchBehaviour {
      * )
      *
      * If job2 will be launched before job1 completes,
-     * job2 will never be executed and will be cancelled immediately,
+     * job2 will never be executed and will be canceled immediately,
      * returning null instead of a job.
      * */
     DropLatest,
@@ -71,7 +82,7 @@ enum class LaunchBehaviour {
      * )
      *
      * If job2 will be launched before job1 completes,
-     * job1 will be cancelled and job2 will be started instead.
+     * job1 will be canceled and job2 will be started instead.
      * */
     DropOldest
 }

@@ -14,11 +14,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,7 @@ import me.bookk.designsystem.html
 import me.bookk.designsystem.painter
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
+import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -40,12 +43,21 @@ fun AppTopBar(
     colors: TopAppBarColors = topBarDefaultColors(),
     actions: @Composable RowScope.() -> Unit = {
         state.actions.items.forEach {
-            IconButton(onClick = it.onClick) {
-                Icon(
-                    painter = it.icon.painter(),
-                    contentDescription = it.contentDescription?.localized(),
-                    tint = colors.actionIconContentColor
-                )
+            if (it.icon != null) {
+                IconButton(onClick = it.onClick) {
+                    Icon(
+                        painter = it.icon.painter(),
+                        contentDescription = it.contentDescription.localized(),
+                        tint = colors.actionIconContentColor
+                    )
+                }
+            } else {
+                TextButton(onClick = it.onClick) {
+                    Text(
+                        it.contentDescription.localized(),
+                        style = MaterialTheme.typography.bodyLarge.active()
+                    )
+                }
             }
         }
     },
@@ -113,9 +125,14 @@ private fun AppBarTitle(text: String, size: TopBarSize, color: Color) {
         TopBarSize.SMALL -> MaterialTheme.typography.headlineSmall
         TopBarSize.LARGE -> MaterialTheme.typography.headlineLarge
     }
+    val weight = when (size) {
+        TopBarSize.SMALL -> FontWeight.Normal
+        TopBarSize.LARGE -> FontWeight.Bold
+    }
     Text(
         text = text,
         style = style,
+        fontWeight = weight,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
         color = color

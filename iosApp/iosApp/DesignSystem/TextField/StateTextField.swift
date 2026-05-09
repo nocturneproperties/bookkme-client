@@ -38,7 +38,7 @@ struct StateTextField: View {
 	}
 	
 	init(
-		state: TextFieldState,
+		_ state: TextFieldState,
 		textEditor: Bool = false,
 		onTextChanged: ((String) -> Void)? = nil
 	) {
@@ -56,7 +56,7 @@ struct StateTextField: View {
 				}
 				LabeledContent {
 					TextField(
-						state.hint.localized(),
+						state.placeholder.localized(),
 						text: Binding<String>(
 							get: { state.text },
 							set: { text in
@@ -121,10 +121,10 @@ struct StateTextField: View {
     
     @Previewable
     @State
-	var value: IOSTextFieldState = IOSTextFieldState(enabled: true, supportingTextRes: RawStringDesc(string: "Error") , hint: RawStringDesc(string: "Hint"), isValid: true, maxLength: 20, readOnly: false, text: "Text")
+	var value: IOSTextFieldState = IOSTextFieldState(enabled: true, supportingTextRes: RawStringDesc(string: "Error"), placeholder: RawStringDesc(string: "Hint"), isValid: true, maxLength: 20, readOnly: false, text: "Text",)
     
 	VStack {
-		StateTextField(state: value) { _ in
+		StateTextField(value) { _ in
 			
 		}.padding()
 	}.background(AppColors.background)

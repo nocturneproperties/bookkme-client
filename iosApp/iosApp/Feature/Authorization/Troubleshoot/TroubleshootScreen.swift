@@ -19,11 +19,11 @@ struct TroubleshootScreen: View {
         VStack {
             TroubleshootCard(troubleshootInfo: uiState.troubleshootCardStaticData)
             Spacer()
-            StateButton(state: uiState.contactSupportButton.impl()) {
+            StateButton(uiState.contactSupportButton.impl()) {
 				//navigationStack.path.append()
             }
         }
-		.sendLifecycleEventsTo(viewModel: troubleshootVM)
+		.sendLifecycleEventsTo(troubleshootVM)
         .padding()
         .navigationTitle(troubleshootVM.uiState.appBar.title.localized())
         .navigationBarTitleDisplayMode(.large)

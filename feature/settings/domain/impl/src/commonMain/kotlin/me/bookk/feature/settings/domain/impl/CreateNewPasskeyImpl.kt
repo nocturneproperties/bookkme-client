@@ -6,9 +6,9 @@ import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVeri
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
 import me.bookk.feature.settings.domain.api.entity.Passkey
+import me.bookk.feature.settings.domain.datasource.passkey.AddPasskeyChallenge
 import me.bookk.feature.settings.domain.datasource.passkey.ClientSignUpResult
 import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSource
-import me.bookk.feature.settings.domain.datasource.passkey.ServerSignUpChallenge
 
 internal class CreateNewPasskeyImpl(
     private val passkeySettingsDataSource: PasskeySettingsDataSource,
@@ -27,19 +27,20 @@ internal class CreateNewPasskeyImpl(
         return getAvailablePasskeys()
     }
 
-    private suspend fun createPasskeyFrom(challenge: ServerSignUpChallenge): PasskeyVerificationPayload {
+    private suspend fun createPasskeyFrom(challenge: AddPasskeyChallenge): PasskeyVerificationPayload {
         return runCatching {
             passKeyManager.create(
-                PassKeyManager.ChallengeRequest(
-                    userId = challenge.requestId,
+                PassKeyManager.CreationRequest(
+                    userId = challenge.userHandle,
                     userName = challenge.displayName,
-                    challengeJson = challenge.jsonChallengeData
+                    challengeJson = challenge.jsonChallengeData,
+                    challenge = challenge.challenge
                 )
             )
         }.getOrElse {
             throw when (it) {
-                PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                else -> CreateNewPasskey.Error.AccountCreationFailed
+                is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
+                else -> CreateNewPasskey.Error.AccountCreationFailed()
             }
         }
     }

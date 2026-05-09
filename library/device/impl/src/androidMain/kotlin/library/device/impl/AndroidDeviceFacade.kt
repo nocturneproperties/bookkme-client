@@ -6,10 +6,15 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import androidx.core.net.toUri
 import library.device.api.DeviceFacade
+import me.bookk.core.LogFactory
+
 
 class AndroidDeviceFacade(
     private val appContext: Context
 ) : DeviceFacade {
+
+    private val logger = LogFactory.createLogger("DeviceFacade")
+
     override fun getPlatformName(): String {
         return "android"
     }
@@ -32,5 +37,19 @@ class AndroidDeviceFacade(
     override fun openMapAt(lat: Double, lng: Double) {
         val geoUrl = "geo:$lat,$lng?z=15"
         openUrlPreview(geoUrl)
+    }
+
+    override fun dial(number: String) {
+        val intent = Intent(Intent.ACTION_DIAL, "tel:$number".toUri())
+            .addFlags(FLAG_ACTIVITY_NEW_TASK)
+        runCatching { appContext.startActivity(intent) }
+            .onFailure { logger.e(it) }
+    }
+
+    override fun mail(email: String) {
+        val intent = Intent(Intent.ACTION_SENDTO, "mailto:$email".toUri())
+            .addFlags(FLAG_ACTIVITY_NEW_TASK)
+        runCatching { appContext.startActivity(Intent.createChooser(intent, "Chooser Title")) }
+            .onFailure { logger.e(it) }
     }
 }

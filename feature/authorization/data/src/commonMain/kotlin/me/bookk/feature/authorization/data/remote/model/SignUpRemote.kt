@@ -13,7 +13,9 @@ data class PassKeySignUpStartInfo(
 class RegistrationChallengeResponse(
     val requestId: String,
     val challenge: String,
-    val displayName: String
+    val challengeJson: String,
+    val userHandle: String,
+    val displayName: String,
 )
 
 @Serializable

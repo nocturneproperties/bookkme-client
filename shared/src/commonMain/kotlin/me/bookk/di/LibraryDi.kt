@@ -6,6 +6,7 @@ import library.device.impl.di.deviceModule
 import library.files.impl.di.filesModule
 import library.money.impl.di.moneyModule
 import library.permissions.impl.di.permissionsModule
+import library.validation.impl.di.validationModule
 import org.koin.dsl.module
 
 internal fun libraryModule() = module {
@@ -15,6 +16,7 @@ internal fun libraryModule() = module {
         cacheModule(),
         deviceModule(),
         credentialsModule(),
-        moneyModule()
+        moneyModule(),
+        validationModule()
     )
 }

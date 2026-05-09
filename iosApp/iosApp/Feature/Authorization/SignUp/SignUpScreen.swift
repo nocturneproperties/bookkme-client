@@ -18,9 +18,9 @@ struct SignUpScreen: View {
 		ScrollView {
 			SignUpScreenContent(signUpVM: signUpVM)
 				.padding()
-				.withNavigationBar(state: signUpVM.uiState.appBar)
-				.sendLifecycleEventsTo(viewModel: signUpVM)
-				.handleNotifications(state: uiState.notification)
+				.withNavigationBar(signUpVM.uiState.appBar)
+				.sendLifecycleEventsTo(signUpVM)
+				.handleNotifications(uiState.notification)
 		}.background(AppColors.background)
     }
 }
@@ -37,7 +37,7 @@ struct SignUpScreenContent:View {
 	var body: some View {
 		let uiState = signUpVM.uiState
 		VStack {
-			StateTextField(state: uiState.name.impl()) { text in
+			StateTextField(uiState.name.impl()) { text in
 				signUpVM.onFirstNameTextChanged(text: text)
 			}
 			.focused($focusedField, equals: .name)
@@ -47,7 +47,7 @@ struct SignUpScreenContent:View {
 				focusedField = .lastName
 			}
 			
-			StateTextField(state: uiState.lastName.impl()) { text in
+			StateTextField(uiState.lastName.impl()) { text in
 				signUpVM.onLastNameTextChanged(text: text)
 			}
 			.focused($focusedField, equals: .lastName)
@@ -57,7 +57,7 @@ struct SignUpScreenContent:View {
 				focusedField = .email
 			}
 			
-			StateTextField(state: uiState.email.impl()) { text in
+			StateTextField(uiState.email.impl()) { text in
 				signUpVM.onEmailTextChanged(text: text)
 			}
 			.autocapitalization(.none)
@@ -73,7 +73,7 @@ struct SignUpScreenContent:View {
 				signUpVM.onLearnMoreClick()
 			}
 			Spacer(minLength: 20)
-			StateButton(state: uiState.confirmButton.impl()) {
+			StateButton(uiState.confirmButton.impl()) {
 				signUpVM.onConfirmButtonClick()
 			}
 		}

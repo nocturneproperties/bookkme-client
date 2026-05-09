@@ -7,10 +7,10 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import dev.icerock.moko.resources.desc.StringDesc
-import eu.advapay.mobilebank.core.android.AndroidActivityAware
 import kotlinx.coroutines.suspendCancellableCoroutine
 import library.biometry.api.Biometry
 import library.biometry.api.BiometryOptManager
+import me.bookk.core.android.AndroidActivityAware
 import kotlin.coroutines.resume
 
 internal class AndroidBiometry(

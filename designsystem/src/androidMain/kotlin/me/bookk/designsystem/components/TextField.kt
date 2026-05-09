@@ -93,91 +93,81 @@ fun TextField(
         { Icon(painterResource(it), contentDescription = null) }
     }
 ) {
-    val colors = defaultTextFieldColors(state.validationState)
-    var isFocused by remember { mutableStateOf(false) }
-    CompositionLocalProvider(LocalTextSelectionColors provides colors.textSelectionColors) {
-        BasicTextField(
-            value = state.text,
-            modifier =
-                modifier
-                    .fillMaxWidth()
-                    .onFocusChanged {
-                        isFocused = it.isFocused
-                    }
-                    .animateContentSize(),
-            onValueChange = onValueChange,
-            enabled = state.enabled,
-            readOnly = state.readOnly,
-            textStyle = textStyle,
-            cursorBrush = SolidColor(if (state.validationState.isAtLeastWarning()) state.validationState.color else colors.cursorColor),
-            visualTransformation = visualTransformation,
-            keyboardOptions = keyboardOptions.copy(
-                keyboardType = state.inputType.nativeInputType()
-            ),
-            keyboardActions = keyboardActions,
-            interactionSource = interactionSource,
-            singleLine = singleLine,
-            maxLines = maxLines,
-            minLines = minLines,
-            decorationBox =
-                @Composable { innerTextField ->
-                    TextFieldDefaults.DecorationBox(
-                        value = state.text,
-                        visualTransformation = visualTransformation,
-                        innerTextField = innerTextField,
-                        label = state.label.localized().takeIf { it.isNotBlank() }?.let {
-                            {
-                                val animatedTextSize by animateFloatAsState(
-                                    targetValue = if (isFocused || state.text.isNotEmpty()) 11.sp.value else 15.sp.value,
-                                    label = "fontSizeAnimation"
-                                )
-                                Text(
-                                    text = it,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontSize = animatedTextSize.sp
-                                    )
-                                )
-                            }
-                        },
-                        placeholder = state.placeholder.localized().takeIf { it.isNotBlank() }
-                            ?.let {
+    Column(modifier) {
+        val label = state.label.localized()
+        if (label.isNotBlank()) {
+            Header(label)
+        }
+        val colors = defaultTextFieldColors(state.validationState)
+        var isFocused by remember { mutableStateOf(false) }
+        CompositionLocalProvider(LocalTextSelectionColors provides colors.textSelectionColors) {
+            BasicTextField(
+                value = state.text,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged {
+                            isFocused = it.isFocused
+                        }
+                        .animateContentSize(),
+                onValueChange = onValueChange,
+                enabled = state.enabled,
+                readOnly = state.readOnly,
+                textStyle = textStyle,
+                cursorBrush = SolidColor(if (state.validationState.isAtLeastWarning()) state.validationState.color else colors.cursorColor),
+                visualTransformation = visualTransformation,
+                keyboardOptions = keyboardOptions.copy(
+                    keyboardType = state.inputType.nativeInputType()
+                ),
+                keyboardActions = keyboardActions,
+                interactionSource = interactionSource,
+                singleLine = singleLine,
+                maxLines = maxLines,
+                minLines = minLines,
+                decorationBox =
+                    @Composable { innerTextField ->
+                        TextFieldDefaults.DecorationBox(
+                            value = state.text,
+                            visualTransformation = visualTransformation,
+                            innerTextField = innerTextField,
+                            placeholder = state.placeholder.localized().takeIf { it.isNotBlank() }
+                                ?.let {
+                                    {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodyLarge.secondary()
+                                        )
+                                    }
+                                },
+                            supportingText = state.supportingTextRes?.let { supportingTextRes ->
                                 {
                                     Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyLarge.secondary()
+                                        text = supportingTextRes.localized(),
+                                        color = state.validationState.color,
+                                        style = MaterialTheme.typography.bodySmall.primary(),
                                     )
                                 }
                             },
-                        supportingText = state.supportingTextRes?.let { supportingTextRes ->
-                            {
-                                Text(
-                                    text = supportingTextRes.localized(),
-                                    color = state.validationState.color,
-                                    style = MaterialTheme.typography.bodySmall.primary(),
+                            trailingIcon = trailingIcon,
+                            leadingIcon = leadingIcon,
+                            shape = MaterialTheme.shapes.large,
+                            singleLine = singleLine,
+                            enabled = state.enabled,
+                            isError = state.validationState.isAtLeastWarning(),
+                            interactionSource = interactionSource,
+                            colors = colors,
+                            container = {
+                                TextFieldContainer(
+                                    isFocused,
+                                    state,
+                                    colors,
+                                    interactionSource
                                 )
                             }
-                        },
-                        trailingIcon = trailingIcon,
-                        leadingIcon = leadingIcon,
-                        shape = MaterialTheme.shapes.large,
-                        singleLine = singleLine,
-                        enabled = state.enabled,
-                        isError = state.validationState.isAtLeastWarning(),
-                        interactionSource = interactionSource,
-                        colors = colors,
-                        container = {
-                            TextFieldContainer(
-                                isFocused,
-                                state,
-                                colors,
-                                interactionSource
-                            )
-                        }
-                    )
-                },
-        )
+                        )
+                    },
+            )
+        }
     }
 }
 

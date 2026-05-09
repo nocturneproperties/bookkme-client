@@ -2,6 +2,10 @@ package me.bookk.feature.authorization.presentation.sign_up
 
 import dev.icerock.moko.resources.desc.desc
 import library.device.api.DeviceFacade
+import library.validation.api.ValidateEmail
+import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
+import library.validation.api.ValidateName
+import library.validation.api.ValidateName.Result.Invalid.Length.isValid
 import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -13,10 +17,6 @@ import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.Error
-import me.bookk.feature.authorization.domain.api.ValidateEmail
-import me.bookk.feature.authorization.domain.api.ValidateEmail.Result.Invalid.Format.isValid
-import me.bookk.feature.authorization.domain.api.ValidateName
-import me.bookk.feature.authorization.domain.api.ValidateName.Result.Invalid.Length.isValid
 import me.bookk.feature.authorization.presentation.AuthConstants
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData

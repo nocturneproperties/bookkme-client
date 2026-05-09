@@ -1,0 +1,11 @@
+package ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.presentation.di
+
+import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
+import org.koin.mp.KoinPlatform
+
+internal actual fun platform${FEATURE_NAME_CAPITAL}DiModule(): Module = module {
+
+}

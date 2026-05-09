@@ -16,7 +16,7 @@ struct CreateBusinessScreen: View {
 	var body: some View {
 		let uiState = viewModel.uiState
 		VStack {
-			StateTextField(state: uiState.name.impl()) { text in
+			StateTextField(uiState.name.impl()) { text in
 				viewModel.onBusinessNameChanged(name: text)
 			}
 			.textContentType(.organizationName)
@@ -27,12 +27,12 @@ struct CreateBusinessScreen: View {
 		.navigationTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.toolbar {
-			TextButton(state: uiState.createBtn) {
+			TextButton(uiState.createBtn) {
 				viewModel.onCreateClick()
 			}
 		}
-		.handleNotifications(state: uiState.notifications)
-		.sendLifecycleEventsTo(viewModel: viewModel)
+		.handleNotifications(uiState.notifications)
+		.sendLifecycleEventsTo(viewModel)
 		.background(AppColors.background)
 	}
 }

@@ -6,6 +6,7 @@
 //  Copyright © 2024 BookkMe. All rights reserved.
 //
 import shared
+import SwiftUI
 
 @Observable
 @MainActor
@@ -17,15 +18,14 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 
     var enabled: Bool
     var supportingTextRes: (any StringDesc)?
-    var hint: any StringDesc
 	var label: any StringDesc
     var validationState: ValidationState
     var isValid: Bool
     var maxLength: Int32
     var readOnly: Bool
     var text: String
-	var startIcon: ImageResource?
-	var endIcon: ImageResource?
+	var startIcon: shared.ImageResource?
+	var endIcon: shared.ImageResource?
 	var inputType: InputType
 	var onTextChanged: ((String) -> Void)?
 	var placeholder: any StringDesc
@@ -33,22 +33,20 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 	init(
 		enabled: Bool = true,
 		supportingTextRes: (any StringDesc)? = nil,
-		hint: any StringDesc = RawStringDesc(string: ""),
+		placeholder: any StringDesc = RawStringDesc(string: ""),
 		label: any StringDesc = RawStringDesc(string: ""),
 		validationState: ValidationState = ValidationState.default_,
 		isValid: Bool = true,
 		maxLength: Int32 = Int32.max,
 		readOnly: Bool = false,
 		text: String = "",
-		startIcon: ImageResource? = nil,
-		endIcon: ImageResource? = nil,
+		startIcon: shared.ImageResource? = nil,
+		endIcon: shared.ImageResource? = nil,
 		inputType: InputType = InputType.text,
-		onTextChanged: ((String) -> Void)? = nil,
-		placeholder: any StringDesc = RawStringDesc(string: "")
+		onTextChanged: ((String) -> Void)? = nil
 	) {
 		self.enabled = enabled
 		self.supportingTextRes = supportingTextRes
-		self.hint = hint
 		self.label = label
 		self.validationState = validationState
 		self.isValid = isValid
@@ -72,4 +70,15 @@ extension shared.TextFieldState {
     func impl() -> IOSTextFieldState {
         return self as! IOSTextFieldState
     }
+	
+	func binding() -> Binding<String> {
+		return Binding(
+			get: {
+				return self.text
+			},
+			set: {
+				self.onTextChanged?($0)
+			}
+		)
+	}
 }

@@ -16,16 +16,24 @@ struct BusinessTab: View {
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
 			BusinessStartDestinationView(state: bootstrapVM.uiState)
-				.handleNotifications(state: bootstrapVM.uiState.notification)
+				.handleNotifications(bootstrapVM.uiState.notification)
+				.navigationDestination(for: ClientsDestinations.ClientDetails.self) { type in
+					ClientDetailsScreen(id: type.id)
+				}
+				.navigationDestination(for: ClientsDestinations.CreateClient.self) { type in
+					CreateClientScreen(businessId: type.businessId)
+				}
 				.navigationDestination(for: DashboardNavigationDestination.self) { type in
 					switch type {
-					case is DashboardNavigationDestination.Settings:
-						BusinessSettingsScreen(id: (type as! DashboardNavigationDestination.Settings).id)
+					case let type as DashboardNavigationDestination.Settings:
+						BusinessSettingsScreen(id: type.id)
+					case let type as DashboardNavigationDestination.Clients:
+						ClientsListScreen(businessId: type.id)
 					default:
 						ProgressView()
 					}
 				}
-		}
+		}.environmentObject(navigationStack)
 	}
 }
 

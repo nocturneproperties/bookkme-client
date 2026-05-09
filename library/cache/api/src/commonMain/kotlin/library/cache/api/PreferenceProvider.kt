@@ -13,6 +13,8 @@ interface Preferences {
     fun <T : Any> getFlow(key: Key<T>, cls: KClass<T>): Flow<T?>
 
     suspend fun <T : Any> set(key: Key<T>, value: T?, cls: KClass<T>)
+    suspend fun <T : Any> remove(key: Key<T>, cls: KClass<T>)
+    suspend fun clear()
 
     class Key<T>(val name: String)
 }
@@ -27,4 +29,8 @@ inline fun <reified T : Any> Preferences.getFlow(key: Preferences.Key<T>): Flow<
 
 suspend inline fun <reified T : Any> Preferences.set(key: Preferences.Key<T>, value: T?) {
     return set(key, value, T::class)
+}
+
+suspend inline fun <reified T : Any> Preferences.remove(key: Preferences.Key<T>) {
+    return remove(key, T::class)
 }

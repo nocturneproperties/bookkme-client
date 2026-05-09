@@ -23,12 +23,16 @@ internal class DeleteAccountImpl(
     }
 
     private suspend fun authorizeWithPasskey(challenge: ServerAuthenticationChallenge): PasskeyVerificationPayload {
-        return runCatching { passKeyManager.authorize(challenge.challengeJson) }
+        return runCatching {
+            passKeyManager.authorize(
+                PassKeyManager.AuthorizationRequest(challenge.challengeJson, challenge.challenge)
+            )
+        }
             .recoverCatching {
                 throw when (it) {
-                    PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                    PassKeyManager.Error.CredentialsMissing -> DeleteAccount.Error.AccountVerificationFailed
-                    else -> DeleteAccount.Error.AccountVerificationFailed
+                    is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
+                    is PassKeyManager.Error.CredentialsMissing -> DeleteAccount.Error.AccountVerificationFailed()
+                    else -> DeleteAccount.Error.AccountVerificationFailed()
                 }
             }.getOrThrow()
     }
@@ -46,7 +50,7 @@ internal class DeleteAccountImpl(
             )
         }.getOrElse {
             when (it.businessOrThrow().errorCode) {
-                AuthErrorCodes.VERIFICATION_FAILED -> DeleteAccount.Error.AccountVerificationFailed
+                AuthErrorCodes.VERIFICATION_FAILED -> DeleteAccount.Error.AccountVerificationFailed()
                 else -> it
             }
         }

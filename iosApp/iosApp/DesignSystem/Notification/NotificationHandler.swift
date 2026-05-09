@@ -11,6 +11,8 @@ import Combine
 import shared
 
 struct NotificationHandler: ViewModifier {
+	
+	@EnvironmentObject var logOutHandler: LogOutHandler
     
     @Bindable
     var notificationState: IOSNotificationState
@@ -32,6 +34,10 @@ struct NotificationHandler: ViewModifier {
 						break
 					case is PresentationNotificationGlobalMessage:
 						notificationState.removeFirst()
+						break
+					case is PresentationNotificationUnauthorized:
+						notificationState.removeFirst()
+						logOutHandler.onLogOut()
 						break
 					default:
 						notificationState.removeFirst()
@@ -63,7 +69,7 @@ struct NotificationHandler: ViewModifier {
 }
 
 extension View {
-	func handleNotifications(state: PresentationNotificationState) -> some View {
+	func handleNotifications(_ state: PresentationNotificationState) -> some View {
         modifier(NotificationHandler(notificationState: state.impl()))
     }
 }

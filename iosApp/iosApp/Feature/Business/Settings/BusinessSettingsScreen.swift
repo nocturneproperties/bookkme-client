@@ -19,11 +19,11 @@ struct BusinessSettingsScreen: View {
 	var body: some View {
 		BusinessSettingsContent(viewModel: viewModel)
 			.background(AppColors.background)
-			.withNavigationBar(state: viewModel.uiState.appBar)
-			.handleNotifications(state: viewModel.uiState.notifications)
-			.sendLifecycleEventsTo(viewModel: viewModel)
+			.withNavigationBar(viewModel.uiState.appBar)
+			.handleNotifications(viewModel.uiState.notifications)
+			.sendLifecycleEventsTo(viewModel)
 			.toolbar {
-				TextButton(state: viewModel.uiState.save) {
+				TextButton(viewModel.uiState.save) {
 					viewModel.onSaveClick()
 				}
 			}
@@ -45,13 +45,13 @@ struct BusinessSettingsContent: View {
 			VStack(alignment: .leading, spacing: 16) {
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_name_title.desc().localized())
-					StateTextField(state: state.name) { text in
+					StateTextField(state.name) { text in
 						viewModel.onNameChanged(name: text)
 					}
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_description_title.desc().localized())
-					StateTextField(state: state.description_, textEditor: true) { text in
+					StateTextField(state.description_, textEditor: true) { text in
 						viewModel.onDescriptionChanged(description: text)
 					}
 					.lineLimit(3, reservesSpace: true)
@@ -59,38 +59,38 @@ struct BusinessSettingsContent: View {
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_location_title.desc().localized())
 					HStack(spacing: 0) {
-						StateTextField(state: state.location) { text in
+						StateTextField(state.location) { text in
 						}
 						
-						TextButton(state: state.pickLocation, maxWidth: nil) {
+						TextButton(state.pickLocation, maxWidth: nil) {
 							viewModel.onPickLocationClicked()
 						}.padding(.horizontal)
 					}
-					TextButton(state: state.testLocation, textAlignment: .leading) {
+					TextButton(state.testLocation, textAlignment: .leading) {
 						viewModel.onTestLocationClick()
 					}
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_address_title.desc().localized())
-					StateTextField(state: state.address) { text in
+					StateTextField(state.address) { text in
 						viewModel.onAddressChanged(address: text)
 					}
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_currency_title.desc().localized())
-					PickerField(state: state.currency) { option in
+					PickerField(state.currency) { option in
 						viewModel.onCurrencySelected(currencyUI: option as! CurrencyUI)
 					}
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_socials_title.desc().localized())
-					StateTextField(state: state.instagram) { text in
+					StateTextField(state.instagram) { text in
 						viewModel.onInstagramChanged(insta: text)
 					}
-					StateTextField(state: state.telegram) { text in
+					StateTextField(state.telegram) { text in
 						viewModel.onTelegramChanged(telegram: text)
 					}
-					StateTextField(state: state.viber) { text in
+					StateTextField(state.viber) { text in
 						viewModel.onViberChanged(viber: text)
 					}
 				}

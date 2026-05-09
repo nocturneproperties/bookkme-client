@@ -6,6 +6,6 @@ import kotlin.uuid.Uuid
 interface PasskeySettingsDataSource {
     suspend fun getPasskeys(): List<Passkey>
     suspend fun deletePasskey(id: Uuid)
-    suspend fun getRegistrationChallengeForNewPasskey(): ServerSignUpChallenge
+    suspend fun getRegistrationChallengeForNewPasskey(): AddPasskeyChallenge
     suspend fun sendVerifiedPasskey(data: ClientSignUpResult)
 }

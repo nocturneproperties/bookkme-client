@@ -25,7 +25,7 @@ struct ViewLifecycleNotifier: ViewModifier {
 }
 
 extension View {
-    func sendLifecycleEventsTo(viewModel: shared.ViewModel) -> some View {
+    func sendLifecycleEventsTo(_ viewModel: shared.ViewModel) -> some View {
         modifier(ViewLifecycleNotifier(viewModel: viewModel))
     }
 }

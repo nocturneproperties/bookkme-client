@@ -29,4 +29,5 @@ fun businessBootstrapVM(): BusinessBootstrapViewModel = KoinPlatform.getKoin().g
 fun businessDashboardVM(): BusinessDashboardViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
-fun businessSettingsVM(id: Uuid): BusinessSettingsViewModel = KoinPlatform.getKoin().get(parameters = { parametersOf(id) })
+fun businessSettingsVM(id: Uuid): BusinessSettingsViewModel =
+    KoinPlatform.getKoin().get(parameters = { parametersOf(id) })

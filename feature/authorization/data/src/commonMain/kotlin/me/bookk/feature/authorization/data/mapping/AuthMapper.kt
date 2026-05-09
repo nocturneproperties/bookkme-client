@@ -30,7 +30,9 @@ internal fun RegistrationChallengeResponse.toDomain(): ServerSignUpChallenge {
     return ServerSignUpChallenge(
         requestId = requestId,
         displayName = displayName,
-        jsonChallengeData = challenge
+        jsonChallengeData = challengeJson,
+        challenge = challenge,
+        userHandle = userHandle
     )
 }
 
@@ -60,7 +62,8 @@ internal fun RegistrationData.toRemote(): VerifyAccountCreationRequest {
 internal fun AuthChallengeResponse.toDomain(): ServerAuthenticationChallenge {
     return ServerAuthenticationChallenge(
         requestId = requestId,
-        challengeJson = challengeJson
+        challengeJson = challengeJson,
+        challenge = challenge
     )
 }
 

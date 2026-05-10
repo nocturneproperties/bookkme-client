@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bookk.core.LogFactory
 import me.bookk.core.presentation.error.ErrorMapper
+import me.bookk.core.presentation.error.PresentationNotification
 import kotlin.coroutines.CoroutineContext
 import androidx.lifecycle.ViewModel as AndroidViewModel
 import androidx.lifecycle.viewModelScope as frameworkScope
@@ -107,6 +108,10 @@ actual abstract class ViewModel actual constructor(
                 activeJobs[key] = it
             }
         }
+    }
+
+    actual fun Throwable.notification(): PresentationNotification {
+        return errorMapper.mapToNotification(this)
     }
 
     actual open fun onViewPresented() {

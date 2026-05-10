@@ -12,6 +12,7 @@ import me.bookk.core.LogFactory
 import me.bookk.core.UsedInSwift
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.error.ErrorMapper
+import me.bookk.core.presentation.error.PresentationNotification
 import kotlin.coroutines.CoroutineContext
 
 actual abstract class ViewModel actual constructor(
@@ -113,6 +114,10 @@ actual abstract class ViewModel actual constructor(
                 activeJobs[key] = it
             }
         }
+    }
+
+    actual fun Throwable.notification(): PresentationNotification {
+        return errorMapper.mapToNotification(this)
     }
 
     @UsedInSwift

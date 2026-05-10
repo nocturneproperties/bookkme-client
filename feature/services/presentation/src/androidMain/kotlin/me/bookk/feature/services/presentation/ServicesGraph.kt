@@ -1,0 +1,8 @@
+package me.bookk.feature.services.presentation
+
+import androidx.navigation.NavGraphBuilder
+import me.bookk.feature.services.presentation.service.list.serviceListScreen
+
+fun NavGraphBuilder.servicesGraph(navigation: ServicesNavigation) {
+    serviceListScreen(navigation)
+}

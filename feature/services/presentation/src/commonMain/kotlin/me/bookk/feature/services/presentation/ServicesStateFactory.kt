@@ -1,5 +1,7 @@
 package me.bookk.feature.services.presentation
 
-interface ServicesStateFactory {
+import me.bookk.feature.services.presentation.service.list.ServiceListState
 
+interface ServicesStateFactory {
+    fun createServiceListState(): ServiceListState
 }

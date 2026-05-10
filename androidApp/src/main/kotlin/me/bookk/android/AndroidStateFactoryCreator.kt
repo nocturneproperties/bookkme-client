@@ -10,6 +10,8 @@ import me.bookk.feature.clients.presentation.AndroidClientsStateFactory
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.dashboard.presentation.AndroidDashboardStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
+import me.bookk.feature.services.presentation.AndroidServicesStateFactory
+import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.factory.AndroidSettingsStateFactory
 import me.bookk.presentation.StateFactoryCreator
@@ -37,5 +39,8 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
 
     override fun createClientsFactory(): ClientsStateFactory {
         return AndroidClientsStateFactory()
+    }
+    override fun createServicesFactory(): ServicesStateFactory {
+        return AndroidServicesStateFactory()
     }
 }

@@ -20,6 +20,7 @@ sealed class BusinessDashboardSection(
         items: List<DashboardUIItem> = listOf(
             Employees,
             Clients(id),
+            Services(id),
             Analytics,
             Settings(id)
         )
@@ -43,11 +44,16 @@ sealed class BusinessDashboardSection(
             BusinessRes.strings.business_dashboard_settings.desc(),
             DashboardNavigationDestination.Settings(id)
         )
+
+        class Services(id: Uuid) : DashboardUIItem(
+            BusinessRes.strings.business_dashboard_services.desc(),
+            DashboardNavigationDestination.Services(id)
+        )
     }
 
     class Appointments(
         items: List<DashboardUIItem> = listOf(
-            Services,
+            Requests,
             History,
             Settings,
         )
@@ -55,11 +61,10 @@ sealed class BusinessDashboardSection(
         BusinessRes.strings.business_dashboard_appointments.desc(),
         items
     ) {
-        data object Services : DashboardUIItem(
-            BusinessRes.strings.business_dashboard_services.desc(),
-            DashboardNavigationDestination.Services
+        data object Requests : DashboardUIItem(
+            BusinessRes.strings.business_dashboard_requests.desc(),
+            DashboardNavigationDestination.Requests
         )
-
         data object History : DashboardUIItem(
             BusinessRes.strings.business_dashboard_history.desc(),
             DashboardNavigationDestination.History

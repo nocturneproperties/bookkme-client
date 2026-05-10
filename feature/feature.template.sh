@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
-feature_name=clients
-feature_capital=Clients
+feature_name=services
+feature_capital=Services
 root_package="me/bookk"
 root_package_dotted="me.bookk"
 export ROOT_PACKAGE=$root_package_dotted
@@ -72,9 +72,7 @@ cat >> ../../androidApp/src/main/kotlin/${root_package}/android/AndroidStateFact
 }
 EOF
 cat >> presentation/src/androidMain/kotlin/$root_package/feature/$feature_name/presentation/Android${feature_capital}StateFactory.kt << EOF
-package $root_package.feature.$feature_name.presentation
-
-import$root_package.feature.$feature_name.presentation.${feature_capital}StateFactory
+package $root_package_dotted.feature.$feature_name.presentation
 
 class Android${feature_capital}StateFactory : ${feature_capital}StateFactory {
 

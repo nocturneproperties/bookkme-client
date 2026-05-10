@@ -41,10 +41,11 @@ fun BusinessTab(
                 toBusinessSettings = { businessController.navigate(BusinessDestination.Settings(it)) },
                 toAppointmentSettings = {},
                 toAppointmentHistory = {},
-                toAppointmentServices = {},
+                toBusinessServices = {},
                 toShopOrders = {},
                 toShopAssortment = {},
-                toShopWarehouse = {}
+                toShopWarehouse = {},
+                toAppointmentRequests = {}
             )
         )
     }

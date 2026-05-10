@@ -84,3 +84,10 @@ include(":feature:clients:data:source")
 include(":feature:clients:domain:api")
 include(":feature:clients:domain:impl")
 include(":feature:clients:presentation")
+
+//Services
+include(":feature:services:data")
+include(":feature:services:data:source")
+include(":feature:services:domain:api")
+include(":feature:services:domain:impl")
+include(":feature:services:presentation")

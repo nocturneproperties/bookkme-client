@@ -15,6 +15,7 @@
     <string name="business_dashboard_appointments">Appointments</string>
     <string name="business_dashboard_services">Services</string>
     <string name="business_dashboard_history">History</string>
+    <string name="business_dashboard_requests">Requests</string>
     <string name="business_dashboard_shop">Shop</string>
     <string name="business_dashboard_assortment">Assortment</string>
     <string name="business_dashboard_warehouse">Warehouse</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="services_title">Services</string>
-    <string name="services_empty">You have no services at the moment</string>
+    <string name="services_empty">There are no services at the moment</string>
 
 </resources>

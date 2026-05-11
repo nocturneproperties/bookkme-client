@@ -18,7 +18,7 @@ interface ServiceListState {
     val notifications: PresentationNotificationState
     val navigation: NavigationState<ServiceListDestination>
 
-    class ServiceGroupUI(
+    data class ServiceGroupUI(
         val id: String,
         val name: String,
         val onItemClick: (ServiceUI) -> Unit,

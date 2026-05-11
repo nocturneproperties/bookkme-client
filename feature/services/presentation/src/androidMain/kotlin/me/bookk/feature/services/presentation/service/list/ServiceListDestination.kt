@@ -26,6 +26,7 @@ internal fun NavGraphBuilder.serviceListScreen(navigation: ServicesNavigation) {
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
                     ServiceListDestination.Back -> navigation.onBack()
+                    is ServiceListDestination.AddService -> navigation.toCreateService(it.businessId)
                 }
             }
         }

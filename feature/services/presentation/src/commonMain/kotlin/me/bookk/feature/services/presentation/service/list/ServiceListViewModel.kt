@@ -7,9 +7,13 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.presentation.ServicesStateFactory
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddService
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.Back
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceDetails
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceUI
 import kotlin.uuid.Uuid
@@ -23,6 +27,8 @@ class ServiceListViewModel(
 
     val uiState: ServiceListState = stateFactory.createServiceListState().setup()
 
+    private var items = listOf<ServiceGroupUI>()
+
     init {
         loadServiceList()
     }
@@ -33,7 +39,7 @@ class ServiceListViewModel(
             onStart = { uiState.refreshState.isRefreshing = true },
             call = { getServices.cached(businessId, it) },
             onComplete = { services ->
-                val items = services
+                val grouped = services
                     .groupBy { it.group }
                     .map { (group, services) ->
                         ServiceGroupUI(
@@ -43,7 +49,8 @@ class ServiceListViewModel(
                             onItemClick = weakSelfClosure { vm, item -> vm.onServiceClick(item) }
                         )
                     }
-                uiState.services.replace(items)
+                items = grouped
+                uiState.services.replace(grouped)
             },
             onTerminate = {
                 uiState.refreshState.isRefreshing = false
@@ -54,16 +61,40 @@ class ServiceListViewModel(
     }
 
     private fun onServiceClick(serviceUI: ServiceUI) {
+        uiState.navigation.push(ServiceDetails(serviceUI.domain.id))
+    }
 
+    private fun onSearchQueryChanged(query: String) {
+        uiState.searchField.text = query
+        if (query.isBlank()) uiState.services.replace(items)
+        val filtered = items
+            .map {
+                it.copy(items = it.items.filter {
+                    it.title.contains(query, ignoreCase = true)
+                })
+            }
+            .filter { it.items.isNotEmpty() }
+        uiState.services.replace(filtered)
     }
 
     private fun ServiceListState.setup() = apply {
         appBar.title = ServicesRes.strings.services_title.desc()
         appBar.onBackClick = weakSelfClosure {
-            it.uiState.navigation.push(ServiceListDestination.Back)
+            it.uiState.navigation.push(Back)
         }
+        appBar.actions.replace(
+            listOf(
+                AppBarAction(
+                    contentDescription = DesignSystem.strings.action_add.desc(),
+                    onClick = weakSelfClosure {
+                        it.uiState.navigation.push(AddService(it.businessId))
+                    }
+                )
+            )
+        )
 
         searchField.placeholder = DesignSystem.strings.action_search.desc()
+        searchField.onTextChanged = weakSelfClosure { vm, query -> vm.onSearchQueryChanged(query) }
         services.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = ServicesRes.strings.services_empty.desc()

@@ -16,6 +16,7 @@ class AndroidTextFieldState(
     placeholder: StringDesc = "".desc(),
     text: String = "",
     label: StringDesc = "".desc(),
+    suffix: StringDesc? = null,
     startIcon: ImageResource? = null,
     endIcon: ImageResource? = null,
     supportingTextRes: StringDesc? = null,
@@ -31,6 +32,7 @@ class AndroidTextFieldState(
     override var placeholder: StringDesc by mutableStateOf(placeholder)
     override var label: StringDesc by mutableStateOf(label)
     override var text: String by mutableStateOf(text)
+    override var suffix: StringDesc? by mutableStateOf(suffix)
     override var startIcon: ImageResource? by mutableStateOf(startIcon)
     override var endIcon: ImageResource? by mutableStateOf(endIcon)
     override var supportingTextRes: StringDesc? by mutableStateOf(supportingTextRes)

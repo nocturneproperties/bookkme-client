@@ -7,6 +7,7 @@ interface TextFieldState : ViewState {
     var placeholder: StringDesc
     var label: StringDesc
     var text: String
+    var suffix: StringDesc?
     var startIcon: ImageResource?
     var endIcon: ImageResource?
     var supportingTextRes: StringDesc?

@@ -17,6 +17,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -87,10 +88,12 @@ fun TextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     leadingIcon: (@Composable () -> Unit)? = state.startIcon?.let {
-        { Icon(painterResource(it), contentDescription = null) }
+        { Icon(painterResource(it), contentDescription = null, tint = LocalColors.current.secondaryText) }
     },
     trailingIcon: (@Composable () -> Unit)? = state.endIcon?.let {
-        { Icon(painterResource(it), contentDescription = null) }
+        { Icon(painterResource(it), contentDescription = null, tint = LocalColors.current.secondaryText) }
+    } ?: state.suffix?.let {
+        { Text(it.localized(), style = MaterialTheme.typography.bodySmall.secondary()) }
     }
 ) {
     Column(modifier) {
@@ -106,6 +109,7 @@ fun TextField(
                 modifier =
                     Modifier
                         .fillMaxWidth()
+                        .height(48.dp)
                         .onFocusChanged {
                             isFocused = it.isFocused
                         }
@@ -156,6 +160,7 @@ fun TextField(
                             isError = state.validationState.isAtLeastWarning(),
                             interactionSource = interactionSource,
                             colors = colors,
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
                             container = {
                                 TextFieldContainer(
                                     isFocused,
@@ -304,7 +309,7 @@ private fun TextFieldContainer(
     )
     Container(
         modifier = Modifier
-            .height(56.dp)
+            .height(48.dp)
             .border(
                 strokeWidth,
                 strokeColor,

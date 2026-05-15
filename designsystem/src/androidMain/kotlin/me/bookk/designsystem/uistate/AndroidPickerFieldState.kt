@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.PickerFieldState.PickerType
 
 @Immutable
@@ -16,7 +17,7 @@ class AndroidPickerFieldState<T : PickerPresentation>(
     type: PickerType = PickerType.BOTTOM_SHEET,
     items: List<T> = emptyList()
 ) : AndroidViewState(isVisible = true), PickerFieldState<T> {
-    override val textField: TextFieldState = AndroidTextFieldState(readOnly = true)
+    override val textField: TextFieldState = AndroidTextFieldState(readOnly = true, endIcon = DesignSystem.images.arrow_down)
     override var pickerTitle: StringDesc by mutableStateOf(title)
     override var pickerType: PickerType by mutableStateOf(type)
     override val options: MutableList<T> = mutableStateListOf<T>().apply {

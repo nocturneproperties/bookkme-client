@@ -7,7 +7,9 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import library.money.api.Money
 import me.bookk.core.data.DataSource
+import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.ServiceDao
 import me.bookk.feature.services.data.mapper.toDb
 import me.bookk.feature.services.data.mapper.toDomain
@@ -20,6 +22,7 @@ import kotlin.uuid.Uuid
 internal class ServiceDataSourceImpl(
     private val httpClient: HttpClient,
     private val serviceDao: ServiceDao,
+    private val businessDao: BusinessDao,
 ) : DataSource(), ServiceDataSource {
     override suspend fun getServices(businessId: Uuid): List<Service> = mapExceptions {
         httpClient.get(Api.Service(businessId = businessId))
@@ -47,6 +50,12 @@ internal class ServiceDataSourceImpl(
         mapExceptions {
             httpClient.delete(Api.Service.Id(Api.Service(businessId = businessId), id))
         }
+    }
+
+    override suspend fun getBusinessCurrency(businessId: Uuid): Money.SupportedCurrency {
+        return Money.SupportedCurrency.fromCode(
+            requireNotNull(businessDao.queryBusiness(businessId)).currencyCode
+        )
     }
 
     override suspend fun saveServicesInDB(services: List<Service>) = mapExceptions {

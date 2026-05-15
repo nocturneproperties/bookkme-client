@@ -2,6 +2,7 @@ package me.bookk.designsystem.components
 
 import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
+import android.view.animation.AccelerateInterpolator
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
@@ -17,8 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -61,6 +65,7 @@ fun AppTopBar(
             }
         }
     },
+    behavior: TopAppBarScrollBehavior? = null,
     onNavigationIconClick: (() -> Unit)? = state.onBackClick
 ) {
     when (state.size) {
@@ -70,7 +75,7 @@ fun AppTopBar(
                 colors = colors,
                 actions = actions,
                 title = {
-                    AppBarTitle(state.title.localized(), state.size, colors.titleContentColor)
+                    AppBarTitle(state.title.localized(), state.size, colors.titleContentColor, behavior)
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -94,7 +99,8 @@ fun AppTopBar(
                         AppBarTitle(
                             state.title.localized(),
                             state.size,
-                            colors.titleContentColor
+                            colors.titleContentColor,
+                            behavior
                         )
                     },
                     navigationIcon = {
@@ -105,7 +111,8 @@ fun AppTopBar(
                                 tint = colors.navigationIconContentColor
                             )
                         }
-                    }
+                    },
+                    scrollBehavior = behavior
                 )
                 state.subtitle?.let {
                     Text(
@@ -120,7 +127,7 @@ fun AppTopBar(
 }
 
 @Composable
-private fun AppBarTitle(text: String, size: TopBarSize, color: Color) {
+private fun AppBarTitle(text: String, size: TopBarSize, color: Color, behavior: TopAppBarScrollBehavior?) {
     val style = when (size) {
         TopBarSize.SMALL -> MaterialTheme.typography.headlineSmall
         TopBarSize.LARGE -> MaterialTheme.typography.headlineLarge
@@ -129,7 +136,10 @@ private fun AppBarTitle(text: String, size: TopBarSize, color: Color) {
         TopBarSize.SMALL -> FontWeight.Normal
         TopBarSize.LARGE -> FontWeight.Bold
     }
+    val interpolator = remember { AccelerateInterpolator(1.6f) }
+    val fraction = if (behavior != null) interpolator.getInterpolation(1f - behavior.state.collapsedFraction) else 1f
     Text(
+        modifier = Modifier.alpha(fraction),
         text = text,
         style = style,
         fontWeight = weight,
@@ -142,7 +152,7 @@ private fun AppBarTitle(text: String, size: TopBarSize, color: Color) {
 @Composable
 fun topBarDefaultColors(
     containerColor: Color = Color.Transparent,
-    scrolledContainerColor: Color = Color.Unspecified,
+    scrolledContainerColor: Color = Color.Transparent,
     navigationIconContentColor: Color = Color.Unspecified,
     titleContentColor: Color = Color.Unspecified,
     actionIconContentColor: Color = Color.Unspecified,

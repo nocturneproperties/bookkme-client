@@ -1,0 +1,30 @@
+import SwiftUI
+import shared
+
+struct ${SCREEN_NAME}Screen: View {
+	
+	@EnvironmentObject var navigationStack: NavigationStackHolder
+	@StateViewModel var viewModel: ${SCREEN_NAME}ViewModel
+	
+	init() {
+		_viewModel = StateViewModel(wrappedValue: Ios${FEATURE_NAME_CAPITAL}PresentationDiKt.${SCREEN_NAME_SMALL}VM())
+	}
+	
+	var body: some View {
+		let uiState = IOS${SCREEN_NAME}State.cast(viewModel.uiState)
+		VStack {
+			Text("${SCREEN_NAME} Screen")
+		}
+		.withNavigationBar(uiState.appBar)
+		.sendLifecycleEventsTo(viewModel)
+		.handleNotifications(uiState.notifications)
+		.handleNavigation(uiState.navigation) { destination in
+			switch destination {
+			case is ${SCREEN_NAME}NavigationDestination.Back:
+				navigationStack.popLast()
+			default:
+				break
+			}
+		}
+	}
+}

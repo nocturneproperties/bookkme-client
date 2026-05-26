@@ -1,0 +1,11 @@
+package ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.presentation.${SCREEN_PACKAGE}
+
+import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.NavigationState
+import me.bookk.designsystem.uistate.PresentationNotificationState
+
+interface ${SCREEN_NAME}State {
+    val appBar: AppBarState
+    val notifications: PresentationNotificationState
+    val navigation: NavigationState<${SCREEN_NAME}Destination>
+}

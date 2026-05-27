@@ -15,4 +15,6 @@
     <string name="services_create_min">min.</string>
     <string name="services_create_visible">Visible to clients</string>
 
+    <string name="services_group_pick">Select group</string>
+
 </resources>

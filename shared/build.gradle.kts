@@ -88,6 +88,7 @@ kotlin {
             api(projects.library.credentials.impl)
             api(projects.library.money.api)
             api(projects.library.biometry.api)
+            api(projects.library.picker)
             implementation(projects.library.biometry.impl)
             implementation(projects.library.money.impl)
             //Auth
@@ -158,6 +159,7 @@ kotlin {
             export(projects.library.money.api)
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)
+            export(projects.library.picker)
         }
     }
 }

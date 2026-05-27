@@ -1,4 +1,6 @@
 package me.bookk.feature.services.presentation
+import me.bookk.feature.services.presentation.group.list.AndroidServiceGroupListState
+import me.bookk.feature.services.presentation.group.list.ServiceGroupListState
 
 import me.bookk.feature.services.presentation.service.add.AddServiceState
 import me.bookk.feature.services.presentation.service.add.AndroidAddServiceState
@@ -12,5 +14,8 @@ class AndroidServicesStateFactory : ServicesStateFactory {
 
     override fun createServiceState(): AddServiceState {
         return AndroidAddServiceState()
+    }
+    override fun createServiceGroupListState(): ServiceGroupListState {
+        return AndroidServiceGroupListState()
     }
 }

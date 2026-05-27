@@ -10,9 +10,10 @@ import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PickerPresentation
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
+import me.bookk.designsystem.uistate.ViewState
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 
-interface AddServiceState {
+interface AddServiceState : ViewState {
 
     val appBar: AppBarState
 

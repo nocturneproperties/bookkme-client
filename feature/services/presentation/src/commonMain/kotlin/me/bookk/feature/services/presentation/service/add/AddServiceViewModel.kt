@@ -11,6 +11,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
+import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.feature.services.domain.api.GetBusinessCurrency
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.CreateService
@@ -123,6 +124,8 @@ class AddServiceViewModel(
         group.onItemPicked = weakSelfClosure { vm, item -> item?.let { vm.onGroupSelected(it) } }
         group.textField.isValid = false
         group.textField.placeholder = ServicesRes.strings.services_create_group_placeholder.desc()
+        group.pickerType = PickerFieldState.PickerType.SCREEN
+        group.pickerTitle = ServicesRes.strings.services_group_pick.desc()
 
         duration.label = ServicesRes.strings.services_create_duration.desc()
         duration.placeholder = ServicesRes.strings.services_create_duration_placeholder.desc()

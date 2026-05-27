@@ -5,4 +5,7 @@ class IOSServicesStateFactory: @MainActor ServicesStateFactory {
 	func createServiceListState() -> any ServiceListState {
 		return IOSServiceListState()
 	}
+	func createServiceGroupListState() -> any ServiceGroupListState {
+		return IOSServiceGroupListState()
+	}
 }

@@ -140,4 +140,4 @@ if [ -f "$IOS_SF_IMPL" ]; then
 EOF
 fi
 
-echo "Screen ${screen_name} created and wired successfully in feature ${feature_name} (including iOS)!"
+echo "Screen ${screen_name} created and wired successfully in feature ${feature_name}"

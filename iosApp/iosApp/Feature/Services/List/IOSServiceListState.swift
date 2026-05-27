@@ -19,6 +19,7 @@ class IOSServiceListState: @MainActor ServiceListState, NativeStateRepresentatio
 	var appBar: any AppBarState
 	var refreshState: any RefreshState
 	var searchField: any TextFieldState
+	var groupsSection: Action
 	var services: any ListState
 	
 	var navigation: any NavigationState
@@ -29,7 +30,7 @@ class IOSServiceListState: @MainActor ServiceListState, NativeStateRepresentatio
 		refreshState = IOSRefreshState()
 		searchField = IOSTextFieldState()
 		services = IOSListState<ServiceListStateServiceGroupUI>()
-		
+		groupsSection = Action(title: RawStringDesc(string: ""))
 		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()
 	}

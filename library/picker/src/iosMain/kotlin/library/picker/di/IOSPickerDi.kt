@@ -1,8 +1,8 @@
 package library.picker.di
 
-import eu.advapay.mobilebank.core.UsedInSwift
 import library.picker.PickOptionViewModel
 import library.picker.PickerScreenArgs
+import me.bookk.core.UsedInSwift
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module

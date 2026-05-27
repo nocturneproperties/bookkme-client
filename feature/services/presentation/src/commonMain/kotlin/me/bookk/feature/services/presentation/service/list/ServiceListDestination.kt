@@ -6,5 +6,7 @@ import kotlin.uuid.Uuid
 sealed class ServiceListDestination : NavigationDestination() {
     data object Back : ServiceListDestination()
     data class AddService(val businessId: Uuid) : ServiceListDestination()
+
+    data class AddServiceGroup(val businessId: Uuid) : ServiceListDestination()
     data class ServiceDetails(val id: Uuid) : ServiceListDestination()
 }

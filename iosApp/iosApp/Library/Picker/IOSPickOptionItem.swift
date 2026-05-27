@@ -1,0 +1,23 @@
+//
+//  IOSPickOptionItem.swift
+//  iosApp
+//
+//  Created by BookkMe on 27.05.2026.
+//  Copyright © 2026 BookkMe. All rights reserved.
+//
+import shared
+
+@MainActor
+class IOSPickOptionItem: @MainActor IOSViewState, @MainActor PickOptionItem {
+	
+	var checkBox: any CheckBoxState
+	var icon: (any ImageDesc)?
+	var identity: KeyValueData
+	
+	init() {
+		checkBox = IOSCheckBoxState()
+		icon = nil
+		identity = KeyValueData(key: "", value: "")
+		super.init()
+	}
+}

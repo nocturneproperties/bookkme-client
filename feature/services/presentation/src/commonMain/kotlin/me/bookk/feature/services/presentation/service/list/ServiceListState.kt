@@ -6,11 +6,13 @@ import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.RefreshState
 import me.bookk.designsystem.uistate.TextFieldState
+import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.feature.services.domain.api.service.entity.Service
 
 interface ServiceListState {
     val appBar: AppBarState
     val searchField: TextFieldState
+    var groupsSection: Action
 
     val refreshState: RefreshState
     val services: ListState<ServiceGroupUI>

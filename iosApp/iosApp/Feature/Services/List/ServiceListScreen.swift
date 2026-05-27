@@ -21,10 +21,14 @@ struct ServiceListScreen: View {
 	var body: some View {
 		let uiState = IOSServiceListState.cast(viewModel.uiState)
 		let listState = IOSListState<ServiceListStateServiceGroupUI>.cast(uiState.services)
-		ListGroup(listState: listState) { section in
+		ListGroup(listState: listState, listStyle: .automatic) { section in
 			ServiceGroupSection(section: section)
 				.transition(.opacity)
 				.animation(.easeInOut, value: uiState.services.items.count)
+		} header: {
+			Section {
+				SectionView(action: uiState.groupsSection)
+			}.listRowSeparator(.hidden)
 		}
 		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
 		.searchable(

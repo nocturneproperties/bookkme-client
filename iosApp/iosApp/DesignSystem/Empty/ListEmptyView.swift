@@ -9,7 +9,7 @@
 import SwiftUI
 import shared
 
-struct EmptyView: View {
+struct ListEmptyView: View {
 	
 	var state: EmptyState
 	

@@ -8,10 +8,12 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddService
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddServiceGroup
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.Back
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceDetails
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI
@@ -95,6 +97,10 @@ class ServiceListViewModel(
 
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakSelfClosure { vm, query -> vm.onSearchQueryChanged(query) }
+        groupsSection = Action(
+            title = ServicesRes.strings.services_create_groups.desc(),
+            onClick = weakSelfClosure { uiState.navigation.push(AddServiceGroup(businessId))  }
+        )
         services.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = ServicesRes.strings.services_empty.desc()

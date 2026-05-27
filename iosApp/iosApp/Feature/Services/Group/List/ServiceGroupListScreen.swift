@@ -6,8 +6,8 @@ struct ServiceGroupListScreen: View {
 	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: ServiceGroupListViewModel
 	
-	init() {
-		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceGroupListVM())
+	init(businessId: KotlinUuid) {
+		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceGroupListVM(businessId: businessId))
 	}
 	
 	var body: some View {
@@ -20,7 +20,7 @@ struct ServiceGroupListScreen: View {
 		.handleNotifications(uiState.notifications)
 		.handleNavigation(uiState.navigation) { destination in
 			switch destination {
-			case is ServiceGroupListNavigationDestination.Back:
+			case is ServiceGroupListDestination.Back:
 				navigationStack.popLast()
 			default:
 				break

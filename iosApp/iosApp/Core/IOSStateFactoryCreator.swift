@@ -33,7 +33,12 @@ class IOSStateFactoryCreator: @MainActor StateFactoryCreator {
 	func createClientsFactory() -> any ClientsStateFactory {
 		return IOSClientsStateFactory()
 	}
+	
 	func createServicesFactory() -> any ServicesStateFactory {
 		return IOSServicesStateFactory()
+	}
+	
+	func createPickOptionFactory() -> any PickOptionStateFactory {
+		return IOSPickOptionFactory()
 	}
 }

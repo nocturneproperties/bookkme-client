@@ -5,6 +5,7 @@
 
     <string name="services_create_title">Add service</string>
     <string name="services_create_group">Group</string>
+    <string name="services_create_groups">Service groups</string>
     <string name="services_create_group_placeholder">Service group</string>
     <string name="services_create_name">Name</string>
     <string name="services_create_name_placeholder">Service name</string>

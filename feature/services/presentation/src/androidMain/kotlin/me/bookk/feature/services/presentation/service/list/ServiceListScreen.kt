@@ -1,5 +1,6 @@
 package me.bookk.feature.services.presentation.service.list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.PullToRefresh
+import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
@@ -41,6 +44,17 @@ internal fun ServiceListScreen(state: ServiceListState) {
                     Modifier
                         .padding(horizontal = 16.dp)
                         .padding(top = 16.dp)
+                )
+                SectionItem(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .padding(horizontal = 16.dp)
+                        .background(
+                            LocalColors.current.elevated,
+                            shape = MaterialTheme.shapes.medium
+                        ),
+                    text = state.groupsSection.title.localized(),
+                    onClick = state.groupsSection.onClick
                 )
             }
         },

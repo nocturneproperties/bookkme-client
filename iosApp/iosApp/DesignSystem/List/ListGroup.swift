@@ -9,27 +9,46 @@
 import SwiftUI
 import shared
 
-struct ListGroup<T, Content: View>:View where T:AnyObject, T:Identifiable {
+struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyObject, T:Identifiable {
 	
 	var listState: IOSListState<T>
+	
+	let listStyle: S
 	
 	@ViewBuilder
 	let content: (T) -> Content
 	
+	@ViewBuilder
+	let header: () -> Header
+	
+	init(listState: IOSListState<T>, listStyle: S, content: @escaping (T) -> Content, header: @escaping () -> Header) {
+		self.listState = listState
+		self.content = content
+		self.header = header
+		self.listStyle = listStyle
+	}
+	
+	init(listState: IOSListState<T>, content: @escaping (T) -> Content) where Header == EmptyView, S == PlainListStyle {
+		self.init(listState: listState, listStyle: .plain, content: content) { EmptyView() }
+	}
+	
 	var body: some View {
 		Group {
-			if (!listState.items.isEmpty) {
+			if (!listState.isInitialLoading) {
 				List {
+					header()
 					ForEach(listState.typedItems) { item in
 						content(item)
 							.listRowSeparator(.hidden)
 					}
 				}
-				.listStyle(.plain)
-			} else if let emptyState = listState.emptyState, !listState.isInitialLoading {
-				EmptyView(state: emptyState)
+				.listStyle(listStyle)
 			} else {
 				ProgressView()
+			}
+		}.overlay {
+			if let emptyState = listState.emptyState, !listState.isInitialLoading {
+				ListEmptyView(state: emptyState)
 			}
 		}
 	}

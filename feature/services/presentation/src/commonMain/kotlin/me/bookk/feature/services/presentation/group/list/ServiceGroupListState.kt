@@ -13,6 +13,7 @@ interface ServiceGroupListState {
     val search: TextFieldState
     val groups: ListState<ServiceGroupUI>
     val refreshState: RefreshState
+    var isAddGroupDialogVisible: Boolean
     val notifications: PresentationNotificationState
     val navigation: NavigationState<ServiceGroupListDestination>
 

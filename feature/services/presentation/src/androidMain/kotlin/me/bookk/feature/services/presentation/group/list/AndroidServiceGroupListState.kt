@@ -1,5 +1,8 @@
 package me.bookk.feature.services.presentation.group.list
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidListState
 import me.bookk.designsystem.uistate.AndroidNavigationState
@@ -18,6 +21,7 @@ internal class AndroidServiceGroupListState : ServiceGroupListState {
     override val search: TextFieldState = AndroidTextFieldState()
     override val groups: ListState<ServiceGroupListState.ServiceGroupUI> = AndroidListState()
     override val refreshState: RefreshState = AndroidRefreshState()
+    override var isAddGroupDialogVisible: Boolean by mutableStateOf(false)
     override val notifications: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<ServiceGroupListDestination> = AndroidNavigationState()
 }

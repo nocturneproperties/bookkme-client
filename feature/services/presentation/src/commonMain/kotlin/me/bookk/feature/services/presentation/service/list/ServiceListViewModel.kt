@@ -1,6 +1,7 @@
 package me.bookk.feature.services.presentation.service.list
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.launchIn
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -11,6 +12,8 @@ import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.service.GetServices
+import me.bookk.feature.services.domain.api.service.ServiceEvent
+import me.bookk.feature.services.domain.api.service.listenFor
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddService
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.Back
@@ -33,6 +36,13 @@ class ServiceListViewModel(
 
     init {
         loadServiceList()
+        listenForEvents()
+    }
+
+    private fun listenForEvents() {
+        listenFor<ServiceEvent> {
+            loadServiceList()
+        }.launchIn(viewModelScope)
     }
 
     private fun loadServiceList() {

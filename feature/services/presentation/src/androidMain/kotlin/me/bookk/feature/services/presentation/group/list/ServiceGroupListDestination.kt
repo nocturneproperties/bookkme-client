@@ -21,7 +21,7 @@ internal fun NavGraphBuilder.serviceGroupListScreen(navigation: ServicesNavigati
         val route: ServicesDestination.ServiceGroupList = it.toRoute()
         val viewModel: ServiceGroupListViewModel = koinViewModel { parametersOf(route.businessId) }
         CompositionLocalProvider(LocalNavigation provides navigation) {
-            ServiceGroupListScreen(viewModel.uiState)
+            ServiceGroupListScreen(viewModel.uiState, route.businessId)
             ObserveNotifications(viewModel.uiState.notifications)
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {

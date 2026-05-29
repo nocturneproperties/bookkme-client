@@ -1,6 +1,7 @@
 package me.bookk.feature.services.presentation.group.list
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.launchIn
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -10,7 +11,9 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
+import me.bookk.feature.services.domain.api.group.ServiceGroupEvent
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
+import me.bookk.feature.services.domain.api.group.listenFor
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import kotlin.uuid.Uuid
 
@@ -26,6 +29,7 @@ class ServiceGroupListViewModel(
 
     init {
         loadServiceGroups()
+        listenGroupEvents()
     }
 
     private fun loadServiceGroups() {
@@ -42,6 +46,12 @@ class ServiceGroupListViewModel(
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.refreshState.isRefreshing = false }
         )
+    }
+
+    private fun listenGroupEvents() {
+        listenFor<ServiceGroupEvent> {
+            loadServiceGroups()
+        }.launchIn(viewModelScope)
     }
 
     private fun onGroupClicked(group: ServiceGroup) {
@@ -65,9 +75,7 @@ class ServiceGroupListViewModel(
             listOf(
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakSelfClosure {
-                        it.uiState.navigation.push(ServiceGroupListDestination.AddGroup(it.businessId))
-                    }
+                    onClick = weakSelfClosure { it.uiState.isAddGroupDialogVisible = true }
                 )
             )
         )

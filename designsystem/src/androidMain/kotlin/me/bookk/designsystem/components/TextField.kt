@@ -109,7 +109,6 @@ fun TextField(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
                         .onFocusChanged {
                             isFocused = it.isFocused
                         }

@@ -8,7 +8,11 @@
 import shared
 
 @MainActor
-class IOSPickOptionState: @MainActor PickOptionState {
+class IOSPickOptionState: @MainActor PickOptionState, NativeStateRepresentation {
+	
+	typealias SwiftType = IOSPickOptionState
+	typealias KotlinType = PickOptionState
+	
 	var appBar: any AppBarState
 	
 	var filteredOptions: any ListState
@@ -21,7 +25,7 @@ class IOSPickOptionState: @MainActor PickOptionState {
 	
 	init() {
 		appBar = IOSAppBarState()
-		filteredOptions = IOSListState<PickOptionItem>()
+		filteredOptions = IOSListState<IOSPickOptionItem>()
 		navigation = IOSNavigationState()
 		queryField = IOSTextFieldState()
 		selectButton = IOSButtonState()

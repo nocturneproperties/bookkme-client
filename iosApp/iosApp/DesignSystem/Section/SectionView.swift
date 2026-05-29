@@ -21,7 +21,9 @@ struct SectionView: View {
 				.font(.subheadline)
 				.bold()
 				.foregroundStyle(.tertiary)
-		}.onTapGesture {
+		}
+		.contentShape(Rectangle())
+		.onTapGesture {
 			action.onClick()
 		}
 	}

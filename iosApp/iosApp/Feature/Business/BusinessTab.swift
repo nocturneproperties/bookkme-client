@@ -23,6 +23,12 @@ struct BusinessTab: View {
 				.navigationDestination(for: ClientsDestinations.CreateClient.self) { type in
 					CreateClientScreen(businessId: type.businessId)
 				}
+				.navigationDestination(for: ServicesDestination.AddService.self) { type in
+					AddServiceScreen(businessId: type.businessId)
+				}
+				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { type in
+					ServiceGroupListScreen(businessId: type.businessId)
+				}
 				.navigationDestination(for: DashboardNavigationDestination.self) { type in
 					switch type {
 					case let type as DashboardNavigationDestination.Settings:

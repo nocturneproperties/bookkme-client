@@ -19,11 +19,13 @@ class AndroidListState<T>(
 
     override fun append(list: List<T>) {
         items += list
+        isInitialLoading = false
     }
 
     override fun replace(list: List<T>) {
         items.clear()
         items.addAll(list)
+        isInitialLoading = false
     }
 
     override fun clear() {

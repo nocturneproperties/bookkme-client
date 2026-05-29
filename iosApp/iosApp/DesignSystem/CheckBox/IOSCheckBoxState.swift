@@ -9,7 +9,12 @@ import shared
 import SwiftUI
 
 @MainActor
-class IOSCheckBoxState: @MainActor IOSViewState, @MainActor CheckBoxState {
+@Observable
+class IOSCheckBoxState: @MainActor IOSViewState, @MainActor CheckBoxState, NativeStateRepresentation {
+	
+	typealias SwiftType = IOSCheckBoxState
+	typealias KotlinType = CheckBoxState
+	
 	var isChecked: Bool
 	
 	var isEnabled: Bool
@@ -24,13 +29,13 @@ class IOSCheckBoxState: @MainActor IOSViewState, @MainActor CheckBoxState {
 	
 	var validationState: ValidationState
 	
-	init() {
+	init(text: any StringDesc = RawStringDesc(string: "")) {
 		isChecked = false
 		isEnabled = true
 		isValid = true
 		onCheckedChange = nil
 		supportingTextRes = nil
-		text = RawStringDesc(string: "")
+		self.text = text
 		validationState = ValidationState.default_
 		super.init()
 	}

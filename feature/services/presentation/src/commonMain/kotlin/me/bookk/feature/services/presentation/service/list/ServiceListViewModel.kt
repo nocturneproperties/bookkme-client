@@ -13,9 +13,9 @@ import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddService
-import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddServiceGroup
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.Back
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceDetails
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceGroups
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceUI
 import kotlin.uuid.Uuid
@@ -99,7 +99,7 @@ class ServiceListViewModel(
         searchField.onTextChanged = weakSelfClosure { vm, query -> vm.onSearchQueryChanged(query) }
         groupsSection = Action(
             title = ServicesRes.strings.services_create_groups.desc(),
-            onClick = weakSelfClosure { uiState.navigation.push(AddServiceGroup(businessId))  }
+            onClick = weakSelfClosure { uiState.navigation.push(ServiceGroups(businessId))  }
         )
         services.emptyState = EmptyState(
             image = DesignSystem.images.empty,

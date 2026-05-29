@@ -9,7 +9,12 @@ import shared
 import SwiftUI
 
 @MainActor
-class IOSAddServiceState: @MainActor IOSViewState, @MainActor AddServiceState {
+@Observable
+class IOSAddServiceState: @MainActor IOSViewState, @MainActor AddServiceState, NativeStateRepresentation {
+	
+	typealias SwiftType = IOSAddServiceState
+	typealias KotlinType = AddServiceState
+	
 	var appBar: any AppBarState
 	
 	var group: any PickerFieldState

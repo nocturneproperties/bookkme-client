@@ -17,7 +17,9 @@ fun rememberServicesNavigation(controller: NavController) = remember {
         toServiceDetails = {},
         toCreateService = { controller.navigate(ServicesDestination.AddService(it)) },
         toCreateServiceGroup = {},
-        toServiceGroupList = {},
+        toServiceGroupList = {
+            controller.navigate(ServicesDestination.ServiceGroupList(it))
+        },
         navigateToPicker = {
             controller.navigate(PickOptionDestination(it))
         }

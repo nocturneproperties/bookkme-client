@@ -41,9 +41,11 @@ struct ServiceListScreen: View {
 		.handleNotifications(uiState.notifications)
 		.handleNavigation(uiState.navigation) { destination in
 			switch destination {
-			case let destination as ServiceListDestination.ServiceDetails:
+			case let destination as ServiceListDestination.ServiceGroups:
+				navigationStack.push(ServicesDestination.ServiceGroupList(businessId: destination.businessId))
 				break
 			case let destination as ServiceListDestination.AddService:
+				navigationStack.push(ServicesDestination.AddService(businessId: destination.businessId))
 				break
 			case is ServiceListDestination.Back:
 				navigationStack.popLast()

@@ -1,9 +1,9 @@
 //
-//  DSPickerField.swift
+//  PickerField.swift
 //  iosApp
 //
-//  Created by Dmytro Akulinin on 06.02.2026.
-//  Copyright © 2026 ValthSolutions. All rights reserved.
+//  Created by BookkMe on 11.05.2026.
+//  Copyright © 2026 BookkMe. All rights reserved.
 //
 
 import SwiftUI
@@ -18,12 +18,16 @@ private enum PickerBottomSheetDetent: CustomPresentationDetent {
     }
 }
 
+extension PickerScreenArgs: @retroactive Identifiable {
+	
+}
+
 struct PickerField: View {
     @Bindable private var state: IOSPickerState
     private let onItemPicked: (PickerPresentation) -> Void
 
     @State private var isSheetPresented = false
-    @State private var isScreenPresented = false
+	@State private var pickerArgs: PickerScreenArgs? = nil
 
     init(_ state: PickerFieldState, onItemPicked: ((PickerPresentation) -> Void)? = nil) {
         let impl = state.impl()
@@ -39,38 +43,75 @@ struct PickerField: View {
     }
 
     var body: some View {
-        if state.isVisible {
-            StateTextField(state.textField)
-                .contentShape(Rectangle())
-                .simultaneousGesture(TapGesture().onEnded {
-                    guard state.textField.enabled else { return }
-                    dismissKeyboard()
-                    switch state.pickerType {
-                    case .bottomSheet:
-                        guard !state.options.isEmpty else { return }
-                        isSheetPresented = true
-                    case .screen:
-                        isScreenPresented = true
-                    default:
-                        isScreenPresented = true
-                    }
-                })
-                .sheet(isPresented: $isSheetPresented) {
-                    PickerBottomSheet(
-                        title: state.pickerTitle.localized(),
-                        options: state.options,
-                        selectedId: state.selectedItem?.pickerItemId,
-                        onPick: { option in
-                            onItemPicked(option)
-                            isSheetPresented = false
-                        }
-                    )
-                    .presentationDetents([pickerDetent])
-                    .presentationDragIndicator(.hidden)
-                    .presentationCornerRadius(24)
-                    .presentationBackground(AppColors.background)
-                }
-        }
+		if state.isVisible {
+			StateTextField(state.textField)
+				.simultaneousGesture(TapGesture().onEnded {
+					guard state.textField.enabled else { return }
+					dismissKeyboard()
+					switch state.pickerType {
+					case .bottomSheet:
+						guard !state.options.isEmpty else { return }
+						isSheetPresented = true
+					case .screen:
+						pickerArgs = PickerScreenArgs(
+							id: state.id,
+							title: state.pickerTitle.localized(),
+							options: state.options.map { presentation in
+								PickerScreenArgs.PickerData(
+									data: KeyValueData(
+										key: presentation.pickerItemId,
+										value: presentation.displayName.localized()
+									),
+									iconUrl: presentation.displayIconUrl
+								)
+							},
+							choice: PickerScreenArgs.Choice.single
+						)
+					default:
+						break
+					}
+				})
+				.overlay(alignment: .trailing) {
+					switch state.pickerType {
+					case .bottomSheet:
+						Image(systemName: "chevron.down")
+							.font(.subheadline)
+							.bold()
+							.foregroundStyle(.tertiary)
+							.padding(.trailing)
+					default:
+						Image(systemName: "chevron.right")
+							.font(.subheadline)
+							.bold()
+							.foregroundStyle(.tertiary)
+							.padding(.trailing)
+					}
+				}
+				.sheet(isPresented: $isSheetPresented) {
+				PickerBottomSheet(
+					title: state.pickerTitle.localized(),
+					options: state.options,
+					selectedId: state.selectedItem?.pickerItemId,
+					onPick: { option in
+						onItemPicked(option)
+						isSheetPresented = false
+					}
+				)
+				.presentationDetents([pickerDetent])
+				.presentationDragIndicator(.hidden)
+				.presentationCornerRadius(24)
+				.presentationBackground(AppColors.background)
+			}.fullScreenCover(item: $pickerArgs) { args in
+				NavigationStack {
+					PickOptionScreen(args: args) { item in
+						if let choice = state.options.first(where: { $0.pickerItemId == item.key }) {
+							onItemPicked(choice)
+							pickerArgs = nil
+						}
+					}
+				}
+			}
+		}
     }
 
     private func dismissKeyboard() {

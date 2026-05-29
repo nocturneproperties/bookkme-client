@@ -18,6 +18,6 @@ class IOSPickOptionItem: @MainActor IOSViewState, @MainActor PickOptionItem {
 		checkBox = IOSCheckBoxState()
 		icon = nil
 		identity = KeyValueData(key: "", value: "")
-		super.init()
+		super.init(id: identity.key, isVisible: true)
 	}
 }

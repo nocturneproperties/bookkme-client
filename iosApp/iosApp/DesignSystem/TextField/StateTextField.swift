@@ -82,7 +82,8 @@ struct StateTextField: View {
 				}
 				if let suffix = state.suffix {
 					Text(suffix.localized())
-						.font(.caption)
+						.font(.footnote)
+						.foregroundStyle(AppColors.secondary)
 				}
 			}
 			.padding(.horizontal, 8)

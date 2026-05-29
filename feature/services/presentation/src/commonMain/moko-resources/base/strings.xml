@@ -2,6 +2,7 @@
 <resources>
     <string name="services_title">Services</string>
     <string name="services_empty">There are no services at the moment</string>
+    <string name="service_group_empty">There are no service groups at the moment</string>
 
     <string name="services_create_title">Add service</string>
     <string name="services_create_group">Group</string>

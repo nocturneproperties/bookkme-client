@@ -3,6 +3,9 @@ package me.bookk.designsystem.components
 import android.content.Context
 import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -18,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import dev.icerock.moko.resources.compose.localized
-import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -67,13 +69,11 @@ fun <T : PickerPresentation> PickerField(
                     }
                 },
                 trailingIcon = {
-                    state.textField.endIcon?.let {
-                        Icon(
-                            painter = painterResource(it),
-                            tint = LocalColors.current.secondaryText,
-                            contentDescription = null
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        tint = LocalColors.current.secondaryText,
+                        contentDescription = null
+                    )
                 },
                 state = state.textField
             )
@@ -85,8 +85,9 @@ fun <T : PickerPresentation> PickerField(
         }
 
         PickerType.SCREEN -> {
-            val navController =
-                requireNotNull(navController) { "Nav controller is required for PickerType.SCREEN" }
+            val navController = requireNotNull(navController) {
+                "Nav controller is required for PickerType.SCREEN"
+            }
 
             ObservePickerResult(state.id, navController) { result ->
                 state.options.firstOrNull { it.pickerItemId == result.key }?.let {
@@ -100,13 +101,11 @@ fun <T : PickerPresentation> PickerField(
                     navigateToScreenPicker(state.options)
                 },
                 trailingIcon = {
-                    state.textField.endIcon?.let {
-                        Icon(
-                            painter = painterResource(it),
-                            tint = LocalColors.current.secondaryText,
-                            contentDescription = null
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Filled.ChevronRight,
+                        tint = LocalColors.current.secondaryText,
+                        contentDescription = null
+                    )
                 },
                 state = state.textField
             )

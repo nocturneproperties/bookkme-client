@@ -12,6 +12,8 @@ import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.services.domain.api.GetBusinessCurrency
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.CreateService
@@ -82,7 +84,10 @@ class AddServiceViewModel(
     }
 
     private fun onPriceChanged(price: String) {
-        uiState.price.text = price.filter { it.isDigit() }.replace(",", ".")
+        val symbols = listOf('.', ',')
+        uiState.price.text = price
+            .filter { it.isDigit() || it in symbols }
+            .replace(",", ".")
         uiState.price.isValid = uiState.price.text.toFloatOrNull() != null
         invalidateButton()
     }
@@ -99,7 +104,16 @@ class AddServiceViewModel(
             group = group.domain,
             name = uiState.name.text,
             duration = uiState.duration.text.toInt().seconds,
-            price = Money(uiState.price.text.toDouble(), currency)
+            price = Money(uiState.price.text.toDouble(), currency),
+            isAvailable = uiState.enabled.isChecked
+        )
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.create.startLoading() },
+            call = { createService(service) },
+            onComplete = { uiState.navigation.push(Back) },
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.create.stopLoading() }
         )
     }
 

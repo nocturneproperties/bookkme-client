@@ -11,5 +11,6 @@ data class Service(
     val group: ServiceGroup,
     val name: String,
     val duration: Duration,
-    val price: Money
+    val price: Money,
+    val isAvailable: Boolean
 )

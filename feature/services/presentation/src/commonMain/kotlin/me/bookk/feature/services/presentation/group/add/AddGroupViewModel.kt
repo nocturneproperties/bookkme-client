@@ -7,6 +7,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.services.domain.api.group.CreateServiceGroup
@@ -26,6 +27,8 @@ class AddGroupViewModel(
     private fun onNameChanged(text: String) {
         uiState.name.text = text
         uiState.create.isEnabled = text.length > 1
+        uiState.name.validationState = ValidationState.DEFAULT
+        uiState.name.supportingTextRes = null
     }
 
     private fun onCreate() {
@@ -39,7 +42,19 @@ class AddGroupViewModel(
             onStart = { uiState.create.startLoading() },
             call = { createGroup(group) },
             onComplete = { uiState.navigation.push(AddGroupNavigation.Dismiss) },
-            onError = { uiState.notifications.add(it.notification()) },
+            onError = {
+                when (it) {
+                    is CreateServiceGroup.Error.InvalidName -> {
+                        uiState.name.validationState = ValidationState.ERROR
+                        uiState.name.supportingTextRes = ServicesRes.strings.services_group_add_name_invalid.desc()
+                    }
+                    is CreateServiceGroup.Error.NameExists -> {
+                        uiState.name.validationState = ValidationState.ERROR
+                        uiState.name.supportingTextRes = ServicesRes.strings.services_group_add_name_exists.desc()
+                    }
+                    else -> uiState.notifications.add(it.notification())
+                }
+            },
             onTerminate = { uiState.create.stopLoading() }
         )
     }

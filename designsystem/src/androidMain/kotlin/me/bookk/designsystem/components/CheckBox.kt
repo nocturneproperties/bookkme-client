@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -77,29 +78,26 @@ fun CheckBox(
 fun CheckBoxSelector(
     state: CheckBoxState,
     modifier: Modifier = Modifier,
-    colors: CheckboxColors = CheckboxDefaults.colors(
-        checkedColor = LocalColors.current.primaryText,
-        uncheckedColor = LocalColors.current.primaryText,
-        disabledCheckedColor = LocalColors.current.inactive,
-        disabledUncheckedColor = LocalColors.current.inactive,
-    ),
 ) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(48.dp)
                 .clip(MaterialTheme.shapes.large)
                 .clickable {
                     state.onCheckedChange?.invoke(!state.isChecked)
-                },
+                }
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = state.text.html(),
+                modifier = modifier.weight(1f),
                 style = MaterialTheme.typography.bodyLarge.primary()
             )
-            if (state.isChecked) {
+            AnimatedVisibility(state.isChecked) {
                 Icon(
                     Icons.Filled.Check,
                     contentDescription = null,

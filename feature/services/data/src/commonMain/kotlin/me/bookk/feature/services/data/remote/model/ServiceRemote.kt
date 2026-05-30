@@ -15,7 +15,8 @@ internal class ServiceRemote(
     val name: String,
     val duration: Duration,
     @Serializable(with = RemoteMoneySerializer::class)
-    val price: Money
+    val price: Money,
+    val isAvailable: Boolean
 ) {
     fun toDomain(): Service {
         return Service(
@@ -24,7 +25,8 @@ internal class ServiceRemote(
             group = group.toDomain(),
             name = name,
             duration = duration,
-            price = price
+            price = price,
+            isAvailable = isAvailable
         )
     }
 
@@ -36,7 +38,8 @@ internal class ServiceRemote(
                 group = ServiceGroupRemote.fromDomain(group),
                 name = name,
                 duration = duration,
-                price = price
+                price = price,
+                isAvailable = isAvailable
             )
         }
     }

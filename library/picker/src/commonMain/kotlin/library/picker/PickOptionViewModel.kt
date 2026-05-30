@@ -8,23 +8,48 @@ import library.picker.state.PickOptionItem
 import library.picker.state.PickOptionState
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.CheckBoxState
 import me.bookk.designsystem.uistate.simple.EmptyState
 
 class PickOptionViewModel(
     private val pickArgs: PickerScreenArgs,
-    factory: PickOptionStateFactory,
+    private val factory: PickOptionStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
     private var options = listOf<PickOptionItem>()
 
-    val uiState = factory.createPickOptionState().apply {
+    val uiState = factory.createPickOptionState().setup()
+
+    private fun PickOptionState.setup() = apply {
         appBar.title = pickArgs.title.desc()
-        initItems(pickArgs, factory::createPickOptionItem, ::onItemSelected)
-        initQueryField(::onFilterChanged)
-        initButton(pickArgs.choice, ::onItemsPicked)
+
+        val items = pickArgs.options.map {
+            factory.createPickOptionItem().apply {
+                identity = it.data
+                icon = it.iconUrl?.asImageUrl()
+                checkBox.text = it.data.value.desc()
+                checkBox.isChecked = false
+                checkBox.onCheckedChange = weakSelfClosure { vm, _ -> vm.onItemSelected(checkBox) }
+            }
+        }
+        options = items
+        filteredOptions.replace(items)
+        filteredOptions.isInitialLoading = false
+        filteredOptions.emptyState = EmptyState(
+            image = DesignSystem.images.empty,
+            label = DesignSystem.strings.list_empty.desc()
+        )
+
+        queryField.placeholder = DesignSystem.strings.action_search.desc()
+        queryField.onTextChanged = weakSelfClosure { vm, text ->  vm.onFilterChanged(text) }
+
+        selectButton.isVisible = pickArgs.choice == Choice.MULTIPLE
+        selectButton.text = DesignSystem.strings.action_select.desc()
+        selectButton.onClick = weakSelfClosure { it.onItemsPicked() }
+        selectButton.isEnabled = false
     }
 
     private fun onItemsPicked() {
@@ -50,58 +75,6 @@ class PickOptionViewModel(
         uiState.selectButton.isEnabled = options.any { it.checkBox.isChecked }
         if (pickArgs.choice == Choice.SINGLE) {
             onItemsPicked()
-        }
-    }
-
-    companion object {
-        internal fun PickOptionState.initPreview(
-            args: PickerScreenArgs,
-            createItem: () -> PickOptionItem,
-        ): PickOptionState {
-            appBar.title = args.title.desc()
-            initItems(args, createItem) {}
-            initQueryField {}
-            initButton(Choice.SINGLE) {}
-            return this
-        }
-
-        private fun PickOptionState.initItems(
-            args: PickerScreenArgs,
-            createItem: () -> PickOptionItem,
-            onItemSelected: (CheckBoxState) -> Unit
-        ) {
-            val items = args.options.map {
-                createItem().apply {
-                    identity = it.data
-                    icon = it.iconUrl?.asImageUrl()
-                    checkBox.text = it.data.value.desc()
-                    checkBox.isChecked = false
-                    checkBox.onCheckedChange = { onItemSelected(checkBox) }
-                }
-            }
-            filteredOptions.replace(items)
-            filteredOptions.isInitialLoading = false
-            filteredOptions.emptyState = EmptyState(
-                image = DesignSystem.images.empty,
-                label = DesignSystem.strings.list_empty.desc()
-            )
-        }
-
-        private fun PickOptionState.initQueryField(onTextChanged: (String) -> Unit): PickOptionState {
-            queryField.placeholder = DesignSystem.strings.action_search.desc()
-            queryField.onTextChanged = onTextChanged
-            return this
-        }
-
-        private fun PickOptionState.initButton(
-            choice: Choice,
-            onClick: () -> Unit
-        ): PickOptionState {
-            selectButton.isVisible = choice == Choice.MULTIPLE
-            selectButton.text = DesignSystem.strings.action_select.desc()
-            selectButton.onClick = onClick
-            selectButton.isEnabled = false
-            return this
         }
     }
 }

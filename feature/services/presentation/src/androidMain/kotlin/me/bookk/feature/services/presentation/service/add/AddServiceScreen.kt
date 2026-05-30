@@ -54,7 +54,7 @@ internal fun AddServiceScreen(state: AddServiceState) {
                     navigateToScreenPicker = {
                         navigation.navigateToPicker(
                             PickerScreenArgs(
-                                id = state.id,
+                                id = state.group.id,
                                 title = title,
                                 options = it.map { presentation ->
                                     PickerScreenArgs.PickerData(

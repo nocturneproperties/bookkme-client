@@ -14,7 +14,7 @@ suspend fun Throwable.toDomain(): Error {
 
         is CancellationException -> Error.Cancelled(this)
         is ResponseException -> {
-            return when (response.status.value) {
+            when (response.status.value) {
                 401 -> Error.Unauthorized(this)
                 in 400..500 -> {
                     val body = runCatching { response.body<BusinessServerError>() }.getOrNull()

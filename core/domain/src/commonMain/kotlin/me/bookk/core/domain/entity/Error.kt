@@ -24,3 +24,9 @@ sealed class Error(val error: String, cause: Throwable?) : Throwable(error, caus
 }
 
 fun Throwable.businessOrThrow() = (this as? Error.BusinessError) ?: throw this
+
+suspend inline fun <T> Result<T>.onBusinessError(action: suspend (error: Error.BusinessError) -> Unit): Result<T> {
+    return onFailure {
+        action(it.businessOrThrow())
+    }
+}

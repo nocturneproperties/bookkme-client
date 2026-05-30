@@ -14,12 +14,12 @@ class RemoteMoneySerializer : KSerializer<Money> {
     override fun deserialize(decoder: Decoder): Money {
         val string = decoder.decodeString()
         return Money(
-            value = string.substring(3, string.length - 1).toLong(),
-            currencyType = Money.SupportedCurrency.valueOf(string.substring(0, 3))
+            value = string.substring(4, string.length - 1).toDouble(),
+            currency = Money.SupportedCurrency.valueOf(string.substring(0, 3))
         )
     }
 
     override fun serialize(encoder: Encoder, value: Money) {
-        encoder.encodeString(value.toString())
+        encoder.encodeString("${value.currency.code()} ${value.valueToStringWithoutAmountSeparation()}")
     }
 }

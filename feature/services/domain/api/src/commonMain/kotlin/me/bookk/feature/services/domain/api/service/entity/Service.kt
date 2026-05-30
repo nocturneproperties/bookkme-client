@@ -3,6 +3,7 @@ package me.bookk.feature.services.domain.api.service.entity
 import library.money.api.Money
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import kotlin.time.Duration
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 data class Service(
@@ -12,5 +13,6 @@ data class Service(
     val name: String,
     val duration: Duration,
     val price: Money,
-    val isAvailable: Boolean
+    val isAvailable: Boolean,
+    val createdAt: Instant
 )

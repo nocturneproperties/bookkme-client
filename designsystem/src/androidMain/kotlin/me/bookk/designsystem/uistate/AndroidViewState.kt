@@ -10,4 +10,8 @@ open class AndroidViewState(
 ) : ViewState {
     override var id: String by mutableStateOf(Uuid.random().toHexString())
     override var isVisible: Boolean by mutableStateOf(isVisible)
+
+    override fun refreshIdentity() {
+        id = Uuid.random().toHexString()
+    }
 }

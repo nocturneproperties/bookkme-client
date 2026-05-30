@@ -17,6 +17,20 @@ struct ServiceGroupListScreen: View {
 		let listState = IOSListState<ServiceGroupListStateServiceGroupUI>.cast(uiState.groups)
 		ListGroup(listState: listState, listStyle: .automatic) { group in
 			Text(group.name)
+				.transition(.opacity)
+				.animation(.easeInOut, value: listState.items.count)
+				.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+					Button(DesignSystem.strings().action_delete.desc().localized()) {
+						group.onDeleteClick()
+					}
+					.tint(.red)
+				}
+				.contextMenu {
+					Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
+						group.onDeleteClick()
+					}
+				}
+				.id(group.id)
 		}
 		.sheet(isPresented: uiState.isAddGroupDialogVisibleBinding) {
 			AddServiceGroupScreen(businessId: businessId) {

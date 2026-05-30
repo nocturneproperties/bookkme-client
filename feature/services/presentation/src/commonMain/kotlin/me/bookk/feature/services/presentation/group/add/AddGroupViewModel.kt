@@ -13,6 +13,7 @@ import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.services.domain.api.group.CreateServiceGroup
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.presentation.ServicesStateFactory
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 class AddGroupViewModel(
@@ -35,7 +36,8 @@ class AddGroupViewModel(
         val group = ServiceGroup(
             id = Uuid.random(),
             businessId = businessId,
-            name = uiState.name.text
+            name = uiState.name.text,
+            createdAt = Clock.System.now()
         )
         launch(
             launchIn = DispatcherProvider.io,

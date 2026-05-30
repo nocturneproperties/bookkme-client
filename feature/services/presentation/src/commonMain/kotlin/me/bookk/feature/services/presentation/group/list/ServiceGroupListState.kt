@@ -21,11 +21,16 @@ interface ServiceGroupListState {
         val id: String,
         val name: String,
         val onItemClick: () -> Unit,
+        val onDeleteClick: () -> Unit
     )
 }
 
-internal fun ServiceGroup.ui(onItemClick: () -> Unit) = ServiceGroupListState.ServiceGroupUI(
+internal fun ServiceGroup.ui(
+    onItemClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) = ServiceGroupListState.ServiceGroupUI(
     id = id.toString(),
     name = name,
-    onItemClick = onItemClick
+    onItemClick = onItemClick,
+    onDeleteClick = onDeleteClick
 )

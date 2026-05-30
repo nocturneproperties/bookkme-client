@@ -24,6 +24,7 @@ interface ServiceListState {
         val id: String,
         val name: String,
         val onItemClick: (ServiceUI) -> Unit,
+        val onItemDeleteClick: (ServiceUI) -> Unit,
         val items: List<ServiceUI>
     )
 

@@ -9,6 +9,7 @@ import androidx.room.TypeConverters
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.database.converter.DurationConverter
+import me.bookk.database.converter.InstantConverter
 import me.bookk.database.converter.UuidConverter
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.ClientsDao
@@ -29,17 +30,19 @@ import me.bookk.database.entity.UserProfileEntity
         ServiceEntity::class,
         ServiceGroupEntity::class
     ],
-    version = 5,
+    version = 6,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
-        AutoMigration(from = 4, to = 5)
+        AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6)
     ]
 )
 @TypeConverters(
     UuidConverter::class,
-    DurationConverter::class
+    DurationConverter::class,
+    InstantConverter::class
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

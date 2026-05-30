@@ -14,7 +14,8 @@ internal fun Service.toDb(): ServiceEntity {
         duration = duration,
         priceCurrency = price.currency.code(),
         priceValue = price.value,
-        isAvailable = isAvailable
+        isAvailable = isAvailable,
+        createdAt = createdAt
     )
 }
 
@@ -29,6 +30,7 @@ internal fun ServiceLocal.toDomain(): Service {
             value = entity.priceValue,
             currencyType = Money.SupportedCurrency.fromCode(entity.priceCurrency)
         ),
-        isAvailable = entity.isAvailable
+        isAvailable = entity.isAvailable,
+        createdAt = entity.createdAt
     )
 }

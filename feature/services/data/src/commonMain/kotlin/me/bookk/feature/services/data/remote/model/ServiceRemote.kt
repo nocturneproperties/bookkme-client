@@ -5,6 +5,7 @@ import library.money.api.Money
 import library.money.api.RemoteMoneySerializer
 import me.bookk.feature.services.domain.api.service.entity.Service
 import kotlin.time.Duration
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -16,7 +17,8 @@ internal class ServiceRemote(
     val duration: Duration,
     @Serializable(with = RemoteMoneySerializer::class)
     val price: Money,
-    val isAvailable: Boolean
+    val isAvailable: Boolean,
+    val createdAt: Instant
 ) {
     fun toDomain(): Service {
         return Service(
@@ -26,7 +28,8 @@ internal class ServiceRemote(
             name = name,
             duration = duration,
             price = price,
-            isAvailable = isAvailable
+            isAvailable = isAvailable,
+            createdAt = createdAt
         )
     }
 
@@ -39,7 +42,8 @@ internal class ServiceRemote(
                 name = name,
                 duration = duration,
                 price = price,
-                isAvailable = isAvailable
+                isAvailable = isAvailable,
+                createdAt = createdAt
             )
         }
     }

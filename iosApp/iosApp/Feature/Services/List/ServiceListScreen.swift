@@ -25,6 +25,7 @@ struct ServiceListScreen: View {
 			ServiceGroupSection(section: section)
 				.transition(.opacity)
 				.animation(.easeInOut, value: uiState.services.items.count)
+				.id(section.id)
 		} header: {
 			Section {
 				SectionView(action: uiState.groupsSection)
@@ -82,7 +83,20 @@ struct ServiceGroupSection: View {
 					Divider()
 						.padding(.leading)
 						.background(AppColors.divider)
-				}.listRowSeparator(.hidden)
+				}
+				.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+					Button(DesignSystem.strings().action_delete.desc().localized()) {
+						section.onItemDeleteClick(service)
+					}
+					.tint(.red)
+				}
+				.contextMenu {
+					Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
+						section.onItemDeleteClick(service)
+					}
+				}
+				.listRowSeparator(.hidden)
+				.id(service.id)
 			}
 		} header: {
 			VStack {
@@ -97,6 +111,8 @@ struct ServiceGroupSection: View {
 					.background(AppColors.divider)
 					.padding(.bottom)
 			}.background(AppColors.background)
-		}.listRowInsets(EdgeInsets())
+		}
+		.listRowInsets(EdgeInsets())
+		.id(section.id)
 	}
 }

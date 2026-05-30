@@ -8,6 +8,7 @@ internal fun ServiceGroup.toDb(): ServiceGroupEntity {
         id = id,
         businessId = businessId,
         name = name,
+        createdAt = createdAt
     )
 }
 
@@ -16,5 +17,6 @@ internal fun ServiceGroupEntity.toDomain(): ServiceGroup {
         id = id,
         businessId = businessId,
         name = name,
+        createdAt = createdAt
     )
 }

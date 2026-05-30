@@ -9,8 +9,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 internal actual fun platformServicesDiModule(): Module = module {
-    viewModel { ServiceListViewModel(it.get(), get(), get(), get()) }
+    viewModel { ServiceListViewModel(it.get(), get(), get(), get(),  get()) }
     viewModel { AddServiceViewModel(it.get(), get(), get(), get(), get(),get()) }
-    viewModel { ServiceGroupListViewModel(it.get(), get(), get(), get()) }
+    viewModel { ServiceGroupListViewModel(it.get(),get(), get(), get(), get()) }
     viewModel { AddGroupViewModel(it.get(), get(), get(), get()) }
 }

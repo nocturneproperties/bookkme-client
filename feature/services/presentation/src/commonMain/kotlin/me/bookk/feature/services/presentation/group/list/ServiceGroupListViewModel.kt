@@ -6,10 +6,13 @@ import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.services.domain.api.group.DeleteServiceGroup
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.group.ServiceGroupEvent
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
@@ -20,6 +23,7 @@ import kotlin.uuid.Uuid
 class ServiceGroupListViewModel(
     private val businessId: Uuid,
     private val getServiceGroups: GetServiceGroups,
+    private val deleteServiceGroup: DeleteServiceGroup,
     stateFactory: ServicesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -33,13 +37,16 @@ class ServiceGroupListViewModel(
     }
 
     private fun loadServiceGroups() {
-        launch(
+        launchCached(
             launchIn = DispatcherProvider.io,
-            call = { getServiceGroups(businessId) },
+            call = { getServiceGroups.cached(businessId, it) },
             onStart = { uiState.refreshState.isRefreshing = true },
-            onComplete = {
-                groups = it.map { group ->
-                    group.ui(weakSelfClosure { it.onGroupClicked(group) })
+            onComplete = { services ->
+                groups = services.map { group ->
+                    group.ui(
+                        onItemClick = weakSelfClosure { it.onGroupClicked(group) },
+                        onDeleteClick = weakSelfClosure { it.onDeleteClicked(group) }
+                    )
                 }
                 uiState.groups.replace(groups)
             },
@@ -55,12 +62,34 @@ class ServiceGroupListViewModel(
     }
 
     private fun onGroupClicked(group: ServiceGroup) {
+    }
 
+    private fun onDeleteClicked(group: ServiceGroup) {
+        uiState.notifications.add(
+            PresentationNotification.Message.deleteConfirmation(
+                onConfirmed = {
+                    deleteGroup(group)
+                }
+            )
+        )
+    }
+
+    private fun deleteGroup(group: ServiceGroup) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { deleteServiceGroup(group) },
+            onStart = { uiState.refreshState.isRefreshing = true },
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.refreshState.isRefreshing = false }
+        )
     }
 
     private fun onSearchQueryChanged(query: String) {
         uiState.search.text = query
-        if (query.isBlank()) uiState.groups.replace(groups)
+        if (query.isBlank()) {
+            uiState.groups.replace(groups)
+            return
+        }
         val filtered = groups
             .filter { it.name.contains(query, ignoreCase = true) }
         uiState.groups.replace(filtered)

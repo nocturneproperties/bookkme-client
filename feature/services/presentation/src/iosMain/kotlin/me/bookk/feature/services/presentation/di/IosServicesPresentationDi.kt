@@ -12,8 +12,8 @@ import org.koin.mp.KoinPlatform
 import kotlin.uuid.Uuid
 
 internal actual fun platformServicesDiModule(): Module = module {
-    factory { ServiceGroupListViewModel(it.get(), get(), get(), get()) }
-    factory { ServiceListViewModel(it.get(), get(), get(), get()) }
+    factory { ServiceGroupListViewModel(it.get(), get(), get(), get(),get()) }
+    factory { ServiceListViewModel(it.get(), get(), get(), get(), get()) }
     factory { AddServiceViewModel(it.get(), get(), get(), get(),  get(), get()) }
     factory { AddGroupViewModel(it.get(), get(), get(), get()) }
 }

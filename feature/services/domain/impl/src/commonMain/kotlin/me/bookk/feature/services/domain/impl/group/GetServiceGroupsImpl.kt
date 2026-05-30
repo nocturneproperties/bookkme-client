@@ -11,7 +11,7 @@ internal class GetServiceGroupsImpl(
     override suspend fun invoke(businessId: Uuid): List<ServiceGroup> {
         return dataSource.getServiceGroups(businessId).also {
             dataSource.saveGroupsInDB(it)
-        }
+        }.sortedBy { it.createdAt }
     }
 
     override suspend fun cached(
@@ -20,7 +20,7 @@ internal class GetServiceGroupsImpl(
     ) {
         val groups = dataSource.getServiceGroups(businessId)
         if (groups.isNotEmpty()) {
-            onResultAvailable(groups)
+            onResultAvailable(groups.sortedBy { it.createdAt })
         }
         onResultAvailable(invoke(businessId))
     }

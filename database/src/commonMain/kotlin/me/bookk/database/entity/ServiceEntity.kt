@@ -7,6 +7,7 @@ import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlin.time.Duration
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Entity(
@@ -40,5 +41,7 @@ class ServiceEntity(
     val priceCurrency: String,
     val priceValue: Long,
     @ColumnInfo(defaultValue = "true")
-    val isAvailable: Boolean
+    val isAvailable: Boolean,
+    @ColumnInfo(defaultValue = "0")
+    val createdAt: Instant
 )

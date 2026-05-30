@@ -14,7 +14,7 @@ internal class GetServicesImpl(
         return dataSource.getServices(businessId).also {
             groupsDataSource.saveGroupsInDB(it.map { it.group }.distinctBy { it.id })
             dataSource.saveServicesInDB(it)
-        }
+        }.sortedBy { it.createdAt }
     }
 
     override suspend fun cached(
@@ -23,7 +23,7 @@ internal class GetServicesImpl(
     ) {
         val groups = dataSource.getServicesFromDb(businessId)
         if (groups.isNotEmpty()) {
-            onResultAvailable(groups)
+            onResultAvailable(groups.sortedBy { it.createdAt })
         }
         onResultAvailable(invoke(businessId))
     }

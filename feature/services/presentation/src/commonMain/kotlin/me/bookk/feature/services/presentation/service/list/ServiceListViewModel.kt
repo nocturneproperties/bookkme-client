@@ -6,11 +6,14 @@ import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.services.domain.api.service.DeleteService
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.domain.api.service.ServiceEvent
 import me.bookk.feature.services.domain.api.service.listenFor
@@ -26,6 +29,7 @@ import kotlin.uuid.Uuid
 class ServiceListViewModel(
     private val businessId: Uuid,
     private val getServices: GetServices,
+    private val deleteService: DeleteService,
     stateFactory: ServicesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -58,11 +62,12 @@ class ServiceListViewModel(
                             id = group.id.toString(),
                             name = group.name,
                             items = services.map { ServiceUI(it) },
-                            onItemClick = weakSelfClosure { vm, item -> vm.onServiceClick(item) }
+                            onItemClick = weakSelfClosure { vm, item -> vm.onServiceClick(item) },
+                            onItemDeleteClick = weakSelfClosure { vm, item -> vm.onServiceDeleteClick(item) }
                         )
                     }
                 items = grouped
-                uiState.services.replace(grouped)
+                uiState.services.replace(items)
             },
             onTerminate = {
                 uiState.refreshState.isRefreshing = false
@@ -76,9 +81,32 @@ class ServiceListViewModel(
         uiState.navigation.push(ServiceDetails(serviceUI.domain.id))
     }
 
+    private fun onServiceDeleteClick(serviceUI: ServiceUI) {
+        uiState.notifications.add(
+            PresentationNotification.Message.deleteConfirmation(
+                onConfirmed = {
+                    deleteServiceItem(serviceUI)
+                }
+            )
+        )
+    }
+
+    private fun deleteServiceItem(serviceUI: ServiceUI) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { deleteService(serviceUI.domain) },
+            onStart = { uiState.refreshState.isRefreshing = true },
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.refreshState.isRefreshing = false }
+        )
+    }
+
     private fun onSearchQueryChanged(query: String) {
         uiState.searchField.text = query
-        if (query.isBlank()) uiState.services.replace(items)
+        if (query.isBlank()) {
+            uiState.services.replace(items)
+            return
+        }
         val filtered = items
             .map {
                 it.copy(items = it.items.filter {

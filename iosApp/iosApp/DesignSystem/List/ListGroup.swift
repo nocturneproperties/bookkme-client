@@ -32,6 +32,10 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 		self.init(listState: listState, listStyle: .plain, content: content) { EmptyView() }
 	}
 	
+	init(listState: IOSListState<T>, listStyle: S, content: @escaping (T) -> Content) where Header == EmptyView {
+		self.init(listState: listState, listStyle: listStyle, content: content) { EmptyView() }
+	}
+	
 	var body: some View {
 		Group {
 			if (!listState.isInitialLoading) {
@@ -39,7 +43,6 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 					header()
 					ForEach(listState.typedItems) { item in
 						content(item)
-							.listRowSeparator(.hidden)
 					}
 				}
 				.listStyle(listStyle)
@@ -47,7 +50,7 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 				ProgressView()
 			}
 		}.overlay {
-			if let emptyState = listState.emptyState, !listState.isInitialLoading {
+			if let emptyState = listState.emptyState, !listState.isInitialLoading, listState.items.isEmpty {
 				ListEmptyView(state: emptyState)
 			}
 		}

@@ -11,7 +11,6 @@ import shared
 
 struct PickOptionScreen: View {
 	
-	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: PickOptionViewModel
 	
 	let onItemSelected: (KeyValueData) -> Void
@@ -24,7 +23,7 @@ struct PickOptionScreen: View {
 	var body: some View {
 		let uiState = IOSPickOptionState.cast(viewModel.uiState)
 		let listState = IOSListState<IOSPickOptionItem>.cast(uiState.filteredOptions)
-		ListGroup(listState: listState) { option in
+		ListGroup(listState: listState, listStyle: .automatic) { option in
 			PickOptionItemView(item: option)
 		}
 		.searchable(
@@ -38,7 +37,6 @@ struct PickOptionScreen: View {
 			switch event {
 			case let event as PickerNavigationDestination.FinishWithResult:
 				onItemSelected(event.pickResult)
-				navigationStack.popLast()
 				break
 			default :
 				break
@@ -59,7 +57,9 @@ struct PickOptionItemView: View {
 				Image(systemName: "checkmark")
 					.foregroundStyle(AppColors.actionText)
 			}
-		}.onTapGesture {
+		}
+		.contentShape(Rectangle())
+		.onTapGesture {
 			item.checkBox.onCheckedChange?(KotlinBoolean(bool: !item.checkBox.isChecked))
 		}
 	}

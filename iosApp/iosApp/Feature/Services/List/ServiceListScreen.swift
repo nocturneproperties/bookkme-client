@@ -95,6 +95,7 @@ struct ServiceGroupSection: View {
 				Divider()
 					.padding(.leading)
 					.background(AppColors.divider)
+					.padding(.bottom)
 			}.background(AppColors.background)
 		}.listRowInsets(EdgeInsets())
 	}

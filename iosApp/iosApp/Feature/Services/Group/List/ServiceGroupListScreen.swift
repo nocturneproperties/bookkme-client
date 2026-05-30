@@ -5,16 +5,23 @@ struct ServiceGroupListScreen: View {
 	
 	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: ServiceGroupListViewModel
+	let businessId: KotlinUuid
 	
 	init(businessId: KotlinUuid) {
+		self.businessId = businessId
 		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceGroupListVM(businessId: businessId))
 	}
 	
 	var body: some View {
 		let uiState = IOSServiceGroupListState.cast(viewModel.uiState)
 		let listState = IOSListState<ServiceGroupListStateServiceGroupUI>.cast(uiState.groups)
-		ListGroup(listState: listState) { group in
+		ListGroup(listState: listState, listStyle: .automatic) { group in
 			Text(group.name)
+		}
+		.sheet(isPresented: uiState.isAddGroupDialogVisibleBinding) {
+			AddServiceGroupScreen(businessId: businessId) {
+				uiState.isAddGroupDialogVisible.toggle()
+			}
 		}
 		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
 		.searchable(

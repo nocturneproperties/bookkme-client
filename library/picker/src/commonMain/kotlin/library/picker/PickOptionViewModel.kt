@@ -28,6 +28,7 @@ class PickOptionViewModel(
 
         val items = pickArgs.options.map {
             factory.createPickOptionItem().apply {
+                id = it.data.key
                 identity = it.data
                 icon = it.iconUrl?.asImageUrl()
                 checkBox.text = it.data.value.desc()

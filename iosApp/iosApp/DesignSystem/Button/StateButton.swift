@@ -53,7 +53,7 @@ struct StateButton: View {
 	@Bindable
     var state: IOSButtonState
     @State
-    var onClick: () -> Void
+    var onClick: (() -> Void)? = nil
     
 	init(_ state: IOSButtonState, onClick: (() -> Void)? = nil) {
 		self.state = state
@@ -62,20 +62,26 @@ struct StateButton: View {
 	
 	init(_ state: ButtonState, onClick: (() -> Void)? = nil) {
 		self.state = state.impl()
-		self.onClick = onClick ?? state.onClick ?? {}
+		self.onClick = onClick
 	}
 	
     var body: some View {
-        Button(action: onClick) {
-            if (state.isLoading) {
-                ProgressView()
-                    .frame(maxWidth: .infinity, minHeight: 36)
-            } else {
-                Text(state.text.localized())
-                    .frame(maxWidth: .infinity, minHeight: 36)
-            }
-        }
+		Button(
+			action: {
+				onClick?()
+				state.onClick?()
+			}
+		) {
+			if (state.isLoading) {
+				ProgressView()
+					.frame(maxWidth: .infinity, minHeight: 36)
+			} else {
+				Text(state.text.localized())
+					.frame(maxWidth: .infinity, minHeight: 36)
+			}
+		}
         .disabled(!state.isEnabled)
+		.tint(state.isEnabled ? AppColors.buttonActive : AppColors.buttonInactive)
         .buttonStyle(.borderedProminent)
     }
 }

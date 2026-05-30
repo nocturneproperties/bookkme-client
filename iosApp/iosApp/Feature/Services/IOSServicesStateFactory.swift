@@ -14,4 +14,8 @@ class IOSServicesStateFactory: @MainActor ServicesStateFactory {
 	func createServiceState() -> any AddServiceState {
 		return IOSAddServiceState()
 	}
+	
+	func createAddGroupState() -> any AddGroupState {
+		return IOSAddGroupState()
+	}
 }

@@ -78,6 +78,7 @@ data class Money(
         val separators = ",."
         return valueToString()
             .filter { it.isDigit() || it in separators }
+            .replace(',', '.')
     }
 
     enum class SupportedCurrency(val code: String) {

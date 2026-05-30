@@ -23,6 +23,7 @@ struct ClientsListScreen: View {
 		let listState = IOSListState<ClientSection>.cast(uiState.clientsList)
 		ListGroup(listState: listState) { section in
 			ContactSection(section: section)
+				.listRowSeparator(.hidden)
 				.transition(.opacity)
 				.animation(.easeInOut, value: uiState.clientsList.items.count)
 		}

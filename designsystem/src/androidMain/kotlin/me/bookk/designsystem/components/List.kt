@@ -22,6 +22,7 @@ fun <T> List(
     state: ListState<T>,
     modifier: Modifier = Modifier,
     idProvider: ((T) -> Any)? = null,
+    contentType: (T) -> Any? = { null },
     contentPadding: PaddingValues = PaddingValues(0.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical =
@@ -44,7 +45,7 @@ fun <T> List(
     ) {
         when {
             state.items.isNotEmpty() -> {
-                items(state.items, key = idProvider, itemContent = itemContent)
+                items(state.items, key = idProvider, itemContent = itemContent, contentType = contentType)
                 state.loadMore?.let { loadMore ->
                     item { loadMore() }
                 }

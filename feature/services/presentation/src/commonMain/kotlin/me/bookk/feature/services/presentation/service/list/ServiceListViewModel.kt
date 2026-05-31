@@ -13,6 +13,8 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.services.domain.api.group.ServiceGroupEvent
+import me.bookk.feature.services.domain.api.group.listenFor
 import me.bookk.feature.services.domain.api.service.DeleteService
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.domain.api.service.ServiceEvent
@@ -45,6 +47,9 @@ class ServiceListViewModel(
 
     private fun listenForEvents() {
         listenFor<ServiceEvent> {
+            loadServiceList()
+        }.launchIn(viewModelScope)
+        listenFor<ServiceGroupEvent> {
             loadServiceList()
         }.launchIn(viewModelScope)
     }

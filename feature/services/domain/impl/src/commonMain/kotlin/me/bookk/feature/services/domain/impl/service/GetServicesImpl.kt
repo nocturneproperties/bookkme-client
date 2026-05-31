@@ -21,9 +21,9 @@ internal class GetServicesImpl(
         businessId: Uuid,
         onResultAvailable: suspend (List<Service>) -> Unit
     ) {
-        val groups = dataSource.getServicesFromDb(businessId)
-        if (groups.isNotEmpty()) {
-            onResultAvailable(groups.sortedBy { it.createdAt })
+        val services = dataSource.getServicesFromDb(businessId)
+        if (services.isNotEmpty()) {
+            onResultAvailable(services.sortedBy { it.createdAt })
         }
         onResultAvailable(invoke(businessId))
     }

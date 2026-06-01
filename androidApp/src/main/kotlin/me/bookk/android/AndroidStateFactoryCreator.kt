@@ -2,6 +2,8 @@ package me.bookk.android
 
 import library.credentials.di.CredentialModuleFactory
 import library.credentials.impl.AndroidCredentialFactory
+import library.picker.AndroidPickOptionStateFactory
+import library.picker.PickOptionStateFactory
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.factory.AndroidAuthStateFactory
 import me.bookk.feature.business.presentation.BusinessStateFactory
@@ -10,6 +12,8 @@ import me.bookk.feature.clients.presentation.AndroidClientsStateFactory
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.dashboard.presentation.AndroidDashboardStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
+import me.bookk.feature.services.presentation.AndroidServicesStateFactory
+import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.factory.AndroidSettingsStateFactory
 import me.bookk.presentation.StateFactoryCreator
@@ -37,5 +41,13 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
 
     override fun createClientsFactory(): ClientsStateFactory {
         return AndroidClientsStateFactory()
+    }
+
+    override fun createServicesFactory(): ServicesStateFactory {
+        return AndroidServicesStateFactory()
+    }
+
+    override fun createPickOptionFactory(): PickOptionStateFactory {
+        return AndroidPickOptionStateFactory()
     }
 }

@@ -1,0 +1,21 @@
+import build_src.constants.ApplicationConfig
+
+plugins {
+    id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
+}
+
+android {
+    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.${FEATURE_NAME}.domain.impl"
+}
+
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.core)
+            implementation(projects.core.domain)
+            implementation(projects.feature.${FEATURE_NAME}.domain.api)
+            implementation(projects.feature.${FEATURE_NAME}.data.source)
+        }
+    }
+}

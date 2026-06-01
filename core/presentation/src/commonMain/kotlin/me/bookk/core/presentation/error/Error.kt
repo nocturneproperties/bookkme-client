@@ -37,7 +37,9 @@ sealed interface PresentationNotification {
         val title: StringDesc? = null,
         val message: StringDesc,
         val buttons: List<ButtonDescriptor>
-    ) : PresentationNotification
+    ) : PresentationNotification {
+        companion object
+    }
 }
 
 class ButtonDescriptor(

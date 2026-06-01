@@ -22,6 +22,10 @@ class IOSRefreshState: @MainActor RefreshState {
 	
 	func awaitRefresh() async {
 		onRefresh()
+		await waitForNextValue()
+	}
+	
+	private func waitForNextValue() async {
 		await withCheckedContinuation { continuation in
 			withObservationTracking({
 				_ = isRefreshing
@@ -32,7 +36,7 @@ class IOSRefreshState: @MainActor RefreshState {
 			}
 		}
 		if (isRefreshing) {
-			await awaitRefresh()
+			await waitForNextValue()
 		}
 	}
 }

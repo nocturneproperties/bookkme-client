@@ -12,12 +12,19 @@ import SwiftUI
 @MainActor
 @Observable
 class IOSViewState: @MainActor ViewState, @MainActor Identifiable {
+	
 	var id: String
 	var isVisible: Bool
 	
-	init(isVisible: Bool = true) {
+	init(id: String = UUID().uuidString, isVisible: Bool = true) {
 		self.isVisible = isVisible
-		self.id = UUID().uuidString
+		self.id = id
+	}
+	
+	func refreshIdentity() {
+		withAnimation {
+			id = UUID().uuidString
+		}
 	}
 }
 

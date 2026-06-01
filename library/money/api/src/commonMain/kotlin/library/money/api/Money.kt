@@ -78,6 +78,7 @@ data class Money(
         val separators = ",."
         return valueToString()
             .filter { it.isDigit() || it in separators }
+            .replace(',', '.')
     }
 
     enum class SupportedCurrency(val code: String) {
@@ -87,6 +88,12 @@ data class Money(
         PLN("PLN"),
         CZK("CZK"),
         GBP("GBP");
+
+        companion object {
+            fun fromCode(code: String): SupportedCurrency {
+                return SupportedCurrency.entries.first { it.code == code }
+            }
+        }
     }
 
     companion object {
@@ -100,6 +107,5 @@ data class Money(
         private fun Double.asPreciseLong(): Long {
             return (this * PRECISION_MULTIPLIER).roundToLong()
         }
-
     }
 }

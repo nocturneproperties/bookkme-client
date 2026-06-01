@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlin.uuid.Uuid
 
@@ -16,7 +17,8 @@ import kotlin.uuid.Uuid
             childColumns = ["businessId"],
             onDelete = CASCADE
         ),
-    ]
+    ],
+    indices = [Index("businessId")]
 )
 class ClientEntity(
     @PrimaryKey

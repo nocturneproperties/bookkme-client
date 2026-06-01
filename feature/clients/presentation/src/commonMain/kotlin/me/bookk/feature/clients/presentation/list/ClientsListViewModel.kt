@@ -73,7 +73,10 @@ class ClientsListViewModel(
 
     private fun onSearchQueryChanged(query: String) {
         uiState.searchField.text = query
-        if (query.isBlank()) uiState.clientsList.replace(items)
+        if (query.isBlank()) {
+            uiState.clientsList.replace(items)
+            return
+        }
         val filtered = items
             .map {
                 it.copy(items = it.items.filter {

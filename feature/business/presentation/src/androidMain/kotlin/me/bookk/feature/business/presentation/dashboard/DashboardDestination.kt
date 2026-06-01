@@ -29,10 +29,11 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
                     DashboardNavigationDestination.AppointmentSettings -> navigation.toAppointmentSettings()
                     DashboardNavigationDestination.Assortment -> navigation.toShopAssortment()
                     is DashboardNavigationDestination.Clients -> navigation.toClients(navItem.id)
+                    is DashboardNavigationDestination.Requests -> navigation.toAppointmentRequests()
                     DashboardNavigationDestination.Employees -> navigation.toEmployees()
                     DashboardNavigationDestination.History -> navigation.toAppointmentHistory()
                     DashboardNavigationDestination.Orders -> navigation.toShopOrders()
-                    DashboardNavigationDestination.Services -> navigation.toAppointmentServices()
+                    is DashboardNavigationDestination.Services -> navigation.toBusinessServices(navItem.id)
                     is DashboardNavigationDestination.Settings -> navigation.toBusinessSettings(navItem.id)
                     DashboardNavigationDestination.Warehouse -> navigation.toShopWarehouse()
                 }

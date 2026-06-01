@@ -16,7 +16,7 @@ struct StateTextField: View {
 	@State
 	var isEditor: Bool = false
     @State
-    var onTextChanged: (String) -> Void
+    var onTextChanged: ((String) -> Void)? = nil //TODO: Backward compatibility, remove when deprecated screens will be refactored
 	
 	private var keyboardType: UIKeyboardType {
 		switch state.inputType {
@@ -44,7 +44,7 @@ struct StateTextField: View {
 	) {
 		self.state = IOSTextFieldState.cast(state)
 		self.isEditor = textEditor
-		self.onTextChanged = onTextChanged ?? state.onTextChanged ?? {_ in}
+		self.onTextChanged = onTextChanged
 	}
     
     var body: some View {
@@ -54,29 +54,38 @@ struct StateTextField: View {
 					Image(uiImage: state.startIcon!.toUIImage()!)
 						.frame(width: 24, height: 24)
 				}
-				LabeledContent {
-					TextField(
-						state.placeholder.localized(),
-						text: Binding<String>(
-							get: { state.text },
-							set: { text in
-								withAnimation {
-									let newValue = String(text.prefix(Int(state.maxLength)))
-									if (newValue != state.text) {
-										onTextChanged(String(text.prefix(Int(state.maxLength)))) }
+				ZStack(alignment: .trailingLastTextBaseline) {
+					LabeledContent {
+						TextField(
+							state.placeholder.localized(),
+							text: Binding<String>(
+								get: { state.text },
+								set: { text in
+									withAnimation {
+										let newValue = String(text.prefix(Int(state.maxLength)))
+										if (newValue != state.text) {
+											state.onTextChanged?(newValue)
+											onTextChanged?(newValue)
+										}
+									}
 								}
-							}
-						),
-						axis: isEditor ? .vertical : .horizontal
-					)
-					.keyboardType(keyboardType)
-					.font(Font.system(.body))
-					.disabled(!state.enabled || state.readOnly)
-				} label: {
-					if (!state.label.localized().isEmpty) {
-						Text(state.label.localized())
-							.frame(minWidth: 100, alignment: .leading)
+							),
+							axis: isEditor ? .vertical : .horizontal
+						)
+						.keyboardType(keyboardType)
+						.font(Font.system(.body))
+						.disabled(!state.enabled || state.readOnly)
+					} label: {
+						if (!state.label.localized().isEmpty) {
+							Text(state.label.localized())
+								.frame(minWidth: 100, alignment: .leading)
+						}
 					}
+				}
+				if let suffix = state.suffix {
+					Text(suffix.localized())
+						.font(.footnote)
+						.foregroundStyle(AppColors.secondary)
 				}
 			}
 			.padding(.horizontal, 8)
@@ -113,8 +122,8 @@ struct StateTextField: View {
 					.foregroundStyle(state.validationState == ValidationState.error ? AppColors.error : AppColors.secondary)
 					.padding(.leading)
             }
-        }
-    }
+        }.id(state.id)
+	}
 }
 
 #Preview {

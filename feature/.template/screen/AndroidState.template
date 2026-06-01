@@ -1,0 +1,14 @@
+package ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.presentation.${SCREEN_PACKAGE}
+
+import me.bookk.designsystem.uistate.AndroidAppBarState
+import me.bookk.designsystem.uistate.AndroidNavigationState
+import me.bookk.designsystem.uistate.AndroidNotificationState
+import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.NavigationState
+import me.bookk.designsystem.uistate.PresentationNotificationState
+
+internal class Android${SCREEN_NAME}State : ${SCREEN_NAME}State {
+    override val appBar: AppBarState = AndroidAppBarState()
+    override val notifications: PresentationNotificationState = AndroidNotificationState()
+    override val navigation: NavigationState<${SCREEN_NAME}Destination> = AndroidNavigationState()
+}

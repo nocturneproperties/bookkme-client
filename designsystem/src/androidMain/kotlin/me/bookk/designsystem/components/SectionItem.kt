@@ -22,11 +22,12 @@ import me.bookk.designsystem.theme.color.LocalColors
 @Composable
 fun SectionItem(
     text: String,
-    color: Color = LocalColors.current.primaryText,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    color: Color = LocalColors.current.primaryText
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(56.dp)
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)

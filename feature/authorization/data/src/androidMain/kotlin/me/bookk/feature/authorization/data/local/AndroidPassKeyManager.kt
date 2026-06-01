@@ -1,6 +1,5 @@
 package me.bookk.feature.authorization.data.local
 
-import android.content.Context
 import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.CreatePublicKeyCredentialResponse
 import androidx.credentials.CredentialManager
@@ -14,19 +13,18 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.domerrors.NotAllowedError
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
+import me.bookk.core.android.AndroidActivityAware
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager.CreationRequest
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import org.json.JSONObject
 
-class AndroidPassKeyManager(
-    private val context: Context
-) : PassKeyManager {
-
-    private val credentialManager = CredentialManager.create(context.applicationContext)
+class AndroidPassKeyManager : AndroidActivityAware(), PassKeyManager {
 
     override suspend fun create(challenge: CreationRequest): PasskeyVerificationPayload {
         return runCatching {
+            val context = awaitActivity()
+            val credentialManager = CredentialManager.create(context)
             val omittedPublicKeyObject =
                 JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
             val createPublicKeyCredentialRequest = CreatePublicKeyCredentialRequest(
@@ -61,6 +59,8 @@ class AndroidPassKeyManager(
 
     override suspend fun authorize(challenge: PassKeyManager.AuthorizationRequest): PasskeyVerificationPayload {
         return runCatching {
+            val context = awaitActivity()
+            val credentialManager = CredentialManager.create(context)
             val publicKeyObject =
                 JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
             val getPublicKeyCredentialOption = GetPublicKeyCredentialOption(

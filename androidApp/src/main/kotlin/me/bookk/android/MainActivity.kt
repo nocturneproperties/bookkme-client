@@ -30,8 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import library.picker.pickScreen
 import me.bookk.android.navigation.rememberAuthNavigation
 import me.bookk.android.navigation.rememberClientsNavigation
+import me.bookk.android.navigation.rememberServicesNavigation
 import me.bookk.core.android.AndroidActivityAware
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.UnauthorizedHandler
@@ -52,6 +54,8 @@ import me.bookk.feature.clients.presentation.ClientsDestinations
 import me.bookk.feature.clients.presentation.clientsGraph
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
 import me.bookk.feature.dashboard.presentation.navigation.dashboardGraph
+import me.bookk.feature.services.presentation.ServicesDestination
+import me.bookk.feature.services.presentation.servicesGraph
 import me.bookk.feature.settings.presentation.SettingsTab
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.mp.KoinPlatform
@@ -100,6 +104,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
     val controller = rememberNavController()
     val authNavigation = rememberAuthNavigation(controller)
     val clientsNavigation = rememberClientsNavigation(controller)
+    val servicesNavigation = rememberServicesNavigation(controller)
     val destination = state.startDestination
     if (destination != null) {
         val snackBarState = remember { SnackbarHostState() }
@@ -134,17 +139,22 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
             ) {
                 authGraph(navigation = authNavigation)
                 clientsGraph(navigation = clientsNavigation)
+                servicesGraph(navigation = servicesNavigation)
                 dashboardGraph(
                     appointmentsTab = { Text("Appointments") },
                     businessTab = {
                         BusinessTab(
                             showClients = {
                                 controller.navigate(ClientsDestinations.Clients(it))
+                            },
+                            showServices = {
+                                controller.navigate(ServicesDestination.Services(it))
                             }
                         )
                     },
                     settingsTab = { SettingsTab() }
                 )
+                pickScreen(controller)
             }
         }
         Box(

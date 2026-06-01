@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="services_title">Services</string>
+    <string name="services_empty">There are no services at the moment</string>
+    <string name="service_group_empty">There are no service groups at the moment</string>
+
+    <string name="services_create_title">Add service</string>
+    <string name="services_create_group">Group</string>
+    <string name="services_create_groups">Service groups</string>
+    <string name="services_create_group_placeholder">Service group</string>
+    <string name="services_create_name">Name</string>
+    <string name="services_create_name_placeholder">Service name</string>
+    <string name="services_create_duration">Duration</string>
+    <string name="services_create_duration_placeholder">Duration in minutes</string>
+    <string name="services_create_price">Price</string>
+    <string name="services_create_price_placeholder">Payment amount</string>
+    <string name="services_create_min">min.</string>
+    <string name="services_create_visible">Visible to clients</string>
+
+    <string name="services_group_pick">Select group</string>
+
+    <string name="services_group_add_title">Create service group</string>
+    <string name="services_group_add_name_exists">Group with this name already exists</string>
+    <string name="services_group_add_name_invalid">Invalid name</string>
+
+</resources>

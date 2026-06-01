@@ -1,0 +1,19 @@
+import shared
+
+@Observable
+@MainActor
+class IOS${SCREEN_NAME}State: @MainActor ${SCREEN_NAME}State, NativeStateRepresentation {
+	
+	typealias SwiftType = IOS${SCREEN_NAME}State
+	typealias KotlinType = ${SCREEN_NAME}State
+	
+	var appBar: any AppBarState
+	var navigation: any NavigationState
+	var notifications: any PresentationNotificationState
+	
+	init() {
+		appBar = IOSAppBarState()
+		navigation = IOSNavigationState()
+		notifications = IOSNotificationState()
+	}
+}

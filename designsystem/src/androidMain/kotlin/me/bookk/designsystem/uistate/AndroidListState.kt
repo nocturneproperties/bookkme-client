@@ -8,7 +8,7 @@ import me.bookk.designsystem.uistate.simple.EmptyState
 
 class AndroidListState<T>(
     items: List<T> = emptyList()
-) : ListState<T> {
+) : ListState<T>, AndroidViewState() {
 
     override val items = mutableStateListOf<T>().apply {
         addAll(items)
@@ -19,11 +19,13 @@ class AndroidListState<T>(
 
     override fun append(list: List<T>) {
         items += list
+        isInitialLoading = false
     }
 
     override fun replace(list: List<T>) {
         items.clear()
         items.addAll(list)
+        isInitialLoading = false
     }
 
     override fun clear() {

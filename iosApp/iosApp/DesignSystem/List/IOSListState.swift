@@ -12,7 +12,7 @@ import SwiftUI
 
 @Observable
 @MainActor
-class IOSListState<T>: @MainActor ListState, NativeStateRepresentation {
+class IOSListState<T>: @MainActor IOSViewState, @MainActor ListState, NativeStateRepresentation {
 	typealias SwiftType = IOSListState<T>
 	
 	typealias KotlinType = ListState
@@ -27,6 +27,7 @@ class IOSListState<T>: @MainActor ListState, NativeStateRepresentation {
     init(typedItems: [T] = []) {
         self.typedItems = typedItems
         self.isInitialLoading = typedItems.isEmpty
+		super.init()
     }
     
     func append(list: [Any]) {

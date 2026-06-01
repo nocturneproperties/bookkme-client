@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,6 +30,7 @@ fun DesignSystemBottomSheet(
     ModalBottomSheet(
         modifier = modifier,
         sheetState = sheetState,
+        containerColor = LocalColors.current.elevated,
         properties = ModalBottomSheetProperties(),
         onDismissRequest = onDismiss,
     ) {

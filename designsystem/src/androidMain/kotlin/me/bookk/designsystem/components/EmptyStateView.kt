@@ -3,12 +3,14 @@ package me.bookk.designsystem.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.painter
 import me.bookk.designsystem.theme.typography.secondary
@@ -27,6 +29,7 @@ fun LazyItemScope.EmptyStateView(state: EmptyState, modifier: Modifier = Modifie
         )
         Text(
             state.label.localized(),
+            modifier = Modifier.padding(top = 24.dp),
             style = MaterialTheme.typography.bodyMedium.secondary()
         )
     }

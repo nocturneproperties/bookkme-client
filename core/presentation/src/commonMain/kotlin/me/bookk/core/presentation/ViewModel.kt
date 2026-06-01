@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import me.bookk.core.presentation.error.ErrorMapper
+import me.bookk.core.presentation.error.PresentationNotification
 import kotlin.coroutines.CoroutineContext
 
 expect abstract class ViewModel(
@@ -41,6 +42,8 @@ expect abstract class ViewModel(
         onStart: (suspend () -> Unit)? = null,
         onTerminate: (suspend () -> Unit)? = null,
     ): Job?
+
+    protected fun Throwable.notification(): PresentationNotification
 }
 
 enum class LaunchBehaviour {

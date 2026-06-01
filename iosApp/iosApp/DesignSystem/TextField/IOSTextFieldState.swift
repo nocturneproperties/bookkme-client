@@ -11,7 +11,7 @@ import SwiftUI
 @Observable
 @MainActor
 class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRepresentation {
-	
+		
 	typealias SwiftType = IOSTextFieldState
 	
 	typealias KotlinType = TextFieldState
@@ -29,6 +29,7 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 	var inputType: InputType
 	var onTextChanged: ((String) -> Void)?
 	var placeholder: any StringDesc
+	var suffix: (any StringDesc)?
     
 	init(
 		enabled: Bool = true,
@@ -43,6 +44,7 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 		startIcon: shared.ImageResource? = nil,
 		endIcon: shared.ImageResource? = nil,
 		inputType: InputType = InputType.text,
+		suffix: (any StringDesc)? = nil,
 		onTextChanged: ((String) -> Void)? = nil
 	) {
 		self.enabled = enabled
@@ -58,6 +60,7 @@ class IOSTextFieldState: IOSViewState, @MainActor TextFieldState, NativeStateRep
 		self.inputType = inputType
 		self.onTextChanged = onTextChanged
 		self.placeholder = placeholder
+		self.suffix = suffix
 	}
 	
 	func updateText(desc: (any StringDesc)?) {

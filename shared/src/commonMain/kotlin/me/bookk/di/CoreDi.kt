@@ -2,6 +2,7 @@ package me.bookk.di
 
 import kotlinx.coroutines.CoroutineScope
 import library.credentials.di.CredentialModuleFactory
+import library.picker.PickOptionStateFactory
 import me.bookk.core.coroutine.createApplicationScope
 import me.bookk.core.presentation.di.presentationCoreModule
 import me.bookk.core.presentation.error.ErrorMapper
@@ -10,6 +11,7 @@ import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
+import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.presentation.StateFactoryCreator
 import me.bookk.shared.BuildKonfig
@@ -36,5 +38,7 @@ private fun stateModule() = module {
     factory<SettingsStateFactory> { get<StateFactoryCreator>().createSettingsFactory() }
     factory<BusinessStateFactory> { get<StateFactoryCreator>().createBusinessFactory() }
     factory<ClientsStateFactory> { get<StateFactoryCreator>().createClientsFactory() }
+    factory<ServicesStateFactory> { get<StateFactoryCreator>().createServicesFactory() }
     factory<CredentialModuleFactory> { get<StateFactoryCreator>().createCredentialModuleFactory() }
+    factory<PickOptionStateFactory> { get<StateFactoryCreator>().createPickOptionFactory() }
 }

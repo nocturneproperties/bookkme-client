@@ -10,35 +10,39 @@ import shared
 @MainActor
 class IOSStateFactoryCreator: @MainActor StateFactoryCreator {
 	
-	func createDashboardFactory() -> any DashboardStateFactory {
-		return IOSDashboardStateFactory()
+	func createAppointmentsFactory() -> any AppointmentsStateFactory {
+		return IOSAppointmentsStateFactory()
 	}
-	
+
     func createAuthFactory() -> any AuthStateFactory {
         return IOSAuthStateFactory()
     }
-	
-	func createSettingsFactory() -> any SettingsStateFactory {
-		return IOSSettingsStateFactory()
-	}
 	
 	func createBusinessFactory() -> any BusinessStateFactory {
 		return IOSBusinessStateFactory()
 	}
     
+	func createClientsFactory() -> any ClientsStateFactory {
+		return IOSClientsStateFactory()
+	}
+
 	func createCredentialModuleFactory() -> any CredentialModuleFactory {
 		return IOSCredentialFactory()
 	}
 	
-	func createClientsFactory() -> any ClientsStateFactory {
-		return IOSClientsStateFactory()
-	}
-	
-	func createServicesFactory() -> any ServicesStateFactory {
-		return IOSServicesStateFactory()
+	func createDashboardFactory() -> any DashboardStateFactory {
+		return IOSDashboardStateFactory()
 	}
 	
 	func createPickOptionFactory() -> any PickOptionStateFactory {
 		return IOSPickOptionFactory()
+	}
+
+	func createServicesFactory() -> any ServicesStateFactory {
+		return IOSServicesStateFactory()
+	}
+
+	func createSettingsFactory() -> any SettingsStateFactory {
+		return IOSSettingsStateFactory()
 	}
 }

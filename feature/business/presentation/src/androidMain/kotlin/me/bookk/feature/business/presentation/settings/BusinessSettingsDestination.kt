@@ -11,6 +11,7 @@ import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.LocalNavigation
+import me.bookk.feature.business.presentation.screen.settings.BusinessSettingsViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.reflect.typeOf

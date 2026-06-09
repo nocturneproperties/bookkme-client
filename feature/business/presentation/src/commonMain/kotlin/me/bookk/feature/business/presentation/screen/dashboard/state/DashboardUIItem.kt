@@ -1,9 +1,9 @@
-package me.bookk.feature.business.presentation.dashboard.state
+package me.bookk.feature.business.presentation.screen.dashboard.state
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.feature.business.presentation.dashboard.DashboardNavigationDestination
+import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 import kotlin.uuid.Uuid
 
 abstract class DashboardUIItem(

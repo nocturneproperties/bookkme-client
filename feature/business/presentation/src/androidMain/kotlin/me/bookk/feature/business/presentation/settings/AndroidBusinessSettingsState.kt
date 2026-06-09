@@ -14,8 +14,8 @@ import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.designsystem.uistate.TopBarSize
-import me.bookk.feature.business.presentation.settings.state.BusinessSettingsState
-import me.bookk.feature.business.presentation.settings.state.CurrencyUI
+import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
+import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 
 @Immutable
 internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.InitData) :

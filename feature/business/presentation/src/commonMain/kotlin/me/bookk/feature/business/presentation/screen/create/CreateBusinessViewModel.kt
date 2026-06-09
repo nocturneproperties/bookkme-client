@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.create
+package me.bookk.feature.business.presentation.screen.create
 
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.business.resources.BusinessRes
@@ -8,7 +8,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.presentation.BusinessStateFactory
-import me.bookk.feature.business.presentation.create.state.CreateBusinessState
+import me.bookk.feature.business.presentation.screen.create.state.CreateBusinessState
 
 class CreateBusinessViewModel(
     private val createBusiness: CreateBusiness,
@@ -33,7 +33,7 @@ class CreateBusinessViewModel(
             call = { createBusiness(uiState.name.text) },
             onComplete = {
                 /**
-                 * @see me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
+                 * @see me.bookk.feature.business.presentation.screen.bootstrap.BusinessBootstrapViewModel
                  * After successful business creation bootstrap will change root destination resulting
                  * in screen stack change
                  * */

@@ -29,7 +29,8 @@ import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.feature.business.presentation.settings.state.BusinessSettingsState
+import me.bookk.feature.business.presentation.screen.settings.BusinessSettingsViewModel
+import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
 
 @Composable
 internal fun BusinessSettingsScreen(state: BusinessSettingsState) {

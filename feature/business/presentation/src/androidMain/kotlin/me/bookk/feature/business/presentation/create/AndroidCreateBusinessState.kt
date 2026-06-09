@@ -9,7 +9,7 @@ import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
-import me.bookk.feature.business.presentation.create.state.CreateBusinessState
+import me.bookk.feature.business.presentation.screen.create.state.CreateBusinessState
 
 @Immutable
 internal class AndroidCreateBusinessState(

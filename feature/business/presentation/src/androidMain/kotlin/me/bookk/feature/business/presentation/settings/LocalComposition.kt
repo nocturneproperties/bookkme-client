@@ -1,7 +1,7 @@
 package me.bookk.feature.business.presentation.settings
 
 import androidx.compose.runtime.compositionLocalOf
-import me.bookk.feature.business.presentation.settings.state.CurrencyUI
+import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 
 internal class BusinessSettingsEventListener(
     val onBackClick: () -> Unit,

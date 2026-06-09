@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.bootstrap
+package me.bookk.feature.business.presentation.screen.bootstrap
 
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.feature.business.presentation.navigation.BusinessDestination

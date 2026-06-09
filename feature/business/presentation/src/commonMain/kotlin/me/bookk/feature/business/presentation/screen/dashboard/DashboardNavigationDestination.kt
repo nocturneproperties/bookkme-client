@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.dashboard
+package me.bookk.feature.business.presentation.screen.dashboard
 
 import me.bookk.core.presentation.navigation.NavigationDestination
 import kotlin.uuid.Uuid

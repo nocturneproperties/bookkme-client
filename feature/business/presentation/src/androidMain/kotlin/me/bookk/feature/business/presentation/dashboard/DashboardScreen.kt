@@ -23,8 +23,9 @@ import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardSection
-import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardState
+import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
+import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
+import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
 import kotlin.uuid.Uuid
 
 @Composable

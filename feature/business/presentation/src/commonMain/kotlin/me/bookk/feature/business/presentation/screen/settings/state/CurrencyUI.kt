@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.settings.state
+package me.bookk.feature.business.presentation.screen.settings.state
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc

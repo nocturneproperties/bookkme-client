@@ -8,8 +8,9 @@ import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TopBarSize
-import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardSection
-import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardState
+import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
+import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
+import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
 
 internal class AndroidDashboardState(
     initData: BusinessDashboardState.InitData

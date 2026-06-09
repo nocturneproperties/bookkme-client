@@ -1,9 +1,9 @@
-package me.bookk.feature.business.presentation.dashboard.state
+package me.bookk.feature.business.presentation.screen.dashboard.state
 
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
-import me.bookk.feature.business.presentation.dashboard.DashboardNavigationDestination
+import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 
 interface BusinessDashboardState {
 

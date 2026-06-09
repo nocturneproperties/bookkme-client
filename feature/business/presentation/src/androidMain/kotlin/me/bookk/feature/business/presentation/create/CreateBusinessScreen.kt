@@ -18,7 +18,8 @@ import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
-import me.bookk.feature.business.presentation.create.state.CreateBusinessState
+import me.bookk.feature.business.presentation.screen.create.CreateBusinessViewModel
+import me.bookk.feature.business.presentation.screen.create.state.CreateBusinessState
 
 @Composable
 internal fun CreateBusinessScreen(

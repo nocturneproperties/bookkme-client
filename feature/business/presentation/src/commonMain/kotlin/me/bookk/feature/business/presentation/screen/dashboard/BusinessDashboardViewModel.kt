@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.dashboard
+package me.bookk.feature.business.presentation.screen.dashboard
 
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
@@ -14,8 +14,8 @@ import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatur
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.BusinessStateFactory
-import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardSection
-import me.bookk.feature.business.presentation.dashboard.state.BusinessDashboardState
+import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
+import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
 import kotlin.uuid.Uuid
 
 class BusinessDashboardViewModel(

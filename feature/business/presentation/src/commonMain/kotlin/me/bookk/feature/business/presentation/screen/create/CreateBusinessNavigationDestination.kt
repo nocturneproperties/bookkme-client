@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.create
+package me.bookk.feature.business.presentation.screen.create
 
 import me.bookk.core.presentation.navigation.NavigationDestination
 

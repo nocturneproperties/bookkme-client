@@ -27,6 +27,7 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.LocalNavigation
+import me.bookk.feature.business.presentation.screen.create.CreateBusinessViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

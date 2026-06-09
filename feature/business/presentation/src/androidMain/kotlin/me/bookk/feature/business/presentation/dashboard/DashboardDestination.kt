@@ -10,6 +10,8 @@ import me.bookk.core.presentation.SendLifecycleEventsTo
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
+import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
+import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {

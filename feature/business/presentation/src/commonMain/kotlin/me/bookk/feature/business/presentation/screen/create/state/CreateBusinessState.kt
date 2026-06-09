@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.create.state
+package me.bookk.feature.business.presentation.screen.create.state
 
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState

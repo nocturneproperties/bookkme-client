@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.settings
+package me.bookk.feature.business.presentation.screen.settings
 
 import dev.icerock.moko.resources.desc.desc
 import library.device.api.DeviceFacade
@@ -22,9 +22,9 @@ import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.Business.Social
 import me.bookk.feature.business.domain.api.entity.Business.SocialKind
 import me.bookk.feature.business.presentation.BusinessStateFactory
-import me.bookk.feature.business.presentation.settings.state.BusinessSettingsState
-import me.bookk.feature.business.presentation.settings.state.CurrencyUI
-import me.bookk.feature.business.presentation.settings.state.toCurrencyUI
+import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
+import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
+import me.bookk.feature.business.presentation.screen.settings.state.toCurrencyUI
 import kotlin.properties.Delegates
 import kotlin.uuid.Uuid
 

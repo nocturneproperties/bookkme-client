@@ -14,6 +14,4 @@ interface BusinessDashboardState {
     val navigation: NavigationState<DashboardNavigationDestination>
 
     fun updateSections(sections: List<BusinessDashboardSection>)
-
-    class InitData
 }

@@ -15,7 +15,6 @@ import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessCha
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
-import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
 import kotlin.uuid.Uuid
 
 class BusinessDashboardViewModel(
@@ -25,7 +24,7 @@ class BusinessDashboardViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
-    val uiState = stateFactory.createBusinessDashboardState(createInitData())
+    val uiState = stateFactory.createBusinessDashboardState()
 
     init {
         observeBusiness()
@@ -67,10 +66,5 @@ class BusinessDashboardViewModel(
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
         )
-    }
-
-
-    companion object {
-        internal fun createInitData() = BusinessDashboardState.InitData()
     }
 }

@@ -22,7 +22,8 @@ sealed class BusinessDashboardSection(
             Clients(id),
             Services(id),
             Analytics,
-            Settings(id)
+            Settings(id),
+            Plugins(id)
         )
     ) : BusinessDashboardSection(BusinessRes.strings.business_dashboard_business.desc(), items) {
         data object Employees : DashboardUIItem(
@@ -48,6 +49,11 @@ sealed class BusinessDashboardSection(
         class Services(id: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_services.desc(),
             DashboardNavigationDestination.Services(id)
+        )
+
+        class Plugins(id: Uuid) : DashboardUIItem(
+            BusinessRes.strings.business_dashboard_plugins.desc(),
+            DashboardNavigationDestination.Plugins(id)
         )
     }
 

@@ -48,6 +48,7 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                     implementation(libs.kmm.resources)
                     implementation(libs.compose.runtime)
                     implementation(libs.koin.core)
+                    implementation(libs.koin.annotation)
                 }
             }
 

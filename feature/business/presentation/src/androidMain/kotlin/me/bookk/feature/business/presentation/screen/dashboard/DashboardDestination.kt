@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.dashboard
+package me.bookk.feature.business.presentation.screen.dashboard
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -10,8 +10,6 @@ import me.bookk.core.presentation.SendLifecycleEventsTo
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
-import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
-import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
@@ -37,6 +35,7 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
                     DashboardNavigationDestination.Orders -> navigation.toShopOrders()
                     is DashboardNavigationDestination.Services -> navigation.toBusinessServices(navItem.id)
                     is DashboardNavigationDestination.Settings -> navigation.toBusinessSettings(navItem.id)
+                    is DashboardNavigationDestination.Plugins -> navigation.toBusinessPlugins(navItem.id)
                     DashboardNavigationDestination.Warehouse -> navigation.toShopWarehouse()
                 }
             }

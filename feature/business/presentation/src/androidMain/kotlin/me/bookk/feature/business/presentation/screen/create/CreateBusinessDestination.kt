@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.create
+package me.bookk.feature.business.presentation.screen.create
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,7 +27,6 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.LocalNavigation
-import me.bookk.feature.business.presentation.screen.create.CreateBusinessViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

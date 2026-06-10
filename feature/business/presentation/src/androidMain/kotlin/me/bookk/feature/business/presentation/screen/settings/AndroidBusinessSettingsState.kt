@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.settings
+package me.bookk.feature.business.presentation.screen.settings
 
 import androidx.compose.runtime.Immutable
 import dev.icerock.moko.resources.desc.desc

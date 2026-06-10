@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.settings
+package me.bookk.feature.business.presentation.screen.settings
 
 import androidx.compose.runtime.compositionLocalOf
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI

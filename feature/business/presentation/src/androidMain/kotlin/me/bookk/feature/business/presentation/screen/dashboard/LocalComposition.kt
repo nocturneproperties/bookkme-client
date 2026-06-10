@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.dashboard
+package me.bookk.feature.business.presentation.screen.dashboard
 
 import androidx.compose.runtime.compositionLocalOf
 import me.bookk.feature.business.presentation.screen.dashboard.state.DashboardUIItem

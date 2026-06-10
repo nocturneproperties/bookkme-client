@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.loading
+package me.bookk.feature.business.presentation.screen.loading
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

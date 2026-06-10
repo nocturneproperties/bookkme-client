@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.bootstrap
+package me.bookk.feature.business.presentation.screen.bootstrap
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
-import me.bookk.feature.business.presentation.screen.bootstrap.BusinessBootstrapState
 
 internal class AndroidBusinessBootstrapState(initData: BusinessBootstrapState.InitData) :
     BusinessBootstrapState {

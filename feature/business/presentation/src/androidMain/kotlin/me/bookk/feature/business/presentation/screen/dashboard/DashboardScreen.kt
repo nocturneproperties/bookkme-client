@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.dashboard
+package me.bookk.feature.business.presentation.screen.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +23,6 @@ import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
 import kotlin.uuid.Uuid
@@ -88,7 +87,7 @@ private fun DashboardSection(item: BusinessDashboardSection) {
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         DashboardScreen(
-            state = AndroidDashboardState(BusinessDashboardViewModel.createInitData()).apply {
+            state = AndroidDashboardState().apply {
                 appBar.title = "Business name".desc()
                 updateSections(listOf(BusinessDashboardSection.Business(Uuid.random()), BusinessDashboardSection.Appointments(), BusinessDashboardSection.Shop()))
             }
@@ -101,7 +100,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         DashboardScreen(
-            state = AndroidDashboardState(BusinessDashboardViewModel.createInitData()).apply {
+            state = AndroidDashboardState().apply {
                 appBar.title = "Business name".desc()
                 updateSections(listOf(BusinessDashboardSection.Business(Uuid.random()), BusinessDashboardSection.Appointments(), BusinessDashboardSection.Shop()))
             }

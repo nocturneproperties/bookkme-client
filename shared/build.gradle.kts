@@ -161,6 +161,7 @@ kotlin {
             export(projects.feature.business.presentation)
             export(projects.feature.clients.presentation)
             export(projects.feature.services.presentation)
+            export(projects.feature.appointments.presentation)
             export(projects.library.money.api)
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)

@@ -52,7 +52,7 @@
     <string name="business_plugins_appointments_title">Appointments</string>
     <string name="business_plugins_appointments_subtitle">Manage appointments with ease</string>
     <string name="business_plugins_you_can">You can</string>
-    <string name="business_plugins_you_can">Clients can</string>
+    <string name="business_plugins_clients_can">Clients can</string>
     <string name="business_plugins_appointments_you_item1">Create appointments.</string>
     <string name="business_plugins_appointments_you_item2">Reschedule appointments.</string>
     <string name="business_plugins_appointments_you_item3">View, Approve, Decline appointment requests from clients.</string>

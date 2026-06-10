@@ -1,5 +1,6 @@
 package me.bookk.feature.business.presentation.screen.bootstrap
 
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import me.bookk.core.coroutine.DispatcherProvider
@@ -22,6 +23,7 @@ class BusinessBootstrapViewModel(
 
     init {
         loadBusiness()
+        observeBusinessChanges()
     }
 
     private fun loadBusiness() {
@@ -30,7 +32,11 @@ class BusinessBootstrapViewModel(
             call = { refreshBusinessInfo() },
             onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
+    }
+
+    private fun observeBusinessChanges() {
         observeDashboardBusinessChanges()
+            .flowOn(DispatcherProvider.io)
             .onEach { business ->
                 uiState.startDestination = if (business == null) {
                     BusinessDestination.Create

@@ -138,7 +138,7 @@ internal fun BusinessPlugin(
                     FeatureList(
                         modifier = Modifier.padding(top = 8.dp),
                         icon = Icons.Filled.Group,
-                        title = BusinessRes.strings.business_plugins_you_can.desc().localized(),
+                        title = BusinessRes.strings.business_plugins_clients_can.desc().localized(),
                         features = state.clientCan.items
                     )
                     if (!state.isEnabled) {

@@ -24,4 +24,7 @@ sealed class BusinessDestination {
 
     @Serializable
     data class Settings(val id: Uuid) : BusinessDestination()
+
+    @Serializable
+    data class Plugins(val id: Uuid) : BusinessDestination()
 }

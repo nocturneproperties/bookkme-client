@@ -9,6 +9,8 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.authorization.domain.api.SignIn
 import me.bookk.feature.authorization.presentation.AuthConstants
 import me.bookk.feature.authorization.presentation.AuthStateFactory
@@ -36,7 +38,7 @@ class SignInViewModel(
     override fun onSignInClick() {
         launch(
             launchIn = DispatcherProvider.io,
-            onStart = { uiState.signInButton.isLoading = true },
+            onStart = { uiState.signInButton.startLoading() },
             call = { signIn() },
             onError = {
                 val message = if (it is SignIn.Error) {
@@ -56,7 +58,7 @@ class SignInViewModel(
                 }
                 uiState.notification.add(message)
             },
-            onTerminate = { uiState.signInButton.isLoading = false }
+            onTerminate = { uiState.signInButton.stopLoading() }
         )
     }
 

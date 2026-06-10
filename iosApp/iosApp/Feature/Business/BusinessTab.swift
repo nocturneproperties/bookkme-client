@@ -37,6 +37,8 @@ struct BusinessTab: View {
 						ClientsListScreen(businessId: type.id)
 					case let type as DashboardNavigationDestination.Services:
 						ServiceListScreen(businessId: type.id)
+					case let type as DashboardNavigationDestination.Plugins:
+						BusinessPluginsScreen(businessId: type.id)
 					default:
 						ProgressView()
 					}

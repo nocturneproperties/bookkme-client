@@ -25,9 +25,9 @@ fun CollapsingAppBarScaffold(
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = contentColorFor(containerColor),
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+    behaviour: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val behaviour = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier.nestedScroll(behaviour.nestedScrollConnection),
         { topBar(behaviour) },

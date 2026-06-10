@@ -3,6 +3,7 @@ package me.bookk.di
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import me.bookk.core.LogFactory
+import me.bookk.di.feature.appointmentsDiModule
 import me.bookk.di.feature.authDiModule
 import me.bookk.di.feature.businessDiModule
 import me.bookk.di.feature.clientsDiModule
@@ -33,10 +34,11 @@ fun initDI(creator: StateFactoryCreator) {
 private fun KoinApplication.installModules(creator: StateFactoryCreator) = modules(
     coreModule(creator),
     libraryModule(),
+    appointmentsDiModule(),
     authDiModule(),
-    dashboardDiModule(),
-    settingsDiModule(),
     businessDiModule(),
     clientsDiModule(),
-    servicesDiModule()
+    dashboardDiModule(),
+    servicesDiModule(),
+    settingsDiModule()
 )

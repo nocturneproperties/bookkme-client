@@ -1,110 +1,214 @@
 # Bookk Project Guidelines
 
-Bookk is a Kotlin Multiplatform (KMP) mobile application for Android and iOS. It follows a clean architecture with a multi-module structure, emphasizing separation of concerns and platform-specific implementations where necessary.
+Bookk is a Kotlin Multiplatform (KMP) mobile application for Android and iOS. Android UI is Jetpack Compose (`androidMain` of presentation modules); iOS UI is SwiftUI (`iosApp/`). ViewModels, state interfaces, domain and data layers are shared in `commonMain`.
+
+> **Canonical reference screen**: `BusinessPlugins` (feature/business, `screen/plugins` package + `iosApp/iosApp/Feature/Business/Plugins/`). It is the newest screen and demonstrates the current pattern.
+> **Outdated pattern — do NOT copy**: screens whose state is created with a `State.InitData` parameter (e.g. business `bootstrap`, `create`, `settings`). New screens must use parameterless state creation + the `setup()` extension pattern described below.
 
 ## Architecture Overview
 
-The project is organized into several top-level directories:
+Top-level directories:
 
-- `androidApp/`: Android-specific entry point and configuration.
-- `iosApp/`: iOS-specific entry point and configuration (Swift).
-- `shared/`: Orchestrates global DI and shared logic.
-- `feature/`: Contains feature-specific modules (e.g., `authorization`, `dashboard`).
-- `core/`: Core utilities, base classes, and shared business rules.
-- `designsystem/`: Shared UI components, themes, and design tokens.
-- `library/`: Independent, reusable modules (e.g., `cache`, `device`, `permissions`).
+- `androidApp/`: Android entry point and configuration.
+- `iosApp/`: iOS app (SwiftUI). Uses Xcode file-system-synchronized groups, so new `.swift` files under `iosApp/iosApp/` are picked up automatically — no pbxproj editing needed.
+- `shared/`: Global DI wiring (`me/bookk/di/DISetup.kt`, `me/bookk/di/feature/*DI.kt`) and the cross-feature `StateFactoryCreator`.
+- `feature/`: Feature modules (`authorization`, `business`, `appointments`, `clients`, `dashboard`, `services`, `settings`, …).
+- `core/`: Base classes (`core/presentation/ViewModel`, `core/data/DataSource`, navigation primitives).
+- `designsystem/`: Shared UI components and reusable UI-state primitives (`AppBarState`, `ButtonState`, `ListState`, `NavigationState`, `PresentationNotificationState`, plus their `Android*`/`IOS*` implementations).
+- `library/`: Independent reusable modules (`cache`, `device`, `permissions`, `picker`, `credentials`, …).
 
 ### Feature Module Structure
 
-Each feature is typically split into the following sub-modules:
-
-1. **`presentation`**:
-   - `commonMain`: Contains `ViewModel`, `State` (interface), `NavigationDestination`, and `EventListener` (interface).
-   - `androidMain`: Contains `Screen` (Compose UI), `AndroidState` (implementation using Compose `mutableStateOf`), and `NavigationGraph`.
-   - `iosMain`: Platform-specific presentation logic for iOS.
-2. **`domain`**:
-   - `api`: Contains UseCase interfaces (usually functional interfaces with `operator fun invoke`) and domain entities.
-   - `impl`: Contains UseCase implementations.
-3. **`data`**:
-   - `source`: (Optional) Shared data source interfaces.
-   - `src/commonMain`: Contains Data Source implementations, Mappers, and Ktor-based networking logic.
-   - `src/androidMain` / `src/iosMain`: Platform-specific data implementations (e.g., local storage, platform APIs).
-
-## Coding Standards & Patterns
-
-### 1. Presentation Layer (UDF)
-
-- **State Interface**: Define UI state as an `interface` in `commonMain`. Use platform-specific implementations (e.g., `AndroidState` in `androidMain` and `IOSState` in Swift) to bridge with UI frameworks.
-- **ViewModel**: Inherit from `me.bookk.core.presentation.ViewModel`. ViewModels implement the `EventListener` interface for the screen.
-- **Event Listeners**: Define user actions in an interface (e.g., `SignInEventListener`) and implement it in the `ViewModel`.
-- **Compose Screens (Android)**: Keep screens stateless by passing `State` and `EventListener`. Use `:designsystem` components whenever possible.
-- **SwiftUI Screens (iOS)**: 
-    - Implement `IOS...State` in Swift using `@Observable` and `NativeStateRepresentation`.
-    - Use `@StateViewModel` to hold the ViewModel.
-    - Use `.cast()` to get the native state implementation from the ViewModel's `uiState`.
-    - Handle navigation and notifications using the provided view modifiers (e.g., `.handleNavigation`, `.handleNotifications`).
-- **ViewModel Initialization (Up-to-date)**:
-    - **Do NOT use `createInitData()` companion function** in `ViewModel`.
-    - **Use the `setup()` extension function** pattern within the `ViewModel` to initialize the `uiState`.
-    - Initialize `uiState` by calling `stateFactory.create${ScreenName}State().setup()`.
-    - Use `weakSelfClosure` for listener callbacks within `setup()` to avoid memory leaks.
-- **iOS DI Wiring**:
-    - For every ViewModel, add a `@UsedInSwift` function in `Ios...PresentationDi.kt` to allow Swift to resolve it from Koin.
-    - Use `KoinPlatform.getKoin().get()` to resolve the ViewModel in these helper functions.
-
-### 2. Domain Layer (UseCases)
-
-- **UseCases**: Use functional interfaces with a `suspend operator fun invoke()`.
-- **Error Handling**: Define errors as sealed classes within the UseCase interface.
-- **Logic**: Keep business logic in the `domain` layer, away from UI and data implementation details.
-
-### 3. Data Layer
-
-- **Networking**: Use Ktor with the `Resources` plugin for type-safe routing.
-- **Mapping**: Always map remote/local models to domain entities.
-- **Error Mapping**: Use `runCatching` and `mapExceptions` (from `core.data.DataSource`) to map platform/network errors to domain-specific errors.
-- **Persistence**: Use the `library/cache` module for simple key-value storage or Room for complex data.
-
-### 4. Dependency Injection (Koin)
-
-- Define DI modules in each layer (e.g., `AuthPresentationDi.kt`, `AuthDomainDi.kt`, `AuthDataDi.kt`).
-- Wire them up in `shared/src/commonMain/kotlin/me/bookk/di/DISetup.kt`.
-
-### 5. Resources
-
-- Use **moko-resources** for strings, images, and colors to ensure cross-platform availability.
-- Access strings via `AuthRes.strings.my_string_key.desc()`.
-
-## Feature Creation
-
-To create a new feature, use the `feature/.template/feature.template.sh` script:
-```bash
-cd feature/.template
-./feature.template.sh <feature_name> <FeatureNameCapitalized>
 ```
-This script scaffolds the module structure and performs initial DI wiring.
+feature/<name>/
+  presentation/
+    src/commonMain/  ViewModels, State interfaces, Destinations, <Feature>StateFactory,
+                     di/<Feature>Di.kt (expect platform module), moko-resources strings
+                     Screens live under .../presentation/screen/<screenname>/
+    src/androidMain/ Compose Screens, Android*State impls, NavGraph destinations,
+                     factory/Android<Feature>StateFactory.kt, di/<Feature>Di.android.kt
+    src/iosMain/     di/IOS<Feature>Di.kt (actual module + @UsedInSwift VM accessors)
+  domain/
+    api/             UseCase interfaces + domain entities (commonMain)
+    impl/            UseCase implementations + di/DI.kt (commonMain, internal classes)
+  data/
+    source/          Data source INTERFACES, package me.bookk.feature.<name>.domain.datasource
+    src/commonMain/  Common*DataSource impls, Ktor routing/models, mappers, di/<Feature>DataDi.kt
+```
 
-## Screen Creation
+iOS UI for a feature lives in `iosApp/iosApp/Feature/<FeatureCapitalized>/`, one folder per screen, plus `IOS<Feature>StateFactory.swift`.
 
-To create a new screen within an existing feature, use the `feature/.template/screen.template.sh` script:
+## Screen Creation (the current pattern)
+
+Scaffold with the template script (it generates code in the up-to-date pattern):
+
 ```bash
 cd feature/.template
 ./screen.template.sh <feature_name> <ScreenName> <screen.package>
+# example: ./screen.template.sh business Plugins screen.plugins
 ```
-Example:
-```bash
-./screen.template.sh services Details service.details
-```
+
+⚠️ The script's DI/factory wiring steps only run if it finds files at its expected paths, and some features use different file names (e.g. it looks for `Ios<Feature>PresentationDi.kt` but business uses `IOS<Feature>Di.kt`). **Always verify every item in the checklist below after running it**, and wire manually whatever the script skipped.
+
+### Checklist — files & wiring for a new screen `Foo` in feature `bar`
+
+**commonMain** (`feature/bar/presentation/src/commonMain/.../presentation/screen/foo/`):
+
+1. `FooState.kt` — `interface FooState` with `val appBar: AppBarState`, screen fields (`var x: StringDesc`, `var isY: Boolean`, sub-state interfaces, `ListState<...>`, `ButtonState`), `val notifications: PresentationNotificationState`, `val navigation: NavigationState<FooDestinations>`.
+2. `FooDestinations.kt` — `sealed class FooDestinations : NavigationDestination()` with `data object Back` and any forward destinations.
+3. `FooViewModel.kt`:
+   ```kotlin
+   class FooViewModel(
+       @InjectedParam private val businessId: Uuid,   // screen args, if any
+       private val someUseCase: SomeUseCase,
+       stateFactory: BarStateFactory,
+       vmArgs: VmArgs
+   ) : ViewModel(vmArgs) {
+       val uiState: FooState = stateFactory.createFooState().setup()
+
+       private fun FooState.setup() = apply {
+           appBar.title = BarRes.strings.foo_title.desc()
+           appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(FooDestinations.Back) }
+           button.onClick = weakSelfClosure { it.doSomething() }
+       }
+   }
+   ```
+   - **No `InitData`, no `createInitData()`** — state factory methods take no parameters; everything is set in `setup()`.
+   - All callbacks inside `setup()` use `weakSelfClosure { it... }` (from `core.presentation.memory`) to avoid retain cycles on iOS.
+   - Async work uses the base-class `launch` helper:
+     ```kotlin
+     launch(
+         launchIn = DispatcherProvider.io,
+         onStart = { uiState.button.startLoading() },
+         call = { someUseCase(businessId) },
+         onComplete = { uiState.x = it },
+         onError = { uiState.notifications.add(it.notification()) },
+         onTerminate = { uiState.button.stopLoading() }
+     )
+     ```
+     Handle known use-case errors with a `when (it)` in `onError`; fall back to `uiState.notifications.add(it.notification())`.
+4. Add `fun createFooState(): FooState` to `BarStateFactory` (and one method per sub-state interface if the screen has reusable sub-states, e.g. `createBusinessPluginState()`).
+
+**androidMain**:
+
+5. `AndroidFooState.kt` — `internal class AndroidFooState : FooState`, scalar fields via `by mutableStateOf(...)`, composites via design-system impls (`AndroidAppBarState()`, `AndroidButtonState()`, `AndroidListState()`, `AndroidNavigationState()`, `AndroidNotificationState()`).
+6. `FooScreen.kt` — stateless `@Composable internal fun FooScreen(state: FooState)`; `Scaffold` + `AppTopBar(state.appBar)`; use `:designsystem` components; render moko strings with `.localized()`.
+7. `FooDestination.kt` — nav-graph entry:
+   ```kotlin
+   internal fun NavGraphBuilder.fooScreen(navigation: BarNavigation) {
+       composable<BarDestination.Foo>(typeMap = mapOf(serializableNavTypeEntry<Uuid>())) {
+           val entry = it.toRoute<BarDestination.Foo>()
+           val viewModel: FooViewModel = koinViewModel { parametersOf(entry.id) }
+           CompositionLocalProvider(LocalNavigation provides navigation) {
+               ObserveNotifications(viewModel.uiState.notifications)
+               SendLifecycleEventsTo(viewModel)
+               FooScreen(viewModel.uiState)
+           }
+           ObserveNavigation(viewModel.uiState.navigation) {
+               when (it) {
+                   FooDestinations.Back -> { /* onBackPressedDispatcher */ }
+               }
+           }
+       }
+   }
+   ```
+8. Add `@Serializable data class Foo(val id: Uuid)` (or `data object`) to `navigation/BarDestinations.kt` (commonMain), register `fooScreen(navigation)` in `navigation/BarGraph.kt`, and add a `toFoo` lambda to the feature's `BarNavigation`/`LocalNavigation` if other screens navigate to it.
+9. Add `override fun createFooState() = AndroidFooState()` to `factory/AndroidBarStateFactory.kt`.
+10. Register the ViewModel in `di/BarDi.android.kt`: `viewModelOf(::FooViewModel)`.
+
+**iosMain**:
+
+11. In `di/IOSBarDi.kt`: add `factoryOf(::FooViewModel)` to `platformBarDiModule()` and a Swift accessor:
+    ```kotlin
+    @UsedInSwift
+    fun fooVM(id: Uuid): FooViewModel =
+        KoinPlatform.getKoin().get(parameters = { parametersOf(id) })
+    ```
+
+**iosApp** (`iosApp/iosApp/Feature/Bar/Foo/`):
+
+12. `IOSFooState.swift`:
+    ```swift
+    @Observable
+    @MainActor
+    class IOSFooState: @MainActor FooState, NativeStateRepresentation {
+        typealias SwiftType = IOSFooState
+        typealias KotlinType = FooState
+        let appBar: any AppBarState
+        var title: any StringDesc          // default: RawStringDesc(string: "")
+        let navigation: any NavigationState
+        let notifications: any PresentationNotificationState
+        init() { appBar = IOSAppBarState(); /* ... IOSListState<...>(), IOSButtonState() ... */ }
+    }
+    ```
+    Sub-state classes also conform to `NativeStateRepresentation` so views can `IOSFooSubState.cast(kotlinState)`.
+13. `FooScreen.swift`:
+    ```swift
+    struct FooScreen: View {
+        @EnvironmentObject var navigationStack: NavigationStackHolder
+        @StateViewModel var viewModel: FooViewModel
+
+        init(businessId: KotlinUuid) {
+            self._viewModel = StateViewModel(wrappedValue: IOSBarDiKt.fooVM(id: businessId))
+        }
+
+        var body: some View {
+            ScrollView { /* content */ }
+                .withNavigationBar(viewModel.uiState.appBar)
+                .sendLifecycleEventsTo(viewModel)
+                .handleNotifications(viewModel.uiState.notifications)
+                .handleNavigation(viewModel.uiState.navigation) { dest in
+                    switch dest {
+                    case is FooDestinations.Back: navigationStack.popLast()
+                    default: break
+                    }
+                }
+        }
+    }
+    ```
+14. Add `func createFooState() -> any FooState { IOSFooState() }` to `IOS<Bar>StateFactory.swift`.
+15. Wire forward navigation: register `.navigationDestination(for: ...)` in the feature tab (e.g. `BusinessTab.swift`) mapping the destination class pushed by the source screen's ViewModel to `FooScreen(...)`. Source screens push via `uiState.navigation.push(...)`; SwiftUI `NavigationLink(value:)` over `NavigationStack(path: $navigationStack.path)` also works for list items.
+
+**Strings**: add keys to `feature/bar/presentation/src/commonMain/moko-resources/base/strings.xml`. Access in Kotlin: `BarRes.strings.key.desc()`; in Compose render with `.localized()`; in Swift: `BarRes.strings().key.desc().localized()`.
+
+## Use Case (operation) Creation
+
+1. **Interface** in `feature/<name>/domain/api` (one file per use case, verb-first name):
+   ```kotlin
+   interface EnableAppointmentsPlugin {
+       suspend operator fun invoke(businessId: Uuid)
+
+       sealed interface Error {
+           class AlreadyEnabled : Exception()
+       }
+   }
+   ```
+   Domain errors are exception classes nested in a `sealed interface Error` inside the use case interface.
+2. **Implementation** in `feature/<name>/domain/impl`, `internal class <Name>Impl(dataSources...) : <Name>`. Depend on data-source **interfaces** from the `data/source` module (package `me.bookk.feature.<name>.domain.datasource`). Map data errors to domain errors (`runCatching { ... }.onBusinessError { when (it.errorCode) { ... -> throw Error.X() } }`).
+3. **Register** in `domain/impl/.../di/DI.kt`: `factoryOf(::EnableAppointmentsPluginImpl) bind EnableAppointmentsPlugin::class`.
+4. **Inject** into the ViewModel constructor (Koin resolves it on both platforms — no extra per-platform wiring for use cases).
+
+If a new data-source method is needed: add it to the interface in `data/source`, implement in `Common<X>DataSource(httpClient) : DataSource(), <X>DataSource` in `data/src/commonMain` wrapping calls in `mapExceptions { ... }`, using Ktor `Resources` typed routes and request/response models in `data/remote/`. Register with `singleOf(::Common<X>DataSource) bind <X>DataSource::class` in the feature's data DI module. Always map remote/local models to domain entities — never leak Ktor models out of `data`.
+
+## Dependency Injection (Koin)
+
+- Presentation: `di/<Feature>Di.kt` (commonMain) declares `internal expect fun platform<Feature>DiModule(): Module` and a public `<feature>PresentationModule()`; actuals in `androidMain` (`viewModelOf`) and `iosMain` (`factoryOf` + `@UsedInSwift` accessors). ViewModel screen arguments are passed with `@InjectedParam` + `parametersOf(...)` at resolution.
+- Domain: `<feature>DomainModule()` in `domain/impl`. Data: `<feature>DataModule()` in `data`.
+- Per-feature aggregation: `shared/src/commonMain/kotlin/me/bookk/di/feature/<Feature>DI.kt` includes presentation + data + domain modules; installed in `shared/.../di/DISetup.kt`.
+- New feature module set: add to `settings.gradle.kts`, `shared/build.gradle.kts` deps, create the `<Feature>DI.kt` aggregator, add the feature's `StateFactory` to `shared/.../presentation/StateFactoryCreator.kt`, and implement it in both `iosApp/iosApp/Core/IOSStateFactoryCreator.swift` and the Android creator. Prefer the scaffold script: `cd feature/.template && ./feature.template.sh <feature_name> <FeatureNameCapitalized>`.
 
 ## Commands
 
 - **Build Android**: `./gradlew :androidApp:assembleDevDebug`
+- **Compile shared for iOS (quick check of commonMain/iosMain code)**: `./gradlew :shared:compileKotlinIosArm64`
 - **Run Tests**: `./gradlew test` (runs common and Android tests)
 - **Lint**: `./gradlew detekt` (if configured)
 
 ## AI Agent Interaction Rules
 
-- **Research First**: Always check for existing patterns in similar features before implementing new ones.
-- **Respect Boundaries**: Keep implementation details (e.g., Ktor models, SQL queries) within the `data` layer and never leak them to `presentation`.
-- **UDF Integrity**: Do not bypass the `State` interface pattern.
-- **Mocking**: For "mock" build variants, provide mock implementations of data sources or use Ktor's `MockEngine`.
+- **Use the newest screen as reference** (currently `BusinessPlugins`). Never copy from screens that pass `InitData` into state factories — that pattern is deprecated.
+- **A "new screen" task is not done until both platforms are wired**: commonMain state/VM/destinations, Android state/screen/nav/DI/factory, iOS Kotlin DI accessor, Swift state/screen, Swift factory method, and navigation registration on both platforms.
+- **Respect layer boundaries**: Ktor models, SQL, platform APIs stay in `data`; `presentation` only sees use cases and domain entities; ViewModels never touch data sources directly.
+- **UDF integrity**: UI reads only `State` interfaces; user actions flow through state callbacks set in `setup()`; navigation flows through `NavigationState.push(...)` and is observed at the edge (`ObserveNavigation` / `.handleNavigation`).
+- **Persistence**: use `library/cache` for simple key-value storage or Room for complex data.
+- **Mocking**: for "mock" build variants provide `RoutingMock` implementations or Ktor `MockEngine`.

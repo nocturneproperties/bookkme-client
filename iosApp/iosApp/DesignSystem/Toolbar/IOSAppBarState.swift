@@ -22,7 +22,7 @@ final class IOSAppBarState: @MainActor IOSViewState, @MainActor AppBarState {
 		title: any StringDesc = RawStringDesc(string: ""),
 		subtitle: (any StringDesc)? = nil,
 		isVisible: Bool = true,
-		size: TopBarSize = .large,
+		size: TopBarSize = .small,
 	) {
 		self.subtitle = subtitle
 		self.title = title

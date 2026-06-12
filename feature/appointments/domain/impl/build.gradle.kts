@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.domain)
             implementation(projects.feature.appointments.domain.api)
             implementation(projects.feature.appointments.data.source)
+            implementation(projects.feature.business.domain.api)
         }
     }
 }

@@ -1,5 +1,10 @@
 package me.bookk.feature.appointments.presentation
 
-class AndroidAppointmentsStateFactory : AppointmentsStateFactory {
+import me.bookk.feature.appointments.presentation.screen.requestlist.AndroidAppointmentListState
+import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListState
 
+class AndroidAppointmentsStateFactory : AppointmentsStateFactory {
+    override fun createAppointmentListState(): AppointmentListState {
+        return AndroidAppointmentListState()
+    }
 }

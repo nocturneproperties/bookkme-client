@@ -57,7 +57,7 @@ struct DashboardTab: View {
 	private func screenFromId(id: TabItemId) -> some View {
 		switch id {
 		case .home:
-			SettingsDashboardScreen()
+			AppointmentRequestListScreen()
 		case .business:
 			BusinessTab()
 		case .settings:

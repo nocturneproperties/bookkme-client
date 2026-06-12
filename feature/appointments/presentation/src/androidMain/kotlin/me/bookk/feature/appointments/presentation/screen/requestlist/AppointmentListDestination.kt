@@ -7,6 +7,8 @@ import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.appointments.presentation.navigation.AppointmentNavigation
 import me.bookk.feature.appointments.presentation.navigation.AppointmentsDestination
+import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListDestinations.AppointmentDetails
+import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListDestinations.CreateAppointment
 import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.appointmentRequestListScreen(navigation: AppointmentNavigation) {
@@ -17,8 +19,9 @@ internal fun NavGraphBuilder.appointmentRequestListScreen(navigation: Appointmen
         SendLifecycleEventsTo(viewModel)
         AppointmentListScreen(viewModel.uiState)
         ObserveNavigation(viewModel.uiState.navigation) { dest ->
-            when(dest) {
-                AppointmentListDestinations.CreateAppointment -> navigation.createAppointment()
+            when (dest) {
+                is CreateAppointment -> navigation.createAppointment(dest.businessId)
+                is AppointmentDetails -> navigation.details(dest.appointmentId)
             }
         }
     }

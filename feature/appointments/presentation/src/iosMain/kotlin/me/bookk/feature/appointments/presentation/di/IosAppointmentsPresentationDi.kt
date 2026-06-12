@@ -12,5 +12,5 @@ internal actual fun platformAppointmentsDiModule(): Module = module {
 }
 
 @UsedInSwift
-fun appointmentRequestListVM(): AppointmentListViewModel =
+fun appointmentListVM(): AppointmentListViewModel =
     KoinPlatform.getKoin().get()

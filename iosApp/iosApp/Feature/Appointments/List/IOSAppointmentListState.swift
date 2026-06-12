@@ -19,7 +19,8 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
     let appBar: any AppBarState
 	let refresh: any RefreshState
 	var selectedDate: LocalDate
-    let requests: any ListState
+	let appointments: any ListState
+	var onDateSelected: (LocalDate) -> Void
     var isLoading: Bool
     let navigation: any NavigationState
     let notifications: any PresentationNotificationState
@@ -28,9 +29,12 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
         appBar = IOSAppBarState()
 		refresh = IOSRefreshState()
 		selectedDate = LocalDate.Companion().today(timeZone: TimeZone.Companion().currentSystemDefault())
-        requests = IOSListState<AppointmentItemState>()
+		appointments = IOSListState<AppointmentItemState>()
         isLoading = false
+		onDateSelected = { _ in }
         navigation = IOSNavigationState()
         notifications = IOSNotificationState()
     }
 }
+
+extension AppointmentItemState: @retroactive Identifiable {}

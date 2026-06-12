@@ -19,6 +19,7 @@ import me.bookk.designsystem.uistate.RefreshState
 internal class AndroidAppointmentListState : AppointmentListState {
     override val appBar: AppBarState = AndroidAppBarState()
     override var selectedDate: LocalDate by mutableStateOf(LocalDate.today())
+    override var onDateSelected: (LocalDate) -> Unit by mutableStateOf({})
     override val appointments: ListState<AppointmentItemState> = AndroidListState()
     override val refresh: RefreshState = AndroidRefreshState()
     override val notifications: PresentationNotificationState = AndroidNotificationState()

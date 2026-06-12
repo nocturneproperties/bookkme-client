@@ -25,7 +25,7 @@ struct SignUpScreen: View {
     }
 }
 
-struct SignUpScreenContent:View {
+struct SignUpScreenContent: View {
 	private enum FocusField {
 		case name
 		case lastName

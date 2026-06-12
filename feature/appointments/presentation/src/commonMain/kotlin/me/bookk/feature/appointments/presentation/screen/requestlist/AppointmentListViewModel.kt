@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.coroutine.resultOnEach
@@ -50,6 +51,11 @@ class AppointmentListViewModel(
             .launchIn(viewModelScope)
     }
 
+    private fun onNewDateSelected(date: LocalDate) {
+        uiState.selectedDate = date
+        onRefresh()
+    }
+
     private fun onRefresh() {
         val date = uiState.selectedDate
         launch(
@@ -57,7 +63,10 @@ class AppointmentListViewModel(
             onStart = { uiState.refresh.isRefreshing = true },
             call = { getAppointmentsForDashboardBusiness(date) },
             onComplete = ::mapItems,
-            onError = { uiState.notifications.add(it.notification()) },
+            onError = {
+                uiState.appointments.replace(emptyList())
+                uiState.notifications.add(it.notification())
+            },
             onTerminate = { uiState.refresh.isRefreshing = false },
         )
     }
@@ -97,7 +106,7 @@ class AppointmentListViewModel(
                 )
             )
         )
-
+        onDateSelected = weakSelfClosure { vm, date -> vm.onNewDateSelected(date) }
         refresh.onRefresh = weakSelfClosure { it.onRefresh() }
         appointments.emptyState = EmptyState(
             image = DesignSystem.images.empty,

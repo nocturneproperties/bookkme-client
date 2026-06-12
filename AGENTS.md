@@ -190,6 +190,24 @@ cd feature/.template
 
 If a new data-source method is needed: add it to the interface in `data/source`, implement in `Common<X>DataSource(httpClient) : DataSource(), <X>DataSource` in `data/src/commonMain` wrapping calls in `mapExceptions { ... }`, using Ktor `Resources` typed routes and request/response models in `data/remote/`. Register with `singleOf(::Common<X>DataSource) bind <X>DataSource::class` in the feature's data DI module. Always map remote/local models to domain entities — never leak Ktor models out of `data`.
 
+### DataSource method contract
+
+Each datasource method must do **one thing**: either fetch from network, read from DB, or write to DB — never combine these in a single method. When a use case needs to fetch and then cache, it calls two separate datasource methods (e.g. `getAppointmentsForDate` then `saveAppointmentsForDate`). The use case is the only orchestrator of multi-step data operations.
+
+### Mapper placement
+
+- **Remote → domain**: embed as an instance method directly inside the remote model class (e.g. `fun toDomain()` in `AppointmentRemote`).
+- **Domain ↔ local (DB entity)**: the `database` module must not depend on feature domain-api modules. Because of this cross-module boundary, embed mappers inside entities is not possible. Use a dedicated `<Feature>Mapper.kt` file in `feature/<name>/data/src/commonMain/…/mapping/` that contains extension functions (e.g. `Appointment.toEntity()`, `AppointmentLocal.toDomain()`). Never add domain-api dependencies to the `database` module to work around this.
+
+### Local (Room) caching pattern
+
+When adding local caching for a new entity:
+
+1. **`database` module**: create `<X>Entity` (flat columns, `@PrimaryKey`), a child entity for any collection fields (composite PK + FK + CASCADE delete), and a relation class `<X>Local` (`@Embedded` + `@Relation`). Add an `<X>Dao` with upsert, delete, and a `@Transaction open suspend fun upsertWithChildren(...)` that deletes stale children before re-inserting. Register the entities in `AppDatabase`, bump `version` by 1, and add `AutoMigration(from = N, to = N+1)` — Room generates the migration automatically for additive schema changes (new tables only).
+2. **`data/source`**: add a `saveFor*(...)` method to the datasource interface.
+3. **`data/src/commonMain`**: implement the save method in `Common<X>DataSource` (DB write only). Embed domain→entity conversion as private extensions inside the datasource file. Keep the network-fetch method a pure network call.
+4. **`domain/impl`**: call the save method from the use case after a successful fetch, using `.also { dataSource.saveFor*(...) }`.
+
 ## Dependency Injection (Koin)
 
 - Presentation: `di/<Feature>Di.kt` (commonMain) declares `internal expect fun platform<Feature>DiModule(): Module` and a public `<feature>PresentationModule()`; actuals in `androidMain` (`viewModelOf`) and `iosMain` (`factoryOf` + `@UsedInSwift` accessors). ViewModel screen arguments are passed with `@InjectedParam` + `parametersOf(...)` at resolution.

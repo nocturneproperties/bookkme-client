@@ -9,4 +9,9 @@ interface AppointmentDataSource {
         businessId: Uuid,
         forDate: LocalDate
     ): List<Appointment>
+
+    suspend fun saveAppointmentsForDate(
+        appointments: List<Appointment>,
+        forDate: LocalDate
+    )
 }

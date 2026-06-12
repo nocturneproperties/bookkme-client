@@ -22,6 +22,7 @@ internal class GetAppointmentsForDashboardBusinessImpl(
         val business = observeDashboardBusiness().firstOrNull() ?: return emptyList()
         businessIdCache = business.id
         return dataSource.getAppointmentsForDate(business.id, date)
+            .also { dataSource.saveAppointmentsForDate(it, date) }
     }
 
     override suspend fun businessId(): Uuid? {
@@ -35,6 +36,7 @@ internal class GetAppointmentsForDashboardBusinessImpl(
                 if (it == null) return@mapLatest Result.success(emptyList())
                 runCatching {
                     dataSource.getAppointmentsForDate(it.id, date)
+                        .also { appointments -> dataSource.saveAppointmentsForDate(appointments, date) }
                 }
             }
     }

@@ -38,9 +38,7 @@ class AppointmentItemState(
         serviceName = appointment.services.joinToString { it.name },
         source = appointment,
         scheduledAt = formatter.format(appointment.date.toLocalDateTime(TimeZone.currentSystemDefault())),
-        earnings = appointment.services.fold(appointment.services[0].price) { acc, service ->
-            acc + service.price
-        }.toString(),
+        earnings = appointment.total,
         onItemClick = onItemClick
     )
 }

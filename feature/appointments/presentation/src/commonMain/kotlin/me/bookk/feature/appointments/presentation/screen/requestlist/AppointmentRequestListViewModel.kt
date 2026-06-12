@@ -63,6 +63,7 @@ class AppointmentRequestListViewModel(
         val items = appointments.map { appointment ->
             AppointmentItemState(
                 appointment = appointment,
+                formatter = dateFormat,
                 onItemClick = weakSelfClosure { it.onAppointmentClick(appointment) }
             )
         }

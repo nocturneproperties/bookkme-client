@@ -1,5 +1,8 @@
 package me.bookk.feature.appointments.presentation.screen.requestlist
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import kotlinx.datetime.LocalDate
 import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.uistate.AndroidAppBarState
@@ -15,7 +18,7 @@ import me.bookk.designsystem.uistate.RefreshState
 
 internal class AndroidAppointmentListState : AppointmentListState {
     override val appBar: AppBarState = AndroidAppBarState()
-    override var selectedDate: LocalDate = LocalDate.today()
+    override var selectedDate: LocalDate by mutableStateOf(LocalDate.today())
     override val requests: ListState<AppointmentItemState> = AndroidListState()
     override val refresh: RefreshState = AndroidRefreshState()
     override val notifications: PresentationNotificationState = AndroidNotificationState()

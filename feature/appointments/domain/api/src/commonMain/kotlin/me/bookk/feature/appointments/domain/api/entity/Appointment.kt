@@ -14,6 +14,15 @@ data class Appointment(
     val note: String,
     val cancellationReason: String
 ) {
+
+    val total: String by lazy(LazyThreadSafetyMode.NONE) {
+        services
+            .fold(services[0].price) { acc, service ->
+                acc + service.price
+            }
+            .toString()
+    }
+
     companion object {
         fun stub(
             id: Uuid = Uuid.random(),

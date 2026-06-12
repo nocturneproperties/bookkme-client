@@ -41,7 +41,6 @@ import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
-import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 
 @Composable
 internal fun AppointmentListScreen(
@@ -69,6 +68,7 @@ internal fun AppointmentListScreen(
         ) {
             PullToRefresh(state = state.refresh) {
                 List(
+                    modifier = Modifier.fillMaxSize(),
                     state = state.appointments,
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -149,69 +149,34 @@ private fun AppointmentRequestItem(
         modifier = modifier.fillMaxWidth(),
         onClick = state.onItemClick
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Text(
+                text = state.scheduledAt,
+                style = MaterialTheme.typography.titleLarge.primary(),
+                fontWeight = FontWeight.Medium
+            )
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = state.clientName,
                     style = MaterialTheme.typography.titleMedium.primary()
                 )
-                StatusBadge(status = state.source.status)
+                Text(
+                    text = state.serviceName,
+                    style = MaterialTheme.typography.bodyMedium.secondary()
+                )
             }
             Text(
-                text = state.serviceName,
-                style = MaterialTheme.typography.bodyMedium.secondary()
+                text = state.earnings,
+                style = MaterialTheme.typography.titleSmall.primary()
             )
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = LocalColors.current.divider
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = state.scheduledAt,
-                    style = MaterialTheme.typography.bodySmall.secondary()
-                )
-                Text(
-                    text = state.earnings,
-                    style = MaterialTheme.typography.titleSmall.primary()
-                )
-            }
         }
     }
-}
-
-@Composable
-private fun StatusBadge(status: AppointmentStatus) {
-    val colors = LocalColors.current
-    val (background, textColor) = when (status) {
-        AppointmentStatus.SCHEDULED -> colors.buttonActive.copy(alpha = 0.15f) to colors.buttonActive
-        AppointmentStatus.COMPLETED -> colors.success.copy(alpha = 0.15f) to colors.success
-        AppointmentStatus.CANCELLED -> colors.error.copy(alpha = 0.15f) to colors.error
-    }
-    val label = when (status) {
-        AppointmentStatus.SCHEDULED -> "Scheduled"
-        AppointmentStatus.COMPLETED -> "Completed"
-        AppointmentStatus.CANCELLED -> "Cancelled"
-    }
-    Text(
-        modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
-            .background(background)
-            .padding(horizontal = 8.dp, vertical = 2.dp),
-        text = label,
-        style = MaterialTheme.typography.labelSmall,
-        color = textColor
-    )
 }

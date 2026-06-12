@@ -4,6 +4,8 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.coroutine.resultOnEach
@@ -20,6 +22,8 @@ import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForDashboardBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
+import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListDestinations.AppointmentDetails
+import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListDestinations.CreateAppointment
 
 class AppointmentListViewModel(
     private val getAppointmentsForDashboardBusiness: GetAppointmentsForDashboardBusiness,
@@ -54,20 +58,25 @@ class AppointmentListViewModel(
             call = { getAppointmentsForDashboardBusiness(date) },
             onComplete = ::mapItems,
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.refresh.isRefreshing = true },
+            onTerminate = { uiState.refresh.isRefreshing = false },
         )
     }
 
     private fun onNewAppointmentClick() {
-
+        viewModelScope.launch(DispatcherProvider.io) {
+            val businessId = getAppointmentsForDashboardBusiness.businessId() ?: return@launch
+            withContext(DispatcherProvider.main) {
+                uiState.navigation.push(CreateAppointment(businessId))
+            }
+        }
     }
 
     private fun onAppointmentClick(appointment: Appointment) {
-
+        uiState.navigation.push(AppointmentDetails(appointment.id))
     }
 
     private fun mapItems(appointments: List<Appointment>) {
-        val dateFormat = dateLocalizer.forStyle(DateStyle.MEDIUM)
+        val dateFormat = dateLocalizer.forStyle(DateStyle.SHORT)
         val items = appointments.map { appointment ->
             AppointmentItemState(
                 appointment = appointment,

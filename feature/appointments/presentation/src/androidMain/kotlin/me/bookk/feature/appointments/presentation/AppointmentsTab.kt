@@ -7,6 +7,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import me.bookk.feature.appointments.presentation.navigation.AppointmentNavigation
 import me.bookk.feature.appointments.presentation.navigation.AppointmentsDestination
 import me.bookk.feature.appointments.presentation.navigation.appointmentsGraph
 
@@ -15,12 +16,17 @@ fun AppointmentsTab() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = AppointmentsDestination.RequestList,
+        startDestination = AppointmentsDestination.List,
         enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
         exitTransition = { scaleOut(targetScale = 0.92f) },
         popEnterTransition = { scaleIn(initialScale = 0.92f) },
         popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
     ) {
-        appointmentsGraph()
+        appointmentsGraph(
+            navigation = AppointmentNavigation(
+                createAppointment = { navController.navigate(AppointmentsDestination.Create(it)) },
+                onBack = { navController.popBackStack() }
+            )
+        )
     }
 }

@@ -9,15 +9,23 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentsForDashboardBusin
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
+import kotlin.uuid.Uuid
 
 internal class GetAppointmentsForDashboardBusinessImpl(
     private val dataSource: AppointmentDataSource,
     private val observeDashboardBusiness: ObserveDashboardBusinessChanges
 ) : GetAppointmentsForDashboardBusiness {
 
+    private var businessIdCache: Uuid? = null
+
     override suspend fun invoke(date: LocalDate): List<Appointment> {
         val business = observeDashboardBusiness().firstOrNull() ?: return emptyList()
+        businessIdCache = business.id
         return dataSource.getAppointmentsForDate(business.id, date)
+    }
+
+    override suspend fun businessId(): Uuid? {
+        return businessIdCache ?: observeDashboardBusiness().firstOrNull()?.id
     }
 
     override fun flow(date: LocalDate): Flow<Result<List<Appointment>>> {

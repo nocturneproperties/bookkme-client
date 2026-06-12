@@ -63,7 +63,7 @@ struct AppBarHandler: ViewModifier {
 					}
 				}
 				if (!appBarState.actions.items.isEmpty) {
-					ToolbarItem(placement: .topBarTrailing) {
+					ToolbarItemGroup(placement: .topBarTrailing) {
 						actions
 					}
 				}

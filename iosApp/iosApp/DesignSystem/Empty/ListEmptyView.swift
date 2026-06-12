@@ -15,7 +15,7 @@ struct ListEmptyView: View {
 	
 	var body: some View {
 		ZStack(alignment: .center) {
-			VStack(alignment: .center) {
+			VStack(alignment: .center, spacing: 20) {
 				Image(resource: state.image)
 				Text(state.label.localized())
 					.font(.subheadline)

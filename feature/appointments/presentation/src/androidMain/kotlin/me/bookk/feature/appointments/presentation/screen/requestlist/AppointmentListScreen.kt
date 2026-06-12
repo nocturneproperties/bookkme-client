@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.presentation.screen.requestlist
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
 import me.bookk.core.presentation.date.startOfWeek
+import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.List
@@ -55,7 +58,7 @@ internal fun AppointmentListScreen(
                 AppTopBar(state = state.appBar)
                 DateStrip(
                     selectedDate = state.selectedDate,
-                    onDateSelected = state.onDateSelected
+                    onDateSelected = { state.selectedDate = it }
                 )
                 HorizontalDivider(color = LocalColors.current.divider)
             }
@@ -113,12 +116,15 @@ private fun DateCell(
 ) {
     val colors = LocalColors.current
     val background = if (isSelected) colors.buttonPrimary else colors.background
+    val isToday = remember(date) { date == LocalDate.today() }
+    val borderColor = if (isToday) LocalColors.current.actionText else Color.Transparent
     val animatedBg by animateColorAsState(background)
     Column(
         modifier = modifier
-            .padding(vertical = 8.dp)
             .clip(MaterialTheme.shapes.medium)
-            .clickable { onClick() },
+            .border(1.dp, borderColor, MaterialTheme.shapes.medium)
+            .clickable { onClick() }
+            .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {

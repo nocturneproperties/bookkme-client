@@ -78,7 +78,6 @@ private struct DateStrip: View {
                 )
             }
         }
-        .padding(.vertical, 8)
         .background(AppColors.background)
     }
 }
@@ -88,6 +87,10 @@ private struct DateCell: View {
     let date: LocalDate
     let isSelected: Bool
     let onTap: () -> Void
+
+    private var isToday: Bool {
+        date.compareTo(other: LocalDate.Companion().today(timeZone: TimeZone.Companion().currentSystemDefault())) == 0
+    }
 
     var body: some View {
         VStack(spacing: 4) {
@@ -104,6 +107,11 @@ private struct DateCell: View {
                 .animation(.easeInOut(duration: 0.15), value: isSelected)
         }
         .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(isToday ? AppColors.actionText : Color.clear, lineWidth: 1)
+        )
         .contentShape(Rectangle())
         .onTapGesture { onTap() }
     }

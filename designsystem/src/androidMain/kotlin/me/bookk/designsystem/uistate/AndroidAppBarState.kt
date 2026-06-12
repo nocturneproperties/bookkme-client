@@ -12,7 +12,7 @@ class AndroidAppBarState(
     title: StringDesc = "".desc(),
     subtitle: StringDesc? = null,
     isVisible: Boolean = true,
-    size: TopBarSize = TopBarSize.LARGE,
+    size: TopBarSize = TopBarSize.SMALL,
     onBackClick: (() -> Unit)? = null
 ) : AndroidViewState(isVisible), AppBarState {
     override var title: StringDesc by mutableStateOf(title)

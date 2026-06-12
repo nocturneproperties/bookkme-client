@@ -80,6 +80,10 @@ class AppointmentListViewModel(
         }
     }
 
+    private fun onPickDateClick() {
+
+    }
+
     private fun onAppointmentClick(appointment: Appointment) {
         uiState.navigation.push(AppointmentDetails(appointment.id))
     }
@@ -98,10 +102,17 @@ class AppointmentListViewModel(
 
     private fun AppointmentListState.setup() = apply {
         appBar.size = TopBarSize.SMALL
+        appBar.title = AppointmentsRes.strings.appointments_title.desc()
         appBar.actions.replace(
             listOf(
                 AppBarAction(
+                    contentDescription = AppointmentsRes.strings.appointments_pick_date.desc(),
+                    icon = DesignSystem.images.date_range,
+                    onClick = weakSelfClosure { it.onPickDateClick() }
+                ),
+                AppBarAction(
                     contentDescription = DesignSystem.strings.action_new.desc(),
+                    icon = DesignSystem.images.plus,
                     onClick = weakSelfClosure { it.onNewAppointmentClick() }
                 )
             )

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="appointments_request_list_title">Requests</string>
-    <string name="appointments_request_status_pending">Pending</string>
-    <string name="appointments_request_status_confirmed">Confirmed</string>
-    <string name="appointments_request_status_cancelled">Cancelled</string>
+    <string name="appointments_list_empty">No appointments are available</string>
 </resources>

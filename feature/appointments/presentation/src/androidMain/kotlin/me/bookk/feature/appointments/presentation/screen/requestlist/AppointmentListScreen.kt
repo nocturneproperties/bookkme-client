@@ -1,5 +1,6 @@
 package me.bookk.feature.appointments.presentation.screen.requestlist
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,25 +13,27 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.minus
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
+import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.List
@@ -39,8 +42,6 @@ import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
-
-private const val DATE_STRIP_HALF_RANGE = 30
 
 @Composable
 internal fun AppointmentListScreen(
@@ -68,7 +69,7 @@ internal fun AppointmentListScreen(
         ) {
             PullToRefresh(state = state.refresh) {
                 List(
-                    state = state.requests,
+                    state = state.appointments,
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     idProvider = { it.source.id }
@@ -86,27 +87,15 @@ private fun DateStrip(
     onDateSelected: (LocalDate) -> Unit
 ) {
     val dates = remember(selectedDate) {
-        (-DATE_STRIP_HALF_RANGE..DATE_STRIP_HALF_RANGE).map { offset ->
-            when {
-                offset < 0 -> selectedDate.minus(-offset, DateTimeUnit.DAY)
-                offset > 0 -> selectedDate.plus(offset, DateTimeUnit.DAY)
-                else -> selectedDate
-            }
+        val start = selectedDate.startOfWeek()
+        (DayOfWeek.MONDAY.isoDayNumber..DayOfWeek.SUNDAY.isoDayNumber).toList().map {
+            start.plus(it - 1, DateTimeUnit.DAY)
         }
     }
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(selectedDate) {
-        listState.scrollToItem((DATE_STRIP_HALF_RANGE - 3).coerceAtLeast(0))
-    }
-
-    LazyRow(
-        state = listState,
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        items(dates, key = { it.toString() }) { date ->
+    Row {
+        dates.forEach { date ->
             DateCell(
+                modifier = Modifier.weight(1f),
                 date = date,
                 isSelected = date == selectedDate,
                 onClick = { onDateSelected(date) }
@@ -117,33 +106,36 @@ private fun DateStrip(
 
 @Composable
 private fun DateCell(
+    modifier: Modifier,
     date: LocalDate,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
     val colors = LocalColors.current
     val background = if (isSelected) colors.buttonPrimary else colors.background
-    val textColor = if (isSelected) colors.background else colors.primaryText
-    val labelColor = if (isSelected) colors.background else colors.secondaryText
-
+    val animatedBg by animateColorAsState(background)
     Column(
-        modifier = Modifier
-            .size(width = 44.dp, height = 60.dp)
+        modifier = modifier
+            .padding(vertical = 8.dp)
             .clip(MaterialTheme.shapes.medium)
-            .background(background)
             .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = date.dayOfWeek.name.take(3),
+            text = date.dayOfWeek.name.take(1),
             style = MaterialTheme.typography.labelSmall,
-            color = labelColor
+            color = LocalColors.current.primaryText
         )
         Text(
-            text = date.dayOfMonth.toString(),
+            modifier = Modifier
+                .size(30.dp, 30.dp)
+                .background(animatedBg, CircleShape)
+                .wrapContentHeight(align = Alignment.CenterVertically),
+            text = date.day.toString(),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-            color = textColor
+            color = LocalColors.current.primaryText
         )
     }
 }

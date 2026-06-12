@@ -1,6 +1,7 @@
 package me.bookk.feature.appointments.domain.impl
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.datetime.LocalDate
@@ -19,11 +20,14 @@ internal class GetAppointmentsForDashboardBusinessImpl(
         return dataSource.getAppointmentsForDate(business.id, date)
     }
 
-    override fun flow(date: LocalDate): Flow<List<Appointment>> {
+    override fun flow(date: LocalDate): Flow<Result<List<Appointment>>> {
         return observeDashboardBusiness()
+            .distinctUntilChanged()
             .mapLatest {
-                if (it == null) return@mapLatest emptyList()
-                dataSource.getAppointmentsForDate(it.id, date)
+                if (it == null) return@mapLatest Result.success(emptyList())
+                runCatching {
+                    dataSource.getAppointmentsForDate(it.id, date)
+                }
             }
     }
 }

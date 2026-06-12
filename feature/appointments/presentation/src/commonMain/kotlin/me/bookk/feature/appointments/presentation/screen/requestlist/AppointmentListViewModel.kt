@@ -3,9 +3,11 @@ package me.bookk.feature.appointments.presentation.screen.requestlist
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retry
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.coroutine.resultOnEach
+import me.bookk.core.coroutine.resultOnError
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -14,11 +16,12 @@ import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForDashboardBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 
-class AppointmentRequestListViewModel(
+class AppointmentListViewModel(
     private val getAppointmentsForDashboardBusiness: GetAppointmentsForDashboardBusiness,
     private val dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
@@ -34,7 +37,12 @@ class AppointmentRequestListViewModel(
     private fun observeCurrentBusinessRequests() {
         getAppointmentsForDashboardBusiness.flow(uiState.selectedDate)
             .flowOn(DispatcherProvider.io)
-            .onEach(::mapItems)
+            .resultOnEach(::mapItems)
+            .resultOnError {
+                uiState.appointments.replace(emptyList())
+                uiState.notifications.add(it.notification())
+            }
+            .retry()
             .launchIn(viewModelScope)
     }
 
@@ -67,12 +75,11 @@ class AppointmentRequestListViewModel(
                 onItemClick = weakSelfClosure { it.onAppointmentClick(appointment) }
             )
         }
-        uiState.requests.replace(items)
+        uiState.appointments.replace(items)
     }
 
     private fun AppointmentListState.setup() = apply {
         appBar.size = TopBarSize.SMALL
-        appBar.title = AppointmentsRes.strings.appointments_request_list_title.desc()
         appBar.actions.replace(
             listOf(
                 AppBarAction(
@@ -83,5 +90,9 @@ class AppointmentRequestListViewModel(
         )
 
         refresh.onRefresh = weakSelfClosure { it.onRefresh() }
+        appointments.emptyState = EmptyState(
+            image = DesignSystem.images.empty,
+            label = AppointmentsRes.strings.appointments_list_empty.desc(),
+        )
     }
 }

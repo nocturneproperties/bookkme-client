@@ -14,7 +14,7 @@ import me.bookk.feature.appointments.domain.api.entity.Appointment
 interface AppointmentListState {
     val appBar: AppBarState
     var selectedDate: LocalDate
-    val requests: ListState<AppointmentItemState>
+    val appointments: ListState<AppointmentItemState>
     val refresh: RefreshState
     val notifications: PresentationNotificationState
     val navigation: NavigationState<AppointmentListDestinations>

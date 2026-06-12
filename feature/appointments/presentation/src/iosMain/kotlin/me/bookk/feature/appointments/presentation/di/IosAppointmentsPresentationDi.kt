@@ -1,16 +1,16 @@
 package me.bookk.feature.appointments.presentation.di
 
 import me.bookk.core.UsedInSwift
-import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentRequestListViewModel
+import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 
 internal actual fun platformAppointmentsDiModule(): Module = module {
-    factoryOf(::AppointmentRequestListViewModel)
+    factoryOf(::AppointmentListViewModel)
 }
 
 @UsedInSwift
-fun appointmentRequestListVM(): AppointmentRequestListViewModel =
+fun appointmentRequestListVM(): AppointmentListViewModel =
     KoinPlatform.getKoin().get()

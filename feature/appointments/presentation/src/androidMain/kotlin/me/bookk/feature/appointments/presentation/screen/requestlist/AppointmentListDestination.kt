@@ -10,7 +10,7 @@ import org.koin.androidx.compose.koinViewModel
 
 internal fun NavGraphBuilder.appointmentRequestListScreen() {
     composable<AppointmentsDestination.RequestList> {
-        val viewModel: AppointmentRequestListViewModel = koinViewModel()
+        val viewModel: AppointmentListViewModel = koinViewModel()
 
         ObserveNotifications(viewModel.uiState.notifications)
         SendLifecycleEventsTo(viewModel)

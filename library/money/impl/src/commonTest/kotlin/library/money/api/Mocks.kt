@@ -7,12 +7,28 @@ internal val mockFactory = object : CurrencyFactoryImpl {
                 return value.toString()
             }
 
+            override fun code(): String {
+                return code
+            }
+
             override fun symbol(): String {
                 return code
             }
 
+            override fun decimalSeparator(): Char {
+                return '.'
+            }
+
             override fun asString(): String {
                 return code
+            }
+
+            override fun equals(other: Any?): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun hashCode(): Int {
+                TODO("Not yet implemented")
             }
         }
     }

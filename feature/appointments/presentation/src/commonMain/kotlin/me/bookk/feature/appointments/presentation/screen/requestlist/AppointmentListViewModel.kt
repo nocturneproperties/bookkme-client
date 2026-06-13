@@ -81,7 +81,7 @@ class AppointmentListViewModel(
     }
 
     private fun onPickDateClick() {
-
+        uiState.isDatePickerVisible = true
     }
 
     private fun onAppointmentClick(appointment: Appointment) {

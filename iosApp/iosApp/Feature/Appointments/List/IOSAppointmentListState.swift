@@ -22,6 +22,7 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
 	let appointments: any ListState
 	var onDateSelected: (LocalDate) -> Void
     var isLoading: Bool
+    var isDatePickerVisible: Bool
     let navigation: any NavigationState
     let notifications: any PresentationNotificationState
 
@@ -31,6 +32,7 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
 		selectedDate = LocalDate.Companion().today(timeZone: TimeZone.Companion().currentSystemDefault())
 		appointments = IOSListState<AppointmentItemState>()
         isLoading = false
+        isDatePickerVisible = false
 		onDateSelected = { _ in }
         navigation = IOSNavigationState()
         notifications = IOSNotificationState()

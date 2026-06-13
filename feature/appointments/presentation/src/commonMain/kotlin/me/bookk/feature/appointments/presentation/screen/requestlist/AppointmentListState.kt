@@ -14,6 +14,7 @@ import me.bookk.feature.appointments.domain.api.entity.Appointment
 
 interface AppointmentListState {
     val appBar: AppBarState
+    var isDatePickerVisible: Boolean
     var selectedDate: LocalDate
     var onDateSelected: (LocalDate) -> Unit
     val appointments: ListState<AppointmentItemState>

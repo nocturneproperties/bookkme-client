@@ -38,6 +38,7 @@ import kotlinx.datetime.plus
 import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.components.AppCard
+import me.bookk.designsystem.components.AppDatePicker
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.PullToRefresh
@@ -64,6 +65,13 @@ internal fun AppointmentListScreen(
             }
         }
     ) { pv ->
+        if (state.isDatePickerVisible) {
+            AppDatePicker(
+                selectedDate = state.selectedDate,
+                onDismiss = { state.isDatePickerVisible = false },
+                onDatePicked = state.onDateSelected
+            )
+        }
         Column(
             modifier = Modifier
                 .padding(pv)

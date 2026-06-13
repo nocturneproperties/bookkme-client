@@ -49,6 +49,8 @@ kotlin-multiplatform-gradlePlugin = { module = "org.jetbrains.kotlin.multiplatfo
 test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 test-koin = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 test-mock = { module = "io.mockk:mockk", version = "1.14.5" }
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "json-serialization" }
 kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "json-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }

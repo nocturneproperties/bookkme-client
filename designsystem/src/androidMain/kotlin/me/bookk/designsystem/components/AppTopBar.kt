@@ -34,6 +34,7 @@ import me.bookk.designsystem.html
 import me.bookk.designsystem.painter
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
+import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AppBarState
@@ -129,11 +130,11 @@ fun AppTopBar(
 @Composable
 private fun AppBarTitle(text: String, size: TopBarSize, color: Color, behavior: TopAppBarScrollBehavior?) {
     val style = when (size) {
-        TopBarSize.SMALL -> MaterialTheme.typography.headlineSmall
+        TopBarSize.SMALL -> MaterialTheme.typography.titleMedium
         TopBarSize.LARGE -> MaterialTheme.typography.headlineLarge
     }
     val weight = when (size) {
-        TopBarSize.SMALL -> FontWeight.Normal
+        TopBarSize.SMALL -> FontWeight.Medium
         TopBarSize.LARGE -> FontWeight.Bold
     }
     val interpolator = remember { AccelerateInterpolator(1.6f) }
@@ -155,7 +156,7 @@ fun topBarDefaultColors(
     scrolledContainerColor: Color = Color.Transparent,
     navigationIconContentColor: Color = Color.Unspecified,
     titleContentColor: Color = Color.Unspecified,
-    actionIconContentColor: Color = Color.Unspecified,
+    actionIconContentColor: Color = LocalColors.current.actionText,
     subtitleContentColor: Color = Color.Unspecified,
 ) = TopAppBarDefaults.topAppBarColors(
     containerColor,

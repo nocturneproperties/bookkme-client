@@ -141,7 +141,7 @@ internal fun BusinessPlugin(
                         title = BusinessRes.strings.business_plugins_clients_can.desc().localized(),
                         features = state.clientCan.items
                     )
-                    if (!state.isEnabled) {
+                    AnimatedVisibility(!state.isEnabled) {
                         state.demo?.let { demo ->
                             Card(
                                 modifier = Modifier.padding(top = 8.dp),

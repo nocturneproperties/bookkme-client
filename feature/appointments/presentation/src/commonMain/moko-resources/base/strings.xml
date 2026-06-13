@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appointments_title">Appointments</string>
+    <string name="appointments_requests">Requests</string>
+    <string name="appointments_list_empty">No appointments for this day</string>
+    <string name="appointments_pick_date">Pick date</string>
+</resources>

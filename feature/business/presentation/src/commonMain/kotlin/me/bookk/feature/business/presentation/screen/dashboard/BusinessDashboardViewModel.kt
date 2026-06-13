@@ -11,7 +11,9 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
+import me.bookk.feature.business.domain.api.entity.BusinessEvent
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
+import me.bookk.feature.business.domain.api.entity.listenFor
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
 import kotlin.uuid.Uuid
@@ -24,9 +26,11 @@ class BusinessDashboardViewModel(
 ) : ViewModel(vmArgs) {
 
     val uiState = stateFactory.createBusinessDashboardState()
+    private var businessId = Uuid.random()
 
     init {
         observeBusiness()
+        observeEvents()
     }
 
     private fun observeBusiness() {
@@ -35,6 +39,7 @@ class BusinessDashboardViewModel(
             .flowOn(DispatcherProvider.io)
             .onEach { business ->
                 uiState.appBar.title = business.name.desc()
+                businessId = business.id
                 loadFeatures(business.id)
             }
             .retry {
@@ -42,6 +47,12 @@ class BusinessDashboardViewModel(
                 true
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeEvents() {
+        listenFor<BusinessEvent.PluginStateChanged> {
+            loadFeatures(businessId)
+        }.launchIn(viewModelScope)
     }
 
     private fun loadFeatures(businessId: Uuid) {

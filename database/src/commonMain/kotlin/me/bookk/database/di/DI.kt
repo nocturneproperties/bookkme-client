@@ -18,4 +18,5 @@ internal fun daoModule() = module {
     factory { get<AppDatabase>().clientDao() }
     factory { get<AppDatabase>().serviceDao() }
     factory { get<AppDatabase>().serviceGroupDao() }
+    factory { get<AppDatabase>().appointmentDao() }
 }

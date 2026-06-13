@@ -6,6 +6,9 @@ plugins {
 
 android {
     namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.appointments"
+    defaultConfig {
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
 
 kotlin {
@@ -17,6 +20,12 @@ kotlin {
             implementation(projects.feature.appointments.domain.api)
         }
     }
+}
+
+dependencies {
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
 }
 
 multiplatformResources {

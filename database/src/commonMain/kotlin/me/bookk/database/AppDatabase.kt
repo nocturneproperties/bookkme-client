@@ -11,11 +11,14 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
 import me.bookk.database.converter.UuidConverter
+import me.bookk.database.dao.AppointmentDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.ClientsDao
 import me.bookk.database.dao.ServiceDao
 import me.bookk.database.dao.ServiceGroupDao
 import me.bookk.database.dao.UserProfileDao
+import me.bookk.database.entity.AppointmentEntity
+import me.bookk.database.entity.AppointmentServiceSnapshotEntity
 import me.bookk.database.entity.BusinessEntity
 import me.bookk.database.entity.ClientEntity
 import me.bookk.database.entity.ServiceEntity
@@ -28,15 +31,18 @@ import me.bookk.database.entity.UserProfileEntity
         BusinessEntity::class,
         ClientEntity::class,
         ServiceEntity::class,
-        ServiceGroupEntity::class
+        ServiceGroupEntity::class,
+        AppointmentEntity::class,
+        AppointmentServiceSnapshotEntity::class
     ],
-    version = 6,
+    version = 7,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
-        AutoMigration(from = 5, to = 6)
+        AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7)
     ]
 )
 @TypeConverters(
@@ -52,6 +58,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun clientDao(): ClientsDao
     abstract fun serviceDao(): ServiceDao
     abstract fun serviceGroupDao(): ServiceGroupDao
+    abstract fun appointmentDao(): AppointmentDao
 
     companion object {
 

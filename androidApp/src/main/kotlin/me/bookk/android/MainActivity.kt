@@ -18,7 +18,6 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -44,6 +43,7 @@ import me.bookk.designsystem.components.LocalSnackbarProvider
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.feature.appointments.presentation.AppointmentsTab
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapViewModel
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
@@ -141,7 +141,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                 clientsGraph(navigation = clientsNavigation)
                 servicesGraph(navigation = servicesNavigation)
                 dashboardGraph(
-                    appointmentsTab = { Text("Appointments") },
+                    appointmentsTab = { AppointmentsTab() },
                     businessTab = {
                         BusinessTab(
                             showClients = {

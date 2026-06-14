@@ -22,6 +22,13 @@ data class MinimalPickerPresentation(
     override val displayName: StringDesc,
 ) : PickerPresentation()
 
+@UsedInSwift
+data class SimplePickerPresentation<T>(
+    override val pickerItemId: String,
+    override val displayName: StringDesc,
+    val domain: T
+) : PickerPresentation()
+
 interface PickerFieldState<T : PickerPresentation> : ViewState {
     val textField: TextFieldState
     var pickerType: PickerType

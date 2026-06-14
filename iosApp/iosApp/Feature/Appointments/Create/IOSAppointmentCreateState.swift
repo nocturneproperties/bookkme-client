@@ -12,6 +12,7 @@ class IOSAppointmentCreateState: @MainActor AppointmentCreateState, NativeStateR
 	
 	let clientPicker: any PickerFieldState
 	let datePicker: any DatePickerFieldState
+	let timePicker: any TimePickerFieldState
 	let servicePickers: any ListState
 	let note: any TextFieldState
 	let create: any ButtonState
@@ -23,6 +24,7 @@ class IOSAppointmentCreateState: @MainActor AppointmentCreateState, NativeStateR
         appBar = IOSAppBarState()
 		clientPicker = IOSPickerState()
 		datePicker = IOSDatePickerFieldState()
+		timePicker = IOSTimePickerFieldState()
 		servicePickers = IOSListState<IOSPickerState>()
 		note = IOSTextFieldState()
 		create = IOSButtonState()

@@ -15,7 +15,7 @@ struct DatePickerField: View {
     @State private var isPresented = false
 
     init(state: DatePickerFieldState, onDatePicked: ((LocalDate) -> Void)? = nil) {
-		self.state = IOSDatePickerFieldState.cast(state)
+		self._state = Bindable(wrappedValue: IOSDatePickerFieldState.cast(state))
         self.onDatePicked = onDatePicked ?? { date in
 			state.onDatePicked?(date)
         }

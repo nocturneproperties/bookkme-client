@@ -12,6 +12,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.clients.domain.api.CreateClient
@@ -81,6 +82,7 @@ class CreateClientViewModel(
     }
 
     private fun CreateClientState.setup(): CreateClientState {
+        appBar.size = TopBarSize.LARGE
         appBar.title = ClientsRes.strings.clients_create_title.desc()
         appBar.onBackClick = weakSelfClosure {
             it.uiState.navigation.push(CreateClientDestination.Back)

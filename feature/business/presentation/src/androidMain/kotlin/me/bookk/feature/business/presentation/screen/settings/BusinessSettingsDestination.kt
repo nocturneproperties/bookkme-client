@@ -7,10 +7,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import me.bookk.core.presentation.SendLifecycleEventsTo
 import me.bookk.core.presentation.navigation.UuidNavType
+import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.LocalNavigation
+import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsDestination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.reflect.typeOf
@@ -43,6 +45,11 @@ internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
             LocalBusinessSettingsEventListener provides listener
         ) {
             ObserveNotifications(viewModel.uiState.notifications)
+            ObserveNavigation(viewModel.uiState.navigation) { destination ->
+                when (destination) {
+                    BusinessSettingsDestination.Back -> navigation.goBack()
+                }
+            }
             SendLifecycleEventsTo(viewModel)
             BusinessSettingsScreen(viewModel.uiState)
         }

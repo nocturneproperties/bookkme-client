@@ -18,9 +18,18 @@ struct SignUpScreen: View {
 		ScrollView {
 			SignUpScreenContent(signUpVM: signUpVM)
 				.padding()
-				.withNavigationBar(signUpVM.uiState.appBar)
+				.withNavigationBar(uiState.appBar)
 				.sendLifecycleEventsTo(signUpVM)
 				.handleNotifications(uiState.notification)
+				.handleNavigation(uiState.navigation) { dest in
+					switch dest {
+					case is SignUpNavigationDestination.Back:
+						navigationStack.popLast()
+						
+					default:
+						break
+					}
+				}
 		}.background(AppColors.background)
     }
 }

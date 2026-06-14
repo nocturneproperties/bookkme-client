@@ -27,10 +27,5 @@ struct ProfileView: View {
 				.transition(.opacity)
 		}
 		.frame(maxWidth: .infinity)
-		.toolbar {
-			NavigationLink(value: SettingsDestination.EditProfile()) {
-				Text(state.editProfile.text.localized())
-			}
-		}
 	}
 }

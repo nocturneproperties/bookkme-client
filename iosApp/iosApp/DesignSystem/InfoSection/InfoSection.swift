@@ -19,7 +19,6 @@ struct InfoSection: View {
 		VStack(alignment: .leading) {
 			Header(text: section.title.localized(), discardDefaultPadding: true)
 			Text(section.value.localized())
-			Divider()
 		}.contentShape(Rectangle())
 	}
 	var body: some View {

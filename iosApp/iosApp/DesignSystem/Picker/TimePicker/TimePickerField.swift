@@ -15,7 +15,7 @@ struct TimePickerField: View {
     @State private var isPresented = false
 
     init(state: TimePickerFieldState, onTimePicked: ((LocalTime) -> Void)? = nil) {
-		self.state = IOSTimePickerFieldState.cast(state)
+		self._state = Bindable(wrappedValue: IOSTimePickerFieldState.cast(state))
         self.onTimePicked = onTimePicked ?? { date in
 			state.onTimePicked?(date)
         }

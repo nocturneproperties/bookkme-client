@@ -11,6 +11,7 @@ import shared
 
 struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyObject, T:Identifiable {
 	
+	@Bindable
 	var listState: IOSListState<T>
 	
 	let listStyle: S
@@ -22,7 +23,7 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 	let header: () -> Header
 	
 	init(listState: IOSListState<T>, listStyle: S, content: @escaping (T) -> Content, header: @escaping () -> Header) {
-		self.listState = listState
+		self._listState = Bindable(wrappedValue: listState)
 		self.content = content
 		self.header = header
 		self.listStyle = listStyle

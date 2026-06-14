@@ -18,32 +18,21 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 	
 	
 	var appBar: any AppBarState
-	
 	var address: any TextFieldState
-	
 	var currency: any PickerFieldState
-	
 	var description_: any TextFieldState
-	
 	var instagram: any TextFieldState
-	
 	var location: any TextFieldState
-	
 	var name: any TextFieldState
+	var save: any ButtonState
+	var telegram: any TextFieldState
+	var testLocation: any ButtonState
+	var pickLocation: any ButtonState
+	var viber: any TextFieldState
+	var phone: any TextFieldState
 	
 	var notifications: any PresentationNotificationState
-	
-	var save: any ButtonState
-	
-	var telegram: any TextFieldState
-	
-	var testLocation: any ButtonState
-	
-	var pickLocation: any ButtonState
-	
-	var viber: any TextFieldState
-	
-	var phone: any TextFieldState
+	var navigation: any NavigationState
 	
 	init(initData: BusinessSettingsStateInitData) {
 		self.appBar = IOSAppBarState(title: initData.title)
@@ -60,6 +49,7 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 		self.viber = IOSTextFieldState(placeholder: initData.viberHint, startIcon: initData.viberIcon)
 		self.pickLocation = IOSButtonState(text: initData.pickLocationText)
 		self.phone = IOSTextFieldState(placeholder: initData.phoneHint, startIcon: initData.phoneIcon)
+		self.navigation = IOSNavigationState()
 	}
 	
 }

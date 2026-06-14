@@ -31,7 +31,7 @@ struct PickerField: View {
 
     init(_ state: PickerFieldState, onItemPicked: ((PickerPresentation) -> Void)? = nil) {
         let impl = state.impl()
-        self.state = impl
+        self._state = Bindable(wrappedValue: impl)
         self.onItemPicked = onItemPicked ?? { option in
             impl.onItemPicked(option)
         }

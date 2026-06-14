@@ -3,22 +3,24 @@ package me.bookk.feature.settings.presentation.dashboard
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.settings.resources.SettingsRes
-import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextState
 import me.bookk.feature.settings.domain.api.entity.ColorScheme
 
 interface SettingsState {
+    val appBar: AppBarState
     val appearance: AppearanceSection
     val profile: ProfileSection
     val account: AccountSection
     val support: SupportSection
 
     val notification: PresentationNotificationState
+    val navigation: NavigationState<SettingsDashboardDestination>
 
     class InitData(
         val appearance: AppearanceSection.InitData,
-        val profile: ProfileSection.InitData,
         val account: AccountSection.InitData,
         val support: SupportSection.InitData
     )
@@ -59,16 +61,10 @@ interface AppearanceSection {
 }
 
 interface ProfileSection {
-    val title: StringDesc
     var name: StringDesc
     var lastName: StringDesc
     var email: StringDesc
-    val editProfile: ButtonState
 
-    class InitData(
-        val title: StringDesc,
-        val editButtonText: StringDesc
-    )
 }
 
 interface AccountSection {

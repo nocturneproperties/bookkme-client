@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -27,6 +28,7 @@ internal fun SettingsDashboardScreen(state: SettingsState) {
         modifier = Modifier
             .systemBarsPadding()
             .imePadding(),
+        topBar = { AppTopBar(state.appBar) },
         content = {
             Column(
                 modifier = Modifier

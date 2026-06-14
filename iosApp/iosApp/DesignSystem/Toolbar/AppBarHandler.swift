@@ -13,7 +13,7 @@ struct AppBarHandler: ViewModifier {
 	
 	
 	@Environment(\.dismiss) var dismiss
-	var appBarState: IOSAppBarState
+	let appBarState: IOSAppBarState
 	
 	var displayMode: NavigationBarItem.TitleDisplayMode {
 		switch appBarState.size_ {

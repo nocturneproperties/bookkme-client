@@ -5,15 +5,18 @@ import dev.icerock.moko.resources.desc.desc
 import library.money.api.Money
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
+import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidPickerFieldState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsDestination
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 
@@ -66,4 +69,5 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
     )
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()
+    override val navigation: NavigationState<BusinessSettingsDestination> = AndroidNavigationState()
 }

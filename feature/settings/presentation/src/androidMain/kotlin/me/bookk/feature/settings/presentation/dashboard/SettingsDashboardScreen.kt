@@ -34,7 +34,7 @@ internal fun SettingsDashboardScreen(state: SettingsState) {
                 modifier = Modifier
                     .padding(it)
                     .verticalScroll(rememberScrollState())
-                    .padding(vertical = 24.dp),
+                    .padding(bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ProfileSection(state.profile)

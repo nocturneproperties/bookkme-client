@@ -12,8 +12,8 @@ import me.bookk.designsystem.uistate.DatePickerFieldState
 
 @Composable
 fun DatePickerField(
-    modifier: Modifier = Modifier,
     state: DatePickerFieldState,
+    modifier: Modifier = Modifier,
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = System.currentTimeMillis(),

@@ -7,8 +7,12 @@
 
     <string name="appointments_create_title">Create an appointment</string>
     <string name="appointments_create_client">Client</string>
-    <string name="appointments_create_service">Service</string>
+    <string name="appointments_create_client_placeholder">Select client</string>
+    <string name="appointments_create_services">Services</string>
+    <string name="appointments_create_services_add">Add service</string>
     <string name="appointments_create_date">Date</string>
+    <string name="appointments_create_date_placeholder">Pick date</string>
     <string name="appointments_create_time">Time</string>
+    <string name="appointments_create_time_placeholder">Pick time</string>
     <string name="appointments_create_note">Add a note</string>
 </resources>

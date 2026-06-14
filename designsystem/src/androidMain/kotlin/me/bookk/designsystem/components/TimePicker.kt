@@ -27,6 +27,7 @@ fun AppTimePicker(
     ),
     timePickerColors: TimePickerColors = TimePickerDefaults.colors(
         containerColor = LocalColors.current.elevated,
+        timeSelectorSelectedContainerColor = LocalColors.current.actionText
     ),
     confirmButton: ButtonState = remember { AndroidButtonState(DesignSystem.strings.action_select.desc()) },
     dismissButton: ButtonState? = remember { AndroidButtonState(DesignSystem.strings.action_cancel.desc()) },

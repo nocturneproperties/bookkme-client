@@ -10,8 +10,8 @@ import me.bookk.designsystem.uistate.TimePickerFieldState
 
 @Composable
 fun TimePickerField(
-    modifier: Modifier = Modifier,
     state: TimePickerFieldState,
+    modifier: Modifier = Modifier,
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
 

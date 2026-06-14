@@ -30,7 +30,7 @@ final class IOSDatePickerFieldState: IOSViewState, @MainActor DatePickerFieldSta
         onDatePicked: ((LocalDate) -> Void)? = nil,
         pickedDate: LocalDate? = nil
     ) {
-        self.textField = textField ?? IOSTextFieldState()
+        self.textField = textField ?? IOSTextFieldState(readOnly: true)
         self.maxDate = maxDate
         self.minDate = minDate
         self.onDatePicked = onDatePicked

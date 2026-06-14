@@ -30,7 +30,7 @@ fun DesignSystemBottomSheet(
     ModalBottomSheet(
         modifier = modifier,
         sheetState = sheetState,
-        containerColor = LocalColors.current.elevated,
+        containerColor = LocalColors.current.background,
         properties = ModalBottomSheetProperties(),
         onDismissRequest = onDismiss,
     ) {

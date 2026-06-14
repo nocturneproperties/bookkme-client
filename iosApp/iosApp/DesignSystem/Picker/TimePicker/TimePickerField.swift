@@ -95,15 +95,18 @@ struct TimePickerSheet: View {
 				.padding(.trailing, 16)
 			}
 			.padding(.vertical, 12)
-			
-			DatePicker(
-				"",
-				selection: $selection,
-				displayedComponents: [.hourAndMinute]
-			)
-				.datePickerStyle(.graphical)
+			HStack {
+				Spacer()
+				DatePicker(
+					"",
+					selection: $selection,
+					displayedComponents: [.hourAndMinute]
+				)
+				.labelsHidden()
+				.datePickerStyle(.wheel)
 				.tint(AppColors.actionText)
-				.padding(.horizontal, 8)
+				Spacer()
+			}
 		}
 		.presentationBackground(AppColors.elevated)
 		.presentationDetents([.medium])
@@ -120,8 +123,8 @@ private func timeFromLocal(_ localTime: LocalTime?) -> Date? {
 
 private func localTime(from date: Date) -> LocalTime {
 	let components = Calendar.current.dateComponents([.hour, .minute], from: date)
-	let hour = Int32(components.year ?? 0)
-	let min = Int32(components.day ?? 0)
+	let hour = Int32(components.hour ?? 0)
+	let min = Int32(components.minute ?? 0)
 	return LocalTime(hour: hour, minute: min, second: 0, nanosecond: 0)
 }
 

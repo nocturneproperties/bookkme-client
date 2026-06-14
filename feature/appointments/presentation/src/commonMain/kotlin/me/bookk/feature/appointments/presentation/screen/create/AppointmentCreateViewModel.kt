@@ -28,10 +28,12 @@ class AppointmentCreateViewModel(
     }
 
     private fun onDatePicked(date: LocalDate) {
+        uiState.datePicker.textField.text = date.toString()
         uiState.datePicker.pickedDate = date
     }
 
     private fun onTimePicked(date: LocalTime) {
+        uiState.timePicker.textField.text = date.toString()
         uiState.timePicker.pickedTime = date
     }
 
@@ -52,12 +54,15 @@ class AppointmentCreateViewModel(
 
         servicePicker.pickerTitle = AppointmentsRes.strings.appointments_create_services.desc()
         servicePicker.addItemText = AppointmentsRes.strings.appointments_create_services_add.desc()
-        servicePicker.onItemsPicked = weakSelfClosure { vm, items -> vm.uiState.servicePicker.replaceSelected(items) }
+        servicePicker.onItemsPicked = weakSelfClosure { vm, items ->
+            val list = vm.uiState.servicePicker.selectedItems.toSet()
+            vm.uiState.servicePicker.replaceSelected(list.plus(items.toSet()).toList())
+        }
         servicePicker.onItemsRemoveRequested = weakSelfClosure { vm, items ->
             val list = vm.uiState.servicePicker.selectedItems.toSet()
             vm.uiState.servicePicker.replaceSelected(list.minus(items.toSet()).toList())
         }
-        servicePicker.replaceOptions(listOf(ServicePickerPresentation.stub()))
+        servicePicker.replaceOptions(listOf(ServicePickerPresentation.stub(), ServicePickerPresentation.stub(), ServicePickerPresentation.stub(), ServicePickerPresentation.stub(), ServicePickerPresentation.stub(), ServicePickerPresentation.stub(), ServicePickerPresentation.stub()))
 
         datePicker.textField.label = AppointmentsRes.strings.appointments_create_date.desc()
         datePicker.textField.placeholder = AppointmentsRes.strings.appointments_create_date_placeholder.desc()

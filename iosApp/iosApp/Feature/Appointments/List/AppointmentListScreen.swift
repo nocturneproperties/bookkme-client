@@ -61,6 +61,8 @@ struct AppointmentListScreen: View {
         .handleNotifications(state.notifications)
         .handleNavigation(state.navigation) { dest in
             switch dest {
+			case let dest as AppointmentListDestinations.CreateAppointment:
+				navigationStack.push(AppointmentsDestination.Create(businessId: dest.businessId))
             default:
                 break
             }

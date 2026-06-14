@@ -15,6 +15,7 @@ import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.designsystem.uistate.TimePickerFieldState
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
+import kotlin.uuid.Uuid
 
 interface AppointmentCreateState {
     val appBar: AppBarState
@@ -40,7 +41,7 @@ data class ServicePickerPresentation(
 ) : PickerPresentation() {
     companion object {
         fun stub() = ServicePickerPresentation(
-            pickerItemId = "test",
+            pickerItemId = "test" + Uuid.random().toString(),
             displayName = "Haircut".desc(),
             duration = "30 min".desc(),
             price = "$20",

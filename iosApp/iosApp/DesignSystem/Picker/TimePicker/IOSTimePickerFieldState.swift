@@ -26,7 +26,7 @@ final class IOSTimePickerFieldState: IOSViewState, @MainActor TimePickerFieldSta
         onTimePicked: ((LocalTime) -> Void)? = nil,
 		pickedTime: LocalTime? = nil
     ) {
-        self.textField = textField ?? IOSTextFieldState()
+        self.textField = textField ?? IOSTextFieldState(readOnly: true)
         self.onTimePicked = onTimePicked
         self.pickedTime = pickedTime
     }

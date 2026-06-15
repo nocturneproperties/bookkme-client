@@ -59,7 +59,7 @@ internal fun AppointmentListScreen(
                 AppTopBar(state = state.appBar)
                 DateStrip(
                     selectedDate = state.selectedDate,
-                    onDateSelected = { state.selectedDate = it }
+                    onDateSelected = state.onDateSelected
                 )
                 HorizontalDivider(color = LocalColors.current.divider)
             }

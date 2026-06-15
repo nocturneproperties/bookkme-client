@@ -43,7 +43,9 @@ class AppointmentItemState(
         clientName = appointment.client.fullName,
         serviceName = appointment.services.joinToString { it.name },
         source = appointment,
-        scheduledAt = formatter.format(appointment.date.toLocalDateTime(TimeZone.currentSystemDefault())),
+        scheduledAt = appointment.date
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .let { formatter.format(it.time) },
         earnings = appointment.total,
         onItemClick = onItemClick
     )

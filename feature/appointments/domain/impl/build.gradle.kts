@@ -19,6 +19,7 @@ kotlin {
             implementation(projects.feature.business.domain.api)
             implementation(projects.feature.clients.domain.api)
             implementation(projects.feature.services.domain.api)
+            implementation(projects.feature.authorization.domain.api)
         }
     }
 }

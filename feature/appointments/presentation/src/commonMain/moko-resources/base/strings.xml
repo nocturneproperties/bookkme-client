@@ -16,4 +16,6 @@
     <string name="appointments_create_time_placeholder">Pick time</string>
     <string name="appointments_create_note">Add a note(optional)</string>
     <string name="appointments_create_subtotal">Subtotal · %1$d services</string>
+    <string name="appointments_create_date_error">Appointments for this day is forbidden by settings</string>
+    <string name="appointments_create_time_error">Appointments for this time is forbidden by settings</string>
 </resources>

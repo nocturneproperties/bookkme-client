@@ -222,6 +222,18 @@ When adding local caching for a new entity:
 - **Run Tests**: `./gradlew test` (runs common and Android tests)
 - **Lint**: `./gradlew detekt` (if configured)
 
+## API Documentation
+
+Current REST API specs are served by the local backend instance:
+
+```
+http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
+```
+
+`{feature_name}` can be the short or long form of the feature, e.g. `auth` or `authorization`, `appointments`, `clients`, `services`, `business`, etc.
+
+**Before reading any endpoint contract**, fetch the relevant YAML to get the authoritative, up-to-date schema. If the URL is not reachable, **stop and return an error**: the local backend is not running and the task cannot be completed safely without current API docs.
+
 ## AI Agent Interaction Rules
 
 - **Use the newest screen as reference** (currently `BusinessPlugins`). Never copy from screens that pass `InitData` into state factories — that pattern is deprecated.

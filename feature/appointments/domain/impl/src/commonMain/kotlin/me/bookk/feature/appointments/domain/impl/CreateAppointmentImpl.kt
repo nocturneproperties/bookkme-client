@@ -5,7 +5,9 @@ import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
+import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
+import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import kotlin.uuid.Uuid
@@ -29,7 +31,9 @@ internal class CreateAppointmentImpl(
             cancellationReason = ""
         )
         return runCatching {
-            appointmentDataSource.createAppointment(appointment)
+            appointmentDataSource.createAppointment(appointment).also {
+                appointmentEvents.emit(AppointmentEvent.Created(it))
+            }
         }.onBusinessError {
             when (it.errorCode) {
                 AppointmentErrorCodes.APPOINTMENT_EXISTS -> throw CreateAppointment.Error.AppointmentOverlap()

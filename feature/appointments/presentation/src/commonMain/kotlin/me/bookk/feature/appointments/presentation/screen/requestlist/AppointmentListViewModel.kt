@@ -22,6 +22,8 @@ import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForDashboardBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
+import me.bookk.feature.appointments.domain.api.entity.listenFor
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListDestinations.AppointmentDetails
 import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListDestinations.CreateAppointment
@@ -37,6 +39,12 @@ class AppointmentListViewModel(
 
     init {
         observeCurrentBusinessRequests()
+        listenForUpdates()
+    }
+
+    private fun listenForUpdates() {
+        listenFor<AppointmentEvent.Created> { onRefresh() }
+            .launchIn(viewModelScope)
     }
 
     private fun observeCurrentBusinessRequests() {

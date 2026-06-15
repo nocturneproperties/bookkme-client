@@ -40,7 +40,7 @@ class IOSPickerState: IOSViewState, @MainActor PickerFieldState, NativeStateRepr
 	
 	
 	func replaceOptions(options_: [PickerPresentation]) {
-		self.options = options
+		self.options = options_
 	}
 }
 

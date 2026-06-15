@@ -23,7 +23,7 @@ import me.bookk.designsystem.theme.typography.primary
 fun DesignSystemBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
-    title: String,
+    title: String? = null,
     onDismiss: () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit
 ) {
@@ -42,10 +42,12 @@ fun DesignSystemBottomSheet(
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge.primary()
-            )
+            title?.let {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge.primary()
+                )
+            }
             content()
         }
     }

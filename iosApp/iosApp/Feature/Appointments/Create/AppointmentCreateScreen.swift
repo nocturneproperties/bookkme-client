@@ -24,6 +24,9 @@ struct AppointmentCreateScreen: View {
                         onRemove: onRemove
                     )
                 }
+                if !state.subtotalPrice.isEmpty {
+                    SubtotalRow(label: state.subtotalLabel, price: state.subtotalPrice)
+                }
                 DatePickerField(state: state.datePicker)
                 TimePickerField(state: state.timePicker)
                 StateTextField(state.note, textEditor: true)
@@ -43,6 +46,24 @@ struct AppointmentCreateScreen: View {
                 break
             }
         }
+    }
+}
+
+private struct SubtotalRow: View {
+    let label: any StringDesc
+    let price: String
+
+    var body: some View {
+        HStack {
+            Text(label.localized())
+                .font(.subheadline)
+                .foregroundStyle(AppColors.secondary)
+            Spacer()
+            Text(price)
+                .font(.headline)
+                .foregroundStyle(AppColors.primary)
+        }
+        .padding(.horizontal, 16)
     }
 }
 

@@ -11,6 +11,7 @@ import shared
 
 struct PickOptionScreen: View {
 	
+	@Environment(\.dismiss) var dismiss
 	@StateViewModel var viewModel: PickOptionViewModel
 	
 	let onItemSelected: (KeyValueData) -> Void
@@ -37,6 +38,9 @@ struct PickOptionScreen: View {
 			switch event {
 			case let event as PickerNavigationDestination.FinishWithResult:
 				onItemSelected(event.pickResult)
+				break  
+			case is PickerNavigationDestination.Back:
+				dismiss()
 				break
 			default :
 				break

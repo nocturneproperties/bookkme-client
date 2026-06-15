@@ -14,5 +14,6 @@
     <string name="appointments_create_date_placeholder">Pick date</string>
     <string name="appointments_create_time">Time</string>
     <string name="appointments_create_time_placeholder">Pick time</string>
-    <string name="appointments_create_note">Add a note</string>
+    <string name="appointments_create_note">Add a note(optional)</string>
+    <string name="appointments_create_subtotal">Subtotal · %1$d services</string>
 </resources>

@@ -1,6 +1,5 @@
 package me.bookk.designsystem.components
 
-import android.content.Context
 import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
 import androidx.compose.material.icons.Icons
@@ -10,7 +9,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,13 +16,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import me.bookk.core.domain.entity.KeyValueData
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -34,33 +28,17 @@ import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PickerFieldState.PickerType
 import me.bookk.designsystem.uistate.PickerPresentation
 
-const val PICKER_RESULT = "pick_result"
-
-@Composable
-fun ObservePickerResult(id: String, navController: NavController, onPick: (KeyValueData) -> Unit) {
-    val entry = navController.currentBackStackEntry ?: return
-    val result by entry.savedStateHandle.getStateFlow<String?>(PICKER_RESULT + id, null)
-        .collectAsStateWithLifecycle()
-
-    LaunchedEffect(result) {
-        result?.let { onPick(Json.decodeFromString<KeyValueData>(it)) }
-    }
-}
-
-fun PickerPresentation.toKeyValue(context: Context) = KeyValueData(pickerItemId, displayName.toString(context))
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : PickerPresentation> PickerField(
     state: PickerFieldState<T>,
     modifier: Modifier = Modifier,
-    navController: NavController? = null,
-    navigateToScreenPicker: (options: List<T>) -> Unit = {},
+    screenPicker: @Composable (state: PickerFieldState<T>, onDismiss: () -> Unit, onItemPicked: (T) -> Unit) -> Unit = { _, _, _ -> },
     onItemPicked: (T) -> Unit = { state.onItemPicked(it) }
 ) {
+    var isSheetVisible by remember { mutableStateOf(false) }
     when (state.pickerType) {
         PickerType.BOTTOM_SHEET -> {
-            var isSheetVisible by remember { mutableStateOf(false) }
             TextField(
                 modifier = modifier,
                 interactionSource = singleClickInteractionSource {
@@ -85,20 +63,12 @@ fun <T : PickerPresentation> PickerField(
         }
 
         PickerType.SCREEN -> {
-            val navController = requireNotNull(navController) {
-                "Nav controller is required for PickerType.SCREEN"
-            }
-
-            ObservePickerResult(state.id, navController) { result ->
-                state.options.firstOrNull { it.pickerItemId == result.key }?.let {
-                    onItemPicked(it)
-                }
-            }
-
             TextField(
                 modifier = modifier,
                 interactionSource = singleClickInteractionSource {
-                    navigateToScreenPicker(state.options)
+                    if (state.options.isNotEmpty()) {
+                        isSheetVisible = true
+                    }
                 },
                 trailingIcon = {
                     Icon(
@@ -109,6 +79,18 @@ fun <T : PickerPresentation> PickerField(
                 },
                 state = state.textField
             )
+            if (isSheetVisible) {
+                screenPicker(
+                    state,
+                    {
+                        isSheetVisible = false
+                    },
+                    {
+                        state.onItemPicked(it)
+                        isSheetVisible = false
+                    }
+                )
+            }
         }
     }
 }

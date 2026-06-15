@@ -42,7 +42,6 @@ struct AppointmentListScreen: View {
 			.listRowInsets(EdgeInsets())
 		}
 		.frame(maxHeight: .infinity)
-		.refreshable { await state.refresh.impl().awaitRefresh() }
 		.sheet(isPresented: Binding(
             get: { state.isDatePickerVisible },
             set: { state.isDatePickerVisible = $0 }
@@ -57,6 +56,7 @@ struct AppointmentListScreen: View {
             )
         }
 		.withNavigationBar(state.appBar)
+		.refreshable { await state.refresh.impl().awaitRefresh() }
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)
         .handleNavigation(state.navigation) { dest in

@@ -22,6 +22,8 @@ interface AppointmentCreateState {
 
     val clientPicker: PickerFieldState<SimplePickerPresentation<ClientSnapshot>>
     val servicePicker: MultiPickerState<ServicePickerPresentation>
+    var subtotalLabel: StringDesc
+    var subtotalPrice: String
     val datePicker: DatePickerFieldState
     val timePicker: TimePickerFieldState
     val note: TextFieldState
@@ -39,6 +41,14 @@ data class ServicePickerPresentation(
     val price: String,
     val item: ServiceSnapshot
 ) : PickerPresentation() {
+
+    constructor(service: ServiceSnapshot): this(
+        pickerItemId = service.id.toString(),
+        displayName = service.name.desc(),
+        duration = service.duration.toString().desc(),
+        price = service.price.toString(),
+        item = service
+    )
     companion object {
         fun stub() = ServicePickerPresentation(
             pickerItemId = "test" + Uuid.random().toString(),
@@ -49,3 +59,9 @@ data class ServicePickerPresentation(
         )
     }
 }
+
+internal fun ClientSnapshot.pickerItem() = SimplePickerPresentation(
+    pickerItemId = id.toString(),
+    displayName = fullName.desc(),
+    domain = this
+)

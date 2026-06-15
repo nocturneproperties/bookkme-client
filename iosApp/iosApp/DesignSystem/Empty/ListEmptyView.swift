@@ -20,6 +20,7 @@ struct ListEmptyView: View {
 				Text(state.label.localized())
 					.font(.subheadline)
 					.foregroundStyle(AppColors.secondary)
+					.frame(maxWidth: .infinity)
 			}.frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
 		}
 	}

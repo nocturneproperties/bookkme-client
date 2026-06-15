@@ -1,5 +1,10 @@
 package me.bookk.feature.appointments.presentation.screen.create
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import dev.icerock.moko.resources.desc.StringDesc
+import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidDatePickerState
@@ -24,6 +29,8 @@ internal class AndroidAppointmentCreateState : AppointmentCreateState {
 
     override val clientPicker = AndroidPickerFieldState<SimplePickerPresentation<ClientSnapshot>>()
     override val servicePicker = AndroidMultiPickerState<ServicePickerPresentation>()
+    override var subtotalLabel: StringDesc by mutableStateOf("".desc())
+    override var subtotalPrice: String by mutableStateOf("")
     override val datePicker: DatePickerFieldState = AndroidDatePickerState()
     override val timePicker: TimePickerFieldState = AndroidTimePickerFieldState()
     override val note: TextFieldState = AndroidTextFieldState()

@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
+import dev.icerock.moko.resources.desc.StringDesc
+import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.DatePickerField
@@ -54,9 +56,16 @@ internal fun AppointmentCreateScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            PickerField(state.clientPicker, modifier = Modifier.padding(top = 16.dp))
+            PickerField(
+                state.clientPicker,
+                modifier = Modifier.padding(top = 16.dp),
+                screenPicker = standardScreenPicker()
+            )
             MultiPicker(state.servicePicker) { item, onItemRemove ->
                 ServiceItem(item, onItemRemove)
+            }
+            if (state.subtotalPrice.isNotEmpty()) {
+                SubtotalRow(state.subtotalLabel, state.subtotalPrice)
             }
             DatePickerField(state.datePicker)
             TimePickerField(state.timePicker)
@@ -67,6 +76,26 @@ internal fun AppointmentCreateScreen(
                     .padding(top = 16.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun SubtotalRow(label: StringDesc, price: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            label.localized(),
+            style = MaterialTheme.typography.bodyMedium.secondary()
+        )
+        Text(
+            price,
+            style = MaterialTheme.typography.titleMedium.primary()
+        )
     }
 }
 

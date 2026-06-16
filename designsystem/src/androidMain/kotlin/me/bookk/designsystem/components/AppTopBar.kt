@@ -30,12 +30,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.designsystem.html
 import me.bookk.designsystem.painter
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -60,7 +60,15 @@ fun AppTopBar(
                 TextButton(onClick = it.onClick) {
                     Text(
                         it.contentDescription.localized(),
-                        style = MaterialTheme.typography.bodyLarge.active()
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = when (it.type) {
+                                ActionType.CANCEL,
+                                ActionType.CONFIRM,
+                                ActionType.POSITIVE -> LocalColors.current.actionText
+
+                                ActionType.NEGATIVE -> LocalColors.current.error
+                            }
+                        )
                     )
                 }
             }

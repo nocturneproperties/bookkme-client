@@ -27,7 +27,7 @@ struct AppBarHandler: ViewModifier {
 	
 	var actions: some View {
 		ForEach(appBarState.actions.items(AppBarAction.self), id: \.self) { action in
-			Button(action: action.onClick) {
+			Button(role: buttonRole(from: action.type), action: action.onClick) {
 				if let icon = action.icon {
 					Label(title: {}, icon: {
 						Image(resource: icon)
@@ -68,6 +68,23 @@ struct AppBarHandler: ViewModifier {
 					}
 				}
 			}
+	}
+	
+	func buttonRole(from type: ActionType) -> ButtonRole? {
+		switch(type) {
+		case .confirm:
+			if #available(iOS 26.0, *) {
+				return .confirm
+			} else {
+				return nil
+			}
+		case .negative:
+			return .destructive
+		case .cancel:
+			return .cancel
+		default:
+			return nil
+		}
 	}
 }
 

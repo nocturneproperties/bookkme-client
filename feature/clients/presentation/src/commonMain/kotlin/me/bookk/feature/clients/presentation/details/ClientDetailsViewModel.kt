@@ -6,6 +6,7 @@ import library.device.api.DeviceFacade
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
@@ -71,11 +72,11 @@ class ClientDetailsViewModel(
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ButtonDescriptor.ActionType.POSITIVE
+                        actionType = ActionType.POSITIVE
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
-                        actionType = ButtonDescriptor.ActionType.NEGATIVE,
+                        actionType = ActionType.NEGATIVE,
                         onClick = ::onDeleteConfirmed
                     )
                 ),

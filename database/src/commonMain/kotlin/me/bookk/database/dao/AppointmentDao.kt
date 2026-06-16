@@ -18,6 +18,10 @@ abstract class AppointmentDao {
     @Query("SELECT * FROM appointment WHERE businessId = :businessId AND localDate = :localDate")
     abstract suspend fun getForDate(businessId: Uuid, localDate: String): List<AppointmentLocal>
 
+    @Transaction
+    @Query("SELECT * FROM appointment WHERE id = :id")
+    abstract suspend fun getById(id: Uuid): AppointmentLocal
+
     @Upsert
     abstract suspend fun upsertAppointments(appointments: List<AppointmentEntity>)
 

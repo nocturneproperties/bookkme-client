@@ -8,6 +8,7 @@ import io.ktor.client.request.setBody
 import kotlinx.datetime.LocalDate
 import me.bookk.core.data.DataSource
 import me.bookk.database.dao.AppointmentDao
+import me.bookk.feature.appointments.data.mapping.toDomain
 import me.bookk.feature.appointments.data.mapping.toEntity
 import me.bookk.feature.appointments.data.mapping.toRemote
 import me.bookk.feature.appointments.data.mapping.toServiceEntities
@@ -24,6 +25,10 @@ internal class CommonAppointmentDataSource(
     private val httpClient: HttpClient,
     private val appointmentDao: AppointmentDao
 ) : DataSource(), AppointmentDataSource {
+
+    override suspend fun getAppointment(id: Uuid): Appointment = mapExceptions {
+        appointmentDao.getById(id).toDomain()
+    }
 
     override suspend fun getAppointmentsForDate(
         businessId: Uuid,

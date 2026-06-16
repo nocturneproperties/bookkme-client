@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
-import me.bookk.core.presentation.error.ButtonDescriptor.ActionType
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
@@ -73,6 +73,7 @@ fun AppDialog(
                                 ActionType.POSITIVE -> LocalColors.current.actionText
                                 ActionType.NEGATIVE -> LocalColors.current.error
                                 ActionType.CANCEL -> LocalColors.current.actionText
+                                ActionType.CONFIRM -> LocalColors.current.actionText
                             },
                         )
                     )

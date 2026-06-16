@@ -63,6 +63,8 @@ struct AppointmentListScreen: View {
             switch dest {
 			case let dest as AppointmentListDestinations.CreateAppointment:
 				navigationStack.push(AppointmentsDestination.Create(businessId: dest.businessId))
+			case let dest as AppointmentListDestinations.AppointmentDetails:
+				navigationStack.push(AppointmentsDestination.Details(appointmentId: dest.appointmentId))
             default:
                 break
             }

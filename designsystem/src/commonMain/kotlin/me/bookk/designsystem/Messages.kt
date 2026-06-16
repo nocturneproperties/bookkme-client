@@ -2,6 +2,7 @@ package me.bookk.designsystem
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
@@ -35,7 +36,7 @@ fun PresentationNotification.Message.Companion.deleteConfirmation(
             ),
             ButtonDescriptor(
                 DesignSystem.strings.action_delete.desc(),
-                actionType = ButtonDescriptor.ActionType.NEGATIVE,
+                actionType = ActionType.NEGATIVE,
                 onClick = onConfirmed
             )
         )

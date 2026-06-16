@@ -19,4 +19,13 @@
     <string name="appointments_create_overlap_error">Appointment overlap. Looks like someone created an appointment for this date and time while you were creating yours, select another date or time and try again!</string>
     <string name="appointments_create_date_error">Appointments for this day are forbidden by settings</string>
     <string name="appointments_create_time_error">Appointments for this time are forbidden by settings</string>
+
+    <string name="appointments_details_status">Status</string>
+    <string name="appointments_details_total">Estimated revenue</string>
+    <string name="appointments_details_note">Note</string>
+    <string name="appointments_details_phone">Contact number</string>
+    <string name="appointments_details_email">Email</string>
+    <string name="appointments_status_scheduled">Scheduled</string>
+    <string name="appointments_status_completed">Completed</string>
+    <string name="appointments_status_cancelled">Cancelled</string>
 </resources>

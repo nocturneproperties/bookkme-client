@@ -13,8 +13,10 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.TopBarSize
@@ -138,6 +140,11 @@ class AppointmentCreateViewModel(
             onError = {
                 when (it) {
                     is CreateAppointment.Error.AppointmentOverlap -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                            AppointmentsRes.strings.appointments_create_overlap_error.desc()
+                            )
+                        )
                     }
                     is CreateAppointment.Error.DateIsNotAllowed -> {
                         uiState.datePicker.textField.showError(AppointmentsRes.strings.appointments_create_date_error.desc())

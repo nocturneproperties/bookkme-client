@@ -6,6 +6,7 @@ import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
@@ -68,11 +69,11 @@ class SettingsDashboardViewModel(
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ButtonDescriptor.ActionType.POSITIVE
+                        actionType = ActionType.POSITIVE
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
-                        actionType = ButtonDescriptor.ActionType.NEGATIVE,
+                        actionType = ActionType.NEGATIVE,
                         onClick = ::logout
                     )
                 ),

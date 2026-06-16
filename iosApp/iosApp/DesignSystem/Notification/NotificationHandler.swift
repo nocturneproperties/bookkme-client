@@ -55,7 +55,7 @@ struct NotificationHandler: ViewModifier {
 	@ViewBuilder
 	func alertButtons(buttons: [ButtonDescriptor]) -> some View {
 		ForEach(buttons, id: \.id) { button in
-			let role = button.actionType == ButtonDescriptor.ActionType.negative ? ButtonRole.destructive : ButtonRole.cancel
+			let role = button.actionType == ActionType.negative ? ButtonRole.destructive : ButtonRole.cancel
 			
 			Button(role: role) {
 				self.showAlert = false

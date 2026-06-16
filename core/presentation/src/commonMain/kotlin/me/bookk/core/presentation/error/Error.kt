@@ -50,10 +50,11 @@ class ButtonDescriptor(
     @OptIn(ExperimentalUuidApi::class)
     @UsedInSwift
     val id: Int = Uuid.random().hashCode()
+}
 
-    enum class ActionType {
-        POSITIVE,
-        NEGATIVE,
-        CANCEL
-    }
+enum class ActionType {
+    POSITIVE,
+    NEGATIVE,
+    CANCEL,
+    CONFIRM
 }

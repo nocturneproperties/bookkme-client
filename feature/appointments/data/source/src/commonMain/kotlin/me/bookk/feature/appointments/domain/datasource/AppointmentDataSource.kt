@@ -6,6 +6,8 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import kotlin.uuid.Uuid
 
 interface AppointmentDataSource {
+    suspend fun getAppointment(id: Uuid): Appointment
+
     suspend fun getAppointmentsForDate(
         businessId: Uuid,
         forDate: LocalDate

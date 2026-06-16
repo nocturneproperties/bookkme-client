@@ -13,6 +13,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
+import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
@@ -185,6 +186,7 @@ class AppointmentCreateViewModel(
             vm.onServicesRemove(items)
         }
 
+        datePicker.minDate = LocalDate.today()
         datePicker.textField.label = AppointmentsRes.strings.appointments_create_date.desc()
         datePicker.textField.placeholder =
             AppointmentsRes.strings.appointments_create_date_placeholder.desc()

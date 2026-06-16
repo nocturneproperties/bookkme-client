@@ -30,6 +30,7 @@ struct AppointmentCreateScreen: View {
                 DatePickerField(state: state.datePicker)
                 TimePickerField(state: state.timePicker)
                 StateTextField(state.note, textEditor: true)
+					.lineLimit(3...5)
                 StateButton(state.create)
                     .padding(.top, 16)
             }

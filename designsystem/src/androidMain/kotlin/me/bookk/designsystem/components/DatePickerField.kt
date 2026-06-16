@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import kotlinx.datetime.toJavaLocalDate
 import me.bookk.core.presentation.date.SelectableDateRange
 import me.bookk.designsystem.uistate.DatePickerFieldState
 
@@ -16,7 +17,7 @@ fun DatePickerField(
     modifier: Modifier = Modifier,
 ) {
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = System.currentTimeMillis(),
+        initialSelectedDate = state.pickedDate?.toJavaLocalDate(),
         selectableDates = SelectableDateRange(state.maxDate, state.minDate)
     )
     var showDatePicker by remember { mutableStateOf(false) }
@@ -31,7 +32,6 @@ fun DatePickerField(
 
     if (showDatePicker) {
         AppDatePicker(
-            selectedDate = state.pickedDate,
             datePickerState = datePickerState,
             onDismiss = { showDatePicker = false },
             onDatePicked = { state.onDatePicked?.invoke(it) }

@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
@@ -24,10 +23,7 @@ import kotlin.time.Instant
 
 @Composable
 fun AppDatePicker(
-    selectedDate: LocalDate? = null,
-    datePickerState: DatePickerState = rememberDatePickerState(
-        initialSelectedDate = selectedDate?.toJavaLocalDate()
-    ),
+    datePickerState: DatePickerState = rememberDatePickerState(),
     datePickerColors: DatePickerColors = DatePickerDefaults.colors(
         containerColor = LocalColors.current.elevated,
         selectedDayContentColor = LocalColors.current.primaryText,

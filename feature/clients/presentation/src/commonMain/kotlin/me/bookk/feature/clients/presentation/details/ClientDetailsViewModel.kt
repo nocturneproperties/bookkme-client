@@ -48,13 +48,13 @@ class ClientDetailsViewModel(
                 uiState.infoSections.replace(
                     listOf(
                         InfoLine(
-                            title = ClientsRes.strings.clients_create_phone.desc(),
-                            value = it.phone.desc(),
+                            title = ClientsRes.strings.clients_create_phone,
+                            value = it.phone,
                             onClick = { device.dial(it.phone) }
                         ),
                         InfoLine(
-                            title = ClientsRes.strings.clients_create_email.desc(),
-                            value = it.email.ifBlank { "-" }.desc(),
+                            title = ClientsRes.strings.clients_create_email,
+                            value = it.email.ifBlank { "-" },
                             onClick = { device.mail(it.email) }
                         )
                     )

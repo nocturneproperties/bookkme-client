@@ -1,9 +1,9 @@
 package me.bookk.feature.appointments.presentation.screen.details
 
-import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import library.device.api.DeviceFacade
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -17,7 +17,10 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.InfoLine
+import me.bookk.feature.appointments.domain.api.CancelAppointment
+import me.bookk.feature.appointments.domain.api.CancelAppointment.Error
 import me.bookk.feature.appointments.domain.api.GetAppointment
+import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import org.koin.core.annotation.InjectedParam
@@ -26,19 +29,32 @@ import kotlin.uuid.Uuid
 class AppointmentDetailsViewModel(
     @InjectedParam private val appointmentId: Uuid,
     private val getAppointment: GetAppointment,
+    private val cancelAppointment: CancelAppointment,
     private val dateLocalizer: DateLocalizer,
+    private val device: DeviceFacade,
     stateFactory: AppointmentsStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
     val uiState: AppointmentDetailsState = stateFactory.createAppointmentDetailsState().setup()
+    private var businessId = Uuid.random()
 
     init {
         loadAppointment()
     }
 
-    private fun cancelAppointment(reason: String) {
-
+    private fun onCancellationApproved(reason: String) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { cancelAppointment(appointmentId, businessId, reason) },
+            onComplete = ::renderAppointment,
+            onError = {
+                when (it) {
+                    is Error.AppointmentAlreadyCancelled -> {}
+                    is Error.AppointmentAlreadyCompleted -> {}
+                }
+            }
+        )
     }
 
     private fun onCancelClick() {
@@ -50,7 +66,7 @@ class AppointmentDetailsViewModel(
                 cancelText = DesignSystem.strings.action_ignore.desc(),
                 confirmText = DesignSystem.strings.action_cancel.desc(),
                 confirmActionType = ActionType.NEGATIVE,
-                onConfirm = weakSelfClosure { vm, reason -> vm.cancelAppointment(reason) }
+                onConfirm = weakSelfClosure { vm, reason -> vm.onCancellationApproved(reason) }
             )
         )
     }
@@ -59,59 +75,74 @@ class AppointmentDetailsViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { getAppointment(appointmentId) },
-            onComplete = { appointment ->
-                val dateFormat = dateLocalizer.forStyle(DateStyle.MEDIUM)
-                val dateTime = appointment.date.toLocalDateTime(TimeZone.currentSystemDefault())
-
-                uiState.appBar.title = appointment.client.fullName.desc()
-                if (appointment.status == AppointmentStatus.SCHEDULED) {
-                    uiState.appBar.actions.replace(
-                        listOf(
-                            AppBarAction(
-                                contentDescription = DesignSystem.strings.action_cancel.desc(),
-                                type = ActionType.NEGATIVE,
-                                onClick = weakSelfClosure { it.onCancelClick() }
-                            )
-                        )
-                    )
-                }
-                uiState.infoSections.replace(
-                    listOf(
-                        InfoLine(
-                            title = AppointmentsRes.strings.appointments_details_phone.desc(),
-                            value = appointment.client.phone.ifBlank { "-" }.desc()
-                        ),
-                        InfoLine(
-                            title = AppointmentsRes.strings.appointments_details_email.desc(),
-                            value = appointment.client.email.ifBlank { "-" }.desc()
-                        ),
-                        InfoLine(
-                            title = AppointmentsRes.strings.appointments_create_date.desc(),
-                            value = dateFormat.format(dateTime).desc()
-                        ),
-                        InfoLine(
-                            title = AppointmentsRes.strings.appointments_create_services.desc(),
-                            value = appointment.services.joinToString { it.name }.desc()
-                        ),
-                        InfoLine(
-                            title = AppointmentsRes.strings.appointments_details_total.desc(),
-                            value = appointment.total.desc()
-                        ),
-                        InfoLine(
-                            title = AppointmentsRes.strings.appointments_details_note.desc(),
-                            value = appointment.note.ifBlank { "-" }.desc()
-                        )
-                    )
-                )
-            },
+            onComplete = ::renderAppointment,
             onError = { uiState.notifications.add(it.notification()) }
         )
     }
 
-    private fun AppointmentStatus.label(): StringDesc = when (this) {
-        AppointmentStatus.SCHEDULED -> AppointmentsRes.strings.appointments_status_scheduled.desc()
-        AppointmentStatus.COMPLETED -> AppointmentsRes.strings.appointments_status_completed.desc()
-        AppointmentStatus.CANCELLED -> AppointmentsRes.strings.appointments_status_cancelled.desc()
+    private fun onPhoneClick(phone: String) {
+        if (phone.isNotEmpty()) {
+            device.dial(phone)
+        }
+    }
+
+    private fun onEmailClick(email: String) {
+        if (email.isNotEmpty()) {
+            device.mail(email)
+        }
+    }
+
+    private fun renderAppointment(appointment: Appointment) {
+        val dateFormat = dateLocalizer.forStyle(DateStyle.MEDIUM)
+        val dateTime = appointment.date.toLocalDateTime(TimeZone.currentSystemDefault())
+        businessId = appointment.businessId
+        uiState.appBar.title = appointment.client.fullName.desc()
+        uiState.status = UIAppointmentStatus(appointment.status)
+        if (appointment.status == AppointmentStatus.SCHEDULED) {
+            uiState.appBar.actions.replace(
+                listOf(
+                    AppBarAction(
+                        contentDescription = DesignSystem.strings.action_cancel.desc(),
+                        type = ActionType.NEGATIVE,
+                        onClick = weakSelfClosure { it.onCancelClick() }
+                    )
+                )
+            )
+        }
+        uiState.infoSections.replace(
+            listOfNotNull(
+                InfoLine(
+                    title = AppointmentsRes.strings.appointments_details_cancellation_reason,
+                    value = appointment.cancellationReason
+                ).takeIf { appointment.cancellationReason.isNotEmpty() },
+                InfoLine(
+                    title = AppointmentsRes.strings.appointments_details_phone,
+                    value = appointment.client.phone,
+                    onClick = weakSelfClosure { vm -> vm.onPhoneClick(appointment.client.phone) }
+                ).takeIf { appointment.client.phone.isNotEmpty() },
+                InfoLine(
+                    title = AppointmentsRes.strings.appointments_details_email,
+                    value = appointment.client.email,
+                    onClick = weakSelfClosure { vm -> vm.onEmailClick(appointment.client.email) }
+                ).takeIf { appointment.client.email.isNotEmpty() },
+                InfoLine(
+                    title = AppointmentsRes.strings.appointments_create_date,
+                    value = dateFormat.format(dateTime)
+                ),
+                InfoLine(
+                    title = AppointmentsRes.strings.appointments_create_services,
+                    value = appointment.services.joinToString { it.name }
+                ),
+                InfoLine(
+                    title = AppointmentsRes.strings.appointments_details_total,
+                    value = appointment.total
+                ),
+                InfoLine(
+                    title = AppointmentsRes.strings.appointments_details_note,
+                    value = appointment.note
+                ).takeIf { appointment.note.isNotEmpty() }
+            )
+        )
     }
 
     private fun AppointmentDetailsState.setup() = apply {

@@ -24,6 +24,7 @@
     <string name="appointments_details_total">Estimated revenue</string>
     <string name="appointments_details_note">Note</string>
     <string name="appointments_details_phone">Contact number</string>
+    <string name="appointments_details_cancellation_reason">Cancellation reason</string>
     <string name="appointments_details_email">Email</string>
     <string name="appointments_status_scheduled">Scheduled</string>
     <string name="appointments_status_completed">Completed</string>

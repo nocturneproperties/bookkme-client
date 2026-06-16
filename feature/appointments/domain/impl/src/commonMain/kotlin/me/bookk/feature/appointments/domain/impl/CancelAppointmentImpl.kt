@@ -14,8 +14,11 @@ internal class CancelAppointmentImpl(
     private val appointmentDataSource: AppointmentDataSource
 ) : CancelAppointment {
 
-    override suspend fun invoke(appointmentId: Uuid, reason: String): Appointment {
-        val businessId = appointmentDataSource.getAppointment(appointmentId).businessId
+    override suspend fun invoke(
+        appointmentId: Uuid,
+        businessId: Uuid,
+        reason: String
+    ): Appointment {
         val cancellation = AppointmentCancellation(
             id = appointmentId,
             businessId = businessId,

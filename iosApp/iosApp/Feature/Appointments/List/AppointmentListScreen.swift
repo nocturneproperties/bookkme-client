@@ -40,6 +40,7 @@ struct AppointmentListScreen: View {
 			.listRowSeparator(.hidden)
 			.listRowBackground(Color.clear)
 			.listRowInsets(EdgeInsets())
+			.padding(.bottom)
 		}
 		.frame(maxHeight: .infinity)
 		.sheet(isPresented: Binding(

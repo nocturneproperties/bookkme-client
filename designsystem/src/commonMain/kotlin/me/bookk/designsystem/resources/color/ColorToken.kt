@@ -13,6 +13,7 @@ enum class ColorToken {
     BlurredBackground,
     Header,
     Success,
+    Error,
     InactiveToggle,
     Button,
     ButtonInactive,

@@ -31,6 +31,9 @@ abstract class AppointmentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertServices(services: List<AppointmentServiceSnapshotEntity>)
 
+    @Query("UPDATE appointment SET status = :status, cancellationReason = :cancellationReason WHERE id = :id")
+    abstract suspend fun updateStatus(id: Uuid, status: String, cancellationReason: String)
+
     @Transaction
     open suspend fun upsertWithServices(
         appointments: List<AppointmentEntity>,

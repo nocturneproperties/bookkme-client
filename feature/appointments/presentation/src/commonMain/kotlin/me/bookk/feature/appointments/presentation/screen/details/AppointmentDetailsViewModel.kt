@@ -11,7 +11,6 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
-import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
@@ -38,23 +37,20 @@ class AppointmentDetailsViewModel(
         loadAppointment()
     }
 
-    private fun cancelAppointment() {
+    private fun cancelAppointment(reason: String) {
 
     }
 
     private fun onCancelClick() {
         uiState.notifications.add(
-            PresentationNotification.Message(
+            PresentationNotification.InputMessage(
                 title = DesignSystem.strings.action_confirm.desc(),
-                message = DesignSystem.strings.message_delete.desc(),
-                buttons = listOf(
-                    ButtonDescriptor(DesignSystem.strings.action_cancel.desc()),
-                    ButtonDescriptor(
-                        DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.NEGATIVE,
-                        onClick = weakSelfClosure { it.cancelAppointment() }
-                    )
-                )
+                message = AppointmentsRes.strings.appointments_details_cancel.desc(),
+                placeholder = AppointmentsRes.strings.appointments_details_cancel_reason.desc(),
+                cancelText = DesignSystem.strings.action_ignore.desc(),
+                confirmText = DesignSystem.strings.action_cancel.desc(),
+                confirmActionType = ActionType.NEGATIVE,
+                onConfirm = weakSelfClosure { vm, reason -> vm.cancelAppointment(reason) }
             )
         )
     }

@@ -7,9 +7,9 @@ import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
-import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
@@ -66,20 +66,9 @@ class ClientDetailsViewModel(
 
     private fun onDeleteClient() {
         uiState.notifications.add(
-            PresentationNotification.Message(
-                title = ClientsRes.strings.clients_delete_title.desc(),
+            PresentationNotification.Message.deleteConfirmation(
                 message = ClientsRes.strings.clients_delete_desc.desc(),
-                buttons = listOf(
-                    ButtonDescriptor(
-                        text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.POSITIVE
-                    ),
-                    ButtonDescriptor(
-                        text = DesignSystem.strings.action_confirm.desc(),
-                        actionType = ActionType.NEGATIVE,
-                        onClick = ::onDeleteConfirmed
-                    )
-                ),
+                onConfirmed = ::onDeleteConfirmed,
             )
         )
     }
@@ -100,6 +89,7 @@ class ClientDetailsViewModel(
             listOf(
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_delete.desc(),
+                    type = ActionType.NEGATIVE,
                     onClick = weakSelfClosure { it.onDeleteClient() }
                 )
             )

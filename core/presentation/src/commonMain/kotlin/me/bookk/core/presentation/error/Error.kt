@@ -38,6 +38,22 @@ sealed interface PresentationNotification {
         val message: StringDesc,
         val buttons: List<ButtonDescriptor>
     ) : PresentationNotification {
+        val id: String = Uuid.random().toHexString()
+        companion object
+    }
+
+    data class InputMessage(
+        val title: StringDesc,
+        val message: StringDesc,
+        val placeholder: StringDesc? = null,
+        val initialText: String = "",
+        val cancelText: StringDesc,
+        val confirmText: StringDesc,
+        val confirmActionType: ActionType = ActionType.POSITIVE,
+        val onConfirm: (String) -> Unit,
+        val onCancel: () -> Unit = {}
+    ) : PresentationNotification {
+        val id: String = Uuid.random().toHexString()
         companion object
     }
 }

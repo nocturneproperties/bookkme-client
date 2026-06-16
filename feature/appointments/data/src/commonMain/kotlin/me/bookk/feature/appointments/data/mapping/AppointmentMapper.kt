@@ -5,6 +5,7 @@ import library.money.api.Money
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
 import me.bookk.database.relation.AppointmentLocal
+import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestStatusRemote
@@ -12,6 +13,7 @@ import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
 import me.bookk.feature.appointments.data.remote.model.ClientSnapshotRemote
 import me.bookk.feature.appointments.data.remote.model.ServiceSnapshotRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
@@ -42,6 +44,12 @@ internal fun Appointment.toRemote() = AppointmentRemote(
     cancellationReason = cancellationReason
 )
 
+
+internal fun AppointmentCancellation.toRemote() = AppointmentCancellationRemote(
+    id = id,
+    businessId = businessId,
+    reason = reason
+)
 
 private fun ClientSnapshot.toRemote() = ClientSnapshotRemote(
     id = id,

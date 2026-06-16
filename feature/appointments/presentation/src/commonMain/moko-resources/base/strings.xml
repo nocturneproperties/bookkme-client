@@ -28,4 +28,7 @@
     <string name="appointments_status_scheduled">Scheduled</string>
     <string name="appointments_status_completed">Completed</string>
     <string name="appointments_status_cancelled">Cancelled</string>
+
+    <string name="appointments_details_cancel">Are you sure you want to cancel this appointment?\nClient attached to the system will receive notification.</string>
+    <string name="appointments_details_cancel_reason">reason(optional)</string>
 </resources>

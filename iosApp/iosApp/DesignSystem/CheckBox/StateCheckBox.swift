@@ -14,11 +14,11 @@ struct StateCheckBox: View {
 	@Bindable var state: IOSCheckBoxState
 	
 	init(_ state: IOSCheckBoxState) {
-		self.state = state
+		self._state = Bindable(wrappedValue: state)
 	}
 	
 	init(_ state: CheckBoxState) {
-		self.state = IOSCheckBoxState.cast(state)
+		self._state = Bindable(wrappedValue: IOSCheckBoxState.cast(state))
 	}
 	
 	var body: some View {

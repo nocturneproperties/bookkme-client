@@ -15,11 +15,12 @@ struct ListEmptyView: View {
 	
 	var body: some View {
 		ZStack(alignment: .center) {
-			VStack(alignment: .center) {
+			VStack(alignment: .center, spacing: 20) {
 				Image(resource: state.image)
 				Text(state.label.localized())
 					.font(.subheadline)
 					.foregroundStyle(AppColors.secondary)
+					.frame(maxWidth: .infinity)
 			}.frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
 		}
 	}

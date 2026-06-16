@@ -34,6 +34,7 @@ import me.bookk.designsystem.html
 import me.bookk.designsystem.painter
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
+import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AppBarState
@@ -75,7 +76,12 @@ fun AppTopBar(
                 colors = colors,
                 actions = actions,
                 title = {
-                    AppBarTitle(state.title.localized(), state.size, colors.titleContentColor, behavior)
+                    AppBarTitle(
+                        state.title.localized(),
+                        state.size,
+                        colors.titleContentColor,
+                        behavior
+                    )
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -127,17 +133,23 @@ fun AppTopBar(
 }
 
 @Composable
-private fun AppBarTitle(text: String, size: TopBarSize, color: Color, behavior: TopAppBarScrollBehavior?) {
+private fun AppBarTitle(
+    text: String,
+    size: TopBarSize,
+    color: Color,
+    behavior: TopAppBarScrollBehavior?
+) {
     val style = when (size) {
-        TopBarSize.SMALL -> MaterialTheme.typography.headlineSmall
+        TopBarSize.SMALL -> MaterialTheme.typography.titleMedium
         TopBarSize.LARGE -> MaterialTheme.typography.headlineLarge
     }
     val weight = when (size) {
-        TopBarSize.SMALL -> FontWeight.Normal
+        TopBarSize.SMALL -> FontWeight.Medium
         TopBarSize.LARGE -> FontWeight.Bold
     }
     val interpolator = remember { AccelerateInterpolator(1.6f) }
-    val fraction = if (behavior != null) interpolator.getInterpolation(1f - behavior.state.collapsedFraction) else 1f
+    val fraction =
+        if (behavior != null) interpolator.getInterpolation(1f - behavior.state.collapsedFraction) else 1f
     Text(
         modifier = Modifier.alpha(fraction),
         text = text,
@@ -151,11 +163,11 @@ private fun AppBarTitle(text: String, size: TopBarSize, color: Color, behavior: 
 
 @Composable
 fun topBarDefaultColors(
-    containerColor: Color = Color.Transparent,
+    containerColor: Color = LocalColors.current.background,
     scrolledContainerColor: Color = Color.Transparent,
     navigationIconContentColor: Color = Color.Unspecified,
     titleContentColor: Color = Color.Unspecified,
-    actionIconContentColor: Color = Color.Unspecified,
+    actionIconContentColor: Color = LocalColors.current.actionText,
     subtitleContentColor: Color = Color.Unspecified,
 ) = TopAppBarDefaults.topAppBarColors(
     containerColor,

@@ -10,22 +10,25 @@ import shared
 
 @MainActor
 class IOSSettingsState: @MainActor SettingsState {
+	
+	var appBar: any AppBarState
+	
 	var account: any AccountSection
-	
 	var appearance: any AppearanceSection
-	
 	var profile: any ProfileSection
-	
 	var support: any SupportSection
 	
 	var notification: any PresentationNotificationState
+	var navigation: any NavigationState
 	
 	init(initData: SettingsStateInitData) {
+		appBar = IOSAppBarState()
 		account = IOSAccountSection(initData: initData.account)
 		appearance = IOSAppearanceSection(initData: initData.appearance)
-		profile = IOSProfileSection(initData: initData.profile)
+		profile = IOSProfileSection()
 		support = IOSSupportSection(initData: initData.support)
 		notification = IOSNotificationState()
+		navigation = IOSNavigationState()
 	}
 }
 
@@ -80,17 +83,12 @@ extension AppearanceSection {
 @Observable
 class IOSProfileSection: @MainActor ProfileSection {
 	
-	var title: any StringDesc
 	var email: any StringDesc
 	var lastName: any StringDesc
 	var name: any StringDesc
 	
-	var editProfile: any ButtonState
 	
-	
-	init(initData: ProfileSectionInitData) {
-		title = initData.title
-		editProfile = IOSButtonState(text: initData.editButtonText)
+	init() {
 		email = RawStringDesc(string: "")
 		lastName = RawStringDesc(string: "")
 		name = RawStringDesc(string: "")

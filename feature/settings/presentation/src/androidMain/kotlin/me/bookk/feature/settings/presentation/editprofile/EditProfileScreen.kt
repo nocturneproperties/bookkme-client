@@ -1,5 +1,6 @@
 package me.bookk.feature.settings.presentation.editprofile
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,7 +35,8 @@ internal fun EditProfileScreen(state: EditProfileState) {
                 modifier = Modifier
                     .padding(it)
                     .padding(16.dp)
-                    .padding(top = 8.dp)
+                    .padding(top = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 TextField(
                     state = state.name,

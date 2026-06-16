@@ -4,6 +4,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import me.bookk.core.presentation.SendLifecycleEventsTo
+import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 import me.bookk.feature.settings.presentation.navigation.SettingsDestination
 import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
@@ -25,6 +26,11 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: SettingsNavigation) {
         ) {
             SendLifecycleEventsTo(viewModel)
             SettingsDashboardScreen(viewModel.uiState)
+            ObserveNavigation(viewModel.uiState.navigation) {
+                when (it) {
+                    SettingsDashboardDestination.EditProfile -> navigation.navigateToEditProfile()
+                }
+            }
         }
     }
 }

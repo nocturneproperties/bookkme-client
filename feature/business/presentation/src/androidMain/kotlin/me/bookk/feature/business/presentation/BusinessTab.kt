@@ -10,10 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import me.bookk.designsystem.components.ObserveNotifications
-import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.businessGraph
+import me.bookk.feature.business.presentation.screen.bootstrap.BusinessBootstrapViewModel
 import org.koin.androidx.compose.koinViewModel
 import kotlin.uuid.Uuid
 
@@ -43,10 +43,12 @@ fun BusinessTab(
                 toAppointmentSettings = {},
                 toAppointmentHistory = {},
                 toBusinessServices = { showServices(it) },
+                toBusinessPlugins = { businessController.navigate(BusinessDestination.Plugins(it)) },
                 toShopOrders = {},
                 toShopAssortment = {},
                 toShopWarehouse = {},
-                toAppointmentRequests = {}
+                toAppointmentRequests = {},
+                goBack = { businessController.popBackStack() }
             )
         )
     }

@@ -21,7 +21,7 @@ class IOSBusinessDashboardState: @MainActor BusinessDashboardState {
 	
 	var sections: [BusinessDashboardSection] = []
 	
-	init(initData: BusinessDashboardStateInitData) {
+	init() {
 		self.appBar = IOSAppBarState(title: RawStringDesc(string: ""))
 		self.navigation =  IOSNavigationState()
 		self.notifications = IOSNotificationState()

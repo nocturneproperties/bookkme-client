@@ -19,11 +19,19 @@ class IOSBusinessStateFactory: @MainActor BusinessStateFactory {
 		return IOSCreateBusinessState(initData: initData)
 	}
 	
-	func createBusinessDashboardState(initData: BusinessDashboardStateInitData) -> any BusinessDashboardState {
-		return IOSBusinessDashboardState(initData: initData)
+	func createBusinessDashboardState() -> any BusinessDashboardState {
+		return IOSBusinessDashboardState()
 	}
 	
 	func createBusinessSettingsState(initData: BusinessSettingsStateInitData) -> any BusinessSettingsState {
 		return IOSBusinessSettingsState(initData: initData)
+	}
+	
+	func createBusinessPluginListState() -> any BusinessPluginListState {
+		return IOSBusinessPluginListState()
+	}
+	
+	func createBusinessPluginState() -> any BusinessPluginState {
+		return IOSBusinessPluginState()
 	}
 }

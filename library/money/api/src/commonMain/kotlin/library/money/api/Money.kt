@@ -32,6 +32,10 @@ data class Money(
         currency: SupportedCurrency
     ) : this(value.asPreciseLong(), currency)
 
+    operator fun plus(other: Money): Money {
+        return Money(value + other.value, currencyType)
+    }
+
     operator fun times(times: Int): Money {
         return Money(value * times, currencyType)
     }

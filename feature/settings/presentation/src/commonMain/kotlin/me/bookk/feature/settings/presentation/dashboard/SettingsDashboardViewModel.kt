@@ -8,7 +8,9 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.LogOut
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
@@ -24,7 +26,18 @@ class SettingsDashboardViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
-    val uiState = settingsStateFactory.createSettingsState(createInitData())
+    val uiState = settingsStateFactory.createSettingsState(createInitData()).setup()
+
+    private fun SettingsState.setup(): SettingsState = apply {
+        appBar.actions.replace(
+            listOf(
+                AppBarAction(
+                    contentDescription = SettingsRes.strings.settings_profile_edit.desc(),
+                    onClick = weakSelfClosure { it.onEditClick() }
+                )
+            )
+        )
+    }
 
     override fun onViewPresented() {
         loadSettings()
@@ -67,6 +80,10 @@ class SettingsDashboardViewModel(
         )
     }
 
+    private fun onEditClick() {
+        uiState.navigation.push(SettingsDashboardDestination.EditProfile)
+    }
+
     private fun logout() {
         launch(
             launchIn = DispatcherProvider.io,
@@ -94,10 +111,6 @@ class SettingsDashboardViewModel(
         fun createInitData() = SettingsState.InitData(
             appearance = AppearanceSection.InitData(
                 title = SettingsRes.strings.settings_appearance_title.desc()
-            ),
-            profile = ProfileSection.InitData(
-                title = SettingsRes.strings.settings_profile_title.desc(),
-                editButtonText = SettingsRes.strings.settings_profile_edit.desc()
             ),
             account = AccountSection.InitData(
                 title = SettingsRes.strings.settings_account_title.desc(),

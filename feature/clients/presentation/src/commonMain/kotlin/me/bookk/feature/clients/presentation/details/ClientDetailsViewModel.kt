@@ -11,6 +11,7 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.GetClient
@@ -92,6 +93,7 @@ class ClientDetailsViewModel(
     }
 
     private fun ClientDetailsState.setup() = apply {
+        appBar.size = TopBarSize.LARGE
         appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(Back) }
         appBar.actions.replace(
             listOf(

@@ -1,9 +1,10 @@
 package me.bookk.feature.business.presentation.di
 
-import me.bookk.feature.business.presentation.bootstrap.BusinessBootstrapViewModel
-import me.bookk.feature.business.presentation.create.CreateBusinessViewModel
-import me.bookk.feature.business.presentation.dashboard.BusinessDashboardViewModel
-import me.bookk.feature.business.presentation.settings.BusinessSettingsViewModel
+import me.bookk.feature.business.presentation.screen.bootstrap.BusinessBootstrapViewModel
+import me.bookk.feature.business.presentation.screen.create.CreateBusinessViewModel
+import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
+import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginsViewModel
+import me.bookk.feature.business.presentation.screen.settings.BusinessSettingsViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -13,5 +14,6 @@ internal actual fun platformBusinessDiModule(): Module = module {
     viewModelOf(::CreateBusinessViewModel)
     viewModelOf(::BusinessBootstrapViewModel)
     viewModelOf(::BusinessDashboardViewModel)
+    viewModelOf(::BusinessPluginsViewModel)
     viewModel { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get()) }
 }

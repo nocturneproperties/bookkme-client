@@ -57,11 +57,11 @@ struct DashboardTab: View {
 	private func screenFromId(id: TabItemId) -> some View {
 		switch id {
 		case .home:
-			SettingsDashboardScreen()
+			AppointmentsTab()
 		case .business:
 			BusinessTab()
 		case .settings:
-			SettingsDashboardScreen()
+			SettingsTab()
 		default:
 			fatalError("Unsupported tab \(state.id)")
 		}

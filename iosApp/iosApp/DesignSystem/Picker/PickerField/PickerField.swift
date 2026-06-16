@@ -10,7 +10,7 @@ import SwiftUI
 import UIKit
 import shared
 
-private enum PickerBottomSheetDetent: CustomPresentationDetent {
+enum PickerBottomSheetDetent: CustomPresentationDetent {
     nonisolated(unsafe) static var requestedHeight: CGFloat = .zero
 
     static func height(in context: Context) -> CGFloat? {
@@ -31,15 +31,10 @@ struct PickerField: View {
 
     init(_ state: PickerFieldState, onItemPicked: ((PickerPresentation) -> Void)? = nil) {
         let impl = state.impl()
-        self.state = impl
+        self._state = Bindable(wrappedValue: impl)
         self.onItemPicked = onItemPicked ?? { option in
             impl.onItemPicked(option)
         }
-    }
-
-    private var pickerDetent: PresentationDetent {
-        PickerBottomSheetDetent.requestedHeight = PickerBottomSheet.calculateHeight(items: state.options.count)
-        return .custom(PickerBottomSheetDetent.self)
     }
 
     var body: some View {
@@ -97,10 +92,6 @@ struct PickerField: View {
 						isSheetPresented = false
 					}
 				)
-				.presentationDetents([pickerDetent])
-				.presentationDragIndicator(.hidden)
-				.presentationCornerRadius(24)
-				.presentationBackground(AppColors.background)
 			}.fullScreenCover(item: $pickerArgs) { args in
 				NavigationStack {
 					PickOptionScreen(args: args) { item in
@@ -124,17 +115,13 @@ struct PickerField: View {
     }
 }
 
-private struct PickerBottomSheet: View {
+struct PickerBottomSheet: View {
     let title: String
     let options: [PickerPresentation]
     let onPick: (PickerPresentation) -> Void
 
     @State private var selectedOptionId: String?
     @Environment(\.dismiss) private var dismiss
-
-    private var listHeight: CGFloat {
-        Self.listHeight(for: options.count)
-    }
 
     private enum Layout {
         static let rowHeight: CGFloat = 48
@@ -166,8 +153,8 @@ private struct PickerBottomSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            header
             ScrollView {
+				header
                 LazyVStack(spacing: 8) {
                     ForEach(options, id: \.pickerItemId) { option in
                         Button(action: {
@@ -196,7 +183,6 @@ private struct PickerBottomSheet: View {
             }
             .scrollIndicators(.hidden)
             .scrollBounceBehavior(.basedOnSize)
-            .frame(maxHeight: listHeight, alignment: .top)
             .clipped()
             StateButton(
                 IOSButtonState(
@@ -211,13 +197,14 @@ private struct PickerBottomSheet: View {
             .padding(.bottom, Layout.bottomPadding)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(AppColors.background.ignoresSafeArea())
+		.presentationBackground(AppColors.background)
+		.presentationDetents([.medium])
     }
 
     private var header: some View {
         HStack(spacing: 12) {
             Text(title)
-				.font(.body)
+				.font(.title)
                 .foregroundStyle(AppColors.primary)
                 .lineLimit(1)
 
@@ -227,14 +214,6 @@ private struct PickerBottomSheet: View {
         .padding(.top, Layout.topPadding)
         .padding(.horizontal, Layout.horizontalPadding)
         .padding(.bottom, Layout.headerBottomPadding)
-    }
-
-    static func calculateHeight(items: Int) -> CGFloat {
-        Layout.baseHeight + listHeight(for: items)
-    }
-
-    private static func listHeight(for items: Int) -> CGFloat {
-        CGFloat(max(items, 1)) * Layout.rowHeight
     }
 
     private func capitalizedItemTitle(_ title: String) -> String {

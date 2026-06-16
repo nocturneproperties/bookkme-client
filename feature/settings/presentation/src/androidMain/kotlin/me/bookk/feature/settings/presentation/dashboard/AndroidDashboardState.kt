@@ -5,10 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.designsystem.uistate.AndroidButtonState
+import me.bookk.designsystem.uistate.AndroidAppBarState
+import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidTextState
-import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextState
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
@@ -16,11 +18,13 @@ import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColo
 internal class AndroidDashboardState(
     initData: SettingsState.InitData
 ) : SettingsState {
+    override val appBar: AppBarState = AndroidAppBarState()
     override val appearance: AppearanceSection = AndroidAppearanceSectionState(initData.appearance)
-    override val profile: ProfileSection = AndroidProfileSectionState(initData.profile)
+    override val profile: ProfileSection = AndroidProfileSectionState()
     override val account: AccountSection = AndroidAccountSectionState(initData.account)
     override val support: SupportSection = AndroidSupportState(initData.support)
     override val notification: PresentationNotificationState = AndroidNotificationState()
+    override val navigation: NavigationState<SettingsDashboardDestination> = AndroidNavigationState()
 }
 
 internal class AndroidAppearanceSectionState(
@@ -30,14 +34,10 @@ internal class AndroidAppearanceSectionState(
     override var colorScheme: UIColorScheme by mutableStateOf(UIColorScheme.SYSTEM)
 }
 
-internal class AndroidProfileSectionState(
-    initData: ProfileSection.InitData
-) : ProfileSection {
-    override val title: StringDesc = initData.title
+internal class AndroidProfileSectionState : ProfileSection {
     override var name: StringDesc by mutableStateOf("".desc())
     override var lastName: StringDesc by mutableStateOf("".desc())
     override var email: StringDesc by mutableStateOf("".desc())
-    override val editProfile: ButtonState = AndroidButtonState(initData.editButtonText)
 }
 
 internal class AndroidAccountSectionState(

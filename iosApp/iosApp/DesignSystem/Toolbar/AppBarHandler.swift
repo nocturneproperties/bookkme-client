@@ -13,7 +13,7 @@ struct AppBarHandler: ViewModifier {
 	
 	
 	@Environment(\.dismiss) var dismiss
-	var appBarState: IOSAppBarState
+	let appBarState: IOSAppBarState
 	
 	var displayMode: NavigationBarItem.TitleDisplayMode {
 		switch appBarState.size_ {
@@ -53,15 +53,17 @@ struct AppBarHandler: ViewModifier {
 			.navigationTitle(appBarState.title.localized())
 			.navigationBarTitleDisplayMode(displayMode)
 			.toolbar {
-				ToolbarItem(placement: .navigation) {
-					Button {
-						(appBarState.onBackClick ?? { dismiss() })()
-					} label: {
-						Label("Back", systemImage: "chevron.left")
+				if let backClick = appBarState.onBackClick {
+					ToolbarItem(placement: .navigation) {
+						Button {
+							backClick()
+						} label: {
+							Label("Back", systemImage: "chevron.left")
+						}
 					}
 				}
 				if (!appBarState.actions.items.isEmpty) {
-					ToolbarItem(placement: .topBarTrailing) {
+					ToolbarItemGroup(placement: .topBarTrailing) {
 						actions
 					}
 				}

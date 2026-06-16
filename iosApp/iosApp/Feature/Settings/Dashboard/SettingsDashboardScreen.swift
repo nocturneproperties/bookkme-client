@@ -11,12 +11,12 @@ import shared
 
 struct SettingsDashboardScreen: View {
 	
-	@StateObject var navigationStack = NavigationStackHolder()
+	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var settingsVM = IOSSettingsDiKt.settingsVM()
 	
 	var body: some View {
 		let uiState = settingsVM.uiState
-		NavigationStack(path: $navigationStack.path) {
+		VStack {
 			List {
 				ProfileView(state: uiState.profile)
 					.listRowBackground(AppColors.elevated)
@@ -34,22 +34,18 @@ struct SettingsDashboardScreen: View {
 					SupportView(state: uiState.support)
 				}
 			}
-			.navigationDestination(for: SettingsDestination.EditProfile.self) { _ in
-				EditProfileScreen()
-			}
-			.navigationDestination(for: SettingsDestination.Passkey.self) { _ in
-				PasskeyScreen()
-			}
-			.navigationDestination(for: SettingsDestination.DeleteAccount.self) { _ in
-				DeleteAccountScreen()
-			}
-			.navigationDestination(for: SettingsDestination.ContactUs.self) { _ in
-				ContactUsScreen()
-			}
 		}
+		.withNavigationBar(uiState.appBar)
 		.sendLifecycleEventsTo(settingsVM)
 		.handleNotifications(uiState.notification)
-		.environmentObject(navigationStack)
+		.handleNavigation(uiState.navigation) { dest in
+			switch dest {
+			case is SettingsDashboardDestination.EditProfile:
+				navigationStack.push(SettingsDestination.EditProfile())
+			default:
+				break
+			}
+		}
 	}
 }
 

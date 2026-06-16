@@ -31,3 +31,15 @@ enum class InputType {
     ASCII,
     PASSWORD
 }
+
+fun TextFieldState.clearError() {
+    supportingTextRes = null
+    isValid = true
+    validationState = ValidationState.DEFAULT
+}
+
+fun TextFieldState.showError(error: StringDesc) {
+    supportingTextRes = error
+    isValid = false
+    validationState = ValidationState.ERROR
+}

@@ -19,6 +19,7 @@ fun AppCard(
     shape: Shape = MaterialTheme.shapes.medium,
     border: BorderStroke? = null,
     background: Color = LocalColors.current.elevated,
+    onClick: () -> Unit = {},
     content: @Composable (ColumnScope.() -> Unit)
 ) {
     Card(
@@ -27,6 +28,7 @@ fun AppCard(
             .clip(shape),
         shape = shape,
         border = border,
+        onClick = onClick,
         colors = CardDefaults.cardColors(
             containerColor = background
         )

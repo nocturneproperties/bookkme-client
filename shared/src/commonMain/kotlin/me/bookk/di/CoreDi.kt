@@ -7,6 +7,7 @@ import me.bookk.core.coroutine.createApplicationScope
 import me.bookk.core.presentation.di.presentationCoreModule
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.database.di.databaseModule
+import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.clients.presentation.ClientsStateFactory
@@ -41,4 +42,5 @@ private fun stateModule() = module {
     factory<ServicesStateFactory> { get<StateFactoryCreator>().createServicesFactory() }
     factory<CredentialModuleFactory> { get<StateFactoryCreator>().createCredentialModuleFactory() }
     factory<PickOptionStateFactory> { get<StateFactoryCreator>().createPickOptionFactory() }
+    factory<AppointmentsStateFactory> { get<StateFactoryCreator>().createAppointmentsFactory() }
 }

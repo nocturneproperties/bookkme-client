@@ -9,8 +9,7 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "appointment",
     indices = [
-        Index("businessId"),
-        Index("localDate")
+        Index("businessId")
     ]
 )
 class AppointmentEntity(
@@ -18,7 +17,6 @@ class AppointmentEntity(
     val userId: Uuid,
     val businessId: Uuid,
     val date: Instant,
-    val localDate: String,
     val status: String,
     val note: String,
     val cancellationReason: String,

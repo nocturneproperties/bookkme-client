@@ -5,8 +5,6 @@ import dev.icerock.moko.resources.format
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -98,7 +96,7 @@ class AppointmentCreateViewModel(
         uiState.timePicker.textField.clearError()
         uiState.datePicker.textField.clearError()
         uiState.datePicker.textField.text = dateFormat.format(date)
-        uiState.datePicker.pickedDate = date
+        uiState.datePicker.datePicker.pickedDate = date
         invalidateButton()
     }
 
@@ -106,15 +104,15 @@ class AppointmentCreateViewModel(
         uiState.timePicker.textField.clearError()
         uiState.datePicker.textField.clearError()
         uiState.timePicker.textField.text = dateFormat.format(date)
-        uiState.timePicker.pickedTime = date
+        uiState.timePicker.timePicker.pickedTime = date
         invalidateButton()
     }
 
     private fun invalidateButton() {
         uiState.create.isEnabled = uiState.clientPicker.selectedItem != null &&
                 uiState.servicePicker.selectedItems.isNotEmpty() &&
-                uiState.datePicker.pickedDate != null &&
-                uiState.timePicker.pickedTime != null &&
+                uiState.datePicker.datePicker.pickedDate != null &&
+                uiState.timePicker.timePicker.pickedTime != null &&
                 uiState.datePicker.textField.isValid &&
                 uiState.timePicker.textField.isValid
     }
@@ -122,14 +120,14 @@ class AppointmentCreateViewModel(
     private fun onCreateClick() {
         val client = uiState.clientPicker.selectedItem?.domain ?: return
         val services = uiState.servicePicker.selectedItems
-        val date = uiState.datePicker.pickedDate ?: return
-        val time = uiState.timePicker.pickedTime ?: return
+        val date = uiState.datePicker.datePicker.pickedDate ?: return
+        val time = uiState.timePicker.timePicker.pickedTime ?: return
 
         val draft = AppointmentDraft(
             businessId = businessId,
             client = client,
             services = services.map { it.item },
-            date = LocalDateTime(date, time).toInstant(TimeZone.currentSystemDefault()),
+            date = LocalDateTime(date, time),
             note = uiState.note.text
         )
 
@@ -186,16 +184,16 @@ class AppointmentCreateViewModel(
             vm.onServicesRemove(items)
         }
 
-        datePicker.minDate = LocalDate.today()
+        datePicker.datePicker.minDate = LocalDate.today()
         datePicker.textField.label = AppointmentsRes.strings.appointments_create_date.desc()
         datePicker.textField.placeholder =
             AppointmentsRes.strings.appointments_create_date_placeholder.desc()
-        datePicker.onDatePicked = weakSelfClosure { vm, date -> vm.onDatePicked(date) }
+        datePicker.datePicker.onDatePicked = weakSelfClosure { vm, date -> vm.onDatePicked(date) }
 
         timePicker.textField.label = AppointmentsRes.strings.appointments_create_time.desc()
         timePicker.textField.placeholder =
             AppointmentsRes.strings.appointments_create_time_placeholder.desc()
-        timePicker.onTimePicked = weakSelfClosure { vm, time -> vm.onTimePicked(time) }
+        timePicker.timePicker.onTimePicked = weakSelfClosure { vm, time -> vm.onTimePicked(time) }
 
         note.placeholder = AppointmentsRes.strings.appointments_create_note.desc()
 

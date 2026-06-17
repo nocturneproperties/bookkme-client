@@ -41,9 +41,11 @@ struct TextButton: View {
 				Text(state.text.localized())
 					.frame(alignment: textAlignment)
 					.opacity(state.isLoading ? 0 : 1)
+					.foregroundStyle(AppColors.actionText)
 			}
 			.animation(.default, value: state.isLoading)
         }
+		.buttonStyle(.plain)
 		.frame(maxWidth: maxWidth, minHeight: 36)
         .disabled(!state.isEnabled)
     }

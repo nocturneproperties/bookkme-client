@@ -1,10 +1,6 @@
 package me.bookk.designsystem.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import me.bookk.designsystem.uistate.TimePickerFieldState
 
@@ -13,21 +9,15 @@ fun TimePickerField(
     state: TimePickerFieldState,
     modifier: Modifier = Modifier,
 ) {
-    var showTimePicker by remember { mutableStateOf(false) }
-
     TextField(
         modifier = modifier,
         state = state.textField,
         interactionSource = singleClickInteractionSource {
-            showTimePicker = true
+            state.timePicker.isTimePickerVisible = true
         }
     )
 
-    if (showTimePicker) {
-        AppTimePicker(
-            selectedTime = state.pickedTime,
-            onDismiss = { showTimePicker = false },
-            onTimePicked = { state.onTimePicked?.invoke(it) }
-        )
+    if (state.timePicker.isTimePickerVisible) {
+        AppTimePicker(state = state.timePicker)
     }
 }

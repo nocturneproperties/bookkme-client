@@ -23,6 +23,7 @@ struct AppointmentListScreen: View {
     var body: some View {
         let state = IOSAppointmentListState.cast(viewModel.uiState)
         let listState = IOSListState<AppointmentItemState>.cast(state.appointments)
+        let today = LocalDate.Companion().today(timeZone: TimeZone.Companion().currentSystemDefault())
 		ListGroup(listState: listState, listStyle: .plain) { item in
 			AppointmentRequestRow(state: item)
 				.listRowSeparator(.hidden)
@@ -31,8 +32,8 @@ struct AppointmentListScreen: View {
 		} header : {
 			VStack {
 				DateStrip(
-					selectedDate: state.selectedDate,
-					onDateSelected: state.onDateSelected
+					selectedDate: state.datePicker.pickedDate ?? today,
+					onDateSelected: { state.datePicker.onDatePicked?($0) }
 				)
 				Divider()
 					.background(AppColors.divider)
@@ -44,17 +45,10 @@ struct AppointmentListScreen: View {
 		}
 		.frame(maxHeight: .infinity)
 		.sheet(isPresented: Binding(
-            get: { state.isDatePickerVisible },
-            set: { state.isDatePickerVisible = $0 }
+            get: { state.datePicker.isDatePickerVisible },
+            set: { state.datePicker.isDatePickerVisible = $0 }
         )) {
-            DatePickerSheet(
-                selection: state.selectedDate,
-                onDismiss: { state.isDatePickerVisible = false },
-                onDatePicked: { date in
-                    state.onDateSelected(date)
-                    state.isDatePickerVisible = false
-                }
-            )
+            AppDatePicker(state: state.datePicker)
         }
 		.withNavigationBar(state.appBar)
 		.refreshable { await state.refresh.impl().awaitRefresh() }

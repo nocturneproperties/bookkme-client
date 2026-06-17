@@ -11,6 +11,8 @@ import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.coroutine.resultOnEach
 import me.bookk.core.coroutine.resultOnError
+import me.bookk.core.now
+import me.bookk.core.orNow
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -48,7 +50,7 @@ class AppointmentListViewModel(
     }
 
     private fun observeCurrentBusinessRequests() {
-        getAppointmentsForDashboardBusiness.flow(uiState.selectedDate)
+        getAppointmentsForDashboardBusiness.flow(uiState.datePicker.pickedDate.orNow())
             .flowOn(DispatcherProvider.io)
             .resultOnEach(::mapItems)
             .resultOnError {
@@ -60,12 +62,12 @@ class AppointmentListViewModel(
     }
 
     private fun onNewDateSelected(date: LocalDate) {
-        uiState.selectedDate = date
+        uiState.datePicker.pickedDate = date
         onRefresh()
     }
 
     private fun onRefresh() {
-        val date = uiState.selectedDate
+        val date = uiState.datePicker.pickedDate.orNow()
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.refresh.isRefreshing = true },
@@ -89,7 +91,7 @@ class AppointmentListViewModel(
     }
 
     private fun onPickDateClick() {
-        uiState.isDatePickerVisible = true
+        uiState.datePicker.isDatePickerVisible = true
     }
 
     private fun onAppointmentClick(appointment: Appointment) {
@@ -125,7 +127,8 @@ class AppointmentListViewModel(
                 )
             )
         )
-        onDateSelected = weakSelfClosure { vm, date -> vm.onNewDateSelected(date) }
+        datePicker.pickedDate = LocalDate.now()
+        datePicker.onDatePicked = weakSelfClosure { vm, date -> vm.onNewDateSelected(date) }
         refresh.onRefresh = weakSelfClosure { it.onRefresh() }
         appointments.emptyState = EmptyState(
             image = DesignSystem.images.empty,

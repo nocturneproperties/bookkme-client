@@ -24,6 +24,7 @@ import me.bookk.database.entity.ClientEntity
 import me.bookk.database.entity.ServiceEntity
 import me.bookk.database.entity.ServiceGroupEntity
 import me.bookk.database.entity.UserProfileEntity
+import me.bookk.database.migration.DeleteAppointmentLocalDateMigration
 
 @Database(
     entities = [
@@ -35,14 +36,15 @@ import me.bookk.database.entity.UserProfileEntity
         AppointmentEntity::class,
         AppointmentServiceSnapshotEntity::class
     ],
-    version = 7,
+    version = 8,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7)
+        AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8, spec = DeleteAppointmentLocalDateMigration::class)
     ]
 )
 @TypeConverters(

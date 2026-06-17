@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
+import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
 import kotlinx.datetime.LocalDate
 import me.bookk.core.data.DataSource
@@ -41,12 +42,11 @@ internal class CommonAppointmentDataSource(
                 .map { it.toDomain() }
         }
 
-    override suspend fun saveAppointmentsForDate(
-        appointments: List<Appointment>,
-        forDate: LocalDate
+    override suspend fun saveAppointmentsInDB(
+        appointments: List<Appointment>
     ) = mapExceptions {
         appointmentDao.upsertWithServices(
-            appointments = appointments.map { it.toEntity(forDate) },
+            appointments = appointments.map { it.toEntity() },
             services = appointments.flatMap { it.toServiceEntities() }
         )
     }
@@ -88,4 +88,21 @@ internal class CommonAppointmentDataSource(
                 .toDomain()
                 .also { appointmentDao.updateStatus(it.id, it.status.name, it.cancellationReason) }
         }
+
+    override suspend fun updateAppointment(appointment: Appointment) {
+        mapExceptions {
+            httpClient.put(Api.Appointment.Id(id = appointment.id)) {
+                setBody(appointment.toRemote())
+            }
+        }
+    }
+
+    override suspend fun saveAppointmentInDB(appointment: Appointment) {
+        mapExceptions {
+            appointmentDao.upsertWithServices(
+                appointments = listOf(appointment.toEntity()),
+                services = appointment.toServiceEntities()
+            )
+        }
+    }
 }

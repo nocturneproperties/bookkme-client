@@ -20,14 +20,16 @@ struct InfoSection: View {
 			Header(text: section.title.localized(), discardDefaultPadding: true)
 			Text(section.value.localized())
 		}
+		.frame(maxWidth: .infinity, alignment: .leading)
 	}
+	
 	var body: some View {
 		if let action = section.onClick {
 			Button(action: action) {
 				sectionContent
+					.contentShape(Rectangle())
 			}
 			.buttonStyle(.plain)
-			.contentShape(Rectangle())
 		} else {
 			sectionContent
 		}

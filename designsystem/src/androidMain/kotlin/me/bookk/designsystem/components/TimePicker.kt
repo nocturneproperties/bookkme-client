@@ -17,31 +17,30 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.TimePickerState as AppTimePickerState
 
 @Composable
 fun AppTimePicker(
-    selectedTime: LocalTime? = null,
-    timePickerState: TimePickerState = rememberTimePickerState(
-        initialHour = selectedTime?.hour ?: 0,
-        initialMinute = selectedTime?.minute ?: 0
-    ),
+    state: AppTimePickerState,
     timePickerColors: TimePickerColors = TimePickerDefaults.colors(
         containerColor = LocalColors.current.elevated,
         timeSelectorSelectedContainerColor = LocalColors.current.actionText
     ),
     confirmButton: ButtonState = remember { AndroidButtonState(DesignSystem.strings.action_select.desc()) },
     dismissButton: ButtonState? = remember { AndroidButtonState(DesignSystem.strings.action_cancel.desc()) },
-    onDismiss: () -> Unit,
-    onTimePicked: (LocalTime) -> Unit
 ) {
+    val timePickerState: TimePickerState = rememberTimePickerState(
+        initialHour = state.pickedTime?.hour ?: 0,
+        initialMinute = state.pickedTime?.minute ?: 0
+    )
     TimePickerDialog(
         title = {},
-        onDismissRequest = onDismiss,
+        onDismissRequest = { state.isTimePickerVisible = false },
         dismissButton = dismissButton?.let { dismissButtonState ->
             {
                 TextButton(
                     state = dismissButtonState,
-                    onClick = onDismiss,
+                    onClick = { state.isTimePickerVisible = false },
                 )
             }
         },
@@ -50,8 +49,8 @@ fun AppTimePicker(
                 modifier = Modifier.padding(end = 8.dp),
                 state = confirmButton,
                 onClick = {
-                    onTimePicked(LocalTime(timePickerState.hour, timePickerState.minute))
-                    onDismiss()
+                    state.onTimePicked?.invoke(LocalTime(timePickerState.hour, timePickerState.minute))
+                    state.isTimePickerVisible = false
                 }
             )
         }

@@ -15,10 +15,6 @@ import kotlin.uuid.Uuid
 abstract class AppointmentDao {
 
     @Transaction
-    @Query("SELECT * FROM appointment WHERE businessId = :businessId AND localDate = :localDate")
-    abstract suspend fun getForDate(businessId: Uuid, localDate: String): List<AppointmentLocal>
-
-    @Transaction
     @Query("SELECT * FROM appointment WHERE id = :id")
     abstract suspend fun getById(id: Uuid): AppointmentLocal
 

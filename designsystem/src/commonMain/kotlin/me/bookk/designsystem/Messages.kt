@@ -23,12 +23,13 @@ fun PresentationNotification.Message.Companion.simple(
 }
 
 fun PresentationNotification.Message.Companion.deleteConfirmation(
+    message: StringDesc = DesignSystem.strings.message_delete.desc(),
     onConfirmed: () -> Unit,
     onCanceled: () -> Unit = {}
 ): PresentationNotification.Message {
     return PresentationNotification.Message(
         title = DesignSystem.strings.action_confirm.desc(),
-        message = DesignSystem.strings.message_delete.desc(),
+        message = message,
         buttons = listOf(
             ButtonDescriptor(
                 DesignSystem.strings.action_cancel.desc(),

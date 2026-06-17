@@ -17,9 +17,9 @@ struct NotificationHandler: ViewModifier {
     @Bindable
     var notificationState: IOSNotificationState
 
-    @State var showAlert: Bool = false
 	@State var data: PresentationNotificationMessage? = nil
-    
+	@State var inputData: PresentationNotificationInputMessage? = nil
+
     func body(content: Content) -> some View {
         content
 			.onChange(of: notificationState.presentationNotification.count) {
@@ -27,7 +27,10 @@ struct NotificationHandler: ViewModifier {
 					switch value {
 					case is PresentationNotificationMessage:
 						data = value as? PresentationNotificationMessage
-						showAlert = true
+						break
+					case is PresentationNotificationInputMessage:
+						let message = value as? PresentationNotificationInputMessage
+						inputData = message
 						break
 					case is PresentationNotificationIgnore:
 						notificationState.removeFirst()
@@ -45,20 +48,37 @@ struct NotificationHandler: ViewModifier {
 					}
 				}
             }
-            .alert(data?.title?.localized() ?? "", isPresented: $showAlert, presenting: data) { message in
-				alertButtons(buttons: message.buttons)
-            } message: { error in
-                Text(error.message.localized())
-            }
+			.modifier(NotificationAlert(notificationState: notificationState, data: data))
+			.modifier(NotificationInputAlert(notificationState: notificationState, data: inputData))
     }
+}
+
+struct NotificationAlert: ViewModifier {
+
+	@State var isPresented = false
+
+	let notificationState: IOSNotificationState
+	let data: PresentationNotificationMessage?
+
+	func body(content: Content) -> some View {
+		content
+			.onChange(of: data?.id) { _, newValue in
+				isPresented = newValue != nil
+			}
+			.alert(data?.title?.localized() ?? "", isPresented: $isPresented, presenting: data) { message in
+				alertContent(message: message)
+			} message: { message in
+				Text(message.message.localized())
+			}
+	}
 	
 	@ViewBuilder
-	func alertButtons(buttons: [ButtonDescriptor]) -> some View {
-		ForEach(buttons, id: \.id) { button in
+	func alertContent(message: PresentationNotificationMessage) -> some View {
+		ForEach(message.buttons, id: \.id) { button in
 			let role = button.actionType == ActionType.negative ? ButtonRole.destructive : ButtonRole.cancel
 			
 			Button(role: role) {
-				self.showAlert = false
+				self.isPresented = false
 				button.onClick()
 				self.notificationState.removeFirst()
 			} label: {
@@ -67,6 +87,53 @@ struct NotificationHandler: ViewModifier {
 		}
 	}
 }
+
+struct NotificationInputAlert: ViewModifier {
+
+	@State var inputText: String = ""
+	@State var isPresented = false
+	
+	let notificationState: IOSNotificationState
+	let data: PresentationNotificationInputMessage?
+
+	func body(content: Content) -> some View {
+		content
+			.onChange(of: data?.id) { _, newValue in
+				isPresented = newValue != nil
+			}
+			.alert(data?.title.localized() ?? "", isPresented: $isPresented, presenting: data) { message in
+				alertContent(message: message)
+			} message: { message in
+				Text(message.message.localized())
+			}
+	}
+	
+	@ViewBuilder
+	func alertContent(message: PresentationNotificationInputMessage) -> some View {
+		TextField(message.placeholder?.localized() ?? "", text: $inputText)
+		
+		Button(role: .cancel) {
+			self.isPresented = false
+			message.onCancel()
+			self.notificationState.removeFirst()
+		} label: {
+			Text(message.cancelText.localized())
+		}
+		
+		let confirmRole: ButtonRole? = message.confirmActionType == ActionType.negative ? .destructive : nil
+		Button(role: confirmRole) {
+			self.isPresented = false
+			message.onConfirm(inputText)
+			self.notificationState.removeFirst()
+		} label: {
+			Text(message.confirmText.localized())
+		}
+	}
+}
+
+
+extension PresentationNotificationInputMessage:@retroactive Identifiable {}
+extension PresentationNotificationMessage:@retroactive Identifiable {}
 
 extension View {
 	func handleNotifications(_ state: PresentationNotificationState) -> some View {

@@ -17,6 +17,7 @@ import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestIdRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
@@ -76,5 +77,15 @@ internal class CommonAppointmentDataSource(
             }
                 .body<AppointmentRemote>()
                 .toDomain()
+        }
+
+    override suspend fun cancelAppointment(cancellation: AppointmentCancellation): Appointment =
+        mapExceptions {
+            httpClient.post(Api.Appointment.Cancel(id = cancellation.id)) {
+                setBody(cancellation.toRemote())
+            }
+                .body<AppointmentRemote>()
+                .toDomain()
+                .also { appointmentDao.updateStatus(it.id, it.status.name, it.cancellationReason) }
         }
 }

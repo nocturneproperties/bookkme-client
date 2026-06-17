@@ -23,10 +23,12 @@ struct AppointmentDetailsScreen: View {
 	var body: some View {
 		let uiState = viewModel.uiState
 		let listState = IOSListState<InfoLine>.cast(uiState.infoSections)
-		ListGroup(listState: listState) { section in
+		ListGroup(listState: listState, listStyle: .plain, content: { section in
 			InfoSection(section: section)
-		}
-		.padding(.top)
+		}, header: {
+			StatusLabel(status: uiState.status)
+				.listRowSeparator(.hidden)
+		})
 		.withNavigationBar(uiState.appBar)
 		.handleNotifications(uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)
@@ -38,5 +40,20 @@ struct AppointmentDetailsScreen: View {
 				break
 			}
 		}
+	}
+}
+
+private struct StatusLabel: View {
+	let status: UIAppointmentStatus
+
+	var body: some View {
+		let color = status.color.color
+		Text(status.label.localized())
+			.font(.subheadline.weight(.semibold))
+			.foregroundStyle(color)
+			.padding(.horizontal, 12)
+			.padding(.vertical, 4)
+			.background(color.opacity(0.12))
+			.clipShape(RoundedRectangle(cornerRadius: 8))
 	}
 }

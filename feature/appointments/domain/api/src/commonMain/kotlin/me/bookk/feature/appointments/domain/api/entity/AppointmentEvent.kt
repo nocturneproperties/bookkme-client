@@ -11,6 +11,7 @@ import me.bookk.core.coroutine.DispatcherProvider
 interface AppointmentEvent {
     data class Created(val appointment: Appointment) : AppointmentEvent
     data class Cancelled(val appointment: Appointment) : AppointmentEvent
+    data class Updated(val appointment: Appointment) : AppointmentEvent
 }
 
 val appointmentEvents = MutableSharedFlow<AppointmentEvent>(

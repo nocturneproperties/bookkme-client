@@ -1,6 +1,8 @@
 package me.bookk.feature.appointments.data.mapping
 
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import library.money.api.Money
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
@@ -39,7 +41,7 @@ internal fun Appointment.toRemote() = AppointmentRemote(
     client = client.toRemote(),
     services = services.map { it.toRemote() },
     status = status.toRemote(),
-    date = date,
+    date = date.toInstant(TimeZone.UTC),
     note = note,
     cancellationReason = cancellationReason
 )
@@ -78,12 +80,11 @@ private fun AppointmentStatus.toRemote() = when (this) {
     AppointmentStatus.CANCELLED -> AppointmentStatusRemote.CANCELLED
 }
 
-internal fun Appointment.toEntity(localDate: LocalDate) = AppointmentEntity(
+internal fun Appointment.toEntity() = AppointmentEntity(
     id = id,
     userId = userId,
     businessId = businessId,
-    date = date,
-    localDate = localDate.toString(),
+    date = date.toInstant(TimeZone.currentSystemDefault()),
     status = status.name,
     note = note,
     cancellationReason = cancellationReason,
@@ -109,7 +110,7 @@ internal fun AppointmentLocal.toDomain() = Appointment(
     id = entity.id,
     userId = entity.userId,
     businessId = entity.businessId,
-    date = entity.date,
+    date = entity.date.toLocalDateTime(TimeZone.currentSystemDefault()),
     client = ClientSnapshot(
         id = entity.clientId,
         fullName = entity.clientFullName,

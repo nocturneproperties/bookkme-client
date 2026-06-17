@@ -14,11 +14,6 @@ interface AppointmentDataSource {
         forDate: LocalDate
     ): List<Appointment>
 
-    suspend fun saveAppointmentsForDate(
-        appointments: List<Appointment>,
-        forDate: LocalDate
-    )
-
     suspend fun createAppointmentRequest(request: AppointmentRequest): AppointmentRequest
 
     suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment
@@ -26,4 +21,10 @@ interface AppointmentDataSource {
     suspend fun createAppointment(appointment: Appointment): Appointment
 
     suspend fun cancelAppointment(cancellation: AppointmentCancellation): Appointment
+
+    suspend fun updateAppointment(appointment: Appointment): Appointment
+
+    suspend fun saveAppointmentsInDB(appointments: List<Appointment>)
+
+    suspend fun saveAppointmentInDB(appointment: Appointment)
 }

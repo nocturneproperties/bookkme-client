@@ -10,8 +10,13 @@ data class InfoLine(
     val value: StringDesc,
     val onClick: (() -> Unit)? = null
 ) {
-    constructor(title: StringResource, value: String, onClick: (() -> Unit)? = null) : this(
-        id = value,
+    constructor(
+        title: StringResource,
+        value: String,
+        onClick: (() -> Unit)? = null,
+        id: String = value
+    ) : this(
+        id = id,
         title = title.desc(),
         value = value.desc(),
         onClick = onClick

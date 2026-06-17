@@ -18,16 +18,13 @@ final class IOSTimePickerFieldState: IOSViewState, @MainActor TimePickerFieldSta
     typealias KotlinType = TimePickerFieldState
 
     var textField: any TextFieldState
-    var onTimePicked: ((LocalTime) -> Void)?
-    var pickedTime: LocalTime?
+    var timePicker: any TimePickerState
 
     init(
         textField: (any TextFieldState)? = nil,
-        onTimePicked: ((LocalTime) -> Void)? = nil,
-		pickedTime: LocalTime? = nil
+        timePicker: (any TimePickerState)? = nil
     ) {
         self.textField = textField ?? IOSTextFieldState(readOnly: true)
-        self.onTimePicked = onTimePicked
-        self.pickedTime = pickedTime
+        self.timePicker = timePicker ?? IOSTimePickerState()
     }
 }

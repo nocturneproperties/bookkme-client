@@ -1,6 +1,7 @@
 package me.bookk.feature.appointments.domain.api.entity
 
-import kotlin.time.Instant
+import kotlinx.datetime.LocalDateTime
+import me.bookk.core.now
 import kotlin.uuid.Uuid
 
 data class Appointment(
@@ -10,7 +11,7 @@ data class Appointment(
     val client: ClientSnapshot,
     val services: List<ServiceSnapshot>,
     val status: AppointmentStatus,
-    val date: Instant,
+    val date: LocalDateTime,
     val note: String,
     val cancellationReason: String
 ) {
@@ -28,7 +29,7 @@ data class Appointment(
             id: Uuid = Uuid.random(),
             userId: Uuid = Uuid.random(),
             businessId: Uuid = Uuid.random(),
-            date: Instant = Instant.fromEpochMilliseconds(0)
+            date: LocalDateTime = LocalDateTime.now()
         ) = Appointment(
             id = id,
             userId = userId,

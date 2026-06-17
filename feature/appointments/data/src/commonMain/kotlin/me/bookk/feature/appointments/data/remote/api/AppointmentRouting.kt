@@ -24,6 +24,9 @@ object AppointmentRouting {
 
             @Resource("/{id}/cancel")
             class Cancel(val parent: Appointment = Appointment(), val id: Uuid)
+
+            @Resource("/{id}")
+            class Id(val parent: Appointment = Appointment(), val id: Uuid)
         }
 
         @Resource("/appointments/{businessId}")

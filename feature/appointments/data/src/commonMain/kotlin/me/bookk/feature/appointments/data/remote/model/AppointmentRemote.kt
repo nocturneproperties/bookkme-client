@@ -1,5 +1,7 @@
 package me.bookk.feature.appointments.data.remote.model
 
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import kotlin.time.Instant
@@ -24,7 +26,7 @@ data class AppointmentRemote(
         client = client.toDomain(),
         services = services.map { it.toDomain() },
         status = status.toDomain(),
-        date = date,
+        date = date.toLocalDateTime(TimeZone.currentSystemDefault()),
         note = note,
         cancellationReason = cancellationReason
     )

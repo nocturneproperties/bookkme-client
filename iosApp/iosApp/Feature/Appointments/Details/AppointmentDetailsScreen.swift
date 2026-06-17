@@ -24,11 +24,21 @@ struct AppointmentDetailsScreen: View {
 		let uiState = viewModel.uiState
 		let listState = IOSListState<InfoLine>.cast(uiState.infoSections)
 		ListGroup(listState: listState, listStyle: .plain, content: { section in
-			InfoSection(section: section)
+			Group {
+				if (section.id == AppointmentDetailsStateCompanion().APPOINTMENT_DATE_ID) {
+					RescheduleInfoSection(section: section, rescheduleButton: uiState.rescheduleButton)
+				} else {
+					InfoSection(section: section)
+				}
+			}
 		}, header: {
 			StatusLabel(status: uiState.status)
 				.listRowSeparator(.hidden)
 		})
+		.sheet(isPresented: Binding(
+			get: { uiState.dateTimePicker.isDatePickerVisible },
+			set: { uiState.dateTimePicker.isDatePickerVisible = $0 }
+		)) { DateTimePicker(uiState.dateTimePicker) }
 		.withNavigationBar(uiState.appBar)
 		.handleNotifications(uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)
@@ -39,6 +49,18 @@ struct AppointmentDetailsScreen: View {
 			default :
 				break
 			}
+		}
+	}
+}
+
+private struct RescheduleInfoSection: View {
+	let section: InfoLine
+	let rescheduleButton: ButtonState
+	
+	var body: some View {
+		HStack {
+			InfoSection(section: section)
+			TextButton(rescheduleButton, maxWidth: nil)
 		}
 	}
 }

@@ -5,6 +5,8 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.DateTimePickerState
 import me.bookk.designsystem.uistate.ListState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
@@ -14,10 +16,16 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 interface AppointmentDetailsState {
     val appBar: AppBarState
     var status: UIAppointmentStatus
+    val dateTimePicker: DateTimePickerState
+    val rescheduleButton: ButtonState
     val infoSections: ListState<InfoLine>
 
     val notifications: PresentationNotificationState
     val navigation: NavigationState<AppointmentDetailsDestination>
+
+    companion object {
+        const val APPOINTMENT_DATE_ID = "appointment_date"
+    }
 }
 
 class UIAppointmentStatus(

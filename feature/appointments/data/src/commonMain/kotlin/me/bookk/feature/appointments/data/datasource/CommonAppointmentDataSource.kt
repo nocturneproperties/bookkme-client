@@ -89,11 +89,13 @@ internal class CommonAppointmentDataSource(
                 .also { appointmentDao.updateStatus(it.id, it.status.name, it.cancellationReason) }
         }
 
-    override suspend fun updateAppointment(appointment: Appointment) {
-        mapExceptions {
+    override suspend fun updateAppointment(appointment: Appointment): Appointment {
+        return mapExceptions {
             httpClient.put(Api.Appointment.Id(id = appointment.id)) {
                 setBody(appointment.toRemote())
             }
+                .body<AppointmentRemote>()
+                .toDomain()
         }
     }
 

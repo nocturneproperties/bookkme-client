@@ -13,12 +13,16 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.InfoLine
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.appointments.domain.api.CancelAppointment
 import me.bookk.feature.appointments.domain.api.CancelAppointment.Error
 import me.bookk.feature.appointments.domain.api.GetAppointment
+import me.bookk.feature.appointments.domain.api.UpdateAppointment
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
@@ -30,6 +34,7 @@ class AppointmentDetailsViewModel(
     @InjectedParam private val appointmentId: Uuid,
     private val getAppointment: GetAppointment,
     private val cancelAppointment: CancelAppointment,
+    private val updateAppointment: UpdateAppointment,
     private val dateLocalizer: DateLocalizer,
     private val device: DeviceFacade,
     stateFactory: AppointmentsStateFactory,
@@ -37,7 +42,7 @@ class AppointmentDetailsViewModel(
 ) : ViewModel(vmArgs) {
 
     val uiState: AppointmentDetailsState = stateFactory.createAppointmentDetailsState().setup()
-    private var businessId = Uuid.random()
+    private var appointment = Appointment.stub(id = appointmentId)
 
     init {
         loadAppointment()
@@ -55,7 +60,7 @@ class AppointmentDetailsViewModel(
     private fun onCancellationApproved(reason: String) {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { cancelAppointment(appointmentId, businessId, reason) },
+            call = { cancelAppointment(appointmentId, appointment.businessId, reason) },
             onComplete = ::renderAppointment,
             onError = {
                 when (it) {
@@ -81,7 +86,43 @@ class AppointmentDetailsViewModel(
     }
 
     private fun onDatePicked(date: LocalDateTime) {
-        uiState.dateTimePicker.pickedDate = date
+        val newAppointment = appointment.copy(date = date)
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.rescheduleButton.startLoading() },
+            call = { updateAppointment(newAppointment) },
+            onComplete = ::renderAppointment,
+            onTerminate = { uiState.rescheduleButton.stopLoading() },
+            onError = {
+                when (it) {
+                    is UpdateAppointment.Error.AppointmentOverlap -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_create_overlap_error.desc()
+                            )
+                        )
+                    }
+
+                    is UpdateAppointment.Error.DateIsNotAllowed -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_create_date_error.desc()
+                            )
+                        )
+                    }
+
+                    is UpdateAppointment.Error.TimeIsNotAllowed -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_create_time_error.desc()
+                            )
+                        )
+                    }
+
+                    else -> uiState.notifications.add(it.notification())
+                }
+            }
+        )
     }
 
     private fun onRescheduleClick() {
@@ -101,7 +142,7 @@ class AppointmentDetailsViewModel(
     }
 
     private fun renderAppointment(appointment: Appointment) {
-        businessId = appointment.businessId
+        this.appointment = appointment
         uiState.appBar.title = appointment.client.fullName.desc()
         uiState.status = UIAppointmentStatus(appointment.status)
         if (appointment.status == AppointmentStatus.SCHEDULED) {
@@ -123,7 +164,8 @@ class AppointmentDetailsViewModel(
 
     private fun AppointmentDetailsState.setup() = apply {
         appBar.size = TopBarSize.LARGE
-        appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(AppointmentDetailsDestination.Back) }
+        appBar.onBackClick =
+            weakSelfClosure { it.uiState.navigation.push(AppointmentDetailsDestination.Back) }
 
         rescheduleButton.onClick = weakSelfClosure { it.onRescheduleClick() }
         rescheduleButton.text = AppointmentsRes.strings.appointments_details_reschedule.desc()

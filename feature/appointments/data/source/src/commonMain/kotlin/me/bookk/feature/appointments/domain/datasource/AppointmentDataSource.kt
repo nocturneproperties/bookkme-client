@@ -22,7 +22,7 @@ interface AppointmentDataSource {
 
     suspend fun cancelAppointment(cancellation: AppointmentCancellation): Appointment
 
-    suspend fun updateAppointment(appointment: Appointment)
+    suspend fun updateAppointment(appointment: Appointment): Appointment
 
     suspend fun saveAppointmentsInDB(appointments: List<Appointment>)
 

@@ -47,6 +47,8 @@ class AppointmentListViewModel(
     private fun listenForUpdates() {
         listenFor<AppointmentEvent.Created> { onRefresh() }
             .launchIn(viewModelScope)
+        listenFor<AppointmentEvent.Updated> { onRefresh() }
+            .launchIn(viewModelScope)
     }
 
     private fun observeCurrentBusinessRequests() {

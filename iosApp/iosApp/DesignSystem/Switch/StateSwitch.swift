@@ -16,7 +16,7 @@ struct StateSwitch: View {
 	let onToggledChanged: (Bool) -> Void
 	
 	init(state: SwitchState, onToggledChanged: @escaping (Bool) -> Void) {
-		self.state = state.impl()
+		self._state = Bindable(wrappedValue: state.impl())
 		self.onToggledChanged = onToggledChanged
 	}
 	

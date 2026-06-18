@@ -6,14 +6,15 @@ import androidx.compose.runtime.setValue
 import kotlinx.datetime.LocalDate
 
 class AndroidDatePickerState(
-    textFieldState: TextFieldState,
+    isDatePickerVisible: Boolean = false,
     pickedDate: LocalDate? = null,
     maxDate: LocalDate? = null,
     minDate: LocalDate? = null,
-    override var onDatePicked: ((LocalDate) -> Unit)? = null
-) : AndroidViewState(isVisible = true), DatePickerState {
-    override val textField: TextFieldState = textFieldState
+    onDatePicked: ((LocalDate) -> Unit)? = null
+) : DatePickerState {
+    override var isDatePickerVisible: Boolean by mutableStateOf(isDatePickerVisible)
+    override var pickedDate: LocalDate? by mutableStateOf(pickedDate)
     override var maxDate: LocalDate? by mutableStateOf(maxDate)
     override var minDate: LocalDate? by mutableStateOf(minDate)
-    override var pickedDate: LocalDate? by mutableStateOf(pickedDate)
+    override var onDatePicked: ((LocalDate) -> Unit)? by mutableStateOf(onDatePicked)
 }

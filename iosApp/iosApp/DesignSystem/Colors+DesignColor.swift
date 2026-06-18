@@ -31,6 +31,8 @@ extension ColorToken {
 			AppColors.header
 		case ColorToken.success:
 			AppColors.success
+		case ColorToken.error:
+			AppColors.error
 		case ColorToken.inactivetoggle:
 			AppColors.inactiveToggle
 		case ColorToken.button:

@@ -4,4 +4,33 @@
     <string name="appointments_requests">Requests</string>
     <string name="appointments_list_empty">No appointments for this day</string>
     <string name="appointments_pick_date">Pick date</string>
+
+    <string name="appointments_create_title">Create an appointment</string>
+    <string name="appointments_create_client">Client</string>
+    <string name="appointments_create_client_placeholder">Select client</string>
+    <string name="appointments_create_services">Services</string>
+    <string name="appointments_create_services_add">Add service</string>
+    <string name="appointments_create_date">Date</string>
+    <string name="appointments_create_date_placeholder">Pick date</string>
+    <string name="appointments_create_time">Time</string>
+    <string name="appointments_create_time_placeholder">Pick time</string>
+    <string name="appointments_create_note">Add a note(optional)</string>
+    <string name="appointments_create_subtotal">Subtotal · %1$d services</string>
+    <string name="appointments_create_overlap_error">Appointment overlap. Looks like someone created an appointment for this date and time while you were creating yours, select another date or time and try again!</string>
+    <string name="appointments_create_date_error">Appointments for this day are forbidden by settings</string>
+    <string name="appointments_create_time_error">Appointments for this time are forbidden by settings</string>
+
+    <string name="appointments_details_status">Status</string>
+    <string name="appointments_details_total">Estimated revenue</string>
+    <string name="appointments_details_note">Note</string>
+    <string name="appointments_details_phone">Contact number</string>
+    <string name="appointments_details_cancellation_reason">Cancellation reason</string>
+    <string name="appointments_details_email">Email</string>
+    <string name="appointments_details_reschedule">Reschedule</string>
+    <string name="appointments_status_scheduled">Scheduled</string>
+    <string name="appointments_status_completed">Completed</string>
+    <string name="appointments_status_cancelled">Cancelled</string>
+
+    <string name="appointments_details_cancel">Are you sure you want to cancel this appointment?\nClient attached to the system will receive notification.</string>
+    <string name="appointments_details_cancel_reason">reason(optional)</string>
 </resources>

@@ -89,9 +89,7 @@ class ServiceListViewModel(
     private fun onServiceDeleteClick(serviceUI: ServiceUI) {
         uiState.notifications.add(
             PresentationNotification.Message.deleteConfirmation(
-                onConfirmed = {
-                    deleteServiceItem(serviceUI)
-                }
+                onConfirmed = { deleteServiceItem(serviceUI) }
             )
         )
     }

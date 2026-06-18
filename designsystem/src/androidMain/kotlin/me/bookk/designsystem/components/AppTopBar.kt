@@ -30,12 +30,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.designsystem.html
 import me.bookk.designsystem.painter
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -60,7 +60,15 @@ fun AppTopBar(
                 TextButton(onClick = it.onClick) {
                     Text(
                         it.contentDescription.localized(),
-                        style = MaterialTheme.typography.bodyLarge.active()
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = when (it.type) {
+                                ActionType.CANCEL,
+                                ActionType.CONFIRM,
+                                ActionType.POSITIVE -> LocalColors.current.actionText
+
+                                ActionType.NEGATIVE -> LocalColors.current.error
+                            }
+                        )
                     )
                 }
             }
@@ -76,7 +84,12 @@ fun AppTopBar(
                 colors = colors,
                 actions = actions,
                 title = {
-                    AppBarTitle(state.title.localized(), state.size, colors.titleContentColor, behavior)
+                    AppBarTitle(
+                        state.title.localized(),
+                        state.size,
+                        colors.titleContentColor,
+                        behavior
+                    )
                 },
                 navigationIcon = {
                     onNavigationIconClick?.let {
@@ -128,7 +141,12 @@ fun AppTopBar(
 }
 
 @Composable
-private fun AppBarTitle(text: String, size: TopBarSize, color: Color, behavior: TopAppBarScrollBehavior?) {
+private fun AppBarTitle(
+    text: String,
+    size: TopBarSize,
+    color: Color,
+    behavior: TopAppBarScrollBehavior?
+) {
     val style = when (size) {
         TopBarSize.SMALL -> MaterialTheme.typography.titleMedium
         TopBarSize.LARGE -> MaterialTheme.typography.headlineLarge
@@ -138,7 +156,8 @@ private fun AppBarTitle(text: String, size: TopBarSize, color: Color, behavior: 
         TopBarSize.LARGE -> FontWeight.Bold
     }
     val interpolator = remember { AccelerateInterpolator(1.6f) }
-    val fraction = if (behavior != null) interpolator.getInterpolation(1f - behavior.state.collapsedFraction) else 1f
+    val fraction =
+        if (behavior != null) interpolator.getInterpolation(1f - behavior.state.collapsedFraction) else 1f
     Text(
         modifier = Modifier.alpha(fraction),
         text = text,
@@ -152,7 +171,7 @@ private fun AppBarTitle(text: String, size: TopBarSize, color: Color, behavior: 
 
 @Composable
 fun topBarDefaultColors(
-    containerColor: Color = Color.Transparent,
+    containerColor: Color = LocalColors.current.background,
     scrolledContainerColor: Color = Color.Transparent,
     navigationIconContentColor: Color = Color.Unspecified,
     titleContentColor: Color = Color.Unspecified,

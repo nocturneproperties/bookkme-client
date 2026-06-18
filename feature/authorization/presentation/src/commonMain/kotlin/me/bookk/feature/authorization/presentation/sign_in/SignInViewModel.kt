@@ -9,6 +9,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.authorization.domain.api.SignIn
@@ -26,6 +27,10 @@ class SignInViewModel(
 ) : ViewModel(vmArgs), SignInEventListener {
 
     val uiState: SignInState = stateFactory.createSignInState(createInitData())
+
+    init {
+        uiState.appBar.size = TopBarSize.LARGE
+    }
 
     override fun onBackClick() {
         uiState.navigation.push(SignInNavigationDestination.Main)

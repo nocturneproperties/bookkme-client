@@ -29,7 +29,7 @@ import me.bookk.designsystem.theme.color.LocalColors
 
 @Composable
 fun PickOptionScreen(
-    state: PickOptionState
+    state: PickOptionState,
 ) {
     Scaffold(
         modifier = Modifier.imePadding(),

@@ -18,6 +18,7 @@ val ColorToken.themed
         ColorToken.BlurredBackground -> LocalColors.current.blurredBackground
         ColorToken.Header -> LocalColors.current.header
         ColorToken.Success -> LocalColors.current.success
+        ColorToken.Error -> LocalColors.current.error
         ColorToken.InactiveToggle -> LocalColors.current.inactiveToggle
         ColorToken.ButtonActive -> LocalColors.current.buttonActive
         ColorToken.ButtonInactive -> LocalColors.current.buttonInactive

@@ -23,6 +23,7 @@ struct AppointmentListScreen: View {
     var body: some View {
         let state = IOSAppointmentListState.cast(viewModel.uiState)
         let listState = IOSListState<AppointmentItemState>.cast(state.appointments)
+        let today = LocalDate.Companion().today(timeZone: TimeZone.Companion().currentSystemDefault())
 		ListGroup(listState: listState, listStyle: .plain) { item in
 			AppointmentRequestRow(state: item)
 				.listRowSeparator(.hidden)
@@ -31,8 +32,8 @@ struct AppointmentListScreen: View {
 		} header : {
 			VStack {
 				DateStrip(
-					selectedDate: state.selectedDate,
-					onDateSelected: state.onDateSelected
+					selectedDate: state.datePicker.pickedDate ?? today,
+					onDateSelected: { state.datePicker.onDatePicked?($0) }
 				)
 				Divider()
 					.background(AppColors.divider)
@@ -40,27 +41,25 @@ struct AppointmentListScreen: View {
 			.listRowSeparator(.hidden)
 			.listRowBackground(Color.clear)
 			.listRowInsets(EdgeInsets())
+			.padding(.bottom)
 		}
 		.frame(maxHeight: .infinity)
-		.refreshable { await state.refresh.impl().awaitRefresh() }
 		.sheet(isPresented: Binding(
-            get: { state.isDatePickerVisible },
-            set: { state.isDatePickerVisible = $0 }
+            get: { state.datePicker.isDatePickerVisible },
+            set: { state.datePicker.isDatePickerVisible = $0 }
         )) {
-            AppointmentDatePickerSheet(
-                selectedDate: state.selectedDate,
-                onDismiss: { state.isDatePickerVisible = false },
-                onDatePicked: { date in
-                    state.onDateSelected(date)
-                    state.isDatePickerVisible = false
-                }
-            )
+            AppDatePicker(state: state.datePicker)
         }
 		.withNavigationBar(state.appBar)
+		.refreshable { await state.refresh.impl().awaitRefresh() }
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)
         .handleNavigation(state.navigation) { dest in
             switch dest {
+			case let dest as AppointmentListDestinations.CreateAppointment:
+				navigationStack.push(AppointmentsDestination.Create(businessId: dest.businessId))
+			case let dest as AppointmentListDestinations.AppointmentDetails:
+				navigationStack.push(AppointmentsDestination.Details(appointmentId: dest.appointmentId))
             default:
                 break
             }
@@ -130,64 +129,6 @@ private struct DateCell: View {
         .onTapGesture { onTap() }
         .accessibilityAddTraits(.isButton)
         .accessibilityElement(children: .combine)
-    }
-}
-
-private struct AppointmentDatePickerSheet: View {
-
-    let selectedDate: LocalDate
-    let onDismiss: () -> Void
-    let onDatePicked: (LocalDate) -> Void
-
-    @State private var selection: Date
-
-    init(
-		selectedDate: LocalDate,
-		onDismiss: @escaping () -> Void,
-		onDatePicked: @escaping (LocalDate) -> Void
-	) {
-        self.selectedDate = selectedDate
-        self.onDismiss = onDismiss
-        self.onDatePicked = onDatePicked
-        var components = DateComponents()
-        components.year = Int(selectedDate.year)
-		components.month = Int(selectedDate.month.number)
-        components.day = Int(selectedDate.day)
-        self._selection = State(initialValue: Calendar.current.date(from: components) ?? Date())
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button(action: onDismiss) {
-                    Text(DesignSystem.strings.shared.action_cancel.desc().localized())
-                        .font(.body)
-                        .foregroundStyle(AppColors.actionText)
-                }
-                .padding(.leading, 16)
-                Spacer()
-                Button(action: {
-                    let components = Calendar.current.dateComponents([.year, .month, .day], from: selection)
-                    let year = Int32(components.year ?? 1970)
-                    let day = Int32(components.day ?? 1)
-                    let monthValue = Int32(components.month ?? 1)
-                    onDatePicked(LocalDate(year: year, month: monthValue, day: day))
-                }) {
-                    Text(DesignSystem.strings.shared.action_select.desc().localized())
-                        .font(.body)
-                        .foregroundStyle(AppColors.actionText)
-                }
-                .padding(.trailing, 16)
-            }
-            .padding(.vertical, 12)
-
-            DatePicker("", selection: $selection, displayedComponents: [.date])
-                .datePickerStyle(.graphical)
-                .tint(AppColors.actionText)
-                .padding(.horizontal, 8)
-        }
-		.presentationBackground(AppColors.elevated)
-		.presentationDetents([.medium])
     }
 }
 

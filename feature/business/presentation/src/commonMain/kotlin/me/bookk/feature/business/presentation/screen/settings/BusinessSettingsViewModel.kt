@@ -5,11 +5,11 @@ import library.device.api.DeviceFacade
 import library.money.api.CurrencyFactory
 import library.money.api.Money
 import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.core.LogFactory
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
+import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.resources.toOneLine
@@ -22,6 +22,7 @@ import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.Business.Social
 import me.bookk.feature.business.domain.api.entity.Business.SocialKind
 import me.bookk.feature.business.presentation.BusinessStateFactory
+import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsDestination
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 import me.bookk.feature.business.presentation.screen.settings.state.toCurrencyUI
@@ -37,13 +38,18 @@ class BusinessSettingsViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
-    val uiState: BusinessSettingsState = stateFactory.createBusinessSettingsState(createInitData())
+    val uiState: BusinessSettingsState = stateFactory.createBusinessSettingsState(createInitData()).setup()
     private var referenceBusiness: Business by Delegates.notNull()
     private var businessLocation: Business.Location? = null
-    private val logger = LogFactory.createLogger("BusinessSettingsViewModel")
 
     init {
         loadBusinessDetails()
+    }
+
+    private fun BusinessSettingsState.setup() = apply {
+        appBar.onBackClick = weakSelfClosure {
+            it.uiState.navigation.push(BusinessSettingsDestination.Back)
+        }
     }
 
     private fun loadBusinessDetails() {

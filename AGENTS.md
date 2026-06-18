@@ -210,7 +210,7 @@ When adding local caching for a new entity:
 
 ## Dependency Injection (Koin)
 
-- Presentation: `di/<Feature>Di.kt` (commonMain) declares `internal expect fun platform<Feature>DiModule(): Module` and a public `<feature>PresentationModule()`; actuals in `androidMain` (`viewModelOf`) and `iosMain` (`factoryOf` + `@UsedInSwift` accessors). ViewModel screen arguments are passed with `@InjectedParam` + `parametersOf(...)` at resolution.
+- Presentation: `di/<Feature>Di.kt` (commonMain) declares `internal expect fun platform<Feature>DiModule(): Module` and a public `<feature>PresentationModule()`; actuals in `androidMain` (`viewModelOf`) and `iosMain` (`factoryOf` + `@UsedInSwift` accessors). ViewModel screen arguments are passed with `@InjectedParam` (`org.koin.core.annotation.InjectedParam`) on the constructor parameter + `parametersOf(...)` at the call site (`koinViewModel { parametersOf(id) }` on Android, `KoinPlatform.getKoin().get(parameters = { parametersOf(id) })` on iOS). **When a parameter is annotated with `@InjectedParam`, always keep `viewModelOf(::FooViewModel)` / `factoryOf(::FooViewModel)` in the DI module — never switch to the manual lambda form `viewModel { FooViewModel(it.get(), get(), ...) }`. Koin resolves `@InjectedParam` fields automatically from the `parametersOf` block.**
 - Domain: `<feature>DomainModule()` in `domain/impl`. Data: `<feature>DataModule()` in `data`.
 - Per-feature aggregation: `shared/src/commonMain/kotlin/me/bookk/di/feature/<Feature>DI.kt` includes presentation + data + domain modules; installed in `shared/.../di/DISetup.kt`.
 - New feature module set: add to `settings.gradle.kts`, `shared/build.gradle.kts` deps, create the `<Feature>DI.kt` aggregator, add the feature's `StateFactory` to `shared/.../presentation/StateFactoryCreator.kt`, and implement it in both `iosApp/iosApp/Core/IOSStateFactoryCreator.swift` and the Android creator. Prefer the scaffold script: `cd feature/.template && ./feature.template.sh <feature_name> <FeatureNameCapitalized>`.
@@ -222,6 +222,18 @@ When adding local caching for a new entity:
 - **Run Tests**: `./gradlew test` (runs common and Android tests)
 - **Lint**: `./gradlew detekt` (if configured)
 
+## API Documentation
+
+Current REST API specs are served by the local backend instance:
+
+```
+http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
+```
+
+`{feature_name}` can be the short or long form of the feature, e.g. `auth` or `authorization`, `appointments`, `clients`, `services`, `business`, etc.
+
+**Before reading any endpoint contract**, fetch the relevant YAML to get the authoritative, up-to-date schema. If the URL is not reachable, **stop and return an error**: the local backend is not running and the task cannot be completed safely without current API docs.
+
 ## AI Agent Interaction Rules
 
 - **Use the newest screen as reference** (currently `BusinessPlugins`). Never copy from screens that pass `InitData` into state factories — that pattern is deprecated.
@@ -230,3 +242,226 @@ When adding local caching for a new entity:
 - **UDF integrity**: UI reads only `State` interfaces; user actions flow through state callbacks set in `setup()`; navigation flows through `NavigationState.push(...)` and is observed at the edge (`ObserveNavigation` / `.handleNavigation`).
 - **Persistence**: use `library/cache` for simple key-value storage or Room for complex data.
 - **Mocking**: for "mock" build variants provide `RoutingMock` implementations or Ktor `MockEngine`.
+- **No string literals in screens**: never hardcode user-visible strings in Compose/SwiftUI screen files. All strings must be defined in the feature's `moko-resources/base/strings.xml`, accessed in Kotlin via `FeatureRes.strings.key.desc()` and rendered in Compose with `.localized()` / in Swift with `.localized()`. Dynamic strings with runtime values use the `.format(vararg args)` extension (e.g. `AppointmentsRes.strings.appointments_create_subtotal.format(count)`).
+
+## Design System – Screen Building Blocks
+
+Use this section to map a screenshot or wireframe to concrete components and state types.
+
+### Screen Shell
+
+```
+┌─────────────────────────────────┐
+│ ←   Title                [Act] │  AppTopBar (TopBarSize.SMALL)
+├─────────────────────────────────┤
+│ content                         │  Scaffold { paddingValues -> ... }
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│ ←                        [Act] │
+│ Large Title                     │  AppTopBar (TopBarSize.LARGE)
+│ subtitle text                   │
+├─────────────────────────────────┤
+│ content (collapses bar on scroll│  CollapsingAppBarScaffold { behaviour -> AppTopBar(..., behaviour) }
+└─────────────────────────────────┘
+```
+
+- `AppTopBar(state)` — back arrow from `state.onBackClick`; action buttons (icon or text) from `state.actions`; `TopBarSize.SMALL` = `CenterAlignedTopAppBar`, `LARGE` = `MediumTopAppBar` + optional subtitle below.
+- Standard content: `Column(Modifier.verticalScroll(...).padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp))`.
+
+### Input Fields
+
+```
+ Label text                        ← Header (section label above a group)
+┌─────────────────────────────────┐
+│ placeholder / value             │  TextField(state)
+└─────────────────────────────────┘
+  supporting / error text
+
+┌────────────────────────── [🔒] ─┐
+│ ••••••••                        │  SecureTextField(state)  (password toggle on right)
+└─────────────────────────────────┘
+
+┌──────────────────────── [▾] ────┐
+│ picked value or placeholder     │  PickerField<T>(state)  type=BOTTOM_SHEET  (chevron-down icon)
+└─────────────────────────────────┘
+
+┌──────────────────────── [›] ────┐
+│ picked value or placeholder     │  PickerField<T>(state)  type=SCREEN  (chevron-right → opens screen)
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│ picked date                     │  DatePickerField(state)  (tap → material date picker dialog)
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│ picked time                     │  TimePickerField(state)  (tap → time picker dialog)
+└─────────────────────────────────┘
+```
+
+`TextField` state keys: `label`, `placeholder`, `text`, `suffix`, `startIcon`, `endIcon`, `supportingTextRes`, `validationState` (`NONE`/`WARNING`/`ERROR`), `inputType`, `enabled`, `readOnly`, `onTextChanged`.
+
+### Multi-item Picker
+
+```
+ Section Header
+╔═════════════════════════════════╗
+║ Selected Item 1           [–]  ║  AppCard wrapping the list
+║─────────────────────────────────║
+║ Selected Item 2           [–]  ║
+║─────────────────────────────────║
+║ + Add item                      ║  TextButton (active color, visible when isEditable)
+╚═════════════════════════════════╝
+```
+
+`MultiPicker<T>(state) { item, onRemove -> }` — the lambda renders each selected row; `AppCard` container is provided by the component.
+
+### Toggle / Selection
+
+```
+Label text                  [ ● ]   StateSwitch(state, onCheckedChange)  (green when on)
+
+[✓] Label text                      CheckBox(state)
+    supporting / error text
+
+ Label text                  [✓]    CheckBoxSelector(state)  (check icon appears on right when selected)
+
+ Label text               ●         RadioButton(state)  (circle on right; selected = filled dot)
+```
+
+### Read-only Display
+
+```
+ Section Title                      Header(text)  — titleMedium, header color, h-padding 16dp
+
+ title label (secondary)
+ value text (primary)               InfoSection(InfoLine)  — optionally clickable; HorizontalDivider below
+ ─────────────────────────
+
+ Row label                  ›       SectionItem(text, onClick)  — 56dp row, chevron-right
+
+ ████░░░░░░░░░░░░░░░        AnimatedLinearProgress(progress: Float 0..1)  — 4dp bar
+```
+
+### Lists
+
+```
+  [loading bar]                      List(state) when isInitialLoading
+  item row                           List(state) { item -> } — LazyColumn; auto shows EmptyStateView
+  item row
+  ...
+```
+
+- `PullToRefresh(state) { List(...) }` — pull-to-refresh wrapper; `state.isRefreshing`, `state.onRefresh`.
+- `EmptyStateView(state)` — centered illustration + label; used automatically inside `List` when `state.emptyState != null`.
+
+### Cards
+
+```
+╔═════════════════════════════════╗
+║  arbitrary content              ║  AppCard { content }  — elevated bg, drop shadow, medium shape
+╚═════════════════════════════════╝
+```
+
+### Overlays
+
+**Bottom sheet (generic):**
+```
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+╔═════════════════════════════════╗
+║ Optional Sheet Title            ║  DesignSystemBottomSheet(sheetState, title) { content }
+║  content items 16dp apart       ║
+╚═════════════════════════════════╝
+```
+
+**Selector bottom sheet:**
+```
+╔═════════════════════════════════╗
+║ Picker Title                    ║  SelectorBottomSheet<T>(sheetState, title, data, ...)
+║ ┌─────────────────────────────┐ ║
+║ │ [icon] Option 1         [✓] │ ║  StandardSelectorItem  (56dp, check on right if selected)
+║ └─────────────────────────────┘ ║
+║ ┌─────────────────────────────┐ ║
+║ │ [icon] Option 2             │ ║
+║ └─────────────────────────────┘ ║
+║ ╔═════════════════════════════╗ ║  ActionButton (only when requireConfirmation = true)
+║ ║      Continue               ║ ║
+║ ╚═════════════════════════════╝ ║
+╚═════════════════════════════════╝
+```
+
+`StandardElevatedSelectorItem` — same but 72dp, `ElevatedCard`.
+
+**Dialog:**
+```
+     ╔══════════════════════╗
+     ║ Title (headlineSmall)║  AppDialog(title, subtitle, buttonDescriptors, onDismiss)
+     ║ subtitle body text   ║    max width 312dp
+     ║ [optional content]   ║
+     ║        [Cancel] [OK] ║  buttons: ActionType.CANCEL / NEGATIVE / POSITIVE
+     ╚══════════════════════╝
+```
+
+`AppDialogContainer` / `AppDialogScreenContainer` — bare Card wrappers for custom dialog layouts.
+
+### Buttons
+
+```
+╔═════════════════════════════════╗  ActionButton(state)  — filled, buttonActive bg, min 48dp
+║           Label                 ║
+╚═════════════════════════════════╝
+
+           Label                     TextButton(state)  — transparent bg, actionText color
+
+  ○  ◉  (loading spinner)            Both: state.isLoading replaces text with CircularProgressIndicator
+```
+
+### Typography Quick Reference
+
+| Style | Usage |
+|---|---|
+| `headlineLarge` | Large app bar title |
+| `headlineSmall` | Dialog title |
+| `titleMedium` | Section header, SectionItem row, strong inline label |
+| `titleSmall` | MultiPicker "add" button |
+| `bodyLarge` | Body text, text field value, button label |
+| `bodyMedium` | Dialog subtitle, subtitles |
+| `bodySmall` | Field supporting text, app bar subtitle |
+| `labelMedium` / `labelSmall` | Small labels, validation messages |
+
+Color modifiers: `.primary()` = `primaryText`, `.secondary()` = `secondaryText`, `.active()` = `actionText`, `.error()` = `error`.
+
+### Color Tokens (`LocalColors.current`)
+
+| Token | Role |
+|---|---|
+| `background` | Screen & top bar background |
+| `elevated` | Card / text field container |
+| `primaryText` | Main readable text |
+| `secondaryText` | Hints, labels, trailing icons |
+| `actionText` | Tappable text, focus/active accent |
+| `header` | `Header` component text |
+| `divider` | Thin separator lines |
+| `success` | Switch checked track |
+| `error` | Error state, negative action |
+| `buttonActive` / `buttonInactive` | `ActionButton` enabled / disabled bg |
+| `hintText` | TextField placeholder |
+
+### State Interfaces Cheat-Sheet (commonMain)
+
+| Interface | Key fields |
+|---|---|
+| `AppBarState` | `title`, `subtitle`, `onBackClick`, `size: TopBarSize`, `actions: ListState<AppBarAction>` |
+| `ButtonState` | `text`, `isEnabled`, `isLoading`, `onClick` |
+| `TextFieldState` | `label`, `placeholder`, `text`, `suffix`, `startIcon`, `endIcon`, `supportingTextRes`, `validationState`, `inputType`, `enabled`, `readOnly`, `onTextChanged` |
+| `PickerFieldState<T>` | `textField`, `options`, `selectedItem`, `onItemPicked`, `pickerTitle`, `pickerType` |
+| `MultiPickerState<T>` | `pickerTitle`, `options`, `selectedItems`, `onItemsPicked`, `onItemsRemoveRequested`, `addItemText`, `isEditable` |
+| `DatePickerFieldState` | `textField`, `pickedDate`, `minDate`, `maxDate`, `onDatePicked` |
+| `TimePickerFieldState` | `textField`, `pickedTime`, `onTimePicked` |
+| `SwitchState` | `text`, `isChecked` |
+| `CheckBoxState` | `text`, `isChecked`, `supportingTextRes`, `validationState`, `onCheckedChange` |
+| `RadioButtonState` | `text`, `isSelected`, `isEnabled`, `onClick` |
+| `ListState<T>` | `items`, `isInitialLoading`, `emptyState`, `loadMore` |
+| `RefreshState` | `isRefreshing`, `onRefresh` |
+| `InfoLine` | `title: StringDesc`, `value: StringDesc`, `onClick?` |
+| `EmptyState` | `image: ImageResource`, `label: StringDesc` |

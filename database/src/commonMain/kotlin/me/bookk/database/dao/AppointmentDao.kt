@@ -15,8 +15,8 @@ import kotlin.uuid.Uuid
 abstract class AppointmentDao {
 
     @Transaction
-    @Query("SELECT * FROM appointment WHERE businessId = :businessId AND localDate = :localDate")
-    abstract suspend fun getForDate(businessId: Uuid, localDate: String): List<AppointmentLocal>
+    @Query("SELECT * FROM appointment WHERE id = :id")
+    abstract suspend fun getById(id: Uuid): AppointmentLocal
 
     @Upsert
     abstract suspend fun upsertAppointments(appointments: List<AppointmentEntity>)
@@ -26,6 +26,9 @@ abstract class AppointmentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertServices(services: List<AppointmentServiceSnapshotEntity>)
+
+    @Query("UPDATE appointment SET status = :status, cancellationReason = :cancellationReason WHERE id = :id")
+    abstract suspend fun updateStatus(id: Uuid, status: String, cancellationReason: String)
 
     @Transaction
     open suspend fun upsertWithServices(

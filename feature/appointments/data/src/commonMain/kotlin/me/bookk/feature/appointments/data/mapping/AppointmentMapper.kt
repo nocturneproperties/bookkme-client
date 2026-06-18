@@ -1,21 +1,90 @@
 package me.bookk.feature.appointments.data.mapping
 
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import library.money.api.Money
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
 import me.bookk.database.relation.AppointmentLocal
+import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentRequestStatusRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
+import me.bookk.feature.appointments.data.remote.model.ClientSnapshotRemote
+import me.bookk.feature.appointments.data.remote.model.ServiceSnapshotRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 
-internal fun Appointment.toEntity(localDate: LocalDate) = AppointmentEntity(
+internal fun AppointmentRequest.toRemote() = AppointmentRequestRemote(
     id = id,
     userId = userId,
     businessId = businessId,
+    client = client.toRemote(),
+    services = services.map { it.toRemote() },
+    status = status.toRemote(),
     date = date,
-    localDate = localDate.toString(),
+    note = note,
+    declineReason = declineReason
+)
+
+internal fun Appointment.toRemote() = AppointmentRemote(
+    id = id,
+    userId = userId,
+    businessId = businessId,
+    client = client.toRemote(),
+    services = services.map { it.toRemote() },
+    status = status.toRemote(),
+    date = date.toInstant(TimeZone.UTC),
+    note = note,
+    cancellationReason = cancellationReason
+)
+
+
+internal fun AppointmentCancellation.toRemote() = AppointmentCancellationRemote(
+    id = id,
+    businessId = businessId,
+    reason = reason
+)
+
+private fun ClientSnapshot.toRemote() = ClientSnapshotRemote(
+    id = id,
+    fullName = fullName,
+    phone = phone,
+    email = email
+)
+
+private fun ServiceSnapshot.toRemote() = ServiceSnapshotRemote(
+    id = id,
+    name = name,
+    groupId = groupId,
+    price = price,
+    duration = duration
+)
+
+private fun AppointmentRequestStatus.toRemote() = when (this) {
+    AppointmentRequestStatus.PENDING -> AppointmentRequestStatusRemote.PENDING
+    AppointmentRequestStatus.APPROVED -> AppointmentRequestStatusRemote.APPROVED
+    AppointmentRequestStatus.DECLINED -> AppointmentRequestStatusRemote.DECLINED
+}
+
+private fun AppointmentStatus.toRemote() = when (this) {
+    AppointmentStatus.SCHEDULED -> AppointmentStatusRemote.SCHEDULED
+    AppointmentStatus.COMPLETED -> AppointmentStatusRemote.COMPLETED
+    AppointmentStatus.CANCELLED -> AppointmentStatusRemote.CANCELLED
+}
+
+internal fun Appointment.toEntity() = AppointmentEntity(
+    id = id,
+    userId = userId,
+    businessId = businessId,
+    date = date.toInstant(TimeZone.currentSystemDefault()),
     status = status.name,
     note = note,
     cancellationReason = cancellationReason,
@@ -41,7 +110,7 @@ internal fun AppointmentLocal.toDomain() = Appointment(
     id = entity.id,
     userId = entity.userId,
     businessId = entity.businessId,
-    date = entity.date,
+    date = entity.date.toLocalDateTime(TimeZone.currentSystemDefault()),
     client = ClientSnapshot(
         id = entity.clientId,
         fullName = entity.clientFullName,

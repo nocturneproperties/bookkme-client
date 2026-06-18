@@ -3,7 +3,6 @@ package me.bookk.android.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
-import library.picker.PickOptionDestination
 import me.bookk.feature.services.presentation.ServicesDestination
 import me.bookk.feature.services.presentation.ServicesNavigation
 import kotlin.uuid.ExperimentalUuidApi
@@ -12,7 +11,6 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 fun rememberServicesNavigation(controller: NavController) = remember {
     ServicesNavigation(
-        controller = { controller },
         onBack = { controller.popBackStack() },
         toServiceDetails = {},
         toCreateService = { controller.navigate(ServicesDestination.AddService(it)) },
@@ -20,8 +18,5 @@ fun rememberServicesNavigation(controller: NavController) = remember {
         toServiceGroupList = {
             controller.navigate(ServicesDestination.ServiceGroupList(it))
         },
-        navigateToPicker = {
-            controller.navigate(PickOptionDestination(it))
-        }
     )
 }

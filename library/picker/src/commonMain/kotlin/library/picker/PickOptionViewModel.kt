@@ -11,6 +11,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.CheckBoxState
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 
 class PickOptionViewModel(
@@ -21,10 +22,14 @@ class PickOptionViewModel(
 
     private var options = listOf<PickOptionItem>()
 
-    val uiState = factory.createPickOptionState().setup()
+    val uiState: PickOptionState = factory.createPickOptionState().setup()
 
     private fun PickOptionState.setup() = apply {
+        appBar.size = TopBarSize.LARGE
         appBar.title = pickArgs.title.desc()
+        appBar.onBackClick = weakSelfClosure { vm ->
+            vm.uiState.navigation.push(PickerNavigationDestination.Back)
+        }
 
         val items = pickArgs.options.map {
             factory.createPickOptionItem().apply {
@@ -45,7 +50,7 @@ class PickOptionViewModel(
         )
 
         queryField.placeholder = DesignSystem.strings.action_search.desc()
-        queryField.onTextChanged = weakSelfClosure { vm, text ->  vm.onFilterChanged(text) }
+        queryField.onTextChanged = weakSelfClosure { vm, text -> vm.onFilterChanged(text) }
 
         selectButton.isVisible = pickArgs.choice == Choice.MULTIPLE
         selectButton.text = DesignSystem.strings.action_select.desc()

@@ -12,6 +12,7 @@ import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.services.domain.api.GetBusinessCurrency
@@ -127,6 +128,7 @@ class AddServiceViewModel(
     }
 
     private fun AddServiceState.setup(currency: SupportedCurrency) = apply {
+        appBar.size = TopBarSize.LARGE
         appBar.title = ServicesRes.strings.services_create_title.desc()
         appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(Back) }
 

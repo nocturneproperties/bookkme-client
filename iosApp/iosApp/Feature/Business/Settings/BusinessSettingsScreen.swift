@@ -1,5 +1,5 @@
 //
-//  BusinessSettingsScreen'.swift
+//  BusinessSettingsScreen.swift
 //  iosApp
 //
 //  Created by BookkMe on 07.09.2025.
@@ -10,6 +10,7 @@ import shared
 
 struct BusinessSettingsScreen: View {
 	
+	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: BusinessSettingsViewModel
 	
 	init(id: shared.KotlinUuid) {
@@ -22,10 +23,19 @@ struct BusinessSettingsScreen: View {
 			.withNavigationBar(viewModel.uiState.appBar)
 			.handleNotifications(viewModel.uiState.notifications)
 			.sendLifecycleEventsTo(viewModel)
+			.handleNavigation(viewModel.uiState.navigation) { dest in
+				switch dest {
+				case is BusinessSettingsDestination.Back:
+					navigationStack.popLast()
+				default :
+					break
+				}
+			}
 			.toolbar {
 				TextButton(viewModel.uiState.save) {
 					viewModel.onSaveClick()
 				}
+				.frame(width: 100)
 			}
 	}
 }

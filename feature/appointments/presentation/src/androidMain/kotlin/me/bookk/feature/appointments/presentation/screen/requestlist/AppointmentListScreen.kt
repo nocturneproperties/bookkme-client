@@ -35,6 +35,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
+import me.bookk.core.now
 import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.components.AppCard
@@ -58,19 +59,15 @@ internal fun AppointmentListScreen(
             Column {
                 AppTopBar(state = state.appBar)
                 DateStrip(
-                    selectedDate = state.selectedDate,
-                    onDateSelected = { state.selectedDate = it }
+                    selectedDate = state.datePicker.pickedDate ?: LocalDate.now(),
+                    onDateSelected = { state.datePicker.onDatePicked?.invoke(it) }
                 )
                 HorizontalDivider(color = LocalColors.current.divider)
             }
         }
     ) { pv ->
-        if (state.isDatePickerVisible) {
-            AppDatePicker(
-                selectedDate = state.selectedDate,
-                onDismiss = { state.isDatePickerVisible = false },
-                onDatePicked = state.onDateSelected
-            )
+        if (state.datePicker.isDatePickerVisible) {
+            AppDatePicker(state.datePicker)
         }
         Column(
             modifier = Modifier

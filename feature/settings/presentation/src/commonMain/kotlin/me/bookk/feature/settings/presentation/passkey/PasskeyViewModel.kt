@@ -9,6 +9,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
@@ -70,7 +71,7 @@ class PasskeyViewModel(
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
-                        actionType = ButtonDescriptor.ActionType.NEGATIVE,
+                        actionType = ActionType.NEGATIVE,
                         onClick = { deletePasskeyById(passkeyItem.id) }
                     )
                 )
@@ -92,7 +93,7 @@ class PasskeyViewModel(
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
-                        actionType = ButtonDescriptor.ActionType.NEGATIVE,
+                        actionType = ActionType.NEGATIVE,
                         onClick = { deletePasskeyByIdList(itemList.map { it.id }) }
                     )
                 )

@@ -13,10 +13,8 @@ struct StateTextField: View {
     
     @Bindable
     var state: IOSTextFieldState
-	@State
-	var isEditor: Bool = false
-    @State
-    var onTextChanged: ((String) -> Void)? = nil //TODO: Backward compatibility, remove when deprecated screens will be refactored
+	let isEditor: Bool
+    let onTextChanged: ((String) -> Void)? //TODO: Backward compatibility, remove when deprecated screens will be refactored
 	
 	private var keyboardType: UIKeyboardType {
 		switch state.inputType {
@@ -42,7 +40,7 @@ struct StateTextField: View {
 		textEditor: Bool = false,
 		onTextChanged: ((String) -> Void)? = nil
 	) {
-		self.state = IOSTextFieldState.cast(state)
+		self._state = Bindable(wrappedValue: IOSTextFieldState.cast(state))
 		self.isEditor = textEditor
 		self.onTextChanged = onTextChanged
 	}

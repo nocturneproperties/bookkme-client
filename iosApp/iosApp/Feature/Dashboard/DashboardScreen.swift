@@ -61,7 +61,7 @@ struct DashboardTab: View {
 		case .business:
 			BusinessTab()
 		case .settings:
-			SettingsDashboardScreen()
+			SettingsTab()
 		default:
 			fatalError("Unsupported tab \(state.id)")
 		}

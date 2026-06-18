@@ -19,14 +19,17 @@ struct InfoSection: View {
 		VStack(alignment: .leading) {
 			Header(text: section.title.localized(), discardDefaultPadding: true)
 			Text(section.value.localized())
-			Divider()
-		}.contentShape(Rectangle())
+		}
+		.frame(maxWidth: .infinity, alignment: .leading)
 	}
+	
 	var body: some View {
 		if let action = section.onClick {
 			Button(action: action) {
 				sectionContent
-			}.buttonStyle(.plain)
+					.contentShape(Rectangle())
+			}
+			.buttonStyle(.plain)
 		} else {
 			sectionContent
 		}

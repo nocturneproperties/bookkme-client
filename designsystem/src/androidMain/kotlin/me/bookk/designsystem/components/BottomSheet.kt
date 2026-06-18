@@ -23,14 +23,14 @@ import me.bookk.designsystem.theme.typography.primary
 fun DesignSystemBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
-    title: String,
+    title: String? = null,
     onDismiss: () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit
 ) {
     ModalBottomSheet(
         modifier = modifier,
         sheetState = sheetState,
-        containerColor = LocalColors.current.elevated,
+        containerColor = LocalColors.current.background,
         properties = ModalBottomSheetProperties(),
         onDismissRequest = onDismiss,
     ) {
@@ -42,10 +42,12 @@ fun DesignSystemBottomSheet(
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge.primary()
-            )
+            title?.let {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge.primary()
+                )
+            }
             content()
         }
     }

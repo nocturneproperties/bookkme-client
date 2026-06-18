@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
-import me.bookk.core.presentation.error.ButtonDescriptor.ActionType
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
@@ -35,7 +34,7 @@ fun AppDialog(
     buttonDescriptors: List<ButtonDescriptor>,
     onDismiss: () -> Unit,
 ) {
-    AppDialogContainer(onDismiss) {
+    AppDialogScreenContainer(onDismiss) {
         Column(
             modifier = Modifier.padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -73,6 +72,7 @@ fun AppDialog(
                                 ActionType.POSITIVE -> LocalColors.current.actionText
                                 ActionType.NEGATIVE -> LocalColors.current.error
                                 ActionType.CANCEL -> LocalColors.current.actionText
+                                ActionType.CONFIRM -> LocalColors.current.actionText
                             },
                         )
                     )
@@ -82,23 +82,6 @@ fun AppDialog(
     }
 }
 
-@Composable
-fun AppDialogContainer(
-    onDismiss: () -> Unit,
-    content: @Composable () -> Unit,
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(
-                containerColor = LocalColors.current.elevated
-            ),
-            modifier = Modifier.widthIn(max = 312.dp)
-        ) {
-            content()
-        }
-    }
-}
 
 @Composable
 fun AppDialogScreenContainer(

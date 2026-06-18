@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import library.picker.pickScreen
 import me.bookk.android.navigation.rememberAuthNavigation
 import me.bookk.android.navigation.rememberClientsNavigation
 import me.bookk.android.navigation.rememberServicesNavigation
@@ -154,7 +153,6 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                     },
                     settingsTab = { SettingsTab() }
                 )
-                pickScreen(controller)
             }
         }
         Box(

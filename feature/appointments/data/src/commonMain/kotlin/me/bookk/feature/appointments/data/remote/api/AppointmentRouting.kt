@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 object AppointmentRouting {
     @Resource("api")
     class Api {
-        @Resource("/appointment")
+        @Resource("/appointments")
         class Appointment(val parent: Api = Api()) {
 
             @Resource("/instant")
@@ -29,7 +29,7 @@ object AppointmentRouting {
             class Id(val parent: Appointment = Appointment(), val id: Uuid)
         }
 
-        @Resource("/appointments/{businessId}")
+        @Resource("/appointments/list/{businessId}")
         class Appointments(val parent: Api = Api(), val businessId: Uuid, val date: LocalDate)
 
         @Resource("/appointments/history/{businessId}")

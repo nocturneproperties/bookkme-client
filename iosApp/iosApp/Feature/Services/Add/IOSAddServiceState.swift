@@ -21,7 +21,7 @@ class IOSAddServiceState: @MainActor IOSViewState, @MainActor AddServiceState, N
 	var name: any TextFieldState
 	var price: any TextFieldState
 	var duration: any TextFieldState
-	var enabled_: any CheckBoxState
+	var enabled_: any BooleanState
 	var create: any ButtonState
 	
 	var navigation: any NavigationState
@@ -33,7 +33,7 @@ class IOSAddServiceState: @MainActor IOSViewState, @MainActor AddServiceState, N
 		name = IOSTextFieldState()
 		price = IOSTextFieldState()
 		duration = IOSTextFieldState()
-		enabled_ = IOSCheckBoxState()
+		enabled_ = IOSBooleanState()
 		create = IOSButtonState()
 		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()

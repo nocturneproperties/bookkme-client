@@ -3,8 +3,8 @@ package me.bookk.feature.services.presentation.service.add
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.ButtonState
-import me.bookk.designsystem.uistate.CheckBoxState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PickerPresentation
@@ -21,7 +21,7 @@ interface AddServiceState : ViewState {
     val name: TextFieldState
     val duration: TextFieldState
     val price: TextFieldState
-    val enabled: CheckBoxState
+    val enabled: BooleanState
     val create: ButtonState
 
     val notifications: PresentationNotificationState

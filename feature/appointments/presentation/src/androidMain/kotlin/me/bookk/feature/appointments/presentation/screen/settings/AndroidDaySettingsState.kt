@@ -13,6 +13,7 @@ class AndroidDaySettingsState(
     isActive: Boolean = false
 ) : DaySettingsState {
     override var isActive: Boolean by mutableStateOf(isActive)
+    override var isExpanded: Boolean by mutableStateOf(isActive)
     override val intervals: MutableList<TimeSettingState> = mutableStateListOf()
     override val addTimeButton: ButtonState = AndroidButtonState()
     override var onDeleteInterval: () -> Unit by mutableStateOf({})

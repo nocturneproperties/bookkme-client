@@ -10,6 +10,7 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
 
     let appBar: any AppBarState
 	
+	let automaticApproval: any BooleanState
 	let schedule: [any DaySettingsState]
 	let dayOffs: any MultiPickerState
 
@@ -25,5 +26,6 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
         notifications = IOSNotificationState()
 		schedule = []
 		dayOffs = IOSMultiPickerState()
+		automaticApproval = IOSBooleanState()
     }
 }

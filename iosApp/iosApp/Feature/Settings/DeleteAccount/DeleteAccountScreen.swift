@@ -23,7 +23,7 @@ struct DeleteAccountScreen: View {
 			Text(uiState.confirmationMessage.localized())
 				.font(.callout)
 			
-			StateSwitch(state: uiState.confirmationSwitch) { newState in
+			StateSwitch(state: uiState.confirmation) { newState in
 				viewModel.onSwitchStateChanged(isChecked: newState)
 			}
 			.padding(.horizontal, 16)

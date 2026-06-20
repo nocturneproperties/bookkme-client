@@ -4,7 +4,7 @@ import SwiftUI
 @MainActor
 @Observable
 final class IOSDaySettingsState: @MainActor DaySettingsState {
-
+	var isExpanded: Bool
     var isActive: Bool
     var title: any StringDesc
     var intervals: [TimeSettingState]
@@ -17,6 +17,7 @@ final class IOSDaySettingsState: @MainActor DaySettingsState {
         self.intervals = []
         self.addTimeButton = IOSButtonState()
         self.onDeleteInterval = {}
+		self.isExpanded = false
     }
 
     func replaceIntervals(newIntervals: [TimeSettingState]) {

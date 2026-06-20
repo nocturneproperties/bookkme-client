@@ -2,15 +2,15 @@ package me.bookk.feature.settings.presentation.accdelete
 
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
-import me.bookk.designsystem.uistate.SwitchState
 
 interface DeleteAccountState {
     val appBar: AppBarState
     val confirmationMessage: StringDesc
-    val confirmationSwitch: SwitchState
+    val confirmation: BooleanState
     val deleteButton: ButtonState
 
     val notifications: PresentationNotificationState

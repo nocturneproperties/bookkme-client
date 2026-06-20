@@ -16,7 +16,7 @@ class IOSContactUsState: @MainActor ContactUsState {
 	
 	var contactField: any TextFieldState
 	
-	var includeLogsSwitch: any SwitchState
+	var includeLogsSwitch: any BooleanState
 	
 	var logsExplanationText: any StringDesc
 	
@@ -29,7 +29,7 @@ class IOSContactUsState: @MainActor ContactUsState {
 	init(initData: ContactUsStateInitData) {
 		appBar = IOSAppBarState(title: initData.title)
 		contactField = IOSTextFieldState(placeholder: initData.contactHint)
-		includeLogsSwitch = IOSSwitchState(text: initData.usageLogsText, isChecked: false)
+		includeLogsSwitch = IOSBooleanState(text: initData.usageLogsText, isChecked: false)
 		logsExplanationText = initData.includeLogsExplanation
 		submitButton = IOSButtonState(text: initData.submitButtonText, isEnabled: false)
 		notifications = IOSNotificationState()

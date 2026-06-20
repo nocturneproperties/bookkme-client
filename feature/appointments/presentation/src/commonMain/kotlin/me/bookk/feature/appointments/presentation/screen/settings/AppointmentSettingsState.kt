@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.presentation.screen.settings
 
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.MinimalPickerPresentation
 import me.bookk.designsystem.uistate.MultiPickerState
@@ -12,8 +13,9 @@ import me.bookk.designsystem.uistate.ViewState
 
 interface AppointmentSettingsState {
     val appBar: AppBarState
-    val schedule: List<DaySettingsState>
+    val automaticApproval: BooleanState
     val dayOffs: MultiPickerState<MinimalPickerPresentation>
+    val schedule: List<DaySettingsState>
     val save: ButtonState
 
     val notifications: PresentationNotificationState
@@ -22,6 +24,7 @@ interface AppointmentSettingsState {
 
 interface DaySettingsState {
     var isActive: Boolean
+    var isExpanded: Boolean
     val title: StringDesc
     val intervals: List<TimeSettingState>
     val addTimeButton: ButtonState

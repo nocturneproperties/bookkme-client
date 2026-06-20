@@ -10,27 +10,21 @@ import SwiftUI
 
 @MainActor
 @Observable
-class IOSCheckBoxState: @MainActor IOSViewState, @MainActor CheckBoxState, NativeStateRepresentation {
+class IOSBooleanState: @MainActor IOSViewState, @MainActor BooleanState, NativeStateRepresentation {
 	
-	typealias SwiftType = IOSCheckBoxState
-	typealias KotlinType = CheckBoxState
+	typealias SwiftType = IOSBooleanState
+	typealias KotlinType = BooleanState
 	
 	var isChecked: Bool
-	
 	var isEnabled: Bool
-	
 	var isValid: Bool
-	
 	var onCheckedChange: ((KotlinBoolean) -> Void)?
-	
 	var supportingTextRes: (any StringDesc)?
-	
 	var text: any StringDesc
-	
 	var validationState: ValidationState
 	
-	init(text: any StringDesc = RawStringDesc(string: "")) {
-		isChecked = false
+	init(text: any StringDesc = RawStringDesc(string: ""), isChecked: Bool = false) {
+		self.isChecked = isChecked
 		isEnabled = true
 		isValid = true
 		onCheckedChange = nil

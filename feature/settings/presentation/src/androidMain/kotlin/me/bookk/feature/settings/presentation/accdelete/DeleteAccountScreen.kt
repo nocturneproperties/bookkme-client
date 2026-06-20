@@ -47,7 +47,7 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
                 AppCard {
                     StateSwitch(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        state = state.confirmationSwitch,
+                        state = state.confirmation,
                         onCheckedChange = LocalDeleteAccountEventListener.current.onSwitchStateChanged
                     )
                 }

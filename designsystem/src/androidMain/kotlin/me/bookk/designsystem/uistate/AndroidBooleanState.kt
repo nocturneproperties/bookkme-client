@@ -8,7 +8,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 
 @Immutable
-class AndroidCheckboxState(
+class AndroidBooleanState(
     isVisible: Boolean = true,
     isChecked: Boolean = false,
     validationState: ValidationState = ValidationState.DEFAULT,
@@ -16,7 +16,7 @@ class AndroidCheckboxState(
     isValid: Boolean = true,
     text: StringDesc = "".desc(),
     onCheckedChange: ((Boolean) -> Unit)? = null
-) : AndroidViewState(isVisible), CheckBoxState {
+) : AndroidViewState(isVisible), BooleanState {
     override var isEnabled: Boolean by mutableStateOf(isEnabled)
     override var isChecked: Boolean by mutableStateOf(isChecked)
     override var text: StringDesc by mutableStateOf(text)

@@ -2,7 +2,7 @@ package me.bookk.designsystem.uistate
 
 import dev.icerock.moko.resources.desc.StringDesc
 
-interface CheckBoxState : ViewState {
+interface BooleanState : ViewState {
     var text: StringDesc
     var isEnabled: Boolean
     var isChecked: Boolean

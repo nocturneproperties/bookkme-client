@@ -12,11 +12,11 @@ import shared
 struct StateSwitch: View {
 	
 	@Bindable
-	var state: IOSSwitchState
+	var state: IOSBooleanState
 	let onToggledChanged: (Bool) -> Void
 	
-	init(state: SwitchState, onToggledChanged: @escaping (Bool) -> Void) {
-		self._state = Bindable(wrappedValue: state.impl())
+	init(state: BooleanState, onToggledChanged: @escaping (Bool) -> Void) {
+		self._state = Bindable(wrappedValue: IOSBooleanState.cast(state))
 		self.onToggledChanged = onToggledChanged
 	}
 	

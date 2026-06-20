@@ -18,7 +18,7 @@ class DeleteAccountViewModel(
     val uiState = settingsStateFactory.createDeleteAccountState(createInitData())
 
     fun onSwitchStateChanged(isChecked: Boolean) {
-        uiState.confirmationSwitch.isChecked = isChecked
+        uiState.confirmation.isChecked = isChecked
         uiState.deleteButton.isEnabled = isChecked
     }
 

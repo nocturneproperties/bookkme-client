@@ -10,7 +10,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.CheckBoxState
+import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 
@@ -73,7 +73,7 @@ class PickOptionViewModel(
                 filtered.any { it.checkBox.isChecked }
     }
 
-    private fun onItemSelected(item: CheckBoxState) {
+    private fun onItemSelected(item: BooleanState) {
         options.forEach { item ->
             item.checkBox.isChecked = item.checkBox.isChecked && pickArgs.choice == Choice.MULTIPLE
         }

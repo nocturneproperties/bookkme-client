@@ -89,7 +89,7 @@ private fun PreviewDark() {
         DashboardScreen(
             state = AndroidDashboardState().apply {
                 appBar.title = "Business name".desc()
-                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random()), BusinessDashboardSection.Appointments(), BusinessDashboardSection.Shop()))
+                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random()), BusinessDashboardSection.Appointments(Uuid.random()), BusinessDashboardSection.Shop()))
             }
         )
     }
@@ -102,7 +102,7 @@ private fun PreviewLight() {
         DashboardScreen(
             state = AndroidDashboardState().apply {
                 appBar.title = "Business name".desc()
-                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random()), BusinessDashboardSection.Appointments(), BusinessDashboardSection.Shop()))
+                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random()), BusinessDashboardSection.Appointments(Uuid.random()), BusinessDashboardSection.Shop()))
             }
         )
     }

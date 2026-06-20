@@ -21,6 +21,9 @@ struct AppointmentsTab: View {
 				.navigationDestination(for: AppointmentsDestination.Details.self) { dest in
 					AppointmentDetailsScreen(appointmentId: dest.appointmentId)
 				}
+				.navigationDestination(for: AppointmentsDestination.Settings.self) { dest in
+					AppointmentSettingsScreen(businessId: dest.businessId)
+				}
 		}.environmentObject(navigationStack)
 	}
 }

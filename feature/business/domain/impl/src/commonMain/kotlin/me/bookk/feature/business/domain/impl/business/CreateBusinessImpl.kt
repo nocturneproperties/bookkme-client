@@ -1,5 +1,6 @@
 package me.bookk.feature.business.domain.impl.business
 
+import kotlinx.datetime.TimeZone
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.entity.Business
@@ -10,7 +11,11 @@ internal class CreateBusinessImpl(
     private val refreshBusinessInfo: RefreshBusinessInfo
 ) : CreateBusiness {
     override suspend fun invoke(name: String): Business {
-        val business = businessDataSource.createBusiness(name, "UAH") //Temporary currency hardcode
+        val business = businessDataSource.createBusiness(
+            name = name,
+            currencyCode = "UAH", //Temporary currency hardcode
+            timeZone = TimeZone.currentSystemDefault()
+        )
         refreshBusinessInfo()
         return business
     }

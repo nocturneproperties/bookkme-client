@@ -1,26 +1,37 @@
 package me.bookk.feature.appointments.data.mapping
 
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import library.money.api.Money
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
+import me.bookk.database.entity.AppointmentSettingsDayOffEntity
+import me.bookk.database.entity.AppointmentSettingsEntity
+import me.bookk.database.entity.AppointmentSettingsWorkHourEntity
 import me.bookk.database.relation.AppointmentLocal
+import me.bookk.database.relation.AppointmentSettingsLocal
 import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestStatusRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentSettingsRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
 import me.bookk.feature.appointments.data.remote.model.ClientSnapshotRemote
 import me.bookk.feature.appointments.data.remote.model.ServiceSnapshotRemote
+import me.bookk.feature.appointments.data.remote.model.WorkHourRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
+import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
+import me.bookk.feature.appointments.domain.api.entity.WorkHour
 
 internal fun AppointmentRequest.toRemote() = AppointmentRequestRemote(
     id = id,
@@ -129,4 +140,65 @@ internal fun AppointmentLocal.toDomain() = Appointment(
     status = AppointmentStatus.valueOf(entity.status),
     note = entity.note,
     cancellationReason = entity.cancellationReason
+)
+
+internal fun AppointmentSettings.toRemote() = AppointmentSettingsRemote(
+    id = id,
+    businessId = businessId,
+    timeZone = timeZone,
+    workingDays = workingDays,
+    workingHours = workingHours.map { it.toRemote() },
+    dayOffs = dayOffs,
+    automaticApproval = automaticApproval,
+    inBetweenBreakInMinutes = inBetweenBreakInMinutes,
+    appointmentNote = appointmentNote
+)
+
+private fun WorkHour.toRemote() = WorkHourRemote(
+    dayOfWeek = dayOfWeek,
+    from = from,
+    to = to
+)
+
+internal fun AppointmentSettings.toEntity() = AppointmentSettingsEntity(
+    id = id,
+    businessId = businessId,
+    timeZone = timeZone.id,
+    automaticApproval = automaticApproval,
+    inBetweenBreakInMinutes = inBetweenBreakInMinutes,
+    appointmentNote = appointmentNote
+)
+
+internal fun AppointmentSettings.toWorkHourEntities() = workingHours.map { workHour ->
+    AppointmentSettingsWorkHourEntity(
+        settingsId = id,
+        dayOfWeek = workHour.dayOfWeek.name,
+        from = workHour.from.toString(),
+        to = workHour.to.toString()
+    )
+}
+
+internal fun AppointmentSettings.toDayOffEntities() = dayOffs.map { dayOff ->
+    AppointmentSettingsDayOffEntity(
+        settingsId = id,
+        date = dayOff.toString()
+    )
+}
+
+internal fun AppointmentSettingsLocal.toDomain() = AppointmentSettings(
+    id = entity.id,
+    businessId = entity.businessId,
+    timeZone = TimeZone.of(entity.timeZone),
+    workingDays = workHours.map { DayOfWeek.valueOf(it.dayOfWeek) },
+    workingHours = workHours.map {
+        WorkHour(
+            dayOfWeek = DayOfWeek.valueOf(it.dayOfWeek),
+            from = LocalTime.parse(it.from),
+            to = LocalTime.parse(it.to)
+        )
+    },
+    dayOffs = dayOffs.map { LocalDate.parse(it.date) },
+    automaticApproval = entity.automaticApproval,
+    inBetweenBreakInMinutes = entity.inBetweenBreakInMinutes,
+    appointmentNote = entity.appointmentNote
 )

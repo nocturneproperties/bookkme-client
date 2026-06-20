@@ -6,6 +6,8 @@ import me.bookk.feature.appointments.presentation.screen.details.AndroidAppointm
 import me.bookk.feature.appointments.presentation.screen.details.AppointmentDetailsState
 import me.bookk.feature.appointments.presentation.screen.requestlist.AndroidAppointmentListState
 import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListState
+import me.bookk.feature.appointments.presentation.screen.settings.AndroidAppointmentSettingsState
+import me.bookk.feature.appointments.presentation.screen.settings.AppointmentSettingsState
 
 class AndroidAppointmentsStateFactory : AppointmentsStateFactory {
     override fun createAppointmentListState(): AppointmentListState {
@@ -18,5 +20,9 @@ class AndroidAppointmentsStateFactory : AppointmentsStateFactory {
 
     override fun createAppointmentDetailsState(): AppointmentDetailsState {
         return AndroidAppointmentDetailsState()
+    }
+
+    override fun createAppointmentSettingsState(): AppointmentSettingsState {
+        return AndroidAppointmentSettingsState()
     }
 }

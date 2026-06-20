@@ -1,5 +1,6 @@
 package me.bookk.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlin.uuid.Uuid
@@ -20,5 +21,7 @@ class BusinessEntity(
     val insta: String?,
     val viber: String?,
     val whatsApp: String?,
-    val telegram: String?
+    val telegram: String?,
+    @ColumnInfo(defaultValue = "UTC")
+    val timeZone: String
 )

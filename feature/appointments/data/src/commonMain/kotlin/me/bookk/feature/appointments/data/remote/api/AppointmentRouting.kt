@@ -13,6 +13,15 @@ object AppointmentRouting {
             @Resource("/instant")
             class Instant(val parent: Appointment = Appointment())
 
+            @Resource("/settings/{businessId}")
+            class Settings(val parent: Appointment = Appointment(), val businessId: Uuid)
+
+            @Resource("/list/{businessId}")
+            class List(val parent: Api = Api(), val businessId: Uuid, val date: LocalDate)
+
+            @Resource("/history/{businessId}")
+            class History(val parent: Api = Api(), val businessId: Uuid, val limit: Int, val offset: Long)
+
             @Resource("/request/{businessId}")
             class Requests(
                 val parent: Appointment = Appointment(),
@@ -28,11 +37,5 @@ object AppointmentRouting {
             @Resource("/{id}")
             class Id(val parent: Appointment = Appointment(), val id: Uuid)
         }
-
-        @Resource("/appointments/list/{businessId}")
-        class Appointments(val parent: Api = Api(), val businessId: Uuid, val date: LocalDate)
-
-        @Resource("/appointments/history/{businessId}")
-        class AppointmentHistory(val parent: Api = Api(), val businessId: Uuid, val limit: Int, val offset: Long)
     }
 }

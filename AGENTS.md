@@ -190,6 +190,8 @@ cd feature/.template
 
 If a new data-source method is needed: add it to the interface in `data/source`, implement in `Common<X>DataSource(httpClient) : DataSource(), <X>DataSource` in `data/src/commonMain` wrapping calls in `mapExceptions { ... }`, using Ktor `Resources` typed routes and request/response models in `data/remote/`. Register with `singleOf(::Common<X>DataSource) bind <X>DataSource::class` in the feature's data DI module. Always map remote/local models to domain entities — never leak Ktor models out of `data`.
 
+**Remote model field order matters.** API requests/responses are serialized as `application/x-protobuf` via `kotlinx-serialization-protobuf` (`core/data/.../Serialization.kt`), and none of the remote models use `@ProtoNumber` — field numbers are assigned positionally by declaration order. Whenever you add, remove, or reorder a field on a `*Remote`/`*Request` model, fetch the current schema from the swagger endpoint (see API Documentation section) and verify the Kotlin property declaration order matches the backend's property order exactly (e.g. `curl -s <swagger-yaml-url> | python3 -c "import json,sys; print(list(json.load(sys.stdin)['components']['schemas']['<SchemaName>']['properties'].keys()))"`). A mismatched order silently desyncs every field after the change — Kotlin won't catch it, only a wire-format bug at runtime will.
+
 ### DataSource method contract
 
 Each datasource method must do **one thing**: either fetch from network, read from DB, or write to DB — never combine these in a single method. When a use case needs to fetch and then cache, it calls two separate datasource methods (e.g. `getAppointmentsForDate` then `saveAppointmentsForDate`). The use case is the only orchestrator of multi-step data operations.

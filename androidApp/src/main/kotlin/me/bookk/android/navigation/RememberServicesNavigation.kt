@@ -9,7 +9,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-fun rememberServicesNavigation(controller: NavController) = remember {
+fun rememberServicesNavigation(controller: NavController) = remember(controller) {
     ServicesNavigation(
         onBack = { controller.popBackStack() },
         toServiceDetails = {},

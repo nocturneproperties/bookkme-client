@@ -33,4 +33,16 @@
 
     <string name="appointments_details_cancel">Are you sure you want to cancel this appointment?\nClient attached to the system will receive notification.</string>
     <string name="appointments_details_cancel_reason">reason(optional)</string>
+
+    <string name="appointments_settings_title">Appointment settings</string>
+    <string name="appointments_settings_working_days">Working days</string>
+    <string name="appointments_settings_add_working_day">Add working day</string>
+    <string name="appointments_settings_from">From</string>
+    <string name="appointments_settings_to">To</string>
+    <string name="appointments_settings_automatic_approval">Automatically approve appointment requests</string>
+    <string name="appointments_settings_break">Break between appointments (minutes)</string>
+    <string name="appointments_settings_note">Note for clients</string>
+    <string name="appointments_settings_note_placeholder">Add a note(optional)</string>
+    <string name="appointments_settings_day_offs">Days off</string>
+    <string name="appointments_settings_add_day_off">Add day off</string>
 </resources>

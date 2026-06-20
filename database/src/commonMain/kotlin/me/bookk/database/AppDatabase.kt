@@ -1,6 +1,5 @@
 package me.bookk.database
 
-import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -21,6 +20,7 @@ import me.bookk.database.dao.UserProfileDao
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
 import me.bookk.database.entity.AppointmentSettingsDayOffEntity
+import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
 import me.bookk.database.entity.AppointmentSettingsEntity
 import me.bookk.database.entity.AppointmentSettingsWorkHourEntity
 import me.bookk.database.entity.BusinessEntity
@@ -28,7 +28,6 @@ import me.bookk.database.entity.ClientEntity
 import me.bookk.database.entity.ServiceEntity
 import me.bookk.database.entity.ServiceGroupEntity
 import me.bookk.database.entity.UserProfileEntity
-import me.bookk.database.migration.DeleteAppointmentLocalDateMigration
 
 @Database(
     entities = [
@@ -40,21 +39,12 @@ import me.bookk.database.migration.DeleteAppointmentLocalDateMigration
         AppointmentEntity::class,
         AppointmentServiceSnapshotEntity::class,
         AppointmentSettingsEntity::class,
+        AppointmentSettingsDayScheduleEntity::class,
         AppointmentSettingsWorkHourEntity::class,
         AppointmentSettingsDayOffEntity::class
     ],
-    version = 10,
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4),
-        AutoMigration(from = 4, to = 5),
-        AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7),
-        AutoMigration(from = 7, to = 8, spec = DeleteAppointmentLocalDateMigration::class),
-        AutoMigration(from = 8, to = 9),
-        AutoMigration(from = 9, to = 10)
-    ]
+    version = 1,
+    autoMigrations = []
 )
 @TypeConverters(
     UuidConverter::class,

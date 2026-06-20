@@ -8,7 +8,7 @@ import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "appointment_settings_day_off",
-    primaryKeys = ["settingsId", "date"],
+    primaryKeys = ["settingsId", "start", "end"],
     foreignKeys = [
         ForeignKey(
             entity = AppointmentSettingsEntity::class,
@@ -21,5 +21,6 @@ import kotlin.uuid.Uuid
 )
 class AppointmentSettingsDayOffEntity(
     val settingsId: Uuid,
-    val date: String
+    val start: String,
+    val end: String
 )

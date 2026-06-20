@@ -9,10 +9,9 @@ class IOSMultiPickerState: IOSViewState, @MainActor MultiPickerState, NativeStat
     typealias KotlinType = MultiPickerState
 
     var pickerTitle: any StringDesc
-    var options: [PickerPresentation]
-    var selectedItems: [PickerPresentation]
-    var onItemsPicked: ([PickerPresentation]) -> Void
-    var onItemsRemoveRequested: ([PickerPresentation]) -> Void
+	var selectedItems: [PickerPresentation]
+	var onItemsPicked: ([PickerPresentation]) -> Void
+	var onItemsRemoveRequested: ([PickerPresentation]) -> Void
     var addItemText: any StringDesc
     var isEditable: Bool
 
@@ -26,7 +25,6 @@ class IOSMultiPickerState: IOSViewState, @MainActor MultiPickerState, NativeStat
         isEditable: Bool = true
     ) {
         self.pickerTitle = pickerTitle
-        self.options = options
         self.selectedItems = selectedItems
         self.onItemsPicked = onItemsPicked
         self.onItemsRemoveRequested = onItemsRemoveRequested
@@ -34,12 +32,8 @@ class IOSMultiPickerState: IOSViewState, @MainActor MultiPickerState, NativeStat
         self.isEditable = isEditable
     }
 
-    func replaceOptions(options: [PickerPresentation]) {
-        self.options = options
-    }
-
-    func replaceSelected(selected: [PickerPresentation]) {
-        self.selectedItems = selected
+    func replaceSelected(items: [PickerPresentation]) {
+        self.selectedItems = items
     }
 }
 

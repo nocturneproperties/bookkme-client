@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import me.bookk.database.entity.AppointmentSettingsDayOffEntity
+import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
 import me.bookk.database.entity.AppointmentSettingsEntity
 import me.bookk.database.entity.AppointmentSettingsWorkHourEntity
 import me.bookk.database.relation.AppointmentSettingsLocal
@@ -22,7 +23,13 @@ abstract class AppointmentSettingsDao {
     @Upsert
     abstract suspend fun upsertSettings(settings: AppointmentSettingsEntity)
 
-    @Query("DELETE FROM appointment_settings_work_hour WHERE settingsId = :settingsId")
+    @Query("DELETE FROM appointment_settings_day_schedule WHERE settingsId = :settingsId")
+    abstract suspend fun deleteDaySchedules(settingsId: Uuid)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insertDaySchedules(daySchedules: List<AppointmentSettingsDayScheduleEntity>)
+
+    @Query("DELETE FROM appointment_settings_working_time WHERE settingsId = :settingsId")
     abstract suspend fun deleteWorkHours(settingsId: Uuid)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -37,10 +44,13 @@ abstract class AppointmentSettingsDao {
     @Transaction
     open suspend fun upsertWithChildren(
         settings: AppointmentSettingsEntity,
+        daySchedules: List<AppointmentSettingsDayScheduleEntity>,
         workHours: List<AppointmentSettingsWorkHourEntity>,
         dayOffs: List<AppointmentSettingsDayOffEntity>
     ) {
         upsertSettings(settings)
+        deleteDaySchedules(settings.id)
+        insertDaySchedules(daySchedules)
         deleteWorkHours(settings.id)
         insertWorkHours(workHours)
         deleteDayOffs(settings.id)

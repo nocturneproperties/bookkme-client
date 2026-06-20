@@ -1,6 +1,5 @@
 package me.bookk.database.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
@@ -26,6 +25,5 @@ class ServiceGroupEntity(
     val id: Uuid,
     val businessId: Uuid,
     val name: String,
-    @ColumnInfo(defaultValue = "0")
     val createdAt: Instant
 )

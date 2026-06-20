@@ -5,8 +5,8 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.DatePickerFieldState
-import me.bookk.designsystem.uistate.MultiPickerState
 import me.bookk.designsystem.uistate.NavigationState
+import me.bookk.designsystem.uistate.OptionsMultiPickerState
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PickerPresentation
 import me.bookk.designsystem.uistate.PresentationNotificationState
@@ -21,7 +21,7 @@ interface AppointmentCreateState {
     val appBar: AppBarState
 
     val clientPicker: PickerFieldState<SimplePickerPresentation<ClientSnapshot>>
-    val servicePicker: MultiPickerState<ServicePickerPresentation>
+    val servicePicker: OptionsMultiPickerState<ServicePickerPresentation>
     var subtotalLabel: StringDesc
     var subtotalPrice: String
     val datePicker: DatePickerFieldState

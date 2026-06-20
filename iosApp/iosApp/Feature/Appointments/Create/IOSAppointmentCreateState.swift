@@ -11,7 +11,7 @@ class IOSAppointmentCreateState: @MainActor AppointmentCreateState, NativeStateR
     let appBar: any AppBarState
 
     let clientPicker: any PickerFieldState
-    let servicePicker: any MultiPickerState
+    let servicePicker: any OptionsMultiPickerState
     var subtotalLabel: any StringDesc
     var subtotalPrice: String
     let datePicker: any DatePickerFieldState
@@ -25,7 +25,7 @@ class IOSAppointmentCreateState: @MainActor AppointmentCreateState, NativeStateR
     init() {
         appBar = IOSAppBarState()
         clientPicker = IOSPickerState()
-        servicePicker = IOSMultiPickerState()
+        servicePicker = IOSOptionsMultiPickerState()
         subtotalLabel = RawStringDesc(string: "")
         subtotalPrice = ""
         datePicker = IOSDatePickerFieldState()

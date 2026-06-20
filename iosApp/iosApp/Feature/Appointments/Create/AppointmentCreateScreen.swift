@@ -18,7 +18,7 @@ struct AppointmentCreateScreen: View {
             VStack(spacing: 8) {
                 PickerField(state.clientPicker)
                     .padding(.top, 16)
-                MultiPickerField(state.servicePicker) { item, onRemove in
+                OptionsMultiPickerField(state.servicePicker) { item, onRemove in
                     ServiceItem(
                         service: item as! ServicePickerPresentation,
                         onRemove: onRemove

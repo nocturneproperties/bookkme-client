@@ -8,6 +8,7 @@ import io.ktor.client.request.setBody
 import me.bookk.core.data.DataSource
 import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.feature.appointments.data.mapping.toDayOffEntities
+import me.bookk.feature.appointments.data.mapping.toDayScheduleEntities
 import me.bookk.feature.appointments.data.mapping.toDomain
 import me.bookk.feature.appointments.data.mapping.toEntity
 import me.bookk.feature.appointments.data.mapping.toRemote
@@ -48,6 +49,7 @@ internal class CommonAppointmentSettingsDataSource(
         mapExceptions {
             appointmentSettingsDao.upsertWithChildren(
                 settings = settings.toEntity(),
+                daySchedules = settings.toDayScheduleEntities(),
                 workHours = settings.toWorkHourEntities(),
                 dayOffs = settings.toDayOffEntities()
             )

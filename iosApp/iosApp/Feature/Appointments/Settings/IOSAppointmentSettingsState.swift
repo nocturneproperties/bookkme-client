@@ -9,6 +9,9 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
     typealias KotlinType = AppointmentSettingsState
 
     let appBar: any AppBarState
+	
+	let schedule: [any DaySettingsState]
+	let dayOffs: any MultiPickerState
 
     let save: any ButtonState
 
@@ -20,5 +23,7 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
         save = IOSButtonState()
         navigation = IOSNavigationState()
         notifications = IOSNotificationState()
+		schedule = []
+		dayOffs = IOSMultiPickerState()
     }
 }

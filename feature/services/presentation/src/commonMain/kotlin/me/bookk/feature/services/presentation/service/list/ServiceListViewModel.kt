@@ -7,7 +7,7 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
@@ -67,8 +67,8 @@ class ServiceListViewModel(
                             id = group.id.toString(),
                             name = group.name,
                             items = services.map { ServiceUI(it) },
-                            onItemClick = weakSelfClosure { vm, item -> vm.onServiceClick(item) },
-                            onItemDeleteClick = weakSelfClosure { vm, item -> vm.onServiceDeleteClick(item) }
+                            onItemClick = weakVMClosure { vm, item -> vm.onServiceClick(item) },
+                            onItemDeleteClick = weakVMClosure { vm, item -> vm.onServiceDeleteClick(item) }
                         )
                     }
                 items = grouped
@@ -122,14 +122,14 @@ class ServiceListViewModel(
 
     private fun ServiceListState.setup() = apply {
         appBar.title = ServicesRes.strings.services_title.desc()
-        appBar.onBackClick = weakSelfClosure {
+        appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(Back)
         }
         appBar.actions.replace(
             listOf(
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakSelfClosure {
+                    onClick = weakVMClosure {
                         it.uiState.navigation.push(AddService(it.businessId))
                     }
                 )
@@ -137,16 +137,16 @@ class ServiceListViewModel(
         )
 
         searchField.placeholder = DesignSystem.strings.action_search.desc()
-        searchField.onTextChanged = weakSelfClosure { vm, query -> vm.onSearchQueryChanged(query) }
+        searchField.onTextChanged = weakVMClosure { vm, query -> vm.onSearchQueryChanged(query) }
         groupsSection = Action(
             title = ServicesRes.strings.services_create_groups.desc(),
-            onClick = weakSelfClosure { uiState.navigation.push(ServiceGroups(businessId))  }
+            onClick = weakVMClosure { uiState.navigation.push(ServiceGroups(businessId))  }
         )
         services.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = ServicesRes.strings.services_empty.desc()
         )
-        refreshState.onRefresh = weakSelfClosure { it.loadServiceList() }
+        refreshState.onRefresh = weakVMClosure { it.loadServiceList() }
     }
 
 }

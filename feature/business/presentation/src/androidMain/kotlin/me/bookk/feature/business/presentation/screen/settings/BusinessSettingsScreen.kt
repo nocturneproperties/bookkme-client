@@ -23,7 +23,7 @@ import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.PickerField
-import me.bookk.designsystem.components.TextButton
+import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
@@ -38,7 +38,7 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
             AppTopBar(
                 state = state.appBar,
                 actions = {
-                    TextButton(
+                    StateTextButton(
                         state = state.save,
                         onClick = LocalBusinessSettingsEventListener.current.onSaveClick
                     )
@@ -85,12 +85,12 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                                 onValueChange = {}
                             )
-                            TextButton(
+                            StateTextButton(
                                 state = state.pickLocation,
                                 onClick = LocalBusinessSettingsEventListener.current.onPickLocationClick
                             )
                         }
-                        TextButton(
+                        StateTextButton(
                             state = state.testLocation,
                             onClick = LocalBusinessSettingsEventListener.current.onTestLocationClick
                         )

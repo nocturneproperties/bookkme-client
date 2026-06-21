@@ -17,7 +17,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
@@ -106,7 +106,7 @@ class AppointmentListViewModel(
             AppointmentItemState(
                 appointment = appointment,
                 formatter = dateFormat,
-                onItemClick = weakSelfClosure { it.onAppointmentClick(appointment) }
+                onItemClick = weakVMClosure { it.onAppointmentClick(appointment) }
             )
         }
         uiState.appointments.replace(items)
@@ -120,18 +120,18 @@ class AppointmentListViewModel(
                 AppBarAction(
                     contentDescription = AppointmentsRes.strings.appointments_pick_date.desc(),
                     icon = DesignSystem.images.date_range,
-                    onClick = weakSelfClosure { it.onPickDateClick() }
+                    onClick = weakVMClosure { it.onPickDateClick() }
                 ),
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_new.desc(),
                     icon = DesignSystem.images.plus,
-                    onClick = weakSelfClosure { it.onNewAppointmentClick() }
+                    onClick = weakVMClosure { it.onNewAppointmentClick() }
                 )
             )
         )
         datePicker.pickedDate = LocalDate.now()
-        datePicker.onDatePicked = weakSelfClosure { vm, date -> vm.onNewDateSelected(date) }
-        refresh.onRefresh = weakSelfClosure { it.onRefresh() }
+        datePicker.onDatePicked = weakVMClosure { vm, date -> vm.onNewDateSelected(date) }
+        refresh.onRefresh = weakVMClosure { it.onRefresh() }
         appointments.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = AppointmentsRes.strings.appointments_list_empty.desc(),

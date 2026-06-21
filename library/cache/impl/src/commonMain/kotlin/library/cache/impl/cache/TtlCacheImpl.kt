@@ -3,14 +3,14 @@ package library.cache.impl.cache
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import library.cache.api.Cache
-import me.bookk.core.LogFactory
+import me.bookk.core.Logger
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
 import kotlin.time.Duration
 
 internal class TtlCacheImpl(cacheName: String) : Cache {
 
-    private val logger = LogFactory.createLogger(cacheName)
+    private val logger = Logger.create(cacheName)
     private val mutex = Mutex()
     private val cacheMap = mutableMapOf<String, CacheEntry<*>>()
 

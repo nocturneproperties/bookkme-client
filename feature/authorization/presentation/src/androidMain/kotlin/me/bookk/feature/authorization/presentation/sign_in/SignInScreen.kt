@@ -17,7 +17,7 @@ import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
-import me.bookk.designsystem.components.TextButton
+import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -62,12 +62,12 @@ fun SignInScreen(
                     state = state.signInButton,
                     onClick = listener::onSignInClick
                 )
-                TextButton(
+                StateTextButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.signUpButton,
                     onClick = LocalNavigation.current.navigateToSignUp
                 )
-                TextButton(
+                StateTextButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.troubleshootButton,
                     onClick = LocalNavigation.current.navigateToTroubleshoot
@@ -100,7 +100,7 @@ private fun PasskeyInfoCard(state: SignInState, onButtonClick: () -> Unit) {
                 text = state.passkeyInfoCardData.description.localized(),
                 color = LocalColors.current.secondaryText
             )
-            TextButton(
+            StateTextButton(
                 modifier = Modifier.padding(start = 8.dp),
                 state = state.learnMoreButton,
                 onClick = onButtonClick

@@ -50,7 +50,7 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                             state.addItemText.localized(),
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Start,
-                            style = MaterialTheme.typography.titleSmall.active()
+                            style = MaterialTheme.typography.titleMedium.active()
                         )
                     }
                 }

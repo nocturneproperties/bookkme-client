@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -42,7 +41,6 @@ fun StateSwitch(
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
                 .clip(MaterialTheme.shapes.large)
                 .clickable {
                     state.onCheckedChange?.invoke(!state.isChecked)
@@ -50,14 +48,18 @@ fun StateSwitch(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            val text = state.text.html()
+            if (text.isNotBlank()) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = text,
+                    style = MaterialTheme.typography.titleMedium.primary()
+                )
+            }
             Switch(
                 checked = state.isChecked,
                 colors = colors,
                 onCheckedChange = onCheckedChange
-            )
-            Text(
-                text = state.text.html(),
-                style = MaterialTheme.typography.bodyLarge.primary()
             )
         }
         AnimatedVisibility(state.supportingTextRes != null) {

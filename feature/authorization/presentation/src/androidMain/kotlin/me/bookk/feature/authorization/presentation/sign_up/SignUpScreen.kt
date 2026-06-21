@@ -26,7 +26,7 @@ import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNotifications
-import me.bookk.designsystem.components.TextButton
+import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -127,7 +127,7 @@ private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
                 text = state.passkeyInfoCardData.description.localized(),
                 color = LocalColors.current.secondaryText
             )
-            TextButton(
+            StateTextButton(
                 modifier = Modifier.padding(start = 8.dp),
                 state = state.learnMoreButton,
                 onClick = onButtonClick

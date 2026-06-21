@@ -12,7 +12,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification.Message
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
@@ -36,7 +36,7 @@ class SignUpViewModel(
 
     val uiState: SignUpState = stateFactory.createSignUpState(createInitData()).apply {
         appBar.size = TopBarSize.LARGE
-        appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(SignUpNavigationDestination.Back) }
+        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(SignUpNavigationDestination.Back) }
         name.isValid = false
         lastName.isValid = false
         email.isValid = false

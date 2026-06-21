@@ -224,6 +224,7 @@ internal fun AppointmentSettingsLocal.toDomain() = AppointmentSettings(
         days = daySchedules.associate { daySchedule ->
             val dayOfWeek = DayOfWeek.valueOf(daySchedule.dayOfWeek)
             dayOfWeek to DayOfWeekSchedule(
+                dayOfWeek = dayOfWeek,
                 workingTime = workHours.filter { it.dayOfWeek == daySchedule.dayOfWeek }.map {
                     WorkHour(
                         dayOfWeek = dayOfWeek,

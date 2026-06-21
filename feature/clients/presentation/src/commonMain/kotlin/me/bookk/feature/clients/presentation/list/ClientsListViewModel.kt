@@ -8,7 +8,7 @@ import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -53,7 +53,7 @@ class ClientsListViewModel(
                             id = entry.key,
                             header = entry.key,
                             items = entry.value,
-                            onItemClick = weakSelfClosure { vm, client -> vm.onClientClick(client) }
+                            onItemClick = weakVMClosure { vm, client -> vm.onClientClick(client) }
                         )
                     }
                 items = grouped
@@ -93,14 +93,14 @@ class ClientsListViewModel(
             listOf(
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakSelfClosure { it.uiState.navigation.push(AddClient(args.businessId)) }
+                    onClick = weakVMClosure { it.uiState.navigation.push(AddClient(args.businessId)) }
                 )
             )
         )
-        appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
+        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
-        searchField.onTextChanged = weakSelfClosure { vm, value -> vm.onSearchQueryChanged(value) }
-        refreshState.onRefresh = weakSelfClosure { it.loadClients() }
+        searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
+        refreshState.onRefresh = weakVMClosure { it.loadClients() }
         clientsList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = ClientsRes.strings.clients_empty.desc()

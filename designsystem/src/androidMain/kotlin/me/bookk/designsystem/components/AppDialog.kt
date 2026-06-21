@@ -60,7 +60,7 @@ fun AppDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 buttonDescriptors.forEach {
-                    TextButton(
+                    StateTextButton(
                         onClick = {
                             it.onClick.invoke()
                             onDismiss()

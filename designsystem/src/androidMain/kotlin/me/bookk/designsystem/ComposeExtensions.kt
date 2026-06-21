@@ -20,11 +20,11 @@ import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.desc.StringDesc
-import me.bookk.core.LogFactory
+import me.bookk.core.Logger
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.ValidationState
 
-private val logger = LogFactory.createLogger("DesignSystemExtensions")
+private val logger = Logger.create("DesignSystemExtensions")
 
 @Composable
 fun ColorResource.get(): Color {

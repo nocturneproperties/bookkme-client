@@ -12,8 +12,9 @@ class AndroidMultiPickerState<T : PickerPresentation> : AndroidViewState(), Mult
     override val selectedItems = mutableStateListOf<T>()
     override var onItemsPicked: (List<T>) -> Unit by mutableStateOf({})
     override var onItemsRemoveRequested: (List<T>) -> Unit by mutableStateOf({})
-    override var addItemText: StringDesc by mutableStateOf("".desc())
+    override var addItemButton: ButtonState = AndroidButtonState()
     override var isEditable: Boolean by mutableStateOf(true)
+    override var isPickerVisible: Boolean by mutableStateOf(false)
 
     override fun replaceSelected(items: List<T>) {
         this.selectedItems.clear()

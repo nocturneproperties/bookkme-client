@@ -5,7 +5,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.bookk.core.LogFactory
+import me.bookk.core.Logger
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationNotification
 import kotlin.coroutines.CoroutineContext
@@ -16,7 +16,7 @@ actual abstract class ViewModel actual constructor(
     vmArgs: VmArgs
 ) : AndroidViewModel() {
 
-    private val internalLogger = LogFactory.createLogger("ViewModel")
+    private val internalLogger = Logger.create("ViewModel")
     private val activeJobs = mutableMapOf<String, Job>()
     protected actual val viewModelScope = frameworkScope
     protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper

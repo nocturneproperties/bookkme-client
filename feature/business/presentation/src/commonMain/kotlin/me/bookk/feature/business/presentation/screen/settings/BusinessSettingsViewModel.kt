@@ -9,7 +9,7 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.resources.toOneLine
@@ -47,7 +47,7 @@ class BusinessSettingsViewModel(
     }
 
     private fun BusinessSettingsState.setup() = apply {
-        appBar.onBackClick = weakSelfClosure {
+        appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(BusinessSettingsDestination.Back)
         }
     }

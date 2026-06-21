@@ -9,7 +9,7 @@ import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
@@ -84,33 +84,33 @@ class CreateClientViewModel(
     private fun CreateClientState.setup(): CreateClientState {
         appBar.size = TopBarSize.LARGE
         appBar.title = ClientsRes.strings.clients_create_title.desc()
-        appBar.onBackClick = weakSelfClosure {
+        appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(CreateClientDestination.Back)
         }
         name.isValid = false
         name.label = ClientsRes.strings.clients_create_name.desc()
         name.placeholder = ClientsRes.strings.clients_create_name_placeholder.desc()
         name.inputType = InputType.TEXT
-        name.onTextChanged = weakSelfClosure { vm, text -> vm.onNameChanged(text) }
+        name.onTextChanged = weakVMClosure { vm, text -> vm.onNameChanged(text) }
         lastName.isValid = false
         lastName.label = ClientsRes.strings.clients_create_last_name.desc()
         lastName.placeholder = ClientsRes.strings.clients_create_last_name_placeholder.desc()
         lastName.inputType = InputType.TEXT
-        lastName.onTextChanged = weakSelfClosure { vm, text -> vm.onLastNameChanged(text) }
+        lastName.onTextChanged = weakVMClosure { vm, text -> vm.onLastNameChanged(text) }
         phone.isValid = false
         phone.label = ClientsRes.strings.clients_create_phone.desc()
         phone.placeholder = ClientsRes.strings.clients_create_phone_placeholder.desc()
         phone.inputType = InputType.PHONE
-        phone.onTextChanged = weakSelfClosure { vm, text -> vm.onPhoneChanged(text) }
+        phone.onTextChanged = weakVMClosure { vm, text -> vm.onPhoneChanged(text) }
         email.isValid = true
         email.label = ClientsRes.strings.clients_create_email.desc()
         email.placeholder = ClientsRes.strings.clients_create_email_placeholder.desc()
         email.inputType = InputType.EMAIL
-        email.onTextChanged = weakSelfClosure { vm, text -> vm.onEmailChanged(text) }
+        email.onTextChanged = weakVMClosure { vm, text -> vm.onEmailChanged(text) }
 
         submit.isEnabled = false
         submit.text = DesignSystem.strings.action_create.desc()
-        submit.onClick = weakSelfClosure { it.onSubmit() }
+        submit.onClick = weakVMClosure { it.onSubmit() }
         return this
     }
 

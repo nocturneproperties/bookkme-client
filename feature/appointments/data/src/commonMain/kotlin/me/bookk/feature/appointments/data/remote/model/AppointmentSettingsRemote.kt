@@ -39,7 +39,7 @@ data class AppointmentSettingsRemote(
 data class WorkingScheduleRemote(
     val days: Map<DayOfWeek, DayOfWeekScheduleRemote>
 ) {
-    fun toDomain() = WorkingSchedule(days = days.mapValues { it.value.toDomain() })
+    fun toDomain() = WorkingSchedule(days = days.mapValues { it.value.toDomain(it.key) })
 }
 
 @Serializable
@@ -47,7 +47,8 @@ data class DayOfWeekScheduleRemote(
     val workingTime: List<WorkHourRemote>,
     val isActive: Boolean
 ) {
-    fun toDomain() = DayOfWeekSchedule(
+    fun toDomain(dayOfWeek: DayOfWeek) = DayOfWeekSchedule(
+        dayOfWeek = dayOfWeek,
         workingTime = workingTime.map { it.toDomain() },
         isActive = isActive
     )

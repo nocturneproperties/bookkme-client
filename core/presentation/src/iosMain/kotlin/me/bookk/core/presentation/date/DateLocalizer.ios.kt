@@ -95,5 +95,39 @@ actual enum class DateStyle(
         timeModifier = {
             matchToUserPreferences("HH:mm")
         }
+    ),
+    NARROW_WEEKDAY(
+        dateModifier = {
+            matchToUserPreferences("EEEEE")
+        },
+        dateTimeModifier = {
+            matchToUserPreferences("EEEEE HH:mm")
+        },
+        sameYearDateTimeModifier = {
+            matchToUserPreferences("EEEEE HH:mm")
+        },
+        sameYearDateModifier = {
+            matchToUserPreferences("EEEEE")
+        },
+        timeModifier = {
+            matchToUserPreferences("HH:mm")
+        }
+    ),
+    FULL_WEEKDAY(
+        dateModifier = {
+            matchToUserPreferences("EEEE")
+        },
+        dateTimeModifier = {
+            matchToUserPreferences("EEEE HH:mm")
+        },
+        sameYearDateTimeModifier = {
+            matchToUserPreferences("EEEE HH:mm")
+        },
+        sameYearDateModifier = {
+            matchToUserPreferences("EEEE")
+        },
+        timeModifier = {
+            matchToUserPreferences("HH:mm")
+        }
     )
 }

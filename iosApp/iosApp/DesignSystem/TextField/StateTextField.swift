@@ -13,6 +13,7 @@ struct StateTextField: View {
     
     @Bindable
     var state: IOSTextFieldState
+	let bgColor: Color
 	let isEditor: Bool
     let onTextChanged: ((String) -> Void)? //TODO: Backward compatibility, remove when deprecated screens will be refactored
 	
@@ -37,11 +38,13 @@ struct StateTextField: View {
 	
 	init(
 		_ state: TextFieldState,
+		bgColor: Color = AppColors.elevated,
 		textEditor: Bool = false,
 		onTextChanged: ((String) -> Void)? = nil
 	) {
 		self._state = Bindable(wrappedValue: IOSTextFieldState.cast(state))
 		self.isEditor = textEditor
+		self.bgColor = bgColor
 		self.onTextChanged = onTextChanged
 	}
     
@@ -88,7 +91,7 @@ struct StateTextField: View {
 			}
 			.padding(.horizontal, 8)
             .padding(.vertical, 12)
-            .background(AppColors.elevated)
+            .background(bgColor)
             .overlay(
 				state.validationState == ValidationState.error ?
                 RoundedRectangle(cornerRadius: 10)

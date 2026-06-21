@@ -11,9 +11,11 @@ import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.date.atNextWeekDay
 import me.bookk.core.presentation.date.today
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.startLoading
@@ -68,31 +70,57 @@ class AppointmentSettingsViewModel(
             onStart = { uiState.save.startLoading() },
             call = { updateAppointmentSettings(appointmentSettings) },
             onComplete = ::renderSettings,
-            onError = { uiState.notifications.add(it.notification()) },
+            onError = {
+                when (it) {
+                    is UpdateAppointmentSettings.Error.ActiveDayWithoutWorkHours ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_settings_active_day_without_work_hours_error.desc()
+                            )
+                        )
+                    is UpdateAppointmentSettings.Error.InvalidDayOffRange ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_settings_invalid_day_off_range_error.desc()
+                            )
+                        )
+                    else -> uiState.notifications.add(it.notification())
+                }
+            },
             onTerminate = { uiState.save.stopLoading() }
         )
     }
 
-    private fun snapshotState(): AppointmentSettings = loadedSettings.copy(
-        schedule = WorkingSchedule(
-            listOf(
-                DayOfWeekSchedule(
-                    dayOfWeek = DayOfWeek.MONDAY,
-                    workingTime = uiState.schedule.monday.intervals.map {
-                        WorkHour(
-                            DayOfWeek.MONDAY,
-                            it.timeFromPicker.timePicker.pickedTime!!,
-                            it.timeToPicker.timePicker.pickedTime!!
-                        )
-                    },
-                    isActive = uiState.schedule.monday.isActive.isChecked
-                )
-            ).associateBy { it.dayOfWeek }
-        ),
-        dayOffs = uiState.dayOffs.selectedItems.map { DayOffRange(it.dateFrom, it.dateTo) },
-        automaticApproval = uiState.automaticApproval.isChecked,
-        inBetweenBreakInMinutes = uiState.minimalBreak.text.toIntOrNull() ?: 10,
-        appointmentNote = uiState.note.text
+    private fun snapshotState(): AppointmentSettings = with(uiState.schedule) {
+        loadedSettings.copy(
+            schedule = WorkingSchedule(
+                listOf(
+                    monday.toDomain(DayOfWeek.MONDAY),
+                    tuesday.toDomain(DayOfWeek.TUESDAY),
+                    wednesday.toDomain(DayOfWeek.WEDNESDAY),
+                    thursday.toDomain(DayOfWeek.THURSDAY),
+                    friday.toDomain(DayOfWeek.FRIDAY),
+                    saturday.toDomain(DayOfWeek.SATURDAY),
+                    sunday.toDomain(DayOfWeek.SUNDAY)
+                ).associateBy { it.dayOfWeek }
+            ),
+            dayOffs = uiState.dayOffs.selectedItems.map { DayOffRange(it.dateFrom, it.dateTo) },
+            automaticApproval = uiState.automaticApproval.isChecked,
+            inBetweenBreakInMinutes = uiState.minimalBreak.text.toIntOrNull() ?: 10,
+            appointmentNote = uiState.note.text
+        )
+    }
+
+    private fun DaySettingsState.toDomain(dayOfWeek: DayOfWeek) = DayOfWeekSchedule(
+        dayOfWeek = dayOfWeek,
+        workingTime = intervals.map {
+            WorkHour(
+                dayOfWeek,
+                it.timeFromPicker.timePicker.pickedTime!!,
+                it.timeToPicker.timePicker.pickedTime!!
+            )
+        },
+        isActive = isActive.isChecked
     )
 
     private fun renderSettings(settings: AppointmentSettings) = with(uiState) {
@@ -219,6 +247,7 @@ class AppointmentSettingsViewModel(
 
     private fun AppointmentSettingsState.setupDayOffs() {
         dayOffs.pickerTitle = AppointmentsRes.strings.appointments_settings_day_offs.desc()
+        dayOffs.placeholder = AppointmentsRes.strings.appointments_settings_no_day_offs.desc()
         dayOffs.addItemButton.text =
             AppointmentsRes.strings.appointments_settings_add_day_off.desc()
         dayOffs.addItemButton.icon = DesignSystem.images.plus

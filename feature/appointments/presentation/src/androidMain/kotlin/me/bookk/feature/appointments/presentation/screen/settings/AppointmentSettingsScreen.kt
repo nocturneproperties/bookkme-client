@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -185,6 +186,11 @@ private fun DayOfWeekCell(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .background(animatedBg, CircleShape)
+                .border(
+                    width = if (state.isVisible) 2.dp else 0.dp,
+                    color = LocalColors.current.primaryText,
+                    shape = CircleShape
+                )
                 .size(40.dp)
                 .wrapContentHeight(align = Alignment.CenterVertically)
         )

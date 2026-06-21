@@ -9,10 +9,13 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
     typealias KotlinType = AppointmentSettingsState
 
     let appBar: any AppBarState
-	
-	let automaticApproval: any BooleanState
-	let schedule: [any DaySettingsState]
-	let dayOffs: any MultiPickerState
+
+    let automaticApproval: any BooleanState
+    let dayOffs: any MultiPickerState
+    let dateRange: any DateRangePickerState
+    let schedule: any ScheduleState
+    let note: any TextFieldState
+    let minimalBreak: any TextFieldState
 
     let save: any ButtonState
 
@@ -21,11 +24,18 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
 
     init() {
         appBar = IOSAppBarState()
+        automaticApproval = IOSBooleanState()
+        dayOffs = IOSMultiPickerState()
+        dateRange = IOSDateRangePickerState()
+        schedule = IOSScheduleState()
+        note = IOSTextFieldState()
+        minimalBreak = IOSTextFieldState()
         save = IOSButtonState()
         navigation = IOSNavigationState()
         notifications = IOSNotificationState()
-		schedule = []
-		dayOffs = IOSMultiPickerState()
-		automaticApproval = IOSBooleanState()
+    }
+
+    func createDaySettingState() -> any DaySettingsState {
+        return IOSDaySettingsState()
     }
 }

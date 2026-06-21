@@ -15,9 +15,12 @@ struct StateSwitch: View {
 	var state: IOSBooleanState
 	let onToggledChanged: (Bool) -> Void
 	
-	init(state: BooleanState, onToggledChanged: @escaping (Bool) -> Void) {
+	init(state: BooleanState, onToggledChanged: ((Bool) -> Void)? = nil) {
 		self._state = Bindable(wrappedValue: IOSBooleanState.cast(state))
-		self.onToggledChanged = onToggledChanged
+		self.onToggledChanged = {
+			onToggledChanged?($0)
+			state.onCheckedChange?(KotlinBoolean(bool: $0))
+		}
 	}
 	
 	var body: some View {

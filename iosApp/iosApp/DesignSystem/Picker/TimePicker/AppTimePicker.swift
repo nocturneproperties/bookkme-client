@@ -76,6 +76,7 @@ struct TimePickerSheet: View {
 				.padding(.trailing, 16)
 			}
 			.padding(.vertical, 12)
+			Spacer()
 			HStack {
 				Spacer()
 				DatePicker(
@@ -89,6 +90,7 @@ struct TimePickerSheet: View {
 				.tint(AppColors.actionText)
 				Spacer()
 			}
+			Spacer()
 		}
 		.presentationBackground(AppColors.elevated)
 		.presentationDetents([.medium])

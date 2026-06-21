@@ -4,6 +4,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 
 interface MultiPickerState<T : PickerPresentation> : ViewState {
     var pickerTitle: StringDesc
+    var placeholder: StringDesc?
     val selectedItems: List<T>
     var onItemsPicked: (List<T>) -> Unit
     var onItemsRemoveRequested: (List<T>) -> Unit

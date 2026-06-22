@@ -49,11 +49,10 @@ struct AppointmentCreateScreen: View {
 					.lineLimit(3...5)
 					.textFieldStyle(.inList)
 			}
-                StateButton(state.create)
-                    .padding(.top, 16)
-					.listRowInsets(EdgeInsets())
-					.listRowBackground(Color.clear)
         }
+		.toolbar {
+			TextButton(state.create)
+		}
 		.listSectionSpacing(.compact)
         .withNavigationBar(state.appBar)
         .sendLifecycleEventsTo(viewModel)

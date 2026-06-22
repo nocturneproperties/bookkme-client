@@ -53,10 +53,9 @@ struct AddServiceScreen: View {
 			Section {
 				StateCheckBox(uiState.enabled_)
 			}
-			StateButton(uiState.create)
-				.padding(.top)
-				.listRowInsets(EdgeInsets())
-				.listRowBackground(Color.clear)
+		}
+		.toolbar {
+			TextButton(uiState.create)
 		}
 		.listSectionSpacing(.compact)
 		.withNavigationBar(uiState.appBar)

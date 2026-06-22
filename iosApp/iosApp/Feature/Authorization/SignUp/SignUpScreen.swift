@@ -18,6 +18,11 @@ struct SignUpScreen: View {
 		List {
 			SignUpScreenContent(signUpVM: signUpVM)
 		}
+		.toolbar {
+			TextButton(uiState.confirmButton.impl()) {
+				signUpVM.onConfirmButtonClick()
+			}
+		}
 		.listSectionSpacing(.compact)
 		.withNavigationBar(uiState.appBar)
 		.sendLifecycleEventsTo(signUpVM)
@@ -87,13 +92,6 @@ struct SignUpScreenContent: View {
 			}
 			.listRowInsets(EdgeInsets())
 		}
-		Section {
-			StateButton(uiState.confirmButton.impl()) {
-				signUpVM.onConfirmButtonClick()
-			}
-		}
-		.listRowInsets(EdgeInsets())
-		.listRowBackground(Color.clear)
 	}
 }
 

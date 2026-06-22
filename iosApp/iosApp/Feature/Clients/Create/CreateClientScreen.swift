@@ -33,10 +33,9 @@ struct CreateClientScreen: View {
 				StateTextField(uiState.email)
 					.textFieldStyle(.inListTrailing)
 			}
-			StateButton(uiState.submit)
-				.padding(.top, 20)
-				.listRowInsets(EdgeInsets())
-				.listRowBackground(Color.clear)
+		}
+		.toolbar {
+			TextButton(uiState.submit)
 		}
 		.listSectionSpacing(.compact)
 		.withNavigationBar(uiState.appBar)

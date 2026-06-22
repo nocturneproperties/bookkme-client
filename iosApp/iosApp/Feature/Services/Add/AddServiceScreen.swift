@@ -35,15 +35,18 @@ struct AddServiceScreen: View {
 				.onSubmit {
 					focusedField = .duration
 				}
+				.textFieldStyle(.standalone)
 			StateTextField(uiState.duration)
 				.focused($focusedField, equals: .duration)
 				.submitLabel(.next)
 				.onSubmit {
 					focusedField = .price
 				}
+				.textFieldStyle(.standalone)
 			StateTextField(uiState.price)
 				.focused($focusedField, equals: .price)
 				.submitLabel(.done)
+				.textFieldStyle(.standalone)
 			StateCheckBox(uiState.enabled_)
 				.padding(.vertical)
 			StateButton(uiState.create)

@@ -25,6 +25,7 @@ struct AddServiceGroupScreen: View {
 			VStack {
 				StateTextField(uiState.name)
 					.padding(.top, 42)
+					.textFieldStyle(.standalone)
 				Spacer()
 				StateButton(uiState.create)
 			}

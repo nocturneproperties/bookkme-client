@@ -55,7 +55,8 @@ struct SignUpScreenContent: View {
 			.onSubmit {
 				focusedField = .lastName
 			}
-			
+			.textFieldStyle(.standalone)
+
 			StateTextField(uiState.lastName.impl()) { text in
 				signUpVM.onLastNameTextChanged(text: text)
 			}
@@ -65,7 +66,8 @@ struct SignUpScreenContent: View {
 			.onSubmit {
 				focusedField = .email
 			}
-			
+			.textFieldStyle(.standalone)
+
 			StateTextField(uiState.email.impl()) { text in
 				signUpVM.onEmailTextChanged(text: text)
 			}
@@ -74,6 +76,7 @@ struct SignUpScreenContent: View {
 			.textContentType(.emailAddress)
 			.keyboardType(.emailAddress)
 			.submitLabel(.done)
+			.textFieldStyle(.standalone)
 			
 			PasskeyCard(
 				learnMoreState: uiState.learnMoreButton.impl(),

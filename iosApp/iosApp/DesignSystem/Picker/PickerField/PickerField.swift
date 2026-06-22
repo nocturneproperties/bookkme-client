@@ -40,6 +40,7 @@ struct PickerField: View {
     var body: some View {
 		if state.isVisible {
 			StateTextField(state.textField)
+				.textFieldStyle(.standalone)
 				.simultaneousGesture(TapGesture().onEnded {
 					guard state.textField.enabled else { return }
 					dismissKeyboard()

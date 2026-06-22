@@ -22,9 +22,13 @@ struct CreateClientScreen: View {
 		let uiState = viewModel.uiState
 		VStack {
 			StateTextField(uiState.name)
+				.textFieldStyle(.standalone)
 			StateTextField(uiState.lastName)
+				.textFieldStyle(.standalone)
 			StateTextField(uiState.phone)
+				.textFieldStyle(.standalone)
 			StateTextField(uiState.email)
+				.textFieldStyle(.standalone)
 			StateButton(uiState.submit)
 				.padding(.top, 20)
 			Spacer()

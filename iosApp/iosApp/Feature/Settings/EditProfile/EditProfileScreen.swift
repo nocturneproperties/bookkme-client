@@ -20,12 +20,15 @@ struct EditProfileScreen: View {
 			StateTextField(state.name) { newText in
 				viewModel.onFirstNameTextChanged(text: newText)
 			}
+			.textFieldStyle(.standalone)
 			StateTextField(state.lastName) { newText in
 				viewModel.onLastNameTextChanged(text: newText)
 			}
+			.textFieldStyle(.standalone)
 			StateTextField(state.email) { newText in
 				viewModel.onEmailTextChanged(text: newText)
 			}
+			.textFieldStyle(.standalone)
 			Spacer()
 		}
 		.sendLifecycleEventsTo(viewModel)

@@ -24,6 +24,7 @@ struct ContactUsScreen: View {
 				viewModel.onContactTextChanged(text: text)
 			}
 			.lineLimit(5...10)
+			.textFieldStyle(.standalone)
 			StateSwitch(state: uiState.includeLogsSwitch) { checked in
 				viewModel.onIncludeLogsStateChanged(include: checked)
 			}

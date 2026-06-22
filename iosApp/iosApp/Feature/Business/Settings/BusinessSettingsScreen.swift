@@ -58,6 +58,7 @@ struct BusinessSettingsContent: View {
 					StateTextField(state.name) { text in
 						viewModel.onNameChanged(name: text)
 					}
+					.textFieldStyle(.standalone)
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_description_title.desc().localized())
@@ -65,13 +66,15 @@ struct BusinessSettingsContent: View {
 						viewModel.onDescriptionChanged(description: text)
 					}
 					.lineLimit(3, reservesSpace: true)
+					.textFieldStyle(.standalone)
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_location_title.desc().localized())
 					HStack(spacing: 0) {
 						StateTextField(state.location) { text in
 						}
-						
+						.textFieldStyle(.standalone)
+
 						TextButton(state.pickLocation, maxWidth: nil) {
 							viewModel.onPickLocationClicked()
 						}.padding(.horizontal)
@@ -85,6 +88,7 @@ struct BusinessSettingsContent: View {
 					StateTextField(state.address) { text in
 						viewModel.onAddressChanged(address: text)
 					}
+					.textFieldStyle(.standalone)
 				}
 				VStack(alignment: .leading) {
 					Header(text: BusinessRes.strings().business_settings_currency_title.desc().localized())
@@ -97,12 +101,15 @@ struct BusinessSettingsContent: View {
 					StateTextField(state.instagram) { text in
 						viewModel.onInstagramChanged(insta: text)
 					}
+					.textFieldStyle(.standalone)
 					StateTextField(state.telegram) { text in
 						viewModel.onTelegramChanged(telegram: text)
 					}
+					.textFieldStyle(.standalone)
 					StateTextField(state.viber) { text in
 						viewModel.onViberChanged(viber: text)
 					}
+					.textFieldStyle(.standalone)
 				}
 			}.padding()
 		}

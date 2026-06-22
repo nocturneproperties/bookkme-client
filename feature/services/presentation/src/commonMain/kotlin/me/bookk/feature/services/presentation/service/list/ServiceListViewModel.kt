@@ -11,6 +11,7 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.group.ServiceGroupEvent
@@ -122,6 +123,7 @@ class ServiceListViewModel(
 
     private fun ServiceListState.setup() = apply {
         appBar.title = ServicesRes.strings.services_title.desc()
+        appBar.size = TopBarSize.LARGE
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(Back)
         }

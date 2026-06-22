@@ -236,8 +236,7 @@ class AppointmentSettingsViewModel(
     }
 
     private fun AppointmentSettingsState.setupMinimalBreak() {
-        minimalBreak.placeholder =
-            AppointmentsRes.strings.appointments_settings_minimal_break.desc()
+        minimalBreak.label = AppointmentsRes.strings.appointments_settings_minimal_break.desc()
         minimalBreak.suffix = DesignSystem.strings.common_min.desc()
         minimalBreak.inputType = InputType.DIGIT
         minimalBreak.onTextChanged = weakSelfClosure { state, v ->

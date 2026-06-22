@@ -19,30 +19,37 @@ struct ContactUsScreen: View {
 	
 	var body: some View {
 		let uiState = viewModel.uiState
-		VStack {
-			StateTextField(uiState.contactField, textEditor: true) { text in
-				viewModel.onContactTextChanged(text: text)
+		List {
+			Section {
+				StateTextField(uiState.contactField, textEditor: true) { text in
+					viewModel.onContactTextChanged(text: text)
+				}
+				.lineLimit(5...10)
+				.textFieldStyle(.inList)
+			} header: {
+				Text("")
 			}
-			.lineLimit(5...10)
-			.textFieldStyle(.standalone)
-			StateSwitch(state: uiState.includeLogsSwitch) { checked in
-				viewModel.onIncludeLogsStateChanged(include: checked)
+			Section {
+				VStack {
+					StateSwitch(state: uiState.includeLogsSwitch) { checked in
+						viewModel.onIncludeLogsStateChanged(include: checked)
+					}
+					
+					Text(uiState.logsExplanationText.localized())
+						.font(.footnote)
+						.foregroundStyle(AppColors.secondary)
+						.padding(.top)
+				}
 			}
-			.padding(.horizontal)
-			.padding(.vertical, 8)
-			.background(AppColors.elevated)
-			.clipShape(RoundedRectangle(cornerRadius: 10))
-			Text(uiState.logsExplanationText.localized())
-				.font(.footnote)
-				.foregroundStyle(AppColors.secondary)
-			Spacer()
-			StateButton(uiState.submitButton) {
-				viewModel.onSubmitClick()
+			Section {
+				StateButton(uiState.submitButton) {
+					viewModel.onSubmitClick()
+				}
 			}
-			.padding(.bottom, 24)
+			.listRowInsets(EdgeInsets())
+			.listRowBackground(Color.clear)
 		}
-		.padding()
-		.background(AppColors.background)
+		.listSectionSpacing(.compact)
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.sendLifecycleEventsTo(viewModel)

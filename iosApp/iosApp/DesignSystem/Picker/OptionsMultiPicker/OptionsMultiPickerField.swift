@@ -18,42 +18,39 @@ struct OptionsMultiPickerField<ItemView: View>: View {
 
     var body: some View {
         if state.isVisible {
-            VStack(alignment: .leading, spacing: 8) {
-                Header(text: state.pickerTitle.localized())
-                VStack(spacing: 0) {
-                    ForEach(state.selectedItems, id: \.pickerItemId) { item in
-                        itemContent(item) {
-                            state.onItemsRemoveRequested([item])
-                        }
-                    }
-                    if state.isEditable {
-                        Button {
-                            isSheetPresented = true
-                        } label: {
-                            Text(state.addItemText.localized())
-                                .font(.callout)
-                                .fontWeight(.medium)
-                                .foregroundStyle(AppColors.actionText)
-                                .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
-                                .padding(.horizontal, 16)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .background(AppColors.elevated, in: RoundedRectangle(cornerRadius: 12))
-                .animation(.easeInOut(duration: 0.2), value: state.selectedItems.count)
-            }
-            .sheet(isPresented: $isSheetPresented) {
-                PickerBottomSheet(
-                    title: state.pickerTitle.localized(),
-                    options: state.options,
-                    selectedId: nil,
-                    onPick: { option in
-                        state.onItemsPicked([option])
-                        isSheetPresented = false
-                    }
-                )
-            }
+			ForEach(state.selectedItems, id: \.pickerItemId) { item in
+				itemContent(item) {
+					withAnimation {
+						state.onItemsRemoveRequested([item])
+					}
+				}
+			}
+			if state.isEditable {
+				Button {
+					isSheetPresented = true
+				} label: {
+					Text(state.addItemText.localized())
+						.font(.callout)
+						.fontWeight(.medium)
+						.foregroundStyle(AppColors.actionText)
+						.frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+						.padding(.horizontal, 16)
+				}
+				.buttonStyle(.plain)
+				.sheet(isPresented: $isSheetPresented) {
+					PickerBottomSheet(
+						title: state.pickerTitle.localized(),
+						options: state.options,
+						selectedId: nil,
+						onPick: { option in
+							withAnimation {
+								state.onItemsPicked([option])
+								isSheetPresented = false
+							}
+						}
+					)
+				}
+			}
         }
     }
 }

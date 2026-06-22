@@ -27,32 +27,38 @@ struct AddServiceScreen: View {
 	
 	var body: some View {
 		let uiState = IOSAddServiceState.cast(viewModel.uiState)
-		VStack {
-			PickerField(uiState.group)
-			StateTextField(uiState.name)
-				.focused($focusedField, equals: .name)
-				.submitLabel(.next)
-				.onSubmit {
-					focusedField = .duration
-				}
-				.textFieldStyle(.standalone)
-			StateTextField(uiState.duration)
-				.focused($focusedField, equals: .duration)
-				.submitLabel(.next)
-				.onSubmit {
-					focusedField = .price
-				}
-				.textFieldStyle(.standalone)
-			StateTextField(uiState.price)
-				.focused($focusedField, equals: .price)
-				.submitLabel(.done)
-				.textFieldStyle(.standalone)
-			StateCheckBox(uiState.enabled_)
-				.padding(.vertical)
+		List {
+			Section("") {
+				PickerField(uiState.group)
+					.textFieldStyle(.inListTrailing)
+				StateTextField(uiState.name)
+					.focused($focusedField, equals: .name)
+					.submitLabel(.next)
+					.onSubmit {
+						focusedField = .duration
+					}
+					.textFieldStyle(.inListTrailing)
+				StateTextField(uiState.duration)
+					.focused($focusedField, equals: .duration)
+					.submitLabel(.next)
+					.onSubmit {
+						focusedField = .price
+					}
+					.textFieldStyle(.inListTrailing)
+				StateTextField(uiState.price)
+					.focused($focusedField, equals: .price)
+					.submitLabel(.done)
+					.textFieldStyle(.inListTrailing)
+			}
+			Section {
+				StateCheckBox(uiState.enabled_)
+			}
 			StateButton(uiState.create)
-			Spacer()
+				.padding(.top)
+				.listRowInsets(EdgeInsets())
+				.listRowBackground(Color.clear)
 		}
-		.padding()
+		.listSectionSpacing(.compact)
 		.withNavigationBar(uiState.appBar)
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(uiState.notifications)

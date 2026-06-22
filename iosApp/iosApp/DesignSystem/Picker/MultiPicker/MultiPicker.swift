@@ -19,7 +19,6 @@ struct MultiPicker<ItemContent: View, SheetContent: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Header(text: state.pickerTitle.localized())
             VStack(spacing: 0) {
                 if state.selectedItems.isEmpty, let placeholder = state.placeholder {
                     Text(placeholder.localized())
@@ -37,9 +36,10 @@ struct MultiPicker<ItemContent: View, SheetContent: View>: View {
                     }
                 }
                 if state.isEditable {
-                    TextButton(state.addItemButton, textAlignment: .leading) {
+                    TextButton(state.addItemButton) {
                         state.isPickerVisible = true
-                    }
+					}
+					.buttonStyle(.textStandalone)
                 }
             }
             .background(AppColors.elevated, in: RoundedRectangle(cornerRadius: 12))

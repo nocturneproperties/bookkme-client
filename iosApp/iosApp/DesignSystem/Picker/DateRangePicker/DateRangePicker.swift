@@ -20,7 +20,9 @@ struct DateRangePicker: View {
 			Spacer()
             HStack(spacing: 8) {
                 DatePickerField(state: state.startDate)
+					.textFieldStyle(.onElevated)
                 DatePickerField(state: state.endDate)
+					.textFieldStyle(.onElevated)
             }
 			Spacer()
 			Spacer()
@@ -36,7 +38,7 @@ struct DateRangePicker: View {
             .tint(AppColors.buttonActive)
         }
         .padding(16)
-        .presentationBackground(AppColors.background)
-        .presentationDetents([.medium])
+        .presentationBackground(AppColors.elevated)
+		.presentationDetents([.height(300)])
     }
 }

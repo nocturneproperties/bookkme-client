@@ -29,7 +29,8 @@ struct ServiceListScreen: View {
 		} header: {
 			Section {
 				SectionView(action: uiState.groupsSection)
-			}.listRowSeparator(.hidden)
+			}
+			.listRowSeparator(.hidden)
 		}
 		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
 		.searchable(
@@ -62,28 +63,17 @@ struct ServiceGroupSection: View {
 	var section: ServiceListStateServiceGroupUI
 	
 	var body: some View {
-		Section {
+		Section(section.name) {
 			ForEach(section.items, id: \.id) { service in
-				VStack {
-					Button {
-						section.onItemClick(service)
-					} label: {
-						VStack {
-							Spacer()
-							Text(service.title)
-								.font(.body)
-								.padding(.horizontal)
-								.frame(maxWidth: .infinity, minHeight: 44, alignment: .init(horizontal: .leading, vertical: .center))
-								.contentShape(Rectangle())
-							Spacer()
-						}
-					}
-					.buttonStyle(.plain)
-					
-					Divider()
-						.padding(.leading)
-						.background(AppColors.divider)
+				Button {
+					section.onItemClick(service)
+				} label: {
+					Text(service.title)
+						.font(.body)
+						.frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .center))
+						.contentShape(Rectangle())
 				}
+				.buttonStyle(.plain)
 				.swipeActions(edge: .trailing, allowsFullSwipe: false) {
 					Button(DesignSystem.strings().action_delete.desc().localized()) {
 						section.onItemDeleteClick(service)
@@ -95,24 +85,8 @@ struct ServiceGroupSection: View {
 						section.onItemDeleteClick(service)
 					}
 				}
-				.listRowSeparator(.hidden)
 				.id(service.id)
 			}
-		} header: {
-			VStack {
-				Text(section.name)
-					.fontWeight(.medium)
-					.foregroundStyle(AppColors.header)
-					.padding(.horizontal)
-					.frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .center))
-				
-				Divider()
-					.padding(.leading)
-					.background(AppColors.divider)
-					.padding(.bottom)
-			}.background(AppColors.background)
-		}
-		.listRowInsets(EdgeInsets())
-		.id(section.id)
+		}.id(section.id)
 	}
 }

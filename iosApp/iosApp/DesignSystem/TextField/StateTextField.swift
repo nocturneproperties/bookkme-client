@@ -35,6 +35,34 @@ struct StateTextField: View {
 		}
 	}
 	
+	private var contentType: UITextContentType? {
+		switch state.inputType {
+		case .email:
+			return .emailAddress
+		case .phone:
+			return .telephoneNumber
+		case .password:
+			return .password
+		default:
+			return nil
+		}
+	}
+	
+	private var textBinding: Binding<String> {
+		Binding<String>(
+			get: { state.text },
+			set: { text in
+				let newValue = String(text.prefix(Int(state.maxLength)))
+				if newValue != state.text {
+					withAnimation {
+						state.onTextChanged?(newValue)
+						onTextChanged?(newValue)
+					}
+				}
+			}
+		)
+	}
+	
 	init(
 		_ state: TextFieldState,
 		textEditor: Bool = false,
@@ -45,78 +73,158 @@ struct StateTextField: View {
 		self.onTextChanged = onTextChanged
 	}
     
-    var body: some View {
-        VStack {
-			HStack {
-				if (state.startIcon != nil) {
-					Image(uiImage: state.startIcon!.toUIImage()!)
-						.frame(width: 24, height: 24)
+	var body: some View {
+		HStack(spacing: 8) {
+			if let icon = state.startIcon?.toUIImage() {
+				Image(uiImage: icon)
+					.frame(width: 24, height: 24)
+			}
+			
+			LabeledContent {
+				TextField(
+					state.placeholder.localized(),
+					text: textBinding,
+					axis: isEditor ? .vertical : .horizontal
+				)
+				.keyboardType(keyboardType)
+				.textContentType(contentType)
+				.font(.body)
+				.disabled(!state.enabled || state.readOnly)
+			} label: {
+				let label = state.label.localized()
+				if !label.isEmpty {
+					Text(label)
+						.frame(minWidth: 100, alignment: .leading)
+						.lineLimit(1)
 				}
-				ZStack(alignment: .trailingLastTextBaseline) {
-					LabeledContent {
-						TextField(
-							state.placeholder.localized(),
-							text: Binding<String>(
-								get: { state.text },
-								set: { text in
-									withAnimation {
-										let newValue = String(text.prefix(Int(state.maxLength)))
-										if (newValue != state.text) {
-											state.onTextChanged?(newValue)
-											onTextChanged?(newValue)
-										}
-									}
-								}
-							),
-							axis: isEditor ? .vertical : .horizontal
-						)
-						.keyboardType(keyboardType)
-						.font(Font.system(.body))
-						.disabled(!state.enabled || state.readOnly)
-					} label: {
-						if (!state.label.localized().isEmpty) {
-							Text(state.label.localized())
-								.frame(minWidth: 100, alignment: .leading)
-								.lineLimit(1)
-						}
+			}
+			
+			if let suffix = state.suffix {
+				Text(suffix.localized())
+					.font(.footnote)
+					.foregroundStyle(AppColors.secondary)
+			}
+		}
+		.contentShape(Rectangle())
+		.id(state.id)
+	}
+}
+
+struct SectionTextField: View {
+	
+	@Bindable
+	var state: IOSTextFieldState
+	let header: String?
+	let isEditor: Bool
+	let onTextChanged: ((String) -> Void)? //TODO: Backward compatibility, remove when deprecated screens will be refactored
+	
+	private var keyboardType: UIKeyboardType {
+		switch state.inputType {
+		case .digit:
+			return .numberPad
+		case .decimal:
+			return .decimalPad
+		case .ascii:
+			return .asciiCapable
+		case .email:
+			return .emailAddress
+		case .phone:
+			return .phonePad
+		case .password:
+			return .asciiCapable
+		default:
+			return .default
+		}
+	}
+	
+	private var contentType: UITextContentType? {
+		switch state.inputType {
+		case .email:
+			return .emailAddress
+		case .phone:
+			return .telephoneNumber
+		case .password:
+			return .password
+		default:
+			return nil
+		}
+	}
+	
+	private var textBinding: Binding<String> {
+		Binding<String>(
+			get: { state.text },
+			set: { text in
+				let newValue = String(text.prefix(Int(state.maxLength)))
+				if newValue != state.text {
+					withAnimation {
+						state.onTextChanged?(newValue)
+						onTextChanged?(newValue)
 					}
 				}
+			}
+		)
+	}
+	
+	init(
+		_ state: TextFieldState,
+		header: String? = nil,
+		textEditor: Bool = false,
+		onTextChanged: ((String) -> Void)? = nil
+	) {
+		self._state = Bindable(wrappedValue: IOSTextFieldState.cast(state))
+		self.isEditor = textEditor
+		self.onTextChanged = onTextChanged
+		self.header = header
+	}
+	
+	var body: some View {
+		Section {
+			HStack(spacing: 8) {
+				if let icon = state.startIcon?.toUIImage() {
+					Image(uiImage: icon)
+						.frame(width: 24, height: 24)
+				}
+				
+				LabeledContent {
+					TextField(
+						state.placeholder.localized(),
+						text: textBinding,
+						axis: isEditor ? .vertical : .horizontal
+					)
+					.keyboardType(keyboardType)
+					.textContentType(contentType)
+					.font(.body)
+					.disabled(!state.enabled || state.readOnly)
+				} label: {
+					let label = state.label.localized()
+					if !label.isEmpty {
+						Text(label)
+							.frame(minWidth: 100, alignment: .leading)
+							.lineLimit(1)
+					}
+				}
+				
 				if let suffix = state.suffix {
 					Text(suffix.localized())
 						.font(.footnote)
 						.foregroundStyle(AppColors.secondary)
 				}
 			}
-            .overlay(
-				state.validationState == ValidationState.error ?
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(
-                        AppColors.error,
-                        style: StrokeStyle(
-                            lineWidth: 3,
-                            lineCap: .round,
-                            lineJoin: .round
-                        )
-                    )
-                    .frame(width: 20)
-                    .mask(
-                        LinearGradient(
-                            colors: [.black,.clear, .clear, .clear],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    ) : nil,
-                alignment: .leading
-            )
-            if let supportingText = state.supportingTextRes {
-                Text(supportingText.localized())
-                    .frame(maxWidth: .infinity, alignment: .leading)
+			.contentShape(Rectangle())
+			.id(state.id)
+		} header : {
+			if let headerStr = header {
+				Text(headerStr)
+			}
+		} footer : {
+			if let supporting = state.supportingTextRes {
+				Text(supporting.localized())
 					.font(.footnote)
-                    .scaledToFit()
-					.foregroundStyle(state.validationState == ValidationState.error ? AppColors.error : AppColors.secondary)
-					.padding(.leading)
-            }
-        }.id(state.id)
+					.foregroundStyle(state.validationState == .error ? AppColors.error : AppColors.secondary)
+					.fixedSize(horizontal: false, vertical: true)
+					.frame(maxWidth: .infinity, alignment: .leading)
+			}
+		}
 	}
 }
 
@@ -155,7 +263,7 @@ struct InListTextFieldStyle: TextFieldStyle {
 		configuration
 			.padding(.horizontal, 0)
 			.padding(.vertical, 0)
-			.background(Color.red)
+			.background(Color.clear)
 	}
 }
 

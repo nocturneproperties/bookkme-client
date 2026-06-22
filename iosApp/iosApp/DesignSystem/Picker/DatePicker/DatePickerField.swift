@@ -18,7 +18,6 @@ struct DatePickerField: View {
     var body: some View {
         if state.isVisible {
             StateTextField(state.textField)
-                .textFieldStyle(.standalone)
                 .contentShape(Rectangle())
                 .simultaneousGesture(TapGesture().onEnded {
                     guard state.textField.enabled else { return }

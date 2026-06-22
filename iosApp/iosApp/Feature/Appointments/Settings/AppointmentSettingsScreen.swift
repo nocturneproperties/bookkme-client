@@ -14,31 +14,46 @@ struct AppointmentSettingsScreen: View {
 
     var body: some View {
         let state = IOSAppointmentSettingsState.cast(viewModel.uiState)
-        ScrollView {
-			VStack(alignment: .leading, spacing: 16) {
-                ScheduleStrip(schedule: state.schedule)
-
-                MultiPicker(
-                    state.dayOffs,
-                    pickerContent: {
-                        DateRangePicker(state: state.dateRange) {
-                            state.dayOffs.isPickerVisible = false
-                        }
-                    },
-                    itemContent: { item, onRemove in
-                        DayOffItem(item: item, onDeleteClick: onRemove)
-                    }
-                )
-
-                RequestsSettings(state: state)
-				Header(text: AppointmentsRes.strings().appointments_settings_note_header.desc().localized())
+		List {
+			Section(AppointmentsRes.strings().appointments_settings_schedule.desc().localized()) {
+				ScheduleStrip(schedule: state.schedule)
+				if let expanded = IOSScheduleState.cast(state.schedule).asList().first(where: { $0.isVisible }) {
+					ScheduleDay(state: expanded)
+				}
+			}
+			.listRowInsets(EdgeInsets())
+			.listRowSeparator(.hidden)
+			Section(state.dayOffs.pickerTitle.localized()) {
+				MultiPicker(
+					state.dayOffs,
+					pickerContent: {
+						DateRangePicker(state: state.dateRange) {
+							state.dayOffs.isPickerVisible = false
+						}
+					},
+					itemContent: { item, onRemove in
+						DayOffItem(item: item, onDeleteClick: onRemove)
+					}
+				)
+				.listRowInsets(EdgeInsets())
+			}
+			Section {
+				RequestsSettings(state: state)
+			} header : {
+				Text(AppointmentsRes.strings().appointments_settings_requests.desc().localized())
+			} footer : {
+				Text(AppointmentsRes.strings().appointments_settings_break_footer.desc().localized())
+			}
+			Section(AppointmentsRes.strings().appointments_settings_note_header.desc().localized()) {
 				StateTextField(state.note, textEditor: true)
 					.lineLimit(3...5)
-
-                StateButton(state.save)
-                    .padding(.top, 16)
-            }
-            .padding(16)
+					.textFieldStyle(.inList)
+			}
+			
+			StateButton(state.save)
+				.padding(.top, 16)
+				.listRowInsets(EdgeInsets())
+				.listRowBackground(Color.clear)
         }
         .withNavigationBar(state.appBar)
         .sendLifecycleEventsTo(viewModel)
@@ -82,18 +97,12 @@ private struct RequestsSettings: View {
     let state: IOSAppointmentSettingsState
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                Header(text: AppointmentsRes.strings().appointments_settings_requests.desc().localized())
-                StateSwitch(state: state.automaticApproval) { newValue in
-                    state.automaticApproval.onCheckedChange?(KotlinBoolean(bool: newValue))
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(AppColors.elevated, in: RoundedRectangle(cornerRadius: 12))
-            }
-            StateTextField(state.minimalBreak)
-        }
+		StateSwitch(state: state.automaticApproval) { newValue in
+			state.automaticApproval.onCheckedChange?(KotlinBoolean(bool: newValue))
+		}
+		
+		StateTextField(state.minimalBreak)
+			.textFieldStyle(.inListTrailing)
     }
 }
 
@@ -106,29 +115,18 @@ private struct ScheduleStrip: View {
 
     var body: some View {
         let days = schedule.asList()
-        VStack(alignment: .leading, spacing: 8) {
-            Header(text: AppointmentsRes.strings().appointments_settings_schedule.desc().localized())
-            HStack(spacing: 0) {
-                ForEach(days, id: \.id) { day in
-                    DayOfWeekCell(state: day) {
-                        withAnimation {
-                            for d in days {
-                                d.isVisible = d.id == day.id ? !d.isVisible : false
-                            }
-                        }
-                    }
-                }
-            }
-			Text(AppointmentsRes.strings().appointments_settings_schedule_hint.desc().localized())
-				.foregroundStyle(AppColors.secondary)
-				.font(.subheadline)
-				.padding(.leading)
-            if let expanded = days.first(where: { $0.isVisible }) {
-                ScheduleDay(state: expanded)
-                    .transition(.opacity)
-            }
-        }
-        .animation(.default, value: days.first(where: { $0.isVisible })?.id)
+		HStack(spacing: 0) {
+			ForEach(days, id: \.id) { day in
+				DayOfWeekCell(state: day) {
+					withAnimation {
+						for d in days {
+							d.isVisible = d.id == day.id ? !d.isVisible : false
+						}
+					}
+				}
+			}
+		}
+		.padding(10)
     }
 }
 
@@ -156,35 +154,31 @@ private struct ScheduleDay: View {
     let state: any DaySettingsState
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
-                Text(state.dayIndicator.localized())
-                    .frame(width: 40, height: 40)
-                    .background(state.isActive.isChecked ? AppColors.actionText : AppColors.inactive, in: Circle())
-                Text(state.title.localized())
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                StateSwitch(state: state.isActive) { newValue in
-                    state.isActive.onCheckedChange?(KotlinBoolean(bool: newValue))
-                }
-            }
-            .padding(16)
-
-            ForEach(state.intervals, id: \.id) { interval in
-                TimeRow(timeSettings: interval) {
-					withAnimation {
-						state.onDeleteInterval(interval)
-					}
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
-            }
-
-            TextButton(state.addTimeButton, textAlignment: .leading)
-        }
-        .background(AppColors.elevated, in: RoundedRectangle(cornerRadius: 12))
-        .padding(.top, 8)
-        .animation(.easeInOut, value: state.intervals.count)
+		HStack(spacing: 8) {
+			Text(state.dayIndicator.localized())
+				.font(.headline)
+				.frame(width: 40, height: 40)
+				.background(state.isActive.isChecked ? AppColors.actionText : AppColors.inactive, in: Circle())
+			Text(state.title.localized())
+				.font(.headline)
+				.frame(maxWidth: .infinity, alignment: .leading)
+			StateSwitch(state: state.isActive) { newValue in
+				state.isActive.onCheckedChange?(KotlinBoolean(bool: newValue))
+			}
+		}
+		.padding(16)
+		
+		ForEach(state.intervals, id: \.id) { interval in
+			TimeRow(timeSettings: interval) {
+				withAnimation {
+					state.onDeleteInterval(interval)
+				}
+			}
+			.padding(.horizontal, 16)
+			.padding(.bottom, 8)
+		}
+		
+		TextButton(state.addTimeButton)
     }
 }
 
@@ -194,12 +188,14 @@ private struct TimeRow: View {
 
     var body: some View {
         HStack(spacing: 0) {
-			TimePickerField(state: timeSettings.timeFromPicker, fieldColor: AppColors.background)
+			TimePickerField(state: timeSettings.timeFromPicker)
+				.textFieldStyle(.onElevated)
             Text("-")
                 .font(.subheadline)
                 .foregroundStyle(AppColors.secondary)
                 .padding(.horizontal, 8)
-            TimePickerField(state: timeSettings.timeToPicker, fieldColor: AppColors.background)
+            TimePickerField(state: timeSettings.timeToPicker)
+				.textFieldStyle(.onElevated)
             Button(action: onDeleteClick) {
                 Image(systemName: "xmark")
                     .foregroundStyle(AppColors.secondary)

@@ -16,25 +16,25 @@ struct EditProfileScreen: View {
 	
 	var body: some View {
 		let state = viewModel.uiState
-		VStack {
-			StateTextField(state.name) { newText in
+		List {
+			SectionTextField(state.name) { newText in
 				viewModel.onFirstNameTextChanged(text: newText)
 			}
-			.textFieldStyle(.standalone)
-			StateTextField(state.lastName) { newText in
+			.textFieldStyle(.inList)
+			
+			SectionTextField(state.lastName) { newText in
 				viewModel.onLastNameTextChanged(text: newText)
 			}
-			.textFieldStyle(.standalone)
-			StateTextField(state.email) { newText in
+			.textFieldStyle(.inList)
+			
+			SectionTextField(state.email) { newText in
 				viewModel.onEmailTextChanged(text: newText)
 			}
-			.textFieldStyle(.standalone)
-			Spacer()
+			.textFieldStyle(.inList)
 		}
+		.listSectionSpacing(.compact)
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(state.notification)
-		.padding()
-		.background(AppColors.background)
 		.navigationTitle(state.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.toolbar {

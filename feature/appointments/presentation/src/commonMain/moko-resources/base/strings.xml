@@ -14,7 +14,7 @@
     <string name="appointments_create_date_placeholder">Pick date</string>
     <string name="appointments_create_time">Time</string>
     <string name="appointments_create_time_placeholder">Pick time</string>
-    <string name="appointments_create_note">Add a note(optional)</string>
+    <string name="appointments_create_note">Add a note for yourself(optional)</string>
     <string name="appointments_create_subtotal">Subtotal · %1$d services</string>
     <string name="appointments_create_overlap_error">Appointment overlap. Looks like someone created an appointment for this date and time while you were creating yours, select another date or time and try again!</string>
     <string name="appointments_create_date_error">Appointments for this day are forbidden by settings</string>
@@ -40,7 +40,7 @@
     <string name="appointments_settings_from">From</string>
     <string name="appointments_settings_to">To</string>
     <string name="appointments_settings_automatic_approval">Auto-approve requests</string>
-    <string name="appointments_settings_break">Break between appointments (minutes)</string>
+    <string name="appointments_settings_break_footer">Minimal break between appointments</string>
     <string name="appointments_settings_note_header">Note to clients</string>
     <string name="appointments_settings_note_placeholder">Shown before any booking (optional)</string>
     <string name="appointments_settings_day_offs">Days off</string>
@@ -50,7 +50,7 @@
     <string name="appointments_settings_schedule">Schedule</string>
     <string name="appointments_settings_schedule_hint">Tap to edit schedule</string>
     <string name="appointments_settings_requests">Booking rules</string>
-    <string name="appointments_settings_minimal_break">Minimal break between appointments</string>
+    <string name="appointments_settings_minimal_break">Buffer</string>
     <string name="appointments_settings_active_day_without_work_hours_error">An active day must have at least one work hour</string>
     <string name="appointments_settings_invalid_day_off_range_error">Day off start date must be before the end date</string>
 </resources>

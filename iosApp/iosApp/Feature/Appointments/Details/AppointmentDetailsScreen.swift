@@ -61,6 +61,7 @@ private struct RescheduleInfoSection: View {
 		HStack {
 			InfoSection(section: section)
 			TextButton(rescheduleButton)
+				.buttonStyle(.textAction)
 		}
 	}
 }

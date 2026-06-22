@@ -43,7 +43,6 @@ struct TextButton: View {
 					}
 					Text(state.text.localized())
 						.frame(alignment: textAlignment)
-						.foregroundStyle(AppColors.actionText)
 				}
 				.frame(maxWidth: .infinity, alignment: textAlignment)
 				.opacity(state.isLoading ? 0 : 1)
@@ -128,6 +127,7 @@ struct TextStandaloneButton: ButtonStyle {
 		configuration.label
 			.buttonStyle(.plain)
 			.frame(maxWidth: .infinity, minHeight: 48)
+			.foregroundStyle(AppColors.actionText)
 	}
 }
 
@@ -136,6 +136,15 @@ struct TextInListButton: ButtonStyle {
 		configuration.label
 			.buttonStyle(.plain)
 			.frame(maxWidth: .infinity)
+			.foregroundStyle(AppColors.actionText)
+	}
+}
+
+struct ActionTextButton: ButtonStyle {
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.buttonStyle(.plain)
+			.foregroundStyle(AppColors.actionText)
 	}
 }
 
@@ -145,6 +154,10 @@ extension ButtonStyle where Self == TextInListButton {
 
 extension ButtonStyle where Self == TextStandaloneButton {
 	static var textStandalone: TextStandaloneButton { TextStandaloneButton() }
+}
+
+extension ButtonStyle where Self == ActionTextButton {
+	static var textAction: ActionTextButton { ActionTextButton() }
 }
 
 #Preview {

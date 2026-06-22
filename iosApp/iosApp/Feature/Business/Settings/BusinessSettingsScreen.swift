@@ -25,7 +25,6 @@ struct BusinessSettingsScreen: View {
 			TextButton(viewModel.uiState.save) {
 				viewModel.onSaveClick()
 			}
-			.frame(width: 100)
 		}
 		.listSectionSpacing(.compact)
 		.withNavigationBar(viewModel.uiState.appBar)

@@ -74,9 +74,10 @@ struct PasskeyCard: View {
             TextButton(learnMoreState) {
                 onClick()
             }
-			.buttonStyle(.plain)
+			.buttonStyle(.textStandalone)
         }
-        .padding(24)
+		.padding(.horizontal, 24)
+		.padding(.top, 24)
         .background(AppColors.elevated)
         .cornerRadius(10)
     }

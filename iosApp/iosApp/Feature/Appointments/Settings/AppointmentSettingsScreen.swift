@@ -49,12 +49,10 @@ struct AppointmentSettingsScreen: View {
 					.lineLimit(3...5)
 					.textFieldStyle(.inList)
 			}
-			
-			StateButton(state.save)
-				.padding(.top, 16)
-				.listRowInsets(EdgeInsets())
-				.listRowBackground(Color.clear)
         }
+		.toolbar {
+			TextButton(state.save)
+		}
         .withNavigationBar(state.appBar)
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)

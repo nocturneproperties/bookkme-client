@@ -3,7 +3,6 @@ package me.bookk.core.presentation.date
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSDateFormatterLongStyle
 import platform.Foundation.NSDateFormatterMediumStyle
-import platform.Foundation.NSDateFormatterNoStyle
 import platform.Foundation.NSDateFormatterShortStyle
 
 actual enum class DateStyle(
@@ -15,68 +14,53 @@ actual enum class DateStyle(
 ) {
     SHORT(
         dateModifier = {
-            dateStyle = NSDateFormatterShortStyle
-            timeStyle = NSDateFormatterNoStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterShortStyle)
         },
         dateTimeModifier = {
-            dateStyle = NSDateFormatterShortStyle
-            timeStyle = NSDateFormatterShortStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterShortStyle, timeStyle = NSDateFormatterShortStyle)
         },
         sameYearDateTimeModifier = {
-            dateStyle = NSDateFormatterShortStyle
-            timeStyle = NSDateFormatterShortStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterShortStyle, timeStyle = NSDateFormatterShortStyle)
         },
         sameYearDateModifier = {
-            dateStyle = NSDateFormatterShortStyle
-            timeStyle = NSDateFormatterNoStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterShortStyle)
         },
         timeModifier = {
-            dateStyle = NSDateFormatterNoStyle
-            timeStyle = NSDateFormatterShortStyle
+            matchToUserPreferences(timeStyle = NSDateFormatterShortStyle)
         }
     ),
     MEDIUM(
         dateModifier = {
-            dateStyle = NSDateFormatterMediumStyle
-            timeStyle = NSDateFormatterNoStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle)
         },
         dateTimeModifier = {
-            dateStyle = NSDateFormatterMediumStyle
-            timeStyle = NSDateFormatterMediumStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle, timeStyle = NSDateFormatterMediumStyle)
         },
         sameYearDateTimeModifier = {
-            dateStyle = NSDateFormatterMediumStyle
-            timeStyle = NSDateFormatterMediumStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle, timeStyle = NSDateFormatterMediumStyle)
         },
         sameYearDateModifier = {
-            dateStyle = NSDateFormatterMediumStyle
-            timeStyle = NSDateFormatterNoStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle)
         },
         timeModifier = {
-            dateStyle = NSDateFormatterNoStyle
-            timeStyle = NSDateFormatterMediumStyle
+            matchToUserPreferences(timeStyle = NSDateFormatterMediumStyle)
         }
     ),
     LONG(
         dateModifier = {
-            dateStyle = NSDateFormatterLongStyle
-            timeStyle = NSDateFormatterNoStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterLongStyle)
         },
         dateTimeModifier = {
-            dateStyle = NSDateFormatterLongStyle
-            timeStyle = NSDateFormatterLongStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterLongStyle, timeStyle = NSDateFormatterLongStyle)
         },
         sameYearDateTimeModifier = {
-            dateStyle = NSDateFormatterLongStyle
-            timeStyle = NSDateFormatterLongStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterLongStyle, timeStyle = NSDateFormatterLongStyle)
         },
         sameYearDateModifier = {
-            dateStyle = NSDateFormatterLongStyle
-            timeStyle = NSDateFormatterNoStyle
+            matchToUserPreferences(dateStyle = NSDateFormatterLongStyle)
         },
         timeModifier = {
-            dateStyle = NSDateFormatterNoStyle
-            timeStyle = NSDateFormatterLongStyle
+            matchToUserPreferences(timeStyle = NSDateFormatterLongStyle)
         }
     ),
     D_MMM_YYYY_RELATIVE(

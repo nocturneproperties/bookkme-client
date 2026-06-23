@@ -37,7 +37,6 @@ struct AppointmentSettingsScreen: View {
 						DayOffItem(item: item, onDeleteClick: onRemove)
 					}
 				)
-				.listRowInsets(EdgeInsets())
 			}
 			Section {
 				RequestsSettings(state: state)
@@ -76,21 +75,17 @@ private struct DayOffItem: View {
     let onDeleteClick: () -> Void
 
     var body: some View {
-		VStack(spacing: 0) {
-			HStack(alignment: .center, spacing: 8) {
-				Image(systemName: "calendar")
-					.foregroundStyle(AppColors.primary)
-				Text(item.displayName.localized())
-					.font(.headline)
-					.frame(maxWidth: .infinity, alignment: .leading)
-				Button(action: onDeleteClick) {
-					Image(systemName: "trash")
-						.foregroundStyle(AppColors.error)
-				}
-				.buttonStyle(.plain)
+		HStack(alignment: .center, spacing: 8) {
+			Image(systemName: "calendar")
+				.foregroundStyle(AppColors.primary)
+			Text(item.displayName.localized())
+				.font(.headline)
+				.frame(maxWidth: .infinity, alignment: .leading)
+			Button(action: onDeleteClick) {
+				Image(systemName: "trash")
+					.foregroundStyle(AppColors.error)
 			}
-			.padding()
-			Divider()
+			.buttonStyle(.plain)
 		}
     }
 }
@@ -202,6 +197,6 @@ private struct TimeRow: View {
             }
             .buttonStyle(.plain)
             .padding(.leading, 16)
-        }
+        }.background(AppColors.elevated)
     }
 }

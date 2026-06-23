@@ -17,6 +17,10 @@ import me.bookk.core.UsedInSwift
 import platform.Foundation.NSCalendar
 import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
+import platform.Foundation.NSDateFormatterNoStyle
+import platform.Foundation.NSDateFormatterStyle
+import platform.Foundation.NSLocale
+import platform.Foundation.autoupdatingCurrentLocale
 
 actual fun LocalDate.startOfWeek(): LocalDate {
     val calendar = NSCalendar.currentCalendar
@@ -45,6 +49,18 @@ internal fun LocalTime.nsDate(): NSDate {
 fun NSDateFormatter.matchToUserPreferences(pattern: String) {
     val skeleton = pattern.filter { it.isLetter() }
     setLocalizedDateFormatFromTemplate(skeleton)
+}
+
+fun NSDateFormatter.matchToUserPreferences(
+    dateStyle: NSDateFormatterStyle = NSDateFormatterNoStyle,
+    timeStyle: NSDateFormatterStyle = NSDateFormatterNoStyle
+) {
+    val probe = NSDateFormatter().apply {
+        locale = NSLocale.autoupdatingCurrentLocale
+        this.dateStyle = dateStyle
+        this.timeStyle = timeStyle
+    }
+    matchToUserPreferences(probe.dateFormat)
 }
 
 fun NSDate.asLocalDate(timeZone: TimeZone): LocalDate {

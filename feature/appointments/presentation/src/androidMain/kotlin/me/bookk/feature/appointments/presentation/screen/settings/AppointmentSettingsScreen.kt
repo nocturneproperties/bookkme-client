@@ -132,8 +132,10 @@ private fun RequestsSettings(state: AppointmentSettingsState) {
             StateSwitch(state.automaticApproval, modifier = Modifier.fillMaxWidth())
         }
         TextField(state.minimalBreak)
-        Header(AppointmentsRes.strings.appointments_settings_note_header.desc().localized())
-        TextField(state.note, minLines = 3)
+        Column {
+            Header(AppointmentsRes.strings.appointments_settings_note_header.desc().localized())
+            TextField(state.note, minLines = 3)
+        }
     }
 }
 

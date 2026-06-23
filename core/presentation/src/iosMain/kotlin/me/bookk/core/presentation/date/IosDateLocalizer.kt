@@ -3,34 +3,34 @@ package me.bookk.core.presentation.date
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSLocale
 import platform.Foundation.NSTimeZone
-import platform.Foundation.currentLocale
+import platform.Foundation.autoupdatingCurrentLocale
 import platform.Foundation.localTimeZone
 
 class IosDateLocalizer: DateLocalizer {
 
     private fun DateStyle.nativeFormat(): IOSFormatters {
         val dateFormatter = NSDateFormatter().apply {
-            locale = NSLocale.currentLocale
+            locale = NSLocale.autoupdatingCurrentLocale
             timeZone = NSTimeZone.localTimeZone
             dateModifier()
         }
         val sameYearDateFormatter = NSDateFormatter().apply {
-            locale = NSLocale.currentLocale
+            locale = NSLocale.autoupdatingCurrentLocale
             timeZone = NSTimeZone.localTimeZone
             sameYearDateModifier()
         }
         val dateTimeFormatter = NSDateFormatter().apply {
-            locale = NSLocale.currentLocale
+            locale = NSLocale.autoupdatingCurrentLocale
             timeZone = NSTimeZone.localTimeZone
             dateTimeModifier()
         }
         val sameYearDateTimeFormatter = NSDateFormatter().apply {
-            locale = NSLocale.currentLocale
+            locale = NSLocale.autoupdatingCurrentLocale
             timeZone = NSTimeZone.localTimeZone
             sameYearDateTimeModifier()
         }
         val timeFormatter = NSDateFormatter().apply {
-            locale = NSLocale.currentLocale
+            locale = NSLocale.autoupdatingCurrentLocale
             timeZone = NSTimeZone.localTimeZone
             timeModifier()
         }

@@ -71,7 +71,14 @@ class AppointmentSettingsViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.save.startLoading() },
             call = { updateAppointmentSettings(appointmentSettings) },
-            onComplete = ::renderSettings,
+            onComplete = {
+                renderSettings(it)
+                uiState.notifications.add(
+                    PresentationNotification.GlobalMessage(
+                        AppointmentsRes.strings.appointments_settings_updated.desc()
+                    )
+                )
+            },
             onError = {
                 when (it) {
                     is UpdateAppointmentSettings.Error.ActiveDayWithoutWorkHours ->

@@ -17,7 +17,7 @@ struct EditProfileScreen: View {
 	var body: some View {
 		let state = viewModel.uiState
 		List {
-			SectionTextField(state.name) { newText in
+			SectionTextField(state.name, header: "") { newText in
 				viewModel.onFirstNameTextChanged(text: newText)
 			}
 			.textFieldStyle(.inList)

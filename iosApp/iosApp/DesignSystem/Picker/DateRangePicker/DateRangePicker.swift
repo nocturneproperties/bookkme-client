@@ -28,8 +28,10 @@ struct DateRangePicker: View {
 			Spacer()
 
             Button(action: {
-                state.onDateRangeSelected()
-                onDismiss()
+				withAnimation {
+					state.onDateRangeSelected()
+					onDismiss()
+				}
             }) {
                 Text(DesignSystem.strings.shared.action_select.desc().localized())
                     .frame(maxWidth: .infinity, minHeight: 36)

@@ -79,15 +79,27 @@ struct TimePickerSheet: View {
 			Spacer()
 			HStack {
 				Spacer()
-				DatePicker(
-					"",
-					selection: $selection,
-					in: range,
-					displayedComponents: [.hourAndMinute]
-				)
-				.labelsHidden()
-				.datePickerStyle(.wheel)
-				.tint(AppColors.actionText)
+				if minTime != nil && maxTime != nil {
+					DatePicker(
+						"",
+						selection: $selection,
+						in: range,
+						displayedComponents: [.hourAndMinute]
+					)
+					.labelsHidden()
+					.datePickerStyle(.wheel)
+					.tint(AppColors.actionText)
+				}
+				else {
+					DatePicker(
+						"",
+						selection: $selection,
+						displayedComponents: [.hourAndMinute]
+					)
+					.labelsHidden()
+					.datePickerStyle(.wheel)
+					.tint(AppColors.actionText)
+				}
 				Spacer()
 			}
 			Spacer()

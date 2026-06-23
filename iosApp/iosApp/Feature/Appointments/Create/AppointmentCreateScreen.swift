@@ -43,6 +43,15 @@ struct AppointmentCreateScreen: View {
 					.textFieldStyle(.inList)
 				TimePickerField(state: state.timePicker)
 					.textFieldStyle(.inList)
+			} footer: {
+				if let error = state.datePicker.textField.supportingTextRes {
+					Text(error.localized())
+						.foregroundStyle(AppColors.error)
+				}
+				if let error = state.timePicker.textField.supportingTextRes {
+					Text(error.localized())
+						.foregroundStyle(AppColors.error)
+				}
 			}
 			Section {
 				StateTextField(state.note, textEditor: true)

@@ -59,7 +59,7 @@ internal fun Appointment.toRemote() = AppointmentRemote(
     client = client.toRemote(),
     services = services.map { it.toRemote() },
     status = status.toRemote(),
-    date = date.toInstant(TimeZone.UTC),
+    date = date.toInstant(TimeZone.currentSystemDefault()),
     note = note,
     cancellationReason = cancellationReason
 )

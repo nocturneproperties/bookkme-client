@@ -150,7 +150,7 @@ class AppointmentCreateViewModel(
                         uiState.create.isEnabled = false
                     }
                     is CreateAppointment.Error.TimeIsNotAllowed -> {
-                        uiState.datePicker.textField.showError(AppointmentsRes.strings.appointments_create_time_error.desc())
+                        uiState.timePicker.textField.showError(AppointmentsRes.strings.appointments_create_time_error.desc())
                         uiState.create.isEnabled = false
                     }
                     else -> uiState.notifications.add(it.notification())
@@ -191,8 +191,7 @@ class AppointmentCreateViewModel(
         datePicker.datePicker.onDatePicked = weakVMClosure { vm, date -> vm.onDatePicked(date) }
 
         timePicker.textField.label = AppointmentsRes.strings.appointments_create_time.desc()
-        timePicker.textField.placeholder =
-            AppointmentsRes.strings.appointments_create_time_placeholder.desc()
+        timePicker.textField.placeholder = AppointmentsRes.strings.appointments_create_time_placeholder.desc()
         timePicker.timePicker.onTimePicked = weakVMClosure { vm, time -> vm.onTimePicked(time) }
 
         note.placeholder = AppointmentsRes.strings.appointments_create_note.desc()

@@ -18,11 +18,12 @@ struct AppointmentSettingsScreen: View {
 		List {
 			Section(AppointmentsRes.strings().appointments_settings_schedule.desc().localized()) {
 				ScheduleStrip(schedule: items)
+					.listRowInsets(EdgeInsets())
 				if let expanded = items.first(where: { $0.isVisible }) {
 					ScheduleDay(state: expanded)
+						.listRowInsets(EdgeInsets())
 				}
 			}
-			.listRowInsets(EdgeInsets())
 			.listRowSeparator(.hidden)
 			Section(state.dayOffs.pickerTitle.localized()) {
 				MultiPicker(

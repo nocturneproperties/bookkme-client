@@ -48,12 +48,6 @@ internal fun SupportSection(state: SupportSection) {
                 text = state.policy.text.localized(),
                 onClick = LocalDashboardEventListener.current.showPolicy
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            SectionItem(
-                text = state.reportError.text.localized(),
-                color = LocalColors.current.error,
-                onClick = LocalNavigation.current.navigateToDeleteAccount
-            )
         }
     }
 }

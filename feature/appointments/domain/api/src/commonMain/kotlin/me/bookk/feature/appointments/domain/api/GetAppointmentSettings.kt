@@ -5,4 +5,5 @@ import kotlin.uuid.Uuid
 
 interface GetAppointmentSettings {
     suspend operator fun invoke(businessId: Uuid): AppointmentSettings
+    suspend fun cached(businessId: Uuid, onResultAvailable: suspend (AppointmentSettings) -> Unit)
 }

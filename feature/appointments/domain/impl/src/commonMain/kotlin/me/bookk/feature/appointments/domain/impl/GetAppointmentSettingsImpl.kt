@@ -13,4 +13,17 @@ internal class GetAppointmentSettingsImpl(
             ?: appointmentSettingsDataSource.getAppointmentSettings(businessId)
                 .also { appointmentSettingsDataSource.saveAppointmentSettingsInDB(it) }
     }
+
+    override suspend fun cached(
+        businessId: Uuid,
+        onResultAvailable: suspend (AppointmentSettings) -> Unit
+    ) {
+        appointmentSettingsDataSource.getAppointmentSettingsFromDB(businessId)?.let {
+            onResultAvailable(it)
+        }
+        onResultAvailable(
+            appointmentSettingsDataSource.getAppointmentSettings(businessId)
+                .also { appointmentSettingsDataSource.saveAppointmentSettingsInDB(it) }
+        )
+    }
 }

@@ -54,9 +54,9 @@ class AppointmentSettingsViewModel(
     }
 
     private fun loadSettings() {
-        launch(
+        launchCached(
             launchIn = DispatcherProvider.io,
-            call = { getAppointmentSettings(businessId) },
+            call = { getAppointmentSettings.cached(businessId, it) },
             onComplete = {
                 loadedSettings = it
                 renderSettings(it)

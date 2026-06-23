@@ -49,7 +49,7 @@ fun ActionButton(
     Button(
         modifier = modifier.heightIn(min = 48.dp),
         colors = colors,
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         enabled = state.isEnabled,
         onClick = onClick
@@ -98,7 +98,7 @@ fun StateTextButton(
     Button(
         modifier = modifier.heightIn(min = 48.dp),
         colors = colors,
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         enabled = state.isEnabled,
         onClick = onClick,
@@ -146,7 +146,7 @@ fun AlignStartTextButton(
     Button(
         modifier = modifier.heightIn(min = 48.dp),
         colors = colors,
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         enabled = state.isEnabled,
         onClick = onClick,

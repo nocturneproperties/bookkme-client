@@ -41,7 +41,7 @@ internal fun AppearanceSection(state: AppearanceSection) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
-                .clip(MaterialTheme.shapes.medium)
+                .clip(MaterialTheme.shapes.large)
                 .background(LocalColors.current.elevated)
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -67,7 +67,7 @@ private fun RowScope.ThemeItem(
     Column(
         modifier = Modifier
             .weight(1f)
-            .clip(MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.large)
             .clickable { onSchemeSelected(scheme) }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -76,14 +76,14 @@ private fun RowScope.ThemeItem(
         Box(
             modifier = Modifier
                 .size(70.dp)
-                .clip(MaterialTheme.shapes.medium)
+                .clip(MaterialTheme.shapes.large)
                 .background(scheme.asColor())
                 .border(
                     BorderStroke(
                         if (scheme == currentScheme) 4.dp else 1.dp,
                         if (scheme == currentScheme) LocalColors.current.actionText else LocalColors.current.divider
                     ),
-                    MaterialTheme.shapes.medium
+                    MaterialTheme.shapes.large
                 )
         )
         Text(text = scheme.title.localized(), style = MaterialTheme.typography.titleSmall)

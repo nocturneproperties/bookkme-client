@@ -43,7 +43,9 @@ struct AppointmentSettingsScreen: View {
 			} header : {
 				Text(AppointmentsRes.strings().appointments_settings_requests.desc().localized())
 			} footer : {
-				Text(AppointmentsRes.strings().appointments_settings_break_footer.desc().localized())
+				if let footer = state.minimalBreak.supportingTextRes {
+					Text(footer.localized())
+				}
 			}
 			Section(AppointmentsRes.strings().appointments_settings_note_header.desc().localized()) {
 				StateTextField(state.note, textEditor: true)

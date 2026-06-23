@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
-import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.StateSwitch
@@ -44,13 +43,10 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
                     text = state.confirmationMessage.localized(),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                AppCard {
-                    StateSwitch(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        state = state.confirmation,
-                        onCheckedChange = LocalDeleteAccountEventListener.current.onSwitchStateChanged
-                    )
-                }
+                StateSwitch(
+                    state = state.confirmation,
+                    onCheckedChange = LocalDeleteAccountEventListener.current.onSwitchStateChanged
+                )
 
             }
         },

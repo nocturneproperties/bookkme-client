@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.atTime
 import me.bookk.core.now
+import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.uistate.AndroidDatePickerState
 import me.bookk.designsystem.uistate.AndroidTimePickerState
 import me.bookk.designsystem.uistate.DateTimePickerState
@@ -20,7 +21,7 @@ fun DateTimePicker(
             isTimePickerVisible = false,
             pickedTime = state.pickedDate?.time,
             onTimePicked = {
-                val picked = state.pickedDate?.date?.atTime(it) ?: LocalDate.now().atTime(it)
+                val picked = state.pickedDate?.date?.atTime(it) ?: LocalDate.today().atTime(it)
                 state.onDatePicked?.invoke(picked)
                 state.isDatePickerVisible = false
             }

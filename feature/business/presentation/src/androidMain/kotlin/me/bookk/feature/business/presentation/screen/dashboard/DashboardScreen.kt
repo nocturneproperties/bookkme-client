@@ -65,7 +65,7 @@ private fun DashboardSection(item: BusinessDashboardSection) {
         Column(
             modifier = Modifier.background(
                 LocalColors.current.elevated,
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.large
             )
         ) {
             val clickListener = LocalDashboardEventListener.current.onItemClicked

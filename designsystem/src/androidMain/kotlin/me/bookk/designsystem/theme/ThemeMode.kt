@@ -87,7 +87,8 @@ fun AppColorScheme.animated():AppColorScheme {
         buttonPrimary = animateColor(buttonPrimary),
         buttonActive = animateColor(buttonActive),
         buttonInactive = animateColor(buttonInactive),
-        error = animateColor(error)
+        error = animateColor(error),
+        onAction = animateColor(onAction)
     )
 }
 

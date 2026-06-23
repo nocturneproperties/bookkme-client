@@ -16,7 +16,7 @@ import me.bookk.designsystem.theme.color.LocalColors
 @Composable
 fun AppCard(
     modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.medium,
+    shape: Shape = MaterialTheme.shapes.large,
     border: BorderStroke? = null,
     background: Color = LocalColors.current.elevated,
     onClick: () -> Unit = {},

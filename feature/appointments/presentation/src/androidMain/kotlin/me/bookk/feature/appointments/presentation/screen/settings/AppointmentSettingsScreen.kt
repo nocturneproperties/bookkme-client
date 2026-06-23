@@ -132,6 +132,7 @@ private fun RequestsSettings(state: AppointmentSettingsState) {
             StateSwitch(state.automaticApproval, modifier = Modifier.fillMaxWidth())
         }
         TextField(state.minimalBreak)
+        Header(AppointmentsRes.strings.appointments_settings_note_header.desc().localized())
         TextField(state.note, minLines = 3)
     }
 }
@@ -139,9 +140,18 @@ private fun RequestsSettings(state: AppointmentSettingsState) {
 @Composable
 private fun ScheduleStrip(schedule: ScheduleState) {
     var selectedState by remember(schedule) { mutableStateOf(schedule.monday) }
-    Column(Modifier.animateContentSize()) {
+    Column(Modifier.fillMaxWidth()) {
         Header(AppointmentsRes.strings.appointments_settings_schedule.desc().localized())
-        Row {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize()
+                .background(
+                    LocalColors.current.elevated,
+                    MaterialTheme.shapes.large
+                )
+                .padding(vertical = 8.dp, horizontal = 16.dp)
+        ) {
             schedule.list.items.forEach { day ->
                 DayOfWeekCell(
                     modifier = Modifier.weight(1f),
@@ -173,7 +183,7 @@ private fun DayOfWeekCell(
     val animatedBg by animateColorAsState(background)
     Column(
         modifier = modifier
-            .clip(MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.large)
             .clickable { onClick() }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -182,12 +192,13 @@ private fun DayOfWeekCell(
         Text(
             text = state.dayIndicator.localized(),
             textAlign = TextAlign.Center,
+            color = if (state.isActive.isChecked) LocalColors.current.onAction else LocalColors.current.primaryText,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .background(animatedBg, CircleShape)
                 .border(
                     width = if (state.isVisible) 2.dp else 0.dp,
-                    color = LocalColors.current.primaryText,
+                    color = if (state.isVisible) LocalColors.current.primaryText else Color.Transparent,
                     shape = CircleShape
                 )
                 .size(40.dp)
@@ -219,6 +230,7 @@ private fun ScheduleDay(state: DaySettingsState) {
                     Text(
                         text = state.dayIndicator.localized(),
                         textAlign = TextAlign.Center,
+                        color = if (state.isActive.isChecked) LocalColors.current.onAction else LocalColors.current.primaryText,
                         modifier = Modifier
                             .background(bgColor, CircleShape)
                             .size(40.dp)

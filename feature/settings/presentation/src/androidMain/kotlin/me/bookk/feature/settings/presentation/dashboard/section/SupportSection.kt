@@ -33,7 +33,7 @@ internal fun SupportSection(state: SupportSection) {
             color = LocalColors.current.header
         )
 
-        Column(modifier = Modifier.background(LocalColors.current.elevated, shape = MaterialTheme.shapes.medium)) {
+        Column(modifier = Modifier.background(LocalColors.current.elevated, shape = MaterialTheme.shapes.large)) {
             SectionItem(
                 text = state.contact.text.localized(),
                 onClick = LocalNavigation.current.navigateToContact

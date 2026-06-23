@@ -1,6 +1,7 @@
 package me.bookk.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,13 +39,20 @@ fun StateSwitch(
     ),
     onCheckedChange: (Boolean) -> Unit = { state.onCheckedChange?.invoke(it) }
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .background(
+                LocalColors.current.elevated,
+                MaterialTheme.shapes.large
+            )
+    ) {
         Row(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.large)
                 .clickable {
                     state.onCheckedChange?.invoke(!state.isChecked)
-                },
+                }
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {

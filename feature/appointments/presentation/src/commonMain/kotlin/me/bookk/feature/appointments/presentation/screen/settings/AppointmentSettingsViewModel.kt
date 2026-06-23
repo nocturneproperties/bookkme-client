@@ -260,6 +260,7 @@ class AppointmentSettingsViewModel(
         minimalBreak.onTextChanged = weakSelfClosure { state, v ->
             state.minimalBreak.text = v.filter { it.isDigit() }
         }
+        minimalBreak.supportingTextRes = AppointmentsRes.strings.appointments_settings_break_footer.desc()
     }
 
     private fun AppointmentSettingsState.setupDayOffs() {

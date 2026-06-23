@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
-import me.bookk.core.now
 import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppDatePicker
@@ -55,7 +54,7 @@ internal fun AppointmentListScreen(
                 AppTopBar(state = state.appBar)
                 DateStrip(
                     dates = state.dates.items,
-                    selectedDate = state.datePicker.pickedDate ?: LocalDate.now(),
+                    selectedDate = state.datePicker.pickedDate ?: LocalDate.today(),
                     onDateSelected = { state.datePicker.onDatePicked?.invoke(it) }
                 )
                 HorizontalDivider(color = LocalColors.current.divider)
@@ -117,8 +116,8 @@ private fun DateCell(
     val animatedBg by animateColorAsState(background)
     Column(
         modifier = modifier
-            .clip(MaterialTheme.shapes.medium)
-            .border(1.dp, borderColor, MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.large)
+            .border(1.dp, borderColor, MaterialTheme.shapes.large)
             .clickable { onClick() }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -137,7 +136,7 @@ private fun DateCell(
             text = date.day.toString(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-            color = LocalColors.current.primaryText
+            color = if (isSelected) LocalColors.current.onAction else LocalColors.current.primaryText
         )
     }
 }

@@ -69,6 +69,7 @@ kotlin {
             implementation(projects.database)
             implementation(projects.core.data)
             implementation(projects.environment.api)
+            implementation(projects.environment.impl)
             api(projects.core)
             api(projects.core.domain)
             api(projects.core.presentation)

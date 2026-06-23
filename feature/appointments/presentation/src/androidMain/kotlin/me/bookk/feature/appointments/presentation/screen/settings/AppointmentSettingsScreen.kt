@@ -138,18 +138,17 @@ private fun RequestsSettings(state: AppointmentSettingsState) {
 
 @Composable
 private fun ScheduleStrip(schedule: ScheduleState) {
-    val days = remember(schedule) { schedule.asList() }
     var selectedState by remember(schedule) { mutableStateOf(schedule.monday) }
     Column(Modifier.animateContentSize()) {
         Header(AppointmentsRes.strings.appointments_settings_schedule.desc().localized())
         Row {
-            days.forEach { day ->
+            schedule.list.items.forEach { day ->
                 DayOfWeekCell(
                     modifier = Modifier.weight(1f),
                     state = day,
                     onClick = {
                         day.isVisible = !day.isVisible
-                        days.forEach {
+                        schedule.list.items.forEach {
                             if (it !== day) it.isVisible = false
                         }
                         selectedState = day

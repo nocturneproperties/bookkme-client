@@ -3,6 +3,7 @@ package me.bookk.feature.appointments.presentation.screen.settings
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.isoDayNumber
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -10,6 +11,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.date.atNextWeekDay
+import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakSelfClosure
@@ -146,6 +148,22 @@ class AppointmentSettingsViewModel(
         schedule.saturday.render(settings.schedule.saturday)
         schedule.sunday.render(settings.schedule.sunday)
 
+        val days = mutableListOf(
+            schedule.monday,
+            schedule.tuesday,
+            schedule.wednesday,
+            schedule.thursday,
+            schedule.friday,
+            schedule.saturday,
+            schedule.sunday
+        )
+        val firstDayOfWeek = LocalDate.today().startOfWeek().dayOfWeek
+        for (i in 0 until (firstDayOfWeek.isoDayNumber - 1)) {
+            days.add(days.removeAt(i))
+        }
+
+        schedule.list.replace(days)
+
         note.text = settings.appointmentNote
 
         minimalBreak.text = settings.inBetweenBreakInMinutes.toString()
@@ -247,8 +265,7 @@ class AppointmentSettingsViewModel(
     private fun AppointmentSettingsState.setupDayOffs() {
         dayOffs.pickerTitle = AppointmentsRes.strings.appointments_settings_day_offs.desc()
         dayOffs.placeholder = AppointmentsRes.strings.appointments_settings_no_day_offs.desc()
-        dayOffs.addItemButton.text =
-            AppointmentsRes.strings.appointments_settings_add_day_off.desc()
+        dayOffs.addItemButton.text = AppointmentsRes.strings.appointments_settings_add_day_off.desc()
         dayOffs.addItemButton.icon = DesignSystem.images.plus
 
         dateRange.title = AppointmentsRes.strings.appointments_settings_pick_day_off_title.desc()

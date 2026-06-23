@@ -8,13 +8,12 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
-import me.bookk.core.now
 import kotlin.time.Clock
 
 expect fun LocalDate.startOfWeek(): LocalDate
 
 fun LocalDate.Companion.atNextWeekDay(dayOfWeek: DayOfWeek): LocalDate {
-    val now = LocalDate.now()
+    val now = LocalDate.today()
     return now.plus(dayOfWeek.isoDayNumber - now.dayOfWeek.isoDayNumber, DateTimeUnit.DAY)
 }
 

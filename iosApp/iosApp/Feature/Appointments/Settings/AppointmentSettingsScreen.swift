@@ -14,10 +14,11 @@ struct AppointmentSettingsScreen: View {
 
     var body: some View {
         let state = IOSAppointmentSettingsState.cast(viewModel.uiState)
+		let items = IOSScheduleState.cast(state.schedule).list.items(DaySettingsState.self)
 		List {
 			Section(AppointmentsRes.strings().appointments_settings_schedule.desc().localized()) {
-				ScheduleStrip(schedule: state.schedule)
-				if let expanded = IOSScheduleState.cast(state.schedule).asList().first(where: { $0.isVisible }) {
+				ScheduleStrip(schedule: items)
+				if let expanded = items.first(where: { $0.isVisible }) {
 					ScheduleDay(state: expanded)
 				}
 			}
@@ -105,19 +106,15 @@ private struct RequestsSettings: View {
 }
 
 private struct ScheduleStrip: View {
-    let schedule: IOSScheduleState
-
-    init(schedule: any ScheduleState) {
-        self.schedule = IOSScheduleState.cast(schedule)
-    }
+	
+    let schedule: [DaySettingsState]
 
     var body: some View {
-        let days = schedule.asList()
 		HStack(spacing: 0) {
-			ForEach(days, id: \.id) { day in
+			ForEach(schedule, id: \.id) { day in
 				DayOfWeekCell(state: day) {
 					withAnimation {
-						for d in days {
+						for d in schedule {
 							d.isVisible = d.id == day.id ? !d.isVisible : false
 						}
 					}
@@ -137,6 +134,7 @@ private struct DayOfWeekCell: View {
             Text(state.dayIndicator.localized())
                 .font(.headline)
                 .frame(width: 40, height: 40)
+				.foregroundStyle(state.isActive.isChecked ? AppColors.onAction : AppColors.primary)
                 .background(state.isActive.isChecked ? AppColors.buttonPrimary : Color.clear, in: Circle())
                 .overlay(
                     Circle()
@@ -156,6 +154,7 @@ private struct ScheduleDay: View {
 			Text(state.dayIndicator.localized())
 				.font(.headline)
 				.frame(width: 40, height: 40)
+				.foregroundStyle(AppColors.onAction)
 				.background(state.isActive.isChecked ? AppColors.actionText : AppColors.inactive, in: Circle())
 			Text(state.title.localized())
 				.font(.headline)

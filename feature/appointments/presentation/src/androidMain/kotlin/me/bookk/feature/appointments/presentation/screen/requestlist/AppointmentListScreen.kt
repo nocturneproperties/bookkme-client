@@ -30,13 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.isoDayNumber
-import kotlinx.datetime.plus
 import me.bookk.core.now
-import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppDatePicker
@@ -59,6 +54,7 @@ internal fun AppointmentListScreen(
             Column {
                 AppTopBar(state = state.appBar)
                 DateStrip(
+                    dates = state.dates.items,
                     selectedDate = state.datePicker.pickedDate ?: LocalDate.now(),
                     onDateSelected = { state.datePicker.onDatePicked?.invoke(it) }
                 )
@@ -91,22 +87,17 @@ internal fun AppointmentListScreen(
 
 @Composable
 private fun DateStrip(
+    dates: List<DateInfo>,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val dates = remember(selectedDate) {
-        val start = selectedDate.startOfWeek()
-        (DayOfWeek.MONDAY.isoDayNumber..DayOfWeek.SUNDAY.isoDayNumber).toList().map {
-            start.plus(it - 1, DateTimeUnit.DAY)
-        }
-    }
     Row {
-        dates.forEach { date ->
+        dates.forEach { info ->
             DateCell(
                 modifier = Modifier.weight(1f),
-                date = date,
-                isSelected = date == selectedDate,
-                onClick = { onDateSelected(date) }
+                date = info.date,
+                isSelected = info.date == selectedDate,
+                onClick = { onDateSelected(info.date) }
             )
         }
     }

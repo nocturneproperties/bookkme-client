@@ -8,6 +8,7 @@ import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.DateRangePickerState
+import me.bookk.designsystem.uistate.ListState
 import me.bookk.designsystem.uistate.MultiPickerState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PickerPresentation
@@ -42,7 +43,7 @@ interface ScheduleState {
     val saturday: DaySettingsState
     val sunday: DaySettingsState
 
-    fun asList(): List<DaySettingsState>
+    val list: ListState<DaySettingsState>
 }
 
 interface DaySettingsState : ViewState {

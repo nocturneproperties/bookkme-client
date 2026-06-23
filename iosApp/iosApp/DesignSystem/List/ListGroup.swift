@@ -38,7 +38,7 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 	}
 	
 	var body: some View {
-		Group {
+		
 			if (!listState.isInitialLoading) {
 				List {
 					header()
@@ -50,11 +50,7 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 			} else {
 				ProgressView()
 			}
-		}.overlay {
-			if let emptyState = listState.emptyState, !listState.isInitialLoading, listState.items.isEmpty {
-				ListEmptyView(state: emptyState)
-			}
-		}
+		
 	}
 }
 

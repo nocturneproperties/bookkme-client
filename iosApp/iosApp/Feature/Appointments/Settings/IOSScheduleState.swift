@@ -14,6 +14,8 @@ final class IOSScheduleState: @MainActor ScheduleState, NativeStateRepresentatio
     let friday: any DaySettingsState
     let saturday: any DaySettingsState
     let sunday: any DaySettingsState
+	
+	let list: any ListState
 
     init() {
         monday = IOSDaySettingsState()
@@ -23,9 +25,6 @@ final class IOSScheduleState: @MainActor ScheduleState, NativeStateRepresentatio
         friday = IOSDaySettingsState()
         saturday = IOSDaySettingsState()
         sunday = IOSDaySettingsState()
-    }
-
-    func asList() -> [any DaySettingsState] {
-        return [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+		list = IOSListState<DaySettingsState>()
     }
 }

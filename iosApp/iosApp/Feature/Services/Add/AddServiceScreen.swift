@@ -54,11 +54,11 @@ struct AddServiceScreen: View {
 				StateCheckBox(uiState.enabled_)
 			}
 		}
+		.listSectionSpacing(.compact)
+		.withNavigationBar(uiState.appBar)
 		.toolbar {
 			TextButton(uiState.create)
 		}
-		.listSectionSpacing(.compact)
-		.withNavigationBar(uiState.appBar)
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(uiState.notifications)
 		.handleNavigation(uiState.navigation) { destination in

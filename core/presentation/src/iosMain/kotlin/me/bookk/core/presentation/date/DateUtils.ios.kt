@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.atTime
+import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toKotlinInstant
@@ -19,13 +20,12 @@ import platform.Foundation.NSDateFormatter
 
 actual fun LocalDate.startOfWeek(): LocalDate {
     val calendar = NSCalendar.currentCalendar
-    val firstWeekday = calendar.firstWeekday.toInt() // 1 = Sunday, 2 = Monday, etc.
+    val firstWeekday = calendar.firstWeekday.toInt() // 1 = Sunday, 2 = Monday 3
+    // Convert to kotlinx DayOfWeek (Monday = 1) isoDayNumber
+    val firstDayIso = if (firstWeekday == 1) 7 else firstWeekday - 1
+    val currentIso = dayOfWeek.isoDayNumber
 
-    // Convert to kotlinx DayOfWeek (Monday = 0)
-    val firstDayOrdinal = if (firstWeekday == 1) 6 else firstWeekday - 2
-
-    val currentOrdinal = this.dayOfWeek.ordinal
-    val daysToSubtract = (currentOrdinal - firstDayOrdinal + 7) % 7
+    val daysToSubtract = (currentIso - firstDayIso + 7) % 7
 
     return this.minus(daysToSubtract, DateTimeUnit.DAY)
 }

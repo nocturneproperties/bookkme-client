@@ -1,5 +1,8 @@
 package me.bookk.feature.appointments.presentation.screen.settings
 
+import me.bookk.designsystem.uistate.AndroidListState
+import me.bookk.designsystem.uistate.ListState
+
 internal class AndroidScheduleState: ScheduleState {
     override val monday: DaySettingsState = AndroidDaySettingsState()
     override val tuesday: DaySettingsState = AndroidDaySettingsState()
@@ -9,15 +12,5 @@ internal class AndroidScheduleState: ScheduleState {
     override val saturday: DaySettingsState = AndroidDaySettingsState()
     override val sunday: DaySettingsState = AndroidDaySettingsState()
 
-    override fun asList(): List<DaySettingsState> {
-        return listOf(
-            monday,
-            tuesday,
-            wednesday,
-            thursday,
-            friday,
-            saturday,
-            sunday
-        )
-    }
+    override val list: ListState<DaySettingsState> = AndroidListState()
 }

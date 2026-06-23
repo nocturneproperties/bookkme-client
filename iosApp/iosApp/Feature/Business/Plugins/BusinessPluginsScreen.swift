@@ -36,7 +36,7 @@ struct BusinessPluginsScreen: View {
 					break
 				}
 			}
-		}
+		}.background(Color(UIColor.systemGroupedBackground))
 	}
 }
 
@@ -98,6 +98,7 @@ struct BusinessPluginCard: View {
 					expandedContent
 				}
 			}
+			.contentShape(Rectangle())
 			.padding(16)
 		}
 		.buttonStyle(.plain)

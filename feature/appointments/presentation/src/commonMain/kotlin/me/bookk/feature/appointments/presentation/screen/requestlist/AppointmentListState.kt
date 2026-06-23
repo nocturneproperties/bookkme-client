@@ -1,5 +1,6 @@
 package me.bookk.feature.appointments.presentation.screen.requestlist
 
+import kotlinx.datetime.LocalDate
 import me.bookk.core.UsedInSwift
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.designsystem.uistate.AppBarState
@@ -13,6 +14,7 @@ import me.bookk.feature.appointments.domain.api.entity.Appointment
 interface AppointmentListState {
     val appBar: AppBarState
     val datePicker: DatePickerState
+    val dates: ListState<DateInfo>
     val appointments: ListState<AppointmentItemState>
     val refresh: RefreshState
     val notifications: PresentationNotificationState
@@ -44,3 +46,9 @@ class AppointmentItemState(
         onItemClick = onItemClick
     )
 }
+
+class DateInfo(
+    val date: LocalDate,
+    val str: String,
+    val isToday: Boolean
+)

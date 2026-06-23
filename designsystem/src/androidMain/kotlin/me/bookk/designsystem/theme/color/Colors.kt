@@ -39,7 +39,8 @@ object AppColors {
             buttonPrimary = colorResource(resource = DesignSystem.colors.lightButton),
             buttonActive = colorResource(resource = DesignSystem.colors.lightButtonActive),
             buttonInactive = colorResource(resource = DesignSystem.colors.lightButtonInactive),
-            error = colorResource(resource = DesignSystem.colors.error)
+            error = colorResource(resource = DesignSystem.colors.error),
+            onAction = colorResource(resource = DesignSystem.colors.lightOnAction)
         )
 
     val DarkScheme: AppColorScheme
@@ -61,7 +62,8 @@ object AppColors {
             buttonPrimary = colorResource(resource = DesignSystem.colors.darkButton),
             buttonActive = colorResource(resource = DesignSystem.colors.darkButtonActive),
             buttonInactive = colorResource(resource = DesignSystem.colors.darkButtonInactive),
-            error = colorResource(resource = DesignSystem.colors.error)
+            error = colorResource(resource = DesignSystem.colors.error),
+            onAction = colorResource(resource = DesignSystem.colors.darkOnAction)
         )
 }
 

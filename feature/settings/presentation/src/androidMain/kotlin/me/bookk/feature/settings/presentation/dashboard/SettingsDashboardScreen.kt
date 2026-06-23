@@ -19,7 +19,6 @@ import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.feature.settings.presentation.dashboard.section.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.section.AppearanceSection
 import me.bookk.feature.settings.presentation.dashboard.section.ProfileSection
-import me.bookk.feature.settings.presentation.dashboard.section.SupportSection
 
 @Composable
 internal fun SettingsDashboardScreen(state: SettingsState) {
@@ -40,7 +39,6 @@ internal fun SettingsDashboardScreen(state: SettingsState) {
                 ProfileSection(state.profile)
                 AppearanceSection(state.appearance)
                 AccountSection(state.account)
-                SupportSection(state.support)
             }
         }
     )

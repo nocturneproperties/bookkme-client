@@ -10,7 +10,7 @@ class BusinessNavigation(
     val toBusinessSettings: (Uuid) -> Unit,
     val toBusinessServices: (Uuid) -> Unit,
     val toBusinessPlugins: (Uuid) -> Unit,
-    val toAppointmentSettings: () -> Unit,
+    val toAppointmentSettings: (Uuid) -> Unit,
     val toAppointmentHistory: () -> Unit,
     val toAppointmentRequests: () -> Unit,
     val toShopOrders: () -> Unit,

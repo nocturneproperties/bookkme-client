@@ -12,7 +12,7 @@ sealed class DashboardNavigationDestination : NavigationDestination() {
     data class Services(val id: Uuid) : DashboardNavigationDestination()
     data object History : DashboardNavigationDestination()
     data object Requests : DashboardNavigationDestination()
-    data object AppointmentSettings : DashboardNavigationDestination()
+    data class AppointmentSettings(val businessId: Uuid) : DashboardNavigationDestination()
     data object Assortment : DashboardNavigationDestination()
     data object Warehouse : DashboardNavigationDestination()
     data object Orders : DashboardNavigationDestination()

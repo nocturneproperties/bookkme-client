@@ -14,7 +14,6 @@
     <string name="services_create_duration_placeholder">Duration in minutes</string>
     <string name="services_create_price">Price</string>
     <string name="services_create_price_placeholder">Payment amount</string>
-    <string name="services_create_min">min.</string>
     <string name="services_create_visible">Visible to clients</string>
 
     <string name="services_group_pick">Select group</string>

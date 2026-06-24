@@ -12,41 +12,44 @@ import shared
 struct TextButton: View {
     @Bindable
     var state: IOSButtonState
-	let maxWidth: CGFloat?
 	let textAlignment: Alignment
 	let onClick: (() -> Void)?
     
-	init(_ state: IOSButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
+	init(_ state: IOSButtonState, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
 		self._state = Bindable(wrappedValue: state)
 		self.textAlignment = textAlignment
 		self.onClick = onClick
-		self.maxWidth = maxWidth
 	}
 	
-	init(_ state: ButtonState, maxWidth: CGFloat? = .infinity, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
+	init(_ state: ButtonState, textAlignment: Alignment = .center, onClick: (() -> Void)? = nil) {
 		self._state = Bindable(wrappedValue: state.impl())
 		self.textAlignment = textAlignment
 		self.onClick = onClick
-		self.maxWidth = maxWidth
 	}
 	
     var body: some View {
 		Button(action: {
-			self.onClick?()
-			self.state.onClick?()
+			withAnimation {
+				self.onClick?()
+				self.state.onClick?()
+			}
 		}) {
 			ZStack {
 				ProgressView()
 					.opacity(state.isLoading ? 1 : 0)
-				Text(state.text.localized())
-					.frame(alignment: textAlignment)
-					.opacity(state.isLoading ? 0 : 1)
-					.foregroundStyle(AppColors.actionText)
+				HStack {
+					if let icon = state.icon {
+						Image(resource: icon)
+					}
+					Text(state.text.localized())
+						.frame(alignment: textAlignment)
+				}
+				.frame(maxWidth: .infinity, alignment: textAlignment)
+				.opacity(state.isLoading ? 0 : 1)
 			}
+			.contentShape(Rectangle())
 			.animation(.default, value: state.isLoading)
         }
-		.buttonStyle(.plain)
-		.frame(maxWidth: maxWidth, minHeight: 36)
         .disabled(!state.isEnabled)
     }
 }
@@ -117,6 +120,44 @@ struct IconButton: View {
 		}
 		.disabled(!state.isEnabled)
 	}
+}
+
+struct TextStandaloneButton: ButtonStyle {
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.buttonStyle(.plain)
+			.frame(maxWidth: .infinity, minHeight: 48)
+			.foregroundStyle(AppColors.actionText)
+	}
+}
+
+struct TextInListButton: ButtonStyle {
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.buttonStyle(.plain)
+			.frame(maxWidth: .infinity)
+			.foregroundStyle(AppColors.actionText)
+	}
+}
+
+struct ActionTextButton: ButtonStyle {
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.buttonStyle(.plain)
+			.foregroundStyle(AppColors.actionText)
+	}
+}
+
+extension ButtonStyle where Self == TextInListButton {
+	static var textInList: TextInListButton { TextInListButton() }
+}
+
+extension ButtonStyle where Self == TextStandaloneButton {
+	static var textStandalone: TextStandaloneButton { TextStandaloneButton() }
+}
+
+extension ButtonStyle where Self == ActionTextButton {
+	static var textAction: ActionTextButton { ActionTextButton() }
 }
 
 #Preview {

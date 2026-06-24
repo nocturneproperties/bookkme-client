@@ -30,7 +30,7 @@ fun AnimatedLinearProgress(
             .height(4.dp)
             .background(
                 color = LocalColors.current.divider,
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.large
             )
     ) {
         val progressWidth by animateFloatAsState(
@@ -43,7 +43,7 @@ fun AnimatedLinearProgress(
                 .fillMaxHeight()
                 .fillMaxWidth(progressWidth)
                 .background(
-                    shape = MaterialTheme.shapes.medium,
+                    shape = MaterialTheme.shapes.large,
                     color = LocalColors.current.primaryText
                 )
         )

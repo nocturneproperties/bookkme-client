@@ -20,7 +20,7 @@ import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.DateTimePicker
 import me.bookk.designsystem.components.InfoSection
 import me.bookk.designsystem.components.List
-import me.bookk.designsystem.components.TextButton
+import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.resources.color.themed
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.ButtonState
@@ -70,7 +70,7 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
 private fun DateInfoSection(section: InfoLine, rescheduleButtonState: ButtonState) {
     Box {
         InfoSection(section)
-        TextButton(rescheduleButtonState, modifier = Modifier.align(Alignment.CenterEnd))
+        StateTextButton(rescheduleButtonState, modifier = Modifier.align(Alignment.CenterEnd))
     }
 }
 

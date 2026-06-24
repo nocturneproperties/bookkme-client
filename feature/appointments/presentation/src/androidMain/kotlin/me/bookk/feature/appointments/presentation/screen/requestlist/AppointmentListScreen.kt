@@ -30,13 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.isoDayNumber
-import kotlinx.datetime.plus
-import me.bookk.core.now
-import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppDatePicker
@@ -59,7 +53,8 @@ internal fun AppointmentListScreen(
             Column {
                 AppTopBar(state = state.appBar)
                 DateStrip(
-                    selectedDate = state.datePicker.pickedDate ?: LocalDate.now(),
+                    dates = state.dates.items,
+                    selectedDate = state.datePicker.pickedDate ?: LocalDate.today(),
                     onDateSelected = { state.datePicker.onDatePicked?.invoke(it) }
                 )
                 HorizontalDivider(color = LocalColors.current.divider)
@@ -91,22 +86,17 @@ internal fun AppointmentListScreen(
 
 @Composable
 private fun DateStrip(
+    dates: List<DateInfo>,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val dates = remember(selectedDate) {
-        val start = selectedDate.startOfWeek()
-        (DayOfWeek.MONDAY.isoDayNumber..DayOfWeek.SUNDAY.isoDayNumber).toList().map {
-            start.plus(it - 1, DateTimeUnit.DAY)
-        }
-    }
     Row {
-        dates.forEach { date ->
+        dates.forEach { info ->
             DateCell(
                 modifier = Modifier.weight(1f),
-                date = date,
-                isSelected = date == selectedDate,
-                onClick = { onDateSelected(date) }
+                date = info.date,
+                isSelected = info.date == selectedDate,
+                onClick = { onDateSelected(info.date) }
             )
         }
     }
@@ -126,8 +116,8 @@ private fun DateCell(
     val animatedBg by animateColorAsState(background)
     Column(
         modifier = modifier
-            .clip(MaterialTheme.shapes.medium)
-            .border(1.dp, borderColor, MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.large)
+            .border(1.dp, borderColor, MaterialTheme.shapes.large)
             .clickable { onClick() }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -146,7 +136,7 @@ private fun DateCell(
             text = date.day.toString(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-            color = LocalColors.current.primaryText
+            color = if (isSelected) LocalColors.current.onAction else LocalColors.current.primaryText
         )
     }
 }

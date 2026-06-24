@@ -8,7 +8,7 @@ import me.bookk.feature.authorization.presentation.navigation.AuthNavigation
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
 
 @Composable
-fun rememberAuthNavigation(controller: NavController) = remember {
+fun rememberAuthNavigation(controller: NavController) = remember(controller) {
     AuthNavigation(
         navigateBack = controller::popBackStack,
         navigateToMainScreen = {

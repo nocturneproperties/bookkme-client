@@ -204,7 +204,7 @@ private fun Preview() {
 
             Box(
                 modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.large)
                     .shimmerBackground(),
             ) {
                 Text(

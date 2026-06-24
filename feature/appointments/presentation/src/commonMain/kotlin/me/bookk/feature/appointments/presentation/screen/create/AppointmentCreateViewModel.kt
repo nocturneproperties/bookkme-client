@@ -13,7 +13,7 @@ import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.PickerFieldState
@@ -150,7 +150,7 @@ class AppointmentCreateViewModel(
                         uiState.create.isEnabled = false
                     }
                     is CreateAppointment.Error.TimeIsNotAllowed -> {
-                        uiState.datePicker.textField.showError(AppointmentsRes.strings.appointments_create_time_error.desc())
+                        uiState.timePicker.textField.showError(AppointmentsRes.strings.appointments_create_time_error.desc())
                         uiState.create.isEnabled = false
                     }
                     else -> uiState.notifications.add(it.notification())
@@ -163,7 +163,7 @@ class AppointmentCreateViewModel(
     private fun AppointmentCreateState.setup() = apply {
         appBar.size = TopBarSize.LARGE
         appBar.title = AppointmentsRes.strings.appointments_create_title.desc()
-        appBar.onBackClick = weakSelfClosure {
+        appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(AppointmentCreateDestination.Back)
         }
 
@@ -173,14 +173,14 @@ class AppointmentCreateViewModel(
         clientPicker.textField.label = AppointmentsRes.strings.appointments_create_client.desc()
         clientPicker.textField.placeholder =
             AppointmentsRes.strings.appointments_create_client_placeholder.desc()
-        clientPicker.onItemPicked = weakSelfClosure { vm, item -> vm.onClientSelected(item) }
+        clientPicker.onItemPicked = weakVMClosure { vm, item -> vm.onClientSelected(item) }
 
         servicePicker.pickerTitle = AppointmentsRes.strings.appointments_create_services.desc()
         servicePicker.addItemText = AppointmentsRes.strings.appointments_create_services_add.desc()
-        servicePicker.onItemsPicked = weakSelfClosure { vm, items ->
+        servicePicker.onItemsPicked = weakVMClosure { vm, items ->
             vm.onServicesPicked(items)
         }
-        servicePicker.onItemsRemoveRequested = weakSelfClosure { vm, items ->
+        servicePicker.onItemsRemoveRequested = weakVMClosure { vm, items ->
             vm.onServicesRemove(items)
         }
 
@@ -188,17 +188,16 @@ class AppointmentCreateViewModel(
         datePicker.textField.label = AppointmentsRes.strings.appointments_create_date.desc()
         datePicker.textField.placeholder =
             AppointmentsRes.strings.appointments_create_date_placeholder.desc()
-        datePicker.datePicker.onDatePicked = weakSelfClosure { vm, date -> vm.onDatePicked(date) }
+        datePicker.datePicker.onDatePicked = weakVMClosure { vm, date -> vm.onDatePicked(date) }
 
         timePicker.textField.label = AppointmentsRes.strings.appointments_create_time.desc()
-        timePicker.textField.placeholder =
-            AppointmentsRes.strings.appointments_create_time_placeholder.desc()
-        timePicker.timePicker.onTimePicked = weakSelfClosure { vm, time -> vm.onTimePicked(time) }
+        timePicker.textField.placeholder = AppointmentsRes.strings.appointments_create_time_placeholder.desc()
+        timePicker.timePicker.onTimePicked = weakVMClosure { vm, time -> vm.onTimePicked(time) }
 
         note.placeholder = AppointmentsRes.strings.appointments_create_note.desc()
 
         create.text = DesignSystem.strings.action_create.desc()
         create.isEnabled = false
-        create.onClick = weakSelfClosure { it.onCreateClick() }
+        create.onClick = weakVMClosure { it.onCreateClick() }
     }
 }

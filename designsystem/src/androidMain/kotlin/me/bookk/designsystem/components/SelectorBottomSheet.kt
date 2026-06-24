@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
@@ -58,7 +60,7 @@ fun <T> SelectorBottomSheet(
             onDismiss = onDismiss
         ) {
             var selectedItem: T? by remember { mutableStateOf(preselectItem) }
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 data.forEachIndexed { index, item ->
                     itemContent(index, item, selectedItem == item) { item ->
                         selectedItem = item

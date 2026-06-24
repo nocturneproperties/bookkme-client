@@ -29,7 +29,7 @@ import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.PullToRefresh
-import me.bookk.designsystem.components.TextButton
+import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -46,7 +46,7 @@ internal fun PasskeyScreen(state: PasskeyState) {
                 state = state.appBar,
                 onNavigationIconClick = LocalNavigation.current.navigateBack,
                 actions = {
-                    TextButton(
+                    StateTextButton(
                         state = state.addPasskeyButton,
                         onClick = LocalPasskeyEventListener.current.onAddPasskeyClick
                     )

@@ -5,7 +5,7 @@ import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.Action
@@ -71,7 +71,7 @@ class BusinessPluginsViewModel(
     private fun BusinessPluginListState.setup() = apply {
         appBar.size = TopBarSize.SMALL
         appBar.title = BusinessRes.strings.business_plugins_title.desc()
-        appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(Back) }
+        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
         with(appointmentPlugin) {
             title = BusinessRes.strings.business_plugins_appointments_title.desc()
             subtitle = BusinessRes.strings.business_plugins_appointments_subtitle.desc()
@@ -108,10 +108,10 @@ class BusinessPluginsViewModel(
 
             demo = Action(
                 BusinessRes.strings.business_plugins_demo.desc(),
-                onClick = weakSelfClosure { it.onAppointmentDemoClick() }
+                onClick = weakVMClosure { it.onAppointmentDemoClick() }
             )
             enable.text = DesignSystem.strings.action_enable.desc()
-            enable.onClick = weakSelfClosure { it.enableAppointmentsPlugin() }
+            enable.onClick = weakVMClosure { it.enableAppointmentsPlugin() }
         }
     }
 }

@@ -6,18 +6,23 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.plus
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.coroutine.resultOnEach
 import me.bookk.core.coroutine.resultOnError
-import me.bookk.core.now
 import me.bookk.core.orNow
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.date.startOfWeek
+import me.bookk.core.presentation.date.today
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
@@ -36,6 +41,8 @@ class AppointmentListViewModel(
     stateFactory: AppointmentsStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
+
+    private val shortWeekdayFormat = dateLocalizer.forStyle(DateStyle.NARROW_WEEKDAY)
 
     val uiState: AppointmentListState = stateFactory.createAppointmentListState().setup()
 
@@ -66,6 +73,20 @@ class AppointmentListViewModel(
     private fun onNewDateSelected(date: LocalDate) {
         uiState.datePicker.pickedDate = date
         onRefresh()
+        uiState.dates.replace(createDateInfoFrom(date))
+    }
+
+    private fun createDateInfoFrom(date: LocalDate): List<DateInfo> {
+        val startOfWeek = date.startOfWeek()
+        val today = LocalDate.today()
+        return DayOfWeek.entries.map {
+            val weekDay = startOfWeek.plus(it.isoDayNumber - 1, DateTimeUnit.DAY)
+            DateInfo(
+                date = weekDay,
+                str = shortWeekdayFormat.format(weekDay),
+                isToday = weekDay == today
+            )
+        }
     }
 
     private fun onRefresh() {
@@ -106,7 +127,7 @@ class AppointmentListViewModel(
             AppointmentItemState(
                 appointment = appointment,
                 formatter = dateFormat,
-                onItemClick = weakSelfClosure { it.onAppointmentClick(appointment) }
+                onItemClick = weakVMClosure { it.onAppointmentClick(appointment) }
             )
         }
         uiState.appointments.replace(items)
@@ -120,18 +141,19 @@ class AppointmentListViewModel(
                 AppBarAction(
                     contentDescription = AppointmentsRes.strings.appointments_pick_date.desc(),
                     icon = DesignSystem.images.date_range,
-                    onClick = weakSelfClosure { it.onPickDateClick() }
+                    onClick = weakVMClosure { it.onPickDateClick() }
                 ),
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_new.desc(),
                     icon = DesignSystem.images.plus,
-                    onClick = weakSelfClosure { it.onNewAppointmentClick() }
+                    onClick = weakVMClosure { it.onNewAppointmentClick() }
                 )
             )
         )
-        datePicker.pickedDate = LocalDate.now()
-        datePicker.onDatePicked = weakSelfClosure { vm, date -> vm.onNewDateSelected(date) }
-        refresh.onRefresh = weakSelfClosure { it.onRefresh() }
+        datePicker.pickedDate = LocalDate.today()
+        dates.replace(createDateInfoFrom(LocalDate.today()))
+        datePicker.onDatePicked = weakVMClosure { vm, date -> vm.onNewDateSelected(date) }
+        refresh.onRefresh = weakVMClosure { it.onRefresh() }
         appointments.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = AppointmentsRes.strings.appointments_list_empty.desc(),

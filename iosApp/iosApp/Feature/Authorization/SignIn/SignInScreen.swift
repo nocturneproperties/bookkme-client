@@ -29,9 +29,11 @@ struct SignInScreen: View {
 			TextButton(uiState.signUpButton.impl()) {
 				navigationStack.path.append(AuthDestination.SignUp())
 			}
+			.buttonStyle(.textStandalone)
             TextButton(uiState.troubleshootButton.impl()) {
 				navigationStack.path.append(AuthDestination.Troubleshoot())
             }
+			.buttonStyle(.textStandalone)
         }
         .padding()
 		.background(AppColors.background)
@@ -69,11 +71,13 @@ struct PasskeyCard: View {
                 .font(.caption)
                 .foregroundStyle(AppColors.secondary)
             
-            TextButton(learnMoreState, maxWidth: nil) {
+            TextButton(learnMoreState) {
                 onClick()
             }
+			.buttonStyle(.textStandalone)
         }
-        .padding(24)
+		.padding(.horizontal, 24)
+		.padding(.top, 24)
         .background(AppColors.elevated)
         .cornerRadius(10)
     }

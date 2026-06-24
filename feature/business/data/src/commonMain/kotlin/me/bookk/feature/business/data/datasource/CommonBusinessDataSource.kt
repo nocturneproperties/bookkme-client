@@ -8,6 +8,7 @@ import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.TimeZone
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -37,10 +38,10 @@ internal class CommonBusinessDataSource(
 
     private val preferences = preferenceProvider.get("business_prefs")
 
-    override suspend fun createBusiness(name: String, currencyCode: String): Business =
+    override suspend fun createBusiness(name: String, currencyCode: String, timeZone: TimeZone): Business =
         mapExceptions {
             httpClient.post(BusinessRouting.Api.Business()) {
-                setBody(CreateBusinessRequest(name, currencyCode))
+                setBody(CreateBusinessRequest(name, currencyCode, timeZone))
             }
                 .body<BusinessRemote>()
                 .toDomain()

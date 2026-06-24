@@ -33,7 +33,7 @@ internal fun SupportSection(state: SupportSection) {
             color = LocalColors.current.header
         )
 
-        Column(modifier = Modifier.background(LocalColors.current.elevated, shape = MaterialTheme.shapes.medium)) {
+        Column(modifier = Modifier.background(LocalColors.current.elevated, shape = MaterialTheme.shapes.large)) {
             SectionItem(
                 text = state.contact.text.localized(),
                 onClick = LocalNavigation.current.navigateToContact
@@ -47,12 +47,6 @@ internal fun SupportSection(state: SupportSection) {
             SectionItem(
                 text = state.policy.text.localized(),
                 onClick = LocalDashboardEventListener.current.showPolicy
-            )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            SectionItem(
-                text = state.reportError.text.localized(),
-                color = LocalColors.current.error,
-                onClick = LocalNavigation.current.navigateToDeleteAccount
             )
         }
     }

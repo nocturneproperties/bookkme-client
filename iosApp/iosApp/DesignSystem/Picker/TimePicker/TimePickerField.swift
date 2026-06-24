@@ -11,13 +11,13 @@ import shared
 struct TimePickerField: View {
     @Bindable private var state: IOSTimePickerFieldState
 
-    init(state: TimePickerFieldState) {
+	init(state: TimePickerFieldState) {
         self._state = Bindable(wrappedValue: IOSTimePickerFieldState.cast(state))
     }
 
     var body: some View {
         if state.isVisible {
-            StateTextField(state.textField)
+			StateTextField(state.textField)
                 .contentShape(Rectangle())
                 .simultaneousGesture(TapGesture().onEnded {
                     guard state.textField.enabled else { return }

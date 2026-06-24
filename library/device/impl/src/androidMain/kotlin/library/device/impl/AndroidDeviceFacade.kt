@@ -6,14 +6,14 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import androidx.core.net.toUri
 import library.device.api.DeviceFacade
-import me.bookk.core.LogFactory
+import me.bookk.core.Logger
 
 
 class AndroidDeviceFacade(
     private val appContext: Context
 ) : DeviceFacade {
 
-    private val logger = LogFactory.createLogger("DeviceFacade")
+    private val logger = Logger.create("DeviceFacade")
 
     override fun getPlatformName(): String {
         return "android"

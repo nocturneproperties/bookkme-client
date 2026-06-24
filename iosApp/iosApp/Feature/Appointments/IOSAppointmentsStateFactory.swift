@@ -15,6 +15,10 @@ class IOSAppointmentsStateFactory: @MainActor AppointmentsStateFactory {
         return IOSAppointmentDetailsState()
     }
 
+    func createAppointmentSettingsState() -> any AppointmentSettingsState {
+        return IOSAppointmentSettingsState()
+    }
+
 	func createServicePickerItemState() -> any PickerFieldState {
 		return IOSPickerState()
 	}

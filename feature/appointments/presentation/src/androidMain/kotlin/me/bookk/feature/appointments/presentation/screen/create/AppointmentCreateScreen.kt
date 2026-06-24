@@ -30,7 +30,7 @@ import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.DatePickerField
-import me.bookk.designsystem.components.MultiPicker
+import me.bookk.designsystem.components.OptionsMultiPicker
 import me.bookk.designsystem.components.PickerField
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.TimePickerField
@@ -61,7 +61,7 @@ internal fun AppointmentCreateScreen(
                 modifier = Modifier.padding(top = 16.dp),
                 screenPicker = standardScreenPicker()
             )
-            MultiPicker(state.servicePicker) { item, onItemRemove ->
+            OptionsMultiPicker(state.servicePicker) { item, onItemRemove ->
                 ServiceItem(item, onItemRemove)
             }
             if (state.subtotalPrice.isNotEmpty()) {

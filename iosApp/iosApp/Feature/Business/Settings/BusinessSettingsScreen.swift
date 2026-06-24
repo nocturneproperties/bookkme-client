@@ -18,25 +18,26 @@ struct BusinessSettingsScreen: View {
 	}
 	
 	var body: some View {
-		BusinessSettingsContent(viewModel: viewModel)
-			.background(AppColors.background)
-			.withNavigationBar(viewModel.uiState.appBar)
-			.handleNotifications(viewModel.uiState.notifications)
-			.sendLifecycleEventsTo(viewModel)
-			.handleNavigation(viewModel.uiState.navigation) { dest in
-				switch dest {
-				case is BusinessSettingsDestination.Back:
-					navigationStack.popLast()
-				default :
-					break
-				}
+		List {
+			BusinessSettingsContent(viewModel: viewModel)
+		}
+		.toolbar {
+			TextButton(viewModel.uiState.save) {
+				viewModel.onSaveClick()
 			}
-			.toolbar {
-				TextButton(viewModel.uiState.save) {
-					viewModel.onSaveClick()
-				}
-				.frame(width: 100)
+		}
+		.listSectionSpacing(.compact)
+		.withNavigationBar(viewModel.uiState.appBar)
+		.handleNotifications(viewModel.uiState.notifications)
+		.sendLifecycleEventsTo(viewModel)
+		.handleNavigation(viewModel.uiState.navigation) { dest in
+			switch dest {
+			case is BusinessSettingsDestination.Back:
+				navigationStack.popLast()
+			default :
+				break
 			}
+		}
 	}
 }
 
@@ -51,60 +52,66 @@ struct BusinessSettingsContent: View {
 	}
 	
 	var body: some View {
-		ScrollView {
-			VStack(alignment: .leading, spacing: 16) {
-				VStack(alignment: .leading) {
-					Header(text: BusinessRes.strings().business_settings_name_title.desc().localized())
-					StateTextField(state.name) { text in
-						viewModel.onNameChanged(name: text)
-					}
-				}
-				VStack(alignment: .leading) {
-					Header(text: BusinessRes.strings().business_settings_description_title.desc().localized())
-					StateTextField(state.description_, textEditor: true) { text in
-						viewModel.onDescriptionChanged(description: text)
-					}
-					.lineLimit(3, reservesSpace: true)
-				}
-				VStack(alignment: .leading) {
-					Header(text: BusinessRes.strings().business_settings_location_title.desc().localized())
-					HStack(spacing: 0) {
-						StateTextField(state.location) { text in
-						}
-						
-						TextButton(state.pickLocation, maxWidth: nil) {
-							viewModel.onPickLocationClicked()
-						}.padding(.horizontal)
-					}
-					TextButton(state.testLocation, textAlignment: .leading) {
-						viewModel.onTestLocationClick()
-					}
-				}
-				VStack(alignment: .leading) {
-					Header(text: BusinessRes.strings().business_settings_address_title.desc().localized())
-					StateTextField(state.address) { text in
-						viewModel.onAddressChanged(address: text)
-					}
-				}
-				VStack(alignment: .leading) {
-					Header(text: BusinessRes.strings().business_settings_currency_title.desc().localized())
-					PickerField(state.currency) { option in
-						viewModel.onCurrencySelected(currencyUI: option as! CurrencyUI)
-					}
-				}
-				VStack(alignment: .leading) {
-					Header(text: BusinessRes.strings().business_settings_socials_title.desc().localized())
-					StateTextField(state.instagram) { text in
-						viewModel.onInstagramChanged(insta: text)
-					}
-					StateTextField(state.telegram) { text in
-						viewModel.onTelegramChanged(telegram: text)
-					}
-					StateTextField(state.viber) { text in
-						viewModel.onViberChanged(viber: text)
-					}
-				}
-			}.padding()
+		Section(BusinessRes.strings().business_settings_name_title.desc().localized()) {
+			StateTextField(state.name) { text in
+				viewModel.onNameChanged(name: text)
+			}
+			.textFieldStyle(.inList)
+		}
+		
+		Section(BusinessRes.strings().business_settings_description_title.desc().localized()) {
+			StateTextField(state.description_, textEditor: true) { text in
+				viewModel.onDescriptionChanged(description: text)
+			}
+			.lineLimit(3, reservesSpace: true)
+			.textFieldStyle(.inList)
+		}
+		
+		Section {
+			StateTextField(state.location) { text in
+			}
+			.textFieldStyle(.inList)
+			
+			TextButton(state.pickLocation, textAlignment: .leading) {
+				viewModel.onPickLocationClicked()
+			}
+		} header : {
+			Text(BusinessRes.strings().business_settings_location_title.desc().localized())
+		} footer : {
+			TextButton(state.testLocation, textAlignment: .leading) {
+				viewModel.onTestLocationClick()
+			}
+		}
+		
+		Section(BusinessRes.strings().business_settings_address_title.desc().localized()) {
+			StateTextField(state.address) { text in
+				viewModel.onAddressChanged(address: text)
+			}
+			.textFieldStyle(.inList)
+		}
+		
+		Section(BusinessRes.strings().business_settings_currency_title.desc().localized()) {
+			PickerField(state.currency) { option in
+				viewModel.onCurrencySelected(currencyUI: option as! CurrencyUI)
+			}
+			.textFieldStyle(.inList)
+		}
+		
+		Section(BusinessRes.strings().business_settings_socials_title.desc().localized()) {
+			StateTextField(state.instagram) { text in
+				viewModel.onInstagramChanged(insta: text)
+			}
+			.textFieldStyle(.inList)
+			
+			StateTextField(state.telegram) { text in
+				viewModel.onTelegramChanged(telegram: text)
+			}
+			.textFieldStyle(.inList)
+			
+			StateTextField(state.viber) { text in
+				viewModel.onViberChanged(viber: text)
+			}
+			.textFieldStyle(.inList)
 		}
 	}
 }

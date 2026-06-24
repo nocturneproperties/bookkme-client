@@ -9,37 +9,36 @@ class IOSMultiPickerState: IOSViewState, @MainActor MultiPickerState, NativeStat
     typealias KotlinType = MultiPickerState
 
     var pickerTitle: any StringDesc
-    var options: [PickerPresentation]
+    var placeholder: (any StringDesc)?
     var selectedItems: [PickerPresentation]
     var onItemsPicked: ([PickerPresentation]) -> Void
     var onItemsRemoveRequested: ([PickerPresentation]) -> Void
-    var addItemText: any StringDesc
+    var addItemButton: any ButtonState
     var isEditable: Bool
+    var isPickerVisible: Bool
 
     init(
         pickerTitle: any StringDesc = RawStringDesc(string: ""),
-        options: [PickerPresentation] = [],
+        placeholder: (any StringDesc)? = nil,
         selectedItems: [PickerPresentation] = [],
         onItemsPicked: @escaping ([PickerPresentation]) -> Void = { _ in },
         onItemsRemoveRequested: @escaping ([PickerPresentation]) -> Void = { _ in },
-        addItemText: any StringDesc = RawStringDesc(string: ""),
-        isEditable: Bool = true
+        addItemButton: (any ButtonState)? = nil,
+        isEditable: Bool = true,
+        isPickerVisible: Bool = false
     ) {
         self.pickerTitle = pickerTitle
-        self.options = options
+        self.placeholder = placeholder
         self.selectedItems = selectedItems
         self.onItemsPicked = onItemsPicked
         self.onItemsRemoveRequested = onItemsRemoveRequested
-        self.addItemText = addItemText
+        self.addItemButton = addItemButton ?? IOSButtonState()
         self.isEditable = isEditable
+        self.isPickerVisible = isPickerVisible
     }
 
-    func replaceOptions(options: [PickerPresentation]) {
-        self.options = options
-    }
-
-    func replaceSelected(selected: [PickerPresentation]) {
-        self.selectedItems = selected
+    func replaceSelected(items: [PickerPresentation]) {
+        self.selectedItems = items
     }
 }
 

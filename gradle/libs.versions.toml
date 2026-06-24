@@ -56,7 +56,7 @@ kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-compose-bom = { module = "androidx.compose:compose-bom", version = "2026.05.01" }
+compose-bom = { module = "androidx.compose:compose-bom", version = "2026.06.00" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }

@@ -20,16 +20,24 @@ struct CreateClientScreen: View {
 	
 	var body: some View {
 		let uiState = viewModel.uiState
-		VStack {
-			StateTextField(uiState.name)
-			StateTextField(uiState.lastName)
-			StateTextField(uiState.phone)
-			StateTextField(uiState.email)
-			StateButton(uiState.submit)
-				.padding(.top, 20)
-			Spacer()
+		List {
+			Section("") {
+				StateTextField(uiState.name)
+					.textFieldStyle(.inListTrailing)
+				StateTextField(uiState.lastName)
+					.textFieldStyle(.inListTrailing)
+			}
+			Section {
+				StateTextField(uiState.phone)
+					.textFieldStyle(.inListTrailing)
+				StateTextField(uiState.email)
+					.textFieldStyle(.inListTrailing)
+			}
 		}
-		.padding()
+		.toolbar {
+			TextButton(uiState.submit)
+		}
+		.listSectionSpacing(.compact)
 		.withNavigationBar(uiState.appBar)
 		.handleNotifications(uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)

@@ -21,6 +21,7 @@ internal class AndroidAppointmentListState(
     override val appBar: AppBarState = AndroidAppBarState()
     override val datePicker: DatePickerState = AndroidDatePickerState(pickedDate = selectedDate)
     override val appointments: ListState<AppointmentItemState> = AndroidListState()
+    override val dates: ListState<DateInfo> = AndroidListState()
     override val refresh: RefreshState = AndroidRefreshState()
     override val notifications: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<AppointmentListDestinations> = AndroidNavigationState()

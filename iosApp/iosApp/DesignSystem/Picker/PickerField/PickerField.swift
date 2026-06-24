@@ -39,50 +39,50 @@ struct PickerField: View {
 
     var body: some View {
 		if state.isVisible {
-			StateTextField(state.textField)
-				.simultaneousGesture(TapGesture().onEnded {
-					guard state.textField.enabled else { return }
-					dismissKeyboard()
-					switch state.pickerType {
-					case .bottomSheet:
-						guard !state.options.isEmpty else { return }
-						isSheetPresented = true
-					case .screen:
-						pickerArgs = PickerScreenArgs(
-							id: state.id,
-							title: state.pickerTitle.localized(),
-							options: state.options.map { presentation in
-								PickerScreenArgs.PickerData(
-									data: KeyValueData(
-										key: presentation.pickerItemId,
-										value: presentation.displayName.localized()
-									),
-									iconUrl: presentation.displayIconUrl
-								)
-							},
-							choice: PickerScreenArgs.Choice.single
-						)
-					default:
-						break
-					}
-				})
-				.overlay(alignment: .trailing) {
-					switch state.pickerType {
-					case .bottomSheet:
-						Image(systemName: "chevron.down")
-							.font(.subheadline)
-							.bold()
-							.foregroundStyle(.tertiary)
-							.padding(.trailing)
-					default:
-						Image(systemName: "chevron.right")
-							.font(.subheadline)
-							.bold()
-							.foregroundStyle(.tertiary)
-							.padding(.trailing)
-					}
+			HStack {
+				StateTextField(state.textField)
+				switch state.pickerType {
+				case .bottomSheet:
+					Image(systemName: "chevron.down")
+						.font(.subheadline)
+						.bold()
+						.foregroundStyle(.tertiary)
+						.padding(.trailing)
+				default:
+					Image(systemName: "chevron.right")
+						.font(.subheadline)
+						.bold()
+						.foregroundStyle(.tertiary)
+						.padding(.trailing)
 				}
-				.sheet(isPresented: $isSheetPresented) {
+			}
+			.simultaneousGesture(TapGesture().onEnded {
+				guard state.textField.enabled else { return }
+				dismissKeyboard()
+				switch state.pickerType {
+				case .bottomSheet:
+					guard !state.options.isEmpty else { return }
+					isSheetPresented = true
+				case .screen:
+					pickerArgs = PickerScreenArgs(
+						id: state.id,
+						title: state.pickerTitle.localized(),
+						options: state.options.map { presentation in
+							PickerScreenArgs.PickerData(
+								data: KeyValueData(
+									key: presentation.pickerItemId,
+									value: presentation.displayName.localized()
+								),
+								iconUrl: presentation.displayIconUrl
+							)
+						},
+						choice: PickerScreenArgs.Choice.single
+					)
+				default:
+					break
+				}
+			})
+			.sheet(isPresented: $isSheetPresented) {
 				PickerBottomSheet(
 					title: state.pickerTitle.localized(),
 					options: state.options,
@@ -204,7 +204,8 @@ struct PickerBottomSheet: View {
     private var header: some View {
         HStack(spacing: 12) {
             Text(title)
-				.font(.title)
+				.font(.largeTitle)
+				.fontWeight(.bold)
                 .foregroundStyle(AppColors.primary)
                 .lineLimit(1)
 

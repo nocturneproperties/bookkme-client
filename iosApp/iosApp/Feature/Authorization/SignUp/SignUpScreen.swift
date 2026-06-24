@@ -15,22 +15,27 @@ struct SignUpScreen: View {
     
     var body: some View {
         let uiState = signUpVM.uiState
-		ScrollView {
+		List {
 			SignUpScreenContent(signUpVM: signUpVM)
-				.padding()
-				.withNavigationBar(uiState.appBar)
-				.sendLifecycleEventsTo(signUpVM)
-				.handleNotifications(uiState.notification)
-				.handleNavigation(uiState.navigation) { dest in
-					switch dest {
-					case is SignUpNavigationDestination.Back:
-						navigationStack.popLast()
-						
-					default:
-						break
-					}
-				}
-		}.background(AppColors.background)
+		}
+		.toolbar {
+			TextButton(uiState.confirmButton.impl()) {
+				signUpVM.onConfirmButtonClick()
+			}
+		}
+		.listSectionSpacing(.compact)
+		.withNavigationBar(uiState.appBar)
+		.sendLifecycleEventsTo(signUpVM)
+		.handleNotifications(uiState.notification)
+		.handleNavigation(uiState.navigation) { dest in
+			switch dest {
+			case is SignUpNavigationDestination.Back:
+				navigationStack.popLast()
+				
+			default:
+				break
+			}
+		}
     }
 }
 
@@ -45,46 +50,47 @@ struct SignUpScreenContent: View {
 	
 	var body: some View {
 		let uiState = signUpVM.uiState
-		VStack {
-			StateTextField(uiState.name.impl()) { text in
-				signUpVM.onFirstNameTextChanged(text: text)
-			}
-			.focused($focusedField, equals: .name)
-			.textContentType(.givenName)
-			.submitLabel(.next)
-			.onSubmit {
-				focusedField = .lastName
-			}
-			
-			StateTextField(uiState.lastName.impl()) { text in
-				signUpVM.onLastNameTextChanged(text: text)
-			}
-			.focused($focusedField, equals: .lastName)
-			.textContentType(.familyName)
-			.submitLabel(.next)
-			.onSubmit {
-				focusedField = .email
-			}
-			
-			StateTextField(uiState.email.impl()) { text in
-				signUpVM.onEmailTextChanged(text: text)
-			}
-			.autocapitalization(.none)
-			.focused($focusedField, equals: .email)
-			.textContentType(.emailAddress)
-			.keyboardType(.emailAddress)
-			.submitLabel(.done)
-			
+		
+		SectionTextField(uiState.name.impl(), header: "") { text in
+			signUpVM.onFirstNameTextChanged(text: text)
+		}
+		.focused($focusedField, equals: .name)
+		.textContentType(.givenName)
+		.submitLabel(.next)
+		.onSubmit {
+			focusedField = .lastName
+		}
+		.textFieldStyle(.inList)
+		
+		SectionTextField(uiState.lastName.impl()) { text in
+			signUpVM.onLastNameTextChanged(text: text)
+		}
+		.focused($focusedField, equals: .lastName)
+		.textContentType(.familyName)
+		.submitLabel(.next)
+		.onSubmit {
+			focusedField = .email
+		}
+		.textFieldStyle(.inList)
+		
+		SectionTextField(uiState.email.impl()) { text in
+			signUpVM.onEmailTextChanged(text: text)
+		}
+		.autocapitalization(.none)
+		.focused($focusedField, equals: .email)
+		.textContentType(.emailAddress)
+		.keyboardType(.emailAddress)
+		.submitLabel(.done)
+		.textFieldStyle(.inList)
+		
+		Section {
 			PasskeyCard(
 				learnMoreState: uiState.learnMoreButton.impl(),
 				cardInfo: uiState.passkeyInfoCardData
 			) {
 				signUpVM.onLearnMoreClick()
 			}
-			Spacer(minLength: 20)
-			StateButton(uiState.confirmButton.impl()) {
-				signUpVM.onConfirmButtonClick()
-			}
+			.listRowInsets(EdgeInsets())
 		}
 	}
 }

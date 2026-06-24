@@ -1,5 +1,6 @@
 package me.bookk.feature.business.domain.api.entity
 
+import kotlinx.datetime.TimeZone
 import library.money.api.Currency
 import kotlin.uuid.Uuid
 
@@ -10,6 +11,7 @@ data class Business(
     val address: String,
     val location: Location?,
     val currency: Currency,
+    val timeZone: TimeZone,
     val socials: Map<SocialKind, Social>
 ) {
     data class Update(

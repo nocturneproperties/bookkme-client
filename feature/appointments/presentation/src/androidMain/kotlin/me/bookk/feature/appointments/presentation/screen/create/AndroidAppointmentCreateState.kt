@@ -8,9 +8,9 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidDatePickerFieldState
-import me.bookk.designsystem.uistate.AndroidMultiPickerState
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
+import me.bookk.designsystem.uistate.AndroidOptionsMultiPickerState
 import me.bookk.designsystem.uistate.AndroidPickerFieldState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AndroidTimePickerFieldState
@@ -28,7 +28,7 @@ internal class AndroidAppointmentCreateState : AppointmentCreateState {
     override val appBar: AppBarState = AndroidAppBarState()
 
     override val clientPicker = AndroidPickerFieldState<SimplePickerPresentation<ClientSnapshot>>()
-    override val servicePicker = AndroidMultiPickerState<ServicePickerPresentation>()
+    override val servicePicker = AndroidOptionsMultiPickerState<ServicePickerPresentation>()
     override var subtotalLabel: StringDesc by mutableStateOf("".desc())
     override var subtotalPrice: String by mutableStateOf("")
     override val datePicker: DatePickerFieldState = AndroidDatePickerFieldState()

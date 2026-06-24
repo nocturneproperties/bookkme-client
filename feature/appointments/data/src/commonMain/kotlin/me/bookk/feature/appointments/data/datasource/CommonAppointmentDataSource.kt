@@ -37,7 +37,7 @@ internal class CommonAppointmentDataSource(
         forDate: LocalDate
     ): List<Appointment> =
         mapExceptions {
-            httpClient.get(Api.Appointments(businessId = businessId, date = forDate))
+            httpClient.get(Api.Appointment.List(businessId = businessId, date = forDate))
                 .body<List<AppointmentRemote>>()
                 .map { it.toDomain() }
         }

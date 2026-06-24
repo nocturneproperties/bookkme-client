@@ -18,13 +18,11 @@ struct Header : View {
 	var body: some View {
 		if (discardDefaultPadding) {
 			Text(text)
-				.font(.footnote)
-				.textCase(.uppercase)
+				.font(.headline)
 				.foregroundStyle(AppColors.header)
 		} else {
 			Text(text)
-				.font(.footnote)
-				.textCase(.uppercase)
+				.font(.headline)
 				.foregroundStyle(AppColors.header)
 				.padding(.leading)
 		}

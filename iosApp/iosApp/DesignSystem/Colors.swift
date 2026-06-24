@@ -140,6 +140,14 @@ class AppColors {
             )
         }
     }
+	static var onAction: Color {
+		get {
+			createColor(
+				dark: DesignSystem.colors().darkOnAction,
+				light: DesignSystem.colors().lightOnAction
+			)
+		}
+	}
     
     static func createColor(dark:shared.ColorResource, light:shared.ColorResource) -> Color {
         return Color(

@@ -62,7 +62,7 @@ internal fun ServiceListScreen(state: ServiceListState) {
                         .padding(horizontal = 16.dp)
                         .background(
                             LocalColors.current.elevated,
-                            shape = MaterialTheme.shapes.medium
+                            shape = MaterialTheme.shapes.large
                         ),
                     text = state.groupsSection.title.localized(),
                     onClick = state.groupsSection.onClick

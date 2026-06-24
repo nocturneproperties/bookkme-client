@@ -8,7 +8,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
@@ -84,13 +84,13 @@ class ClientDetailsViewModel(
 
     private fun ClientDetailsState.setup() = apply {
         appBar.size = TopBarSize.LARGE
-        appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(Back) }
+        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
         appBar.actions.replace(
             listOf(
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_delete.desc(),
                     type = ActionType.NEGATIVE,
-                    onClick = weakSelfClosure { it.onDeleteClient() }
+                    onClick = weakVMClosure { it.onDeleteClient() }
                 )
             )
         )

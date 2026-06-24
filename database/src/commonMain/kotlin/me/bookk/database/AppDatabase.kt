@@ -1,6 +1,5 @@
 package me.bookk.database
 
-import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -12,6 +11,7 @@ import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
 import me.bookk.database.converter.UuidConverter
 import me.bookk.database.dao.AppointmentDao
+import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.ClientsDao
 import me.bookk.database.dao.ServiceDao
@@ -19,12 +19,15 @@ import me.bookk.database.dao.ServiceGroupDao
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
+import me.bookk.database.entity.AppointmentSettingsDayOffEntity
+import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
+import me.bookk.database.entity.AppointmentSettingsEntity
+import me.bookk.database.entity.AppointmentSettingsWorkHourEntity
 import me.bookk.database.entity.BusinessEntity
 import me.bookk.database.entity.ClientEntity
 import me.bookk.database.entity.ServiceEntity
 import me.bookk.database.entity.ServiceGroupEntity
 import me.bookk.database.entity.UserProfileEntity
-import me.bookk.database.migration.DeleteAppointmentLocalDateMigration
 
 @Database(
     entities = [
@@ -34,18 +37,14 @@ import me.bookk.database.migration.DeleteAppointmentLocalDateMigration
         ServiceEntity::class,
         ServiceGroupEntity::class,
         AppointmentEntity::class,
-        AppointmentServiceSnapshotEntity::class
+        AppointmentServiceSnapshotEntity::class,
+        AppointmentSettingsEntity::class,
+        AppointmentSettingsDayScheduleEntity::class,
+        AppointmentSettingsWorkHourEntity::class,
+        AppointmentSettingsDayOffEntity::class
     ],
-    version = 8,
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 2, to = 3),
-        AutoMigration(from = 3, to = 4),
-        AutoMigration(from = 4, to = 5),
-        AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7),
-        AutoMigration(from = 7, to = 8, spec = DeleteAppointmentLocalDateMigration::class)
-    ]
+    version = 1,
+    autoMigrations = []
 )
 @TypeConverters(
     UuidConverter::class,
@@ -61,6 +60,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun serviceDao(): ServiceDao
     abstract fun serviceGroupDao(): ServiceGroupDao
     abstract fun appointmentDao(): AppointmentDao
+    abstract fun appointmentSettingsDao(): AppointmentSettingsDao
 
     companion object {
 

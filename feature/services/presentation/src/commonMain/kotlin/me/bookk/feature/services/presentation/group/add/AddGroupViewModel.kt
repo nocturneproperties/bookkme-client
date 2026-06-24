@@ -5,7 +5,7 @@ import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.designsystem.uistate.startLoading
@@ -65,11 +65,11 @@ class AddGroupViewModel(
         title = ServicesRes.strings.services_group_add_title.desc()
 
         name.placeholder = ServicesRes.strings.services_create_name.desc()
-        name.onTextChanged = weakSelfClosure { vm, text -> vm.onNameChanged(text) }
+        name.onTextChanged = weakVMClosure { vm, text -> vm.onNameChanged(text) }
         name.maxLength = 512
 
         create.isEnabled = false
         create.text = DesignSystem.strings.action_create.desc()
-        create.onClick = weakSelfClosure { it.onCreate() }
+        create.onClick = weakVMClosure { it.onCreate() }
     }
 }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.bookk.core.LogFactory
+import me.bookk.core.Logger
 import me.bookk.core.UsedInSwift
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.error.ErrorMapper
@@ -18,7 +18,7 @@ import kotlin.coroutines.CoroutineContext
 actual abstract class ViewModel actual constructor(
     vmArgs: VmArgs
 ) {
-    private val internalLogger = LogFactory.createLogger("ViewModel")
+    private val internalLogger = Logger.create("ViewModel")
     private val activeJobs = mutableMapOf<String, Job>()
     protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper
     protected actual val viewModelScope = CoroutineScope(SupervisorJob() + DispatcherProvider.main)

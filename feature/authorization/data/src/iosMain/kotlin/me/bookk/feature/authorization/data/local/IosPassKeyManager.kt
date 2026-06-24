@@ -13,16 +13,16 @@ import platform.UIKit.UIApplication
 import platform.darwin.NSObject
 import kotlin.io.encoding.Base64
 
-class IosPassKeyManager : PassKeyManager {
+class IosPassKeyManager(val relyingParty: String) : PassKeyManager {
 
     private var delegate: PasskeyControllerDelegate? = null
 
     @OptIn(BetaInteropApi::class)
     override suspend fun create(challenge: PassKeyManager.CreationRequest): PasskeyVerificationPayload =
         suspendCancellableCoroutine {
-            delegate = PasskeyControllerDelegate( it)
+            delegate = PasskeyControllerDelegate(it)
             val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
-                relyingPartyIdentifier = "bookkme.app"
+                relyingPartyIdentifier = relyingParty
             )
             val nsChallenge = Base64.UrlSafe
                 .withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
@@ -56,7 +56,7 @@ class IosPassKeyManager : PassKeyManager {
         suspendCancellableCoroutine {
             delegate = PasskeyControllerDelegate(it)
             val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
-                relyingPartyIdentifier = "bookkme.app"
+                relyingPartyIdentifier = relyingParty
             )
             val nsChallenge = Base64.UrlSafe
                 .withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)

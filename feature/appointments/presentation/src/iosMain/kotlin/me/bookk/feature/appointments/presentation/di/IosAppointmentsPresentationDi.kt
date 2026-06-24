@@ -4,6 +4,7 @@ import me.bookk.core.UsedInSwift
 import me.bookk.feature.appointments.presentation.screen.create.AppointmentCreateViewModel
 import me.bookk.feature.appointments.presentation.screen.details.AppointmentDetailsViewModel
 import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListViewModel
+import me.bookk.feature.appointments.presentation.screen.settings.AppointmentSettingsViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.parameter.parametersOf
@@ -15,6 +16,7 @@ internal actual fun platformAppointmentsDiModule(): Module = module {
     factoryOf(::AppointmentListViewModel)
     factoryOf(::AppointmentCreateViewModel)
     factoryOf(::AppointmentDetailsViewModel)
+    factoryOf(::AppointmentSettingsViewModel)
 }
 
 @UsedInSwift
@@ -28,3 +30,7 @@ fun appointmentCreateVM(businessId: Uuid): AppointmentCreateViewModel =
 @UsedInSwift
 fun appointmentDetailsVM(appointmentId: Uuid): AppointmentDetailsViewModel =
     KoinPlatform.getKoin().get(parameters = { parametersOf(appointmentId) })
+
+@UsedInSwift
+fun appointmentSettingsVM(businessId: Uuid): AppointmentSettingsViewModel =
+    KoinPlatform.getKoin().get(parameters = { parametersOf(businessId) })

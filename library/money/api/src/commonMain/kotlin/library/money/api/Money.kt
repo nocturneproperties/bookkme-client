@@ -79,10 +79,7 @@ data class Money(
     }
 
     fun valueToStringWithoutAmountSeparation(): String {
-        val separators = ",."
-        return valueToString()
-            .filter { it.isDigit() || it in separators }
-            .replace(',', '.')
+        return (value / 100.0).toString()
     }
 
     enum class SupportedCurrency(val code: String) {

@@ -12,6 +12,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.headersOf
 import io.ktor.resources.href
 import io.ktor.resources.serialization.ResourcesFormat
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import me.bookk.core.data.dataSerializer
@@ -36,6 +37,7 @@ private var mockBusiness = BusinessRemote(
     address = "Test Address",
     location = BusinessRemote.Location(20.0, 16.0),
     currencyCode = "UAH",
+    timeZone = TimeZone.currentSystemDefault(),
     socials = listOf(
         BusinessRemote.Social(BusinessRemote.SocialKind.VIBER, "viber"),
         BusinessRemote.Social(BusinessRemote.SocialKind.INSTAGRAM, "insta"),

@@ -12,13 +12,13 @@ import SwiftUI
 @Observable
 @MainActor
 class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepresentation {
-	
 
     typealias SwiftType = IOSAppointmentListState
     typealias KotlinType = AppointmentListState
 
     let appBar: any AppBarState
 	let refresh: any RefreshState
+	let dates: any ListState
 	let appointments: any ListState
 	let datePicker: any DatePickerState
     var isLoading: Bool
@@ -29,6 +29,7 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
         appBar = IOSAppBarState()
 		refresh = IOSRefreshState()
 		datePicker = IOSDatePickerState()
+		dates = IOSListState<DateInfo>()
 		appointments = IOSListState<AppointmentItemState>()
         isLoading = false
         navigation = IOSNavigationState()

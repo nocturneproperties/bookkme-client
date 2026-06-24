@@ -1,12 +1,13 @@
 package me.bookk.feature.business.domain.datasource
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.TimeZone
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import kotlin.uuid.Uuid
 
 interface BusinessDataSource {
-    suspend fun createBusiness(name: String, currencyCode: String): Business
+    suspend fun createBusiness(name: String, currencyCode: String, timeZone: TimeZone): Business
     suspend fun updateBusiness(business: Business)
     suspend fun clearBusinessTable()
     suspend fun saveBusinessInDB(business: Business)

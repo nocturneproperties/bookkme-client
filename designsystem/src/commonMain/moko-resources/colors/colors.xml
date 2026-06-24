@@ -21,6 +21,7 @@
     <color name="lightButton">#0A84FF</color>
     <color name="lightButtonInactive">#E3E3E9</color>
     <color name="lightButtonActive">#2C91FF</color>
+    <color name="lightOnAction">#FFFFFF</color>
 
     <!--Dark-->
     <color name="darkBackground">#000000</color>
@@ -39,4 +40,5 @@
     <color name="darkButton">#0A84FF</color>
     <color name="darkButtonInactive">#1B1B1D</color>
     <color name="darkButtonActive">#0A84FF</color>
+    <color name="darkOnAction">#FFFFFF</color>
 </resources>

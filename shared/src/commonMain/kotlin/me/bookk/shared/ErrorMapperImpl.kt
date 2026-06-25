@@ -1,6 +1,7 @@
 package me.bookk.shared;
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.CancellationException
 import me.bookk.core.Logger
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.error.ButtonDescriptor
@@ -46,6 +47,8 @@ class ErrorMapperImpl : ErrorMapper {
                 is Error.Ignore -> PresentationNotification.Ignore
                 is Error.Unauthorized -> PresentationNotification.Unauthorized
             }
+
+            is CancellationException -> PresentationNotification.Ignore
 
             else -> PresentationNotification.Message(
                 message = DesignSystem.strings.error_unexpected.desc(),

@@ -4,6 +4,8 @@
     <string name="appointments_requests">Requests</string>
     <string name="appointments_list_empty">No appointments for this day</string>
     <string name="appointments_pick_date">Pick date</string>
+    <string name="appointments_history_title">History</string>
+    <string name="appointments_history_empty">No appointment history yet</string>
 
     <string name="appointments_create_title">Create an appointment</string>
     <string name="appointments_create_client">Client</string>

@@ -44,6 +44,11 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 					header()
 					ForEach(listState.typedItems) { item in
 						content(item)
+							.onAppear {
+								if item.id == listState.typedItems.last?.id {
+									listState.loadMore?()
+								}
+							}
 					}
 				}
 				.listStyle(listStyle)

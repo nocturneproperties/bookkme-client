@@ -3,6 +3,7 @@ package me.bookk.feature.appointments.domain.impl.di
 import me.bookk.feature.appointments.domain.api.CancelAppointment
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointment
+import me.bookk.feature.appointments.domain.api.GetAppointmentHistory
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
 import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForDashboardBusiness
@@ -10,6 +11,7 @@ import me.bookk.feature.appointments.domain.api.UpdateAppointment
 import me.bookk.feature.appointments.domain.api.UpdateAppointmentSettings
 import me.bookk.feature.appointments.domain.impl.CancelAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.CreateAppointmentImpl
+import me.bookk.feature.appointments.domain.impl.GetAppointmentHistoryImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentOptionsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentSettingsImpl
@@ -26,6 +28,7 @@ fun appointmentsDomainModule() = module {
     factoryOf(::GetAppointmentSettingsImpl) bind GetAppointmentSettings::class
     factoryOf(::CreateAppointmentImpl) bind CreateAppointment::class
     factoryOf(::GetAppointmentImpl) bind GetAppointment::class
+    factoryOf(::GetAppointmentHistoryImpl) bind GetAppointmentHistory::class
     factoryOf(::CancelAppointmentImpl) bind CancelAppointment::class
     factoryOf(::UpdateAppointmentImpl) bind UpdateAppointment::class
     factoryOf(::UpdateAppointmentSettingsImpl) bind UpdateAppointmentSettings::class

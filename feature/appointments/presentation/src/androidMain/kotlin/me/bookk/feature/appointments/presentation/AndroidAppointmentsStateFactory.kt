@@ -4,6 +4,8 @@ import me.bookk.feature.appointments.presentation.screen.create.AndroidAppointme
 import me.bookk.feature.appointments.presentation.screen.create.AppointmentCreateState
 import me.bookk.feature.appointments.presentation.screen.details.AndroidAppointmentDetailsState
 import me.bookk.feature.appointments.presentation.screen.details.AppointmentDetailsState
+import me.bookk.feature.appointments.presentation.screen.history.AndroidAppointmentHistoryState
+import me.bookk.feature.appointments.presentation.screen.history.AppointmentHistoryState
 import me.bookk.feature.appointments.presentation.screen.requestlist.AndroidAppointmentListState
 import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListState
 import me.bookk.feature.appointments.presentation.screen.settings.AndroidAppointmentSettingsState
@@ -24,5 +26,9 @@ class AndroidAppointmentsStateFactory : AppointmentsStateFactory {
 
     override fun createAppointmentSettingsState(): AppointmentSettingsState {
         return AndroidAppointmentSettingsState()
+    }
+
+    override fun createAppointmentHistoryState(): AppointmentHistoryState {
+        return AndroidAppointmentHistoryState()
     }
 }

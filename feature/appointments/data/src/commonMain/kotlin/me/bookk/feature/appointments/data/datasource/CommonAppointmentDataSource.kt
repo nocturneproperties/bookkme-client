@@ -14,6 +14,7 @@ import me.bookk.feature.appointments.data.mapping.toEntity
 import me.bookk.feature.appointments.data.mapping.toRemote
 import me.bookk.feature.appointments.data.mapping.toServiceEntities
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
+import me.bookk.feature.appointments.data.remote.model.AppointmentPaginationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestIdRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
@@ -39,6 +40,21 @@ internal class CommonAppointmentDataSource(
         mapExceptions {
             httpClient.get(Api.Appointment.List(businessId = businessId, date = forDate))
                 .body<List<AppointmentRemote>>()
+                .map { it.toDomain() }
+        }
+
+    override suspend fun getAppointmentHistory(
+        businessId: Uuid,
+        limit: Int,
+        offset: Long,
+        query: String?
+    ): List<Appointment> =
+        mapExceptions {
+            httpClient.get(
+                Api.Appointment.History(businessId = businessId, limit = limit, offset = offset, query = query)
+            )
+                .body<AppointmentPaginationRemote>()
+                .data
                 .map { it.toDomain() }
         }
 

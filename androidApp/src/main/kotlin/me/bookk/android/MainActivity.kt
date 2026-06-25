@@ -156,6 +156,9 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                             },
                             showAppointmentSettings = {
                                 controller.navigate(AppointmentsDestination.Settings(it))
+                            },
+                            showAppointmentHistory = {
+                                controller.navigate(AppointmentsDestination.History(it))
                             }
                         )
                     },

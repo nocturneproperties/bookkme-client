@@ -61,7 +61,7 @@ sealed class BusinessDashboardSection(
         businessId: Uuid,
         items: List<DashboardUIItem> = listOf(
             Requests,
-            History,
+            History(businessId),
             Settings(businessId),
         )
     ) : BusinessDashboardSection(
@@ -73,9 +73,9 @@ sealed class BusinessDashboardSection(
             DashboardNavigationDestination.Requests
         )
 
-        data object History : DashboardUIItem(
+        data class History(val businessId: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_history.desc(),
-            DashboardNavigationDestination.History
+            DashboardNavigationDestination.History(businessId)
         )
 
         data class Settings(val businessId: Uuid) : DashboardUIItem(

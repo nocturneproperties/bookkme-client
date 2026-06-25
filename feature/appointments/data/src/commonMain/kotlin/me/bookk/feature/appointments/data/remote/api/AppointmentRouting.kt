@@ -20,7 +20,13 @@ object AppointmentRouting {
             class List(val parent: Appointment = Appointment(), val businessId: Uuid, val date: LocalDate)
 
             @Resource("/history/{businessId}")
-            class History(val parent: Appointment = Appointment(), val businessId: Uuid, val limit: Int, val offset: Long)
+            class History(
+                val parent: Appointment = Appointment(),
+                val businessId: Uuid,
+                val limit: Int,
+                val offset: Long,
+                val query: String? = null
+            )
 
             @Resource("/request/{businessId}")
             class Requests(

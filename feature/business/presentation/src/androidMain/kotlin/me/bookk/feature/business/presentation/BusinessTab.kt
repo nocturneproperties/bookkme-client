@@ -21,7 +21,8 @@ import kotlin.uuid.Uuid
 fun BusinessTab(
     showClients: (id: Uuid) -> Unit,
     showServices: (id: Uuid) -> Unit,
-    showAppointmentSettings: (businessId: Uuid) -> Unit
+    showAppointmentSettings: (businessId: Uuid) -> Unit,
+    showAppointmentHistory: (businessId: Uuid) -> Unit
 ) {
     val businessController = rememberNavController()
     val viewModel: BusinessBootstrapViewModel = koinViewModel()
@@ -42,7 +43,7 @@ fun BusinessTab(
                 toEmployees = { businessController.navigate(BusinessDestination.Employees) },
                 toBusinessSettings = { businessController.navigate(BusinessDestination.Settings(it)) },
                 toAppointmentSettings = { showAppointmentSettings(it) },
-                toAppointmentHistory = {},
+                toAppointmentHistory = { showAppointmentHistory(it) },
                 toBusinessServices = { showServices(it) },
                 toBusinessPlugins = { businessController.navigate(BusinessDestination.Plugins(it)) },
                 toShopOrders = {},

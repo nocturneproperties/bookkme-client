@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.presentation.di
 
 import me.bookk.feature.appointments.presentation.screen.create.AppointmentCreateViewModel
 import me.bookk.feature.appointments.presentation.screen.details.AppointmentDetailsViewModel
+import me.bookk.feature.appointments.presentation.screen.history.AppointmentHistoryViewModel
 import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListViewModel
 import me.bookk.feature.appointments.presentation.screen.settings.AppointmentSettingsViewModel
 import org.koin.core.module.Module
@@ -13,4 +14,5 @@ internal actual fun platformAppointmentsDiModule(): Module = module {
     viewModelOf(::AppointmentCreateViewModel)
     viewModelOf(::AppointmentDetailsViewModel)
     viewModelOf(::AppointmentSettingsViewModel)
+    viewModelOf(::AppointmentHistoryViewModel)
 }

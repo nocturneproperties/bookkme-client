@@ -14,6 +14,13 @@ interface AppointmentDataSource {
         forDate: LocalDate
     ): List<Appointment>
 
+    suspend fun getAppointmentHistory(
+        businessId: Uuid,
+        limit: Int,
+        offset: Long,
+        query: String? = null
+    ): List<Appointment>
+
     suspend fun createAppointmentRequest(request: AppointmentRequest): AppointmentRequest
 
     suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment

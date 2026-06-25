@@ -4,7 +4,8 @@ import androidx.navigation.NavGraphBuilder
 import me.bookk.feature.appointments.presentation.screen.create.appointmentCreateScreen
 import me.bookk.feature.appointments.presentation.screen.details.appointmentDetailsScreen
 import me.bookk.feature.appointments.presentation.screen.history.appointmentHistoryScreen
-import me.bookk.feature.appointments.presentation.screen.requestlist.appointmentRequestListScreen
+import me.bookk.feature.appointments.presentation.screen.list.appointmentRequestListScreen
+import me.bookk.feature.appointments.presentation.screen.request.appointmentRequestScreen
 import me.bookk.feature.appointments.presentation.screen.settings.appointmentSettingsScreen
 
 fun NavGraphBuilder.appointmentsGraph(navigation: AppointmentNavigation) {
@@ -13,4 +14,5 @@ fun NavGraphBuilder.appointmentsGraph(navigation: AppointmentNavigation) {
     appointmentDetailsScreen(navigation)
     appointmentSettingsScreen(navigation)
     appointmentHistoryScreen(navigation)
+    appointmentRequestScreen(navigation)
 }

@@ -42,6 +42,11 @@ struct AppointmentListScreen: View {
 			.listRowBackground(AppColors.background)
 			.listRowInsets(EdgeInsets())
 		}
+		.toolbar {
+			ToolbarItem(placement: .navigation) {
+				TextButton(state.requestsButton)
+			}
+		}
 		.frame(maxHeight: .infinity)
 		.sheet(isPresented: Binding(
             get: { state.datePicker.isDatePickerVisible },
@@ -60,6 +65,8 @@ struct AppointmentListScreen: View {
 				navigationStack.push(AppointmentsDestination.Create(businessId: dest.businessId))
 			case let dest as AppointmentListDestinations.AppointmentDetails:
 				navigationStack.push(AppointmentsDestination.Details(appointmentId: dest.appointmentId))
+			case let dest as AppointmentListDestinations.AppointmentRequests:
+				navigationStack.push(AppointmentsDestination.Request(businessId: dest.businessId))
             default:
                 break
             }

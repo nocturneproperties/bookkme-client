@@ -1,9 +1,10 @@
-package me.bookk.feature.appointments.presentation.screen.requestlist
+package me.bookk.feature.appointments.presentation.screen.list
 
 import kotlinx.datetime.LocalDate
 import me.bookk.core.UsedInSwift
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.DatePickerState
 import me.bookk.designsystem.uistate.ListState
 import me.bookk.designsystem.uistate.NavigationState
@@ -13,6 +14,7 @@ import me.bookk.feature.appointments.domain.api.entity.Appointment
 
 interface AppointmentListState {
     val appBar: AppBarState
+    val requestsButton: ButtonState
     val datePicker: DatePickerState
     val dates: ListState<DateInfo>
     val appointments: ListState<AppointmentItemState>

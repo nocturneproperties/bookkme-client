@@ -1,11 +1,12 @@
-package me.bookk.feature.appointments.presentation.screen.requestlist
+package me.bookk.feature.appointments.presentation.screen.list
 
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retry
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -13,8 +14,6 @@ import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
-import me.bookk.core.coroutine.resultOnEach
-import me.bookk.core.coroutine.resultOnError
 import me.bookk.core.orNow
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
@@ -27,16 +26,24 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
-import me.bookk.feature.appointments.domain.api.GetAppointmentsForDashboardBusiness
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.feature.appointments.domain.api.GetAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
+import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
 import me.bookk.feature.appointments.domain.api.entity.listenFor
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
-import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListDestinations.AppointmentDetails
-import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListDestinations.CreateAppointment
+import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.AppointmentDetails
+import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.AppointmentRequests
+import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.CreateAppointment
+import kotlin.uuid.Uuid
 
 class AppointmentListViewModel(
-    private val getAppointmentsForDashboardBusiness: GetAppointmentsForDashboardBusiness,
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
+    private val getAppointmentsForBusiness: GetAppointmentsForBusiness,
+    private val getAppointmentRequests: GetAppointmentRequests,
     private val dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
     vmArgs: VmArgs
@@ -46,8 +53,10 @@ class AppointmentListViewModel(
 
     val uiState: AppointmentListState = stateFactory.createAppointmentListState().setup()
 
+    private var businessId = Uuid.random()
+
     init {
-        observeCurrentBusinessRequests()
+        observeCurrentBusiness()
         listenForUpdates()
     }
 
@@ -58,16 +67,43 @@ class AppointmentListViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun observeCurrentBusinessRequests() {
-        getAppointmentsForDashboardBusiness.flow(uiState.datePicker.pickedDate.orNow())
+    private fun observeCurrentBusiness() {
+        observeCurrentBusinessId()
             .flowOn(DispatcherProvider.io)
-            .resultOnEach(::mapItems)
-            .resultOnError {
-                uiState.appointments.replace(emptyList())
-                uiState.notifications.add(it.notification())
+            .filterNotNull()
+            .onEach {
+                businessId = it
+                loadAppointments(it)
+                loadRequestCount(it)
             }
             .retry()
             .launchIn(viewModelScope)
+    }
+
+    private fun loadAppointments(businessId: Uuid) {
+        val date = uiState.datePicker.pickedDate.orNow()
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.refresh.isRefreshing = true },
+            call = { getAppointmentsForBusiness(businessId, date) },
+            onComplete = ::mapItems,
+            onTerminate = { uiState.refresh.isRefreshing = false },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun loadRequestCount(businessId: Uuid) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.requestsButton.startLoading() },
+            call = { getAppointmentRequests(businessId).size },
+            onComplete = {
+                uiState.requestsButton.text =
+                    AppointmentsRes.strings.appointments_requests_count.format(it)
+            },
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.requestsButton.stopLoading() }
+        )
     }
 
     private fun onNewDateSelected(date: LocalDate) {
@@ -90,27 +126,16 @@ class AppointmentListViewModel(
     }
 
     private fun onRefresh() {
-        val date = uiState.datePicker.pickedDate.orNow()
-        launch(
-            launchIn = DispatcherProvider.io,
-            onStart = { uiState.refresh.isRefreshing = true },
-            call = { getAppointmentsForDashboardBusiness(date) },
-            onComplete = ::mapItems,
-            onError = {
-                uiState.appointments.replace(emptyList())
-                uiState.notifications.add(it.notification())
-            },
-            onTerminate = { uiState.refresh.isRefreshing = false },
-        )
+        loadAppointments(businessId)
+        loadRequestCount(businessId)
     }
 
     private fun onNewAppointmentClick() {
-        viewModelScope.launch(DispatcherProvider.io) {
-            val businessId = getAppointmentsForDashboardBusiness.businessId() ?: return@launch
-            withContext(DispatcherProvider.main) {
-                uiState.navigation.push(CreateAppointment(businessId))
-            }
-        }
+        uiState.navigation.push(CreateAppointment(businessId))
+    }
+
+    private fun showRequestsScreen() {
+        uiState.navigation.push(AppointmentRequests(businessId))
     }
 
     private fun onPickDateClick() {
@@ -150,6 +175,9 @@ class AppointmentListViewModel(
                 )
             )
         )
+
+        requestsButton.onClick = weakVMClosure { it.showRequestsScreen() }
+
         datePicker.pickedDate = LocalDate.today()
         dates.replace(createDateInfoFrom(LocalDate.today()))
         datePicker.onDatePicked = weakVMClosure { vm, date -> vm.onNewDateSelected(date) }

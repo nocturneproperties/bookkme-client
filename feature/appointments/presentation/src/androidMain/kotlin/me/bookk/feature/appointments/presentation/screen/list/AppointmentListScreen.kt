@@ -1,4 +1,4 @@
-package me.bookk.feature.appointments.presentation.screen.requestlist
+package me.bookk.feature.appointments.presentation.screen.list
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -37,6 +37,7 @@ import me.bookk.designsystem.components.AppDatePicker
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.PullToRefresh
+import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
@@ -51,7 +52,12 @@ internal fun AppointmentListScreen(
             .imePadding(),
         topBar = {
             Column {
-                AppTopBar(state = state.appBar)
+                AppTopBar(
+                    state = state.appBar,
+                    navigationIcon = {
+                        StateTextButton(state.requestsButton)
+                    }
+                )
                 DateStrip(
                     dates = state.dates.items,
                     selectedDate = state.datePicker.pickedDate ?: LocalDate.today(),

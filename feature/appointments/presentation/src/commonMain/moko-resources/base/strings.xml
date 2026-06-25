@@ -6,6 +6,7 @@
     <string name="appointments_pick_date">Pick date</string>
     <string name="appointments_history_title">History</string>
     <string name="appointments_history_empty">No appointment history yet</string>
+    <string name="appointments_request_title">Request</string>
 
     <string name="appointments_create_title">Create an appointment</string>
     <string name="appointments_create_client">Client</string>
@@ -56,4 +57,6 @@
     <string name="appointments_settings_active_day_without_work_hours_error">An active day must have at least one work hour</string>
     <string name="appointments_settings_invalid_day_off_range_error">Day off start date must be before the end date</string>
     <string name="appointments_settings_updated">Settings updated</string>
+
+    <string name="appointments_requests_count">Requests(%s)</string>
 </resources>

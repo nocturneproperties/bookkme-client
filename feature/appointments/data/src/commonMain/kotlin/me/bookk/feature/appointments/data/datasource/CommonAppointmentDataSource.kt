@@ -16,11 +16,8 @@ import me.bookk.feature.appointments.data.mapping.toServiceEntities
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.appointments.data.remote.model.AppointmentPaginationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
-import me.bookk.feature.appointments.data.remote.model.AppointmentRequestIdRemote
-import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
-import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
 
@@ -67,25 +64,6 @@ internal class CommonAppointmentDataSource(
         )
     }
 
-    override suspend fun createAppointmentRequest(request: AppointmentRequest): AppointmentRequest {
-        return mapExceptions {
-            httpClient.post(Api.Appointment.Request()) {
-                setBody(request.toRemote())
-            }
-                .body<AppointmentRequestRemote>()
-                .toDomain()
-        }
-    }
-
-    override suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment =
-        mapExceptions {
-            httpClient.post(Api.Appointment()) {
-                setBody(AppointmentRequestIdRemote(requestId = requestId))
-            }
-                .body<AppointmentRemote>()
-                .toDomain()
-        }
-
     override suspend fun createAppointment(appointment: Appointment): Appointment =
         mapExceptions {
             httpClient.post(Api.Appointment.Instant()) {
@@ -105,15 +83,14 @@ internal class CommonAppointmentDataSource(
                 .also { appointmentDao.updateStatus(it.id, it.status.name, it.cancellationReason) }
         }
 
-    override suspend fun updateAppointment(appointment: Appointment): Appointment {
-        return mapExceptions {
+    override suspend fun updateAppointment(appointment: Appointment): Appointment =
+        mapExceptions {
             httpClient.put(Api.Appointment.Id(id = appointment.id)) {
                 setBody(appointment.toRemote())
             }
                 .body<AppointmentRemote>()
                 .toDomain()
         }
-    }
 
     override suspend fun saveAppointmentInDB(appointment: Appointment) {
         mapExceptions {

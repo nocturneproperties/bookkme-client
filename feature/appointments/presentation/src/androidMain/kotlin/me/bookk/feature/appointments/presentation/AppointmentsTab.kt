@@ -25,6 +25,7 @@ fun AppointmentsTab() {
         appointmentsGraph(
             navigation = AppointmentNavigation(
                 createAppointment = { navController.navigate(AppointmentsDestination.Create(it)) },
+                requests = { navController.navigate(AppointmentsDestination.Request(it)) },
                 details = { navController.navigate(AppointmentsDestination.Details(it)) },
                 appointmentSettings = { navController.navigate(AppointmentsDestination.Settings(it)) },
                 onBack = { navController.popBackStack() },

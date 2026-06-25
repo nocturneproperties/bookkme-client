@@ -17,6 +17,7 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
     typealias KotlinType = AppointmentListState
 
     let appBar: any AppBarState
+    let requestsButton: any ButtonState
 	let refresh: any RefreshState
 	let dates: any ListState
 	let appointments: any ListState
@@ -27,6 +28,7 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
 
     init() {
         appBar = IOSAppBarState()
+        requestsButton = IOSButtonState()
 		refresh = IOSRefreshState()
 		datePicker = IOSDatePickerState()
 		dates = IOSListState<DateInfo>()

@@ -1,9 +1,10 @@
 package me.bookk.feature.authorization.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -37,7 +38,7 @@ class UserProfileCRUDImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<UserProfileDataSource>()
+        val dataSource = mock<UserProfileDataSource>()
         val sut = UserProfileCRUDImpl(dataSource)
     }
 
@@ -48,82 +49,82 @@ class UserProfileCRUDImplTest {
     @Test
     fun `updateFromRemote fetches from backend and upserts`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val profile = stubProfile()
-        coEvery { fixture.dataSource.getProfileFromBackend() } returns profile
-        coJustRun { fixture.dataSource.upsertProfile(profile) }
+        everySuspend { sut.dataSource.getProfileFromBackend() } returns profile
+        everySuspend { sut.dataSource.upsertProfile(profile) } returns Unit
 
         whenn()
-        fixture.fixture.updateFromRemote()
+        sut.sut.updateFromRemote()
 
         then()
-        coVerify { fixture.dataSource.upsertProfile(profile) }
+        verifySuspend { sut.dataSource.upsertProfile(profile) }
     }
 
     @Test
     fun `get returns local profile when available`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val local = stubProfile()
-        coEvery { fixture.dataSource.getProfileFromDatabase() } returns local
+        everySuspend { sut.dataSource.getProfileFromDatabase() } returns local
 
         whenn()
-        val result = fixture.fixture.get()
+        val result = sut.sut.get()
 
         then()
         assertEquals(local, result)
-        coVerify(exactly = 0) { fixture.dataSource.getProfileFromBackend() }
+        verifySuspend(VerifyMode.exactly(0)) { sut.dataSource.getProfileFromBackend() }
     }
 
     @Test
     fun `get fetches from backend and upserts when local is null`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val remote = stubProfile()
-        coEvery { fixture.dataSource.getProfileFromDatabase() } returns null
-        coEvery { fixture.dataSource.getProfileFromBackend() } returns remote
-        coJustRun { fixture.dataSource.upsertProfile(remote) }
+        everySuspend { sut.dataSource.getProfileFromDatabase() } returns null
+        everySuspend { sut.dataSource.getProfileFromBackend() } returns remote
+        everySuspend { sut.dataSource.upsertProfile(remote) } returns Unit
 
         whenn()
-        val result = fixture.fixture.get()
+        val result = sut.sut.get()
 
         then()
         assertEquals(remote, result)
-        coVerify { fixture.dataSource.upsertProfile(remote) }
+        verifySuspend { sut.dataSource.upsertProfile(remote) }
     }
 
     @Test
     fun `update calls updateProfile and then syncs from backend`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val updated = stubProfile()
         val backend = updated.copy(firstName = "Synced")
-        coJustRun { fixture.dataSource.updateProfile(updated) }
-        coEvery { fixture.dataSource.getProfileFromBackend() } returns backend
-        coJustRun { fixture.dataSource.updateProfile(backend) }
+        everySuspend { sut.dataSource.updateProfile(updated) } returns Unit
+        everySuspend { sut.dataSource.getProfileFromBackend() } returns backend
+        everySuspend { sut.dataSource.updateProfile(backend) } returns Unit
 
         whenn()
-        fixture.fixture.update(updated)
+        sut.sut.update(updated)
 
         then()
-        coVerify(ordering = io.mockk.Ordering.SEQUENCE) {
-            fixture.dataSource.updateProfile(updated)
-            fixture.dataSource.getProfileFromBackend()
-            fixture.dataSource.updateProfile(backend)
+        verifySuspend(VerifyMode.order) {
+            sut.dataSource.updateProfile(updated)
+            sut.dataSource.getProfileFromBackend()
+            sut.dataSource.updateProfile(backend)
         }
     }
 
     @Test
     fun `delete calls deleteProfile with correct id`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
-        coJustRun { fixture.dataSource.deleteProfile(id) }
+        everySuspend { sut.dataSource.deleteProfile(id) } returns Unit
 
         whenn()
-        fixture.fixture.delete(id)
+        sut.sut.delete(id)
 
         then()
-        coVerify { fixture.dataSource.deleteProfile(id) }
+        verifySuspend { sut.dataSource.deleteProfile(id) }
     }
 }

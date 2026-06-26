@@ -1,9 +1,10 @@
 package me.bookk.feature.services.domain.impl.service
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -40,8 +41,8 @@ class GetServicesImplTest {
     }
 
     private class Fixture {
-        val serviceDataSource = mockk<ServiceDataSource>()
-        val groupDataSource = mockk<ServiceGroupDataSource>()
+        val serviceDataSource = mock<ServiceDataSource>()
+        val groupDataSource = mock<ServiceGroupDataSource>()
         val sut = GetServicesImpl(serviceDataSource, groupDataSource)
     }
 
@@ -57,16 +58,16 @@ class GetServicesImplTest {
     @Test
     fun `returns services sorted by createdAt`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val older = stubTimedService(businessId, 1000L)
         val newer = stubTimedService(businessId, 2000L)
-        coEvery { fixture.serviceDataSource.getServices(businessId) } returns listOf(newer, older)
-        coJustRun { fixture.groupDataSource.saveGroupsInDB(any()) }
-        coJustRun { fixture.serviceDataSource.saveServicesInDB(any()) }
+        everySuspend { sut.serviceDataSource.getServices(businessId) } returns listOf(newer, older)
+        everySuspend { sut.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { sut.serviceDataSource.saveServicesInDB(any()) } returns Unit
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(older, result[0])
@@ -76,36 +77,36 @@ class GetServicesImplTest {
     @Test
     fun `saves services and their groups in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val service = stubService(businessId)
-        coEvery { fixture.serviceDataSource.getServices(businessId) } returns listOf(service)
-        coJustRun { fixture.groupDataSource.saveGroupsInDB(any()) }
-        coJustRun { fixture.serviceDataSource.saveServicesInDB(listOf(service)) }
+        everySuspend { sut.serviceDataSource.getServices(businessId) } returns listOf(service)
+        everySuspend { sut.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { sut.serviceDataSource.saveServicesInDB(listOf(service)) } returns Unit
 
         whenn()
-        fixture.sut(businessId)
+        sut.sut(businessId)
 
         then()
-        coVerify { fixture.serviceDataSource.saveServicesInDB(listOf(service)) }
-        coVerify { fixture.groupDataSource.saveGroupsInDB(any()) }
+        verifySuspend { sut.serviceDataSource.saveServicesInDB(listOf(service)) }
+        verifySuspend { sut.groupDataSource.saveGroupsInDB(any()) }
     }
 
     @Test
     fun `cached calls onResultAvailable with DB then remote when DB non-empty`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val cached = listOf(stubService(businessId))
         val remote = listOf(stubService(businessId))
-        coEvery { fixture.serviceDataSource.getServicesFromDb(businessId) } returns cached
-        coEvery { fixture.serviceDataSource.getServices(businessId) } returns remote
-        coJustRun { fixture.groupDataSource.saveGroupsInDB(any()) }
-        coJustRun { fixture.serviceDataSource.saveServicesInDB(any()) }
+        everySuspend { sut.serviceDataSource.getServicesFromDb(businessId) } returns cached
+        everySuspend { sut.serviceDataSource.getServices(businessId) } returns remote
+        everySuspend { sut.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { sut.serviceDataSource.saveServicesInDB(any()) } returns Unit
         val received = mutableListOf<List<Service>>()
 
         whenn()
-        fixture.fixture.cached(businessId) { received.add(it) }
+        sut.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(2, received.size)
@@ -114,17 +115,17 @@ class GetServicesImplTest {
     @Test
     fun `cached skips DB callback when DB is empty`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val remote = listOf(stubService(businessId))
-        coEvery { fixture.serviceDataSource.getServicesFromDb(businessId) } returns emptyList()
-        coEvery { fixture.serviceDataSource.getServices(businessId) } returns remote
-        coJustRun { fixture.groupDataSource.saveGroupsInDB(any()) }
-        coJustRun { fixture.serviceDataSource.saveServicesInDB(any()) }
+        everySuspend { sut.serviceDataSource.getServicesFromDb(businessId) } returns emptyList()
+        everySuspend { sut.serviceDataSource.getServices(businessId) } returns remote
+        everySuspend { sut.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { sut.serviceDataSource.saveServicesInDB(any()) } returns Unit
         val received = mutableListOf<List<Service>>()
 
         whenn()
-        fixture.fixture.cached(businessId) { received.add(it) }
+        sut.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(1, received.size)

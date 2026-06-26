@@ -8,9 +8,6 @@ kotlin {
     android {
         namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.services.domain.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

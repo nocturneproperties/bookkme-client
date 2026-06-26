@@ -1,15 +1,17 @@
 package me.bookk.feature.business.domain.impl.business
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -39,7 +41,7 @@ class UpdateBusinessImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<BusinessDataSource>()
+        val dataSource = mock<BusinessDataSource>()
         val sut = UpdateBusinessImpl(dataSource)
     }
 
@@ -49,7 +51,7 @@ class UpdateBusinessImplTest {
         description = "Old Desc",
         address = "Old Address",
         location = null,
-        currency = mockk(relaxed = true),
+        currency = Currency("USD"),
         timeZone = TimeZone.UTC,
         socials = emptyMap()
     )
@@ -60,23 +62,23 @@ class UpdateBusinessImplTest {
         description = "New Desc",
         address = "New Address",
         location = null,
-        currency = mockk(relaxed = true),
+        currency = Currency("USD"),
         socials = emptyMap()
     )
 
     @Test
     fun `returns updated business with new fields`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
         val current = stubBusiness(id)
         val update = stubUpdate(id)
-        coEvery { fixture.dataSource.getBusinessById(id) } returns current
-        coJustRun { fixture.dataSource.updateBusiness(any()) }
-        coJustRun { fixture.dataSource.saveBusinessInDB(any()) }
+        everySuspend { sut.dataSource.getBusinessById(id) } returns current
+        everySuspend { sut.dataSource.updateBusiness(any()) } returns Unit
+        everySuspend { sut.dataSource.saveBusinessInDB(any()) } returns Unit
 
         whenn()
-        val result = fixture.sut(update)
+        val result = sut.sut(update)
 
         then()
         assertEquals(update.name, result.name)
@@ -87,31 +89,31 @@ class UpdateBusinessImplTest {
     @Test
     fun `calls updateBusiness and saveBusinessInDB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
         val current = stubBusiness(id)
         val update = stubUpdate(id)
-        coEvery { fixture.dataSource.getBusinessById(id) } returns current
-        coJustRun { fixture.dataSource.updateBusiness(any()) }
-        coJustRun { fixture.dataSource.saveBusinessInDB(any()) }
+        everySuspend { sut.dataSource.getBusinessById(id) } returns current
+        everySuspend { sut.dataSource.updateBusiness(any()) } returns Unit
+        everySuspend { sut.dataSource.saveBusinessInDB(any()) } returns Unit
 
         whenn()
-        fixture.sut(update)
+        sut.sut(update)
 
         then()
-        coVerify { fixture.dataSource.updateBusiness(any()) }
-        coVerify { fixture.dataSource.saveBusinessInDB(any()) }
+        verifySuspend { sut.dataSource.updateBusiness(any()) }
+        verifySuspend { sut.dataSource.saveBusinessInDB(any()) }
     }
 
     @Test
     fun `throws when business not found`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
-        coEvery { fixture.dataSource.getBusinessById(id) } returns null
+        everySuspend { sut.dataSource.getBusinessById(id) } returns null
 
         whenn()
-        val thrown = runCatching { fixture.sut(stubUpdate(id)) }.exceptionOrNull()
+        val thrown = runCatching { sut.sut(stubUpdate(id)) }.exceptionOrNull()
 
         then()
         assertNotNull(thrown)

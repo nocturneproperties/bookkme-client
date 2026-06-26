@@ -1,8 +1,9 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.every
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -37,18 +38,18 @@ class GetColorSchemeImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<SettingsDataSource>()
+        val dataSource = mock<SettingsDataSource>()
         val sut = GetColorSchemeImpl(dataSource)
     }
 
     @Test
     fun `returns color scheme from datasource`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.dataSource.getColorScheme() } returns ColorScheme.DARK
+        val sut = Fixture()
+        everySuspend { sut.dataSource.getColorScheme() } returns ColorScheme.DARK
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertEquals(ColorScheme.DARK, result)
@@ -57,11 +58,11 @@ class GetColorSchemeImplTest {
     @Test
     fun `asFlow emits color scheme from datasource flow`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        every { fixture.dataSource.getColorSchemeFlow() } returns flowOf(ColorScheme.LIGHT)
+        val sut = Fixture()
+        every { sut.dataSource.getColorSchemeFlow() } returns flowOf(ColorScheme.LIGHT)
 
         whenn()
-        val result = fixture.fixture.asFlow().first()
+        val result = sut.sut.asFlow().first()
 
         then()
         assertEquals(ColorScheme.LIGHT, result)

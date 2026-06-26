@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "me.bookk.feature.business.domain.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

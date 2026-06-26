@@ -1,9 +1,10 @@
 package me.bookk.feature.clients.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -37,7 +38,7 @@ class GetClientsListImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ClientsDataSource>()
+        val dataSource = mock<ClientsDataSource>()
         val sut = GetClientsListImpl(dataSource)
     }
 
@@ -49,15 +50,15 @@ class GetClientsListImplTest {
     @Test
     fun `returns clients from remote`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val clients = listOf(stubClient(businessId))
-        coEvery { fixture.dataSource.getClients(businessId) } returns clients
-        coJustRun { fixture.dataSource.deleteClientsInDb() }
-        coJustRun { fixture.dataSource.saveClientsInDb(clients) }
+        everySuspend { sut.dataSource.getClients(businessId) } returns clients
+        everySuspend { sut.dataSource.deleteClientsInDb() } returns Unit
+        everySuspend { sut.dataSource.saveClientsInDb(clients) } returns Unit
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(clients, result)
@@ -66,36 +67,36 @@ class GetClientsListImplTest {
     @Test
     fun `deletes old clients then saves new ones`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val clients = listOf(stubClient(businessId))
-        coEvery { fixture.dataSource.getClients(businessId) } returns clients
-        coJustRun { fixture.dataSource.deleteClientsInDb() }
-        coJustRun { fixture.dataSource.saveClientsInDb(clients) }
+        everySuspend { sut.dataSource.getClients(businessId) } returns clients
+        everySuspend { sut.dataSource.deleteClientsInDb() } returns Unit
+        everySuspend { sut.dataSource.saveClientsInDb(clients) } returns Unit
 
         whenn()
-        fixture.sut(businessId)
+        sut.sut(businessId)
 
         then()
-        coVerify(exactly = 1) { fixture.dataSource.deleteClientsInDb() }
-        coVerify(exactly = 1) { fixture.dataSource.saveClientsInDb(clients) }
+        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.deleteClientsInDb() }
+        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.saveClientsInDb(clients) }
     }
 
     @Test
     fun `cached calls onResultAvailable with DB then remote when DB is non-empty`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val cached = listOf(stubClient(businessId))
         val remote = listOf(stubClient(businessId), stubClient(businessId))
-        coEvery { fixture.dataSource.getClientsFromDb(businessId) } returns cached
-        coEvery { fixture.dataSource.getClients(businessId) } returns remote
-        coJustRun { fixture.dataSource.deleteClientsInDb() }
-        coJustRun { fixture.dataSource.saveClientsInDb(remote) }
+        everySuspend { sut.dataSource.getClientsFromDb(businessId) } returns cached
+        everySuspend { sut.dataSource.getClients(businessId) } returns remote
+        everySuspend { sut.dataSource.deleteClientsInDb() } returns Unit
+        everySuspend { sut.dataSource.saveClientsInDb(remote) } returns Unit
         val received = mutableListOf<List<Client>>()
 
         whenn()
-        fixture.fixture.cached(businessId) { received.add(it) }
+        sut.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals<List<List<Client>>>(listOf(cached, remote), received)
@@ -104,17 +105,17 @@ class GetClientsListImplTest {
     @Test
     fun `cached skips DB callback when DB is empty`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val remote = listOf(stubClient(businessId))
-        coEvery { fixture.dataSource.getClientsFromDb(businessId) } returns emptyList()
-        coEvery { fixture.dataSource.getClients(businessId) } returns remote
-        coJustRun { fixture.dataSource.deleteClientsInDb() }
-        coJustRun { fixture.dataSource.saveClientsInDb(remote) }
+        everySuspend { sut.dataSource.getClientsFromDb(businessId) } returns emptyList()
+        everySuspend { sut.dataSource.getClients(businessId) } returns remote
+        everySuspend { sut.dataSource.deleteClientsInDb() } returns Unit
+        everySuspend { sut.dataSource.saveClientsInDb(remote) } returns Unit
         val received = mutableListOf<List<Client>>()
 
         whenn()
-        fixture.fixture.cached(businessId) { received.add(it) }
+        sut.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals<List<List<Client>>>(listOf(remote), received)

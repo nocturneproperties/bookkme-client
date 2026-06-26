@@ -15,16 +15,6 @@ kotlin {
             consumerKeepRules.file("consumer-rules.pro")
         }
     }
-}
-
-buildkonfig {
-    packageName = "me.bookk.feature.authorization.data"
-    defaultConfigs {
-        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
-    }
-}
-
-kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.credentials)
@@ -42,5 +32,12 @@ kotlin {
             implementation(libs.ktor.client.resources)
             implementation(libs.ktor.client.auth)
         }
+    }
+}
+
+buildkonfig {
+    packageName = "me.bookk.feature.authorization.data"
+    defaultConfigs {
+        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
     }
 }

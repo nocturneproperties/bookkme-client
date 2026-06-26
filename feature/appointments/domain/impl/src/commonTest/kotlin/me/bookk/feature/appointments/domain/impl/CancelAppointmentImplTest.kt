@@ -1,8 +1,12 @@
 package me.bookk.feature.appointments.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.matcher.matches
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -43,21 +47,21 @@ class CancelAppointmentImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<AppointmentDataSource>()
+        val dataSource = mock<AppointmentDataSource>()
         val sut = CancelAppointmentImpl(dataSource)
     }
 
     @Test
     fun `returns cancelled appointment`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val appointmentId = Uuid.random()
         val businessId = Uuid.random()
         val expected = stubAppointment(id = appointmentId)
-        coEvery { fixture.dataSource.cancelAppointment(any()) } returns expected
+        everySuspend { sut.dataSource.cancelAppointment(any()) } returns expected
 
         whenn()
-        val result = fixture.sut(appointmentId, businessId, "reason")
+        val result = sut.sut(appointmentId, businessId, "reason")
 
         then()
         assertEquals(expected, result)
@@ -66,19 +70,19 @@ class CancelAppointmentImplTest {
     @Test
     fun `passes correct cancellation to datasource`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val appointmentId = Uuid.random()
         val businessId = Uuid.random()
         val reason = "no longer needed"
-        coEvery { fixture.dataSource.cancelAppointment(any()) } returns stubAppointment()
+        everySuspend { sut.dataSource.cancelAppointment(any()) } returns stubAppointment()
 
         whenn()
-        fixture.sut(appointmentId, businessId, reason)
+        sut.sut(appointmentId, businessId, reason)
 
         then()
-        coVerify {
-            fixture.dataSource.cancelAppointment(
-                match { it.id == appointmentId && it.businessId == businessId && it.reason == reason }
+        verifySuspend {
+            sut.dataSource.cancelAppointment(
+                matches({ "match" }) { it.id == appointmentId && it.businessId == businessId && it.reason == reason }
             )
         }
     }
@@ -86,13 +90,13 @@ class CancelAppointmentImplTest {
     @Test
     fun `emits Cancelled event on success`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.dataSource.cancelAppointment(any()) } returns stubAppointment()
+        val sut = Fixture()
+        everySuspend { sut.dataSource.cancelAppointment(any()) } returns stubAppointment()
         val events = mutableListOf<AppointmentEvent>()
         val job = launch(Dispatchers.Unconfined) { appointmentEvents.collect { events.add(it) } }
 
         whenn()
-        fixture.sut(Uuid.random(), Uuid.random(), "reason")
+        sut.sut(Uuid.random(), Uuid.random(), "reason")
 
         then()
         job.cancel()
@@ -102,28 +106,28 @@ class CancelAppointmentImplTest {
     @Test
     fun `throws AppointmentAlreadyCancelled on corresponding error code`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.dataSource.cancelAppointment(any()) } throws
+        val sut = Fixture()
+        everySuspend { sut.dataSource.cancelAppointment(any()) } throws
             DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED, "msg")
 
         whenn()
         then()
         assertFailsWith<CancelAppointment.Error.AppointmentAlreadyCancelled> {
-            fixture.sut(Uuid.random(), Uuid.random(), "reason")
+            sut.sut(Uuid.random(), Uuid.random(), "reason")
         }
     }
 
     @Test
     fun `throws AppointmentAlreadyCompleted on corresponding error code`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.dataSource.cancelAppointment(any()) } throws
+        val sut = Fixture()
+        everySuspend { sut.dataSource.cancelAppointment(any()) } throws
             DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED, "msg")
 
         whenn()
         then()
         assertFailsWith<CancelAppointment.Error.AppointmentAlreadyCompleted> {
-            fixture.sut(Uuid.random(), Uuid.random(), "reason")
+            sut.sut(Uuid.random(), Uuid.random(), "reason")
         }
     }
 }

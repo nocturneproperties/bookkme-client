@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.cache.impl"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.koin.core)

@@ -1,8 +1,10 @@
 package me.bookk.feature.services.domain.impl.service
 
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -38,52 +40,52 @@ class DeleteServiceImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ServiceDataSource>()
+        val dataSource = mock<ServiceDataSource>()
         val sut = DeleteServiceImpl(dataSource)
     }
 
     @Test
     fun `calls deleteService with businessId and id`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val service = stubService()
-        coJustRun { fixture.dataSource.deleteService(service.businessId, service.id) }
-        coJustRun { fixture.dataSource.deleteServiceFromDB(service) }
+        everySuspend { sut.dataSource.deleteService(service.businessId, service.id) } returns Unit
+        everySuspend { sut.dataSource.deleteServiceFromDB(service) } returns Unit
 
         whenn()
-        fixture.sut(service)
+        sut.sut(service)
 
         then()
-        coVerify { fixture.dataSource.deleteService(service.businessId, service.id) }
+        verifySuspend { sut.dataSource.deleteService(service.businessId, service.id) }
     }
 
     @Test
     fun `calls deleteServiceFromDB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val service = stubService()
-        coJustRun { fixture.dataSource.deleteService(any(), any()) }
-        coJustRun { fixture.dataSource.deleteServiceFromDB(service) }
+        everySuspend { sut.dataSource.deleteService(any(), any()) } returns Unit
+        everySuspend { sut.dataSource.deleteServiceFromDB(service) } returns Unit
 
         whenn()
-        fixture.sut(service)
+        sut.sut(service)
 
         then()
-        coVerify { fixture.dataSource.deleteServiceFromDB(service) }
+        verifySuspend { sut.dataSource.deleteServiceFromDB(service) }
     }
 
     @Test
     fun `emits Deleted event`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val service = stubService()
-        coJustRun { fixture.dataSource.deleteService(any(), any()) }
-        coJustRun { fixture.dataSource.deleteServiceFromDB(any()) }
+        everySuspend { sut.dataSource.deleteService(any(), any()) } returns Unit
+        everySuspend { sut.dataSource.deleteServiceFromDB(any()) } returns Unit
         val events = mutableListOf<ServiceEvent>()
         val job = launch(Dispatchers.Unconfined) { serviceEvents.collect { events.add(it) } }
 
         whenn()
-        fixture.sut(service)
+        sut.sut(service)
 
         then()
         job.cancel()

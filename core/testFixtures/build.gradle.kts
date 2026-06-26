@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "me.bookk.core.test"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

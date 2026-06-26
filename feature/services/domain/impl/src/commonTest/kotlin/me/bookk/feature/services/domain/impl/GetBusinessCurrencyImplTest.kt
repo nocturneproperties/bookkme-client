@@ -1,7 +1,8 @@
 package me.bookk.feature.services.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -35,19 +36,19 @@ class GetBusinessCurrencyImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ServiceDataSource>()
+        val dataSource = mock<ServiceDataSource>()
         val sut = GetBusinessCurrencyImpl(dataSource)
     }
 
     @Test
     fun `returns currency from datasource`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
-        coEvery { fixture.dataSource.getBusinessCurrency(businessId) } returns Money.SupportedCurrency.USD
+        everySuspend { sut.dataSource.getBusinessCurrency(businessId) } returns Money.SupportedCurrency.USD
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(Money.SupportedCurrency.USD, result)

@@ -1,9 +1,10 @@
 package me.bookk.feature.appointments.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,21 +37,21 @@ class GetAppointmentRequestsImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<AppointmentRequestDataSource>()
+        val dataSource = mock<AppointmentRequestDataSource>()
         val sut = GetAppointmentRequestsImpl(dataSource)
     }
 
     @Test
     fun `returns requests from datasource`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val expected = listOf(stubAppointmentRequest(businessId = businessId))
-        coEvery { fixture.dataSource.getAppointmentRequests(businessId) } returns expected
-        coJustRun { fixture.dataSource.saveAppointmentRequestsInDB(expected) }
+        everySuspend { sut.dataSource.getAppointmentRequests(businessId) } returns expected
+        everySuspend { sut.dataSource.saveAppointmentRequestsInDB(expected) } returns Unit
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(expected, result)
@@ -59,32 +60,32 @@ class GetAppointmentRequestsImplTest {
     @Test
     fun `saves requests in DB after fetching`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val requests = listOf(stubAppointmentRequest())
-        coEvery { fixture.dataSource.getAppointmentRequests(businessId) } returns requests
-        coJustRun { fixture.dataSource.saveAppointmentRequestsInDB(requests) }
+        everySuspend { sut.dataSource.getAppointmentRequests(businessId) } returns requests
+        everySuspend { sut.dataSource.saveAppointmentRequestsInDB(requests) } returns Unit
 
         whenn()
-        fixture.sut(businessId)
+        sut.sut(businessId)
 
         then()
-        coVerify(exactly = 1) { fixture.dataSource.saveAppointmentRequestsInDB(requests) }
+        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.saveAppointmentRequestsInDB(requests) }
     }
 
     @Test
     fun `returns empty list and saves empty list`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
-        coEvery { fixture.dataSource.getAppointmentRequests(businessId) } returns emptyList()
-        coJustRun { fixture.dataSource.saveAppointmentRequestsInDB(emptyList()) }
+        everySuspend { sut.dataSource.getAppointmentRequests(businessId) } returns emptyList()
+        everySuspend { sut.dataSource.saveAppointmentRequestsInDB(emptyList()) } returns Unit
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(emptyList(), result)
-        coVerify { fixture.dataSource.saveAppointmentRequestsInDB(emptyList()) }
+        verifySuspend { sut.dataSource.saveAppointmentRequestsInDB(emptyList()) }
     }
 }

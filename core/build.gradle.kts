@@ -9,9 +9,6 @@ kotlin {
             consumerKeepRules.file("consumer-rules.pro")
         }
     }
-}
-
-kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.core)

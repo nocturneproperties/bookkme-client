@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.device.impl"
     }
-}
-
-kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.core)

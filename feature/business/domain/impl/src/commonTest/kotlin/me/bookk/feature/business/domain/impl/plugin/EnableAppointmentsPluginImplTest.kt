@@ -1,9 +1,10 @@
 package me.bookk.feature.business.domain.impl.plugin
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -41,55 +42,55 @@ class EnableAppointmentsPluginImplTest {
     }
 
     private class Fixture {
-        val pluginDataSource = mockk<PluginDataSource>()
-        val businessDataSource = mockk<BusinessDataSource>()
+        val pluginDataSource = mock<PluginDataSource>()
+        val businessDataSource = mock<BusinessDataSource>()
         val sut = EnableAppointmentsPluginImpl(pluginDataSource, businessDataSource)
     }
 
     @Test
     fun `calls enableAppointmentsPlugin with correct business`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
-        coEvery { fixture.businessDataSource.getBusinessById(businessId) } returns business
-        coJustRun { fixture.pluginDataSource.enableAppointmentsPlugin(business) }
+        everySuspend { sut.businessDataSource.getBusinessById(businessId) } returns business
+        everySuspend { sut.pluginDataSource.enableAppointmentsPlugin(business) } returns Unit
 
         whenn()
-        fixture.sut(businessId)
+        sut.sut(businessId)
 
         then()
-        coVerify { fixture.pluginDataSource.enableAppointmentsPlugin(business) }
+        verifySuspend { sut.pluginDataSource.enableAppointmentsPlugin(business) }
     }
 
     @Test
     fun `throws AlreadyEnabled on PLUGIN_ALREADY_ENABLED error`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
-        coEvery { fixture.businessDataSource.getBusinessById(businessId) } returns business
-        coEvery { fixture.pluginDataSource.enableAppointmentsPlugin(business) } throws
+        everySuspend { sut.businessDataSource.getBusinessById(businessId) } returns business
+        everySuspend { sut.pluginDataSource.enableAppointmentsPlugin(business) } throws
             DomainError.BusinessError(AppointmentsErrorCodes.PLUGIN_ALREADY_ENABLED, "msg")
 
         whenn()
         then()
         assertFailsWith<EnableAppointmentsPlugin.Error.AlreadyEnabled> {
-            fixture.sut(businessId)
+            sut.sut(businessId)
         }
     }
 
     @Test
     fun `throws when business not found`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
-        coEvery { fixture.businessDataSource.getBusinessById(businessId) } returns null
+        everySuspend { sut.businessDataSource.getBusinessById(businessId) } returns null
 
         whenn()
         then()
         assertFailsWith<IllegalStateException> {
-            fixture.sut(businessId)
+            sut.sut(businessId)
         }
     }
 }

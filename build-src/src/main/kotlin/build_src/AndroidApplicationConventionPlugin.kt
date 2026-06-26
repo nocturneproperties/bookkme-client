@@ -7,6 +7,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 @Suppress("unused")
 class AndroidApplicationConventionPlugin : Plugin<Project> {
@@ -24,6 +25,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 applyConvention(target)
                 applyFlavourConvention(target.projectDir)
             }
+            extensions.getByType<ComposeCompilerGradlePluginExtension>()
+                .applyConvention(project)
         }
     }
 }

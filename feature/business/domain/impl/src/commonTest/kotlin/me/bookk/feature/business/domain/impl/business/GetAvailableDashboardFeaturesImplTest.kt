@@ -1,7 +1,10 @@
 package me.bookk.feature.business.domain.impl.business
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -38,26 +41,26 @@ class GetAvailableDashboardFeaturesImplTest {
     }
 
     private class Fixture {
-        val isAppointmentsPluginEnabled = mockk<IsAppointmentsPluginEnabled>()
-        val businessDataSource = mockk<BusinessDataSource>()
+        val isAppointmentsPluginEnabled = mock<IsAppointmentsPluginEnabled>()
+        val businessDataSource = mock<BusinessDataSource>()
         val sut = GetAvailableDashboardFeaturesImpl(isAppointmentsPluginEnabled, businessDataSource)
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
 
         init {
-            coEvery { businessDataSource.getDashboardBusinessId() } returns businessId
-            coEvery { businessDataSource.getBusinessById(businessId) } returns business
+            everySuspend { businessDataSource.getDashboardBusinessId() } returns businessId
+            everySuspend { businessDataSource.getBusinessById(businessId) } returns business
         }
     }
 
     @Test
     fun `APPOINTMENTS feature included when plugin is enabled`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.isAppointmentsPluginEnabled(fixture.businessId) } returns true
+        val sut = Fixture()
+        everySuspend { sut.isAppointmentsPluginEnabled(sut.businessId) } returns true
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertTrue(DashboardFeature.APPOINTMENTS in result)
@@ -66,11 +69,11 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `APPOINTMENTS feature not included when plugin is disabled`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.isAppointmentsPluginEnabled(fixture.businessId) } returns false
+        val sut = Fixture()
+        everySuspend { sut.isAppointmentsPluginEnabled(sut.businessId) } returns false
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertFalse(DashboardFeature.APPOINTMENTS in result)
@@ -79,11 +82,11 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `BUSINESS feature always included when business exists`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.isAppointmentsPluginEnabled(any()) } returns false
+        val sut = Fixture()
+        everySuspend { sut.isAppointmentsPluginEnabled(any()) } returns false
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertTrue(DashboardFeature.BUSINESS in result)
@@ -92,11 +95,11 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `returns empty set when no dashboard business id`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.businessDataSource.getDashboardBusinessId() } returns null
+        val sut = Fixture()
+        everySuspend { sut.businessDataSource.getDashboardBusinessId() } returns null
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertTrue(result.isEmpty())
@@ -105,11 +108,11 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `APPOINTMENTS feature not included when plugin check throws`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.isAppointmentsPluginEnabled(any()) } throws RuntimeException("error")
+        val sut = Fixture()
+        everySuspend { sut.isAppointmentsPluginEnabled(any()) } throws RuntimeException("error")
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertFalse(DashboardFeature.APPOINTMENTS in result)

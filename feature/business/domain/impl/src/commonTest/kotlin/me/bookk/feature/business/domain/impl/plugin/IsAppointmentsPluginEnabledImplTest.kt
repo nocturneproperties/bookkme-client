@@ -1,7 +1,8 @@
 package me.bookk.feature.business.domain.impl.plugin
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -35,19 +36,19 @@ class IsAppointmentsPluginEnabledImplTest {
     }
 
     private class Fixture {
-        val pluginDataSource = mockk<PluginDataSource>()
+        val pluginDataSource = mock<PluginDataSource>()
         val sut = IsAppointmentsPluginEnabledImpl(pluginDataSource)
     }
 
     @Test
     fun `returns true when plugin is available`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
-        coEvery { fixture.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns true
+        everySuspend { sut.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns true
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertTrue(result)
@@ -56,12 +57,12 @@ class IsAppointmentsPluginEnabledImplTest {
     @Test
     fun `returns false when plugin is not available`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
-        coEvery { fixture.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns false
+        everySuspend { sut.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns false
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertFalse(result)

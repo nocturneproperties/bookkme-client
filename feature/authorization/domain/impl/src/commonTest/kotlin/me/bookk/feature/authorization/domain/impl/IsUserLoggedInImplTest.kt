@@ -1,8 +1,9 @@
 package me.bookk.feature.authorization.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.every
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -37,18 +38,18 @@ class IsUserLoggedInImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<AuthorizationDataSource>()
+        val dataSource = mock<AuthorizationDataSource>()
         val sut = IsUserLoggedInImpl(dataSource)
     }
 
     @Test
     fun `returns true when access token is present`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.dataSource.getAccessToken() } returns "access-token"
+        val sut = Fixture()
+        everySuspend { sut.dataSource.getAccessToken() } returns "access-token"
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertTrue(result)
@@ -57,11 +58,11 @@ class IsUserLoggedInImplTest {
     @Test
     fun `returns false when access token is null`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.dataSource.getAccessToken() } returns null
+        val sut = Fixture()
+        everySuspend { sut.dataSource.getAccessToken() } returns null
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertFalse(result)
@@ -70,11 +71,11 @@ class IsUserLoggedInImplTest {
     @Test
     fun `asFlow emits value from getIsAuthorizedFlow`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        every { fixture.dataSource.getIsAuthorizedFlow() } returns flowOf(true)
+        val sut = Fixture()
+        every { sut.dataSource.getIsAuthorizedFlow() } returns flowOf(true)
 
         whenn()
-        val result = fixture.fixture.asFlow().first()
+        val result = sut.sut.asFlow().first()
 
         then()
         assertTrue(result)

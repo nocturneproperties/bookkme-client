@@ -1,8 +1,10 @@
 package me.bookk.feature.authorization.domain.impl
 
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -34,50 +36,50 @@ class InitialAppDataFetchImplTest {
     }
 
     private class Fixture {
-        val userProfileCRUD = mockk<UserProfileCRUD>()
-        val refreshBusiness = mockk<RefreshBusinessInfo>()
+        val userProfileCRUD = mock<UserProfileCRUD>()
+        val refreshBusiness = mock<RefreshBusinessInfo>()
         val sut = InitialAppDataFetchImpl(userProfileCRUD, refreshBusiness)
     }
 
     @Test
     fun `calls updateFromRemote on user profile`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coJustRun { fixture.userProfileCRUD.updateFromRemote() }
-        coJustRun { fixture.refreshBusiness() }
+        val sut = Fixture()
+        everySuspend { sut.userProfileCRUD.updateFromRemote() } returns Unit
+        everySuspend { sut.refreshBusiness() } returns Unit
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify { fixture.userProfileCRUD.updateFromRemote() }
+        verifySuspend { sut.userProfileCRUD.updateFromRemote() }
     }
 
     @Test
     fun `calls refreshBusiness`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coJustRun { fixture.userProfileCRUD.updateFromRemote() }
-        coJustRun { fixture.refreshBusiness() }
+        val sut = Fixture()
+        everySuspend { sut.userProfileCRUD.updateFromRemote() } returns Unit
+        everySuspend { sut.refreshBusiness() } returns Unit
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify { fixture.refreshBusiness() }
+        verifySuspend { sut.refreshBusiness() }
     }
 
     @Test
     fun `completes even when refreshBusiness throws`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coJustRun { fixture.userProfileCRUD.updateFromRemote() }
-        io.mockk.coEvery { fixture.refreshBusiness() } throws RuntimeException("network error")
+        val sut = Fixture()
+        everySuspend { sut.userProfileCRUD.updateFromRemote() } returns Unit
+        everySuspend { sut.refreshBusiness() } throws RuntimeException("network error")
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify { fixture.userProfileCRUD.updateFromRemote() }
+        verifySuspend { sut.userProfileCRUD.updateFromRemote() }
     }
 }

@@ -1,9 +1,11 @@
 package me.bookk.feature.appointments.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -37,76 +39,76 @@ class GetAppointmentSettingsImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<AppointmentSettingsDataSource>()
+        val dataSource = mock<AppointmentSettingsDataSource>()
         val sut = GetAppointmentSettingsImpl(dataSource)
     }
 
     @Test
     fun `returns cached settings when available in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val cached = AppointmentSettings.stub(businessId)
-        coEvery { fixture.dataSource.getAppointmentSettingsFromDB(businessId) } returns cached
+        everySuspend { sut.dataSource.getAppointmentSettingsFromDB(businessId) } returns cached
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(cached, result)
-        coVerify(exactly = 0) { fixture.dataSource.getAppointmentSettings(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { sut.dataSource.getAppointmentSettings(any()) }
     }
 
     @Test
     fun `fetches from remote and saves when DB returns null`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val remote = AppointmentSettings.stub(businessId)
-        coEvery { fixture.dataSource.getAppointmentSettingsFromDB(businessId) } returns null
-        coEvery { fixture.dataSource.getAppointmentSettings(businessId) } returns remote
-        coJustRun { fixture.dataSource.saveAppointmentSettingsInDB(remote) }
+        everySuspend { sut.dataSource.getAppointmentSettingsFromDB(businessId) } returns null
+        everySuspend { sut.dataSource.getAppointmentSettings(businessId) } returns remote
+        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(remote) } returns Unit
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(remote, result)
-        coVerify { fixture.dataSource.saveAppointmentSettingsInDB(remote) }
+        verifySuspend { sut.dataSource.saveAppointmentSettingsInDB(remote) }
     }
 
     @Test
-    fun `cached() calls onResultAvailable with DB value then remote value`() = runUnitTest {
+    fun `cached calls onResultAvailable with DB value then remote value`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val cachedSettings = AppointmentSettings.stub(businessId)
         val remoteSettings = AppointmentSettings.stub(businessId)
-        coEvery { fixture.dataSource.getAppointmentSettingsFromDB(businessId) } returns cachedSettings
-        coEvery { fixture.dataSource.getAppointmentSettings(businessId) } returns remoteSettings
-        coJustRun { fixture.dataSource.saveAppointmentSettingsInDB(remoteSettings) }
+        everySuspend { sut.dataSource.getAppointmentSettingsFromDB(businessId) } returns cachedSettings
+        everySuspend { sut.dataSource.getAppointmentSettings(businessId) } returns remoteSettings
+        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(remoteSettings) } returns Unit
         val received = mutableListOf<AppointmentSettings>()
 
         whenn()
-        fixture.fixture.cached(businessId) { received.add(it) }
+        sut.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(listOf(cachedSettings, remoteSettings), received)
     }
 
     @Test
-    fun `cached() skips DB callback when DB is null`() = runUnitTest {
+    fun `cached skips DB callback when DB is null`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val remoteSettings = AppointmentSettings.stub(businessId)
-        coEvery { fixture.dataSource.getAppointmentSettingsFromDB(businessId) } returns null
-        coEvery { fixture.dataSource.getAppointmentSettings(businessId) } returns remoteSettings
-        coJustRun { fixture.dataSource.saveAppointmentSettingsInDB(remoteSettings) }
+        everySuspend { sut.dataSource.getAppointmentSettingsFromDB(businessId) } returns null
+        everySuspend { sut.dataSource.getAppointmentSettings(businessId) } returns remoteSettings
+        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(remoteSettings) } returns Unit
         val received = mutableListOf<AppointmentSettings>()
 
         whenn()
-        fixture.fixture.cached(businessId) { received.add(it) }
+        sut.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(listOf(remoteSettings), received)

@@ -1,8 +1,9 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -34,20 +35,20 @@ class UpdateColorSchemeImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<SettingsDataSource>()
+        val dataSource = mock<SettingsDataSource>()
         val sut = UpdateColorSchemeImpl(dataSource)
     }
 
     @Test
     fun `calls setColorScheme with provided scheme`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coJustRun { fixture.dataSource.setColorScheme(ColorScheme.DARK) }
+        val sut = Fixture()
+        everySuspend { sut.dataSource.setColorScheme(ColorScheme.DARK) } returns Unit
 
         whenn()
-        fixture.fixture.invoke(ColorScheme.DARK)
+        sut.sut.invoke(ColorScheme.DARK)
 
         then()
-        coVerify { fixture.dataSource.setColorScheme(ColorScheme.DARK) }
+        verifySuspend { sut.dataSource.setColorScheme(ColorScheme.DARK) }
     }
 }

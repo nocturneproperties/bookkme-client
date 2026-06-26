@@ -1,7 +1,8 @@
 package me.bookk.feature.appointments.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -43,9 +44,9 @@ class GetAppointmentOptionsImplTest {
     }
 
     private class Fixture {
-        val getAppointmentSettings = mockk<GetAppointmentSettings>()
-        val getClients = mockk<GetClientsList>()
-        val getServices = mockk<GetServices>()
+        val getAppointmentSettings = mock<GetAppointmentSettings>()
+        val getClients = mock<GetClientsList>()
+        val getServices = mock<GetServices>()
         val sut = GetAppointmentOptionsImpl(getAppointmentSettings, getClients, getServices)
     }
 
@@ -72,17 +73,17 @@ class GetAppointmentOptionsImplTest {
     @Test
     fun `returns options combining clients services and settings`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val settings = AppointmentSettings.stub(businessId)
         val clients = listOf(stubClient(businessId))
         val services = listOf(stubService(businessId))
-        coEvery { fixture.getAppointmentSettings(businessId) } returns settings
-        coEvery { fixture.getClients(businessId) } returns clients
-        coEvery { fixture.getServices(businessId) } returns services
+        everySuspend { sut.getAppointmentSettings(businessId) } returns settings
+        everySuspend { sut.getClients(businessId) } returns clients
+        everySuspend { sut.getServices(businessId) } returns services
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(settings, result.settings)
@@ -95,15 +96,15 @@ class GetAppointmentOptionsImplTest {
     @Test
     fun `maps client to ClientSnapshot correctly`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val client = stubClient(businessId)
-        coEvery { fixture.getAppointmentSettings(businessId) } returns AppointmentSettings.stub(businessId)
-        coEvery { fixture.getClients(businessId) } returns listOf(client)
-        coEvery { fixture.getServices(businessId) } returns emptyList()
+        everySuspend { sut.getAppointmentSettings(businessId) } returns AppointmentSettings.stub(businessId)
+        everySuspend { sut.getClients(businessId) } returns listOf(client)
+        everySuspend { sut.getServices(businessId) } returns emptyList()
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         val snapshot = result.clients.first()
@@ -116,15 +117,15 @@ class GetAppointmentOptionsImplTest {
     @Test
     fun `maps service to ServiceSnapshot correctly`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val service = stubService(businessId)
-        coEvery { fixture.getAppointmentSettings(businessId) } returns AppointmentSettings.stub(businessId)
-        coEvery { fixture.getClients(businessId) } returns emptyList()
-        coEvery { fixture.getServices(businessId) } returns listOf(service)
+        everySuspend { sut.getAppointmentSettings(businessId) } returns AppointmentSettings.stub(businessId)
+        everySuspend { sut.getClients(businessId) } returns emptyList()
+        everySuspend { sut.getServices(businessId) } returns listOf(service)
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         val snapshot = result.services.first()

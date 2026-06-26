@@ -1,13 +1,15 @@
 package me.bookk.feature.business.domain.impl.business
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -39,7 +41,7 @@ class GetBusinessByIdImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<BusinessDataSource>()
+        val dataSource = mock<BusinessDataSource>()
         val sut = GetBusinessByIdImpl(dataSource)
     }
 
@@ -49,7 +51,7 @@ class GetBusinessByIdImplTest {
         description = "",
         address = "",
         location = null,
-        currency = mockk(),
+        currency = Currency("USD"),
         timeZone = TimeZone.UTC,
         socials = emptyMap()
     )
@@ -57,13 +59,13 @@ class GetBusinessByIdImplTest {
     @Test
     fun `returns business when found`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
         val expected = stubBusiness(id)
-        coEvery { fixture.dataSource.getBusinessById(id) } returns expected
+        everySuspend { sut.dataSource.getBusinessById(id) } returns expected
 
         whenn()
-        val result = fixture.sut(id)
+        val result = sut.sut(id)
 
         then()
         assertEquals(expected, result)
@@ -72,12 +74,12 @@ class GetBusinessByIdImplTest {
     @Test
     fun `throws when datasource returns null`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
-        coEvery { fixture.dataSource.getBusinessById(id) } returns null
+        everySuspend { sut.dataSource.getBusinessById(id) } returns null
 
         whenn()
-        val thrown = runCatching { fixture.sut(id) }.exceptionOrNull()
+        val thrown = runCatching { sut.sut(id) }.exceptionOrNull()
 
         then()
         assertNotNull(thrown)

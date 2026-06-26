@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.biometry.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

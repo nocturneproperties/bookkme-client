@@ -1,9 +1,11 @@
 package me.bookk.feature.appointments.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -40,21 +42,21 @@ class UpdateAppointmentSettingsImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<AppointmentSettingsDataSource>()
+        val dataSource = mock<AppointmentSettingsDataSource>()
         val sut = UpdateAppointmentSettingsImpl(dataSource)
     }
 
     @Test
     fun `returns updated settings`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val settings = AppointmentSettings.stub()
         val updated = AppointmentSettings.stub()
-        coEvery { fixture.dataSource.updateAppointmentSettings(settings) } returns updated
-        coJustRun { fixture.dataSource.saveAppointmentSettingsInDB(updated) }
+        everySuspend { sut.dataSource.updateAppointmentSettings(settings) } returns updated
+        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(updated) } returns Unit
 
         whenn()
-        val result = fixture.sut(settings)
+        val result = sut.sut(settings)
 
         then()
         assertEquals(updated, result)
@@ -63,46 +65,46 @@ class UpdateAppointmentSettingsImplTest {
     @Test
     fun `saves updated settings in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val settings = AppointmentSettings.stub()
         val updated = AppointmentSettings.stub()
-        coEvery { fixture.dataSource.updateAppointmentSettings(settings) } returns updated
-        coJustRun { fixture.dataSource.saveAppointmentSettingsInDB(updated) }
+        everySuspend { sut.dataSource.updateAppointmentSettings(settings) } returns updated
+        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(updated) } returns Unit
 
         whenn()
-        fixture.sut(settings)
+        sut.sut(settings)
 
         then()
-        coVerify(exactly = 1) { fixture.dataSource.saveAppointmentSettingsInDB(updated) }
+        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.saveAppointmentSettingsInDB(updated) }
     }
 
     @Test
     fun `throws ActiveDayWithoutWorkHours on corresponding error code`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val settings = AppointmentSettings.stub()
-        coEvery { fixture.dataSource.updateAppointmentSettings(settings) } throws
+        everySuspend { sut.dataSource.updateAppointmentSettings(settings) } throws
             DomainError.BusinessError(AppointmentErrorCodes.ACTIVE_DAY_WITHOUT_WORK_HOURS, "msg")
 
         whenn()
         then()
         assertFailsWith<UpdateAppointmentSettings.Error.ActiveDayWithoutWorkHours> {
-            fixture.sut(settings)
+            sut.sut(settings)
         }
     }
 
     @Test
     fun `throws InvalidDayOffRange on corresponding error code`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val settings = AppointmentSettings.stub()
-        coEvery { fixture.dataSource.updateAppointmentSettings(settings) } throws
+        everySuspend { sut.dataSource.updateAppointmentSettings(settings) } throws
             DomainError.BusinessError(AppointmentErrorCodes.INVALID_DAY_OFF_RANGE, "msg")
 
         whenn()
         then()
         assertFailsWith<UpdateAppointmentSettings.Error.InvalidDayOffRange> {
-            fixture.sut(settings)
+            sut.sut(settings)
         }
     }
 }

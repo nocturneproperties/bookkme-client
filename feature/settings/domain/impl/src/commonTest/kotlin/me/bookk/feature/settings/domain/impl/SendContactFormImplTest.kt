@@ -1,8 +1,9 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -33,35 +34,35 @@ class SendContactFormImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<SettingsDataSource>()
+        val dataSource = mock<SettingsDataSource>()
         val sut = SendContactFormImpl(dataSource)
     }
 
     @Test
     fun `calls sendContactForm with text and null logs`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val text = "Hello support"
-        coJustRun { fixture.dataSource.sendContactForm(text, null) }
+        everySuspend { sut.dataSource.sendContactForm(text, null) } returns Unit
 
         whenn()
-        fixture.sut(text, includeLogs = false)
+        sut.sut(text, includeLogs = false)
 
         then()
-        coVerify { fixture.dataSource.sendContactForm(text, null) }
+        verifySuspend { sut.dataSource.sendContactForm(text, null) }
     }
 
     @Test
     fun `passes null logs even when includeLogs is true`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val text = "Need help"
-        coJustRun { fixture.dataSource.sendContactForm(text, null) }
+        everySuspend { sut.dataSource.sendContactForm(text, null) } returns Unit
 
         whenn()
-        fixture.sut(text, includeLogs = true)
+        sut.sut(text, includeLogs = true)
 
         then()
-        coVerify { fixture.dataSource.sendContactForm(text, null) }
+        verifySuspend { sut.dataSource.sendContactForm(text, null) }
     }
 }

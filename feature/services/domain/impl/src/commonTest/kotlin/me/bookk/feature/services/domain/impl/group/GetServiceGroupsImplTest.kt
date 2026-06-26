@@ -1,9 +1,10 @@
 package me.bookk.feature.services.domain.impl.group
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -38,7 +39,7 @@ class GetServiceGroupsImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ServiceGroupDataSource>()
+        val dataSource = mock<ServiceGroupDataSource>()
         val sut = GetServiceGroupsImpl(dataSource)
     }
 
@@ -50,15 +51,15 @@ class GetServiceGroupsImplTest {
     @Test
     fun `returns groups sorted by createdAt`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val older = stubGroup(businessId, 1000L)
         val newer = stubGroup(businessId, 2000L)
-        coEvery { fixture.dataSource.getServiceGroups(businessId) } returns listOf(newer, older)
-        coJustRun { fixture.dataSource.saveGroupsInDB(any()) }
+        everySuspend { sut.dataSource.getServiceGroups(businessId) } returns listOf(newer, older)
+        everySuspend { sut.dataSource.saveGroupsInDB(any()) } returns Unit
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = sut.sut(businessId)
 
         then()
         assertEquals(older, result[0])
@@ -68,31 +69,31 @@ class GetServiceGroupsImplTest {
     @Test
     fun `saves groups in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val groups = listOf(stubGroup(businessId))
-        coEvery { fixture.dataSource.getServiceGroups(businessId) } returns groups
-        coJustRun { fixture.dataSource.saveGroupsInDB(groups) }
+        everySuspend { sut.dataSource.getServiceGroups(businessId) } returns groups
+        everySuspend { sut.dataSource.saveGroupsInDB(groups) } returns Unit
 
         whenn()
-        fixture.sut(businessId)
+        sut.sut(businessId)
 
         then()
-        coVerify { fixture.dataSource.saveGroupsInDB(groups) }
+        verifySuspend { sut.dataSource.saveGroupsInDB(groups) }
     }
 
     @Test
     fun `cached emits groups when non-empty`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val groups = listOf(stubGroup(businessId))
-        coEvery { fixture.dataSource.getServiceGroups(businessId) } returns groups
-        coJustRun { fixture.dataSource.saveGroupsInDB(any()) }
+        everySuspend { sut.dataSource.getServiceGroups(businessId) } returns groups
+        everySuspend { sut.dataSource.saveGroupsInDB(any()) } returns Unit
         val received = mutableListOf<List<ServiceGroup>>()
 
         whenn()
-        fixture.fixture.cached(businessId) { received.add(it) }
+        sut.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(2, received.size)

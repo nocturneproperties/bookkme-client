@@ -1,7 +1,8 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -37,8 +38,8 @@ class GetSettingsImplTest {
     }
 
     private class Fixture {
-        val getColorScheme = mockk<GetColorScheme>()
-        val userProfileCRUD = mockk<UserProfileCRUD>()
+        val getColorScheme = mock<GetColorScheme>()
+        val userProfileCRUD = mock<UserProfileCRUD>()
         val sut = GetSettingsImpl(getColorScheme, userProfileCRUD)
     }
 
@@ -49,12 +50,12 @@ class GetSettingsImplTest {
     @Test
     fun `returns settings combining color scheme and profile`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.getColorScheme() } returns ColorScheme.DARK
-        coEvery { fixture.userProfileCRUD.get() } returns stubProfile()
+        val sut = Fixture()
+        everySuspend { sut.getColorScheme() } returns ColorScheme.DARK
+        everySuspend { sut.userProfileCRUD.get() } returns stubProfile()
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertEquals(ColorScheme.DARK, result.colorScheme)

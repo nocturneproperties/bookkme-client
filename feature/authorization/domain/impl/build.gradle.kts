@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "me.bookk.feature.authorization.domain.impl"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

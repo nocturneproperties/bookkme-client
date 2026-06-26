@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.biometry.impl"
     }
-}
-
-kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.biometry)

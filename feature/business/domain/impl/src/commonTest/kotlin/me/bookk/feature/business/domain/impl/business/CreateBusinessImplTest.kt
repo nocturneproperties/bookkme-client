@@ -1,15 +1,18 @@
 package me.bookk.feature.business.domain.impl.business
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -39,8 +42,8 @@ class CreateBusinessImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<BusinessDataSource>()
-        val refreshBusinessInfo = mockk<RefreshBusinessInfo>()
+        val dataSource = mock<BusinessDataSource>()
+        val refreshBusinessInfo = mock<RefreshBusinessInfo>()
         val sut = CreateBusinessImpl(dataSource, refreshBusinessInfo)
     }
 
@@ -50,7 +53,7 @@ class CreateBusinessImplTest {
         description = "",
         address = "",
         location = null,
-        currency = mockk(),
+        currency = Currency("USD"),
         timeZone = TimeZone.UTC,
         socials = emptyMap()
     )
@@ -58,14 +61,14 @@ class CreateBusinessImplTest {
     @Test
     fun `returns created business`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val name = "My Salon"
         val expected = stubBusiness()
-        coEvery { fixture.dataSource.createBusiness(name, "UAH", any()) } returns expected
-        coJustRun { fixture.refreshBusinessInfo() }
+        everySuspend { sut.dataSource.createBusiness(name, "UAH", any()) } returns expected
+        everySuspend { sut.refreshBusinessInfo() } returns Unit
 
         whenn()
-        val result = fixture.sut(name)
+        val result = sut.sut(name)
 
         then()
         assertEquals(expected, result)
@@ -74,29 +77,29 @@ class CreateBusinessImplTest {
     @Test
     fun `calls createBusiness with UAH currency`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val name = "My Salon"
-        coEvery { fixture.dataSource.createBusiness(name, "UAH", any()) } returns stubBusiness()
-        coJustRun { fixture.refreshBusinessInfo() }
+        everySuspend { sut.dataSource.createBusiness(name, "UAH", any()) } returns stubBusiness()
+        everySuspend { sut.refreshBusinessInfo() } returns Unit
 
         whenn()
-        fixture.sut(name)
+        sut.sut(name)
 
         then()
-        coVerify { fixture.dataSource.createBusiness(name, "UAH", any()) }
+        verifySuspend { sut.dataSource.createBusiness(name, "UAH", any()) }
     }
 
     @Test
     fun `calls refreshBusinessInfo after creation`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
-        coJustRun { fixture.refreshBusinessInfo() }
+        val sut = Fixture()
+        everySuspend { sut.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { sut.refreshBusinessInfo() } returns Unit
 
         whenn()
-        fixture.sut("My Salon")
+        sut.sut("My Salon")
 
         then()
-        coVerify(exactly = 1) { fixture.refreshBusinessInfo() }
+        verifySuspend(VerifyMode.exactly(1)) { sut.refreshBusinessInfo() }
     }
 }

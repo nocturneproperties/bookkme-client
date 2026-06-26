@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.validation.impl"
     }
-}
-
-kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity)

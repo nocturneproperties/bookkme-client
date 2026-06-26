@@ -1,7 +1,8 @@
 package me.bookk.feature.appointments.domain.impl
 
-import io.mockk.every
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.every
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -10,6 +11,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -39,7 +41,7 @@ class ObserveCurrentBusinessIdImplTest {
     }
 
     private class Fixture {
-        val observeDashboardBusinessChanges = mockk<ObserveDashboardBusinessChanges>()
+        val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
         val sut = ObserveCurrentBusinessIdImpl(observeDashboardBusinessChanges)
     }
 
@@ -49,7 +51,7 @@ class ObserveCurrentBusinessIdImplTest {
         description = "",
         address = "",
         location = null,
-        currency = mockk(),
+        currency = Currency("USD"),
         timeZone = TimeZone.UTC,
         socials = emptyMap()
     )
@@ -57,13 +59,13 @@ class ObserveCurrentBusinessIdImplTest {
     @Test
     fun `emits business id when business is present`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
-        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(business)
+        every { sut.observeDashboardBusinessChanges.invoke() } returns flowOf(business)
 
         whenn()
-        val result = fixture.sut().first()
+        val result = sut.sut().first()
 
         then()
         assertEquals(businessId, result)
@@ -72,11 +74,11 @@ class ObserveCurrentBusinessIdImplTest {
     @Test
     fun `emits null when business is null`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(null)
+        val sut = Fixture()
+        every { sut.observeDashboardBusinessChanges.invoke() } returns flowOf(null)
 
         whenn()
-        val result = fixture.sut().first()
+        val result = sut.sut().first()
 
         then()
         assertNull(result)

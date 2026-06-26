@@ -1,9 +1,10 @@
 package me.bookk.feature.services.domain.impl.service
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -40,21 +41,21 @@ class CreateServiceImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ServiceDataSource>()
+        val dataSource = mock<ServiceDataSource>()
         val sut = CreateServiceImpl(dataSource)
     }
 
     @Test
     fun `returns created service`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubService()
         val created = input.copy(id = kotlin.uuid.Uuid.random())
-        coEvery { fixture.dataSource.createService(input) } returns created
-        coJustRun { fixture.dataSource.saveServiceInDB(created) }
+        everySuspend { sut.dataSource.createService(input) } returns created
+        everySuspend { sut.dataSource.saveServiceInDB(created) } returns Unit
 
         whenn()
-        val result = fixture.sut(input)
+        val result = sut.sut(input)
 
         then()
         assertEquals(created, result)
@@ -63,30 +64,30 @@ class CreateServiceImplTest {
     @Test
     fun `saves created service in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubService()
-        coEvery { fixture.dataSource.createService(input) } returns input
-        coJustRun { fixture.dataSource.saveServiceInDB(input) }
+        everySuspend { sut.dataSource.createService(input) } returns input
+        everySuspend { sut.dataSource.saveServiceInDB(input) } returns Unit
 
         whenn()
-        fixture.sut(input)
+        sut.sut(input)
 
         then()
-        coVerify { fixture.dataSource.saveServiceInDB(input) }
+        verifySuspend { sut.dataSource.saveServiceInDB(input) }
     }
 
     @Test
     fun `emits Created event`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubService()
-        coEvery { fixture.dataSource.createService(input) } returns input
-        coJustRun { fixture.dataSource.saveServiceInDB(any()) }
+        everySuspend { sut.dataSource.createService(input) } returns input
+        everySuspend { sut.dataSource.saveServiceInDB(any()) } returns Unit
         val events = mutableListOf<ServiceEvent>()
         val job = launch(Dispatchers.Unconfined) { serviceEvents.collect { events.add(it) } }
 
         whenn()
-        fixture.sut(input)
+        sut.sut(input)
 
         then()
         job.cancel()

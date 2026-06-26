@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.permissions.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

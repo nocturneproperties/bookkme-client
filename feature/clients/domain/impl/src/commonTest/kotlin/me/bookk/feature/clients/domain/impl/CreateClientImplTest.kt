@@ -1,9 +1,10 @@
 package me.bookk.feature.clients.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ class CreateClientImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ClientsDataSource>()
+        val dataSource = mock<ClientsDataSource>()
         val sut = CreateClientImpl(dataSource)
     }
 
@@ -57,14 +58,14 @@ class CreateClientImplTest {
     @Test
     fun `returns created client`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubClient()
         val created = input.copy(id = Uuid.random())
-        coEvery { fixture.dataSource.createClient(input) } returns created
-        coJustRun { fixture.dataSource.saveClientsInDb(listOf(created)) }
+        everySuspend { sut.dataSource.createClient(input) } returns created
+        everySuspend { sut.dataSource.saveClientsInDb(listOf(created)) } returns Unit
 
         whenn()
-        val result = fixture.sut(input)
+        val result = sut.sut(input)
 
         then()
         assertEquals(created, result)
@@ -73,31 +74,31 @@ class CreateClientImplTest {
     @Test
     fun `saves created client in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubClient()
         val created = input.copy(id = Uuid.random())
-        coEvery { fixture.dataSource.createClient(input) } returns created
-        coJustRun { fixture.dataSource.saveClientsInDb(listOf(created)) }
+        everySuspend { sut.dataSource.createClient(input) } returns created
+        everySuspend { sut.dataSource.saveClientsInDb(listOf(created)) } returns Unit
 
         whenn()
-        fixture.sut(input)
+        sut.sut(input)
 
         then()
-        coVerify { fixture.dataSource.saveClientsInDb(listOf(created)) }
+        verifySuspend { sut.dataSource.saveClientsInDb(listOf(created)) }
     }
 
     @Test
     fun `emits Created event`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubClient()
-        coEvery { fixture.dataSource.createClient(input) } returns input
-        coJustRun { fixture.dataSource.saveClientsInDb(any()) }
+        everySuspend { sut.dataSource.createClient(input) } returns input
+        everySuspend { sut.dataSource.saveClientsInDb(any()) } returns Unit
         val events = mutableListOf<ClientEvent>()
         val job = launch(Dispatchers.Unconfined) { clientEvents.collect { events.add(it) } }
 
         whenn()
-        fixture.sut(input)
+        sut.sut(input)
 
         then()
         job.cancel()

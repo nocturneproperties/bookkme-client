@@ -19,7 +19,6 @@ internal fun ApplicationExtension.applyConvention(project: Project) {
     buildFeatures {
         compose = true
     }
-    project.applyComposeCompilerConvention()
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false

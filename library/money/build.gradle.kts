@@ -9,9 +9,6 @@ kotlin {
     android {
         namespace = "library.money"
     }
-}
-
-kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.joda.money)

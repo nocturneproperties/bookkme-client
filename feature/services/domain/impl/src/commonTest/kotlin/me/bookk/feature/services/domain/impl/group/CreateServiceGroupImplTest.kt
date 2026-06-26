@@ -1,9 +1,11 @@
 package me.bookk.feature.services.domain.impl.group
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -46,7 +48,7 @@ class CreateServiceGroupImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ServiceGroupDataSource>()
+        val dataSource = mock<ServiceGroupDataSource>()
         val sut = CreateServiceGroupImpl(dataSource)
     }
 
@@ -58,13 +60,13 @@ class CreateServiceGroupImplTest {
     @Test
     fun `returns created group`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubGroup()
-        coEvery { fixture.dataSource.createServiceGroup(input) } returns input
-        coJustRun { fixture.dataSource.saveGroupInDB(input) }
+        everySuspend { sut.dataSource.createServiceGroup(input) } returns input
+        everySuspend { sut.dataSource.saveGroupInDB(input) } returns Unit
 
         whenn()
-        val result = fixture.sut(input)
+        val result = sut.sut(input)
 
         then()
         assertEquals(input, result)
@@ -73,30 +75,30 @@ class CreateServiceGroupImplTest {
     @Test
     fun `saves group in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubGroup()
-        coEvery { fixture.dataSource.createServiceGroup(input) } returns input
-        coJustRun { fixture.dataSource.saveGroupInDB(input) }
+        everySuspend { sut.dataSource.createServiceGroup(input) } returns input
+        everySuspend { sut.dataSource.saveGroupInDB(input) } returns Unit
 
         whenn()
-        fixture.sut(input)
+        sut.sut(input)
 
         then()
-        coVerify { fixture.dataSource.saveGroupInDB(input) }
+        verifySuspend { sut.dataSource.saveGroupInDB(input) }
     }
 
     @Test
     fun `emits Created event`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubGroup()
-        coEvery { fixture.dataSource.createServiceGroup(input) } returns input
-        coJustRun { fixture.dataSource.saveGroupInDB(any()) }
+        everySuspend { sut.dataSource.createServiceGroup(input) } returns input
+        everySuspend { sut.dataSource.saveGroupInDB(any()) } returns Unit
         val events = mutableListOf<ServiceGroupEvent>()
         val job = launch(Dispatchers.Unconfined) { serviceGroupEvents.collect { events.add(it) } }
 
         whenn()
-        fixture.sut(input)
+        sut.sut(input)
 
         then()
         job.cancel()
@@ -106,30 +108,30 @@ class CreateServiceGroupImplTest {
     @Test
     fun `throws NameExists on BUSINESS_SERVICE_GROUP_EXISTS error`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubGroup()
-        coEvery { fixture.dataSource.createServiceGroup(input) } throws
+        everySuspend { sut.dataSource.createServiceGroup(input) } throws
             DomainError.BusinessError(ServiceErrorCodes.BUSINESS_SERVICE_GROUP_EXISTS, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateServiceGroup.Error.NameExists> {
-            fixture.sut(input)
+            sut.sut(input)
         }
     }
 
     @Test
     fun `throws InvalidName on BUSINESS_SERVICE_GROUP_VALIDATION_ERROR`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val input = stubGroup()
-        coEvery { fixture.dataSource.createServiceGroup(input) } throws
+        everySuspend { sut.dataSource.createServiceGroup(input) } throws
             DomainError.BusinessError(ServiceErrorCodes.BUSINESS_SERVICE_GROUP_VALIDATION_ERROR, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateServiceGroup.Error.InvalidName> {
-            fixture.sut(input)
+            sut.sut(input)
         }
     }
 }

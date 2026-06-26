@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.credentials.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

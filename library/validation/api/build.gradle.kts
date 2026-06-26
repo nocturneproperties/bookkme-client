@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.validation.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

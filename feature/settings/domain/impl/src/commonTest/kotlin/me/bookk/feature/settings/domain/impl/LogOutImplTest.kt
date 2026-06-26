@@ -1,9 +1,10 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,25 +37,25 @@ class LogOutImplTest {
     @Test
     fun `calls doOnLogOut on all actors`() = runUnitTest {
         given()
-        val actor1 = mockk<LogOutAction>()
-        val actor2 = mockk<LogOutAction>()
-        coJustRun { actor1.doOnLogOut() }
-        coJustRun { actor2.doOnLogOut() }
+        val actor1 = mock<LogOutAction>()
+        val actor2 = mock<LogOutAction>()
+        everySuspend { actor1.doOnLogOut() } returns Unit
+        everySuspend { actor2.doOnLogOut() } returns Unit
         val sut = LogOutImpl(listOf(actor1, actor2))
 
         whenn()
         sut()
 
         then()
-        coVerify { actor1.doOnLogOut() }
-        coVerify { actor2.doOnLogOut() }
+        verifySuspend { actor1.doOnLogOut() }
+        verifySuspend { actor2.doOnLogOut() }
     }
 
     @Test
     fun `completes silently when actor throws`() = runUnitTest {
         given()
-        val failingActor = mockk<LogOutAction>()
-        coEvery { failingActor.doOnLogOut() } throws RuntimeException("network error")
+        val failingActor = mock<LogOutAction>()
+        everySuspend { failingActor.doOnLogOut() } throws RuntimeException("network error")
         val sut = LogOutImpl(listOf(failingActor))
 
         whenn()

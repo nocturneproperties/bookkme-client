@@ -1,7 +1,8 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,7 +37,7 @@ class GetAvailablePasskeysImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<PasskeySettingsDataSource>()
+        val dataSource = mock<PasskeySettingsDataSource>()
         val sut = GetAvailablePasskeysImpl(dataSource)
     }
 
@@ -51,12 +52,12 @@ class GetAvailablePasskeysImplTest {
     @Test
     fun `returns passkeys from datasource`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val expected = listOf(stubPasskey())
-        coEvery { fixture.dataSource.getPasskeys() } returns expected
+        everySuspend { sut.dataSource.getPasskeys() } returns expected
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertEquals(expected, result)
@@ -65,11 +66,11 @@ class GetAvailablePasskeysImplTest {
     @Test
     fun `returns empty list when no passkeys`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.dataSource.getPasskeys() } returns emptyList()
+        val sut = Fixture()
+        everySuspend { sut.dataSource.getPasskeys() } returns emptyList()
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertEquals(emptyList(), result)

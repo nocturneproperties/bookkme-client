@@ -1,7 +1,9 @@
 package me.bookk.feature.appointments.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -16,6 +18,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,20 +37,20 @@ class GetAppointmentImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<AppointmentDataSource>()
+        val dataSource = mock<AppointmentDataSource>()
         val sut = GetAppointmentImpl(dataSource)
     }
 
     @Test
     fun `returns appointment by id`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
         val expected = stubAppointment(id = id)
-        coEvery { fixture.dataSource.getAppointment(id) } returns expected
+        everySuspend { sut.dataSource.getAppointment(id) } returns expected
 
         whenn()
-        val result = fixture.sut(id)
+        val result = sut.sut(id)
 
         then()
         assertEquals(expected, result)
@@ -56,14 +59,14 @@ class GetAppointmentImplTest {
     @Test
     fun `propagates datasource exception`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
-        coEvery { fixture.dataSource.getAppointment(id) } throws IllegalStateException("not found")
+        everySuspend { sut.dataSource.getAppointment(id) } throws IllegalStateException("not found")
 
         whenn()
-        val thrown = runCatching { fixture.sut(id) }.exceptionOrNull()
+        val thrown = runCatching { sut.sut(id) }.exceptionOrNull()
 
         then()
-        assert(thrown is IllegalStateException)
+        assertTrue(thrown is IllegalStateException)
     }
 }

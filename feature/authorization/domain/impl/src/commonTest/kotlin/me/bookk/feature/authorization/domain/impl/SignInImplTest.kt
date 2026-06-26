@@ -1,9 +1,11 @@
 package me.bookk.feature.authorization.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -45,11 +47,11 @@ class SignInImplTest {
     }
 
     private class Fixture {
-        val deviceDataSource = mockk<DeviceDataSource>()
-        val authorizationDataSource = mockk<AuthorizationDataSource>()
-        val deviceFacade = mockk<DeviceFacade>()
-        val passKeyManager = mockk<PassKeyManager>()
-        val initialAppDataFetch = mockk<InitialAppDataFetch>()
+        val deviceDataSource = mock<DeviceDataSource>()
+        val authorizationDataSource = mock<AuthorizationDataSource>()
+        val deviceFacade = mock<DeviceFacade>()
+        val passKeyManager = mock<PassKeyManager>()
+        val initialAppDataFetch = mock<InitialAppDataFetch>()
         val sut = SignInImpl(deviceDataSource, authorizationDataSource, deviceFacade, passKeyManager, initialAppDataFetch)
     }
 
@@ -62,86 +64,86 @@ class SignInImplTest {
 
     private suspend fun Fixture.setupHappyPath() {
         val challenge = stubChallenge()
-        coEvery { authorizationDataSource.getAuthorizationChallenge() } returns challenge
-        coEvery { passKeyManager.authorize(any()) } returns payload
-        coEvery { deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
-        coEvery { deviceFacade.getDeviceName() } returns "Device Name"
-        coEvery { authorizationDataSource.verifyAuthorization(any()) } returns tokenInfo
-        coJustRun { authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
-        coJustRun { authorizationDataSource.invalidateClientTokens() }
-        coJustRun { initialAppDataFetch() }
-        coJustRun { authorizationDataSource.setAuthorizationStatus(true) }
+        everySuspend { authorizationDataSource.getAuthorizationChallenge() } returns challenge
+        everySuspend { passKeyManager.authorize(any()) } returns payload
+        everySuspend { deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
+        everySuspend { deviceFacade.getDeviceName() } returns "Device Name"
+        everySuspend { authorizationDataSource.verifyAuthorization(any()) } returns tokenInfo
+        everySuspend { authorizationDataSource.saveAuthorizationTokens(tokenInfo) } returns Unit
+        everySuspend { authorizationDataSource.invalidateClientTokens() } returns Unit
+        everySuspend { initialAppDataFetch() } returns Unit
+        everySuspend { authorizationDataSource.setAuthorizationStatus(true) } returns Unit
     }
 
     @Test
     fun `sets authorization status true on success`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        fixture.setupHappyPath()
+        val sut = Fixture()
+        sut.setupHappyPath()
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify { fixture.authorizationDataSource.setAuthorizationStatus(true) }
+        verifySuspend { sut.authorizationDataSource.setAuthorizationStatus(true) }
     }
 
     @Test
     fun `saves token info on success`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        fixture.setupHappyPath()
+        val sut = Fixture()
+        sut.setupHappyPath()
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify { fixture.authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
+        verifySuspend { sut.authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
     }
 
     @Test
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        coEvery { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
+        val sut = Fixture()
+        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { sut.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
         assertFailsWith<Error.Ignore> {
-            fixture.sut()
+            sut.sut()
         }
     }
 
     @Test
     fun `throws NoCredentialsAvailable when PassKeyManager throws CredentialsMissing`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        coEvery { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
+        val sut = Fixture()
+        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { sut.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
 
         whenn()
         then()
         assertFailsWith<SignIn.Error.NoCredentialsAvailable> {
-            fixture.sut()
+            sut.sut()
         }
     }
 
     @Test
     fun `throws NoAccountForThisPasskey on PASSKEY_OWNER_NOT_FOUND error`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        coEvery { fixture.passKeyManager.authorize(any()) } returns payload
-        coEvery { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
-        coEvery { fixture.deviceFacade.getDeviceName() } returns "Name"
-        coEvery { fixture.authorizationDataSource.verifyAuthorization(any()) } throws
+        val sut = Fixture()
+        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { sut.passKeyManager.authorize(any()) } returns payload
+        everySuspend { sut.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
+        everySuspend { sut.deviceFacade.getDeviceName() } returns "Name"
+        everySuspend { sut.authorizationDataSource.verifyAuthorization(any()) } throws
             Error.BusinessError(AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND, "msg")
 
         whenn()
         then()
         assertFailsWith<SignIn.Error.NoAccountForThisPasskey> {
-            fixture.sut()
+            sut.sut()
         }
     }
 }

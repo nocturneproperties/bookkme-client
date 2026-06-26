@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "me.bookk.domain.environment.impl"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.environment.api)

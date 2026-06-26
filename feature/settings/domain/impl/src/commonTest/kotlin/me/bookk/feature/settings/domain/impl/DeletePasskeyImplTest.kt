@@ -1,8 +1,9 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -34,21 +35,21 @@ class DeletePasskeyImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<PasskeySettingsDataSource>()
+        val dataSource = mock<PasskeySettingsDataSource>()
         val sut = DeletePasskeyImpl(dataSource)
     }
 
     @Test
     fun `calls deletePasskey with correct id`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
-        coJustRun { fixture.dataSource.deletePasskey(id) }
+        everySuspend { sut.dataSource.deletePasskey(id) } returns Unit
 
         whenn()
-        fixture.sut(id)
+        sut.sut(id)
 
         then()
-        coVerify { fixture.dataSource.deletePasskey(id) }
+        verifySuspend { sut.dataSource.deletePasskey(id) }
     }
 }

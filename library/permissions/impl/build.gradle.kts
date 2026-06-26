@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.permissions.impl"
     }
-}
-
-kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity)

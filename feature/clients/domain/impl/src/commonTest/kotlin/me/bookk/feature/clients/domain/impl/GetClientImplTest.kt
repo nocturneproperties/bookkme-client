@@ -1,7 +1,8 @@
 package me.bookk.feature.clients.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -35,14 +36,14 @@ class GetClientImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ClientsDataSource>()
+        val dataSource = mock<ClientsDataSource>()
         val sut = GetClientImpl(dataSource)
     }
 
     @Test
     fun `returns client by id`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
         val expected = Client.Detached(
             id = id,
@@ -52,10 +53,10 @@ class GetClientImplTest {
             email = "john@example.com",
             businessId = Uuid.random()
         )
-        coEvery { fixture.dataSource.getClient(id) } returns expected
+        everySuspend { sut.dataSource.getClient(id) } returns expected
 
         whenn()
-        val result = fixture.sut(id)
+        val result = sut.sut(id)
 
         then()
         assertEquals(expected, result)

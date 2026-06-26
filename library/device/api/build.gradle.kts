@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.device.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

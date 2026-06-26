@@ -1,15 +1,17 @@
 package me.bookk.feature.business.domain.impl.business
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -38,66 +40,66 @@ class RefreshBusinessInfoImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<BusinessDataSource>()
+        val dataSource = mock<BusinessDataSource>()
         val sut = RefreshBusinessInfoImpl(dataSource)
     }
 
     @Test
     fun `saves dashboard business id after fetching`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val dashboardId = Uuid.random()
         val info = UserBusinessInfo(dashboardId = dashboardId, businesses = emptyList())
-        coEvery { fixture.dataSource.getBusinessesFromRemote() } returns info
-        coJustRun { fixture.dataSource.saveDashboardBusinessId(dashboardId) }
-        coJustRun { fixture.dataSource.saveBusinessListInDB(emptyList()) }
+        everySuspend { sut.dataSource.getBusinessesFromRemote() } returns info
+        everySuspend { sut.dataSource.saveDashboardBusinessId(dashboardId) } returns Unit
+        everySuspend { sut.dataSource.saveBusinessListInDB(emptyList()) } returns Unit
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify { fixture.dataSource.saveDashboardBusinessId(dashboardId) }
+        verifySuspend { sut.dataSource.saveDashboardBusinessId(dashboardId) }
     }
 
     @Test
     fun `saves business list in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val business = Business(
             id = Uuid.random(),
             name = "B",
             description = "",
             address = "",
             location = null,
-            currency = mockk(),
+            currency = Currency("USD"),
             timeZone = TimeZone.UTC,
             socials = emptyMap()
         )
         val info = UserBusinessInfo(dashboardId = null, businesses = listOf(business))
-        coEvery { fixture.dataSource.getBusinessesFromRemote() } returns info
-        coJustRun { fixture.dataSource.saveDashboardBusinessId(null) }
-        coJustRun { fixture.dataSource.saveBusinessListInDB(listOf(business)) }
+        everySuspend { sut.dataSource.getBusinessesFromRemote() } returns info
+        everySuspend { sut.dataSource.saveDashboardBusinessId(null) } returns Unit
+        everySuspend { sut.dataSource.saveBusinessListInDB(listOf(business)) } returns Unit
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify { fixture.dataSource.saveBusinessListInDB(listOf(business)) }
+        verifySuspend { sut.dataSource.saveBusinessListInDB(listOf(business)) }
     }
 
     @Test
     fun `calls getBusinessesFromRemote`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val info = UserBusinessInfo(dashboardId = null, businesses = emptyList())
-        coEvery { fixture.dataSource.getBusinessesFromRemote() } returns info
-        coJustRun { fixture.dataSource.saveDashboardBusinessId(null) }
-        coJustRun { fixture.dataSource.saveBusinessListInDB(emptyList()) }
+        everySuspend { sut.dataSource.getBusinessesFromRemote() } returns info
+        everySuspend { sut.dataSource.saveDashboardBusinessId(null) } returns Unit
+        everySuspend { sut.dataSource.saveBusinessListInDB(emptyList()) } returns Unit
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify(exactly = 1) { fixture.dataSource.getBusinessesFromRemote() }
+        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.getBusinessesFromRemote() }
     }
 }

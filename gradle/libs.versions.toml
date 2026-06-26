@@ -96,6 +96,7 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 joda-money = { module = "org.joda:joda-money", version.ref = "money" }
 logger = { module = "io.github.aakira:napier", version.ref = "napier" }
 buildkonfig-compiler = { module = "com.codingfeline.buildkonfig:buildkonfig-compiler", version.ref = "build-konfig" }
+compose-compiler-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
 android-room = { id = "androidx.room", version.ref = "room" }

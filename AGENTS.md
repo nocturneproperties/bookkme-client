@@ -549,7 +549,19 @@ private val testDispatcher = UnconfinedTestDispatcher()
 @AfterTest fun tearDown() { Dispatchers.resetMain() }
 ```
 
-**Fixture pattern** — use `private class Fixture { val dep = mockk<Dep>(); val sut = Impl(dep) }` so a fresh SUT and fresh mocks are created for every test. Never share state between tests. Instantiate it as `val fixture = Fixture()` — never `val f = Fixture()` or any other single-character variable name.
+**Fixture pattern** — use `private class Fixture { val dep = mock<Dep>(); val sut = Impl(dep) }` so a fresh SUT and fresh mocks are created for every test. Never share state between tests. Instantiate it as `val fixture = Fixture()` — never `val f = Fixture()`, `val sut = Fixture()`, or any other name. Inside the body, the system under test is `fixture.sut(...)` and mocks are `fixture.dep`.
+
+**Mocking library** — use **Mokkery** (`dev.mokkery`), a KMP compiler-plugin-based mock framework. Key API:
+- `mock<T>()` — strict mock (throws on unstubbed calls); `mock<T>(MockMode.autofill)` for a relaxed placeholder
+- `everySuspend { mock.suspendFn(any()) } returns value` — stub suspend functions
+- `everySuspend { mock.suspendFn(any()) } returns Unit` — stub void suspend (replaces `coJustRun`)
+- `everySuspend { mock.suspendFn(any()) } throws error` — stub suspend throws
+- `every { mock.fn(any()) } returns value` — stub non-suspend functions (e.g. Flow-returning)
+- `verifySuspend { mock.suspendFn(args) }` — verify suspend call
+- `verifySuspend(VerifyMode.exactly(n)) { mock.suspendFn(args) }` — exact call count
+- `verifySuspend(VerifyMode.order) { mock.fn1(a); mock.fn2(b) }` — ordered call sequence
+- `any()` — any-argument matcher (from `dev.mokkery.matcher`)
+- `matches({ "desc" }) { predicate }` — predicate matcher (replaces MockK's `match {}`)
 
 **Fixture files** — when multiple test classes in a module share the same stub helpers, extract them into an `internal` top-level file (e.g. `AppointmentTestFixtures.kt`, `ServiceTestFixtures.kt`, `BusinessTestFixtures.kt`) in the `commonTest` source set at the module's root package. Sub-package test files import via `import me.bookk.feature.<name>.domain.impl.stubX`.
 
@@ -558,11 +570,11 @@ private val testDispatcher = UnconfinedTestDispatcher()
 @Test
 fun `returns created business`() = runUnitTest {
     given()
-    val fixture = Fixture()
-    coEvery { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+    val sut = Fixture()
+    everySuspend { sut.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
 
     whenn()
-    val result = fixture.sut("My Salon")
+    val result = sut.sut("My Salon")
 
     then()
     assertEquals(stubBusiness(), result)
@@ -573,20 +585,20 @@ Import: `import me.bookk.core.test.given`, `import me.bookk.core.test.whenn`, `i
 **SharedFlow event tests** — package-level `MutableSharedFlow` instances (`appointmentEvents`, `clientEvents`, `serviceEvents`, `serviceGroupEvents`) require `Dispatchers.Unconfined` on the subscriber coroutine for the event to be delivered synchronously during `emit()`. With `UnconfinedTestDispatcher`, the emitter queues the subscriber continuation in the test scheduler but doesn't run it until the test coroutine suspends — if `job.cancel()` happens before that suspension, the event is lost. Pattern that works (with given/when/then):
 ```kotlin
 given()
-val fixture = Fixture()
-coEvery { fixture.dataSource.doThing(any()) } returns result
+val sut = Fixture()
+everySuspend { sut.dataSource.doThing(any()) } returns result
 val events = mutableListOf<SomeEvent>()
 val job = launch(Dispatchers.Unconfined) { someEvents.collect { events.add(it) } }
 
 whenn()
-fixture.sut(args)
+sut.sut(args)
 
 then()
 job.cancel()
 assertTrue(events.any { it is SomeEvent.Created })
 ```
 
-**`invoke()` as operator** — some use case interfaces declare `suspend fun invoke(...)` without the `operator` modifier. These cannot be called with `sut(args)` shorthand; use `fixture.invoke(args)` in tests.
+**`invoke()` as operator** — some use case interfaces declare `suspend fun invoke(...)` without the `operator` modifier. These cannot be called with `sut.sut(args)` shorthand; use `sut.sut.invoke(args)` in tests.
 
 **`PassKeyManager.Error.Unknown` constructor** — takes a required `cause: Throwable?` parameter. Throw it in tests as `PassKeyManager.Error.Unknown(null)`.
 

@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.files.impl"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

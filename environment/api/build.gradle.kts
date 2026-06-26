@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "me.bookk.domain.environment.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.datetime)

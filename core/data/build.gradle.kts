@@ -14,6 +14,15 @@ kotlin {
             consumerKeepRules.file("consumer-rules.pro")
         }
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            api(libs.ktor.client.core)
+            api(libs.ktor.client.mock)
+            api(libs.ktor.client.protobuf)
+            api(projects.core.domain)
+        }
+    }
 }
 
 buildkonfig {
@@ -25,16 +34,5 @@ buildkonfig {
             getCurrentVariant().contains("debug", ignoreCase = true).toString(),
             const = true
         )
-    }
-}
-
-kotlin {
-    sourceSets {
-        commonMain.dependencies {
-            api(libs.ktor.client.core)
-            api(libs.ktor.client.mock)
-            api(libs.ktor.client.protobuf)
-            api(projects.core.domain)
-        }
     }
 }

@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 @Suppress("unused")
@@ -50,6 +51,9 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                     implementation(libs.koin.annotation)
                 }
             }
+
+            extensions.getByType<ComposeCompilerGradlePluginExtension>()
+                .applyConvention(project)
 
             dependencies {
                 add("androidRuntimeClasspath",libs.compose.ui.tooling)

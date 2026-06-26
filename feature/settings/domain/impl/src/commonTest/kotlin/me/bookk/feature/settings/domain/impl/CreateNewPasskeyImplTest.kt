@@ -1,9 +1,12 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.matcher.matches
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -45,9 +48,9 @@ class CreateNewPasskeyImplTest {
     }
 
     private class Fixture {
-        val passkeySettingsDataSource = mockk<PasskeySettingsDataSource>()
-        val passKeyManager = mockk<PassKeyManager>()
-        val getAvailablePasskeys = mockk<GetAvailablePasskeys>()
+        val passkeySettingsDataSource = mock<PasskeySettingsDataSource>()
+        val passKeyManager = mock<PassKeyManager>()
+        val getAvailablePasskeys = mock<GetAvailablePasskeys>()
         val sut = CreateNewPasskeyImpl(passkeySettingsDataSource, passKeyManager, getAvailablePasskeys)
     }
 
@@ -68,17 +71,17 @@ class CreateNewPasskeyImplTest {
     @Test
     fun `returns updated passkeys list on success`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val challenge = stubChallenge()
         val payload = PasskeyVerificationPayload("{}")
         val passkeys = listOf(stubPasskey())
-        coEvery { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns challenge
-        coEvery { fixture.passKeyManager.create(any()) } returns payload
-        coJustRun { fixture.passkeySettingsDataSource.sendVerifiedPasskey(any()) }
-        coEvery { fixture.getAvailablePasskeys() } returns passkeys
+        everySuspend { sut.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns challenge
+        everySuspend { sut.passKeyManager.create(any()) } returns payload
+        everySuspend { sut.passkeySettingsDataSource.sendVerifiedPasskey(any()) } returns Unit
+        everySuspend { sut.getAvailablePasskeys() } returns passkeys
 
         whenn()
-        val result = fixture.sut()
+        val result = sut.sut()
 
         then()
         assertEquals(passkeys, result)
@@ -87,21 +90,21 @@ class CreateNewPasskeyImplTest {
     @Test
     fun `sends verified passkey with requestId from challenge`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val challenge = stubChallenge()
         val payload = PasskeyVerificationPayload("{\"key\":\"value\"}")
-        coEvery { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns challenge
-        coEvery { fixture.passKeyManager.create(any()) } returns payload
-        coJustRun { fixture.passkeySettingsDataSource.sendVerifiedPasskey(any()) }
-        coEvery { fixture.getAvailablePasskeys() } returns emptyList()
+        everySuspend { sut.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns challenge
+        everySuspend { sut.passKeyManager.create(any()) } returns payload
+        everySuspend { sut.passkeySettingsDataSource.sendVerifiedPasskey(any()) } returns Unit
+        everySuspend { sut.getAvailablePasskeys() } returns emptyList()
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify {
-            fixture.passkeySettingsDataSource.sendVerifiedPasskey(
-                match { it.requestId == challenge.requestId && it.publicKeyCredentialJson == payload.jsonPayload }
+        verifySuspend {
+            sut.passkeySettingsDataSource.sendVerifiedPasskey(
+                matches({ "match" }) { it.requestId == challenge.requestId && it.publicKeyCredentialJson == payload.jsonPayload }
             )
         }
     }
@@ -109,28 +112,28 @@ class CreateNewPasskeyImplTest {
     @Test
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns stubChallenge()
-        coEvery { fixture.passKeyManager.create(any()) } throws PassKeyManager.Error.UserCancelled()
+        val sut = Fixture()
+        everySuspend { sut.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns stubChallenge()
+        everySuspend { sut.passKeyManager.create(any()) } throws PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
         assertFailsWith<Error.Ignore> {
-            fixture.sut()
+            sut.sut()
         }
     }
 
     @Test
     fun `throws AccountCreationFailed when PassKeyManager throws other error`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns stubChallenge()
-        coEvery { fixture.passKeyManager.create(any()) } throws PassKeyManager.Error.Unknown(null)
+        val sut = Fixture()
+        everySuspend { sut.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns stubChallenge()
+        everySuspend { sut.passKeyManager.create(any()) } throws PassKeyManager.Error.Unknown(null)
 
         whenn()
         then()
         assertFailsWith<CreateNewPasskey.Error.AccountCreationFailed> {
-            fixture.sut()
+            sut.sut()
         }
     }
 }

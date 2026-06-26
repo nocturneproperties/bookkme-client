@@ -1,9 +1,11 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -40,8 +42,8 @@ class DeleteAccountImplTest {
     }
 
     private class Fixture {
-        val authorizationDataSource = mockk<AuthorizationDataSource>()
-        val passKeyManager = mockk<PassKeyManager>()
+        val authorizationDataSource = mock<AuthorizationDataSource>()
+        val passKeyManager = mock<PassKeyManager>()
         val sut = DeleteAccountImpl(authorizationDataSource, passKeyManager)
     }
 
@@ -56,47 +58,47 @@ class DeleteAccountImplTest {
     @Test
     fun `clears auth tokens and status on success`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val challenge = stubChallenge()
-        coEvery { fixture.authorizationDataSource.getAuthorizationChallenge() } returns challenge
-        coEvery { fixture.passKeyManager.authorize(any()) } returns verificationPayload
-        coJustRun { fixture.authorizationDataSource.deleteAccount(any()) }
-        coJustRun { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
-        coJustRun { fixture.authorizationDataSource.setAuthorizationStatus(false) }
+        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns challenge
+        everySuspend { sut.passKeyManager.authorize(any()) } returns verificationPayload
+        everySuspend { sut.authorizationDataSource.deleteAccount(any()) } returns Unit
+        everySuspend { sut.authorizationDataSource.saveAuthorizationTokens(null) } returns Unit
+        everySuspend { sut.authorizationDataSource.setAuthorizationStatus(false) } returns Unit
 
         whenn()
-        fixture.sut()
+        sut.sut()
 
         then()
-        coVerify { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
-        coVerify { fixture.authorizationDataSource.setAuthorizationStatus(false) }
+        verifySuspend { sut.authorizationDataSource.saveAuthorizationTokens(null) }
+        verifySuspend { sut.authorizationDataSource.setAuthorizationStatus(false) }
     }
 
     @Test
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        coEvery { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
+        val sut = Fixture()
+        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { sut.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
         assertFailsWith<Error.Ignore> {
-            fixture.sut()
+            sut.sut()
         }
     }
 
     @Test
     fun `throws AccountVerificationFailed when PassKeyManager throws CredentialsMissing`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        coEvery { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
+        val sut = Fixture()
+        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { sut.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
 
         whenn()
         then()
         assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> {
-            fixture.sut()
+            sut.sut()
         }
     }
 }

@@ -1,7 +1,8 @@
 package me.bookk.feature.business.domain.impl.business
 
-import io.mockk.every
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.every
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -10,6 +11,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -39,7 +41,7 @@ class ObserveDashboardBusinessChangesImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<BusinessDataSource>()
+        val dataSource = mock<BusinessDataSource>()
         val sut = ObserveDashboardBusinessChangesImpl(dataSource)
     }
 
@@ -49,7 +51,7 @@ class ObserveDashboardBusinessChangesImplTest {
         description = "",
         address = "",
         location = null,
-        currency = mockk(),
+        currency = Currency("USD"),
         timeZone = TimeZone.UTC,
         socials = emptyMap()
     )
@@ -57,14 +59,14 @@ class ObserveDashboardBusinessChangesImplTest {
     @Test
     fun `emits business when dashboard id exists and business is found`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
-        every { fixture.dataSource.getDashboardBusinessIdFlow() } returns flowOf(businessId)
-        every { fixture.dataSource.observeBusinessDBChanges(businessId) } returns flowOf(business)
+        every { sut.dataSource.getDashboardBusinessIdFlow() } returns flowOf(businessId)
+        every { sut.dataSource.observeBusinessDBChanges(businessId) } returns flowOf(business)
 
         whenn()
-        val result = fixture.sut().first()
+        val result = sut.sut().first()
 
         then()
         assertEquals(business, result)
@@ -73,11 +75,11 @@ class ObserveDashboardBusinessChangesImplTest {
     @Test
     fun `emits null when dashboard id flow emits null`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        every { fixture.dataSource.getDashboardBusinessIdFlow() } returns flowOf(null)
+        val sut = Fixture()
+        every { sut.dataSource.getDashboardBusinessIdFlow() } returns flowOf(null)
 
         whenn()
-        val result = fixture.sut().first()
+        val result = sut.sut().first()
 
         then()
         assertNull(result)

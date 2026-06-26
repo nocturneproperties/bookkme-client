@@ -1,9 +1,9 @@
 package me.bookk.feature.services.domain.impl.service
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,21 +36,21 @@ class EditServiceImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ServiceDataSource>()
+        val dataSource = mock<ServiceDataSource>()
         val sut = EditServiceImpl(dataSource)
     }
 
     @Test
     fun `returns edited service from datasource`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val service = stubService()
         val updated = service.copy(name = "Color")
-        coEvery { fixture.dataSource.editService(service) } returns updated
-        coJustRun { fixture.dataSource.saveServiceInDB(updated) }
+        everySuspend { sut.dataSource.editService(service) } returns updated
+        everySuspend { sut.dataSource.saveServiceInDB(updated) } returns Unit
 
         whenn()
-        val result = fixture.sut(service)
+        val result = sut.sut(service)
 
         then()
         assertEquals(updated, result)
@@ -59,16 +59,16 @@ class EditServiceImplTest {
     @Test
     fun `saves edited service in DB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val service = stubService()
         val updated = service.copy(name = "Color")
-        coEvery { fixture.dataSource.editService(service) } returns updated
-        coJustRun { fixture.dataSource.saveServiceInDB(updated) }
+        everySuspend { sut.dataSource.editService(service) } returns updated
+        everySuspend { sut.dataSource.saveServiceInDB(updated) } returns Unit
 
         whenn()
-        fixture.sut(service)
+        sut.sut(service)
 
         then()
-        coVerify { fixture.dataSource.saveServiceInDB(updated) }
+        verifySuspend { sut.dataSource.saveServiceInDB(updated) }
     }
 }

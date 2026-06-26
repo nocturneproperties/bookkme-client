@@ -8,8 +8,10 @@ actual class Currency actual constructor(
     code: String
 ) {
     private val currencyUnit: CurrencyUnit = CurrencyUnit.of(code)
-    private val formatter = NumberFormat.getCurrencyInstance().apply {
-        currency = android.icu.util.Currency.getInstance(currencyUnit.code)
+    private val formatter by lazy {
+        NumberFormat.getCurrencyInstance().apply {
+            currency = android.icu.util.Currency.getInstance(currencyUnit.code)
+        }
     }
 
     actual fun code(): String {

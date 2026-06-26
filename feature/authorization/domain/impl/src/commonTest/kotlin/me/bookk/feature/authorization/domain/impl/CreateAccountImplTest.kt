@@ -1,9 +1,11 @@
 package me.bookk.feature.authorization.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -46,12 +48,12 @@ class CreateAccountImplTest {
     }
 
     private class Fixture {
-        val registrationDataSource = mockk<RegistrationDataSource>()
-        val deviceDataSource = mockk<DeviceDataSource>()
-        val authorizationDataSource = mockk<AuthorizationDataSource>()
-        val deviceFacade = mockk<DeviceFacade>()
-        val passKeyManager = mockk<PassKeyManager>()
-        val initialAppDataFetch = mockk<InitialAppDataFetch>()
+        val registrationDataSource = mock<RegistrationDataSource>()
+        val deviceDataSource = mock<DeviceDataSource>()
+        val authorizationDataSource = mock<AuthorizationDataSource>()
+        val deviceFacade = mock<DeviceFacade>()
+        val passKeyManager = mock<PassKeyManager>()
+        val initialAppDataFetch = mock<InitialAppDataFetch>()
         val sut = CreateAccountImpl(
             registrationDataSource, deviceDataSource, authorizationDataSource,
             deviceFacade, passKeyManager, initialAppDataFetch
@@ -70,100 +72,100 @@ class CreateAccountImplTest {
 
     private suspend fun Fixture.setupHappyPath() {
         val challenge = stubChallenge()
-        coEvery { registrationDataSource.getSignUpPasskeyChallenge(any()) } returns challenge
-        coEvery { passKeyManager.create(any()) } returns payload
-        coEvery { deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
-        coEvery { deviceFacade.getDeviceName() } returns "Device Name"
-        coEvery { registrationDataSource.finishRegistration(any()) } returns tokenInfo
-        coJustRun { authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
-        coJustRun { authorizationDataSource.invalidateClientTokens() }
-        coJustRun { initialAppDataFetch() }
-        coJustRun { authorizationDataSource.setAuthorizationStatus(true) }
+        everySuspend { registrationDataSource.getSignUpPasskeyChallenge(any()) } returns challenge
+        everySuspend { passKeyManager.create(any()) } returns payload
+        everySuspend { deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
+        everySuspend { deviceFacade.getDeviceName() } returns "Device Name"
+        everySuspend { registrationDataSource.finishRegistration(any()) } returns tokenInfo
+        everySuspend { authorizationDataSource.saveAuthorizationTokens(tokenInfo) } returns Unit
+        everySuspend { authorizationDataSource.invalidateClientTokens() } returns Unit
+        everySuspend { initialAppDataFetch() } returns Unit
+        everySuspend { authorizationDataSource.setAuthorizationStatus(true) } returns Unit
     }
 
     @Test
     fun `sets authorization status true on success`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        fixture.setupHappyPath()
+        val sut = Fixture()
+        sut.setupHappyPath()
 
         whenn()
-        fixture.sut(stubUserData())
+        sut.sut(stubUserData())
 
         then()
-        coVerify { fixture.authorizationDataSource.setAuthorizationStatus(true) }
+        verifySuspend { sut.authorizationDataSource.setAuthorizationStatus(true) }
     }
 
     @Test
     fun `saves token info on success`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        fixture.setupHappyPath()
+        val sut = Fixture()
+        sut.setupHappyPath()
 
         whenn()
-        fixture.sut(stubUserData())
+        sut.sut(stubUserData())
 
         then()
-        coVerify { fixture.authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
+        verifySuspend { sut.authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
     }
 
     @Test
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
-        coEvery { fixture.passKeyManager.create(any()) } throws PassKeyManager.Error.UserCancelled()
+        val sut = Fixture()
+        everySuspend { sut.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
+        everySuspend { sut.passKeyManager.create(any()) } throws PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
         assertFailsWith<Error.Ignore> {
-            fixture.sut(stubUserData())
+            sut.sut(stubUserData())
         }
     }
 
     @Test
     fun `throws EmailAlreadyExist on EMAIL_EXIST error from challenge`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.registrationDataSource.getSignUpPasskeyChallenge(any()) } throws
+        val sut = Fixture()
+        everySuspend { sut.registrationDataSource.getSignUpPasskeyChallenge(any()) } throws
             Error.BusinessError(AuthErrorCodes.EMAIL_EXIST, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateAccount.Error.EmailAlreadyExist> {
-            fixture.sut(stubUserData())
+            sut.sut(stubUserData())
         }
     }
 
     @Test
     fun `throws EmailAlreadyExist on USER_ALREADY_EXIST error from registration`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
-        coEvery { fixture.passKeyManager.create(any()) } returns payload
-        coEvery { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
-        coEvery { fixture.deviceFacade.getDeviceName() } returns "Name"
-        coEvery { fixture.registrationDataSource.finishRegistration(any()) } throws
+        val sut = Fixture()
+        everySuspend { sut.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
+        everySuspend { sut.passKeyManager.create(any()) } returns payload
+        everySuspend { sut.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
+        everySuspend { sut.deviceFacade.getDeviceName() } returns "Name"
+        everySuspend { sut.registrationDataSource.finishRegistration(any()) } throws
             Error.BusinessError(AuthErrorCodes.USER_ALREADY_EXIST, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateAccount.Error.EmailAlreadyExist> {
-            fixture.sut(stubUserData())
+            sut.sut(stubUserData())
         }
     }
 
     @Test
     fun `throws AccountCreationFailed when PassKeyManager throws Unknown`() = runUnitTest {
         given()
-        val fixture = Fixture()
-        coEvery { fixture.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
-        coEvery { fixture.passKeyManager.create(any()) } throws PassKeyManager.Error.Unknown(null)
+        val sut = Fixture()
+        everySuspend { sut.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
+        everySuspend { sut.passKeyManager.create(any()) } throws PassKeyManager.Error.Unknown(null)
 
         whenn()
         then()
         assertFailsWith<CreateAccount.Error.AccountCreationFailed> {
-            fixture.sut(stubUserData())
+            sut.sut(stubUserData())
         }
     }
 }

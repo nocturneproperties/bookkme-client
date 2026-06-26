@@ -11,9 +11,6 @@ kotlin {
             consumerKeepRules.file("consumer-rules.pro")
         }
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

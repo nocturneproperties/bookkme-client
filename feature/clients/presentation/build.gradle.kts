@@ -8,9 +8,6 @@ kotlin {
     android {
         namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.clients"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)
@@ -22,7 +19,6 @@ kotlin {
         }
     }
 }
-
 multiplatformResources {
     resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.feature.clients.resources")
     resourcesClassName.set("ClientsRes")

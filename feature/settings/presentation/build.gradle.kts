@@ -11,14 +11,6 @@ kotlin {
             consumerKeepRules.file("consumer-rules.pro")
         }
     }
-}
-
-multiplatformResources {
-    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.feature.settings.resources")
-    resourcesClassName.set("SettingsRes")
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)
@@ -29,4 +21,9 @@ kotlin {
             implementation(projects.library.device.api)
         }
     }
+}
+
+multiplatformResources {
+    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.feature.settings.resources")
+    resourcesClassName.set("SettingsRes")
 }

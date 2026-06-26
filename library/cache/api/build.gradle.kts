@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.cache.api"
     }
-}
-
-kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

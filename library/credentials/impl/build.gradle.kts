@@ -6,9 +6,6 @@ kotlin {
     android {
         namespace = "library.credentials.impl"
     }
-}
-
-kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.credentials)

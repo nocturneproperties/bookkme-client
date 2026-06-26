@@ -10,9 +10,7 @@ kotlin {
             consumerKeepRules.file("consumer-rules.pro")
         }
     }
-}
 
-kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.core)

@@ -20,6 +20,7 @@ dependencies {
     compileOnly(libs.kotlin.multiplatform.gradlePlugin)
     compileOnly(libs.firebase.crashlytics.gradlePlugin)
     compileOnly(libs.buildkonfig.compiler)
+    compileOnly(libs.compose.compiler.gradlePlugin)
 }
 
 gradlePlugin {

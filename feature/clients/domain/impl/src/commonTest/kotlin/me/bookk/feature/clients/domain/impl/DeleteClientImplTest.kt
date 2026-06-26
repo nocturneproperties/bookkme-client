@@ -1,8 +1,10 @@
 package me.bookk.feature.clients.domain.impl
 
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -39,7 +41,7 @@ class DeleteClientImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ClientsDataSource>()
+        val dataSource = mock<ClientsDataSource>()
         val sut = DeleteClientImpl(dataSource)
     }
 
@@ -55,45 +57,45 @@ class DeleteClientImplTest {
     @Test
     fun `calls deleteClient with correct businessId and id`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val client = stubClient()
-        coJustRun { fixture.dataSource.deleteClient(client.businessId, client.id) }
-        coJustRun { fixture.dataSource.deleteClientInDb(client.id) }
+        everySuspend { sut.dataSource.deleteClient(client.businessId, client.id) } returns Unit
+        everySuspend { sut.dataSource.deleteClientInDb(client.id) } returns Unit
 
         whenn()
-        fixture.sut(client)
+        sut.sut(client)
 
         then()
-        coVerify { fixture.dataSource.deleteClient(client.businessId, client.id) }
+        verifySuspend { sut.dataSource.deleteClient(client.businessId, client.id) }
     }
 
     @Test
     fun `calls deleteClientInDb`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val client = stubClient()
-        coJustRun { fixture.dataSource.deleteClient(client.businessId, client.id) }
-        coJustRun { fixture.dataSource.deleteClientInDb(client.id) }
+        everySuspend { sut.dataSource.deleteClient(client.businessId, client.id) } returns Unit
+        everySuspend { sut.dataSource.deleteClientInDb(client.id) } returns Unit
 
         whenn()
-        fixture.sut(client)
+        sut.sut(client)
 
         then()
-        coVerify { fixture.dataSource.deleteClientInDb(client.id) }
+        verifySuspend { sut.dataSource.deleteClientInDb(client.id) }
     }
 
     @Test
     fun `emits Deleted event`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val client = stubClient()
-        coJustRun { fixture.dataSource.deleteClient(any(), any()) }
-        coJustRun { fixture.dataSource.deleteClientInDb(any()) }
+        everySuspend { sut.dataSource.deleteClient(any(), any()) } returns Unit
+        everySuspend { sut.dataSource.deleteClientInDb(any()) } returns Unit
         val events = mutableListOf<ClientEvent>()
         val job = launch(Dispatchers.Unconfined) { clientEvents.collect { events.add(it) } }
 
         whenn()
-        fixture.sut(client)
+        sut.sut(client)
 
         then()
         job.cancel()

@@ -1,7 +1,8 @@
 package me.bookk.feature.appointments.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,20 +37,20 @@ class GetAppointmentHistoryImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<AppointmentDataSource>()
+        val dataSource = mock<AppointmentDataSource>()
         val sut = GetAppointmentHistoryImpl(dataSource)
     }
 
     @Test
     fun `reload fetches first page with offset 0`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val firstPage = List(20) { stubAppointment() }
-        coEvery { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns firstPage
+        everySuspend { sut.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns firstPage
 
         whenn()
-        val result = fixture.fixture.reload(businessId)
+        val result = sut.sut.reload(businessId)
 
         then()
         assertEquals(firstPage, result)
@@ -58,16 +59,16 @@ class GetAppointmentHistoryImplTest {
     @Test
     fun `loadMore fetches next page with correct offset`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val firstPage = List(20) { stubAppointment() }
         val secondPage = List(10) { stubAppointment() }
-        coEvery { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns firstPage
-        coEvery { fixture.dataSource.getAppointmentHistory(businessId, 20, 20L, null) } returns secondPage
-        fixture.fixture.reload(businessId)
+        everySuspend { sut.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns firstPage
+        everySuspend { sut.dataSource.getAppointmentHistory(businessId, 20, 20L, null) } returns secondPage
+        sut.sut.reload(businessId)
 
         whenn()
-        val result = fixture.fixture.loadMore()
+        val result = sut.sut.loadMore()
 
         then()
         assertEquals(secondPage, result)
@@ -76,14 +77,14 @@ class GetAppointmentHistoryImplTest {
     @Test
     fun `loadMore returns empty when all data loaded`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val partial = List(5) { stubAppointment() }
-        coEvery { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns partial
-        fixture.fixture.reload(businessId)
+        everySuspend { sut.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns partial
+        sut.sut.reload(businessId)
 
         whenn()
-        val result = fixture.fixture.loadMore()
+        val result = sut.sut.loadMore()
 
         then()
         assertEquals(emptyList(), result)
@@ -92,26 +93,26 @@ class GetAppointmentHistoryImplTest {
     @Test
     fun `loadMore throws when called before reload`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
 
         whenn()
         then()
         assertFailsWith<CounterPager.CounterPagerException> {
-            fixture.fixture.loadMore()
+            sut.sut.loadMore()
         }
     }
 
     @Test
     fun `reload passes query to datasource`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val businessId = Uuid.random()
         val query = "John"
         val page = listOf(stubAppointment())
-        coEvery { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, query) } returns page
+        everySuspend { sut.dataSource.getAppointmentHistory(businessId, 20, 0L, query) } returns page
 
         whenn()
-        val result = fixture.fixture.reload(businessId, query)
+        val result = sut.sut.reload(businessId, query)
 
         then()
         assertEquals(page, result)

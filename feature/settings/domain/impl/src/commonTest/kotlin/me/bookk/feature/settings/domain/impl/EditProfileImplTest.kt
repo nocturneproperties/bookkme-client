@@ -1,9 +1,11 @@
 package me.bookk.feature.settings.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.matcher.matches
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,25 +38,25 @@ class EditProfileImplTest {
     }
 
     private class Fixture {
-        val profileCRUD = mockk<UserProfileCRUD>()
+        val profileCRUD = mock<UserProfileCRUD>()
         val sut = EditProfileImpl(profileCRUD)
     }
 
     @Test
     fun `calls update with merged profile fields`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val existing = UserProfile(id = Uuid.random(), firstName = "Old", lastName = "Name", email = "old@example.com")
-        coEvery { fixture.profileCRUD.get() } returns existing
-        coJustRun { fixture.profileCRUD.update(any()) }
+        everySuspend { sut.profileCRUD.get() } returns existing
+        everySuspend { sut.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("New", "Lastname", "new@example.com")
+        sut.sut("New", "Lastname", "new@example.com")
 
         then()
-        coVerify {
-            fixture.profileCRUD.update(
-                match { it.firstName == "New" && it.lastName == "Lastname" && it.email == "new@example.com" }
+        verifySuspend {
+            sut.profileCRUD.update(
+                matches({ "match" }) { it.firstName == "New" && it.lastName == "Lastname" && it.email == "new@example.com" }
             )
         }
     }
@@ -62,16 +64,16 @@ class EditProfileImplTest {
     @Test
     fun `preserves profile id when updating`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val id = Uuid.random()
         val existing = UserProfile(id = id, firstName = "Old", lastName = "Name", email = "old@e.com")
-        coEvery { fixture.profileCRUD.get() } returns existing
-        coJustRun { fixture.profileCRUD.update(any()) }
+        everySuspend { sut.profileCRUD.get() } returns existing
+        everySuspend { sut.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("A", "B", "a@b.com")
+        sut.sut("A", "B", "a@b.com")
 
         then()
-        coVerify { fixture.profileCRUD.update(match { it.id == id }) }
+        verifySuspend { sut.profileCRUD.update(matches({ "match" }) { it.id == id }) }
     }
 }

@@ -1,9 +1,9 @@
 package me.bookk.feature.authorization.domain.impl
 
-import io.mockk.coEvery
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,21 +36,21 @@ class RefreshTokenImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<AuthorizationDataSource>()
+        val dataSource = mock<AuthorizationDataSource>()
         val sut = RefreshTokenImpl(dataSource)
     }
 
     @Test
     fun `returns new token info`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val refreshToken = "old-refresh"
         val newToken = TokenInfo("new-access", "new-refresh")
-        coEvery { fixture.dataSource.refreshToken(refreshToken) } returns newToken
-        coJustRun { fixture.dataSource.saveAuthorizationTokens(newToken) }
+        everySuspend { sut.dataSource.refreshToken(refreshToken) } returns newToken
+        everySuspend { sut.dataSource.saveAuthorizationTokens(newToken) } returns Unit
 
         whenn()
-        val result = fixture.sut(refreshToken)
+        val result = sut.sut(refreshToken)
 
         then()
         assertEquals(newToken, result)
@@ -59,16 +59,16 @@ class RefreshTokenImplTest {
     @Test
     fun `saves new tokens after refreshing`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val refreshToken = "old-refresh"
         val newToken = TokenInfo("new-access", "new-refresh")
-        coEvery { fixture.dataSource.refreshToken(refreshToken) } returns newToken
-        coJustRun { fixture.dataSource.saveAuthorizationTokens(newToken) }
+        everySuspend { sut.dataSource.refreshToken(refreshToken) } returns newToken
+        everySuspend { sut.dataSource.saveAuthorizationTokens(newToken) } returns Unit
 
         whenn()
-        fixture.sut(refreshToken)
+        sut.sut(refreshToken)
 
         then()
-        coVerify { fixture.dataSource.saveAuthorizationTokens(newToken) }
+        verifySuspend { sut.dataSource.saveAuthorizationTokens(newToken) }
     }
 }

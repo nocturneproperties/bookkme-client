@@ -1,8 +1,10 @@
 package me.bookk.feature.services.domain.impl.group
 
-import io.mockk.coJustRun
-import io.mockk.coVerify
-import io.mockk.mockk
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -40,7 +42,7 @@ class DeleteServiceGroupImplTest {
     }
 
     private class Fixture {
-        val dataSource = mockk<ServiceGroupDataSource>()
+        val dataSource = mock<ServiceGroupDataSource>()
         val sut = DeleteServiceGroupImpl(dataSource)
     }
 
@@ -52,45 +54,45 @@ class DeleteServiceGroupImplTest {
     @Test
     fun `calls deleteServiceGroup with businessId and id`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val group = stubGroup()
-        coJustRun { fixture.dataSource.deleteServiceGroup(group.businessId, group.id) }
-        coJustRun { fixture.dataSource.deleteGroupFromDB(group) }
+        everySuspend { sut.dataSource.deleteServiceGroup(group.businessId, group.id) } returns Unit
+        everySuspend { sut.dataSource.deleteGroupFromDB(group) } returns Unit
 
         whenn()
-        fixture.sut(group)
+        sut.sut(group)
 
         then()
-        coVerify { fixture.dataSource.deleteServiceGroup(group.businessId, group.id) }
+        verifySuspend { sut.dataSource.deleteServiceGroup(group.businessId, group.id) }
     }
 
     @Test
     fun `calls deleteGroupFromDB`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val group = stubGroup()
-        coJustRun { fixture.dataSource.deleteServiceGroup(any(), any()) }
-        coJustRun { fixture.dataSource.deleteGroupFromDB(group) }
+        everySuspend { sut.dataSource.deleteServiceGroup(any(), any()) } returns Unit
+        everySuspend { sut.dataSource.deleteGroupFromDB(group) } returns Unit
 
         whenn()
-        fixture.sut(group)
+        sut.sut(group)
 
         then()
-        coVerify { fixture.dataSource.deleteGroupFromDB(group) }
+        verifySuspend { sut.dataSource.deleteGroupFromDB(group) }
     }
 
     @Test
     fun `emits Deleted event`() = runUnitTest {
         given()
-        val fixture = Fixture()
+        val sut = Fixture()
         val group = stubGroup()
-        coJustRun { fixture.dataSource.deleteServiceGroup(any(), any()) }
-        coJustRun { fixture.dataSource.deleteGroupFromDB(any()) }
+        everySuspend { sut.dataSource.deleteServiceGroup(any(), any()) } returns Unit
+        everySuspend { sut.dataSource.deleteGroupFromDB(any()) } returns Unit
         val events = mutableListOf<ServiceGroupEvent>()
         val job = launch(Dispatchers.Unconfined) { serviceGroupEvents.collect { events.add(it) } }
 
         whenn()
-        fixture.sut(group)
+        sut.sut(group)
 
         then()
         job.cancel()

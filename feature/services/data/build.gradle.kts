@@ -5,8 +5,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.services.data"
+kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.services.data"
+    }
 }
 
 kotlin {

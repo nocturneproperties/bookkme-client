@@ -4,8 +4,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.services.domain.api"
+kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.services.domain.api"
+    }
 }
 
 kotlin {
@@ -13,7 +15,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core)
             implementation(projects.core.domain)
-            api(projects.library.money.api)
+            api(projects.library.money)
         }
     }
 }

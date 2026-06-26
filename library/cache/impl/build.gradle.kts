@@ -2,8 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "library.cache.impl"
+kotlin {
+    android {
+        namespace = "library.cache.impl"
+    }
 }
 
 kotlin {

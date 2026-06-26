@@ -2,8 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "me.bookk.domain.environment.impl"
+kotlin {
+    android {
+        namespace = "me.bookk.domain.environment.impl"
+    }
 }
 
 kotlin {

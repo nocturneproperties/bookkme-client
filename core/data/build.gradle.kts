@@ -7,8 +7,13 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "me.bookk.core.data"
+kotlin {
+    android {
+        namespace = "me.bookk.core.data"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
 }
 
 buildkonfig {

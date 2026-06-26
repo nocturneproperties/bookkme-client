@@ -4,8 +4,13 @@ plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.business"
+kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.business"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
 }
 
 kotlin {

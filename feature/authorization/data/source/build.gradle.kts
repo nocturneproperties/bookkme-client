@@ -2,8 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "me.bookk.feature.authorization.data.source"
+kotlin {
+    android {
+        namespace = "me.bookk.feature.authorization.data.source"
+    }
 }
 
 kotlin {

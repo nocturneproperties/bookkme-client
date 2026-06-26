@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.Serializable
+import me.bookk.core.data.TimeZoneSerializer
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.appointments.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.appointments.domain.api.entity.DayOffRange
@@ -16,6 +17,7 @@ import kotlin.uuid.Uuid
 data class AppointmentSettingsRemote(
     val id: Uuid,
     val businessId: Uuid,
+    @Serializable(with = TimeZoneSerializer::class)
     val timeZone: TimeZone,
     val schedule: WorkingScheduleRemote,
     val dayOffs: List<DayOffRangeRemote>,

@@ -2,8 +2,13 @@ plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
-android {
-    namespace = "me.bookk.designsystem"
+kotlin {
+    android {
+        namespace = "me.bookk.designsystem"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
 }
 
 kotlin {
@@ -11,7 +16,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.presentation)
             implementation(projects.environment.api)
-            implementation(projects.library.money.api)
+            implementation(projects.library.money)
         }
     }
 }

@@ -15,6 +15,8 @@ val keystoreProperties = file("keystore.properties").inputStream().use {
 android {
     namespace = ApplicationConfig.ROOT_PACKAGE
 
+    ndkVersion = "30.0.14904198"
+
     defaultConfig {
         applicationId = ApplicationConfig.ROOT_PACKAGE
         versionCode = ApplicationConfig.VERSION_CODE

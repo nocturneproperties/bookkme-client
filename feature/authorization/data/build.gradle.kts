@@ -8,8 +8,13 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "me.bookk.feature.authorization.data"
+kotlin {
+    android {
+        namespace = "me.bookk.feature.authorization.data"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
 }
 
 buildkonfig {
@@ -24,6 +29,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.compat)
+            implementation(libs.androidx.lifecycle.viewmodel)
         }
         commonMain.dependencies {
             implementation(projects.core)

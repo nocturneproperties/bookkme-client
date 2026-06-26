@@ -3,8 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "me.bookk.feature.settings.data"
+kotlin {
+    android {
+        namespace = "me.bookk.feature.settings.data"
+    }
 }
 
 kotlin {

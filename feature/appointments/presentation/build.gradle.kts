@@ -4,14 +4,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.appointments"
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-}
-
 kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.appointments"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.domain)
@@ -22,12 +18,6 @@ kotlin {
             implementation(projects.library.device.api)
         }
     }
-}
-
-dependencies {
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.compose.ui.test.junit4)
-    debugImplementation(libs.compose.ui.test.manifest)
 }
 
 multiplatformResources {

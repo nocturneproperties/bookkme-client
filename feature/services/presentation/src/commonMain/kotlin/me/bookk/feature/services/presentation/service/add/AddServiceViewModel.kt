@@ -1,7 +1,7 @@
 package me.bookk.feature.services.presentation.service.add
 
 import dev.icerock.moko.resources.desc.desc
-import library.money.api.CurrencyFactory
+import library.money.api.Currency
 import library.money.api.Money
 import library.money.api.Money.SupportedCurrency
 import me.bookk.android.feature.services.resources.ServicesRes
@@ -155,7 +155,7 @@ class AddServiceViewModel(
         price.label = ServicesRes.strings.services_create_price.desc()
         price.placeholder = ServicesRes.strings.services_create_price_placeholder.desc()
         price.onTextChanged = weakVMClosure { vm, price -> vm.onPriceChanged(price) }
-        price.suffix = CurrencyFactory.forCode(currency.code).symbol().desc()
+        price.suffix = Currency(currency.code).symbol().desc()
         price.isValid = false
         price.inputType = InputType.DECIMAL
 

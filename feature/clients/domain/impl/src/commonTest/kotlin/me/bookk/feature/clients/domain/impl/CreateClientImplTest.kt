@@ -58,14 +58,14 @@ class CreateClientImplTest {
     @Test
     fun `returns created client`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubClient()
         val created = input.copy(id = Uuid.random())
-        everySuspend { sut.dataSource.createClient(input) } returns created
-        everySuspend { sut.dataSource.saveClientsInDb(listOf(created)) } returns Unit
+        everySuspend { fixture.dataSource.createClient(input) } returns created
+        everySuspend { fixture.dataSource.saveClientsInDb(listOf(created)) } returns Unit
 
         whenn()
-        val result = sut.sut(input)
+        val result = fixture.sut(input)
 
         then()
         assertEquals(created, result)
@@ -74,31 +74,31 @@ class CreateClientImplTest {
     @Test
     fun `saves created client in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubClient()
         val created = input.copy(id = Uuid.random())
-        everySuspend { sut.dataSource.createClient(input) } returns created
-        everySuspend { sut.dataSource.saveClientsInDb(listOf(created)) } returns Unit
+        everySuspend { fixture.dataSource.createClient(input) } returns created
+        everySuspend { fixture.dataSource.saveClientsInDb(listOf(created)) } returns Unit
 
         whenn()
-        sut.sut(input)
+        fixture.sut(input)
 
         then()
-        verifySuspend { sut.dataSource.saveClientsInDb(listOf(created)) }
+        verifySuspend { fixture.dataSource.saveClientsInDb(listOf(created)) }
     }
 
     @Test
     fun `emits Created event`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubClient()
-        everySuspend { sut.dataSource.createClient(input) } returns input
-        everySuspend { sut.dataSource.saveClientsInDb(any()) } returns Unit
+        everySuspend { fixture.dataSource.createClient(input) } returns input
+        everySuspend { fixture.dataSource.saveClientsInDb(any()) } returns Unit
         val events = mutableListOf<ClientEvent>()
         val job = launch(Dispatchers.Unconfined) { clientEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(input)
+        fixture.sut(input)
 
         then()
         job.cancel()

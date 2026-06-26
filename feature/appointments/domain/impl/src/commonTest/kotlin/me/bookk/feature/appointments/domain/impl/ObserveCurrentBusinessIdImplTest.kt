@@ -59,13 +59,13 @@ class ObserveCurrentBusinessIdImplTest {
     @Test
     fun `emits business id when business is present`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
-        every { sut.observeDashboardBusinessChanges.invoke() } returns flowOf(business)
+        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(business)
 
         whenn()
-        val result = sut.sut().first()
+        val result = fixture.sut().first()
 
         then()
         assertEquals(businessId, result)
@@ -74,11 +74,11 @@ class ObserveCurrentBusinessIdImplTest {
     @Test
     fun `emits null when business is null`() = runUnitTest {
         given()
-        val sut = Fixture()
-        every { sut.observeDashboardBusinessChanges.invoke() } returns flowOf(null)
+        val fixture = Fixture()
+        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(null)
 
         whenn()
-        val result = sut.sut().first()
+        val result = fixture.sut().first()
 
         then()
         assertNull(result)

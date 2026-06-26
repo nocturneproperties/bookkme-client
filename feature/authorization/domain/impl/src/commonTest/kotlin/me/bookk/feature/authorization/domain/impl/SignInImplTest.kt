@@ -78,72 +78,72 @@ class SignInImplTest {
     @Test
     fun `sets authorization status true on success`() = runUnitTest {
         given()
-        val sut = Fixture()
-        sut.setupHappyPath()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { sut.authorizationDataSource.setAuthorizationStatus(true) }
+        verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(true) }
     }
 
     @Test
     fun `saves token info on success`() = runUnitTest {
         given()
-        val sut = Fixture()
-        sut.setupHappyPath()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { sut.authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
+        verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
     }
 
     @Test
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        everySuspend { sut.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
         assertFailsWith<Error.Ignore> {
-            sut.sut()
+            fixture.sut()
         }
     }
 
     @Test
     fun `throws NoCredentialsAvailable when PassKeyManager throws CredentialsMissing`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        everySuspend { sut.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
 
         whenn()
         then()
         assertFailsWith<SignIn.Error.NoCredentialsAvailable> {
-            sut.sut()
+            fixture.sut()
         }
     }
 
     @Test
     fun `throws NoAccountForThisPasskey on PASSKEY_OWNER_NOT_FOUND error`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        everySuspend { sut.passKeyManager.authorize(any()) } returns payload
-        everySuspend { sut.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
-        everySuspend { sut.deviceFacade.getDeviceName() } returns "Name"
-        everySuspend { sut.authorizationDataSource.verifyAuthorization(any()) } throws
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { fixture.passKeyManager.authorize(any()) } returns payload
+        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
+        everySuspend { fixture.deviceFacade.getDeviceName() } returns "Name"
+        everySuspend { fixture.authorizationDataSource.verifyAuthorization(any()) } throws
             Error.BusinessError(AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND, "msg")
 
         whenn()
         then()
         assertFailsWith<SignIn.Error.NoAccountForThisPasskey> {
-            sut.sut()
+            fixture.sut()
         }
     }
 }

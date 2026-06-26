@@ -48,14 +48,14 @@ class CreateServiceImplTest {
     @Test
     fun `returns created service`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubService()
         val created = input.copy(id = kotlin.uuid.Uuid.random())
-        everySuspend { sut.dataSource.createService(input) } returns created
-        everySuspend { sut.dataSource.saveServiceInDB(created) } returns Unit
+        everySuspend { fixture.dataSource.createService(input) } returns created
+        everySuspend { fixture.dataSource.saveServiceInDB(created) } returns Unit
 
         whenn()
-        val result = sut.sut(input)
+        val result = fixture.sut(input)
 
         then()
         assertEquals(created, result)
@@ -64,30 +64,30 @@ class CreateServiceImplTest {
     @Test
     fun `saves created service in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubService()
-        everySuspend { sut.dataSource.createService(input) } returns input
-        everySuspend { sut.dataSource.saveServiceInDB(input) } returns Unit
+        everySuspend { fixture.dataSource.createService(input) } returns input
+        everySuspend { fixture.dataSource.saveServiceInDB(input) } returns Unit
 
         whenn()
-        sut.sut(input)
+        fixture.sut(input)
 
         then()
-        verifySuspend { sut.dataSource.saveServiceInDB(input) }
+        verifySuspend { fixture.dataSource.saveServiceInDB(input) }
     }
 
     @Test
     fun `emits Created event`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubService()
-        everySuspend { sut.dataSource.createService(input) } returns input
-        everySuspend { sut.dataSource.saveServiceInDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.createService(input) } returns input
+        everySuspend { fixture.dataSource.saveServiceInDB(any()) } returns Unit
         val events = mutableListOf<ServiceEvent>()
         val job = launch(Dispatchers.Unconfined) { serviceEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(input)
+        fixture.sut(input)
 
         then()
         job.cancel()

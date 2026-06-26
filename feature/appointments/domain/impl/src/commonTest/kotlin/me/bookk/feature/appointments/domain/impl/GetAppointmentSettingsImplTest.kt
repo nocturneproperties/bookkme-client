@@ -46,51 +46,51 @@ class GetAppointmentSettingsImplTest {
     @Test
     fun `returns cached settings when available in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val cached = AppointmentSettings.stub(businessId)
-        everySuspend { sut.dataSource.getAppointmentSettingsFromDB(businessId) } returns cached
+        everySuspend { fixture.dataSource.getAppointmentSettingsFromDB(businessId) } returns cached
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertEquals(cached, result)
-        verifySuspend(VerifyMode.exactly(0)) { sut.dataSource.getAppointmentSettings(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getAppointmentSettings(any()) }
     }
 
     @Test
     fun `fetches from remote and saves when DB returns null`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val remote = AppointmentSettings.stub(businessId)
-        everySuspend { sut.dataSource.getAppointmentSettingsFromDB(businessId) } returns null
-        everySuspend { sut.dataSource.getAppointmentSettings(businessId) } returns remote
-        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(remote) } returns Unit
+        everySuspend { fixture.dataSource.getAppointmentSettingsFromDB(businessId) } returns null
+        everySuspend { fixture.dataSource.getAppointmentSettings(businessId) } returns remote
+        everySuspend { fixture.dataSource.saveAppointmentSettingsInDB(remote) } returns Unit
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertEquals(remote, result)
-        verifySuspend { sut.dataSource.saveAppointmentSettingsInDB(remote) }
+        verifySuspend { fixture.dataSource.saveAppointmentSettingsInDB(remote) }
     }
 
     @Test
     fun `cached calls onResultAvailable with DB value then remote value`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val cachedSettings = AppointmentSettings.stub(businessId)
         val remoteSettings = AppointmentSettings.stub(businessId)
-        everySuspend { sut.dataSource.getAppointmentSettingsFromDB(businessId) } returns cachedSettings
-        everySuspend { sut.dataSource.getAppointmentSettings(businessId) } returns remoteSettings
-        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(remoteSettings) } returns Unit
+        everySuspend { fixture.dataSource.getAppointmentSettingsFromDB(businessId) } returns cachedSettings
+        everySuspend { fixture.dataSource.getAppointmentSettings(businessId) } returns remoteSettings
+        everySuspend { fixture.dataSource.saveAppointmentSettingsInDB(remoteSettings) } returns Unit
         val received = mutableListOf<AppointmentSettings>()
 
         whenn()
-        sut.sut.cached(businessId) { received.add(it) }
+        fixture.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(listOf(cachedSettings, remoteSettings), received)
@@ -99,16 +99,16 @@ class GetAppointmentSettingsImplTest {
     @Test
     fun `cached skips DB callback when DB is null`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val remoteSettings = AppointmentSettings.stub(businessId)
-        everySuspend { sut.dataSource.getAppointmentSettingsFromDB(businessId) } returns null
-        everySuspend { sut.dataSource.getAppointmentSettings(businessId) } returns remoteSettings
-        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(remoteSettings) } returns Unit
+        everySuspend { fixture.dataSource.getAppointmentSettingsFromDB(businessId) } returns null
+        everySuspend { fixture.dataSource.getAppointmentSettings(businessId) } returns remoteSettings
+        everySuspend { fixture.dataSource.saveAppointmentSettingsInDB(remoteSettings) } returns Unit
         val received = mutableListOf<AppointmentSettings>()
 
         whenn()
-        sut.sut.cached(businessId) { received.add(it) }
+        fixture.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(listOf(remoteSettings), received)

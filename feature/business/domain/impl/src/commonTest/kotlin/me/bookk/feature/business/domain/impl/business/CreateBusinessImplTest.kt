@@ -61,14 +61,14 @@ class CreateBusinessImplTest {
     @Test
     fun `returns created business`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val name = "My Salon"
         val expected = stubBusiness()
-        everySuspend { sut.dataSource.createBusiness(name, "UAH", any()) } returns expected
-        everySuspend { sut.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.dataSource.createBusiness(name, "UAH", any()) } returns expected
+        everySuspend { fixture.refreshBusinessInfo() } returns Unit
 
         whenn()
-        val result = sut.sut(name)
+        val result = fixture.sut(name)
 
         then()
         assertEquals(expected, result)
@@ -77,29 +77,29 @@ class CreateBusinessImplTest {
     @Test
     fun `calls createBusiness with UAH currency`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val name = "My Salon"
-        everySuspend { sut.dataSource.createBusiness(name, "UAH", any()) } returns stubBusiness()
-        everySuspend { sut.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.dataSource.createBusiness(name, "UAH", any()) } returns stubBusiness()
+        everySuspend { fixture.refreshBusinessInfo() } returns Unit
 
         whenn()
-        sut.sut(name)
+        fixture.sut(name)
 
         then()
-        verifySuspend { sut.dataSource.createBusiness(name, "UAH", any()) }
+        verifySuspend { fixture.dataSource.createBusiness(name, "UAH", any()) }
     }
 
     @Test
     fun `calls refreshBusinessInfo after creation`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
-        everySuspend { sut.refreshBusinessInfo() } returns Unit
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { fixture.refreshBusinessInfo() } returns Unit
 
         whenn()
-        sut.sut("My Salon")
+        fixture.sut("My Salon")
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { sut.refreshBusinessInfo() }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.refreshBusinessInfo() }
     }
 }

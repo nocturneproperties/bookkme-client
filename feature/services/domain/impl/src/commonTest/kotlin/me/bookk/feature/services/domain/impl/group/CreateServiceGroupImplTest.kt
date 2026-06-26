@@ -60,13 +60,13 @@ class CreateServiceGroupImplTest {
     @Test
     fun `returns created group`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubGroup()
-        everySuspend { sut.dataSource.createServiceGroup(input) } returns input
-        everySuspend { sut.dataSource.saveGroupInDB(input) } returns Unit
+        everySuspend { fixture.dataSource.createServiceGroup(input) } returns input
+        everySuspend { fixture.dataSource.saveGroupInDB(input) } returns Unit
 
         whenn()
-        val result = sut.sut(input)
+        val result = fixture.sut(input)
 
         then()
         assertEquals(input, result)
@@ -75,30 +75,30 @@ class CreateServiceGroupImplTest {
     @Test
     fun `saves group in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubGroup()
-        everySuspend { sut.dataSource.createServiceGroup(input) } returns input
-        everySuspend { sut.dataSource.saveGroupInDB(input) } returns Unit
+        everySuspend { fixture.dataSource.createServiceGroup(input) } returns input
+        everySuspend { fixture.dataSource.saveGroupInDB(input) } returns Unit
 
         whenn()
-        sut.sut(input)
+        fixture.sut(input)
 
         then()
-        verifySuspend { sut.dataSource.saveGroupInDB(input) }
+        verifySuspend { fixture.dataSource.saveGroupInDB(input) }
     }
 
     @Test
     fun `emits Created event`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubGroup()
-        everySuspend { sut.dataSource.createServiceGroup(input) } returns input
-        everySuspend { sut.dataSource.saveGroupInDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.createServiceGroup(input) } returns input
+        everySuspend { fixture.dataSource.saveGroupInDB(any()) } returns Unit
         val events = mutableListOf<ServiceGroupEvent>()
         val job = launch(Dispatchers.Unconfined) { serviceGroupEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(input)
+        fixture.sut(input)
 
         then()
         job.cancel()
@@ -108,30 +108,30 @@ class CreateServiceGroupImplTest {
     @Test
     fun `throws NameExists on BUSINESS_SERVICE_GROUP_EXISTS error`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubGroup()
-        everySuspend { sut.dataSource.createServiceGroup(input) } throws
+        everySuspend { fixture.dataSource.createServiceGroup(input) } throws
             DomainError.BusinessError(ServiceErrorCodes.BUSINESS_SERVICE_GROUP_EXISTS, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateServiceGroup.Error.NameExists> {
-            sut.sut(input)
+            fixture.sut(input)
         }
     }
 
     @Test
     fun `throws InvalidName on BUSINESS_SERVICE_GROUP_VALIDATION_ERROR`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val input = stubGroup()
-        everySuspend { sut.dataSource.createServiceGroup(input) } throws
+        everySuspend { fixture.dataSource.createServiceGroup(input) } throws
             DomainError.BusinessError(ServiceErrorCodes.BUSINESS_SERVICE_GROUP_VALIDATION_ERROR, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateServiceGroup.Error.InvalidName> {
-            sut.sut(input)
+            fixture.sut(input)
         }
     }
 }

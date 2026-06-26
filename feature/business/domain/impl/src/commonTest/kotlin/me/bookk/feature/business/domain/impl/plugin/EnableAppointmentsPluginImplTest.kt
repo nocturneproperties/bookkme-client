@@ -50,47 +50,47 @@ class EnableAppointmentsPluginImplTest {
     @Test
     fun `calls enableAppointmentsPlugin with correct business`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
-        everySuspend { sut.businessDataSource.getBusinessById(businessId) } returns business
-        everySuspend { sut.pluginDataSource.enableAppointmentsPlugin(business) } returns Unit
+        everySuspend { fixture.businessDataSource.getBusinessById(businessId) } returns business
+        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(business) } returns Unit
 
         whenn()
-        sut.sut(businessId)
+        fixture.sut(businessId)
 
         then()
-        verifySuspend { sut.pluginDataSource.enableAppointmentsPlugin(business) }
+        verifySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(business) }
     }
 
     @Test
     fun `throws AlreadyEnabled on PLUGIN_ALREADY_ENABLED error`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
-        everySuspend { sut.businessDataSource.getBusinessById(businessId) } returns business
-        everySuspend { sut.pluginDataSource.enableAppointmentsPlugin(business) } throws
+        everySuspend { fixture.businessDataSource.getBusinessById(businessId) } returns business
+        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(business) } throws
             DomainError.BusinessError(AppointmentsErrorCodes.PLUGIN_ALREADY_ENABLED, "msg")
 
         whenn()
         then()
         assertFailsWith<EnableAppointmentsPlugin.Error.AlreadyEnabled> {
-            sut.sut(businessId)
+            fixture.sut(businessId)
         }
     }
 
     @Test
     fun `throws when business not found`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { sut.businessDataSource.getBusinessById(businessId) } returns null
+        everySuspend { fixture.businessDataSource.getBusinessById(businessId) } returns null
 
         whenn()
         then()
         assertFailsWith<IllegalStateException> {
-            sut.sut(businessId)
+            fixture.sut(businessId)
         }
     }
 }

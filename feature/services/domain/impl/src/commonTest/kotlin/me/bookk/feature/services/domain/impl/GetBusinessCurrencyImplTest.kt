@@ -43,12 +43,12 @@ class GetBusinessCurrencyImplTest {
     @Test
     fun `returns currency from datasource`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { sut.dataSource.getBusinessCurrency(businessId) } returns Money.SupportedCurrency.USD
+        everySuspend { fixture.dataSource.getBusinessCurrency(businessId) } returns Money.SupportedCurrency.USD
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertEquals(Money.SupportedCurrency.USD, result)

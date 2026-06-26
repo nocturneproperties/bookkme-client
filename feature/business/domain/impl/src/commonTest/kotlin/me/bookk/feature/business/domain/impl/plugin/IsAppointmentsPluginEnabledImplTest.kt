@@ -43,12 +43,12 @@ class IsAppointmentsPluginEnabledImplTest {
     @Test
     fun `returns true when plugin is available`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { sut.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns true
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns true
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertTrue(result)
@@ -57,12 +57,12 @@ class IsAppointmentsPluginEnabledImplTest {
     @Test
     fun `returns false when plugin is not available`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { sut.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns false
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns false
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertFalse(result)

@@ -50,32 +50,32 @@ class UpdateAppointmentImplTest {
     @Test
     fun `updates appointment via datasource and saves in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val appointment = stubAppointment()
         val updated = appointment.copy(note = "updated")
-        everySuspend { sut.dataSource.updateAppointment(appointment) } returns updated
-        everySuspend { sut.dataSource.saveAppointmentInDB(updated) } returns Unit
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } returns updated
+        everySuspend { fixture.dataSource.saveAppointmentInDB(updated) } returns Unit
 
         whenn()
-        sut.sut(appointment)
+        fixture.sut(appointment)
 
         then()
-        verifySuspend { sut.dataSource.updateAppointment(appointment) }
-        verifySuspend { sut.dataSource.saveAppointmentInDB(updated) }
+        verifySuspend { fixture.dataSource.updateAppointment(appointment) }
+        verifySuspend { fixture.dataSource.saveAppointmentInDB(updated) }
     }
 
     @Test
     fun `emits Updated event on success`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val appointment = stubAppointment()
-        everySuspend { sut.dataSource.updateAppointment(appointment) } returns appointment
-        everySuspend { sut.dataSource.saveAppointmentInDB(appointment) } returns Unit
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } returns appointment
+        everySuspend { fixture.dataSource.saveAppointmentInDB(appointment) } returns Unit
         val events = mutableListOf<AppointmentEvent>()
         val job = launch(Dispatchers.Unconfined) { appointmentEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(appointment)
+        fixture.sut(appointment)
 
         then()
         job.cancel()
@@ -85,45 +85,45 @@ class UpdateAppointmentImplTest {
     @Test
     fun `throws DateIsNotAllowed on DATE_NOT_ALLOWED error`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val appointment = stubAppointment()
-        everySuspend { sut.dataSource.updateAppointment(appointment) } throws
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
             DomainError.BusinessError(AppointmentErrorCodes.DATE_NOT_ALLOWED, "msg")
 
         whenn()
         then()
         assertFailsWith<UpdateAppointment.Error.DateIsNotAllowed> {
-            sut.sut(appointment)
+            fixture.sut(appointment)
         }
     }
 
     @Test
     fun `throws TimeIsNotAllowed on TIME_NOT_ALLOWED error`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val appointment = stubAppointment()
-        everySuspend { sut.dataSource.updateAppointment(appointment) } throws
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
             DomainError.BusinessError(AppointmentErrorCodes.TIME_NOT_ALLOWED, "msg")
 
         whenn()
         then()
         assertFailsWith<UpdateAppointment.Error.TimeIsNotAllowed> {
-            sut.sut(appointment)
+            fixture.sut(appointment)
         }
     }
 
     @Test
     fun `throws AppointmentOverlap on APPOINTMENT_EXISTS error`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val appointment = stubAppointment()
-        everySuspend { sut.dataSource.updateAppointment(appointment) } throws
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
             DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_EXISTS, "msg")
 
         whenn()
         then()
         assertFailsWith<UpdateAppointment.Error.AppointmentOverlap> {
-            sut.sut(appointment)
+            fixture.sut(appointment)
         }
     }
 }

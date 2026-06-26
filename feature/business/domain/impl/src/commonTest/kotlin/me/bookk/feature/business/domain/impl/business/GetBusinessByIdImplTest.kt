@@ -59,13 +59,13 @@ class GetBusinessByIdImplTest {
     @Test
     fun `returns business when found`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
         val expected = stubBusiness(id)
-        everySuspend { sut.dataSource.getBusinessById(id) } returns expected
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns expected
 
         whenn()
-        val result = sut.sut(id)
+        val result = fixture.sut(id)
 
         then()
         assertEquals(expected, result)
@@ -74,12 +74,12 @@ class GetBusinessByIdImplTest {
     @Test
     fun `throws when datasource returns null`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
-        everySuspend { sut.dataSource.getBusinessById(id) } returns null
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns null
 
         whenn()
-        val thrown = runCatching { sut.sut(id) }.exceptionOrNull()
+        val thrown = runCatching { fixture.sut(id) }.exceptionOrNull()
 
         then()
         assertNotNull(thrown)

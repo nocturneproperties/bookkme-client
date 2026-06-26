@@ -43,12 +43,12 @@ class GetTokenInfoImplTest {
     @Test
     fun `returns TokenInfo when both tokens are present`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.getAccessToken() } returns "access-token"
-        everySuspend { sut.dataSource.getRefreshToken() } returns "refresh-token"
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getAccessToken() } returns "access-token"
+        everySuspend { fixture.dataSource.getRefreshToken() } returns "refresh-token"
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertEquals(TokenInfo("access-token", "refresh-token"), result)
@@ -57,12 +57,12 @@ class GetTokenInfoImplTest {
     @Test
     fun `returns null when access token is missing`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.getAccessToken() } returns null
-        everySuspend { sut.dataSource.getRefreshToken() } returns "refresh-token"
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getAccessToken() } returns null
+        everySuspend { fixture.dataSource.getRefreshToken() } returns "refresh-token"
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertNull(result)
@@ -71,12 +71,12 @@ class GetTokenInfoImplTest {
     @Test
     fun `returns null when refresh token is missing`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.getAccessToken() } returns "access-token"
-        everySuspend { sut.dataSource.getRefreshToken() } returns null
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getAccessToken() } returns "access-token"
+        everySuspend { fixture.dataSource.getRefreshToken() } returns null
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertNull(result)
@@ -85,12 +85,12 @@ class GetTokenInfoImplTest {
     @Test
     fun `returns null when both tokens are missing`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.getAccessToken() } returns null
-        everySuspend { sut.dataSource.getRefreshToken() } returns null
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getAccessToken() } returns null
+        everySuspend { fixture.dataSource.getRefreshToken() } returns null
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertNull(result)

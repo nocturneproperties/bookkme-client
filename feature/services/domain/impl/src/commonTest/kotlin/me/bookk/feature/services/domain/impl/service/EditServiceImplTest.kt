@@ -43,14 +43,14 @@ class EditServiceImplTest {
     @Test
     fun `returns edited service from datasource`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val service = stubService()
         val updated = service.copy(name = "Color")
-        everySuspend { sut.dataSource.editService(service) } returns updated
-        everySuspend { sut.dataSource.saveServiceInDB(updated) } returns Unit
+        everySuspend { fixture.dataSource.editService(service) } returns updated
+        everySuspend { fixture.dataSource.saveServiceInDB(updated) } returns Unit
 
         whenn()
-        val result = sut.sut(service)
+        val result = fixture.sut(service)
 
         then()
         assertEquals(updated, result)
@@ -59,16 +59,16 @@ class EditServiceImplTest {
     @Test
     fun `saves edited service in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val service = stubService()
         val updated = service.copy(name = "Color")
-        everySuspend { sut.dataSource.editService(service) } returns updated
-        everySuspend { sut.dataSource.saveServiceInDB(updated) } returns Unit
+        everySuspend { fixture.dataSource.editService(service) } returns updated
+        everySuspend { fixture.dataSource.saveServiceInDB(updated) } returns Unit
 
         whenn()
-        sut.sut(service)
+        fixture.sut(service)
 
         then()
-        verifySuspend { sut.dataSource.saveServiceInDB(updated) }
+        verifySuspend { fixture.dataSource.saveServiceInDB(updated) }
     }
 }

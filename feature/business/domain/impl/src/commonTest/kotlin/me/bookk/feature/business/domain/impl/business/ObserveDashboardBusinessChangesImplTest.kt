@@ -59,14 +59,14 @@ class ObserveDashboardBusinessChangesImplTest {
     @Test
     fun `emits business when dashboard id exists and business is found`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val business = stubBusiness(id = businessId)
-        every { sut.dataSource.getDashboardBusinessIdFlow() } returns flowOf(businessId)
-        every { sut.dataSource.observeBusinessDBChanges(businessId) } returns flowOf(business)
+        every { fixture.dataSource.getDashboardBusinessIdFlow() } returns flowOf(businessId)
+        every { fixture.dataSource.observeBusinessDBChanges(businessId) } returns flowOf(business)
 
         whenn()
-        val result = sut.sut().first()
+        val result = fixture.sut().first()
 
         then()
         assertEquals(business, result)
@@ -75,11 +75,11 @@ class ObserveDashboardBusinessChangesImplTest {
     @Test
     fun `emits null when dashboard id flow emits null`() = runUnitTest {
         given()
-        val sut = Fixture()
-        every { sut.dataSource.getDashboardBusinessIdFlow() } returns flowOf(null)
+        val fixture = Fixture()
+        every { fixture.dataSource.getDashboardBusinessIdFlow() } returns flowOf(null)
 
         whenn()
-        val result = sut.sut().first()
+        val result = fixture.sut().first()
 
         then()
         assertNull(result)

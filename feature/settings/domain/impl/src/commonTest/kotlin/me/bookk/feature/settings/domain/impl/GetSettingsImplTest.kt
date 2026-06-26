@@ -50,12 +50,12 @@ class GetSettingsImplTest {
     @Test
     fun `returns settings combining color scheme and profile`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.getColorScheme() } returns ColorScheme.DARK
-        everySuspend { sut.userProfileCRUD.get() } returns stubProfile()
+        val fixture = Fixture()
+        everySuspend { fixture.getColorScheme() } returns ColorScheme.DARK
+        everySuspend { fixture.userProfileCRUD.get() } returns stubProfile()
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertEquals(ColorScheme.DARK, result.colorScheme)

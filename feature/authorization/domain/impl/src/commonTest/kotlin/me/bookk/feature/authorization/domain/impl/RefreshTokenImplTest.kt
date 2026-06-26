@@ -43,14 +43,14 @@ class RefreshTokenImplTest {
     @Test
     fun `returns new token info`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val refreshToken = "old-refresh"
         val newToken = TokenInfo("new-access", "new-refresh")
-        everySuspend { sut.dataSource.refreshToken(refreshToken) } returns newToken
-        everySuspend { sut.dataSource.saveAuthorizationTokens(newToken) } returns Unit
+        everySuspend { fixture.dataSource.refreshToken(refreshToken) } returns newToken
+        everySuspend { fixture.dataSource.saveAuthorizationTokens(newToken) } returns Unit
 
         whenn()
-        val result = sut.sut(refreshToken)
+        val result = fixture.sut(refreshToken)
 
         then()
         assertEquals(newToken, result)
@@ -59,16 +59,16 @@ class RefreshTokenImplTest {
     @Test
     fun `saves new tokens after refreshing`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val refreshToken = "old-refresh"
         val newToken = TokenInfo("new-access", "new-refresh")
-        everySuspend { sut.dataSource.refreshToken(refreshToken) } returns newToken
-        everySuspend { sut.dataSource.saveAuthorizationTokens(newToken) } returns Unit
+        everySuspend { fixture.dataSource.refreshToken(refreshToken) } returns newToken
+        everySuspend { fixture.dataSource.saveAuthorizationTokens(newToken) } returns Unit
 
         whenn()
-        sut.sut(refreshToken)
+        fixture.sut(refreshToken)
 
         then()
-        verifySuspend { sut.dataSource.saveAuthorizationTokens(newToken) }
+        verifySuspend { fixture.dataSource.saveAuthorizationTokens(newToken) }
     }
 }

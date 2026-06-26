@@ -54,14 +54,14 @@ class CancelAppointmentImplTest {
     @Test
     fun `returns cancelled appointment`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val appointmentId = Uuid.random()
         val businessId = Uuid.random()
         val expected = stubAppointment(id = appointmentId)
-        everySuspend { sut.dataSource.cancelAppointment(any()) } returns expected
+        everySuspend { fixture.dataSource.cancelAppointment(any()) } returns expected
 
         whenn()
-        val result = sut.sut(appointmentId, businessId, "reason")
+        val result = fixture.sut(appointmentId, businessId, "reason")
 
         then()
         assertEquals(expected, result)
@@ -70,18 +70,18 @@ class CancelAppointmentImplTest {
     @Test
     fun `passes correct cancellation to datasource`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val appointmentId = Uuid.random()
         val businessId = Uuid.random()
         val reason = "no longer needed"
-        everySuspend { sut.dataSource.cancelAppointment(any()) } returns stubAppointment()
+        everySuspend { fixture.dataSource.cancelAppointment(any()) } returns stubAppointment()
 
         whenn()
-        sut.sut(appointmentId, businessId, reason)
+        fixture.sut(appointmentId, businessId, reason)
 
         then()
         verifySuspend {
-            sut.dataSource.cancelAppointment(
+            fixture.dataSource.cancelAppointment(
                 matches({ "match" }) { it.id == appointmentId && it.businessId == businessId && it.reason == reason }
             )
         }
@@ -90,13 +90,13 @@ class CancelAppointmentImplTest {
     @Test
     fun `emits Cancelled event on success`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.cancelAppointment(any()) } returns stubAppointment()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.cancelAppointment(any()) } returns stubAppointment()
         val events = mutableListOf<AppointmentEvent>()
         val job = launch(Dispatchers.Unconfined) { appointmentEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(Uuid.random(), Uuid.random(), "reason")
+        fixture.sut(Uuid.random(), Uuid.random(), "reason")
 
         then()
         job.cancel()
@@ -106,28 +106,28 @@ class CancelAppointmentImplTest {
     @Test
     fun `throws AppointmentAlreadyCancelled on corresponding error code`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.cancelAppointment(any()) } throws
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.cancelAppointment(any()) } throws
             DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED, "msg")
 
         whenn()
         then()
         assertFailsWith<CancelAppointment.Error.AppointmentAlreadyCancelled> {
-            sut.sut(Uuid.random(), Uuid.random(), "reason")
+            fixture.sut(Uuid.random(), Uuid.random(), "reason")
         }
     }
 
     @Test
     fun `throws AppointmentAlreadyCompleted on corresponding error code`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.cancelAppointment(any()) } throws
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.cancelAppointment(any()) } throws
             DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED, "msg")
 
         whenn()
         then()
         assertFailsWith<CancelAppointment.Error.AppointmentAlreadyCompleted> {
-            sut.sut(Uuid.random(), Uuid.random(), "reason")
+            fixture.sut(Uuid.random(), Uuid.random(), "reason")
         }
     }
 }

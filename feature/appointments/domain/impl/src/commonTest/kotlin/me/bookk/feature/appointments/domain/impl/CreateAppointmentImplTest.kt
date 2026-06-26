@@ -74,13 +74,13 @@ class CreateAppointmentImplTest {
     @Test
     fun `returns created appointment from datasource`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val draft = stubDraft()
         val created = stubAppointment()
-        everySuspend { sut.appointmentDataSource.createAppointment(any()) } returns created
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns created
 
         whenn()
-        val result = sut.sut(draft)
+        val result = fixture.sut(draft)
 
         then()
         assertEquals(created, result)
@@ -89,17 +89,17 @@ class CreateAppointmentImplTest {
     @Test
     fun `uses userId from profile in appointment`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val draft = stubDraft()
-        everySuspend { sut.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
 
         whenn()
-        sut.sut(draft)
+        fixture.sut(draft)
 
         then()
         verifySuspend {
-            sut.appointmentDataSource.createAppointment(
-                matches({ "match" }) { it.userId == sut.userId && it.status == AppointmentStatus.SCHEDULED }
+            fixture.appointmentDataSource.createAppointment(
+                matches({ "match" }) { it.userId == fixture.userId && it.status == AppointmentStatus.SCHEDULED }
             )
         }
     }
@@ -107,13 +107,13 @@ class CreateAppointmentImplTest {
     @Test
     fun `emits Created event on success`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
+        val fixture = Fixture()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
         val events = mutableListOf<AppointmentEvent>()
         val job = launch(Dispatchers.Unconfined) { appointmentEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(stubDraft())
+        fixture.sut(stubDraft())
 
         then()
         job.cancel()
@@ -123,42 +123,42 @@ class CreateAppointmentImplTest {
     @Test
     fun `throws AppointmentOverlap on APPOINTMENT_EXISTS error`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.appointmentDataSource.createAppointment(any()) } throws
+        val fixture = Fixture()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } throws
             DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_EXISTS, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateAppointment.Error.AppointmentOverlap> {
-            sut.sut(stubDraft())
+            fixture.sut(stubDraft())
         }
     }
 
     @Test
     fun `throws TimeIsNotAllowed on TIME_NOT_ALLOWED error`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.appointmentDataSource.createAppointment(any()) } throws
+        val fixture = Fixture()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } throws
             DomainError.BusinessError(AppointmentErrorCodes.TIME_NOT_ALLOWED, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateAppointment.Error.TimeIsNotAllowed> {
-            sut.sut(stubDraft())
+            fixture.sut(stubDraft())
         }
     }
 
     @Test
     fun `throws DateIsNotAllowed on DATE_NOT_ALLOWED error`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.appointmentDataSource.createAppointment(any()) } throws
+        val fixture = Fixture()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } throws
             DomainError.BusinessError(AppointmentErrorCodes.DATE_NOT_ALLOWED, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateAppointment.Error.DateIsNotAllowed> {
-            sut.sut(stubDraft())
+            fixture.sut(stubDraft())
         }
     }
 }

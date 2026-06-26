@@ -52,12 +52,12 @@ class GetAvailablePasskeysImplTest {
     @Test
     fun `returns passkeys from datasource`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val expected = listOf(stubPasskey())
-        everySuspend { sut.dataSource.getPasskeys() } returns expected
+        everySuspend { fixture.dataSource.getPasskeys() } returns expected
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertEquals(expected, result)
@@ -66,11 +66,11 @@ class GetAvailablePasskeysImplTest {
     @Test
     fun `returns empty list when no passkeys`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.getPasskeys() } returns emptyList()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getPasskeys() } returns emptyList()
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertEquals(emptyList(), result)

@@ -47,45 +47,45 @@ class DeleteServiceImplTest {
     @Test
     fun `calls deleteService with businessId and id`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val service = stubService()
-        everySuspend { sut.dataSource.deleteService(service.businessId, service.id) } returns Unit
-        everySuspend { sut.dataSource.deleteServiceFromDB(service) } returns Unit
+        everySuspend { fixture.dataSource.deleteService(service.businessId, service.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteServiceFromDB(service) } returns Unit
 
         whenn()
-        sut.sut(service)
+        fixture.sut(service)
 
         then()
-        verifySuspend { sut.dataSource.deleteService(service.businessId, service.id) }
+        verifySuspend { fixture.dataSource.deleteService(service.businessId, service.id) }
     }
 
     @Test
     fun `calls deleteServiceFromDB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val service = stubService()
-        everySuspend { sut.dataSource.deleteService(any(), any()) } returns Unit
-        everySuspend { sut.dataSource.deleteServiceFromDB(service) } returns Unit
+        everySuspend { fixture.dataSource.deleteService(any(), any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteServiceFromDB(service) } returns Unit
 
         whenn()
-        sut.sut(service)
+        fixture.sut(service)
 
         then()
-        verifySuspend { sut.dataSource.deleteServiceFromDB(service) }
+        verifySuspend { fixture.dataSource.deleteServiceFromDB(service) }
     }
 
     @Test
     fun `emits Deleted event`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val service = stubService()
-        everySuspend { sut.dataSource.deleteService(any(), any()) } returns Unit
-        everySuspend { sut.dataSource.deleteServiceFromDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteService(any(), any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteServiceFromDB(any()) } returns Unit
         val events = mutableListOf<ServiceEvent>()
         val job = launch(Dispatchers.Unconfined) { serviceEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(service)
+        fixture.sut(service)
 
         then()
         job.cancel()

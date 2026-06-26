@@ -86,86 +86,86 @@ class CreateAccountImplTest {
     @Test
     fun `sets authorization status true on success`() = runUnitTest {
         given()
-        val sut = Fixture()
-        sut.setupHappyPath()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
 
         whenn()
-        sut.sut(stubUserData())
+        fixture.sut(stubUserData())
 
         then()
-        verifySuspend { sut.authorizationDataSource.setAuthorizationStatus(true) }
+        verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(true) }
     }
 
     @Test
     fun `saves token info on success`() = runUnitTest {
         given()
-        val sut = Fixture()
-        sut.setupHappyPath()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
 
         whenn()
-        sut.sut(stubUserData())
+        fixture.sut(stubUserData())
 
         then()
-        verifySuspend { sut.authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
+        verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(tokenInfo) }
     }
 
     @Test
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
-        everySuspend { sut.passKeyManager.create(any()) } throws PassKeyManager.Error.UserCancelled()
+        val fixture = Fixture()
+        everySuspend { fixture.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
+        everySuspend { fixture.passKeyManager.create(any()) } throws PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
         assertFailsWith<Error.Ignore> {
-            sut.sut(stubUserData())
+            fixture.sut(stubUserData())
         }
     }
 
     @Test
     fun `throws EmailAlreadyExist on EMAIL_EXIST error from challenge`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.registrationDataSource.getSignUpPasskeyChallenge(any()) } throws
+        val fixture = Fixture()
+        everySuspend { fixture.registrationDataSource.getSignUpPasskeyChallenge(any()) } throws
             Error.BusinessError(AuthErrorCodes.EMAIL_EXIST, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateAccount.Error.EmailAlreadyExist> {
-            sut.sut(stubUserData())
+            fixture.sut(stubUserData())
         }
     }
 
     @Test
     fun `throws EmailAlreadyExist on USER_ALREADY_EXIST error from registration`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
-        everySuspend { sut.passKeyManager.create(any()) } returns payload
-        everySuspend { sut.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
-        everySuspend { sut.deviceFacade.getDeviceName() } returns "Name"
-        everySuspend { sut.registrationDataSource.finishRegistration(any()) } throws
+        val fixture = Fixture()
+        everySuspend { fixture.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
+        everySuspend { fixture.passKeyManager.create(any()) } returns payload
+        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
+        everySuspend { fixture.deviceFacade.getDeviceName() } returns "Name"
+        everySuspend { fixture.registrationDataSource.finishRegistration(any()) } throws
             Error.BusinessError(AuthErrorCodes.USER_ALREADY_EXIST, "msg")
 
         whenn()
         then()
         assertFailsWith<CreateAccount.Error.EmailAlreadyExist> {
-            sut.sut(stubUserData())
+            fixture.sut(stubUserData())
         }
     }
 
     @Test
     fun `throws AccountCreationFailed when PassKeyManager throws Unknown`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
-        everySuspend { sut.passKeyManager.create(any()) } throws PassKeyManager.Error.Unknown(null)
+        val fixture = Fixture()
+        everySuspend { fixture.registrationDataSource.getSignUpPasskeyChallenge(any()) } returns stubChallenge()
+        everySuspend { fixture.passKeyManager.create(any()) } throws PassKeyManager.Error.Unknown(null)
 
         whenn()
         then()
         assertFailsWith<CreateAccount.Error.AccountCreationFailed> {
-            sut.sut(stubUserData())
+            fixture.sut(stubUserData())
         }
     }
 }

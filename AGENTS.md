@@ -549,7 +549,7 @@ private val testDispatcher = UnconfinedTestDispatcher()
 @AfterTest fun tearDown() { Dispatchers.resetMain() }
 ```
 
-**Fixture pattern** — use `private class Fixture { val dep = mock<Dep>(); val sut = Impl(dep) }` so a fresh SUT and fresh mocks are created for every test. Never share state between tests. Instantiate it as `val fixture = Fixture()` — never `val f = Fixture()`, `val sut = Fixture()`, or any other name. Inside the body, the system under test is `fixture.sut(...)` and mocks are `fixture.dep`.
+**Fixture pattern** — use `private class Fixture { val dep = mock<Dep>(); val sut = Impl(dep) }` so a fresh SUT and fresh mocks are created for every test. Never share state between tests. Instantiate it as `val fixture = Fixture()` — never `val f = Fixture()`, `val fixture = Fixture()`, or any other name. Inside the body, the system under test is `fixture.sut(...)` and mocks are `fixture.dep`.
 
 **Mocking library** — use **Mokkery** (`dev.mokkery`), a KMP compiler-plugin-based mock framework. Key API:
 - `mock<T>()` — strict mock (throws on unstubbed calls); `mock<T>(MockMode.autofill)` for a relaxed placeholder
@@ -570,11 +570,11 @@ private val testDispatcher = UnconfinedTestDispatcher()
 @Test
 fun `returns created business`() = runUnitTest {
     given()
-    val sut = Fixture()
-    everySuspend { sut.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+    val fixture = Fixture()
+    everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
 
     whenn()
-    val result = sut.sut("My Salon")
+    val result = fixture.sut("My Salon")
 
     then()
     assertEquals(stubBusiness(), result)
@@ -585,20 +585,20 @@ Import: `import me.bookk.core.test.given`, `import me.bookk.core.test.whenn`, `i
 **SharedFlow event tests** — package-level `MutableSharedFlow` instances (`appointmentEvents`, `clientEvents`, `serviceEvents`, `serviceGroupEvents`) require `Dispatchers.Unconfined` on the subscriber coroutine for the event to be delivered synchronously during `emit()`. With `UnconfinedTestDispatcher`, the emitter queues the subscriber continuation in the test scheduler but doesn't run it until the test coroutine suspends — if `job.cancel()` happens before that suspension, the event is lost. Pattern that works (with given/when/then):
 ```kotlin
 given()
-val sut = Fixture()
-everySuspend { sut.dataSource.doThing(any()) } returns result
+val fixture = Fixture()
+everySuspend { fixture.dataSource.doThing(any()) } returns result
 val events = mutableListOf<SomeEvent>()
 val job = launch(Dispatchers.Unconfined) { someEvents.collect { events.add(it) } }
 
 whenn()
-sut.sut(args)
+fixture.sut(args)
 
 then()
 job.cancel()
 assertTrue(events.any { it is SomeEvent.Created })
 ```
 
-**`invoke()` as operator** — some use case interfaces declare `suspend fun invoke(...)` without the `operator` modifier. These cannot be called with `sut.sut(args)` shorthand; use `sut.sut.invoke(args)` in tests.
+**`invoke()` as operator** — some use case interfaces declare `suspend fun invoke(...)` without the `operator` modifier. These cannot be called with `fixture.sut(args)` shorthand; use `fixture.sut.invoke(args)` in tests.
 
 **`PassKeyManager.Error.Unknown` constructor** — takes a required `cause: Throwable?` parameter. Throw it in tests as `PassKeyManager.Error.Unknown(null)`.
 

@@ -57,45 +57,45 @@ class DeleteClientImplTest {
     @Test
     fun `calls deleteClient with correct businessId and id`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val client = stubClient()
-        everySuspend { sut.dataSource.deleteClient(client.businessId, client.id) } returns Unit
-        everySuspend { sut.dataSource.deleteClientInDb(client.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteClient(client.businessId, client.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteClientInDb(client.id) } returns Unit
 
         whenn()
-        sut.sut(client)
+        fixture.sut(client)
 
         then()
-        verifySuspend { sut.dataSource.deleteClient(client.businessId, client.id) }
+        verifySuspend { fixture.dataSource.deleteClient(client.businessId, client.id) }
     }
 
     @Test
     fun `calls deleteClientInDb`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val client = stubClient()
-        everySuspend { sut.dataSource.deleteClient(client.businessId, client.id) } returns Unit
-        everySuspend { sut.dataSource.deleteClientInDb(client.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteClient(client.businessId, client.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteClientInDb(client.id) } returns Unit
 
         whenn()
-        sut.sut(client)
+        fixture.sut(client)
 
         then()
-        verifySuspend { sut.dataSource.deleteClientInDb(client.id) }
+        verifySuspend { fixture.dataSource.deleteClientInDb(client.id) }
     }
 
     @Test
     fun `emits Deleted event`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val client = stubClient()
-        everySuspend { sut.dataSource.deleteClient(any(), any()) } returns Unit
-        everySuspend { sut.dataSource.deleteClientInDb(any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteClient(any(), any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteClientInDb(any()) } returns Unit
         val events = mutableListOf<ClientEvent>()
         val job = launch(Dispatchers.Unconfined) { clientEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(client)
+        fixture.sut(client)
 
         then()
         job.cancel()

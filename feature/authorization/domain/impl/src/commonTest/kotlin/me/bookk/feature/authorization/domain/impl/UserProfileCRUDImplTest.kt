@@ -49,82 +49,82 @@ class UserProfileCRUDImplTest {
     @Test
     fun `updateFromRemote fetches from backend and upserts`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val profile = stubProfile()
-        everySuspend { sut.dataSource.getProfileFromBackend() } returns profile
-        everySuspend { sut.dataSource.upsertProfile(profile) } returns Unit
+        everySuspend { fixture.dataSource.getProfileFromBackend() } returns profile
+        everySuspend { fixture.dataSource.upsertProfile(profile) } returns Unit
 
         whenn()
-        sut.sut.updateFromRemote()
+        fixture.sut.updateFromRemote()
 
         then()
-        verifySuspend { sut.dataSource.upsertProfile(profile) }
+        verifySuspend { fixture.dataSource.upsertProfile(profile) }
     }
 
     @Test
     fun `get returns local profile when available`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val local = stubProfile()
-        everySuspend { sut.dataSource.getProfileFromDatabase() } returns local
+        everySuspend { fixture.dataSource.getProfileFromDatabase() } returns local
 
         whenn()
-        val result = sut.sut.get()
+        val result = fixture.sut.get()
 
         then()
         assertEquals(local, result)
-        verifySuspend(VerifyMode.exactly(0)) { sut.dataSource.getProfileFromBackend() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getProfileFromBackend() }
     }
 
     @Test
     fun `get fetches from backend and upserts when local is null`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val remote = stubProfile()
-        everySuspend { sut.dataSource.getProfileFromDatabase() } returns null
-        everySuspend { sut.dataSource.getProfileFromBackend() } returns remote
-        everySuspend { sut.dataSource.upsertProfile(remote) } returns Unit
+        everySuspend { fixture.dataSource.getProfileFromDatabase() } returns null
+        everySuspend { fixture.dataSource.getProfileFromBackend() } returns remote
+        everySuspend { fixture.dataSource.upsertProfile(remote) } returns Unit
 
         whenn()
-        val result = sut.sut.get()
+        val result = fixture.sut.get()
 
         then()
         assertEquals(remote, result)
-        verifySuspend { sut.dataSource.upsertProfile(remote) }
+        verifySuspend { fixture.dataSource.upsertProfile(remote) }
     }
 
     @Test
     fun `update calls updateProfile and then syncs from backend`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val updated = stubProfile()
         val backend = updated.copy(firstName = "Synced")
-        everySuspend { sut.dataSource.updateProfile(updated) } returns Unit
-        everySuspend { sut.dataSource.getProfileFromBackend() } returns backend
-        everySuspend { sut.dataSource.updateProfile(backend) } returns Unit
+        everySuspend { fixture.dataSource.updateProfile(updated) } returns Unit
+        everySuspend { fixture.dataSource.getProfileFromBackend() } returns backend
+        everySuspend { fixture.dataSource.updateProfile(backend) } returns Unit
 
         whenn()
-        sut.sut.update(updated)
+        fixture.sut.update(updated)
 
         then()
         verifySuspend(VerifyMode.order) {
-            sut.dataSource.updateProfile(updated)
-            sut.dataSource.getProfileFromBackend()
-            sut.dataSource.updateProfile(backend)
+            fixture.dataSource.updateProfile(updated)
+            fixture.dataSource.getProfileFromBackend()
+            fixture.dataSource.updateProfile(backend)
         }
     }
 
     @Test
     fun `delete calls deleteProfile with correct id`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
-        everySuspend { sut.dataSource.deleteProfile(id) } returns Unit
+        everySuspend { fixture.dataSource.deleteProfile(id) } returns Unit
 
         whenn()
-        sut.sut.delete(id)
+        fixture.sut.delete(id)
 
         then()
-        verifySuspend { sut.dataSource.deleteProfile(id) }
+        verifySuspend { fixture.dataSource.deleteProfile(id) }
     }
 }

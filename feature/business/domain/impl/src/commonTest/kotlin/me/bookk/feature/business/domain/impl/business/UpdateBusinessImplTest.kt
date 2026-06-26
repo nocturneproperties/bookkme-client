@@ -69,16 +69,16 @@ class UpdateBusinessImplTest {
     @Test
     fun `returns updated business with new fields`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
         val current = stubBusiness(id)
         val update = stubUpdate(id)
-        everySuspend { sut.dataSource.getBusinessById(id) } returns current
-        everySuspend { sut.dataSource.updateBusiness(any()) } returns Unit
-        everySuspend { sut.dataSource.saveBusinessInDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns current
+        everySuspend { fixture.dataSource.updateBusiness(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessInDB(any()) } returns Unit
 
         whenn()
-        val result = sut.sut(update)
+        val result = fixture.sut(update)
 
         then()
         assertEquals(update.name, result.name)
@@ -89,31 +89,31 @@ class UpdateBusinessImplTest {
     @Test
     fun `calls updateBusiness and saveBusinessInDB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
         val current = stubBusiness(id)
         val update = stubUpdate(id)
-        everySuspend { sut.dataSource.getBusinessById(id) } returns current
-        everySuspend { sut.dataSource.updateBusiness(any()) } returns Unit
-        everySuspend { sut.dataSource.saveBusinessInDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns current
+        everySuspend { fixture.dataSource.updateBusiness(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessInDB(any()) } returns Unit
 
         whenn()
-        sut.sut(update)
+        fixture.sut(update)
 
         then()
-        verifySuspend { sut.dataSource.updateBusiness(any()) }
-        verifySuspend { sut.dataSource.saveBusinessInDB(any()) }
+        verifySuspend { fixture.dataSource.updateBusiness(any()) }
+        verifySuspend { fixture.dataSource.saveBusinessInDB(any()) }
     }
 
     @Test
     fun `throws when business not found`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
-        everySuspend { sut.dataSource.getBusinessById(id) } returns null
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns null
 
         whenn()
-        val thrown = runCatching { sut.sut(stubUpdate(id)) }.exceptionOrNull()
+        val thrown = runCatching { fixture.sut(stubUpdate(id)) }.exceptionOrNull()
 
         then()
         assertNotNull(thrown)

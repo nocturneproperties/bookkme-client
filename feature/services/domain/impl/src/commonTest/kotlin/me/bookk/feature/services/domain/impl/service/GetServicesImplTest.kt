@@ -58,16 +58,16 @@ class GetServicesImplTest {
     @Test
     fun `returns services sorted by createdAt`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val older = stubTimedService(businessId, 1000L)
         val newer = stubTimedService(businessId, 2000L)
-        everySuspend { sut.serviceDataSource.getServices(businessId) } returns listOf(newer, older)
-        everySuspend { sut.groupDataSource.saveGroupsInDB(any()) } returns Unit
-        everySuspend { sut.serviceDataSource.saveServicesInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.getServices(businessId) } returns listOf(newer, older)
+        everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertEquals(older, result[0])
@@ -77,36 +77,36 @@ class GetServicesImplTest {
     @Test
     fun `saves services and their groups in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val service = stubService(businessId)
-        everySuspend { sut.serviceDataSource.getServices(businessId) } returns listOf(service)
-        everySuspend { sut.groupDataSource.saveGroupsInDB(any()) } returns Unit
-        everySuspend { sut.serviceDataSource.saveServicesInDB(listOf(service)) } returns Unit
+        everySuspend { fixture.serviceDataSource.getServices(businessId) } returns listOf(service)
+        everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveServicesInDB(listOf(service)) } returns Unit
 
         whenn()
-        sut.sut(businessId)
+        fixture.sut(businessId)
 
         then()
-        verifySuspend { sut.serviceDataSource.saveServicesInDB(listOf(service)) }
-        verifySuspend { sut.groupDataSource.saveGroupsInDB(any()) }
+        verifySuspend { fixture.serviceDataSource.saveServicesInDB(listOf(service)) }
+        verifySuspend { fixture.groupDataSource.saveGroupsInDB(any()) }
     }
 
     @Test
     fun `cached calls onResultAvailable with DB then remote when DB non-empty`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val cached = listOf(stubService(businessId))
         val remote = listOf(stubService(businessId))
-        everySuspend { sut.serviceDataSource.getServicesFromDb(businessId) } returns cached
-        everySuspend { sut.serviceDataSource.getServices(businessId) } returns remote
-        everySuspend { sut.groupDataSource.saveGroupsInDB(any()) } returns Unit
-        everySuspend { sut.serviceDataSource.saveServicesInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.getServicesFromDb(businessId) } returns cached
+        everySuspend { fixture.serviceDataSource.getServices(businessId) } returns remote
+        everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
         val received = mutableListOf<List<Service>>()
 
         whenn()
-        sut.sut.cached(businessId) { received.add(it) }
+        fixture.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(2, received.size)
@@ -115,17 +115,17 @@ class GetServicesImplTest {
     @Test
     fun `cached skips DB callback when DB is empty`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val remote = listOf(stubService(businessId))
-        everySuspend { sut.serviceDataSource.getServicesFromDb(businessId) } returns emptyList()
-        everySuspend { sut.serviceDataSource.getServices(businessId) } returns remote
-        everySuspend { sut.groupDataSource.saveGroupsInDB(any()) } returns Unit
-        everySuspend { sut.serviceDataSource.saveServicesInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.getServicesFromDb(businessId) } returns emptyList()
+        everySuspend { fixture.serviceDataSource.getServices(businessId) } returns remote
+        everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
         val received = mutableListOf<List<Service>>()
 
         whenn()
-        sut.sut.cached(businessId) { received.add(it) }
+        fixture.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals(1, received.size)

@@ -58,47 +58,47 @@ class DeleteAccountImplTest {
     @Test
     fun `clears auth tokens and status on success`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val challenge = stubChallenge()
-        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns challenge
-        everySuspend { sut.passKeyManager.authorize(any()) } returns verificationPayload
-        everySuspend { sut.authorizationDataSource.deleteAccount(any()) } returns Unit
-        everySuspend { sut.authorizationDataSource.saveAuthorizationTokens(null) } returns Unit
-        everySuspend { sut.authorizationDataSource.setAuthorizationStatus(false) } returns Unit
+        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns challenge
+        everySuspend { fixture.passKeyManager.authorize(any()) } returns verificationPayload
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+        everySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) } returns Unit
+        everySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) } returns Unit
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { sut.authorizationDataSource.saveAuthorizationTokens(null) }
-        verifySuspend { sut.authorizationDataSource.setAuthorizationStatus(false) }
+        verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
+        verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) }
     }
 
     @Test
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        everySuspend { sut.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
         assertFailsWith<Error.Ignore> {
-            sut.sut()
+            fixture.sut()
         }
     }
 
     @Test
     fun `throws AccountVerificationFailed when PassKeyManager throws CredentialsMissing`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        everySuspend { sut.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
 
         whenn()
         then()
         assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> {
-            sut.sut()
+            fixture.sut()
         }
     }
 }

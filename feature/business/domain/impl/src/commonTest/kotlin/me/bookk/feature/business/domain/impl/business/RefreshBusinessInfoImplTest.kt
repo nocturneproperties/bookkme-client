@@ -47,24 +47,24 @@ class RefreshBusinessInfoImplTest {
     @Test
     fun `saves dashboard business id after fetching`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val dashboardId = Uuid.random()
         val info = UserBusinessInfo(dashboardId = dashboardId, businesses = emptyList())
-        everySuspend { sut.dataSource.getBusinessesFromRemote() } returns info
-        everySuspend { sut.dataSource.saveDashboardBusinessId(dashboardId) } returns Unit
-        everySuspend { sut.dataSource.saveBusinessListInDB(emptyList()) } returns Unit
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
+        everySuspend { fixture.dataSource.saveDashboardBusinessId(dashboardId) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessListInDB(emptyList()) } returns Unit
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { sut.dataSource.saveDashboardBusinessId(dashboardId) }
+        verifySuspend { fixture.dataSource.saveDashboardBusinessId(dashboardId) }
     }
 
     @Test
     fun `saves business list in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val business = Business(
             id = Uuid.random(),
             name = "B",
@@ -76,30 +76,30 @@ class RefreshBusinessInfoImplTest {
             socials = emptyMap()
         )
         val info = UserBusinessInfo(dashboardId = null, businesses = listOf(business))
-        everySuspend { sut.dataSource.getBusinessesFromRemote() } returns info
-        everySuspend { sut.dataSource.saveDashboardBusinessId(null) } returns Unit
-        everySuspend { sut.dataSource.saveBusinessListInDB(listOf(business)) } returns Unit
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
+        everySuspend { fixture.dataSource.saveDashboardBusinessId(null) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessListInDB(listOf(business)) } returns Unit
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { sut.dataSource.saveBusinessListInDB(listOf(business)) }
+        verifySuspend { fixture.dataSource.saveBusinessListInDB(listOf(business)) }
     }
 
     @Test
     fun `calls getBusinessesFromRemote`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val info = UserBusinessInfo(dashboardId = null, businesses = emptyList())
-        everySuspend { sut.dataSource.getBusinessesFromRemote() } returns info
-        everySuspend { sut.dataSource.saveDashboardBusinessId(null) } returns Unit
-        everySuspend { sut.dataSource.saveBusinessListInDB(emptyList()) } returns Unit
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
+        everySuspend { fixture.dataSource.saveDashboardBusinessId(null) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessListInDB(emptyList()) } returns Unit
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.getBusinessesFromRemote() }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.getBusinessesFromRemote() }
     }
 }

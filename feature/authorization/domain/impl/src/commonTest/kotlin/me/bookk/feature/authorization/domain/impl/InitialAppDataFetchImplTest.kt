@@ -44,42 +44,42 @@ class InitialAppDataFetchImplTest {
     @Test
     fun `calls updateFromRemote on user profile`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { sut.refreshBusiness() } returns Unit
+        val fixture = Fixture()
+        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+        everySuspend { fixture.refreshBusiness() } returns Unit
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { sut.userProfileCRUD.updateFromRemote() }
+        verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
     }
 
     @Test
     fun `calls refreshBusiness`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { sut.refreshBusiness() } returns Unit
+        val fixture = Fixture()
+        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+        everySuspend { fixture.refreshBusiness() } returns Unit
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { sut.refreshBusiness() }
+        verifySuspend { fixture.refreshBusiness() }
     }
 
     @Test
     fun `completes even when refreshBusiness throws`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { sut.refreshBusiness() } throws RuntimeException("network error")
+        val fixture = Fixture()
+        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+        everySuspend { fixture.refreshBusiness() } throws RuntimeException("network error")
 
         whenn()
-        sut.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { sut.userProfileCRUD.updateFromRemote() }
+        verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
     }
 }

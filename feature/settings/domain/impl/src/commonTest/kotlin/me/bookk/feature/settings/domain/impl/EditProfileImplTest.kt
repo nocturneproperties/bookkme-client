@@ -45,17 +45,17 @@ class EditProfileImplTest {
     @Test
     fun `calls update with merged profile fields`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val existing = UserProfile(id = Uuid.random(), firstName = "Old", lastName = "Name", email = "old@example.com")
-        everySuspend { sut.profileCRUD.get() } returns existing
-        everySuspend { sut.profileCRUD.update(any()) } returns Unit
+        everySuspend { fixture.profileCRUD.get() } returns existing
+        everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        sut.sut("New", "Lastname", "new@example.com")
+        fixture.sut("New", "Lastname", "new@example.com")
 
         then()
         verifySuspend {
-            sut.profileCRUD.update(
+            fixture.profileCRUD.update(
                 matches({ "match" }) { it.firstName == "New" && it.lastName == "Lastname" && it.email == "new@example.com" }
             )
         }
@@ -64,16 +64,16 @@ class EditProfileImplTest {
     @Test
     fun `preserves profile id when updating`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
         val existing = UserProfile(id = id, firstName = "Old", lastName = "Name", email = "old@e.com")
-        everySuspend { sut.profileCRUD.get() } returns existing
-        everySuspend { sut.profileCRUD.update(any()) } returns Unit
+        everySuspend { fixture.profileCRUD.get() } returns existing
+        everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        sut.sut("A", "B", "a@b.com")
+        fixture.sut("A", "B", "a@b.com")
 
         then()
-        verifySuspend { sut.profileCRUD.update(matches({ "match" }) { it.id == id }) }
+        verifySuspend { fixture.profileCRUD.update(matches({ "match" }) { it.id == id }) }
     }
 }

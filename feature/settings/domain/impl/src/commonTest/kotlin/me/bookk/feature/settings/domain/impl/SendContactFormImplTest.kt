@@ -41,28 +41,28 @@ class SendContactFormImplTest {
     @Test
     fun `calls sendContactForm with text and null logs`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val text = "Hello support"
-        everySuspend { sut.dataSource.sendContactForm(text, null) } returns Unit
+        everySuspend { fixture.dataSource.sendContactForm(text, null) } returns Unit
 
         whenn()
-        sut.sut(text, includeLogs = false)
+        fixture.sut(text, includeLogs = false)
 
         then()
-        verifySuspend { sut.dataSource.sendContactForm(text, null) }
+        verifySuspend { fixture.dataSource.sendContactForm(text, null) }
     }
 
     @Test
     fun `passes null logs even when includeLogs is true`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val text = "Need help"
-        everySuspend { sut.dataSource.sendContactForm(text, null) } returns Unit
+        everySuspend { fixture.dataSource.sendContactForm(text, null) } returns Unit
 
         whenn()
-        sut.sut(text, includeLogs = true)
+        fixture.sut(text, includeLogs = true)
 
         then()
-        verifySuspend { sut.dataSource.sendContactForm(text, null) }
+        verifySuspend { fixture.dataSource.sendContactForm(text, null) }
     }
 }

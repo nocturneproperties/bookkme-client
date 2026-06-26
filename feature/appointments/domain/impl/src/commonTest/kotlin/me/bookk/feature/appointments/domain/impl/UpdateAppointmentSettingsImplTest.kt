@@ -49,14 +49,14 @@ class UpdateAppointmentSettingsImplTest {
     @Test
     fun `returns updated settings`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val settings = AppointmentSettings.stub()
         val updated = AppointmentSettings.stub()
-        everySuspend { sut.dataSource.updateAppointmentSettings(settings) } returns updated
-        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(updated) } returns Unit
+        everySuspend { fixture.dataSource.updateAppointmentSettings(settings) } returns updated
+        everySuspend { fixture.dataSource.saveAppointmentSettingsInDB(updated) } returns Unit
 
         whenn()
-        val result = sut.sut(settings)
+        val result = fixture.sut(settings)
 
         then()
         assertEquals(updated, result)
@@ -65,46 +65,46 @@ class UpdateAppointmentSettingsImplTest {
     @Test
     fun `saves updated settings in DB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val settings = AppointmentSettings.stub()
         val updated = AppointmentSettings.stub()
-        everySuspend { sut.dataSource.updateAppointmentSettings(settings) } returns updated
-        everySuspend { sut.dataSource.saveAppointmentSettingsInDB(updated) } returns Unit
+        everySuspend { fixture.dataSource.updateAppointmentSettings(settings) } returns updated
+        everySuspend { fixture.dataSource.saveAppointmentSettingsInDB(updated) } returns Unit
 
         whenn()
-        sut.sut(settings)
+        fixture.sut(settings)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.saveAppointmentSettingsInDB(updated) }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentSettingsInDB(updated) }
     }
 
     @Test
     fun `throws ActiveDayWithoutWorkHours on corresponding error code`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val settings = AppointmentSettings.stub()
-        everySuspend { sut.dataSource.updateAppointmentSettings(settings) } throws
+        everySuspend { fixture.dataSource.updateAppointmentSettings(settings) } throws
             DomainError.BusinessError(AppointmentErrorCodes.ACTIVE_DAY_WITHOUT_WORK_HOURS, "msg")
 
         whenn()
         then()
         assertFailsWith<UpdateAppointmentSettings.Error.ActiveDayWithoutWorkHours> {
-            sut.sut(settings)
+            fixture.sut(settings)
         }
     }
 
     @Test
     fun `throws InvalidDayOffRange on corresponding error code`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val settings = AppointmentSettings.stub()
-        everySuspend { sut.dataSource.updateAppointmentSettings(settings) } throws
+        everySuspend { fixture.dataSource.updateAppointmentSettings(settings) } throws
             DomainError.BusinessError(AppointmentErrorCodes.INVALID_DAY_OFF_RANGE, "msg")
 
         whenn()
         then()
         assertFailsWith<UpdateAppointmentSettings.Error.InvalidDayOffRange> {
-            sut.sut(settings)
+            fixture.sut(settings)
         }
     }
 }

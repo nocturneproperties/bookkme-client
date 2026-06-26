@@ -45,11 +45,11 @@ class IsUserLoggedInImplTest {
     @Test
     fun `returns true when access token is present`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.getAccessToken() } returns "access-token"
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getAccessToken() } returns "access-token"
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertTrue(result)
@@ -58,11 +58,11 @@ class IsUserLoggedInImplTest {
     @Test
     fun `returns false when access token is null`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.getAccessToken() } returns null
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getAccessToken() } returns null
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertFalse(result)
@@ -71,11 +71,11 @@ class IsUserLoggedInImplTest {
     @Test
     fun `asFlow emits value from getIsAuthorizedFlow`() = runUnitTest {
         given()
-        val sut = Fixture()
-        every { sut.dataSource.getIsAuthorizedFlow() } returns flowOf(true)
+        val fixture = Fixture()
+        every { fixture.dataSource.getIsAuthorizedFlow() } returns flowOf(true)
 
         whenn()
-        val result = sut.sut.asFlow().first()
+        val result = fixture.sut.asFlow().first()
 
         then()
         assertTrue(result)

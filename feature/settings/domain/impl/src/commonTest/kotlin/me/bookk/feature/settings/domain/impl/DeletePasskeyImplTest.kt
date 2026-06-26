@@ -42,14 +42,14 @@ class DeletePasskeyImplTest {
     @Test
     fun `calls deletePasskey with correct id`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
-        everySuspend { sut.dataSource.deletePasskey(id) } returns Unit
+        everySuspend { fixture.dataSource.deletePasskey(id) } returns Unit
 
         whenn()
-        sut.sut(id)
+        fixture.sut(id)
 
         then()
-        verifySuspend { sut.dataSource.deletePasskey(id) }
+        verifySuspend { fixture.dataSource.deletePasskey(id) }
     }
 }

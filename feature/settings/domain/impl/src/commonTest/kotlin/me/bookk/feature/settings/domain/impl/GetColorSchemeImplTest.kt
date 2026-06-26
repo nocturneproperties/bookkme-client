@@ -45,11 +45,11 @@ class GetColorSchemeImplTest {
     @Test
     fun `returns color scheme from datasource`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.getColorScheme() } returns ColorScheme.DARK
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getColorScheme() } returns ColorScheme.DARK
 
         whenn()
-        val result = sut.sut()
+        val result = fixture.sut()
 
         then()
         assertEquals(ColorScheme.DARK, result)
@@ -58,11 +58,11 @@ class GetColorSchemeImplTest {
     @Test
     fun `asFlow emits color scheme from datasource flow`() = runUnitTest {
         given()
-        val sut = Fixture()
-        every { sut.dataSource.getColorSchemeFlow() } returns flowOf(ColorScheme.LIGHT)
+        val fixture = Fixture()
+        every { fixture.dataSource.getColorSchemeFlow() } returns flowOf(ColorScheme.LIGHT)
 
         whenn()
-        val result = sut.sut.asFlow().first()
+        val result = fixture.sut.asFlow().first()
 
         then()
         assertEquals(ColorScheme.LIGHT, result)

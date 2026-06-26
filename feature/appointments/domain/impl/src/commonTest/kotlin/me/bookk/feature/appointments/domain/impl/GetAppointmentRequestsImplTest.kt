@@ -44,14 +44,14 @@ class GetAppointmentRequestsImplTest {
     @Test
     fun `returns requests from datasource`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val expected = listOf(stubAppointmentRequest(businessId = businessId))
-        everySuspend { sut.dataSource.getAppointmentRequests(businessId) } returns expected
-        everySuspend { sut.dataSource.saveAppointmentRequestsInDB(expected) } returns Unit
+        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } returns expected
+        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(expected) } returns Unit
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertEquals(expected, result)
@@ -60,32 +60,32 @@ class GetAppointmentRequestsImplTest {
     @Test
     fun `saves requests in DB after fetching`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val requests = listOf(stubAppointmentRequest())
-        everySuspend { sut.dataSource.getAppointmentRequests(businessId) } returns requests
-        everySuspend { sut.dataSource.saveAppointmentRequestsInDB(requests) } returns Unit
+        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } returns requests
+        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(requests) } returns Unit
 
         whenn()
-        sut.sut(businessId)
+        fixture.sut(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.saveAppointmentRequestsInDB(requests) }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentRequestsInDB(requests) }
     }
 
     @Test
     fun `returns empty list and saves empty list`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { sut.dataSource.getAppointmentRequests(businessId) } returns emptyList()
-        everySuspend { sut.dataSource.saveAppointmentRequestsInDB(emptyList()) } returns Unit
+        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } returns emptyList()
+        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(emptyList()) } returns Unit
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertEquals(emptyList(), result)
-        verifySuspend { sut.dataSource.saveAppointmentRequestsInDB(emptyList()) }
+        verifySuspend { fixture.dataSource.saveAppointmentRequestsInDB(emptyList()) }
     }
 }

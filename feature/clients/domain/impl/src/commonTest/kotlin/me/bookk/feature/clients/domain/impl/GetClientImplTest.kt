@@ -43,7 +43,7 @@ class GetClientImplTest {
     @Test
     fun `returns client by id`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
         val expected = Client.Detached(
             id = id,
@@ -53,10 +53,10 @@ class GetClientImplTest {
             email = "john@example.com",
             businessId = Uuid.random()
         )
-        everySuspend { sut.dataSource.getClient(id) } returns expected
+        everySuspend { fixture.dataSource.getClient(id) } returns expected
 
         whenn()
-        val result = sut.sut(id)
+        val result = fixture.sut(id)
 
         then()
         assertEquals(expected, result)

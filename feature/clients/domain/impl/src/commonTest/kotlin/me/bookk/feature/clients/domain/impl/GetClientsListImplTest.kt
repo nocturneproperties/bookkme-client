@@ -50,15 +50,15 @@ class GetClientsListImplTest {
     @Test
     fun `returns clients from remote`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val clients = listOf(stubClient(businessId))
-        everySuspend { sut.dataSource.getClients(businessId) } returns clients
-        everySuspend { sut.dataSource.deleteClientsInDb() } returns Unit
-        everySuspend { sut.dataSource.saveClientsInDb(clients) } returns Unit
+        everySuspend { fixture.dataSource.getClients(businessId) } returns clients
+        everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
+        everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
 
         whenn()
-        val result = sut.sut(businessId)
+        val result = fixture.sut(businessId)
 
         then()
         assertEquals(clients, result)
@@ -67,36 +67,36 @@ class GetClientsListImplTest {
     @Test
     fun `deletes old clients then saves new ones`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val clients = listOf(stubClient(businessId))
-        everySuspend { sut.dataSource.getClients(businessId) } returns clients
-        everySuspend { sut.dataSource.deleteClientsInDb() } returns Unit
-        everySuspend { sut.dataSource.saveClientsInDb(clients) } returns Unit
+        everySuspend { fixture.dataSource.getClients(businessId) } returns clients
+        everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
+        everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
 
         whenn()
-        sut.sut(businessId)
+        fixture.sut(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.deleteClientsInDb() }
-        verifySuspend(VerifyMode.exactly(1)) { sut.dataSource.saveClientsInDb(clients) }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteClientsInDb() }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveClientsInDb(clients) }
     }
 
     @Test
     fun `cached calls onResultAvailable with DB then remote when DB is non-empty`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val cached = listOf(stubClient(businessId))
         val remote = listOf(stubClient(businessId), stubClient(businessId))
-        everySuspend { sut.dataSource.getClientsFromDb(businessId) } returns cached
-        everySuspend { sut.dataSource.getClients(businessId) } returns remote
-        everySuspend { sut.dataSource.deleteClientsInDb() } returns Unit
-        everySuspend { sut.dataSource.saveClientsInDb(remote) } returns Unit
+        everySuspend { fixture.dataSource.getClientsFromDb(businessId) } returns cached
+        everySuspend { fixture.dataSource.getClients(businessId) } returns remote
+        everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
+        everySuspend { fixture.dataSource.saveClientsInDb(remote) } returns Unit
         val received = mutableListOf<List<Client>>()
 
         whenn()
-        sut.sut.cached(businessId) { received.add(it) }
+        fixture.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals<List<List<Client>>>(listOf(cached, remote), received)
@@ -105,17 +105,17 @@ class GetClientsListImplTest {
     @Test
     fun `cached skips DB callback when DB is empty`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val businessId = Uuid.random()
         val remote = listOf(stubClient(businessId))
-        everySuspend { sut.dataSource.getClientsFromDb(businessId) } returns emptyList()
-        everySuspend { sut.dataSource.getClients(businessId) } returns remote
-        everySuspend { sut.dataSource.deleteClientsInDb() } returns Unit
-        everySuspend { sut.dataSource.saveClientsInDb(remote) } returns Unit
+        everySuspend { fixture.dataSource.getClientsFromDb(businessId) } returns emptyList()
+        everySuspend { fixture.dataSource.getClients(businessId) } returns remote
+        everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
+        everySuspend { fixture.dataSource.saveClientsInDb(remote) } returns Unit
         val received = mutableListOf<List<Client>>()
 
         whenn()
-        sut.sut.cached(businessId) { received.add(it) }
+        fixture.sut.cached(businessId) { received.add(it) }
 
         then()
         assertEquals<List<List<Client>>>(listOf(remote), received)

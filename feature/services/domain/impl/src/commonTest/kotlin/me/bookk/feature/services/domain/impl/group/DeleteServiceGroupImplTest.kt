@@ -54,45 +54,45 @@ class DeleteServiceGroupImplTest {
     @Test
     fun `calls deleteServiceGroup with businessId and id`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val group = stubGroup()
-        everySuspend { sut.dataSource.deleteServiceGroup(group.businessId, group.id) } returns Unit
-        everySuspend { sut.dataSource.deleteGroupFromDB(group) } returns Unit
+        everySuspend { fixture.dataSource.deleteServiceGroup(group.businessId, group.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteGroupFromDB(group) } returns Unit
 
         whenn()
-        sut.sut(group)
+        fixture.sut(group)
 
         then()
-        verifySuspend { sut.dataSource.deleteServiceGroup(group.businessId, group.id) }
+        verifySuspend { fixture.dataSource.deleteServiceGroup(group.businessId, group.id) }
     }
 
     @Test
     fun `calls deleteGroupFromDB`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val group = stubGroup()
-        everySuspend { sut.dataSource.deleteServiceGroup(any(), any()) } returns Unit
-        everySuspend { sut.dataSource.deleteGroupFromDB(group) } returns Unit
+        everySuspend { fixture.dataSource.deleteServiceGroup(any(), any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteGroupFromDB(group) } returns Unit
 
         whenn()
-        sut.sut(group)
+        fixture.sut(group)
 
         then()
-        verifySuspend { sut.dataSource.deleteGroupFromDB(group) }
+        verifySuspend { fixture.dataSource.deleteGroupFromDB(group) }
     }
 
     @Test
     fun `emits Deleted event`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val group = stubGroup()
-        everySuspend { sut.dataSource.deleteServiceGroup(any(), any()) } returns Unit
-        everySuspend { sut.dataSource.deleteGroupFromDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteServiceGroup(any(), any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteGroupFromDB(any()) } returns Unit
         val events = mutableListOf<ServiceGroupEvent>()
         val job = launch(Dispatchers.Unconfined) { serviceGroupEvents.collect { events.add(it) } }
 
         whenn()
-        sut.sut(group)
+        fixture.sut(group)
 
         then()
         job.cancel()

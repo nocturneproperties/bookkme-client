@@ -44,13 +44,13 @@ class GetAppointmentImplTest {
     @Test
     fun `returns appointment by id`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
         val expected = stubAppointment(id = id)
-        everySuspend { sut.dataSource.getAppointment(id) } returns expected
+        everySuspend { fixture.dataSource.getAppointment(id) } returns expected
 
         whenn()
-        val result = sut.sut(id)
+        val result = fixture.sut(id)
 
         then()
         assertEquals(expected, result)
@@ -59,12 +59,12 @@ class GetAppointmentImplTest {
     @Test
     fun `propagates datasource exception`() = runUnitTest {
         given()
-        val sut = Fixture()
+        val fixture = Fixture()
         val id = Uuid.random()
-        everySuspend { sut.dataSource.getAppointment(id) } throws IllegalStateException("not found")
+        everySuspend { fixture.dataSource.getAppointment(id) } throws IllegalStateException("not found")
 
         whenn()
-        val thrown = runCatching { sut.sut(id) }.exceptionOrNull()
+        val thrown = runCatching { fixture.sut(id) }.exceptionOrNull()
 
         then()
         assertTrue(thrown is IllegalStateException)

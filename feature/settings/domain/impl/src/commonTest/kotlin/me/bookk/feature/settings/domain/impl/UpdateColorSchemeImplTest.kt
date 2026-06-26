@@ -42,13 +42,13 @@ class UpdateColorSchemeImplTest {
     @Test
     fun `calls setColorScheme with provided scheme`() = runUnitTest {
         given()
-        val sut = Fixture()
-        everySuspend { sut.dataSource.setColorScheme(ColorScheme.DARK) } returns Unit
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.setColorScheme(ColorScheme.DARK) } returns Unit
 
         whenn()
-        sut.sut.invoke(ColorScheme.DARK)
+        fixture.sut.invoke(ColorScheme.DARK)
 
         then()
-        verifySuspend { sut.dataSource.setColorScheme(ColorScheme.DARK) }
+        verifySuspend { fixture.dataSource.setColorScheme(ColorScheme.DARK) }
     }
 }

@@ -11,6 +11,7 @@ kotlin {
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.compat)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.activity)
         }
         commonMain.dependencies {
             implementation(projects.core)

@@ -1,7 +1,7 @@
 package me.bookk.feature.authorization.presentation.bootstrap.state
 
+import me.bookk.feature.authorization.domain.entity.ColorScheme
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
-import me.bookk.feature.settings.domain.api.entity.ColorScheme
 
 interface BootstrapState {
     var colorScheme: UIColorScheme

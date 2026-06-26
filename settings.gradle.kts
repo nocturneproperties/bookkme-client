@@ -66,7 +66,7 @@ include(":feature:authorization:presentation")
 include(":feature:settings:data")
 include(":feature:settings:domain:api")
 include(":feature:settings:domain:impl")
-include(":feature:settings:domain:datasource")
+include(":feature:settings:data:source")
 include(":feature:settings:presentation")
 
 //Dashboard

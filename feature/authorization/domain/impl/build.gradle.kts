@@ -13,6 +13,7 @@ kotlin {
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.business.domain.api)
             implementation(projects.feature.authorization.data.source)
+            implementation(projects.feature.settings.domain.api)
             implementation(projects.library.device.api)
         }
         commonTest.dependencies {

@@ -1,4 +1,4 @@
-package me.bookk.feature.settings.domain.impl
+package me.bookk.feature.authorization.domain.impl
 
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws

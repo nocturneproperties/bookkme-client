@@ -13,7 +13,7 @@ kotlin {
             implementation(projects.core.domain)
             implementation(projects.core.data)
             implementation(projects.feature.settings.domain.api)
-            implementation(projects.feature.settings.domain.datasource)
+            implementation(projects.feature.settings.data.source)
             implementation(projects.library.cache.api)
             implementation(libs.ktor.client.resources)
         }

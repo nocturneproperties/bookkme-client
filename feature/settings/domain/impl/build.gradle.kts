@@ -13,7 +13,7 @@ kotlin {
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.data.source)
             implementation(projects.feature.settings.domain.api)
-            implementation(projects.feature.settings.domain.datasource)
+            implementation(projects.feature.settings.data.source)
         }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)

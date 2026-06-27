@@ -1,9 +1,13 @@
 package me.bookk.designsystem.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -13,7 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -32,7 +39,7 @@ import me.bookk.designsystem.uistate.ButtonState
 fun ActionButton(
     state: ButtonState,
     modifier: Modifier = Modifier,
-    startIcon: Int? = null,
+    startIcon: Int? = state.icon?.drawableResId,
     endIcon: Int? = null,
     startContent: (@Composable () -> Unit)? = null,
     endContent: (@Composable () -> Unit)? = null,
@@ -48,7 +55,7 @@ fun ActionButton(
     Button(
         modifier = modifier.heightIn(min = 48.dp),
         colors = colors,
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         enabled = state.isEnabled,
         onClick = onClick
@@ -77,10 +84,67 @@ fun ActionButton(
 }
 
 @Composable
-fun TextButton(
+fun ButtonDefaults.stateButtonColors(
+    contentColor: Color = LocalColors.current.buttonActive,
+): ButtonColors = buttonColors(
+    containerColor = Color.Transparent,
+    contentColor = contentColor,
+    disabledContainerColor = Color.Transparent,
+    disabledContentColor = LocalColors.current.actionTextDisabled
+)
+
+@Composable
+fun StateTextButton(
     state: ButtonState,
     modifier: Modifier = Modifier,
-    startIcon: Int? = null,
+    startIcon: Int? = state.icon?.drawableResId,
+    endIcon: Int? = null,
+    startContent: (@Composable () -> Unit)? = null,
+    endContent: (@Composable () -> Unit)? = null,
+    colors: ButtonColors = ButtonDefaults.stateButtonColors(),
+    textAlign: TextAlign = TextAlign.Center,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    onClick: () -> Unit = { state.onClick?.invoke() }
+) {
+    Button(
+        modifier = modifier.heightIn(min = 48.dp),
+        colors = colors,
+        shape = MaterialTheme.shapes.large,
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        enabled = state.isEnabled,
+        onClick = onClick,
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            val contentAlpha by animateFloatAsState(if (state.isLoading) 0f else 1f)
+            Row(Modifier.alpha(contentAlpha)) {
+                startContent?.invoke()
+                startIcon?.let { ButtonIcon(id = it) }
+                Text(
+                    text = state.text.localized(),
+                    style = textStyle,
+                    textAlign = textAlign,
+                )
+                endIcon?.let { ButtonIcon(id = it) }
+                endContent?.invoke()
+            }
+            CircularProgressIndicator(
+                strokeWidth = 2.dp,
+                trackColor = Color.Transparent,
+                color = colors.contentColor,
+                modifier = Modifier
+                    .alpha(1f - contentAlpha)
+                    .height(24.dp)
+                    .width(24.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun AlignStartTextButton(
+    state: ButtonState,
+    modifier: Modifier = Modifier,
+    startIcon: Int? = state.icon?.drawableResId,
     endIcon: Int? = null,
     startContent: (@Composable () -> Unit)? = null,
     endContent: (@Composable () -> Unit)? = null,
@@ -90,16 +154,16 @@ fun TextButton(
         disabledContainerColor = Color.Transparent,
         disabledContentColor = LocalColors.current.actionTextDisabled
     ),
-    textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     onClick: () -> Unit = { state.onClick?.invoke() }
 ) {
     Button(
         modifier = modifier.heightIn(min = 48.dp),
         colors = colors,
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         enabled = state.isEnabled,
-        onClick = onClick
+        onClick = onClick,
     ) {
         if (state.isLoading) {
             CircularProgressIndicator(
@@ -114,9 +178,10 @@ fun TextButton(
             startContent?.invoke()
             startIcon?.let { ButtonIcon(id = it) }
             Text(
+                modifier = Modifier.weight(1f),
                 text = state.text.localized(),
                 style = textStyle,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
             )
             endIcon?.let { ButtonIcon(id = it) }
             endContent?.invoke()
@@ -126,7 +191,11 @@ fun TextButton(
 
 @Composable
 private fun ButtonIcon(id: Int, contentDescription: String? = null) {
-    Icon(painter = painterResource(id = id), contentDescription = contentDescription)
+    Icon(
+        modifier = Modifier.padding(end = 8.dp),
+        painter = painterResource(id = id),
+        contentDescription = contentDescription
+    )
 }
 
 @Preview
@@ -135,7 +204,7 @@ private fun PreviewDefault() {
     AppTheme {
         Column {
             ActionButton(state = AndroidButtonState(text = "Text Example".desc())) {}
-            TextButton(state = AndroidButtonState(text = "Text Example".desc())) {}
+            StateTextButton(state = AndroidButtonState(text = "Text Example".desc())) {}
         }
     }
 }
@@ -151,7 +220,7 @@ private fun PreviewDisabled() {
                     isEnabled = false
                 )
             ) {}
-            TextButton(
+            StateTextButton(
                 state = AndroidButtonState(
                     text = "Text Example".desc(),
                     isEnabled = false
@@ -172,7 +241,7 @@ private fun PreviewLoading() {
                     isLoading = true
                 )
             ) {}
-            TextButton(
+            StateTextButton(
                 state = AndroidButtonState(
                     text = "Text Example".desc(),
                     isLoading = true

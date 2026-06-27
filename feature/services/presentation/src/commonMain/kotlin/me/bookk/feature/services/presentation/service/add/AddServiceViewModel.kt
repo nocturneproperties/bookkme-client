@@ -1,14 +1,14 @@
 package me.bookk.feature.services.presentation.service.add
 
 import dev.icerock.moko.resources.desc.desc
-import library.money.api.CurrencyFactory
+import library.money.api.Currency
 import library.money.api.Money
 import library.money.api.Money.SupportedCurrency
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
@@ -130,16 +130,16 @@ class AddServiceViewModel(
     private fun AddServiceState.setup(currency: SupportedCurrency) = apply {
         appBar.size = TopBarSize.LARGE
         appBar.title = ServicesRes.strings.services_create_title.desc()
-        appBar.onBackClick = weakSelfClosure { it.uiState.navigation.push(Back) }
+        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
 
         name.label = ServicesRes.strings.services_create_name.desc()
-        name.onTextChanged = weakSelfClosure { vm, name -> vm.onNameChanged(name) }
+        name.onTextChanged = weakVMClosure { vm, name -> vm.onNameChanged(name) }
         name.isValid = false
         name.inputType = InputType.TEXT
         name.placeholder = ServicesRes.strings.services_create_name_placeholder.desc()
 
         group.textField.label = ServicesRes.strings.services_create_group.desc()
-        group.onItemPicked = weakSelfClosure { vm, item -> item?.let { vm.onGroupSelected(it) } }
+        group.onItemPicked = weakVMClosure { vm, item -> item?.let { vm.onGroupSelected(it) } }
         group.textField.isValid = false
         group.textField.placeholder = ServicesRes.strings.services_create_group_placeholder.desc()
         group.pickerType = PickerFieldState.PickerType.SCREEN
@@ -147,23 +147,23 @@ class AddServiceViewModel(
 
         duration.label = ServicesRes.strings.services_create_duration.desc()
         duration.placeholder = ServicesRes.strings.services_create_duration_placeholder.desc()
-        duration.suffix = ServicesRes.strings.services_create_min.desc()
-        duration.onTextChanged = weakSelfClosure { vm, duration -> vm.onDurationChanged(duration) }
+        duration.suffix = DesignSystem.strings.common_min.desc()
+        duration.onTextChanged = weakVMClosure { vm, duration -> vm.onDurationChanged(duration) }
         duration.isValid = false
         duration.inputType = InputType.DIGIT
 
         price.label = ServicesRes.strings.services_create_price.desc()
         price.placeholder = ServicesRes.strings.services_create_price_placeholder.desc()
-        price.onTextChanged = weakSelfClosure { vm, price -> vm.onPriceChanged(price) }
-        price.suffix = CurrencyFactory.forCode(currency.code).symbol().desc()
+        price.onTextChanged = weakVMClosure { vm, price -> vm.onPriceChanged(price) }
+        price.suffix = Currency(currency.code).symbol().desc()
         price.isValid = false
         price.inputType = InputType.DECIMAL
 
         enabled.text = ServicesRes.strings.services_create_visible.desc()
-        enabled.onCheckedChange = weakSelfClosure { vm, enabled -> vm.onEnabledChanged(enabled) }
+        enabled.onCheckedChange = weakVMClosure { vm, enabled -> vm.onEnabledChanged(enabled) }
 
         create.text = DesignSystem.strings.action_create.desc()
-        create.onClick = weakSelfClosure { it.onCreateClick() }
+        create.onClick = weakVMClosure { it.onCreateClick() }
         create.isEnabled = false
     }
 }

@@ -8,22 +8,18 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "me.bookk.feature.authorization.data"
-}
-
-buildkonfig {
-    packageName = "me.bookk.feature.authorization.data"
-    defaultConfigs {
-        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
-    }
-}
-
 kotlin {
+    android {
+        namespace = "me.bookk.feature.authorization.data"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.compat)
+            implementation(libs.androidx.lifecycle.viewmodel)
         }
         commonMain.dependencies {
             implementation(projects.core)
@@ -36,5 +32,12 @@ kotlin {
             implementation(libs.ktor.client.resources)
             implementation(libs.ktor.client.auth)
         }
+    }
+}
+
+buildkonfig {
+    packageName = "me.bookk.feature.authorization.data"
+    defaultConfigs {
+        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
     }
 }

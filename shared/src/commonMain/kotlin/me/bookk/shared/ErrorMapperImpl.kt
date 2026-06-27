@@ -1,7 +1,8 @@
 package me.bookk.shared;
 
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.core.LogFactory
+import kotlinx.coroutines.CancellationException
+import me.bookk.core.Logger
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.ErrorMapper
@@ -9,7 +10,7 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
 
 class ErrorMapperImpl : ErrorMapper {
-    private val logger = LogFactory.createLogger("ErrorMapper")
+    private val logger = Logger.create("ErrorMapper")
     override fun mapToNotification(e: Throwable): PresentationNotification {
         if (BuildKonfig.DEBUG) {
             logger.e(e)
@@ -46,6 +47,8 @@ class ErrorMapperImpl : ErrorMapper {
                 is Error.Ignore -> PresentationNotification.Ignore
                 is Error.Unauthorized -> PresentationNotification.Unauthorized
             }
+
+            is CancellationException -> PresentationNotification.Ignore
 
             else -> PresentationNotification.Message(
                 message = DesignSystem.strings.error_unexpected.desc(),

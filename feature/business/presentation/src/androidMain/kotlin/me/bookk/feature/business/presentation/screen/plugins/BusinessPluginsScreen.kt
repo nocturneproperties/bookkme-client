@@ -86,7 +86,7 @@ internal fun BusinessPlugin(
                     modifier = Modifier
                         .background(
                             LocalColors.current.actionText.copy(alpha = 0.1f),
-                            MaterialTheme.shapes.medium
+                            MaterialTheme.shapes.large
                         )
                         .size(54.dp)
                         .padding(8.dp),
@@ -116,14 +116,15 @@ internal fun BusinessPlugin(
                                 LocalColors.current.actionText
                             else
                                 LocalColors.current.primaryText.copy(alpha = 0.1f),
-                            shape = MaterialTheme.shapes.medium
+                            shape = MaterialTheme.shapes.large
                         )
                         .padding(horizontal = 8.dp, vertical = 2.dp),
                     text = if (state.isEnabled)
                         BusinessRes.strings.business_plugin_enabled.desc().localized()
                     else
                         BusinessRes.strings.business_plugin_disabled.desc().localized(),
-                    style = MaterialTheme.typography.labelSmall.primary(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (state.isEnabled) LocalColors.current.onAction else LocalColors.current.primaryText,
                     maxLines = 1
                 )
             }
@@ -184,7 +185,7 @@ private fun FeatureList(
         modifier
             .background(
                 color = LocalColors.current.primaryText.copy(alpha = 0.05f),
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.large
             )
             .padding(8.dp)
     ) {

@@ -3,11 +3,14 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "me.bookk.core.domain"
-}
-
 kotlin {
+    android {
+        namespace = "me.bookk.core.domain"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             api(projects.core)

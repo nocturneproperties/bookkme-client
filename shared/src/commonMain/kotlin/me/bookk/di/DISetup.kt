@@ -2,7 +2,7 @@ package me.bookk.di
 
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
-import me.bookk.core.LogFactory
+import me.bookk.core.Logger
 import me.bookk.di.feature.appointmentsDiModule
 import me.bookk.di.feature.authDiModule
 import me.bookk.di.feature.businessDiModule
@@ -18,7 +18,7 @@ import org.koin.core.context.startKoin
 
 fun initDI(creator: StateFactoryCreator, setup: KoinApplication.() -> Unit) {
     if (BuildKonfig.DEBUG) Napier.base(DebugAntilog())
-    LogFactory.initFactory { LoggerImpl(it) }
+    Logger.initFactory { LoggerImpl(it) }
     startKoin {
         setup()
         installModules(creator)

@@ -14,28 +14,55 @@ struct AppointmentCreateScreen: View {
 
     var body: some View {
         let state = IOSAppointmentCreateState.cast(viewModel.uiState)
-        ScrollView {
-            VStack(spacing: 8) {
-                PickerField(state.clientPicker)
-                    .padding(.top, 16)
-                MultiPickerField(state.servicePicker) { item, onRemove in
-                    ServiceItem(
-                        service: item as! ServicePickerPresentation,
-                        onRemove: onRemove
-                    )
-                }
-                if !state.subtotalPrice.isEmpty {
-                    SubtotalRow(label: state.subtotalLabel, price: state.subtotalPrice)
-                }
-                DatePickerField(state: state.datePicker)
-                TimePickerField(state: state.timePicker)
-                StateTextField(state.note, textEditor: true)
+        List {
+			Section {
+				PickerField(state.clientPicker)
+					.textFieldStyle(.inListTrailing)
+			} header: {
+				Text("")
+			}
+			Section {
+				OptionsMultiPickerField(state.servicePicker) { item, onRemove in
+					ServiceItem(
+						service: item as! ServicePickerPresentation,
+						onRemove: onRemove
+					)
+				}
+				.listRowInsets(EdgeInsets())
+			} header: {
+				Text(state.servicePicker.pickerTitle.localized())
+			} footer: {
+				if !state.subtotalPrice.isEmpty {
+					SubtotalRow(label: state.subtotalLabel, price: state.subtotalPrice)
+						.listRowInsets(EdgeInsets())
+						.listRowBackground(Color.clear)
+				}
+			}
+			Section {
+				DatePickerField(state: state.datePicker)
+					.textFieldStyle(.inList)
+				TimePickerField(state: state.timePicker)
+					.textFieldStyle(.inList)
+			} footer: {
+				if let error = state.datePicker.textField.supportingTextRes {
+					Text(error.localized())
+						.foregroundStyle(AppColors.error)
+				}
+				if let error = state.timePicker.textField.supportingTextRes {
+					Text(error.localized())
+						.foregroundStyle(AppColors.error)
+				}
+			}
+			Section {
+				StateTextField(state.note, textEditor: true)
 					.lineLimit(3...5)
-                StateButton(state.create)
-                    .padding(.top, 16)
-            }
-            .padding(16)
+					.textFieldStyle(.inList)
+			}
         }
+		.toolbar {
+			TextButton(state.create)
+		}
+		.listSectionSpacing(.compact)
         .withNavigationBar(state.appBar)
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)
@@ -65,6 +92,7 @@ private struct SubtotalRow: View {
                 .foregroundStyle(AppColors.primary)
         }
         .padding(.horizontal, 16)
+		.padding(.top, 8)
     }
 }
 
@@ -73,39 +101,35 @@ private struct ServiceItem: View {
     let onRemove: () -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(service.displayName.localized())
-                        .font(.headline)
-                        .foregroundStyle(AppColors.primary)
-                    Text(service.duration.localized())
-                        .font(.caption)
-                        .foregroundStyle(AppColors.secondary)
-                }
-                .padding(.leading, 16)
-                Spacer(minLength: 8)
-                Text(service.price)
-                    .font(.headline)
-                    .foregroundStyle(AppColors.primary)
-                Button(action: onRemove) {
-                    ZStack {
-                        Circle()
-                            .fill(AppColors.primary.opacity(0.1))
-                            .frame(width: 28, height: 28)
-                        Text("−")
-                            .font(.body)
-                            .fontWeight(.bold)
-                            .foregroundStyle(AppColors.secondary)
-                    }
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 8)
-                .padding(.trailing, 16)
-            }
-            .padding(.vertical, 16)
-            Divider()
-                .background(AppColors.divider)
-        }
+		HStack(spacing: 0) {
+			VStack(alignment: .leading, spacing: 2) {
+				Text(service.displayName.localized())
+					.font(.headline)
+					.foregroundStyle(AppColors.primary)
+				Text(service.duration.localized())
+					.font(.caption)
+					.foregroundStyle(AppColors.secondary)
+			}
+			.padding(.leading, 16)
+			Spacer(minLength: 8)
+			Text(service.price)
+				.font(.headline)
+				.foregroundStyle(AppColors.primary)
+			Button(action: onRemove) {
+				ZStack {
+					Circle()
+						.fill(AppColors.primary.opacity(0.1))
+						.frame(width: 28, height: 28)
+					Text("−")
+						.font(.body)
+						.fontWeight(.bold)
+						.foregroundStyle(AppColors.secondary)
+				}
+			}
+			.buttonStyle(.plain)
+			.padding(.leading, 8)
+			.padding(.trailing, 16)
+		}
+		.padding(.vertical, 16)
     }
 }

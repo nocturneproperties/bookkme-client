@@ -2,11 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "library.validation.impl"
-}
-
 kotlin {
+    android {
+        namespace = "library.validation.impl"
+    }
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity)

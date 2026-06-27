@@ -29,6 +29,9 @@ struct BusinessTab: View {
 				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { type in
 					ServiceGroupListScreen(businessId: type.businessId)
 				}
+				.navigationDestination(for: AppointmentsDestination.Details.self) { dest in
+					AppointmentDetailsScreen(appointmentId: dest.appointmentId)
+				}
 				.navigationDestination(for: DashboardNavigationDestination.self) { type in
 					switch type {
 					case let type as DashboardNavigationDestination.Settings:
@@ -39,6 +42,10 @@ struct BusinessTab: View {
 						ServiceListScreen(businessId: type.id)
 					case let type as DashboardNavigationDestination.Plugins:
 						BusinessPluginsScreen(businessId: type.id)
+					case let type as DashboardNavigationDestination.AppointmentSettings:
+						AppointmentSettingsScreen(businessId: type.businessId)
+					case let type as DashboardNavigationDestination.History:
+						AppointmentHistoryScreen(businessId: type.businessId)
 					default:
 						ProgressView()
 					}

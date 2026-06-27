@@ -3,7 +3,6 @@ package me.bookk.feature.appointments.domain.datasource
 import kotlinx.datetime.LocalDate
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
-import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import kotlin.uuid.Uuid
 
 interface AppointmentDataSource {
@@ -14,9 +13,12 @@ interface AppointmentDataSource {
         forDate: LocalDate
     ): List<Appointment>
 
-    suspend fun createAppointmentRequest(request: AppointmentRequest): AppointmentRequest
-
-    suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment
+    suspend fun getAppointmentHistory(
+        businessId: Uuid,
+        limit: Int,
+        offset: Long,
+        query: String? = null
+    ): List<Appointment>
 
     suspend fun createAppointment(appointment: Appointment): Appointment
 

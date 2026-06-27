@@ -30,7 +30,7 @@ fun SectionItem(
         modifier = modifier
             .height(56.dp)
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.large)
             .clickable { onClick() }
             .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically

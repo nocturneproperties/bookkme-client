@@ -11,7 +11,7 @@ import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.AppBarAction
@@ -64,8 +64,12 @@ class AppointmentDetailsViewModel(
             onComplete = ::renderAppointment,
             onError = {
                 when (it) {
-                    is Error.AppointmentAlreadyCancelled -> {}
-                    is Error.AppointmentAlreadyCompleted -> {}
+                    is Error.AppointmentAlreadyCancelled -> {
+                        renderAppointment(appointment.copy(status = AppointmentStatus.CANCELLED))
+                    }
+                    is Error.AppointmentAlreadyCompleted -> {
+                        renderAppointment(appointment.copy(status = AppointmentStatus.COMPLETED))
+                    }
                 }
             }
         )
@@ -80,7 +84,7 @@ class AppointmentDetailsViewModel(
                 cancelText = DesignSystem.strings.action_ignore.desc(),
                 confirmText = DesignSystem.strings.action_cancel.desc(),
                 confirmActionType = ActionType.NEGATIVE,
-                onConfirm = weakSelfClosure { vm, reason -> vm.onCancellationApproved(reason) }
+                onConfirm = weakVMClosure { vm, reason -> vm.onCancellationApproved(reason) }
             )
         )
     }
@@ -151,13 +155,13 @@ class AppointmentDetailsViewModel(
                     AppBarAction(
                         contentDescription = DesignSystem.strings.action_cancel.desc(),
                         type = ActionType.NEGATIVE,
-                        onClick = weakSelfClosure { it.onCancelClick() }
+                        onClick = weakVMClosure { it.onCancelClick() }
                     )
                 )
             )
         }
         uiState.dateTimePicker.pickedDate = appointment.date
-        uiState.dateTimePicker.onDatePicked = weakSelfClosure { vm, v -> vm.onDatePicked(v) }
+        uiState.dateTimePicker.onDatePicked = weakVMClosure { vm, v -> vm.onDatePicked(v) }
         uiState.rescheduleButton.isVisible = appointment.status == AppointmentStatus.SCHEDULED
         uiState.infoSections.replace(createSections(appointment))
     }
@@ -165,9 +169,9 @@ class AppointmentDetailsViewModel(
     private fun AppointmentDetailsState.setup() = apply {
         appBar.size = TopBarSize.LARGE
         appBar.onBackClick =
-            weakSelfClosure { it.uiState.navigation.push(AppointmentDetailsDestination.Back) }
+            weakVMClosure { it.uiState.navigation.push(AppointmentDetailsDestination.Back) }
 
-        rescheduleButton.onClick = weakSelfClosure { it.onRescheduleClick() }
+        rescheduleButton.onClick = weakVMClosure { it.onRescheduleClick() }
         rescheduleButton.text = AppointmentsRes.strings.appointments_details_reschedule.desc()
     }
 
@@ -181,12 +185,12 @@ class AppointmentDetailsViewModel(
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_phone,
                 value = appointment.client.phone,
-                onClick = weakSelfClosure { vm -> vm.onPhoneClick(appointment.client.phone) }
+                onClick = weakVMClosure { vm -> vm.onPhoneClick(appointment.client.phone) }
             ).takeIf { appointment.client.phone.isNotEmpty() },
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_email,
                 value = appointment.client.email,
-                onClick = weakSelfClosure { vm -> vm.onEmailClick(appointment.client.email) }
+                onClick = weakVMClosure { vm -> vm.onEmailClick(appointment.client.email) }
             ).takeIf { appointment.client.email.isNotEmpty() },
             InfoLine(
                 title = AppointmentsRes.strings.appointments_create_date,

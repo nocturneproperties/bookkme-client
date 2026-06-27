@@ -24,7 +24,6 @@ struct ClientDetailsScreen: View {
 		ListGroup(listState: listState) { section in
 			InfoSection(section: section)
 		}
-		.padding(.top)
 		.withNavigationBar(uiState.appBar)
 		.handleNotifications(uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)

@@ -5,11 +5,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.clients.data"
-}
-
 kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.clients.data"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

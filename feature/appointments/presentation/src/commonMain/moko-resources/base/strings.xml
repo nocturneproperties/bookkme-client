@@ -4,6 +4,9 @@
     <string name="appointments_requests">Requests</string>
     <string name="appointments_list_empty">No appointments for this day</string>
     <string name="appointments_pick_date">Pick date</string>
+    <string name="appointments_history_title">History</string>
+    <string name="appointments_history_empty">No appointment history yet</string>
+    <string name="appointments_request_title">Request</string>
 
     <string name="appointments_create_title">Create an appointment</string>
     <string name="appointments_create_client">Client</string>
@@ -14,7 +17,7 @@
     <string name="appointments_create_date_placeholder">Pick date</string>
     <string name="appointments_create_time">Time</string>
     <string name="appointments_create_time_placeholder">Pick time</string>
-    <string name="appointments_create_note">Add a note(optional)</string>
+    <string name="appointments_create_note">Add a note for yourself(optional)</string>
     <string name="appointments_create_subtotal">Subtotal · %1$d services</string>
     <string name="appointments_create_overlap_error">Appointment overlap. Looks like someone created an appointment for this date and time while you were creating yours, select another date or time and try again!</string>
     <string name="appointments_create_date_error">Appointments for this day are forbidden by settings</string>
@@ -33,4 +36,33 @@
 
     <string name="appointments_details_cancel">Are you sure you want to cancel this appointment?\nClient attached to the system will receive notification.</string>
     <string name="appointments_details_cancel_reason">reason(optional)</string>
+
+    <string name="appointments_settings_title">Appointment settings</string>
+    <string name="appointments_settings_working_days">Working days</string>
+    <string name="appointments_settings_add_working_time">Add time block</string>
+    <string name="appointments_settings_from">From</string>
+    <string name="appointments_settings_to">To</string>
+    <string name="appointments_settings_automatic_approval">Auto-approve requests</string>
+    <string name="appointments_settings_break_footer">Minimal break between appointments</string>
+    <string name="appointments_settings_note_header">Note to clients</string>
+    <string name="appointments_settings_note_placeholder">Shown before any booking (optional)</string>
+    <string name="appointments_settings_day_offs">Days off</string>
+    <string name="appointments_settings_add_day_off">Add day off</string>
+    <string name="appointments_settings_no_day_offs">No days off scheduled.</string>
+    <string name="appointments_settings_pick_day_off_title">Pick a start and end date for a vacation/day-off block.</string>
+    <string name="appointments_settings_schedule">Schedule</string>
+    <string name="appointments_settings_schedule_hint">Tap to edit schedule</string>
+    <string name="appointments_settings_requests">Booking rules</string>
+    <string name="appointments_settings_minimal_break">Buffer</string>
+    <string name="appointments_settings_active_day_without_work_hours_error">An active day must have at least one work hour</string>
+    <string name="appointments_settings_invalid_day_off_range_error">Day off start date must be before the end date</string>
+    <string name="appointments_settings_updated">Settings updated</string>
+
+    <string name="appointments_requests_count">Requests(%s)</string>
+    <string name="appointments_request_empty">No pending requests</string>
+    <string name="appointments_request_decline">Are you sure you want to decline this appointment?</string>
+    <string name="appointments_request_overlap_error">Appointment overlap. Looks like there is another appointment exists for this day.</string>
+    <string name="appointments_request_in_past">Appointment time is in the past. This request will be automatically canceled soon, or you can decline it manually</string>
+    <string name="appointments_request_date_error">Appointments for this day are forbidden by settings, this day may be marked as day-off.</string>
+    <string name="appointments_request_time_error">Appointments for this time are forbidden by settings</string>
 </resources>

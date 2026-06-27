@@ -1,7 +1,7 @@
 package me.bookk.feature.authorization.domain.impl
 
 import library.device.api.DeviceFacade
-import me.bookk.core.LogFactory
+import me.bookk.core.Logger
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.domain.entity.businessOrThrow
 import me.bookk.feature.authorization.domain.api.CreateAccount
@@ -26,7 +26,7 @@ internal class CreateAccountImpl(
     private val initialAppDataFetch: InitialAppDataFetch
 ) : CreateAccount {
 
-    private val logger = LogFactory.createLogger("CreateAccountImpl")
+    private val logger = Logger.create("CreateAccountImpl")
 
     override suspend fun invoke(userData: UserData) {
         val challenge = obtainRegistrationChallenge(userData)

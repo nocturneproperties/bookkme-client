@@ -2,11 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "library.permissions.impl"
-}
-
 kotlin {
+    android {
+        namespace = "library.permissions.impl"
+    }
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity)

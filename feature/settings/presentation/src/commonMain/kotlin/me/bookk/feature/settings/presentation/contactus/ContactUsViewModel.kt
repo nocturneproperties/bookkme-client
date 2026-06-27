@@ -6,6 +6,9 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.settings.domain.api.SendContactForm
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 
@@ -17,13 +20,13 @@ class ContactUsViewModel(
 
     val uiState = settingsStateFactory.createContactUsState(createInitData())
 
+    init {
+        uiState.appBar.size = TopBarSize.LARGE
+    }
     fun onSubmitClick() {
         launch(
             launchIn = DispatcherProvider.io,
-            onStart = {
-                uiState.submitButton.isEnabled = false
-                uiState.submitButton.isLoading = true
-            },
+            onStart = { uiState.submitButton.startLoading() },
             call = {
                 sendContactForm(
                     text = uiState.contactField.text,
@@ -33,13 +36,8 @@ class ContactUsViewModel(
             onComplete = {
                 uiState.navigation.push(ContactUsNavigationDestination.Back)
             },
-            onError = {
-                uiState.notifications.add(errorMapper.mapToNotification(it))
-            },
-            onTerminate = {
-                uiState.submitButton.isEnabled = true
-                uiState.submitButton.isLoading = false
-            },
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.submitButton.stopLoading() },
         )
     }
 

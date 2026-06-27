@@ -7,7 +7,7 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
@@ -44,8 +44,8 @@ class ServiceGroupListViewModel(
             onComplete = { services ->
                 groups = services.map { group ->
                     group.ui(
-                        onItemClick = weakSelfClosure { it.onGroupClicked(group) },
-                        onDeleteClick = weakSelfClosure { it.onDeleteClicked(group) }
+                        onItemClick = weakVMClosure { it.onGroupClicked(group) },
+                        onDeleteClick = weakVMClosure { it.onDeleteClicked(group) }
                     )
                 }
                 uiState.groups.replace(groups)
@@ -97,25 +97,25 @@ class ServiceGroupListViewModel(
 
     private fun ServiceGroupListState.setup() = apply {
         appBar.title = ServicesRes.strings.services_create_groups.desc()
-        appBar.onBackClick = weakSelfClosure {
+        appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(ServiceGroupListDestination.Back)
         }
         appBar.actions.replace(
             listOf(
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakSelfClosure { it.uiState.isAddGroupDialogVisible = true }
+                    onClick = weakVMClosure { it.uiState.isAddGroupDialogVisible = true }
                 )
             )
         )
 
         search.placeholder = DesignSystem.strings.action_search.desc()
-        search.onTextChanged = weakSelfClosure { vm, query -> vm.onSearchQueryChanged(query) }
+        search.onTextChanged = weakVMClosure { vm, query -> vm.onSearchQueryChanged(query) }
 
         groups.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = ServicesRes.strings.service_group_empty.desc()
         )
-        refreshState.onRefresh = weakSelfClosure { it.loadServiceGroups() }
+        refreshState.onRefresh = weakVMClosure { it.loadServiceGroups() }
     }
 }

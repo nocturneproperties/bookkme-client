@@ -12,9 +12,8 @@ data class AppointmentSettings(
     val id: Uuid,
     val businessId: Uuid,
     val timeZone: TimeZone,
-    val workingDays: List<DayOfWeek>,
-    val workingHours: List<WorkHour>,
-    val dayOffs: List<LocalDate>,
+    val schedule: WorkingSchedule,
+    val dayOffs: List<DayOffRange>,
     val automaticApproval: Boolean,
     val inBetweenBreakInMinutes: Int,
     val appointmentNote: String
@@ -27,20 +26,7 @@ data class AppointmentSettings(
         id = Uuid.random(),
         businessId = businessId,
         timeZone = TimeZone.of("UTC"),
-        workingDays = listOf(
-            DayOfWeek.MONDAY,
-            DayOfWeek.TUESDAY,
-            DayOfWeek.WEDNESDAY,
-            DayOfWeek.THURSDAY,
-            DayOfWeek.FRIDAY,
-        ),
-        workingHours = listOf(
-            DayOfWeek.MONDAY.nineToFive(),
-            DayOfWeek.TUESDAY.nineToFive(),
-            DayOfWeek.WEDNESDAY.nineToFive(),
-            DayOfWeek.THURSDAY.nineToFive(),
-            DayOfWeek.FRIDAY.nineToFive(),
-        ),
+        schedule = WorkingSchedule(),
         automaticApproval = false,
         dayOffs = listOf(),
         inBetweenBreakInMinutes = 10,
@@ -48,14 +34,18 @@ data class AppointmentSettings(
     )
 
     fun isInWorkday(date: Instant): Boolean {
-        return date.toLocalDateTime(timeZone).dayOfWeek in workingDays
+        val localDate = date.toLocalDateTime(timeZone)
+        if (!schedule.days.getValue(localDate.dayOfWeek).isActive) return false
+        return dayOffs.none { localDate.date in it.start..it.end }
     }
 
     fun isInWorktime(date: Instant): Boolean {
         val localDateTime = date.toLocalDateTime(timeZone)
         val dayOfWeek = localDateTime.dayOfWeek
-        val workTime = workingHours.firstOrNull { it.dayOfWeek == dayOfWeek } ?: return false
-        return localDateTime.time in workTime.from..workTime.to
+        val schedule = schedule.days.getValue(dayOfWeek)
+        return schedule.workingTime.any { time ->
+            localDateTime.time in time.from..time.to
+        }
     }
 }
 
@@ -63,6 +53,11 @@ data class WorkHour(
     val dayOfWeek: DayOfWeek,
     val from: LocalTime,
     val to: LocalTime
+)
+
+data class DayOffRange(
+    val start: LocalDate,
+    val end: LocalDate
 )
 
 fun DayOfWeek.nineToFive() = WorkHour(

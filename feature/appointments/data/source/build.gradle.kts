@@ -4,11 +4,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.appointments.data.source"
-}
-
 kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.appointments.data.source"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

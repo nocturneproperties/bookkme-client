@@ -3,7 +3,6 @@ package me.bookk.feature.settings.presentation.contactus
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -13,7 +12,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
-import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
@@ -47,19 +45,17 @@ internal fun ContactUsScreen(state: ContactUsState) {
             ) {
                 TextField(
                     modifier = Modifier
-                        .padding(top = 16.dp)
-                        .requiredHeightIn(min = 150.dp),
+                        .padding(top = 16.dp),
                     state = state.contactField,
+                    minLines = 4,
                     onValueChange = LocalContactUsEventListener.current.onTextChanged
                 )
 
-                AppCard {
-                    StateSwitch(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        state = state.includeLogsSwitch,
-                        onCheckedChange = LocalContactUsEventListener.current.onIncludeUsageLogsCheckedChanged
-                    )
-                }
+                StateSwitch(
+                    modifier = Modifier.padding(top = 16.dp),
+                    state = state.includeLogsSwitch,
+                    onCheckedChange = LocalContactUsEventListener.current.onIncludeUsageLogsCheckedChanged
+                )
 
                 Text(
                     modifier = Modifier.padding(top = 8.dp),

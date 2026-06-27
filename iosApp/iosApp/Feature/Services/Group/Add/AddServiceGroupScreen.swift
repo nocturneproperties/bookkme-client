@@ -25,12 +25,13 @@ struct AddServiceGroupScreen: View {
 			VStack {
 				StateTextField(uiState.name)
 					.padding(.top, 42)
+					.textFieldStyle(.onElevated)
 				Spacer()
 				StateButton(uiState.create)
 			}
 			.navigationTitle(uiState.title.localized())
-			.presentationBackground(AppColors.background)
-			.presentationDetents([.medium])
+			.presentationBackground(AppColors.elevated)
+			.presentationDetents([.height(400)])
 			.padding()
 			.sendLifecycleEventsTo(viewModel)
 			.handleNotifications(uiState.notifications)

@@ -4,11 +4,13 @@ plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.core.presentation"
-}
-
 kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.core.presentation"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

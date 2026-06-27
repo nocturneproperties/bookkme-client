@@ -7,11 +7,26 @@ import kotlin.uuid.Uuid
 object AppointmentRouting {
     @Resource("api")
     class Api {
-        @Resource("/appointment")
+        @Resource("/appointments")
         class Appointment(val parent: Api = Api()) {
 
             @Resource("/instant")
             class Instant(val parent: Appointment = Appointment())
+
+            @Resource("/settings/{businessId}")
+            class Settings(val parent: Appointment = Appointment(), val businessId: Uuid)
+
+            @Resource("/list/{businessId}")
+            class List(val parent: Appointment = Appointment(), val businessId: Uuid, val date: LocalDate)
+
+            @Resource("/history/{businessId}")
+            class History(
+                val parent: Appointment = Appointment(),
+                val businessId: Uuid,
+                val limit: Int,
+                val offset: Long,
+                val query: String? = null
+            )
 
             @Resource("/request/{businessId}")
             class Requests(
@@ -22,17 +37,14 @@ object AppointmentRouting {
             @Resource("/request")
             class Request(val parent: Appointment = Appointment())
 
+            @Resource("/request/{id}/decline")
+            class RequestDecline(val parent: Appointment = Appointment(), val id: Uuid)
+
             @Resource("/{id}/cancel")
             class Cancel(val parent: Appointment = Appointment(), val id: Uuid)
 
             @Resource("/{id}")
             class Id(val parent: Appointment = Appointment(), val id: Uuid)
         }
-
-        @Resource("/appointments/{businessId}")
-        class Appointments(val parent: Api = Api(), val businessId: Uuid, val date: LocalDate)
-
-        @Resource("/appointments/history/{businessId}")
-        class AppointmentHistory(val parent: Api = Api(), val businessId: Uuid, val limit: Int, val offset: Long)
     }
 }

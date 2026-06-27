@@ -18,4 +18,5 @@ enum class ColorToken {
     Button,
     ButtonInactive,
     ButtonActive,
+    OnAction
 }

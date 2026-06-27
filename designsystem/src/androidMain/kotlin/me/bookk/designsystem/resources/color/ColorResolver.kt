@@ -23,4 +23,5 @@ val ColorToken.themed
         ColorToken.ButtonActive -> LocalColors.current.buttonActive
         ColorToken.ButtonInactive -> LocalColors.current.buttonInactive
         ColorToken.Button -> LocalColors.current.buttonPrimary
+        ColorToken.OnAction -> LocalColors.current.onAction
     }

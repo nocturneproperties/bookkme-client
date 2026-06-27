@@ -6,6 +6,7 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.settings.domain.api.DeleteAccount
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 
@@ -17,8 +18,12 @@ class DeleteAccountViewModel(
 
     val uiState = settingsStateFactory.createDeleteAccountState(createInitData())
 
+    init {
+        uiState.appBar.size = TopBarSize.LARGE
+    }
+
     fun onSwitchStateChanged(isChecked: Boolean) {
-        uiState.confirmationSwitch.isChecked = isChecked
+        uiState.confirmation.isChecked = isChecked
         uiState.deleteButton.isEnabled = isChecked
     }
 

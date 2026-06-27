@@ -1,6 +1,7 @@
 package me.bookk.feature.business.data.mapping
 
-import library.money.api.CurrencyFactory
+import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import me.bookk.database.entity.BusinessEntity
 import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
@@ -19,7 +20,8 @@ internal fun BusinessRemote.toDomain(): Business {
                 lng = it.lng
             )
         },
-        currency = CurrencyFactory.forCode(currencyCode),
+        currency = Currency(currencyCode),
+        timeZone = timeZone,
         socials = socials.map(BusinessRemote.Social::toDomain).associateBy { it.kind }
     )
 }
@@ -40,6 +42,7 @@ internal fun Business.toLocal(): BusinessEntity {
         locationLat = location?.lat,
         locationLng = location?.lng,
         currencyCode = currency.code(),
+        timeZone = timeZone.id,
         phone = socials[Business.SocialKind.PHONE]?.value,
         insta = socials[Business.SocialKind.INSTAGRAM]?.value,
         viber = socials[Business.SocialKind.VIBER]?.value,
@@ -57,7 +60,8 @@ internal fun BusinessEntity.toDomain(): Business {
         location = if (locationLat != null && locationLng != null) {
             Business.Location(locationLat!!, locationLng!!)
         } else null,
-        currency = CurrencyFactory.forCode(currencyCode),
+        currency = Currency(currencyCode),
+        timeZone = TimeZone.of(timeZone),
         socials = listOf(
             Business.Social(Business.SocialKind.PHONE, phone),
             Business.Social(Business.SocialKind.INSTAGRAM, insta),
@@ -88,6 +92,7 @@ internal fun Business.toRemote(): BusinessRemote {
             )
         },
         currencyCode = currency.code(),
+        timeZone = timeZone,
         socials = socials.values.map { it.toRemote() }
     )
 }

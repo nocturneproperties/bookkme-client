@@ -24,6 +24,14 @@ internal fun coreModule(creator: StateFactoryCreator) = module {
     single<ErrorMapper> { ErrorMapperImpl() }
     single<StateFactoryCreator> { creator }
     single<String>(named("baseUrl")) { BuildKonfig.BASE_URL }
+    single<String>(named("relyingParty")) {
+        BuildKonfig.BASE_URL
+            .removeSuffix("/api")
+            .removePrefix("https://")
+            .split(".")
+            .takeLast(2)
+            .joinToString(".")
+    }
     single<CoroutineScope> { createApplicationScope() }
     includes(
         presentationCoreModule(),

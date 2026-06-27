@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import me.bookk.android.navigation.rememberAppointmentsNavigation
 import me.bookk.android.navigation.rememberAuthNavigation
 import me.bookk.android.navigation.rememberClientsNavigation
 import me.bookk.android.navigation.rememberServicesNavigation
@@ -43,6 +44,8 @@ import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.appointments.presentation.AppointmentsTab
+import me.bookk.feature.appointments.presentation.navigation.AppointmentsDestination
+import me.bookk.feature.appointments.presentation.navigation.appointmentsGraph
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapViewModel
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
@@ -104,6 +107,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
     val authNavigation = rememberAuthNavigation(controller)
     val clientsNavigation = rememberClientsNavigation(controller)
     val servicesNavigation = rememberServicesNavigation(controller)
+    val appointmentsNavigation = rememberAppointmentsNavigation(controller)
     val destination = state.startDestination
     if (destination != null) {
         val snackBarState = remember { SnackbarHostState() }
@@ -139,6 +143,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                 authGraph(navigation = authNavigation)
                 clientsGraph(navigation = clientsNavigation)
                 servicesGraph(navigation = servicesNavigation)
+                appointmentsGraph(navigation = appointmentsNavigation)
                 dashboardGraph(
                     appointmentsTab = { AppointmentsTab() },
                     businessTab = {
@@ -148,6 +153,12 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                             },
                             showServices = {
                                 controller.navigate(ServicesDestination.Services(it))
+                            },
+                            showAppointmentSettings = {
+                                controller.navigate(AppointmentsDestination.Settings(it))
+                            },
+                            showAppointmentHistory = {
+                                controller.navigate(AppointmentsDestination.History(it))
                             }
                         )
                     },

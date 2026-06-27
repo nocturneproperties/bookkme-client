@@ -43,14 +43,14 @@ fun AppDatePicker(
         onDismissRequest = { state.isDatePickerVisible = false },
         dismissButton = dismissButton?.let { dismissButtonState ->
             {
-                TextButton(
+                StateTextButton(
                     state = dismissButtonState,
                     onClick = { state.isDatePickerVisible = false },
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            StateTextButton(
                 modifier = Modifier.padding(end = 8.dp),
                 state = confirmButton,
                 onClick = {

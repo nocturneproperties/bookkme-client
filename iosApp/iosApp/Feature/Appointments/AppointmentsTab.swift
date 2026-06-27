@@ -9,9 +9,9 @@ import SwiftUI
 import shared
 
 struct AppointmentsTab: View {
-	
+
 	@StateObject var navigationStack = NavigationStackHolder()
-	
+
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
 			AppointmentListScreen()
@@ -20,6 +20,9 @@ struct AppointmentsTab: View {
 				}
 				.navigationDestination(for: AppointmentsDestination.Details.self) { dest in
 					AppointmentDetailsScreen(appointmentId: dest.appointmentId)
+				}
+				.navigationDestination(for: AppointmentsDestination.Settings.self) { dest in
+					AppointmentSettingsScreen(businessId: dest.businessId)
 				}
 		}.environmentObject(navigationStack)
 	}

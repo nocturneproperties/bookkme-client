@@ -28,12 +28,12 @@ import me.bookk.designsystem.html
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
-import me.bookk.designsystem.uistate.CheckBoxState
+import me.bookk.designsystem.uistate.BooleanState
 
 
 @Composable
 fun CheckBox(
-    state: CheckBoxState,
+    state: BooleanState,
     modifier: Modifier = Modifier,
     colors: CheckboxColors = CheckboxDefaults.colors(
         checkedColor = LocalColors.current.primaryText,
@@ -76,7 +76,7 @@ fun CheckBox(
 
 @Composable
 fun CheckBoxSelector(
-    state: CheckBoxState,
+    state: BooleanState,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {

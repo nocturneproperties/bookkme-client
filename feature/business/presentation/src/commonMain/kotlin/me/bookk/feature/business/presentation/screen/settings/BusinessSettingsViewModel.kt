@@ -2,14 +2,14 @@ package me.bookk.feature.business.presentation.screen.settings
 
 import dev.icerock.moko.resources.desc.desc
 import library.device.api.DeviceFacade
-import library.money.api.CurrencyFactory
+import library.money.api.Currency
 import library.money.api.Money
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
-import me.bookk.core.presentation.memory.weakSelfClosure
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.resources.toOneLine
@@ -47,7 +47,7 @@ class BusinessSettingsViewModel(
     }
 
     private fun BusinessSettingsState.setup() = apply {
-        appBar.onBackClick = weakSelfClosure {
+        appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(BusinessSettingsDestination.Back)
         }
     }
@@ -97,7 +97,7 @@ class BusinessSettingsViewModel(
                         description = uiState.description.text.trim(),
                         address = uiState.address.text.trim(),
                         location = businessLocation,
-                        currency = CurrencyFactory.forCode(uiState.currency.selectedItem!!.domainValue.name),
+                        currency = Currency(uiState.currency.selectedItem!!.domainValue.name),
                         socials = listOf(
                             Social(SocialKind.PHONE, uiState.phone.text.trim()),
                             Social(SocialKind.INSTAGRAM, uiState.instagram.text.trim()),

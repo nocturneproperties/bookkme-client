@@ -17,6 +17,7 @@ struct NotificationHandler: ViewModifier {
     @Bindable
     var notificationState: IOSNotificationState
 
+	@State private var confirmCount = 0
 	@State var data: PresentationNotificationMessage? = nil
 	@State var inputData: PresentationNotificationInputMessage? = nil
 
@@ -36,6 +37,7 @@ struct NotificationHandler: ViewModifier {
 						notificationState.removeFirst()
 						break
 					case is PresentationNotificationGlobalMessage:
+						confirmCount += 1
 						notificationState.removeFirst()
 						break
 					case is PresentationNotificationUnauthorized:
@@ -48,6 +50,7 @@ struct NotificationHandler: ViewModifier {
 					}
 				}
             }
+			.sensoryFeedback(.success, trigger: confirmCount)
 			.modifier(NotificationAlert(notificationState: notificationState, data: data))
 			.modifier(NotificationInputAlert(notificationState: notificationState, data: inputData))
     }

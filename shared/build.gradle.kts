@@ -10,8 +10,10 @@ plugins {
     alias(libs.plugins.kmm.resources)
 }
 
-android {
-    namespace = "me.bookk.shared"
+kotlin {
+    android {
+        namespace = "me.bookk.shared"
+    }
 }
 
 buildkonfig {
@@ -69,6 +71,7 @@ kotlin {
             implementation(projects.database)
             implementation(projects.core.data)
             implementation(projects.environment.api)
+            implementation(projects.environment.impl)
             api(projects.core)
             api(projects.core.domain)
             api(projects.core.presentation)
@@ -85,12 +88,11 @@ kotlin {
             implementation(projects.library.validation.api)
             implementation(projects.library.validation.impl)
             api(projects.library.credentials.api)
-            api(projects.library.credentials.impl)
-            api(projects.library.money.api)
+            implementation(projects.library.credentials.impl)
+            api(projects.library.money)
             api(projects.library.biometry.api)
             api(projects.library.picker)
             implementation(projects.library.biometry.impl)
-            implementation(projects.library.money.impl)
             //Auth
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.domain.impl)
@@ -131,7 +133,6 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.resources)
             implementation(libs.ktor.client.auth)
-            implementation(libs.koin.core)
             implementation(libs.logger)
             api(libs.kotlinx.datetime)
             api(libs.kmm.resources)
@@ -162,7 +163,7 @@ kotlin {
             export(projects.feature.clients.presentation)
             export(projects.feature.services.presentation)
             export(projects.feature.appointments.presentation)
-            export(projects.library.money.api)
+            export(projects.library.money)
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)
             export(projects.library.picker)

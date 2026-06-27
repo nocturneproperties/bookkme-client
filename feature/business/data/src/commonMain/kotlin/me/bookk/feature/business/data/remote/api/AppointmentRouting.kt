@@ -6,7 +6,7 @@ import kotlin.uuid.Uuid
 object AppointmentRouting {
     @Resource("api")
     class Api {
-        @Resource("/appointment")
+        @Resource("/appointments")
         class Appointment(val parent: Api = Api()) {
 
             @Resource("/enabled/{businessId}")

@@ -2,11 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "library.biometry.impl"
-}
-
 kotlin {
+    android {
+        namespace = "library.biometry.impl"
+    }
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.biometry)

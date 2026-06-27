@@ -65,7 +65,7 @@ class BusinessDashboardViewModel(
                         add(BusinessDashboardSection.Business(businessId))
                     }
                     if (features.contains(DashboardFeature.APPOINTMENTS)) {
-                        add(BusinessDashboardSection.Appointments())
+                        add(BusinessDashboardSection.Appointments(businessId))
                     }
                     if (features.contains(DashboardFeature.SHOP)) {
                         add(BusinessDashboardSection.Shop())

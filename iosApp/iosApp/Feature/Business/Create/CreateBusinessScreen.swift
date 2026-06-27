@@ -21,6 +21,7 @@ struct CreateBusinessScreen: View {
 			}
 			.textContentType(.organizationName)
 			.submitLabel(.done)
+			.textFieldStyle(.standalone)
 			Spacer()
 		}
 		.padding()

@@ -190,6 +190,8 @@ cd feature/.template
 
 If a new data-source method is needed: add it to the interface in `data/source`, implement in `Common<X>DataSource(httpClient) : DataSource(), <X>DataSource` in `data/src/commonMain` wrapping calls in `mapExceptions { ... }`, using Ktor `Resources` typed routes and request/response models in `data/remote/`. Register with `singleOf(::Common<X>DataSource) bind <X>DataSource::class` in the feature's data DI module. Always map remote/local models to domain entities — never leak Ktor models out of `data`.
 
+**Remote model field order matters.** API requests/responses are serialized as `application/x-protobuf` via `kotlinx-serialization-protobuf` (`core/data/.../Serialization.kt`), and none of the remote models use `@ProtoNumber` — field numbers are assigned positionally by declaration order. Whenever you add, remove, or reorder a field on a `*Remote`/`*Request` model, fetch the current schema from the swagger endpoint (see API Documentation section) and verify the Kotlin property declaration order matches the backend's property order exactly (e.g. `curl -s <swagger-yaml-url> | python3 -c "import json,sys; print(list(json.load(sys.stdin)['components']['schemas']['<SchemaName>']['properties'].keys()))"`). A mismatched order silently desyncs every field after the change — Kotlin won't catch it, only a wire-format bug at runtime will.
+
 ### DataSource method contract
 
 Each datasource method must do **one thing**: either fetch from network, read from DB, or write to DB — never combine these in a single method. When a use case needs to fetch and then cache, it calls two separate datasource methods (e.g. `getAppointmentsForDate` then `saveAppointmentsForDate`). The use case is the only orchestrator of multi-step data operations.
@@ -299,7 +301,7 @@ Use this section to map a screenshot or wireframe to concrete components and sta
 └─────────────────────────────────┘
 ```
 
-`TextField` state keys: `label`, `placeholder`, `text`, `suffix`, `startIcon`, `endIcon`, `supportingTextRes`, `validationState` (`NONE`/`WARNING`/`ERROR`), `inputType`, `enabled`, `readOnly`, `onTextChanged`.
+`TextField` state keys: `label`, `placeholder`, `text`, `suffix`, `startIcon`, `endIcon`, `supportingTextRes`, `validationState` (`DEFAULT`/`WARNING`/`ERROR`), `inputType` (`TEXT`/`DIGIT`/`DECIMAL`/`PHONE`/`EMAIL`/`ASCII`/`PASSWORD`), `isValid`, `enabled`, `readOnly`, `maxLength`, `onTextChanged`.
 
 ### Multi-item Picker
 
@@ -314,7 +316,9 @@ Use this section to map a screenshot or wireframe to concrete components and sta
 ╚═════════════════════════════════╝
 ```
 
-`MultiPicker<T>(state) { item, onRemove -> }` — the lambda renders each selected row; `AppCard` container is provided by the component.
+Two variants:
+- `MultiPicker<T>(state, pickerContent = { /* e.g. SelectorBottomSheet */ }) { item, onRemove -> }` — `state.addItemButton` drives the add button; tapping it sets `state.isPickerVisible = true`; the `pickerContent` lambda is shown when `isPickerVisible`; item lambda renders each row inside the `AppCard`. Use when items come from a source screen or custom picker.
+- `OptionsMultiPicker<T>(state) { item, onRemove -> }` — manages its own `SelectorBottomSheet` using `state.options`; the add button label comes from `state.addItemText`. Use when options are loaded into state directly.
 
 ### Toggle / Selection
 
@@ -452,16 +456,149 @@ Color modifiers: `.primary()` = `primaryText`, `.secondary()` = `secondaryText`,
 | Interface | Key fields |
 |---|---|
 | `AppBarState` | `title`, `subtitle`, `onBackClick`, `size: TopBarSize`, `actions: ListState<AppBarAction>` |
-| `ButtonState` | `text`, `isEnabled`, `isLoading`, `onClick` |
-| `TextFieldState` | `label`, `placeholder`, `text`, `suffix`, `startIcon`, `endIcon`, `supportingTextRes`, `validationState`, `inputType`, `enabled`, `readOnly`, `onTextChanged` |
+| `ButtonState` | `icon`, `text`, `isEnabled`, `isLoading`, `onClick` |
+| `TextFieldState` | `label`, `placeholder`, `text`, `suffix`, `startIcon`, `endIcon`, `supportingTextRes`, `validationState`, `inputType`, `isValid`, `enabled`, `readOnly`, `maxLength`, `onTextChanged` |
 | `PickerFieldState<T>` | `textField`, `options`, `selectedItem`, `onItemPicked`, `pickerTitle`, `pickerType` |
-| `MultiPickerState<T>` | `pickerTitle`, `options`, `selectedItems`, `onItemsPicked`, `onItemsRemoveRequested`, `addItemText`, `isEditable` |
-| `DatePickerFieldState` | `textField`, `pickedDate`, `minDate`, `maxDate`, `onDatePicked` |
-| `TimePickerFieldState` | `textField`, `pickedTime`, `onTimePicked` |
-| `SwitchState` | `text`, `isChecked` |
-| `CheckBoxState` | `text`, `isChecked`, `supportingTextRes`, `validationState`, `onCheckedChange` |
+| `MultiPickerState<T>` | `pickerTitle`, `placeholder`, `selectedItems`, `onItemsPicked`, `onItemsRemoveRequested`, `addItemButton: ButtonState`, `isEditable`, `isPickerVisible` |
+| `OptionsMultiPickerState<T>` | `pickerTitle`, `options`, `selectedItems`, `onItemsPicked`, `onItemsRemoveRequested`, `addItemText`, `isEditable` |
+| `DatePickerFieldState` | `textField: TextFieldState`, `datePicker: DatePickerState` |
+| `DatePickerState` | `isDatePickerVisible`, `pickedDate: LocalDate?`, `minDate`, `maxDate`, `onDatePicked` |
+| `TimePickerFieldState` | `textField: TextFieldState`, `timePicker: TimePickerState` |
+| `TimePickerState` | `isTimePickerVisible`, `pickedTime: LocalTime?`, `minTime`, `maxTime`, `onTimePicked` |
+| `DateRangePickerState` | `title`, `startDate: DatePickerFieldState`, `endDate: DatePickerFieldState`, `onDateRangeSelected` |
+| `DateTimePickerState` | `isDatePickerVisible`, `pickedDate: LocalDateTime?`, `minDate`, `maxDate`, `onDatePicked` |
+| `MoneyFieldState` | `currentValue: Money`, `textState: TextFieldState`, `currency: TextIcon?` |
+| `BooleanState` | `text`, `isEnabled`, `isChecked`, `isValid`, `validationState`, `supportingTextRes`, `onCheckedChange` — used for both `StateSwitch` and `CheckBox`/`CheckBoxSelector` |
 | `RadioButtonState` | `text`, `isSelected`, `isEnabled`, `onClick` |
 | `ListState<T>` | `items`, `isInitialLoading`, `emptyState`, `loadMore` |
 | `RefreshState` | `isRefreshing`, `onRefresh` |
-| `InfoLine` | `title: StringDesc`, `value: StringDesc`, `onClick?` |
-| `EmptyState` | `image: ImageResource`, `label: StringDesc` |
+| `InfoLine` | `id: String`, `title: StringDesc`, `value: StringDesc`, `onClick?` |
+| `OptionalInfoLine` | `title: StringDesc`, `value: StringDesc?`, `onClick?` (auto-generates `id`) |
+| `EmptyState` | `image: ImageResource`, `label: StringDesc`, `refreshAction: (() -> Unit)?` |
+
+
+# Testing Rules
+
+These rules govern how you write and maintain tests in this mobile repository (KMM shared layer, Jetpack Compose on Android, SwiftUI on iOS). They are non-negotiable unless I explicitly tell you to deviate for a specific task.
+
+**Scope:** We test **logic only**. There is no UI testing in this repo for now — no Compose `composeTestRule`/Robolectric, no XCUITest/ViewInspector, no snapshot tests. Do not add UI, instrumentation, or snapshot tests, and do not add their dependencies. If a piece of behavior feels like it needs a UI test to verify, that is a signal the logic should be moved into a testable layer (see §2) — move it, don't test the UI.
+
+## 1. Test-Driven Development (default workflow)
+
+Implement every feature and bug fix using strict TDD:
+
+1. **Red** — Write a failing test that captures the expected behavior. Show the failing output (or name the assertion that fails) before writing implementation.
+2. **Green** — Write the minimum production code needed to make the test pass.
+3. **Refactor** — Improve implementation and tests while all tests stay green.
+
+Hard rules:
+- Never write production code without a failing test that demands it.
+- One behavior per test. Tests are named for the behavior they assert (`returns X when Y`), not for the method they call.
+- After each step, run the relevant suite and confirm the expected pass/fail state before continuing.
+- For a bug fix, first write a test that reproduces the bug (red), then fix it (green). The reproduction test is the proof.
+
+## 2. What to test — logic only
+
+All testable behavior lives below the UI. Push decision-making out of composables/views into state holders and the shared layer, then test it there.
+
+**Always unit test:**
+- Business/domain logic in the KMM shared layer.
+- State holders / ViewModels / presenters: given events/input, assert emitted state. Test the state object, never the view that renders it.
+- Pure functions: validation, mapping, formatting, locale-aware logic (Polish formatting, currency, first-day-of-week, `IOSTextFieldState`/validation), date/time math with `kotlinx-datetime`.
+
+**Never test (out of scope):**
+- Anything that requires rendering, a UI test runtime, or a device/simulator: composables, SwiftUI views, navigation wiring, layout, visual appearance.
+- Trivial mappers or one-line passthroughs with no logic.
+- Framework behavior, language features, or third-party libraries.
+
+**Guiding principle:** the view is a thin projection of state. A composable or SwiftUI view should contain no logic worth testing. If you can't fully verify a feature through state-holder and shared-layer tests, the architecture is wrong for this feature — refactor logic downward (ideally into `commonMain`) until it is testable without the UI.
+
+## 3. Test quality
+
+- **Behavior, not implementation.** Assert observable outcomes (returned values, emitted state, side effects), never private internals. Tests must survive refactors that preserve behavior.
+- **Deterministic.** No reliance on wall-clock time, real network, random seeds, or test execution order. Inject clocks/dispatchers; use fakes.
+- **Cover the edges.** Happy path + boundaries + failure modes (empty, null, invalid input, error states, concurrency where relevant). A feature isn't done until its failure cases are tested.
+- **Arrange–Act–Assert** structure, with a clear single act per test.
+- **Prefer fakes over mocks.** Mock only at true external boundaries (e.g. the network client). Don't assert on mock call sequences as a proxy for behavior.
+- **No assertion-free tests, no tests that can't fail, no `assertTrue(true)` placeholders.** If you can't make it fail meaningfully, don't write it.
+
+## 4. KMM / coroutines specifics
+
+- Put tests in `commonTest`; only drop to `androidUnitTest` / `iosTest` source sets for `expect/actual` or platform-specific APIs.
+- Use `runUnitTest` and `TestDispatcher` / `StandardTestDispatcher` for coroutine code; never `Thread.sleep` or real delays.
+- Inject `Clock` and `Dispatchers` rather than calling `Clock.System.now()` or `Dispatchers.Default` directly, so tests stay deterministic.
+- For concurrency primitives (`Mutex`, `atomicfu`), write a test that would fail under the unsynchronized version.
+- When testing `expect/actual` (e.g. currency retrieval, locale first-day-of-week), assert the shared contract in `commonTest` and cover platform divergence in the platform source set.
+- Keep `commonTest` fast and runnable on the JVM; these are plain unit tests, not instrumented ones.
+
+## 5. Process rules for you (the agent)
+
+- Run the relevant suite before declaring a task done, and report the result. Default to the affected source set during the loop; reserve the full `commonTest` run for a final check.
+- If a requirement is ambiguous, encode your assumption as a test and state the assumption explicitly in your summary.
+- Never delete, skip (`@Ignore` / `xit`), or weaken a failing test to make the suite green. If a test is genuinely wrong, explain why and propose the change before acting.
+- Don't pad coverage with low-value tests to hit a number. Coverage is a side effect of testing real behavior, not a target.
+- Do not introduce UI/instrumentation/snapshot test tooling or dependencies. If you believe a UI test is genuinely warranted, stop and raise it with me instead of adding one.
+- When you add a feature, list which tests you added and what each one protects.
+
+## 6. Platform-specific test setup (KMM unit tests)
+
+**Test dispatcher boilerplate** — every test class that has suspend code needs:
+```kotlin
+private val testDispatcher = UnconfinedTestDispatcher()
+@BeforeTest fun setUp() { Dispatchers.setMain(testDispatcher) }
+@AfterTest fun tearDown() { Dispatchers.resetMain() }
+```
+
+**Fixture pattern** — use `private class Fixture { val dep = mock<Dep>(); val sut = Impl(dep) }` so a fresh SUT and fresh mocks are created for every test. Never share state between tests. Instantiate it as `val fixture = Fixture()` — never `val f = Fixture()`, `val fixture = Fixture()`, or any other name. Inside the body, the system under test is `fixture.sut(...)` and mocks are `fixture.dep`.
+
+**Mocking library** — use **Mokkery** (`dev.mokkery`), a KMP compiler-plugin-based mock framework. Key API:
+- `mock<T>()` — strict mock (throws on unstubbed calls); `mock<T>(MockMode.autofill)` for a relaxed placeholder
+- `everySuspend { mock.suspendFn(any()) } returns value` — stub suspend functions
+- `everySuspend { mock.suspendFn(any()) } returns Unit` — stub void suspend (replaces `coJustRun`)
+- `everySuspend { mock.suspendFn(any()) } throws error` — stub suspend throws
+- `every { mock.fn(any()) } returns value` — stub non-suspend functions (e.g. Flow-returning)
+- `verifySuspend { mock.suspendFn(args) }` — verify suspend call
+- `verifySuspend(VerifyMode.exactly(n)) { mock.suspendFn(args) }` — exact call count
+- `verifySuspend(VerifyMode.order) { mock.fn1(a); mock.fn2(b) }` — ordered call sequence
+- `any()` — any-argument matcher (from `dev.mokkery.matcher`)
+- `matches({ "desc" }) { predicate }` — predicate matcher (replaces MockK's `match {}`)
+
+**Fixture files** — when multiple test classes in a module share the same stub helpers, extract them into an `internal` top-level file (e.g. `AppointmentTestFixtures.kt`, `ServiceTestFixtures.kt`, `BusinessTestFixtures.kt`) in the `commonTest` source set at the module's root package. Sub-package test files import via `import me.bookk.feature.<name>.domain.impl.stubX`.
+
+**Given/When/Then** — every `@Test` function **must** use `runUnitTest` (from `me.bookk.core.test`) and call `given()`, `whenn()`, and `then()` as structural markers. `runUnitTest` enforces their presence at runtime. The three markers divide the test body into: setup & mock-stubbing (`given`), the single action under test (`whenn`), and assertions & verifications (`then`). Example:
+```kotlin
+@Test
+fun `returns created business`() = runUnitTest {
+    given()
+    val fixture = Fixture()
+    everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+
+    whenn()
+    val result = fixture.sut("My Salon")
+
+    then()
+    assertEquals(stubBusiness(), result)
+}
+```
+Import: `import me.bookk.core.test.given`, `import me.bookk.core.test.whenn`, `import me.bookk.core.test.then`, `import me.bookk.core.test.runUnitTest`. The `testFixtures` of `:core` are added to `commonTest` by the convention plugin automatically.
+
+**SharedFlow event tests** — package-level `MutableSharedFlow` instances (`appointmentEvents`, `clientEvents`, `serviceEvents`, `serviceGroupEvents`) require `Dispatchers.Unconfined` on the subscriber coroutine for the event to be delivered synchronously during `emit()`. With `UnconfinedTestDispatcher`, the emitter queues the subscriber continuation in the test scheduler but doesn't run it until the test coroutine suspends — if `job.cancel()` happens before that suspension, the event is lost. Pattern that works (with given/when/then):
+```kotlin
+given()
+val fixture = Fixture()
+everySuspend { fixture.dataSource.doThing(any()) } returns result
+val events = mutableListOf<SomeEvent>()
+val job = launch(Dispatchers.Unconfined) { someEvents.collect { events.add(it) } }
+
+whenn()
+fixture.sut(args)
+
+then()
+job.cancel()
+assertTrue(events.any { it is SomeEvent.Created })
+```
+
+**`invoke()` as operator** — some use case interfaces declare `suspend fun invoke(...)` without the `operator` modifier. These cannot be called with `fixture.sut(args)` shorthand; use `fixture.sut.invoke(args)` in tests.
+
+**`PassKeyManager.Error.Unknown` constructor** — takes a required `cause: Throwable?` parameter. Throw it in tests as `PassKeyManager.Error.Unknown(null)`.
+

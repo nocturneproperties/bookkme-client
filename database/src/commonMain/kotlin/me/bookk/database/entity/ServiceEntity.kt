@@ -1,6 +1,5 @@
 package me.bookk.database.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
@@ -40,8 +39,6 @@ class ServiceEntity(
     val duration: Duration,
     val priceCurrency: String,
     val priceValue: Long,
-    @ColumnInfo(defaultValue = "true")
     val isAvailable: Boolean,
-    @ColumnInfo(defaultValue = "0")
     val createdAt: Instant
 )

@@ -25,4 +25,8 @@ extension String {
 	}
 }
 
+extension KotlinUuid: @retroactive Identifiable {
+	public var id: String { toHexString() }
+}
+
 

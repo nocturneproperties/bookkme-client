@@ -38,14 +38,14 @@ fun AppTimePicker(
         onDismissRequest = { state.isTimePickerVisible = false },
         dismissButton = dismissButton?.let { dismissButtonState ->
             {
-                TextButton(
+                StateTextButton(
                     state = dismissButtonState,
                     onClick = { state.isTimePickerVisible = false },
                 )
             }
         },
         confirmButton = {
-            TextButton(
+            StateTextButton(
                 modifier = Modifier.padding(end = 8.dp),
                 state = confirmButton,
                 onClick = {

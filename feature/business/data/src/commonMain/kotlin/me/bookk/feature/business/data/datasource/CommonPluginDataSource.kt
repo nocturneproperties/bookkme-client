@@ -24,6 +24,7 @@ internal class CommonPluginDataSource(
                         id = business.id,
                         name = business.name,
                         address = business.address,
+                        timeZone = business.timeZone,
                         isEnabled = true
                     )
                 )

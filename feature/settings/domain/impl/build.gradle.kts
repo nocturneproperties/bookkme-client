@@ -2,11 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "me.bookk.feature.settings.domain.impl"
-}
-
 kotlin {
+    android {
+        namespace = "me.bookk.feature.settings.domain.impl"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)
@@ -14,7 +13,10 @@ kotlin {
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.data.source)
             implementation(projects.feature.settings.domain.api)
-            implementation(projects.feature.settings.domain.datasource)
+            implementation(projects.feature.settings.data.source)
+        }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
         }
     }
 }

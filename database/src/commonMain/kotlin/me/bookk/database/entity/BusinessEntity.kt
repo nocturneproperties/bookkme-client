@@ -20,5 +20,6 @@ class BusinessEntity(
     val insta: String?,
     val viber: String?,
     val whatsApp: String?,
-    val telegram: String?
+    val telegram: String?,
+    val timeZone: String
 )

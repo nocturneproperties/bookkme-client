@@ -2,6 +2,7 @@ package library.biometry.impl
 
 
 import dev.icerock.moko.resources.desc.StringDesc
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import library.biometry.api.Biometry
 import library.biometry.api.Biometry.Error
@@ -11,6 +12,7 @@ import platform.LocalAuthentication.LAErrorUserCancel
 import platform.LocalAuthentication.LAPolicyDeviceOwnerAuthenticationWithBiometrics
 import kotlin.coroutines.resume
 
+@OptIn(ExperimentalForeignApi::class)
 internal class IosBiometry(
     optManager: CommonBiometryOptManager
 ) : Biometry, BiometryOptManager by optManager {

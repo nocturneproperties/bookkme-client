@@ -25,7 +25,7 @@ import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import library.device.api.DeviceFacade
-import me.bookk.core.LogFactory
+import me.bookk.core.Logger
 import me.bookk.core.data.HttpClientType
 import me.bookk.data.mock.MockedBackend
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
@@ -44,7 +44,7 @@ internal fun networkModule() = module {
 }
 
 private val refreshMutex = Mutex()
-private val refreshLogger by lazy { LogFactory.createLogger("Network") }
+private val refreshLogger by lazy { Logger.create("Network") }
 
 @OptIn(ExperimentalSerializationApi::class, ExperimentalUuidApi::class)
 private fun Scope.buildClient(installAuth: Boolean): HttpClient {

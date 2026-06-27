@@ -60,22 +60,10 @@ private struct RescheduleInfoSection: View {
 	var body: some View {
 		HStack {
 			InfoSection(section: section)
-			TextButton(rescheduleButton, maxWidth: nil)
+			if rescheduleButton.isVisible {
+				TextButton(rescheduleButton)
+					.buttonStyle(.textAction)
+			}
 		}
-	}
-}
-
-private struct StatusLabel: View {
-	let status: UIAppointmentStatus
-
-	var body: some View {
-		let color = status.color.color
-		Text(status.label.localized())
-			.font(.subheadline.weight(.semibold))
-			.foregroundStyle(color)
-			.padding(.horizontal, 12)
-			.padding(.vertical, 4)
-			.background(color.opacity(0.12))
-			.clipShape(RoundedRectangle(cornerRadius: 8))
 	}
 }

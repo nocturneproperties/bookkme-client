@@ -7,7 +7,7 @@ import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 @Suppress("unused")
 class AndroidApplicationConventionPlugin : Plugin<Project> {
@@ -15,7 +15,6 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.apply {
                 apply(libs.plugins.android.application.get().pluginId)
-                apply(libs.plugins.kotlin.android.get().pluginId)
                 apply(libs.plugins.compose.compiler.get().pluginId)
                 apply(libs.plugins.google.services.get().pluginId)
                 apply(libs.plugins.firebase.crashlytics.get().pluginId)
@@ -25,8 +24,9 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             extensions.getByType<ApplicationExtension>().apply {
                 applyConvention(target)
                 applyFlavourConvention(target.projectDir)
-                extensions.getByType<KotlinAndroidProjectExtension>().applyConvention()
             }
+            extensions.getByType<ComposeCompilerGradlePluginExtension>()
+                .applyConvention(project)
         }
     }
 }

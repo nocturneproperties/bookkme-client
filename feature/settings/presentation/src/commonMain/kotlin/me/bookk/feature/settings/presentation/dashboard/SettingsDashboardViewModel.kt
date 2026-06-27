@@ -13,7 +13,6 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.feature.settings.domain.api.GetSettings
-import me.bookk.feature.settings.domain.api.LogOut
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
@@ -22,7 +21,6 @@ class SettingsDashboardViewModel(
     private val getSettings: GetSettings,
     private val updateColorScheme: UpdateColorScheme,
     private val deviceFacade: DeviceFacade,
-    private val logOut: LogOut,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -86,11 +84,7 @@ class SettingsDashboardViewModel(
     }
 
     private fun logout() {
-        launch(
-            launchIn = DispatcherProvider.io,
-            call = { logOut() },
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
-        )
+        uiState.notification.add(PresentationNotification.Unauthorized)
     }
 
     private fun loadSettings() {

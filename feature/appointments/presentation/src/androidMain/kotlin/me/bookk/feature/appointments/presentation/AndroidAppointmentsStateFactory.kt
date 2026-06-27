@@ -6,29 +6,23 @@ import me.bookk.feature.appointments.presentation.screen.details.AndroidAppointm
 import me.bookk.feature.appointments.presentation.screen.details.AppointmentDetailsState
 import me.bookk.feature.appointments.presentation.screen.history.AndroidAppointmentHistoryState
 import me.bookk.feature.appointments.presentation.screen.history.AppointmentHistoryState
-import me.bookk.feature.appointments.presentation.screen.requestlist.AndroidAppointmentListState
-import me.bookk.feature.appointments.presentation.screen.requestlist.AppointmentListState
+import me.bookk.feature.appointments.presentation.screen.list.AndroidAppointmentListState
+import me.bookk.feature.appointments.presentation.screen.list.AppointmentListState
+import me.bookk.feature.appointments.presentation.screen.request.AndroidAppointmentRequestState
+import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequestState
 import me.bookk.feature.appointments.presentation.screen.settings.AndroidAppointmentSettingsState
 import me.bookk.feature.appointments.presentation.screen.settings.AppointmentSettingsState
 
 class AndroidAppointmentsStateFactory : AppointmentsStateFactory {
-    override fun createAppointmentListState(): AppointmentListState {
-        return AndroidAppointmentListState()
-    }
+    override fun createAppointmentListState(): AppointmentListState = AndroidAppointmentListState()
 
-    override fun createAppointmentCreateState(): AppointmentCreateState {
-        return AndroidAppointmentCreateState()
-    }
+    override fun createAppointmentCreateState(): AppointmentCreateState = AndroidAppointmentCreateState()
 
-    override fun createAppointmentDetailsState(): AppointmentDetailsState {
-        return AndroidAppointmentDetailsState()
-    }
+    override fun createAppointmentDetailsState(): AppointmentDetailsState = AndroidAppointmentDetailsState()
 
-    override fun createAppointmentSettingsState(): AppointmentSettingsState {
-        return AndroidAppointmentSettingsState()
-    }
+    override fun createAppointmentSettingsState(): AppointmentSettingsState = AndroidAppointmentSettingsState()
 
-    override fun createAppointmentHistoryState(): AppointmentHistoryState {
-        return AndroidAppointmentHistoryState()
-    }
+    override fun createAppointmentHistoryState(): AppointmentHistoryState = AndroidAppointmentHistoryState()
+
+    override fun createAppointmentRequestState(): AppointmentRequestState = AndroidAppointmentRequestState()
 }

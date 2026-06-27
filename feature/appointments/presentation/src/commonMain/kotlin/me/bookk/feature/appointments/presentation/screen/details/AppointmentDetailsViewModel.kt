@@ -64,8 +64,12 @@ class AppointmentDetailsViewModel(
             onComplete = ::renderAppointment,
             onError = {
                 when (it) {
-                    is Error.AppointmentAlreadyCancelled -> {}
-                    is Error.AppointmentAlreadyCompleted -> {}
+                    is Error.AppointmentAlreadyCancelled -> {
+                        renderAppointment(appointment.copy(status = AppointmentStatus.CANCELLED))
+                    }
+                    is Error.AppointmentAlreadyCompleted -> {
+                        renderAppointment(appointment.copy(status = AppointmentStatus.COMPLETED))
+                    }
                 }
             }
         )

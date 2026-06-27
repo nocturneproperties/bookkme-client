@@ -2,6 +2,7 @@ package me.bookk.feature.business.data.remote.model
 
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.Serializable
+import me.bookk.core.data.TimeZoneSerializer
 import me.bookk.feature.business.domain.api.entity.Business
 import kotlin.uuid.Uuid
 
@@ -11,6 +12,7 @@ class BusinessRemote(
     val name: String,
     val description: String,
     val address: String,
+    @Serializable(with = TimeZoneSerializer::class)
     val timeZone: TimeZone,
     val location: Location?,
     val currencyCode: String,

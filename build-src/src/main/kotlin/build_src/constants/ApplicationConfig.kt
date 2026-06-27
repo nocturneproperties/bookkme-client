@@ -2,7 +2,7 @@ package build_src.constants
 
 object ApplicationConfig {
     const val MIN_SDK = 28
-    const val COMPILE_SDK = 36
+    const val COMPILE_SDK = 37
 
     const val STATIC_VERSION = "0.1.0"
     const val STATIC_VERSION_CODE = 260571542

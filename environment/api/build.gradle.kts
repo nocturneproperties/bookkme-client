@@ -2,11 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "me.bookk.domain.environment.api"
-}
-
 kotlin {
+    android {
+        namespace = "me.bookk.domain.environment.api"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.datetime)

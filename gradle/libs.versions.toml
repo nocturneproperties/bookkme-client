@@ -1,36 +1,37 @@
 [versions]
 local-plugin-version = "1.0"
-agp = "8.13.2"
+agp = "9.2.1"
 kotlin = "2.3.21"
-compose-runtime = "1.10.3"
+compose-runtime = "1.11.1"
 androidx-activity = "1.13.0"
-androidx-lifecycle = "2.10.0"
-androidx-core = "1.18.0"
+androidx-lifecycle = "2.11.0"
+androidx-core = "1.19.0"
 androidx-credentials = "1.6.0"
-coroutines = "1.10.2"
+coroutines = "1.11.0"
 firebase = "34.12.0"
-appDistribution = "5.2.1"
+appDistribution = "5.3.0"
 crashlytics = "3.0.7"
-google-services = "4.4.4"
-koin = "4.2.1"
-ktor = "3.4.3"
+google-services = "4.5.0"
+koin = "4.2.2"
+ktor = "3.5.1"
 splash = "1.2.0"
-kmm-resources = "0.26.3"
+kmm-resources = "0.26.4"
 kmm-resources-graphics = "0.25.2"
-datetime = "0.7.1"
-coil = "3.4.0"
+datetime = "0.8.0"
+coil = "3.5.0"
 room = "2.8.4"
 sqlite = "2.6.2"
 compose-navigation = "2.9.8"
 ksp = "2.3.4"
 preferences = "1.2.1"
 okio = "3.17.0"
-build-konfig = "0.18.0"
+build-konfig = "0.22.0"
 json-serialization = "1.11.0"
 money = "2.0.3"
 dotindicator = "5.1.0"
 biometry = "1.4.0-alpha02"
 napier = "2.7.1"
+mockery = "3.4.2"
 
 [libraries]
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -48,9 +49,7 @@ kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", ve
 kotlin-multiplatform-gradlePlugin = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
 test-kotlin = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 test-koin = { module = "io.insert-koin:koin-test", version.ref = "koin" }
-test-mock = { module = "io.mockk:mockk", version = "1.14.5" }
-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "json-serialization" }
 kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "json-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
@@ -94,23 +93,21 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-sqlite = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-buildkonfig-gradlePlugin = { module = "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin", version.ref = "build-konfig" }
-buildkonfig-compiler = { module = "com.codingfeline.buildkonfig:buildkonfig-compiler", version.ref = "build-konfig" }
 joda-money = { module = "org.joda:joda-money", version.ref = "money" }
 logger = { module = "io.github.aakira:napier", version.ref = "napier" }
+buildkonfig-compiler = { module = "com.codingfeline.buildkonfig:buildkonfig-compiler", version.ref = "build-konfig" }
+compose-compiler-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
 android-room = { id = "androidx.room", version.ref = "room" }
 android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
+android-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 convention-android-application = { id = "convention.android.application", version.ref = "local-plugin-version" }
 convention-kmm-library-kotlin = { id = "convention.kmm.library", version.ref = "local-plugin-version" }
 convention-kmm-library-compose = { id = "convention.kmm.library.compose", version.ref = "local-plugin-version" }
 convention-kmm-database = { id = "convention.kmm.library.database", version.ref = "local-plugin-version" }
-convention-kotlin-library = { id = "convention.kotlin.library", version.ref = "local-plugin-version" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
@@ -119,3 +116,4 @@ firebase-appDistribution = { id = "com.google.firebase.appdistribution", version
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 buldconfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }
+mockery = { id = "dev.mokkery", version.ref = "mockery" }

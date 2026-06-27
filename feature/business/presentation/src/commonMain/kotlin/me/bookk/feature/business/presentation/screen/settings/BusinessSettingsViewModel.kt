@@ -2,7 +2,7 @@ package me.bookk.feature.business.presentation.screen.settings
 
 import dev.icerock.moko.resources.desc.desc
 import library.device.api.DeviceFacade
-import library.money.api.CurrencyFactory
+import library.money.api.Currency
 import library.money.api.Money
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
@@ -97,7 +97,7 @@ class BusinessSettingsViewModel(
                         description = uiState.description.text.trim(),
                         address = uiState.address.text.trim(),
                         location = businessLocation,
-                        currency = CurrencyFactory.forCode(uiState.currency.selectedItem!!.domainValue.name),
+                        currency = Currency(uiState.currency.selectedItem!!.domainValue.name),
                         socials = listOf(
                             Social(SocialKind.PHONE, uiState.phone.text.trim()),
                             Social(SocialKind.INSTAGRAM, uiState.instagram.text.trim()),

@@ -2,11 +2,11 @@ package build_src
 
 import build_src.convention.applyConvention
 import build_src.tools.libs
-import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 @Suppress("unused")
@@ -19,11 +19,9 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                 apply(libs.plugins.compose.compiler.get().pluginId)
                 apply(libs.plugins.kmm.resources.get().pluginId)
                 apply(libs.plugins.kotlin.serialization.get().pluginId)
+                apply(libs.plugins.mockery.get().pluginId)
             }
 
-            extensions.getByType<LibraryExtension>().apply {
-                applyConvention(target, useCompose = true)
-            }
             extensions.getByType<KotlinMultiplatformExtension>().apply {
                 applyConvention(target)
 
@@ -42,20 +40,23 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                     implementation(libs.kmm.resources.compose)
                     implementation(libs.koin.android)
                     implementation(libs.koin.android.compose)
+                    implementation(libs.compose.ui.tooling.preview)
+                    implementation(libs.compose.runtime)
+                    implementation(project.dependencies.platform(libs.compose.bom))
                 }
                 sourceSets.commonMain.dependencies {
                     implementation(libs.kotlin.serialization)
                     implementation(libs.kmm.resources)
-                    implementation(libs.compose.runtime)
                     implementation(libs.koin.core)
                     implementation(libs.koin.annotation)
                 }
             }
 
+            extensions.getByType<ComposeCompilerGradlePluginExtension>()
+                .applyConvention(project)
+
             dependencies {
-                add("debugImplementation", libs.compose.ui.tooling)
-                add("implementation", libs.compose.ui.tooling.preview)
-                add("implementation", platform(libs.compose.bom))
+                add("androidRuntimeClasspath",libs.compose.ui.tooling)
             }
         }
     }

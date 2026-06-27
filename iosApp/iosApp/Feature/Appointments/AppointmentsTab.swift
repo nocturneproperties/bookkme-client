@@ -9,9 +9,9 @@ import SwiftUI
 import shared
 
 struct AppointmentsTab: View {
-	
+
 	@StateObject var navigationStack = NavigationStackHolder()
-	
+
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
 			AppointmentListScreen()

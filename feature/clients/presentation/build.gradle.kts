@@ -4,11 +4,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.clients"
-}
-
 kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.clients"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)
@@ -20,7 +19,6 @@ kotlin {
         }
     }
 }
-
 multiplatformResources {
     resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.feature.clients.resources")
     resourcesClassName.set("ClientsRes")

@@ -1,22 +1,18 @@
 package build_src.convention
 
+import build_src.constants.ApplicationConfig
 import build_src.tools.isIosBuild
 import build_src.tools.libs
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-internal fun KotlinAndroidProjectExtension.applyConvention() {
-    jvmToolchain(21)
-}
-
 internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
-    @Suppress("DEPRECATION")
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-        }
+    targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
+        compileSdk = ApplicationConfig.COMPILE_SDK
+        minSdk = ApplicationConfig.MIN_SDK
+        androidResources { enable = true }
+        withHostTest {}
     }
 
     jvmToolchain(21)
@@ -55,5 +51,6 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     sourceSets.commonTest.dependencies {
         implementation(project.libs.test.kotlin)
         implementation(project.libs.test.koin)
+        implementation(project.libs.kotlinx.coroutines.test)
     }
 }

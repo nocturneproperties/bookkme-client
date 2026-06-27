@@ -1,5 +1,6 @@
 package me.bookk.database
 
+import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -11,6 +12,7 @@ import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
 import me.bookk.database.converter.UuidConverter
 import me.bookk.database.dao.AppointmentDao
+import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.ClientsDao
@@ -18,6 +20,8 @@ import me.bookk.database.dao.ServiceDao
 import me.bookk.database.dao.ServiceGroupDao
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.database.entity.AppointmentEntity
+import me.bookk.database.entity.AppointmentRequestEntity
+import me.bookk.database.entity.AppointmentRequestServiceSnapshotEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
 import me.bookk.database.entity.AppointmentSettingsDayOffEntity
 import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
@@ -41,10 +45,12 @@ import me.bookk.database.entity.UserProfileEntity
         AppointmentSettingsEntity::class,
         AppointmentSettingsDayScheduleEntity::class,
         AppointmentSettingsWorkHourEntity::class,
-        AppointmentSettingsDayOffEntity::class
+        AppointmentSettingsDayOffEntity::class,
+        AppointmentRequestEntity::class,
+        AppointmentRequestServiceSnapshotEntity::class
     ],
-    version = 1,
-    autoMigrations = []
+    version = 2,
+    autoMigrations = [AutoMigration(from = 1, to = 2)]
 )
 @TypeConverters(
     UuidConverter::class,
@@ -60,6 +66,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun serviceDao(): ServiceDao
     abstract fun serviceGroupDao(): ServiceGroupDao
     abstract fun appointmentDao(): AppointmentDao
+    abstract fun appointmentRequestDao(): AppointmentRequestDao
     abstract fun appointmentSettingsDao(): AppointmentSettingsDao
 
     companion object {

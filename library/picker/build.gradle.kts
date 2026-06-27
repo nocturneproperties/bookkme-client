@@ -4,11 +4,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.picker"
-}
-
 kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.picker"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.presentation)

@@ -2,11 +2,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
-android {
-    namespace = "library.device.impl"
-}
-
 kotlin {
+    android {
+        namespace = "library.device.impl"
+    }
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.core)

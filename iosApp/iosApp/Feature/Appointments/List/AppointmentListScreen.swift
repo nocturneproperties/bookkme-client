@@ -42,16 +42,28 @@ struct AppointmentListScreen: View {
 			.listRowBackground(AppColors.background)
 			.listRowInsets(EdgeInsets())
 		}
+		.toolbar {
+			ToolbarItem(placement: .navigation) {
+				TextButton(state.requestsButton)
+			}
+		}
 		.frame(maxHeight: .infinity)
+		.refreshable { await state.refresh.impl().awaitRefresh() }
 		.sheet(isPresented: Binding(
             get: { state.datePicker.isDatePickerVisible },
             set: { state.datePicker.isDatePickerVisible = $0 }
         )) {
             AppDatePicker(state: state.datePicker)
         }
+		.sheet(item: Binding(get: {
+			state.requestsBusinessId
+		}, set: {
+			state.requestsBusinessId = $0
+		})) { businessId in
+            AppointmentRequestSheet(businessId: businessId)
+        }
 		.listSectionSpacing(.compact)
 		.withNavigationBar(state.appBar)
-		.refreshable { await state.refresh.impl().awaitRefresh() }
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)
         .handleNavigation(state.navigation) { dest in
@@ -134,7 +146,7 @@ private struct AppointmentRequestRow: View {
 						.fontWeight(.medium)
 						.foregroundStyle(AppColors.primary)
 						.fixedSize()
-					
+
 					VStack(alignment: .leading, spacing: 2) {
 						Text(state.clientName)
 							.font(.headline)
@@ -143,9 +155,9 @@ private struct AppointmentRequestRow: View {
 							.font(.subheadline)
 							.foregroundStyle(AppColors.secondary)
 					}
-					
+
 					Spacer()
-					
+
 					Text(state.earnings)
 						.font(.subheadline)
 						.fontWeight(.semibold)

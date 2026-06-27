@@ -3,11 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
-    namespace = "me.bookk.feature.business.data"
-}
-
 kotlin {
+    android {
+        namespace = "me.bookk.feature.business.data"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

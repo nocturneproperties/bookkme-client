@@ -4,11 +4,10 @@ plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
-android {
-    namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.${FEATURE_NAME}"
-}
-
 kotlin {
+    android {
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.${FEATURE_NAME}"
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)

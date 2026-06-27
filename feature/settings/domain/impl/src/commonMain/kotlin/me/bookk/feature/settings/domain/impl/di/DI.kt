@@ -7,7 +7,6 @@ import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
 import me.bookk.feature.settings.domain.api.GetColorScheme
 import me.bookk.feature.settings.domain.api.GetSettings
-import me.bookk.feature.settings.domain.api.LogOut
 import me.bookk.feature.settings.domain.api.SendContactForm
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.domain.impl.CreateNewPasskeyImpl
@@ -17,7 +16,6 @@ import me.bookk.feature.settings.domain.impl.EditProfileImpl
 import me.bookk.feature.settings.domain.impl.GetAvailablePasskeysImpl
 import me.bookk.feature.settings.domain.impl.GetColorSchemeImpl
 import me.bookk.feature.settings.domain.impl.GetSettingsImpl
-import me.bookk.feature.settings.domain.impl.LogOutImpl
 import me.bookk.feature.settings.domain.impl.SendContactFormImpl
 import me.bookk.feature.settings.domain.impl.UpdateColorSchemeImpl
 import org.koin.core.module.dsl.factoryOf
@@ -31,7 +29,6 @@ fun settingsDomainModule() = module {
     factoryOf(::EditProfileImpl) bind EditProfile::class
     factoryOf(::SendContactFormImpl) bind SendContactForm::class
     factoryOf(::DeleteAccountImpl) bind DeleteAccount::class
-    factory { LogOutImpl(getAll()) } bind LogOut::class
     factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
     factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class
     factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class

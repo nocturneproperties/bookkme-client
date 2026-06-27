@@ -75,7 +75,16 @@ fun AppTopBar(
         }
     },
     behavior: TopAppBarScrollBehavior? = null,
-    onNavigationIconClick: (() -> Unit)? = state.onBackClick
+    onNavigationIconClick: (() -> Unit)? = state.onBackClick,
+    navigationIcon: @Composable () -> Unit = {
+        onNavigationIconClick?.let {
+            ClickableIcon(
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                onClick = it,
+                tint = colors.navigationIconContentColor
+            )
+        }
+    }
 ) {
     when (state.size) {
         TopBarSize.SMALL -> {
@@ -91,15 +100,7 @@ fun AppTopBar(
                         behavior
                     )
                 },
-                navigationIcon = {
-                    onNavigationIconClick?.let {
-                        ClickableIcon(
-                            icon = Icons.AutoMirrored.Filled.ArrowBack,
-                            onClick = it,
-                            tint = colors.navigationIconContentColor
-                        )
-                    }
-                }
+                navigationIcon = navigationIcon
             )
         }
 
@@ -117,15 +118,7 @@ fun AppTopBar(
                             behavior
                         )
                     },
-                    navigationIcon = {
-                        onNavigationIconClick?.let {
-                            ClickableIcon(
-                                icon = Icons.AutoMirrored.Filled.ArrowBack,
-                                onClick = it,
-                                tint = colors.navigationIconContentColor
-                            )
-                        }
-                    },
+                    navigationIcon = navigationIcon,
                     scrollBehavior = behavior
                 )
                 state.subtitle?.let {

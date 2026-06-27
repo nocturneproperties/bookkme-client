@@ -2,7 +2,6 @@ package build_src
 
 import build_src.convention.applyConvention
 import build_src.tools.libs
-import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
@@ -20,9 +19,6 @@ class KMMDatabaseConventionPlugin : Plugin<Project> {
                 apply(libs.plugins.google.ksp.get().pluginId)
             }
 
-            extensions.getByType<LibraryExtension>().apply {
-                applyConvention(target, useCompose = false)
-            }
             extensions.getByType<KotlinMultiplatformExtension>().apply {
                 applyConvention(target)
                 sourceSets.commonMain.dependencies {

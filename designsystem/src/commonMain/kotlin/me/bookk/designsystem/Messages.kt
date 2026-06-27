@@ -15,7 +15,7 @@ fun PresentationNotification.Message.Companion.simple(
         message = message,
         buttons = listOf(
             ButtonDescriptor(
-                DesignSystem.strings.action_cancel.desc(),
+                DesignSystem.strings.action_dismiss.desc(),
                 onClick = onCanceled
             ),
         )

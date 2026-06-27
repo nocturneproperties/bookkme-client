@@ -84,6 +84,16 @@ fun ActionButton(
 }
 
 @Composable
+fun ButtonDefaults.stateButtonColors(
+    contentColor: Color = LocalColors.current.buttonActive,
+): ButtonColors = buttonColors(
+    containerColor = Color.Transparent,
+    contentColor = contentColor,
+    disabledContainerColor = Color.Transparent,
+    disabledContentColor = LocalColors.current.actionTextDisabled
+)
+
+@Composable
 fun StateTextButton(
     state: ButtonState,
     modifier: Modifier = Modifier,
@@ -91,12 +101,7 @@ fun StateTextButton(
     endIcon: Int? = null,
     startContent: (@Composable () -> Unit)? = null,
     endContent: (@Composable () -> Unit)? = null,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = Color.Transparent,
-        contentColor = LocalColors.current.buttonActive,
-        disabledContainerColor = Color.Transparent,
-        disabledContentColor = LocalColors.current.actionTextDisabled
-    ),
+    colors: ButtonColors = ButtonDefaults.stateButtonColors(),
     textAlign: TextAlign = TextAlign.Center,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     onClick: () -> Unit = { state.onClick?.invoke() }

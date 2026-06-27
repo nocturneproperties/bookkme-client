@@ -11,6 +11,7 @@ import me.bookk.feature.appointments.data.mapping.toRemote
 import me.bookk.feature.appointments.data.mapping.toRequestEntity
 import me.bookk.feature.appointments.data.mapping.toRequestServiceEntities
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
+import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestIdRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
@@ -55,5 +56,13 @@ internal class CommonAppointmentRequestDataSource(
                 requests = requests.map { it.toRequestEntity() },
                 services = requests.flatMap { it.toRequestServiceEntities() }
             )
+        }
+
+    override suspend fun declineAppointmentRequest(requestId: Uuid, businessId: Uuid, reason: String) =
+        mapExceptions {
+            httpClient.post(Api.Appointment.RequestDecline(id = requestId)) {
+                setBody(AppointmentCancellationRemote(id = requestId, businessId = businessId, reason = reason))
+            }
+            Unit
         }
 }

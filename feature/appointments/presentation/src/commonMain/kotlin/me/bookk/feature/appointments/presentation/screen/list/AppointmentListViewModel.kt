@@ -36,7 +36,6 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
 import me.bookk.feature.appointments.domain.api.entity.listenFor
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.AppointmentDetails
-import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.AppointmentRequests
 import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.CreateAppointment
 import kotlin.uuid.Uuid
 
@@ -73,6 +72,9 @@ class AppointmentListViewModel(
             .filterNotNull()
             .onEach {
                 businessId = it
+                if (uiState.requestsBusinessId != null) {
+                    uiState.requestsBusinessId = it
+                }
                 loadAppointments(it)
                 loadRequestCount(it)
             }
@@ -135,7 +137,7 @@ class AppointmentListViewModel(
     }
 
     private fun showRequestsScreen() {
-        uiState.navigation.push(AppointmentRequests(businessId))
+        uiState.requestsBusinessId = businessId
     }
 
     private fun onPickDateClick() {
@@ -176,6 +178,7 @@ class AppointmentListViewModel(
             )
         )
 
+        requestsButton.text = AppointmentsRes.strings.appointments_requests_count.format(0)
         requestsButton.onClick = weakVMClosure { it.showRequestsScreen() }
 
         datePicker.pickedDate = LocalDate.today()

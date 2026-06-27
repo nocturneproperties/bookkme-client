@@ -20,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -31,16 +32,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
+import me.bookk.core.presentation.SendLifecycleEventsTo
 import me.bookk.core.presentation.date.today
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppDatePicker
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.DesignSystemBottomSheet
 import me.bookk.designsystem.components.List
+import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
+import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequestContent
+import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequestViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun AppointmentListScreen(
@@ -69,6 +77,18 @@ internal fun AppointmentListScreen(
     ) { pv ->
         if (state.datePicker.isDatePickerVisible) {
             AppDatePicker(state.datePicker)
+        }
+        state.requestsBusinessId?.let {
+            val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            val requestViewModel: AppointmentRequestViewModel = koinViewModel { parametersOf(it) }
+            DesignSystemBottomSheet(
+                onDismiss = { state.requestsBusinessId = null },
+                sheetState = sheetState,
+            ) {
+                ObserveNotifications(requestViewModel.uiState.notifications)
+                SendLifecycleEventsTo(requestViewModel)
+                AppointmentRequestContent(requestViewModel.uiState)
+            }
         }
         Column(
             modifier = Modifier

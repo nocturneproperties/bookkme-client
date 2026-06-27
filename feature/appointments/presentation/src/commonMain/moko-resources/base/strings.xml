@@ -59,4 +59,10 @@
     <string name="appointments_settings_updated">Settings updated</string>
 
     <string name="appointments_requests_count">Requests(%s)</string>
+    <string name="appointments_request_empty">No pending requests</string>
+    <string name="appointments_request_decline">Are you sure you want to decline this appointment?</string>
+    <string name="appointments_request_overlap_error">Appointment overlap. Looks like there is another appointment exists for this day.</string>
+    <string name="appointments_request_in_past">Appointment time is in the past. This request will be automatically canceled soon, or you can decline it manually</string>
+    <string name="appointments_request_date_error">Appointments for this day are forbidden by settings, this day may be marked as day-off.</string>
+    <string name="appointments_request_time_error">Appointments for this time are forbidden by settings</string>
 </resources>

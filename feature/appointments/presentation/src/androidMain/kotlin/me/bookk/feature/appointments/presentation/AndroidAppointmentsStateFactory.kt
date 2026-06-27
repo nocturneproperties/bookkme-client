@@ -14,27 +14,15 @@ import me.bookk.feature.appointments.presentation.screen.settings.AndroidAppoint
 import me.bookk.feature.appointments.presentation.screen.settings.AppointmentSettingsState
 
 class AndroidAppointmentsStateFactory : AppointmentsStateFactory {
-    override fun createAppointmentListState(): AppointmentListState {
-        return AndroidAppointmentListState()
-    }
+    override fun createAppointmentListState(): AppointmentListState = AndroidAppointmentListState()
 
-    override fun createAppointmentCreateState(): AppointmentCreateState {
-        return AndroidAppointmentCreateState()
-    }
+    override fun createAppointmentCreateState(): AppointmentCreateState = AndroidAppointmentCreateState()
 
-    override fun createAppointmentDetailsState(): AppointmentDetailsState {
-        return AndroidAppointmentDetailsState()
-    }
+    override fun createAppointmentDetailsState(): AppointmentDetailsState = AndroidAppointmentDetailsState()
 
-    override fun createAppointmentSettingsState(): AppointmentSettingsState {
-        return AndroidAppointmentSettingsState()
-    }
+    override fun createAppointmentSettingsState(): AppointmentSettingsState = AndroidAppointmentSettingsState()
 
-    override fun createAppointmentHistoryState(): AppointmentHistoryState {
-        return AndroidAppointmentHistoryState()
-    }
+    override fun createAppointmentHistoryState(): AppointmentHistoryState = AndroidAppointmentHistoryState()
 
-    override fun createAppointmentRequestState(): AppointmentRequestState {
-        return AndroidAppointmentRequestState()
-    }
+    override fun createAppointmentRequestState(): AppointmentRequestState = AndroidAppointmentRequestState()
 }

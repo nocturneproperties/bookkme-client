@@ -14,6 +14,15 @@ data class AppointmentRequest(
     val note: String,
     val declineReason: String,
 ) {
+
+    val total: String by lazy(LazyThreadSafetyMode.NONE) {
+        services
+            .fold(services[0].price) { acc, service ->
+                acc + service.price
+            }
+            .toString()
+    }
+
     companion object {
         fun stub(
             id: Uuid = Uuid.random(),

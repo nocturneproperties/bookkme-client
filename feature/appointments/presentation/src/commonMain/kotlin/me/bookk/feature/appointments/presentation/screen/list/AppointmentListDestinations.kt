@@ -6,5 +6,4 @@ import kotlin.uuid.Uuid
 sealed class AppointmentListDestinations : NavigationDestination() {
     data class CreateAppointment(val businessId: Uuid) : AppointmentListDestinations()
     data class AppointmentDetails(val appointmentId: Uuid) : AppointmentListDestinations()
-    data class AppointmentRequests(val businessId: Uuid) : AppointmentListDestinations()
 }

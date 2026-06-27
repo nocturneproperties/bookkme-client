@@ -12,4 +12,6 @@ interface AppointmentRequestDataSource {
     suspend fun getAppointmentRequests(businessId: Uuid): List<AppointmentRequest>
 
     suspend fun saveAppointmentRequestsInDB(requests: List<AppointmentRequest>)
+
+    suspend fun declineAppointmentRequest(requestId: Uuid, businessId: Uuid, reason: String)
 }

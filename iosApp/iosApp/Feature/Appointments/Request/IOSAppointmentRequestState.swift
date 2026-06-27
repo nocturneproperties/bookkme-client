@@ -16,13 +16,15 @@ class IOSAppointmentRequestState: @MainActor AppointmentRequestState, NativeStat
     typealias SwiftType = IOSAppointmentRequestState
     typealias KotlinType = AppointmentRequestState
 
-    let appBar: any AppBarState
-    let navigation: any NavigationState
+    let requests: any ListState
     let notifications: any PresentationNotificationState
 
     init() {
-        appBar = IOSAppBarState()
-        navigation = IOSNavigationState()
+        requests = IOSListState<IOSAppointmentRequestItemState>()
         notifications = IOSNotificationState()
+    }
+
+    func createAppointmentRequestItemState() -> any AppointmentRequestItemState {
+        return IOSAppointmentRequestItemState()
     }
 }

@@ -148,6 +148,14 @@ struct ActionTextButton: ButtonStyle {
 	}
 }
 
+struct NegativeTextButton: ButtonStyle {
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.buttonStyle(.plain)
+			.foregroundStyle(AppColors.error)
+	}
+}
+
 extension ButtonStyle where Self == TextInListButton {
 	static var textInList: TextInListButton { TextInListButton() }
 }
@@ -158,6 +166,10 @@ extension ButtonStyle where Self == TextStandaloneButton {
 
 extension ButtonStyle where Self == ActionTextButton {
 	static var textAction: ActionTextButton { ActionTextButton() }
+}
+
+extension ButtonStyle where Self == NegativeTextButton {
+	static var negativeAction: NegativeTextButton { NegativeTextButton() }
 }
 
 #Preview {

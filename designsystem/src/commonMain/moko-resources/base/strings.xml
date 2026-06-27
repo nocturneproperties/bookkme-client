@@ -23,6 +23,9 @@
     <string name="action_disable">Disable</string>
     <string name="action_new">New</string>
     <string name="action_ignore">Ignore</string>
+    <string name="action_decline">Decline</string>
+    <string name="action_approve">Approve</string>
+    <string name="action_dismiss">Dismiss</string>
 
     <string name="message_delete">Are you sure you want to delete this item?</string>
 

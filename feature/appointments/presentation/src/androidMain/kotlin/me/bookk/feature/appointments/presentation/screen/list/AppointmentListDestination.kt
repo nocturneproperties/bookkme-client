@@ -8,7 +8,6 @@ import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.appointments.presentation.navigation.AppointmentNavigation
 import me.bookk.feature.appointments.presentation.navigation.AppointmentsDestination
 import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.AppointmentDetails
-import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.AppointmentRequests
 import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.CreateAppointment
 import org.koin.androidx.compose.koinViewModel
 
@@ -23,7 +22,6 @@ internal fun NavGraphBuilder.appointmentRequestListScreen(navigation: Appointmen
             when (dest) {
                 is CreateAppointment -> navigation.createAppointment(dest.businessId)
                 is AppointmentDetails -> navigation.details(dest.appointmentId)
-                is AppointmentRequests -> navigation.requests(dest.businessId)
             }
         }
     }

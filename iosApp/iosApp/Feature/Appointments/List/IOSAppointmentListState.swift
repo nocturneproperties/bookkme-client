@@ -22,7 +22,7 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
 	let dates: any ListState
 	let appointments: any ListState
 	let datePicker: any DatePickerState
-    var isLoading: Bool
+	var requestsBusinessId: KotlinUuid?
     let navigation: any NavigationState
     let notifications: any PresentationNotificationState
 
@@ -33,7 +33,6 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
 		datePicker = IOSDatePickerState()
 		dates = IOSListState<DateInfo>()
 		appointments = IOSListState<AppointmentItemState>()
-        isLoading = false
         navigation = IOSNavigationState()
         notifications = IOSNotificationState()
     }

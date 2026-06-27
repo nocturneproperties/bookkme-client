@@ -4,7 +4,6 @@ import kotlin.uuid.Uuid
 
 class AppointmentNavigation(
     val createAppointment: (Uuid) -> Unit,
-    val requests: (Uuid) -> Unit,
     val appointmentSettings: (Uuid) -> Unit,
     val details: (Uuid) -> Unit,
     val onBack: () -> Unit,

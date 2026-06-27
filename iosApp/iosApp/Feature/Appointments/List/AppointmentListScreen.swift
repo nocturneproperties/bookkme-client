@@ -48,15 +48,22 @@ struct AppointmentListScreen: View {
 			}
 		}
 		.frame(maxHeight: .infinity)
+		.refreshable { await state.refresh.impl().awaitRefresh() }
 		.sheet(isPresented: Binding(
             get: { state.datePicker.isDatePickerVisible },
             set: { state.datePicker.isDatePickerVisible = $0 }
         )) {
             AppDatePicker(state: state.datePicker)
         }
+		.sheet(item: Binding(get: {
+			state.requestsBusinessId
+		}, set: {
+			state.requestsBusinessId = $0
+		})) { businessId in
+            AppointmentRequestSheet(businessId: businessId)
+        }
 		.listSectionSpacing(.compact)
 		.withNavigationBar(state.appBar)
-		.refreshable { await state.refresh.impl().awaitRefresh() }
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)
         .handleNavigation(state.navigation) { dest in
@@ -65,8 +72,6 @@ struct AppointmentListScreen: View {
 				navigationStack.push(AppointmentsDestination.Create(businessId: dest.businessId))
 			case let dest as AppointmentListDestinations.AppointmentDetails:
 				navigationStack.push(AppointmentsDestination.Details(appointmentId: dest.appointmentId))
-			case let dest as AppointmentListDestinations.AppointmentRequests:
-				navigationStack.push(AppointmentsDestination.Request(businessId: dest.businessId))
             default:
                 break
             }
@@ -141,7 +146,7 @@ private struct AppointmentRequestRow: View {
 						.fontWeight(.medium)
 						.foregroundStyle(AppColors.primary)
 						.fixedSize()
-					
+
 					VStack(alignment: .leading, spacing: 2) {
 						Text(state.clientName)
 							.font(.headline)
@@ -150,9 +155,9 @@ private struct AppointmentRequestRow: View {
 							.font(.subheadline)
 							.foregroundStyle(AppColors.secondary)
 					}
-					
+
 					Spacer()
-					
+
 					Text(state.earnings)
 						.font(.subheadline)
 						.fontWeight(.semibold)

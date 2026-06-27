@@ -18,7 +18,4 @@ sealed class AppointmentsDestination {
 
     @Serializable
     data class Settings(val businessId: Uuid) : AppointmentsDestination()
-
-    @Serializable
-    data class Request(val businessId: Uuid) : AppointmentsDestination()
 }

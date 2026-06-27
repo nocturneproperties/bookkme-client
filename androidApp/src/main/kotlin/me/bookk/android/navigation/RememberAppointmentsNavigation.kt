@@ -12,7 +12,6 @@ import kotlin.uuid.ExperimentalUuidApi
 fun rememberAppointmentsNavigation(controller: NavController) = remember(controller) {
     AppointmentNavigation(
         createAppointment = { controller.navigate(AppointmentsDestination.Create(it)) },
-        requests = { controller.navigate(AppointmentsDestination.Request(it)) },
         details = { controller.navigate(AppointmentsDestination.Details(it)) },
         appointmentSettings = { controller.navigate(AppointmentsDestination.Settings(it)) },
         onBack = { controller.popBackStack() },

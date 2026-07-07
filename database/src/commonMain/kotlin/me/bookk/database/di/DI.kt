@@ -21,4 +21,5 @@ internal fun daoModule() = module {
     factory { get<AppDatabase>().appointmentDao() }
     factory { get<AppDatabase>().appointmentRequestDao() }
     factory { get<AppDatabase>().appointmentSettingsDao() }
+    factory { get<AppDatabase>().notificationSettingsDao() }
 }

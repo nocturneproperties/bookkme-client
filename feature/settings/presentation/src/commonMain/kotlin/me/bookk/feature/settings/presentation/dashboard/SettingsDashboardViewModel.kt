@@ -25,7 +25,7 @@ class SettingsDashboardViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
-    val uiState = settingsStateFactory.createSettingsState(createInitData()).setup()
+    val uiState: SettingsState = settingsStateFactory.createSettingsState(createInitData()).setup()
 
     private fun SettingsState.setup(): SettingsState = apply {
         appBar.actions.replace(
@@ -111,7 +111,8 @@ class SettingsDashboardViewModel(
                 title = SettingsRes.strings.settings_account_title.desc(),
                 passkeyLabel = SettingsRes.strings.settings_account_passkey_label.desc(),
                 logoutLabel = SettingsRes.strings.settings_account_logout_label.desc(),
-                deleteAccountLabel = SettingsRes.strings.settings_account_delete_acc_label.desc()
+                deleteAccountLabel = SettingsRes.strings.settings_account_delete_acc_label.desc(),
+                notificationsLabel = SettingsRes.strings.settings_account_notifications_lable.desc()
             ),
             support = SupportSection.InitData(
                 title = SettingsRes.strings.settings_support_title.desc(),

@@ -30,4 +30,8 @@ class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
 	func createPasskeyState(initData: PasskeyStateInitData) -> any PasskeyState {
 		return IOSPasskeyState(initData: initData)
 	}
+
+	func createNotificationSettingsState() -> any NotificationSettingsState {
+		return IOSNotificationSettingsState()
+	}
 }

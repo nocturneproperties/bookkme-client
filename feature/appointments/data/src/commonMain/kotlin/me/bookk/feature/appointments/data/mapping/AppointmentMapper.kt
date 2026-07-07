@@ -27,6 +27,7 @@ import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
 import me.bookk.feature.appointments.data.remote.model.ClientSnapshotRemote
 import me.bookk.feature.appointments.data.remote.model.DayOfWeekScheduleRemote
 import me.bookk.feature.appointments.data.remote.model.DayOffRangeRemote
+import me.bookk.feature.appointments.data.remote.model.EmployeeSnapshotRemote
 import me.bookk.feature.appointments.data.remote.model.ServiceSnapshotRemote
 import me.bookk.feature.appointments.data.remote.model.WorkHourRemote
 import me.bookk.feature.appointments.data.remote.model.WorkingScheduleRemote
@@ -39,6 +40,7 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.appointments.domain.api.entity.DayOffRange
+import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.domain.api.entity.WorkHour
 import me.bookk.feature.appointments.domain.api.entity.WorkingSchedule
@@ -47,6 +49,7 @@ internal fun AppointmentRequest.toRemote() = AppointmentRequestRemote(
     id = id,
     userId = userId,
     businessId = businessId,
+    employee = employee.toRemote(),
     client = client.toRemote(),
     services = services.map { it.toRemote() },
     status = status.toRemote(),
@@ -59,6 +62,7 @@ internal fun Appointment.toRemote() = AppointmentRemote(
     id = id,
     userId = userId,
     businessId = businessId,
+    employee = employee.toRemote(),
     client = client.toRemote(),
     services = services.map { it.toRemote() },
     status = status.toRemote(),
@@ -72,6 +76,11 @@ internal fun AppointmentCancellation.toRemote() = AppointmentCancellationRemote(
     id = id,
     businessId = businessId,
     reason = reason
+)
+
+private fun EmployeeSnapshot.toRemote() = EmployeeSnapshotRemote(
+    id = id,
+    fullName = fullName
 )
 
 private fun ClientSnapshot.toRemote() = ClientSnapshotRemote(
@@ -93,6 +102,7 @@ private fun AppointmentRequestStatus.toRemote() = when (this) {
     AppointmentRequestStatus.PENDING -> AppointmentRequestStatusRemote.PENDING
     AppointmentRequestStatus.APPROVED -> AppointmentRequestStatusRemote.APPROVED
     AppointmentRequestStatus.DECLINED -> AppointmentRequestStatusRemote.DECLINED
+    AppointmentRequestStatus.CANCELLED -> AppointmentRequestStatusRemote.CANCELLED
 }
 
 private fun AppointmentStatus.toRemote() = when (this) {
@@ -105,6 +115,8 @@ internal fun Appointment.toEntity() = AppointmentEntity(
     id = id,
     userId = userId,
     businessId = businessId,
+    employeeId = employee.id,
+    employeeFullName = employee.fullName,
     date = date.toInstant(TimeZone.currentSystemDefault()),
     status = status.name,
     note = note,
@@ -131,6 +143,7 @@ internal fun AppointmentLocal.toDomain() = Appointment(
     id = entity.id,
     userId = entity.userId,
     businessId = entity.businessId,
+    employee = EmployeeSnapshot(id = entity.employeeId, fullName = entity.employeeFullName),
     date = entity.date.toLocalDateTime(TimeZone.currentSystemDefault()),
     client = ClientSnapshot(
         id = entity.clientId,
@@ -156,6 +169,8 @@ internal fun AppointmentRequest.toRequestEntity() = AppointmentRequestEntity(
     id = id,
     userId = userId,
     businessId = businessId,
+    employeeId = employee.id,
+    employeeFullName = employee.fullName,
     status = status.name,
     date = date,
     note = note,
@@ -182,6 +197,7 @@ internal fun AppointmentRequestLocal.toDomain() = AppointmentRequest(
     id = entity.id,
     userId = entity.userId,
     businessId = entity.businessId,
+    employee = EmployeeSnapshot(id = entity.employeeId, fullName = entity.employeeFullName),
     client = ClientSnapshot(
         id = entity.clientId,
         fullName = entity.clientFullName,

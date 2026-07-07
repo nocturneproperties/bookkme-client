@@ -5,7 +5,7 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import kotlin.uuid.Uuid
 
 interface AppointmentRequestDataSource {
-    suspend fun createAppointmentRequest(request: AppointmentRequest): AppointmentRequest
+    suspend fun createAppointmentRequest(request: AppointmentRequest, offerToken: String)
 
     suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment
 

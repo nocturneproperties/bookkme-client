@@ -87,6 +87,27 @@ class CreateAppointmentImplTest {
     }
 
     @Test
+    fun `uses employee derived from profile in appointment`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val draft = stubDraft()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
+
+        whenn()
+        fixture.sut(draft)
+
+        then()
+        verifySuspend {
+            fixture.appointmentDataSource.createAppointment(
+                matches({ "match" }) {
+                    it.employee.id == fixture.userId &&
+                        it.employee.fullName == "${fixture.profile.firstName} ${fixture.profile.lastName}"
+                }
+            )
+        }
+    }
+
+    @Test
     fun `uses userId from profile in appointment`() = runUnitTest {
         given()
         val fixture = Fixture()

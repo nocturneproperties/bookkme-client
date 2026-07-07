@@ -16,6 +16,7 @@
     <string name="settings_account_logout_label">Log out</string>
     <string name="settings_account_logout_message">Are you sure you want to Log out?</string>
     <string name="settings_account_delete_acc_label">Delete account</string>
+    <string name="settings_account_notifications_lable">Notifications</string>
 
     <string name="settings_support_title">Support</string>
     <string name="settings_support_contact_label">Contact Us</string>
@@ -48,4 +49,13 @@
     <string name="settings_passkey_added_on_format">Added on %s</string>
     <string name="settings_passkey_delete_dialog_title">Delete passkey</string>
     <string name="settings_passkey_delete_dialog_message">Remove ‘%s’ passkey? You won’t be able to login with this passkey anymore.</string>
+
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_notifications_appointment_label">Appointment notifications</string>
+    <string name="settings_notifications_channels_header">Channels</string>
+    <string name="settings_notifications_types_header">Types</string>
+    <string name="settings_notifications_types_footer">More notification types will appear here as they become available.</string>
+    <string name="settings_notifications_email_label">Email</string>
+    <string name="settings_notifications_push_label">Push notifications</string>
+    <string name="settings_notifications_telegram_label">Telegram</string>
 </resources>

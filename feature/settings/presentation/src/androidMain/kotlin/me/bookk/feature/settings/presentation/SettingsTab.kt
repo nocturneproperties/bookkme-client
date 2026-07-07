@@ -36,6 +36,9 @@ fun SettingsTab() {
                 },
                 navigateToDeleteAccount = {
                     settingsController.navigate(SettingsDestination.DeleteAccount)
+                },
+                navigateToNotifications = {
+                    settingsController.navigate(SettingsDestination.Notifications)
                 }
             )
         )

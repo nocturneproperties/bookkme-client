@@ -7,6 +7,7 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
 import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
+import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
@@ -18,11 +19,15 @@ internal class CreateAppointmentImpl(
 ) : CreateAppointment {
 
     override suspend fun invoke(draft: AppointmentDraft): Appointment {
-        val userId = userProfileCRUD.get().id
+        val profile = userProfileCRUD.get()
         val appointment = Appointment(
             id = Uuid.random(),
-            userId = userId,
+            userId = profile.id,
             businessId = draft.businessId,
+            employee = EmployeeSnapshot(
+                id = profile.id,
+                fullName = profile.fullName
+            ),
             client = draft.client,
             services = draft.services,
             status = AppointmentStatus.SCHEDULED,

@@ -69,12 +69,14 @@ interface ProfileSection {
 
 interface AccountSection {
     val title: StringDesc
+    val notifications: TextState
     val passkey: TextState
     val logout: TextState
     val deleteAccount: TextState
 
     class InitData(
         val title: StringDesc,
+        val notificationsLabel: StringDesc,
         val passkeyLabel: StringDesc,
         val logoutLabel: StringDesc,
         val deleteAccountLabel: StringDesc

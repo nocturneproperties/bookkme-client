@@ -12,6 +12,7 @@ import me.bookk.feature.appointments.data.mapping.toRequestEntity
 import me.bookk.feature.appointments.data.mapping.toRequestServiceEntities
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentOfferRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestIdRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
@@ -25,13 +26,12 @@ internal class CommonAppointmentRequestDataSource(
     private val appointmentRequestDao: AppointmentRequestDao
 ) : DataSource(), AppointmentRequestDataSource {
 
-    override suspend fun createAppointmentRequest(request: AppointmentRequest): AppointmentRequest =
+    override suspend fun createAppointmentRequest(request: AppointmentRequest, offerToken: String) =
         mapExceptions {
             httpClient.post(Api.Appointment.Request()) {
-                setBody(request.toRemote())
+                setBody(AppointmentOfferRemote(request = request.toRemote(), offerToken = offerToken))
             }
-                .body<AppointmentRequestRemote>()
-                .toDomain()
+            Unit
         }
 
     override suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment =

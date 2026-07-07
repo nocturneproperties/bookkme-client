@@ -44,6 +44,7 @@ internal class AndroidAccountSectionState(
     initData: AccountSection.InitData
 ) : AccountSection {
     override val title: StringDesc = initData.title
+    override val notifications: TextState = AndroidTextState(initData.notificationsLabel)
     override val passkey: TextState = AndroidTextState(initData.passkeyLabel)
     override val logout: TextState = AndroidTextState(initData.logoutLabel)
     override val deleteAccount: TextState = AndroidTextState(initData.deleteAccountLabel)

@@ -7,11 +7,13 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 enum class AppointmentRequestStatusRemote {
     PENDING,
     APPROVED,
-    DECLINED;
+    DECLINED,
+    CANCELLED;
 
     fun toDomain() = when (this) {
         PENDING -> AppointmentRequestStatus.PENDING
         APPROVED -> AppointmentRequestStatus.APPROVED
         DECLINED -> AppointmentRequestStatus.DECLINED
+        CANCELLED -> AppointmentRequestStatus.CANCELLED
     }
 }

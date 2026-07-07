@@ -26,6 +26,9 @@ struct SettingsTab: View {
 				.navigationDestination(for: SettingsDestination.ContactUs.self) { _ in
 					ContactUsScreen()
 				}
+				.navigationDestination(for: SettingsDestination.Notifications.self) { _ in
+					NotificationSettingsScreen()
+				}
 		}.environmentObject(navigationStack)
 	}
 }

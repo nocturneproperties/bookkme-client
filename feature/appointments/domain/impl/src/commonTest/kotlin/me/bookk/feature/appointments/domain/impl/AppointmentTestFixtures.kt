@@ -7,10 +7,16 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
+import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import kotlin.time.Duration
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
+
+internal fun stubEmployeeSnapshot() = EmployeeSnapshot(
+    id = Uuid.random(),
+    fullName = "John Doe"
+)
 
 internal fun stubServiceSnapshot(groupId: Uuid = Uuid.random()) = ServiceSnapshot(
     id = Uuid.random(),
@@ -36,6 +42,7 @@ internal fun stubAppointment(
     id = id,
     userId = userId,
     businessId = businessId,
+    employee = stubEmployeeSnapshot(),
     client = stubClientSnapshot(),
     services = listOf(stubServiceSnapshot()),
     status = AppointmentStatus.SCHEDULED,
@@ -51,6 +58,7 @@ internal fun stubAppointmentRequest(
     id = id,
     userId = Uuid.random(),
     businessId = businessId,
+    employee = stubEmployeeSnapshot(),
     client = stubClientSnapshot(),
     services = listOf(stubServiceSnapshot()),
     status = AppointmentRequestStatus.PENDING,

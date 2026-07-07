@@ -8,6 +8,7 @@ data class Appointment(
     val id: Uuid,
     val userId: Uuid,
     val businessId: Uuid,
+    val employee: EmployeeSnapshot,
     val client: ClientSnapshot,
     val services: List<ServiceSnapshot>,
     val status: AppointmentStatus,
@@ -17,11 +18,7 @@ data class Appointment(
 ) {
 
     val total: String by lazy(LazyThreadSafetyMode.NONE) {
-        services
-            .fold(services[0].price) { acc, service ->
-                acc + service.price
-            }
-            .toString()
+        services.map { it.price }.reduce { acc, money -> acc + money }.toString()
     }
 
     companion object {
@@ -34,6 +31,7 @@ data class Appointment(
             id = id,
             userId = userId,
             businessId = businessId,
+            employee = EmployeeSnapshot.stub(),
             client = ClientSnapshot.stub(),
             services = listOf(ServiceSnapshot.stub()),
             status = AppointmentStatus.SCHEDULED,

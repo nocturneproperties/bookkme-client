@@ -3,6 +3,7 @@ package me.bookk.feature.business.domain.impl.plugin
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -16,6 +17,7 @@ import me.bookk.feature.business.domain.datasource.PluginDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
@@ -45,7 +47,8 @@ class IsAppointmentsPluginEnabledImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns true
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
 
         whenn()
         val result = fixture.sut(businessId)
@@ -59,12 +62,61 @@ class IsAppointmentsPluginEnabledImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailable(businessId) } returns false
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns false
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, false) } returns Unit
 
         whenn()
         val result = fixture.sut(businessId)
 
         then()
         assertFalse(result)
+    }
+
+    @Test
+    fun `saves fetched availability to the data source`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+
+        whenn()
+        fixture.sut(businessId)
+
+        then()
+        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
+    }
+
+    @Test
+    fun `cached emits the cached value before the fetched value`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns false
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        val results = mutableListOf<Boolean>()
+
+        whenn()
+        fixture.sut.cached(businessId) { results.add(it) }
+
+        then()
+        assertEquals(listOf(false, true), results)
+    }
+
+    @Test
+    fun `cached saves the freshly fetched availability to the data source`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns false
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+
+        whenn()
+        fixture.sut.cached(businessId) {}
+
+        then()
+        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
     }
 }

@@ -6,11 +6,13 @@ import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 
 internal class InitialAppDataFetchImpl(
     private val userProfileCRUD: UserProfileCRUD,
-    private val refreshBusiness: RefreshBusinessInfo
+    private val refreshBusiness: RefreshBusinessInfo,
+    private val lowPriorityDataFetch: LowPriorityDataFetch
 ) : InitialAppDataFetch {
 
     override suspend fun invoke() {
         userProfileCRUD.updateFromRemote()
         runCatching { refreshBusiness() }
+        lowPriorityDataFetch()
     }
 }

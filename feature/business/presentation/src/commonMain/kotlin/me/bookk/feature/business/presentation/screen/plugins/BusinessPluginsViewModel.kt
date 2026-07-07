@@ -35,10 +35,10 @@ class BusinessPluginsViewModel(
     }
 
     private fun initPluginsState() {
-        launch(
+        launchCached(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.appointmentPlugin.enable.startLoading() },
-            call = { isAppointmentsPluginEnabled(businessId) },
+            call = { isAppointmentsPluginEnabled.cached(businessId, it) },
             onComplete = { uiState.appointmentPlugin.isEnabled = it },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.appointmentPlugin.enable.stopLoading() }

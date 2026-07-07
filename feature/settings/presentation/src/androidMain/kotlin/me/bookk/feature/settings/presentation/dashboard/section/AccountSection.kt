@@ -40,6 +40,10 @@ internal fun AccountSection(state: AccountSection) {
             )
         ) {
             SectionItem(
+                text = state.notifications.text.localized(),
+                onClick = LocalNavigation.current.navigateToNotifications
+            )
+            SectionItem(
                 text = state.passkey.text.localized(),
                 onClick = LocalNavigation.current.navigateToPasskey
             )

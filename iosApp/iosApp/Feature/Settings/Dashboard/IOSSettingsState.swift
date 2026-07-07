@@ -37,12 +37,10 @@ class IOSSettingsState: @MainActor SettingsState {
 class IOSAccountSection: @MainActor AccountSection {
 	
 	var title: any StringDesc
-	
 	var deleteAccount: any TextState
-	
 	var logout: any TextState
-	
 	var passkey: any TextState
+	var notifications: any TextState
 	
 	
 	init(initData: AccountSectionInitData) {
@@ -50,6 +48,7 @@ class IOSAccountSection: @MainActor AccountSection {
 		logout = IOSTextState(text: initData.logoutLabel)
 		passkey = IOSTextState(text: initData.passkeyLabel)
 		deleteAccount = IOSTextState(text: initData.deleteAccountLabel)
+		notifications = IOSTextState(text: initData.notificationsLabel)
 	}
 }
 

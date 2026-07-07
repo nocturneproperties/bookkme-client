@@ -9,6 +9,8 @@ import me.bookk.feature.settings.presentation.dashboard.AndroidDashboardState
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
 import me.bookk.feature.settings.presentation.editprofile.AndroidEditProfileState
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
+import me.bookk.feature.settings.presentation.notifications.AndroidNotificationSettingsState
+import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
 import me.bookk.feature.settings.presentation.passkey.AndroidPasskeyState
 import me.bookk.feature.settings.presentation.passkey.PasskeyState
 
@@ -31,5 +33,9 @@ class AndroidSettingsStateFactory : SettingsStateFactory {
 
     override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState {
         return AndroidPasskeyState(initData)
+    }
+
+    override fun createNotificationSettingsState(): NotificationSettingsState {
+        return AndroidNotificationSettingsState()
     }
 }

@@ -22,6 +22,9 @@ struct AccountView: View {
 	}
 	
 	var body: some View {
+		NavigationLink(value: SettingsDestination.Notifications()) {
+			Text(state.notifications.text.localized())
+		}
 		NavigationLink(value: SettingsDestination.Passkey()) {
 			Text(state.passkey.text.localized())
 		}

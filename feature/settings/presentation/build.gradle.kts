@@ -7,9 +7,6 @@ plugins {
 kotlin {
     android {
         namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.settings"
-        optimization {
-            consumerKeepRules.file("consumer-rules.pro")
-        }
     }
     sourceSets {
         commonMain.dependencies {
@@ -20,6 +17,7 @@ kotlin {
             implementation(projects.feature.settings.domain.api)
             implementation(projects.library.validation.api)
             implementation(projects.library.device.api)
+            implementation(projects.library.permissions.api)
         }
     }
 }

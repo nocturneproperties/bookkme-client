@@ -8,6 +8,15 @@ data class NotificationSettings(
     val appointmentEnabled: Boolean,
     val channels: List<NotificationChannelSettings>
 ) {
+
+    fun withToggled(channel: NotificationChannel, enabled: Boolean): NotificationSettings {
+        return copy(
+            channels = channels.map {
+                if (it.channel == channel) it.copy(enabled = enabled) else it
+            }
+        )
+    }
+
     companion object {
         fun stub(userId: Uuid = Uuid.random()) = NotificationSettings(
             id = Uuid.random(),

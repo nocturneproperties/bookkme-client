@@ -185,8 +185,9 @@ cd feature/.template
    ```
    Domain errors are exception classes nested in a `sealed interface Error` inside the use case interface.
 2. **Implementation** in `feature/<name>/domain/impl`, `internal class <Name>Impl(dataSources...) : <Name>`. Depend on data-source **interfaces** from the `data/source` module (package `me.bookk.feature.<name>.domain.datasource`). Map data errors to domain errors (`runCatching { ... }.onBusinessError { when (it.errorCode) { ... -> throw Error.X() } }`).
-3. **Register** in `domain/impl/.../di/DI.kt`: `factoryOf(::EnableAppointmentsPluginImpl) bind EnableAppointmentsPlugin::class`.
-4. **Inject** into the ViewModel constructor (Koin resolves it on both platforms — no extra per-platform wiring for use cases).
+3. **Test by default**: every `<Name>Impl` gets a `<Name>ImplTest.kt` in `domain/impl/src/commonTest` — this is not optional or something to ask about, it is part of creating the use case. See `## Testing Rules` below for the required style (given/when/then, Mokkery, Fixture pattern); cover the happy path, the cached/DB-first branch if applicable, and every `Error` variant.
+4. **Register** in `domain/impl/.../di/DI.kt`: `factoryOf(::EnableAppointmentsPluginImpl) bind EnableAppointmentsPlugin::class`.
+5. **Inject** into the ViewModel constructor (Koin resolves it on both platforms — no extra per-platform wiring for use cases).
 
 If a new data-source method is needed: add it to the interface in `data/source`, implement in `Common<X>DataSource(httpClient) : DataSource(), <X>DataSource` in `data/src/commonMain` wrapping calls in `mapExceptions { ... }`, using Ktor `Resources` typed routes and request/response models in `data/remote/`. Register with `singleOf(::Common<X>DataSource) bind <X>DataSource::class` in the feature's data DI module. Always map remote/local models to domain entities — never leak Ktor models out of `data`.
 
@@ -502,6 +503,7 @@ Hard rules:
 All testable behavior lives below the UI. Push decision-making out of composables/views into state holders and the shared layer, then test it there.
 
 **Always unit test:**
+- **Every use case implementation, by default.** Each `<Name>Impl` in `domain/impl` gets a `<Name>ImplTest.kt` as part of creating or changing it — not something the user needs to ask for separately. See `## Use Case (operation) Creation` for where the test file lives.
 - Business/domain logic in the KMM shared layer.
 - State holders / ViewModels / presenters: given events/input, assert emitted state. Test the state object, never the view that renders it.
 - Pure functions: validation, mapping, formatting, locale-aware logic (Polish formatting, currency, first-day-of-week, `IOSTextFieldState`/validation), date/time math with `kotlinx-datetime`.

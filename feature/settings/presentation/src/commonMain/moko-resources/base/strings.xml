@@ -51,4 +51,11 @@
     <string name="settings_passkey_delete_dialog_message">Remove ‘%s’ passkey? You won’t be able to login with this passkey anymore.</string>
 
     <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_notifications_appointment_label">Appointment notifications</string>
+    <string name="settings_notifications_channels_header">Channels</string>
+    <string name="settings_notifications_types_header">Types</string>
+    <string name="settings_notifications_types_footer">More notification types will appear here as they become available.</string>
+    <string name="settings_notifications_email_label">Email</string>
+    <string name="settings_notifications_push_label">Push notifications</string>
+    <string name="settings_notifications_telegram_label">Telegram</string>
 </resources>

@@ -6,8 +6,17 @@ import kotlin.uuid.Uuid
 
 internal class IsAppointmentsPluginEnabledImpl(
     private val pluginDataSource: PluginDataSource
-): IsAppointmentsPluginEnabled {
+) : IsAppointmentsPluginEnabled {
     override suspend fun invoke(businessId: Uuid): Boolean {
-        return pluginDataSource.isAppointmentPluginAvailable(businessId)
+        return pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId)
+            .also { pluginDataSource.saveAppointmentPluginAvailability(businessId, it) }
+    }
+
+    override suspend fun cached(businessId: Uuid, onResultAvailable: suspend (Boolean) -> Unit) {
+        onResultAvailable(pluginDataSource.getAppointmentPluginAvailability(businessId))
+
+        onResultAvailable(pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId).also {
+            pluginDataSource.saveAppointmentPluginAvailability(businessId, it)
+        })
     }
 }

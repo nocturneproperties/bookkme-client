@@ -11,3 +11,5 @@ local.properties
 xcuserdata
 /gradle/wrapper/gradle-wrapper.jar
 androidApp/keystore.properties
+iosApp/iosApp/GoogleService-Info.plist
+androidApp/keystore/*.jks

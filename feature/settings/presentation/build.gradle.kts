@@ -1,4 +1,5 @@
 import build_src.constants.ApplicationConfig
+import build_src.tools.libs
 
 plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
@@ -9,6 +10,10 @@ kotlin {
         namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.settings"
     }
     sourceSets {
+        androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.push)
+        }
         commonMain.dependencies {
             implementation(projects.core)
             implementation(projects.core.presentation)

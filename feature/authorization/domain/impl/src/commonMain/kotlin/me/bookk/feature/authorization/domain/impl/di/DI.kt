@@ -15,6 +15,7 @@ import me.bookk.feature.authorization.domain.impl.GetTokenInfoImpl
 import me.bookk.feature.authorization.domain.impl.InitialAppDataFetchImpl
 import me.bookk.feature.authorization.domain.impl.IsUserLoggedInImpl
 import me.bookk.feature.authorization.domain.impl.LogOutImpl
+import me.bookk.feature.authorization.domain.impl.LowPriorityDataFetch
 import me.bookk.feature.authorization.domain.impl.RefreshTokenImpl
 import me.bookk.feature.authorization.domain.impl.SignInImpl
 import me.bookk.feature.authorization.domain.impl.UserProfileCRUDImpl
@@ -32,4 +33,5 @@ fun authDomainModule() = module {
     factoryOf(::InitialAppDataFetchImpl) bind InitialAppDataFetch::class
     factory { LogOutImpl(getAll()) } bind LogOut::class
     factoryOf(::GetSettingsColorSchemeImpl) bind GetSettingsColorScheme::class
+    factoryOf(::LowPriorityDataFetch)
 }

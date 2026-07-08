@@ -1,9 +1,11 @@
 package me.bookk.feature.authorization.domain.impl
 
+import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,7 +40,8 @@ class InitialAppDataFetchImplTest {
     private class Fixture {
         val userProfileCRUD = mock<UserProfileCRUD>()
         val refreshBusiness = mock<RefreshBusinessInfo>()
-        val sut = InitialAppDataFetchImpl(userProfileCRUD, refreshBusiness)
+        val lowPriorityDataFetch = mock<LowPriorityDataFetch>(MockMode.autofill)
+        val sut = InitialAppDataFetchImpl(userProfileCRUD, refreshBusiness, lowPriorityDataFetch)
     }
 
     @Test
@@ -81,5 +84,33 @@ class InitialAppDataFetchImplTest {
 
         then()
         verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
+    }
+
+    @Test
+    fun `triggers low priority data fetch`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+        everySuspend { fixture.refreshBusiness() } returns Unit
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verify { fixture.lowPriorityDataFetch() }
+    }
+
+    @Test
+    fun `triggers low priority data fetch even when refreshBusiness throws`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+        everySuspend { fixture.refreshBusiness() } throws RuntimeException("network error")
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verify { fixture.lowPriorityDataFetch() }
     }
 }

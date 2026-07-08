@@ -3,6 +3,8 @@ package library.permissions.impl.checker
 import kotlinx.coroutines.suspendCancellableCoroutine
 import library.permissions.api.PermissionChecker
 import library.permissions.api.PermissionType
+import platform.UIKit.UIApplication
+import platform.UIKit.registerForRemoteNotifications
 import platform.UserNotifications.UNAuthorizationOptionAlert
 import platform.UserNotifications.UNAuthorizationOptionBadge
 import platform.UserNotifications.UNAuthorizationOptionSound
@@ -21,8 +23,11 @@ internal actual class NotificationPermissionChecker : PermissionChecker {
                 UNAuthorizationOptionAlert or
                         UNAuthorizationOptionSound or
                         UNAuthorizationOptionBadge
-            ) { result, _ ->
-                it.resume(result)
+            ) { hasPermissions, _ ->
+                if (hasPermissions) {
+                    UIApplication.sharedApplication.registerForRemoteNotifications()
+                }
+                it.resume(hasPermissions)
             }
     }
 

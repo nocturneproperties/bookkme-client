@@ -5,5 +5,7 @@ import kotlin.uuid.Uuid
 
 interface PluginDataSource {
     suspend fun enableAppointmentsPlugin(business: Business)
-    suspend fun isAppointmentPluginAvailable(businessId: Uuid): Boolean
+    suspend fun isAppointmentPluginAvailableOnRemote(businessId: Uuid): Boolean
+    suspend fun saveAppointmentPluginAvailability(businessId: Uuid, isAvailable: Boolean)
+    suspend fun getAppointmentPluginAvailability(businessId: Uuid): Boolean
 }

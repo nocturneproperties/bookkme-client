@@ -3,6 +3,8 @@ import shared
 
 @main
 struct iOSApp: App {
+	
+	@UIApplicationDelegateAdaptor(FirebaseDelegate.self) var delegate
     
     init() {
         DISetupKt.doInitDI(creator: IOSStateFactoryCreator())

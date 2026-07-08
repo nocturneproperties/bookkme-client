@@ -11,6 +11,7 @@ import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.SendContactForm
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.domain.api.UpdateNotificationSettings
+import me.bookk.feature.settings.domain.api.UpdateNotificationToken
 import me.bookk.feature.settings.domain.impl.CreateNewPasskeyImpl
 import me.bookk.feature.settings.domain.impl.DeleteAccountImpl
 import me.bookk.feature.settings.domain.impl.DeletePasskeyImpl
@@ -22,6 +23,7 @@ import me.bookk.feature.settings.domain.impl.GetSettingsImpl
 import me.bookk.feature.settings.domain.impl.SendContactFormImpl
 import me.bookk.feature.settings.domain.impl.UpdateColorSchemeImpl
 import me.bookk.feature.settings.domain.impl.UpdateNotificationSettingsImpl
+import me.bookk.feature.settings.domain.impl.UpdateNotificationTokenImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -38,4 +40,5 @@ fun settingsDomainModule() = module {
     factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class
     factoryOf(::GetNotificationSettingsImpl) bind GetNotificationSettings::class
     factoryOf(::UpdateNotificationSettingsImpl) bind UpdateNotificationSettings::class
+    factoryOf(::UpdateNotificationTokenImpl) bind UpdateNotificationToken::class
 }

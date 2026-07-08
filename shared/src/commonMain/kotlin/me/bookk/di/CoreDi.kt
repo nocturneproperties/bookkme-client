@@ -23,6 +23,7 @@ import org.koin.dsl.module
 internal fun coreModule(creator: StateFactoryCreator) = module {
     single<ErrorMapper> { ErrorMapperImpl() }
     single<StateFactoryCreator> { creator }
+    single<CoroutineScope> { createApplicationScope() }
     single<String>(named("baseUrl")) { BuildKonfig.BASE_URL }
     single<String>(named("relyingParty")) {
         BuildKonfig.BASE_URL
@@ -32,7 +33,6 @@ internal fun coreModule(creator: StateFactoryCreator) = module {
             .takeLast(2)
             .joinToString(".")
     }
-    single<CoroutineScope> { createApplicationScope() }
     includes(
         presentationCoreModule(),
         stateModule(),

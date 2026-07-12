@@ -51,9 +51,6 @@
     <string name="settings_passkey_delete_dialog_message">Remove ‘%s’ passkey? You won’t be able to login with this passkey anymore.</string>
 
     <string name="settings_notifications_title">Notifications</string>
-    <string name="settings_notifications_channel_id">default_notification_channel</string>
-    <string name="settings_notifications_channel_title">General Notifications</string>
-    <string name="settings_notifications_channel_description">General app notifications</string>
     <string name="settings_notifications_appointment_label">Appointment notifications</string>
     <string name="settings_notifications_channels_header">Channels</string>
     <string name="settings_notifications_types_header">Types</string>

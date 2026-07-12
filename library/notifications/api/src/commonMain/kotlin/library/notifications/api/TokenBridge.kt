@@ -1,4 +1,4 @@
-package me.bookk.feature.settings.presentation.notifications.token
+package library.notifications.api
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

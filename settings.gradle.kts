@@ -54,6 +54,8 @@ include(":library:biometry:impl")
 include(":library:validation:api")
 include(":library:validation:impl")
 include(":library:picker")
+include(":library:notifications:api")
+include(":library:notifications:impl")
 
 //Authorization
 include(":feature:authorization:data")

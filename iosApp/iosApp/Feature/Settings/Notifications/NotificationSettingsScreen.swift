@@ -19,9 +19,15 @@ struct NotificationSettingsScreen: View {
 		let state = viewModel.uiState
 		List {
 			Section(SettingsRes.strings().settings_notifications_channels_header.desc().localized()) {
-				StateSwitch(state: state.emailEnabled)
-				StateSwitch(state: state.pushNotificationsEnabled)
-				StateSwitch(state: state.telegramEnabled)
+				if state.emailEnabled.isVisible {
+					StateSwitch(state: state.emailEnabled)
+				}
+				if state.pushNotificationsEnabled.isVisible {
+					StateSwitch(state: state.pushNotificationsEnabled)
+				}
+				if state.telegramEnabled.isVisible {
+					StateSwitch(state: state.telegramEnabled)
+				}
 			}
 			Section {
 				StateSwitch(state: state.appointmentEnabled)

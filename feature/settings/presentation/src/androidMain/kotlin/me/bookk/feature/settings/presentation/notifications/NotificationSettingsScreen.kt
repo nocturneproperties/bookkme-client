@@ -38,18 +38,24 @@ internal fun NotificationSettingsScreen(state: NotificationSettingsState) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Header(text = SettingsRes.strings.settings_notifications_channels_header.desc().localized())
-                StateSwitch(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    state = state.emailEnabled
-                )
-                StateSwitch(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    state = state.pushNotificationsEnabled
-                )
-                StateSwitch(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    state = state.telegramEnabled
-                )
+                if (state.emailEnabled.isVisible) {
+                    StateSwitch(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        state = state.emailEnabled
+                    )
+                }
+                if (state.pushNotificationsEnabled.isVisible) {
+                    StateSwitch(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        state = state.pushNotificationsEnabled
+                    )
+                }
+                if (state.telegramEnabled.isVisible) {
+                    StateSwitch(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        state = state.telegramEnabled
+                    )
+                }
 
                 Header(text = SettingsRes.strings.settings_notifications_types_header.desc().localized())
                 StateSwitch(

@@ -89,6 +89,9 @@ class NotificationSettingsViewModel(
 
     private fun renderSettings(settings: NotificationSettings) = with(uiState) {
         appointmentEnabled.isChecked = settings.appointmentEnabled
+        emailEnabled.isVisible = settings.channels.any { it.channel == EMAIL }
+        pushNotificationsEnabled.isVisible = settings.channels.any { it.channel == PUSH_NOTIFICATIONS }
+        telegramEnabled.isVisible = settings.channels.any { it.channel == TELEGRAM }
         settings.channels.forEach { channel ->
             when (channel.channel) {
                 EMAIL -> emailEnabled.isChecked = channel.enabled

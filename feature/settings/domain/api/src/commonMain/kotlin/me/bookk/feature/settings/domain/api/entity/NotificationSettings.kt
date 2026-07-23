@@ -23,7 +23,12 @@ data class NotificationSettings(
             userId = userId,
             appointmentEnabled = true,
             channels = NotificationChannel.entries.map {
-                NotificationChannelSettings(id = Uuid.random(), channel = it, enabled = true)
+                NotificationChannelSettings(
+                    id = Uuid.random(),
+                    channel = it,
+                    enabled = true,
+                    availableToClients = true
+                )
             }
         )
     }
@@ -32,7 +37,8 @@ data class NotificationSettings(
 data class NotificationChannelSettings(
     val id: Uuid,
     val channel: NotificationChannel,
-    val enabled: Boolean
+    val enabled: Boolean,
+    val availableToClients: Boolean
 )
 
 enum class NotificationChannel {

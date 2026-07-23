@@ -1,5 +1,6 @@
 package me.bookk.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -23,5 +24,6 @@ class NotificationSettingsChannelEntity(
     val id: Uuid,
     val settingsId: Uuid,
     val channel: String,
-    val enabled: Boolean
+    val enabled: Boolean,
+    @ColumnInfo(defaultValue = "1") val availableToClients: Boolean
 )

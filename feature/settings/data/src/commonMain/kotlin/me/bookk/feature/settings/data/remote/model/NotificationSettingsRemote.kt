@@ -25,12 +25,14 @@ data class NotificationSettingsRemote(
 data class NotificationChannelSettingsRemote(
     val id: Uuid,
     val channel: NotificationChannelRemote,
-    val enabled: Boolean
+    val enabled: Boolean,
+    val availableToClients: Boolean
 ) {
     fun toDomain() = NotificationChannelSettings(
         id = id,
         channel = channel.toDomain(),
-        enabled = enabled
+        enabled = enabled,
+        availableToClients = availableToClients
     )
 }
 

@@ -1,16 +1,16 @@
-package me.bookk.feature.settings.presentation.notifications.service
+package library.notifications.impl.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import androidx.core.content.getSystemService
-import me.bookk.android.feature.settings.resources.SettingsRes
+import library.notifications.resources.NotifcationRes
 
-object NotificationChannels {
+internal object NotificationChannels {
     fun createDefaultChannel(context: Context) {
-        val defaultChannelId = SettingsRes.strings.settings_notifications_channel_id.getString(context)
-        val name = SettingsRes.strings.settings_notifications_channel_title.getString(context)
-        val descr = SettingsRes.strings.settings_notifications_channel_description.getString(context)
+        val defaultChannelId = NotifcationRes.strings.settings_notifications_channel_id.getString(context)
+        val name = NotifcationRes.strings.settings_notifications_channel_title.getString(context)
+        val descr = NotifcationRes.strings.settings_notifications_channel_description.getString(context)
         val channel = NotificationChannel(
             defaultChannelId,
             name,

@@ -28,4 +28,12 @@ class FirebaseDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCente
 			TokenBridge.shared.updateInstallationId(token: id)
 		}
 	}
+
+	func userNotificationCenter(
+		_ center: UNUserNotificationCenter,
+		willPresent notification: UNNotification,
+		withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+	) {
+		completionHandler([.banner, .sound, .badge])
+	}
 }

@@ -19,7 +19,8 @@ internal fun NotificationSettings.toUpdateRequestRemote() = UpdateNotificationSe
 private fun NotificationChannelSettings.toRemote() = NotificationChannelSettingsRemote(
     id = id,
     channel = channel.toRemote(),
-    enabled = enabled
+    enabled = enabled,
+    availableToClients = availableToClients
 )
 
 private fun NotificationChannel.toRemote() = when (this) {
@@ -39,7 +40,8 @@ internal fun NotificationSettings.toChannelEntities() = channels.map { channel -
         id = channel.id,
         settingsId = id,
         channel = channel.channel.name,
-        enabled = channel.enabled
+        enabled = channel.enabled,
+        availableToClients = channel.availableToClients
     )
 }
 
@@ -51,7 +53,8 @@ internal fun NotificationSettingsLocal.toDomain() = NotificationSettings(
         NotificationChannelSettings(
             id = it.id,
             channel = NotificationChannel.valueOf(it.channel),
-            enabled = it.enabled
+            enabled = it.enabled,
+            availableToClients = it.availableToClients
         )
     }
 )

@@ -89,6 +89,8 @@ kotlin {
             implementation(projects.library.files.impl)
             implementation(projects.library.validation.api)
             implementation(projects.library.validation.impl)
+            api(projects.library.notifications.api)
+            implementation(projects.library.notifications.impl)
             api(projects.library.credentials.api)
             implementation(projects.library.credentials.impl)
             api(projects.library.money)
@@ -168,6 +170,7 @@ kotlin {
             export(projects.library.money)
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)
+            export(projects.library.notifications.api)
             export(projects.library.picker)
         }
     }

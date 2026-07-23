@@ -4,6 +4,7 @@ import library.cache.impl.di.cacheModule
 import library.credentials.impl.di.credentialsModule
 import library.device.impl.di.deviceModule
 import library.files.impl.di.filesModule
+import library.notifications.impl.di.notificationsModule
 import library.permissions.impl.di.permissionsModule
 import library.picker.di.pickerModule
 import library.validation.impl.di.validationModule
@@ -17,6 +18,7 @@ internal fun libraryModule() = module {
         deviceModule(),
         credentialsModule(),
         validationModule(),
-        pickerModule()
+        pickerModule(),
+        notificationsModule()
     )
 }

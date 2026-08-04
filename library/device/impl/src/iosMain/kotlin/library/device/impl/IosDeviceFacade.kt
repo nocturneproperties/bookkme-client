@@ -1,7 +1,11 @@
 package library.device.impl
 
 import library.device.api.DeviceFacade
+import platform.Foundation.NSLocale
 import platform.Foundation.NSURL
+import platform.Foundation.canonicalLanguageIdentifierFromString
+import platform.Foundation.currentLocale
+import platform.Foundation.localeIdentifier
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDevice
 
@@ -9,6 +13,10 @@ class IosDeviceFacade : DeviceFacade {
 
     override fun getPlatformName(): String {
         return "ios"
+    }
+
+    override fun getLocaleId(): String {
+        return NSLocale.canonicalLanguageIdentifierFromString(NSLocale.currentLocale.localeIdentifier)
     }
 
     override fun getDeviceName(): String {

@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.core.net.toUri
 import library.device.api.DeviceFacade
 import me.bookk.core.Logger
+import java.util.Locale
 
 
 class AndroidDeviceFacade(
@@ -17,6 +18,10 @@ class AndroidDeviceFacade(
 
     override fun getPlatformName(): String {
         return "android"
+    }
+
+    override fun getLocaleId(): String {
+        return Locale.getDefault(Locale.Category.FORMAT).toLanguageTag()
     }
 
     override fun getDeviceName(): String {

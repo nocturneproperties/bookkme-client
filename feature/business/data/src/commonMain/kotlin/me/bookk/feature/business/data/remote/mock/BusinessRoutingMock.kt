@@ -20,6 +20,7 @@ import me.bookk.core.data.mock.MockRequestHandler
 import me.bookk.core.data.mock.RoutingMock
 import me.bookk.feature.business.data.remote.api.BusinessRouting
 import me.bookk.feature.business.data.remote.model.BusinessRemote
+import me.bookk.feature.business.data.remote.model.BusinessUpdateRemote
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
 import kotlin.uuid.Uuid
 
@@ -73,8 +74,17 @@ private class UpdateBusinessesHandler : MockRequestHandler {
         scope: MockRequestHandleScope,
         request: HttpRequestData
     ): HttpResponseData {
-        val business = dataSerializer.decodeFromByteArray<BusinessRemote>(request.body.toByteArray())
-        mockBusiness = business
+        val business = dataSerializer.decodeFromByteArray<BusinessUpdateRemote>(request.body.toByteArray())
+        mockBusiness = BusinessRemote(
+            id = business.id,
+            name = business.name,
+            description = business.description,
+            address = business.address,
+            timeZone = business.timeZone,
+            location = business.location,
+            currencyCode = business.currencyCode,
+            socials = business.socials
+        )
         return scope.respondOk()
     }
 }

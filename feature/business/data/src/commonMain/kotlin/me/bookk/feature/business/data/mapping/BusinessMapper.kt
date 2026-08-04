@@ -4,6 +4,7 @@ import kotlinx.datetime.TimeZone
 import library.money.api.Currency
 import me.bookk.database.entity.BusinessEntity
 import me.bookk.feature.business.data.remote.model.BusinessRemote
+import me.bookk.feature.business.data.remote.model.BusinessUpdateRemote
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
@@ -79,8 +80,8 @@ internal fun UserBusinessesRemote.toUserBusinesses(): UserBusinessInfo {
     )
 }
 
-internal fun Business.toRemote(): BusinessRemote {
-    return BusinessRemote(
+internal fun Business.toRemote(): BusinessUpdateRemote {
+    return BusinessUpdateRemote(
         id = id,
         name = name,
         description = description,

@@ -17,6 +17,7 @@ import io.ktor.client.plugins.resources.Resources
 import io.ktor.client.request.header
 import io.ktor.client.statement.request
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.protobuf.protobuf
 import kotlinx.coroutines.sync.Mutex
@@ -116,12 +117,14 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
             }
         }
 
+        val deviceFacade = get<DeviceFacade>()
         defaultRequest {
             if (BuildKonfig.DEBUG) {
                 header("X-Debug", true)
             }
             header("X-App-Version", BuildKonfig.VERSION_NAME)
-            header("X-Platform", get<DeviceFacade>().getPlatformName())
+            header("X-Platform", deviceFacade.getPlatformName())
+            header(HttpHeaders.AcceptLanguage, deviceFacade.getLocaleId())
             if (installAuth) {
                 headers["Idempotency-Key"] = Uuid.random().toHexString()
             }

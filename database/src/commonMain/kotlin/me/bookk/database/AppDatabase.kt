@@ -28,7 +28,10 @@ import me.bookk.database.entity.AppointmentSettingsDayOffEntity
 import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
 import me.bookk.database.entity.AppointmentSettingsEntity
 import me.bookk.database.entity.AppointmentSettingsWorkHourEntity
+import me.bookk.database.entity.BusinessDayOffEntity
+import me.bookk.database.entity.BusinessDayScheduleEntity
 import me.bookk.database.entity.BusinessEntity
+import me.bookk.database.entity.BusinessWorkHourEntity
 import me.bookk.database.entity.ClientEntity
 import me.bookk.database.entity.NotificationSettingsChannelEntity
 import me.bookk.database.entity.NotificationSettingsEntity
@@ -40,6 +43,9 @@ import me.bookk.database.entity.UserProfileEntity
     entities = [
         UserProfileEntity::class,
         BusinessEntity::class,
+        BusinessDayScheduleEntity::class,
+        BusinessWorkHourEntity::class,
+        BusinessDayOffEntity::class,
         ClientEntity::class,
         ServiceEntity::class,
         ServiceGroupEntity::class,
@@ -54,12 +60,13 @@ import me.bookk.database.entity.UserProfileEntity
         NotificationSettingsEntity::class,
         NotificationSettingsChannelEntity::class
     ],
-    version = 5,
+    version = 6,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
-        AutoMigration(from = 4, to = 5)
+        AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6)
     ]
 )
 @TypeConverters(

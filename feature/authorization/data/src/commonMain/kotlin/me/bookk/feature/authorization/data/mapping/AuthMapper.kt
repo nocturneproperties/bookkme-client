@@ -83,7 +83,8 @@ internal fun UserProfileEntity.toDomain(): UserProfile {
         id = id,
         firstName = firstName,
         lastName = lastName,
-        email = email
+        email = email,
+        phone = phone
     )
 }
 
@@ -92,7 +93,8 @@ internal fun UserProfile.toRemote(): UserProfileRemote {
         id = id,
         firstName = firstName,
         lastName = lastName,
-        email = email
+        email = email,
+        phone = phone
     )
 }
 
@@ -101,7 +103,8 @@ internal fun UserProfile.toDb(): UserProfileEntity {
         id = id,
         firstName = firstName,
         lastName = lastName,
-        email = email
+        email = email,
+        phone = phone
     )
 }
 
@@ -110,7 +113,8 @@ internal fun UserProfileRemote.toDomain(): UserProfile {
         id = id,
         firstName = firstName,
         lastName = lastName,
-        email = email
+        email = email,
+        phone = phone
     )
 }
 

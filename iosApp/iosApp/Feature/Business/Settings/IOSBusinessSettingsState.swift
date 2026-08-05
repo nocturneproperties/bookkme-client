@@ -18,6 +18,7 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 	
 	
 	var appBar: any AppBarState
+	var photo: any ButtonState
 	var address: any TextFieldState
 	var currency: any PickerFieldState
 	var description_: any TextFieldState
@@ -31,11 +32,16 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 	var viber: any TextFieldState
 	var phone: any TextFieldState
 	
+	var schedule: any ScheduleState
+	var dayOffs: any MultiPickerState
+	var dateRange: any DateRangePickerState
+	
 	var notifications: any PresentationNotificationState
 	var navigation: any NavigationState
 	
 	init(initData: BusinessSettingsStateInitData) {
 		self.appBar = IOSAppBarState(title: initData.title)
+		self.photo = IOSButtonState(text: initData.addPhotoText)
 		self.address = IOSTextFieldState(placeholder: initData.addressHint)
 		self.currency = IOSPickerState()
 		self.description_ = IOSTextFieldState(placeholder: initData.descriptionHint)
@@ -50,6 +56,12 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 		self.pickLocation = IOSButtonState(text: initData.pickLocationText)
 		self.phone = IOSTextFieldState(placeholder: initData.phoneHint, startIcon: initData.phoneIcon)
 		self.navigation = IOSNavigationState()
+		self.schedule = IOSScheduleState()
+		self.dayOffs = IOSMultiPickerState()
+		self.dateRange = IOSDateRangePickerState()
 	}
 	
+	func createDaySettingState() -> any DaySettingsState {
+		return IOSDaySettingsState()
+	}
 }

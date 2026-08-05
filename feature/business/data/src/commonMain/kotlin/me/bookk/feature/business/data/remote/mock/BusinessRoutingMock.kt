@@ -22,6 +22,8 @@ import me.bookk.feature.business.data.remote.api.BusinessRouting
 import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.BusinessUpdateRemote
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
+import me.bookk.feature.business.data.remote.model.toRemote
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.uuid.Uuid
 
 internal class BusinessRoutingMock : RoutingMock {
@@ -43,7 +45,8 @@ private var mockBusiness = BusinessRemote(
         BusinessRemote.Social(BusinessRemote.SocialKind.VIBER, "viber"),
         BusinessRemote.Social(BusinessRemote.SocialKind.INSTAGRAM, "insta"),
         BusinessRemote.Social(BusinessRemote.SocialKind.TELEGRAM, "telegram")
-    )
+    ),
+    schedule = WorkingSchedule().toRemote()
 )
 
 private class GetBusinessesHandler : MockRequestHandler {
@@ -83,7 +86,8 @@ private class UpdateBusinessesHandler : MockRequestHandler {
             timeZone = business.timeZone,
             location = business.location,
             currencyCode = business.currencyCode,
-            socials = business.socials
+            socials = business.socials,
+            schedule = business.schedule
         )
         return scope.respondOk()
     }

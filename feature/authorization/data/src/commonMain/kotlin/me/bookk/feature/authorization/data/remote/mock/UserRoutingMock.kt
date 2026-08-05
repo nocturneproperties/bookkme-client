@@ -22,7 +22,8 @@ private var currentUser = UserProfileRemote(
     id = Uuid.random(),
     firstName = "Mock",
     lastName = "User",
-    email = "mock.user@email.com"
+    email = "mock.user@email.com",
+    phone = null
 )
 
 internal class UserRoutingMock : RoutingMock {

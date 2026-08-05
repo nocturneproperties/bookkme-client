@@ -23,15 +23,16 @@
     <string name="business_dashboard_orders">Orders</string>
 
     <string name="business_settings_title">Business settings</string>
-    <string name="business_settings_name_title">Name</string>
+    <string name="business_settings_add_photo">Add photo</string>
+    <string name="business_settings_name_title">Business name</string>
     <string name="business_settings_name_hint">Business name</string>
     <string name="business_settings_description_title">Description</string>
-    <string name="business_settings_description_hint">Short description</string>
+    <string name="business_settings_description_hint">Add a short description customers will see</string>
     <string name="business_settings_location_title">Location</string>
     <string name="business_settings_location_hint">Business location</string>
     <string name="business_settings_location_supporting">This location helps to find your location on maps app</string>
     <string name="business_settings_address_title">Address</string>
-    <string name="business_settings_address_hint">Enter address</string>
+    <string name="business_settings_address_hint">No address set</string>
     <string name="business_settings_currency_title">Currency</string>
     <string name="business_settings_currency_label">Account currency</string>
     <string name="business_settings_socials_title">Socials</string>
@@ -39,8 +40,8 @@
     <string name="business_settings_instagram_hint">Instagram tag</string>
     <string name="business_settings_viber_hint">Viber number</string>
     <string name="business_settings_telegram_hint">Telegram tag</string>
-    <string name="business_settings_location_test">Test location on map</string>
-    <string name="business_settings_location_pick">Pick</string>
+    <string name="business_settings_location_test">Preview</string>
+    <string name="business_settings_location_pick">Pick on map</string>
     <string name="business_settings_updated">Settings updated</string>
 
     <string name="business_clients_title">Clients</string>
@@ -64,4 +65,12 @@
     <string name="business_plugins_appointments_clients_item2">Receive email and application notifications.</string>
     <string name="business_plugins_appointments_clients_item2_sub">Note that client can opt out from any notifications</string>
     <string name="business_plugins_demo">Click here if you want to see the demo, look how it works and decide whether it fits for you.</string>
+    <string name="business_settings_add_working_time">Add time block</string>
+    <string name="business_settings_day_offs">Days off</string>
+    <string name="business_settings_add_day_off">Add day off</string>
+    <string name="business_settings_no_day_offs">No days off scheduled.</string>
+    <string name="business_settings_pick_day_off_title">Pick a start and end date for a vacation/day-off block.</string>
+    <string name="business_settings_schedule">Schedule</string>
+    <string name="business_settings_active_day_without_work_hours_error">An active day must have at least one work hour</string>
+    <string name="business_settings_invalid_day_off_range_error">Day off start date must be before the end date</string>
 </resources>

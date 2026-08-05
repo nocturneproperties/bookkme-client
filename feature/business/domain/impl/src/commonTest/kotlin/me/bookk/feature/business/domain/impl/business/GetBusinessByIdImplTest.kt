@@ -16,6 +16,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -53,7 +54,8 @@ class GetBusinessByIdImplTest {
         location = null,
         currency = Currency("USD"),
         timeZone = TimeZone.UTC,
-        socials = emptyMap()
+        socials = emptyMap(),
+        schedule = WorkingSchedule()
     )
 
     @Test

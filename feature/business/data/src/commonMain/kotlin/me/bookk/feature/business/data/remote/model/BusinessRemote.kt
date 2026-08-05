@@ -16,7 +16,8 @@ class BusinessRemote(
     val timeZone: TimeZone,
     val location: Location?,
     val currencyCode: String,
-    val socials: List<Social>
+    val socials: List<Social>,
+    val schedule: ScheduleRemote
 ) {
     @Serializable
     class Location(

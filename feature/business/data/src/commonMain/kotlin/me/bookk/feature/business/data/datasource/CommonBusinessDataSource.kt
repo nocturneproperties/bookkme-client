@@ -17,10 +17,13 @@ import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.BusinessDao
+import me.bookk.feature.business.data.mapping.toDayOffEntities
+import me.bookk.feature.business.data.mapping.toDayScheduleEntities
 import me.bookk.feature.business.data.mapping.toDomain
 import me.bookk.feature.business.data.mapping.toLocal
 import me.bookk.feature.business.data.mapping.toRemote
 import me.bookk.feature.business.data.mapping.toUserBusinesses
+import me.bookk.feature.business.data.mapping.toWorkHourEntities
 import me.bookk.feature.business.data.remote.api.BusinessRouting
 import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.CreateBusinessRequest
@@ -60,11 +63,25 @@ internal class CommonBusinessDataSource(
     }
 
     override suspend fun saveBusinessInDB(business: Business) {
-        mapExceptions { businessDao.upsertBusiness(business.toLocal()) }
+        mapExceptions {
+            businessDao.upsertWithChildren(
+                business = business.toLocal(),
+                daySchedules = business.toDayScheduleEntities(),
+                workHours = business.toWorkHourEntities(),
+                dayOffs = business.toDayOffEntities()
+            )
+        }
     }
 
     override suspend fun saveBusinessListInDB(businesses: List<Business>) {
-        mapExceptions { businessDao.upsertBusiness(businesses.map { it.toLocal() }) }
+        mapExceptions {
+            businessDao.upsertAllWithChildren(
+                businesses = businesses.map { it.toLocal() },
+                daySchedules = businesses.flatMap { it.toDayScheduleEntities() },
+                workHours = businesses.flatMap { it.toWorkHourEntities() },
+                dayOffs = businesses.flatMap { it.toDayOffEntities() }
+            )
+        }
     }
 
     override fun observeBusinessDBChanges(businessId: Uuid): Flow<Business?> {

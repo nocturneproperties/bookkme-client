@@ -54,7 +54,7 @@ internal class ServiceDataSourceImpl(
 
     override suspend fun getBusinessCurrency(businessId: Uuid): Money.SupportedCurrency {
         return Money.SupportedCurrency.fromCode(
-            requireNotNull(businessDao.queryBusiness(businessId)).currencyCode
+            requireNotNull(businessDao.queryBusiness(businessId)).entity.currencyCode
         )
     }
 

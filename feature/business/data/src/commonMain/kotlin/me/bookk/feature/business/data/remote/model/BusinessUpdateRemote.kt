@@ -15,5 +15,6 @@ internal class BusinessUpdateRemote(
     val currencyCode: String,
     @Serializable(with = TimeZoneSerializer::class)
     val timeZone: TimeZone,
-    val socials: List<BusinessRemote.Social>
+    val socials: List<BusinessRemote.Social>,
+    val schedule: ScheduleRemote
 )

@@ -12,7 +12,8 @@ data class Business(
     val location: Location?,
     val currency: Currency,
     val timeZone: TimeZone,
-    val socials: Map<SocialKind, Social>
+    val socials: Map<SocialKind, Social>,
+    val schedule: WorkingSchedule
 ) {
     data class Update(
         val id: Uuid,
@@ -21,7 +22,8 @@ data class Business(
         val address: String,
         val location: Location?,
         val currency: Currency,
-        val socials: Map<SocialKind, Social>
+        val socials: Map<SocialKind, Social>,
+        val schedule: WorkingSchedule
     )
 
     data class Location(

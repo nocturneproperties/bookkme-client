@@ -11,9 +11,6 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
     let appBar: any AppBarState
 
     let automaticApproval: any BooleanState
-    let dayOffs: any MultiPickerState
-    let dateRange: any DateRangePickerState
-    let schedule: any ScheduleState
     let note: any TextFieldState
     let minimalBreak: any TextFieldState
 
@@ -25,17 +22,10 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
     init() {
         appBar = IOSAppBarState()
         automaticApproval = IOSBooleanState()
-        dayOffs = IOSMultiPickerState()
-        dateRange = IOSDateRangePickerState()
-        schedule = IOSScheduleState()
         note = IOSTextFieldState()
         minimalBreak = IOSTextFieldState()
         save = IOSButtonState()
         navigation = IOSNavigationState()
         notifications = IOSNotificationState()
-    }
-
-    func createDaySettingState() -> any DaySettingsState {
-        return IOSDaySettingsState()
     }
 }

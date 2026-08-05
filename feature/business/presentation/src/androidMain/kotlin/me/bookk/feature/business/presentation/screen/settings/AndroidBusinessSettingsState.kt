@@ -5,12 +5,16 @@ import dev.icerock.moko.resources.desc.desc
 import library.money.api.Money
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
+import me.bookk.designsystem.uistate.AndroidDateRangePickerState
+import me.bookk.designsystem.uistate.AndroidMultiPickerState
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidPickerFieldState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.DateRangePickerState
+import me.bookk.designsystem.uistate.MultiPickerState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PresentationNotificationState
@@ -19,11 +23,17 @@ import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsDestination
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
+import me.bookk.feature.business.presentation.screen.settings.state.DateRangePickerPresentation
+import me.bookk.feature.business.presentation.screen.settings.state.DaySettingsState
+import me.bookk.feature.business.presentation.screen.settings.state.ScheduleState
 
 @Immutable
 internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.InitData) :
     BusinessSettingsState {
     override val appBar: AppBarState = AndroidAppBarState(initData.title, size = TopBarSize.SMALL)
+    override val photo: ButtonState = AndroidButtonState(
+        text = initData.addPhotoText
+    )
     override val name: TextFieldState = AndroidTextFieldState(
         placeholder = initData.nameHint
     )
@@ -68,6 +78,12 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
         text = initData.pickLocationText
     )
 
+    override val schedule: ScheduleState = AndroidScheduleState()
+    override val dateRange: DateRangePickerState = AndroidDateRangePickerState()
+    override val dayOffs: MultiPickerState<DateRangePickerPresentation> = AndroidMultiPickerState()
+
     override val notifications: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<BusinessSettingsDestination> = AndroidNavigationState()
+
+    override fun createDaySettingState(): DaySettingsState = AndroidDaySettingsState()
 }

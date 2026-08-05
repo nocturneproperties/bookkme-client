@@ -4,6 +4,8 @@ import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.DateRangePickerState
+import me.bookk.designsystem.uistate.MultiPickerState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PresentationNotificationState
@@ -11,6 +13,7 @@ import me.bookk.designsystem.uistate.TextFieldState
 
 interface BusinessSettingsState {
     val appBar: AppBarState
+    val photo: ButtonState
     val name: TextFieldState
     val description: TextFieldState
     val location: TextFieldState
@@ -21,6 +24,10 @@ interface BusinessSettingsState {
     val telegram: TextFieldState
     val viber: TextFieldState
 
+    val schedule: ScheduleState
+    val dayOffs: MultiPickerState<DateRangePickerPresentation>
+    val dateRange: DateRangePickerState
+
     val pickLocation: ButtonState
     val testLocation: ButtonState
     val save: ButtonState
@@ -28,10 +35,13 @@ interface BusinessSettingsState {
     val notifications: PresentationNotificationState
     val navigation: NavigationState<BusinessSettingsDestination>
 
+    fun createDaySettingState(): DaySettingsState
+
     class InitData(
         val title: StringDesc,
         val testLocationText: StringDesc,
         val saveButtonText: StringDesc,
+        val addPhotoText: StringDesc,
         val nameHint: StringDesc,
         val descriptionHint: StringDesc,
         val addressHint: StringDesc,

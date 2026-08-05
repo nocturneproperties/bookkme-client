@@ -25,6 +25,7 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
@@ -60,7 +61,8 @@ class LowPriorityDataFetchTest {
         location = null,
         currency = Currency("USD"),
         timeZone = TimeZone.UTC,
-        socials = emptyMap()
+        socials = emptyMap(),
+        schedule = WorkingSchedule()
     )
 
     private class Fixture {

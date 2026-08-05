@@ -246,6 +246,7 @@ http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
 - **Persistence**: use `library/cache` for simple key-value storage or Room for complex data.
 - **Mocking**: for "mock" build variants provide `RoutingMock` implementations or Ktor `MockEngine`.
 - **No string literals in screens**: never hardcode user-visible strings in Compose/SwiftUI screen files. All strings must be defined in the feature's `moko-resources/base/strings.xml`, accessed in Kotlin via `FeatureRes.strings.key.desc()` and rendered in Compose with `.localized()` / in Swift with `.localized()`. Dynamic strings with runtime values use the `.format(vararg args)` extension (e.g. `AppointmentsRes.strings.appointments_create_subtotal.format(count)`).
+- **Never comment code**: do not add `//`, `/* */`, or `/** KDoc */` comments to Kotlin or Swift source. Code must be self-explanatory through clear naming, small functions, and the existing architectural patterns — if a piece of logic needs a comment to be understood, restructure or rename it instead. This applies to new code and to edits of existing code; do not add comments to files you touch even to explain a change. Pre-existing comments in files you edit may be left as-is unless the user asks for them to be removed.
 
 ## Design System – Screen Building Blocks
 

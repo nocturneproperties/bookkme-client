@@ -18,7 +18,7 @@ internal actual fun platformBusinessDiModule(): Module = module {
     factoryOf(::BusinessBootstrapViewModel)
     factoryOf(::BusinessDashboardViewModel)
     factoryOf(::BusinessPluginsViewModel)
-    factory { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get()) }
+    factory { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get(), get()) }
 }
 
 @UsedInSwift

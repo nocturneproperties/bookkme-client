@@ -7,12 +7,21 @@ import kotlinx.datetime.TimeZone
 import kotlinx.serialization.Serializable
 import me.bookk.core.data.TimeZoneSerializer
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
-import me.bookk.feature.appointments.domain.api.entity.DayOfWeekSchedule
-import me.bookk.feature.appointments.domain.api.entity.DayOffRange
-import me.bookk.feature.appointments.domain.api.entity.WorkHour
-import me.bookk.feature.appointments.domain.api.entity.WorkingSchedule
+import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
+import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.WorkHour
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.uuid.Uuid
 
+/**
+ * Read-only view of the appointment settings.
+ *
+ * The working schedule and day offs are owned by the business service and only replicated here,
+ * so they are never sent back on update — see [AppointmentSettingsUpdateRemote].
+ *
+ * Field order is significant: the API speaks protobuf and none of the remote models declare
+ * explicit `@ProtoNumber`s, so field numbers are assigned by declaration order.
+ */
 @Serializable
 data class AppointmentSettingsRemote(
     val id: Uuid,
@@ -20,7 +29,6 @@ data class AppointmentSettingsRemote(
     @Serializable(with = TimeZoneSerializer::class)
     val timeZone: TimeZone,
     val schedule: WorkingScheduleRemote,
-    val dayOffs: List<DayOffRangeRemote>,
     val automaticApproval: Boolean,
     val inBetweenBreakInMinutes: Int,
     val appointmentNote: String
@@ -30,7 +38,6 @@ data class AppointmentSettingsRemote(
         businessId = businessId,
         timeZone = timeZone,
         schedule = schedule.toDomain(),
-        dayOffs = dayOffs.map { it.toDomain() },
         automaticApproval = automaticApproval,
         inBetweenBreakInMinutes = inBetweenBreakInMinutes,
         appointmentNote = appointmentNote
@@ -38,10 +45,22 @@ data class AppointmentSettingsRemote(
 }
 
 @Serializable
+data class AppointmentSettingsUpdateRemote(
+    val businessId: Uuid,
+    val automaticApproval: Boolean,
+    val inBetweenBreakInMinutes: Int,
+    val appointmentNote: String
+)
+
+@Serializable
 data class WorkingScheduleRemote(
-    val days: Map<DayOfWeek, DayOfWeekScheduleRemote>
+    val days: Map<DayOfWeek, DayOfWeekScheduleRemote>,
+    val dayOffs: List<DayOffRangeRemote>
 ) {
-    fun toDomain() = WorkingSchedule(days = days.mapValues { it.value.toDomain(it.key) })
+    fun toDomain() = WorkingSchedule(
+        days = days.mapValues { it.value.toDomain(it.key) },
+        dayOffs = dayOffs.map { it.toDomain() }
+    )
 }
 
 @Serializable
@@ -58,15 +77,10 @@ data class DayOfWeekScheduleRemote(
 
 @Serializable
 data class WorkHourRemote(
-    val dayOfWeek: DayOfWeek,
     val from: LocalTime,
     val to: LocalTime
 ) {
-    fun toDomain() = WorkHour(
-        dayOfWeek = dayOfWeek,
-        from = from,
-        to = to
-    )
+    fun toDomain() = WorkHour(from = from, to = to)
 }
 
 @Serializable
@@ -74,8 +88,5 @@ data class DayOffRangeRemote(
     val start: LocalDate,
     val end: LocalDate
 ) {
-    fun toDomain() = DayOffRange(
-        start = start,
-        end = end
-    )
+    fun toDomain() = DayOffRange(start = start, end = end)
 }

@@ -16,9 +16,7 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.datasource.AppointmentsErrorCodes
-import me.bookk.feature.business.domain.datasource.BusinessDataSource
 import me.bookk.feature.business.domain.datasource.PluginDataSource
-import me.bookk.feature.business.domain.impl.stubBusiness
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,24 +41,21 @@ class EnableAppointmentsPluginImplTest {
 
     private class Fixture {
         val pluginDataSource = mock<PluginDataSource>()
-        val businessDataSource = mock<BusinessDataSource>()
-        val sut = EnableAppointmentsPluginImpl(pluginDataSource, businessDataSource)
+        val sut = EnableAppointmentsPluginImpl(pluginDataSource)
     }
 
     @Test
-    fun `calls enableAppointmentsPlugin with correct business`() = runUnitTest {
+    fun `enables the plugin for the requested business id`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        val business = stubBusiness(id = businessId)
-        everySuspend { fixture.businessDataSource.getBusinessById(businessId) } returns business
-        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(business) } returns Unit
+        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } returns Unit
 
         whenn()
         fixture.sut(businessId)
 
         then()
-        verifySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(business) }
+        verifySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) }
     }
 
     @Test
@@ -68,28 +63,12 @@ class EnableAppointmentsPluginImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        val business = stubBusiness(id = businessId)
-        everySuspend { fixture.businessDataSource.getBusinessById(businessId) } returns business
-        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(business) } throws
+        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } throws
             DomainError.BusinessError(AppointmentsErrorCodes.PLUGIN_ALREADY_ENABLED, "msg")
 
         whenn()
         then()
         assertFailsWith<EnableAppointmentsPlugin.Error.AlreadyEnabled> {
-            fixture.sut(businessId)
-        }
-    }
-
-    @Test
-    fun `throws when business not found`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        everySuspend { fixture.businessDataSource.getBusinessById(businessId) } returns null
-
-        whenn()
-        then()
-        assertFailsWith<IllegalStateException> {
             fixture.sut(businessId)
         }
     }

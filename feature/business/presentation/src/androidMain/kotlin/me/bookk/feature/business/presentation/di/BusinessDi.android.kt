@@ -15,5 +15,5 @@ internal actual fun platformBusinessDiModule(): Module = module {
     viewModelOf(::BusinessBootstrapViewModel)
     viewModelOf(::BusinessDashboardViewModel)
     viewModelOf(::BusinessPluginsViewModel)
-    viewModel { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get()) }
+    viewModel { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get(), get()) }
 }

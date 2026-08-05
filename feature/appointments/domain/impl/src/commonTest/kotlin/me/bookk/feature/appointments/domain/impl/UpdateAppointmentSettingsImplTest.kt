@@ -1,7 +1,6 @@
 package me.bookk.feature.appointments.domain.impl
 
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
@@ -15,16 +14,12 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.feature.appointments.domain.api.UpdateAppointmentSettings
-import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.appointments.domain.datasource.AppointmentSettingsDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import me.bookk.core.domain.entity.Error as DomainError
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpdateAppointmentSettingsImplTest {
@@ -78,33 +73,4 @@ class UpdateAppointmentSettingsImplTest {
         verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentSettingsInDB(updated) }
     }
 
-    @Test
-    fun `throws ActiveDayWithoutWorkHours on corresponding error code`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val settings = AppointmentSettings.stub()
-        everySuspend { fixture.dataSource.updateAppointmentSettings(settings) } throws
-            DomainError.BusinessError(AppointmentErrorCodes.ACTIVE_DAY_WITHOUT_WORK_HOURS, "msg")
-
-        whenn()
-        then()
-        assertFailsWith<UpdateAppointmentSettings.Error.ActiveDayWithoutWorkHours> {
-            fixture.sut(settings)
-        }
-    }
-
-    @Test
-    fun `throws InvalidDayOffRange on corresponding error code`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val settings = AppointmentSettings.stub()
-        everySuspend { fixture.dataSource.updateAppointmentSettings(settings) } throws
-            DomainError.BusinessError(AppointmentErrorCodes.INVALID_DAY_OFF_RANGE, "msg")
-
-        whenn()
-        then()
-        assertFailsWith<UpdateAppointmentSettings.Error.InvalidDayOffRange> {
-            fixture.sut(settings)
-        }
-    }
 }

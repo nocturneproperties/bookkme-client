@@ -5,6 +5,7 @@ import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 
 internal class BusinessSettingsEventListener(
     val onBackClick: () -> Unit,
+    val onAddPhotoClick: () -> Unit,
     val onNameChanged: (String) -> Unit,
     val onDescriptionChanged: (String) -> Unit,
     val onAddressChanged: (String) -> Unit,
@@ -20,6 +21,7 @@ internal class BusinessSettingsEventListener(
 
 internal val LocalBusinessSettingsEventListener = compositionLocalOf {
     BusinessSettingsEventListener(
+        onAddPhotoClick = {},
         onNameChanged = {},
         onAddressChanged = {},
         onViberChanged = {},

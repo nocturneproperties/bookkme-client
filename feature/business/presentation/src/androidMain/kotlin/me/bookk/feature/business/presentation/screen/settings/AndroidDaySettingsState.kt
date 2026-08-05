@@ -1,4 +1,4 @@
-package me.bookk.feature.appointments.presentation.screen.settings
+package me.bookk.feature.business.presentation.screen.settings
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -11,6 +11,8 @@ import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidViewState
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.feature.business.presentation.screen.settings.state.DaySettingsState
+import me.bookk.feature.business.presentation.screen.settings.state.TimeSettingState
 
 class AndroidDaySettingsState : AndroidViewState(isVisible = false), DaySettingsState {
 

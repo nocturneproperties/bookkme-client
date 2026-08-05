@@ -22,15 +22,11 @@ import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRe
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestStatusRemote
-import me.bookk.feature.appointments.data.remote.model.AppointmentSettingsRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentSettingsUpdateRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
 import me.bookk.feature.appointments.data.remote.model.ClientSnapshotRemote
-import me.bookk.feature.appointments.data.remote.model.DayOfWeekScheduleRemote
-import me.bookk.feature.appointments.data.remote.model.DayOffRangeRemote
 import me.bookk.feature.appointments.data.remote.model.EmployeeSnapshotRemote
 import me.bookk.feature.appointments.data.remote.model.ServiceSnapshotRemote
-import me.bookk.feature.appointments.data.remote.model.WorkHourRemote
-import me.bookk.feature.appointments.data.remote.model.WorkingScheduleRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
@@ -38,12 +34,12 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
-import me.bookk.feature.appointments.domain.api.entity.DayOfWeekSchedule
-import me.bookk.feature.appointments.domain.api.entity.DayOffRange
 import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
-import me.bookk.feature.appointments.domain.api.entity.WorkHour
-import me.bookk.feature.appointments.domain.api.entity.WorkingSchedule
+import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
+import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.WorkHour
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 
 internal fun AppointmentRequest.toRemote() = AppointmentRequestRemote(
     id = id,
@@ -219,35 +215,11 @@ internal fun AppointmentRequestLocal.toDomain() = AppointmentRequest(
     declineReason = entity.declineReason
 )
 
-internal fun AppointmentSettings.toRemote() = AppointmentSettingsRemote(
-    id = id,
+internal fun AppointmentSettings.toRemote() = AppointmentSettingsUpdateRemote(
     businessId = businessId,
-    timeZone = timeZone,
-    schedule = schedule.toRemote(),
-    dayOffs = dayOffs.map { it.toRemote() },
     automaticApproval = automaticApproval,
     inBetweenBreakInMinutes = inBetweenBreakInMinutes,
     appointmentNote = appointmentNote
-)
-
-private fun WorkingSchedule.toRemote() = WorkingScheduleRemote(
-    days = days.mapValues { it.value.toRemote() }
-)
-
-private fun DayOfWeekSchedule.toRemote() = DayOfWeekScheduleRemote(
-    workingTime = workingTime.map { it.toRemote() },
-    isActive = isActive
-)
-
-private fun WorkHour.toRemote() = WorkHourRemote(
-    dayOfWeek = dayOfWeek,
-    from = from,
-    to = to
-)
-
-private fun DayOffRange.toRemote() = DayOffRangeRemote(
-    start = start,
-    end = end
 )
 
 internal fun AppointmentSettings.toEntity() = AppointmentSettingsEntity(
@@ -278,7 +250,7 @@ internal fun AppointmentSettings.toWorkHourEntities() = schedule.days.flatMap { 
     }
 }
 
-internal fun AppointmentSettings.toDayOffEntities() = dayOffs.map { dayOff ->
+internal fun AppointmentSettings.toDayOffEntities() = schedule.dayOffs.map { dayOff ->
     AppointmentSettingsDayOffEntity(
         settingsId = id,
         start = dayOff.start.toString(),
@@ -296,17 +268,15 @@ internal fun AppointmentSettingsLocal.toDomain() = AppointmentSettings(
             dayOfWeek to DayOfWeekSchedule(
                 dayOfWeek = dayOfWeek,
                 workingTime = workHours.filter { it.dayOfWeek == daySchedule.dayOfWeek }.map {
-                    WorkHour(
-                        dayOfWeek = dayOfWeek,
-                        from = LocalTime.parse(it.from),
-                        to = LocalTime.parse(it.to)
-                    )
+                    WorkHour(from = LocalTime.parse(it.from), to = LocalTime.parse(it.to))
                 },
                 isActive = daySchedule.isActive
             )
+        },
+        dayOffs = dayOffs.map {
+            DayOffRange(start = LocalDate.parse(it.start), end = LocalDate.parse(it.end))
         }
     ),
-    dayOffs = dayOffs.map { DayOffRange(start = LocalDate.parse(it.start), end = LocalDate.parse(it.end)) },
     automaticApproval = entity.automaticApproval,
     inBetweenBreakInMinutes = entity.inBetweenBreakInMinutes,
     appointmentNote = entity.appointmentNote

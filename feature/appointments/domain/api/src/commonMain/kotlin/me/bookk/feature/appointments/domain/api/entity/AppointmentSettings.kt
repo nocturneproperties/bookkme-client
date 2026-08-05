@@ -1,10 +1,8 @@
 package me.bookk.feature.appointments.domain.api.entity
 
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -13,7 +11,6 @@ data class AppointmentSettings(
     val businessId: Uuid,
     val timeZone: TimeZone,
     val schedule: WorkingSchedule,
-    val dayOffs: List<DayOffRange>,
     val automaticApproval: Boolean,
     val inBetweenBreakInMinutes: Int,
     val appointmentNote: String
@@ -28,7 +25,6 @@ data class AppointmentSettings(
         timeZone = TimeZone.of("UTC"),
         schedule = WorkingSchedule(),
         automaticApproval = false,
-        dayOffs = listOf(),
         inBetweenBreakInMinutes = 10,
         appointmentNote = ""
     )
@@ -36,7 +32,7 @@ data class AppointmentSettings(
     fun isInWorkday(date: Instant): Boolean {
         val localDate = date.toLocalDateTime(timeZone)
         if (!schedule.days.getValue(localDate.dayOfWeek).isActive) return false
-        return dayOffs.none { localDate.date in it.start..it.end }
+        return schedule.dayOffs.none { localDate.date in it.start..it.end }
     }
 
     fun isInWorktime(date: Instant): Boolean {
@@ -48,20 +44,3 @@ data class AppointmentSettings(
         }
     }
 }
-
-data class WorkHour(
-    val dayOfWeek: DayOfWeek,
-    val from: LocalTime,
-    val to: LocalTime
-)
-
-data class DayOffRange(
-    val start: LocalDate,
-    val end: LocalDate
-)
-
-fun DayOfWeek.nineToFive() = WorkHour(
-    dayOfWeek = this,
-    from = LocalTime(9, 0),
-    to = LocalTime(17, 0)
-)

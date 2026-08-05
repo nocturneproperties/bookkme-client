@@ -8,5 +8,6 @@ internal class UserProfileRemote(
     val id: Uuid,
     val firstName: String,
     val lastName: String,
-    val email: String
+    val email: String,
+    val phone: String?
 )

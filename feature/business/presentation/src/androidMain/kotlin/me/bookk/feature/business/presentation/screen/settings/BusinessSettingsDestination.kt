@@ -26,6 +26,7 @@ internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
         val viewModel: BusinessSettingsViewModel = koinViewModel { parametersOf(entry.id) }
         val backPressOwner = LocalOnBackPressedDispatcherOwner.current
         val listener = BusinessSettingsEventListener(
+            onAddPhotoClick = viewModel::onAddPhotoClicked,
             onNameChanged = viewModel::onNameChanged,
             onDescriptionChanged = viewModel::onDescriptionChanged,
             onSaveClick = viewModel::onSaveClick,

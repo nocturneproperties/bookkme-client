@@ -1,13 +1,25 @@
 package me.bookk.feature.business.data.mapping
 
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import library.money.api.Currency
+import me.bookk.database.entity.BusinessDayOffEntity
+import me.bookk.database.entity.BusinessDayScheduleEntity
 import me.bookk.database.entity.BusinessEntity
+import me.bookk.database.entity.BusinessWorkHourEntity
+import me.bookk.database.relation.BusinessLocal
 import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.BusinessUpdateRemote
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
+import me.bookk.feature.business.data.remote.model.toRemote
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
+import me.bookk.feature.business.domain.api.entity.DayOffRange
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
+import me.bookk.feature.business.domain.api.entity.WorkHour
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 
 internal fun BusinessRemote.toDomain(): Business {
     return Business(
@@ -23,7 +35,8 @@ internal fun BusinessRemote.toDomain(): Business {
         },
         currency = Currency(currencyCode),
         timeZone = timeZone,
-        socials = socials.map(BusinessRemote.Social::toDomain).associateBy { it.kind }
+        socials = socials.map(BusinessRemote.Social::toDomain).associateBy { it.kind },
+        schedule = schedule.toDomain()
     )
 }
 
@@ -52,24 +65,66 @@ internal fun Business.toLocal(): BusinessEntity {
     )
 }
 
-internal fun BusinessEntity.toDomain(): Business {
+internal fun Business.toDayScheduleEntities() = schedule.days.map { (dayOfWeek, daySchedule) ->
+    BusinessDayScheduleEntity(
+        businessId = id,
+        dayOfWeek = dayOfWeek.name,
+        isActive = daySchedule.isActive
+    )
+}
+
+internal fun Business.toWorkHourEntities() = schedule.days.flatMap { (dayOfWeek, daySchedule) ->
+    daySchedule.workingTime.map { workHour ->
+        BusinessWorkHourEntity(
+            businessId = id,
+            dayOfWeek = dayOfWeek.name,
+            from = workHour.from.toString(),
+            to = workHour.to.toString()
+        )
+    }
+}
+
+internal fun Business.toDayOffEntities() = schedule.dayOffs.map { dayOff ->
+    BusinessDayOffEntity(
+        businessId = id,
+        start = dayOff.start.toString(),
+        end = dayOff.end.toString()
+    )
+}
+
+internal fun BusinessLocal.toDomain(): Business {
     return Business(
-        id = id,
-        name = name,
-        description = description,
-        address = address,
-        location = if (locationLat != null && locationLng != null) {
-            Business.Location(locationLat!!, locationLng!!)
-        } else null,
-        currency = Currency(currencyCode),
-        timeZone = TimeZone.of(timeZone),
+        id = entity.id,
+        name = entity.name,
+        description = entity.description,
+        address = entity.address,
+        location = entity.locationLat?.let { lat ->
+            entity.locationLng?.let { lng -> Business.Location(lat, lng) }
+        },
+        currency = Currency(entity.currencyCode),
+        timeZone = TimeZone.of(entity.timeZone),
         socials = listOf(
-            Business.Social(Business.SocialKind.PHONE, phone),
-            Business.Social(Business.SocialKind.INSTAGRAM, insta),
-            Business.Social(Business.SocialKind.VIBER, viber),
-            Business.Social(Business.SocialKind.WHATSAPP, whatsApp),
-            Business.Social(Business.SocialKind.TELEGRAM, telegram)
-        ).associateBy { it.kind }
+            Business.Social(Business.SocialKind.PHONE, entity.phone),
+            Business.Social(Business.SocialKind.INSTAGRAM, entity.insta),
+            Business.Social(Business.SocialKind.VIBER, entity.viber),
+            Business.Social(Business.SocialKind.WHATSAPP, entity.whatsApp),
+            Business.Social(Business.SocialKind.TELEGRAM, entity.telegram)
+        ).associateBy { it.kind },
+        schedule = WorkingSchedule(
+            days = daySchedules.associate { daySchedule ->
+                val dayOfWeek = DayOfWeek.valueOf(daySchedule.dayOfWeek)
+                dayOfWeek to DayOfWeekSchedule(
+                    dayOfWeek = dayOfWeek,
+                    workingTime = workHours.filter { it.dayOfWeek == daySchedule.dayOfWeek }.map {
+                        WorkHour(from = LocalTime.parse(it.from), to = LocalTime.parse(it.to))
+                    },
+                    isActive = daySchedule.isActive
+                )
+            },
+            dayOffs = dayOffs.map {
+                DayOffRange(start = LocalDate.parse(it.start), end = LocalDate.parse(it.end))
+            }
+        )
     )
 }
 
@@ -94,7 +149,8 @@ internal fun Business.toRemote(): BusinessUpdateRemote {
         },
         currencyCode = currency.code(),
         timeZone = timeZone,
-        socials = socials.values.map { it.toRemote() }
+        socials = socials.values.map { it.toRemote() },
+        schedule = schedule.toRemote()
     )
 }
 

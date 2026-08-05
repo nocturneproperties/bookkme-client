@@ -18,6 +18,7 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -53,7 +54,8 @@ class ObserveCurrentBusinessIdImplTest {
         location = null,
         currency = Currency("USD"),
         timeZone = TimeZone.UTC,
-        socials = emptyMap()
+        socials = emptyMap(),
+        schedule = WorkingSchedule()
     )
 
     @Test

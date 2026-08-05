@@ -32,7 +32,8 @@ fun <T : PickerPresentation> MultiPicker(
                         placeholder.localized(),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
+                            .padding(vertical = 16.dp)
+                            .padding(top = 4.dp),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium.secondary()
                     )

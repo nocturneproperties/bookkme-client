@@ -3,10 +3,12 @@ package me.bookk.feature.business.presentation.screen.create
 import androidx.compose.runtime.Immutable
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
+import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.feature.business.presentation.screen.create.state.CreateBusinessState
@@ -25,6 +27,8 @@ internal class AndroidCreateBusinessState(
         text = initData.buttonText,
         isEnabled = false
     )
+    override val navigation: NavigationState<CreateBusinessNavigationDestination> =
+        AndroidNavigationState()
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()
 }

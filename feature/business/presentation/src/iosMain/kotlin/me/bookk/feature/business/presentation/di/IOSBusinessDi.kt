@@ -1,7 +1,6 @@
 package me.bookk.feature.business.presentation.di
 
 import me.bookk.core.UsedInSwift
-import me.bookk.feature.business.presentation.screen.bootstrap.BusinessBootstrapViewModel
 import me.bookk.feature.business.presentation.screen.create.CreateBusinessViewModel
 import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginsViewModel
@@ -15,7 +14,6 @@ import kotlin.uuid.Uuid
 
 internal actual fun platformBusinessDiModule(): Module = module {
     factoryOf(::CreateBusinessViewModel)
-    factoryOf(::BusinessBootstrapViewModel)
     factoryOf(::BusinessDashboardViewModel)
     factoryOf(::BusinessPluginsViewModel)
     factory { BusinessSettingsViewModel(it.get(), get(), get(), get(), get(), get(), get()) }
@@ -23,9 +21,6 @@ internal actual fun platformBusinessDiModule(): Module = module {
 
 @UsedInSwift
 fun createBusinessVM(): CreateBusinessViewModel = KoinPlatform.getKoin().get()
-
-@UsedInSwift
-fun businessBootstrapVM(): BusinessBootstrapViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun businessDashboardVM(): BusinessDashboardViewModel = KoinPlatform.getKoin().get()

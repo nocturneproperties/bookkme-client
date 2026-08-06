@@ -11,12 +11,10 @@ import shared
 
 struct BusinessTab: View {
 	@StateObject var navigationStack = NavigationStackHolder()
-	@StateViewModel var bootstrapVM = IOSBusinessDiKt.businessBootstrapVM()
-	
+
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
-			BusinessStartDestinationView(state: bootstrapVM.uiState)
-				.handleNotifications(bootstrapVM.uiState.notification)
+			BusinessDashboardScreen()
 				.navigationDestination(for: ClientsDestinations.ClientDetails.self) { type in
 					ClientDetailsScreen(id: type.id)
 				}
@@ -51,27 +49,5 @@ struct BusinessTab: View {
 					}
 				}
 		}.environmentObject(navigationStack)
-	}
-}
-
-struct BusinessStartDestinationView: View {
-	
-	let state: IOSBusinessBootstrapState
-	
-	init(state: BusinessBootstrapState) {
-		self.state = state.impl()
-	}
-	
-	var body: some View {
-		ZStack {
-			switch state.startDestination {
-			case is BusinessDestination.BlockingProgress:
-				ProgressView()
-			case is BusinessDestination.Create:
-				CreateBusinessScreen()
-			default:
-				BusinessDashboardScreen()
-			}
-		}.animation(.default, value: state.startDestination)
 	}
 }

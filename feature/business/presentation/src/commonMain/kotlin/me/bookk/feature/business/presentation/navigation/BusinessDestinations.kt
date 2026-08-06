@@ -5,12 +5,6 @@ import kotlin.uuid.Uuid
 
 sealed class BusinessDestination {
     @Serializable
-    data object BlockingProgress : BusinessDestination()
-
-    @Serializable
-    data object Create : BusinessDestination()
-
-    @Serializable
     data object Dashboard : BusinessDestination()
 
     @Serializable

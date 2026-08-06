@@ -6,6 +6,8 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.screen.create.state.CreateBusinessState
@@ -16,7 +18,7 @@ class CreateBusinessViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
-    val uiState = stateFactory.createBusinessState(createInitData())
+    val uiState: CreateBusinessState = stateFactory.createBusinessState(createInitData())
 
     fun onBusinessNameChanged(name: String) {
         uiState.name.text = name
@@ -26,23 +28,13 @@ class CreateBusinessViewModel(
     fun onCreateClick() {
         launch(
             launchIn = DispatcherProvider.io,
-            onStart = {
-                uiState.createBtn.isEnabled = false
-                uiState.createBtn.isLoading = true
-            },
+            onStart = { uiState.createBtn.startLoading() },
             call = { createBusiness(uiState.name.text) },
             onComplete = {
-                /**
-                 * @see me.bookk.feature.business.presentation.screen.bootstrap.BusinessBootstrapViewModel
-                 * After successful business creation bootstrap will change root destination resulting
-                 * in screen stack change
-                 * */
+                uiState.navigation.push(CreateBusinessNavigationDestination.Main)
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = {
-                uiState.createBtn.isEnabled = true
-                uiState.createBtn.isLoading = false
-            }
+            onTerminate = { uiState.createBtn.stopLoading() }
         )
     }
 

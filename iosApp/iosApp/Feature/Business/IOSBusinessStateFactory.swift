@@ -11,10 +11,6 @@ import shared
 @MainActor
 class IOSBusinessStateFactory: @MainActor BusinessStateFactory {
 	
-	func createBootstrapState(initData: BusinessBootstrapStateInitData) -> any BusinessBootstrapState {
-		return IOSBusinessBootstrapState(initData: initData)
-	}
-	
 	func createBusinessState(initData: CreateBusinessStateInitData) -> any CreateBusinessState {
 		return IOSCreateBusinessState(initData: initData)
 	}

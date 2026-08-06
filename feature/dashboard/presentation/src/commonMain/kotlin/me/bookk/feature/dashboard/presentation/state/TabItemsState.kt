@@ -16,11 +16,13 @@ interface TabItem {
     val id: Id
     val text: StringDesc
     var badgeText: StringDesc?
+    var isEnabled: Boolean
 
     class InitData(
         val id: Id,
         val text: StringDesc,
-        val badgeText: StringDesc? = null
+        val badgeText: StringDesc? = null,
+        val isEnabled: Boolean = true
     )
     enum class Id {
         HOME,

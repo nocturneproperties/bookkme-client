@@ -1,8 +1,6 @@
 package me.bookk.feature.business.presentation.factory
 
 import me.bookk.feature.business.presentation.BusinessStateFactory
-import me.bookk.feature.business.presentation.screen.bootstrap.AndroidBusinessBootstrapState
-import me.bookk.feature.business.presentation.screen.bootstrap.BusinessBootstrapState
 import me.bookk.feature.business.presentation.screen.create.AndroidCreateBusinessState
 import me.bookk.feature.business.presentation.screen.create.state.CreateBusinessState
 import me.bookk.feature.business.presentation.screen.dashboard.AndroidDashboardState
@@ -17,10 +15,6 @@ import me.bookk.feature.business.presentation.screen.settings.state.BusinessSett
 class AndroidBusinessStateFactory : BusinessStateFactory {
     override fun createBusinessState(initData: CreateBusinessState.InitData): CreateBusinessState {
         return AndroidCreateBusinessState(initData)
-    }
-
-    override fun createBootstrapState(initData: BusinessBootstrapState.InitData): BusinessBootstrapState {
-        return AndroidBusinessBootstrapState(initData)
     }
 
     override fun createBusinessDashboardState(): BusinessDashboardState {

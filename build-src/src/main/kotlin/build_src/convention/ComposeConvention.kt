@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 fun ComposeCompilerGradlePluginExtension.applyConvention(project: Project) {
     targetKotlinPlatforms.set(setOf(KotlinPlatformType.androidJvm))
     stabilityConfigurationFiles.add(
-        project.rootProject.layout.projectDirectory.file("/build-src/compose-stability-config.txt")
+        project.rootProject.layout.projectDirectory.file("build-src/compose-stability-config.txt")
     )
 //    Uncomment to generate reports
 //    reportsDestination.set(

@@ -10,9 +10,10 @@ import SwiftUI
 import shared
 
 struct CreateBusinessScreen: View {
-	
+
+	@Environment(\.dismiss) private var dismiss
 	@StateViewModel var viewModel = IOSBusinessDiKt.createBusinessVM()
-	
+
 	var body: some View {
 		let uiState = viewModel.uiState
 		VStack {
@@ -34,6 +35,14 @@ struct CreateBusinessScreen: View {
 		}
 		.handleNotifications(uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)
+		.handleNavigation(uiState.navigation) { dest in
+			switch dest {
+			case is CreateBusinessNavigationDestination.Main, is CreateBusinessNavigationDestination.Back:
+				dismiss()
+			default:
+				break
+			}
+		}
 		.background(AppColors.background)
 	}
 }

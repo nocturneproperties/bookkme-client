@@ -52,6 +52,10 @@ import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapStat
 import me.bookk.feature.authorization.presentation.navigation.AuthDestination
 import me.bookk.feature.authorization.presentation.navigation.authGraph
 import me.bookk.feature.business.presentation.BusinessTab
+import me.bookk.feature.business.presentation.navigation.BusinessDestination
+import me.bookk.feature.business.presentation.navigation.BusinessNavigation
+import me.bookk.feature.business.presentation.screen.create.CreateBusinessSheet
+import me.bookk.feature.business.presentation.screen.plugins.pluginsScreen
 import me.bookk.feature.clients.presentation.ClientsDestinations
 import me.bookk.feature.clients.presentation.clientsGraph
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
@@ -145,7 +149,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                 servicesGraph(navigation = servicesNavigation)
                 appointmentsGraph(navigation = appointmentsNavigation)
                 dashboardGraph(
-                    appointmentsTab = { AppointmentsTab() },
+                    homeTab = { AppointmentsTab() },
                     businessTab = {
                         BusinessTab(
                             showClients = {
@@ -162,8 +166,11 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                             }
                         )
                     },
-                    settingsTab = { SettingsTab() }
+                    settingsTab = { SettingsTab() },
+                    createBusinessSheet = { onDismiss -> CreateBusinessSheet(onDismiss) },
+                    onEnablePlugins = { controller.navigate(BusinessDestination.Plugins(it)) }
                 )
+                pluginsScreen(navigation = BusinessNavigation())
             }
         }
         Box(

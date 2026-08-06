@@ -9,12 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.businessGraph
-import me.bookk.feature.business.presentation.screen.bootstrap.BusinessBootstrapViewModel
-import org.koin.androidx.compose.koinViewModel
 import kotlin.uuid.Uuid
 
 @Composable
@@ -25,12 +22,10 @@ fun BusinessTab(
     showAppointmentHistory: (businessId: Uuid) -> Unit
 ) {
     val businessController = rememberNavController()
-    val viewModel: BusinessBootstrapViewModel = koinViewModel()
-    ObserveNotifications(viewModel.uiState.notification)
     NavHost(
         modifier = Modifier.fillMaxSize(),
         navController = businessController,
-        startDestination = viewModel.uiState.startDestination,
+        startDestination = BusinessDestination.Dashboard,
         enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
         exitTransition = { scaleOut(targetScale = 0.92f) },
         popEnterTransition = { scaleIn(initialScale = 0.92f) },

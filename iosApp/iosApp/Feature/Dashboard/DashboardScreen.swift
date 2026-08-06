@@ -10,26 +10,30 @@ import SwiftUI
 import shared
 
 struct DashboardScreen: View {
-	
+
 	@StateViewModel
 	var dashboardVM = IOSDashboardDiKt.dashboardVM()
-	
+
 	var body: some View {
-		DashboardTabs(tabsState: dashboardVM.uiState.tabItems.impl())
+		DashboardTabs(state: dashboardVM.uiState.impl())
 	}
 }
 struct DashboardTabs: View {
-	
+
 	@Bindable
-	var tabsState: IOSTabItemsState
-	
+	var state: IOSDashboardState
+
 	var body: some View {
 		TabView(selection: Binding(
-			get: { tabsState.selectedItemId },
-			set: { tabsState.selectedItemId = $0 }
+			get: { state.tabItems.selectedItemId },
+			set: { newId in
+				if state.tabItems.items.first(where: { $0.id == newId })?.isEnabled == true {
+					state.tabItems.selectedItemId = newId
+				}
+			}
 		)) {
-			ForEach(tabsState.items, id:\.id) { state in
-				DashboardTab(state: state.impl())
+			ForEach(state.tabItems.items, id:\.id) { item in
+				DashboardTab(item: item.impl(), dashboardState: state)
 			}
 		}
 	}
@@ -37,33 +41,36 @@ struct DashboardTabs: View {
 
 struct DashboardTab: View {
 
-	var state: IOSTabItem
-	
+	var item: IOSTabItem
+	var dashboardState: IOSDashboardState
+
 	var body: some View {
-		screenFromId(id: state.id)
+		screenFromId(id: item.id)
 			.tabItem {
 				Label(
 					title: {
-						Text(state.text.localized())
+						Text(item.text.localized())
 					},
 					icon: {
-						Image(systemName: iconFrom(id: state.id))
+						Image(systemName: iconFrom(id: item.id))
 					}
 				)
-			}.badge(state.badgeText?.localized())
+				.opacity(item.isEnabled ? 1 : 0.4)
+			}
+			.badge(item.badgeText?.localized())
 	}
-	
+
 	@ViewBuilder
 	private func screenFromId(id: TabItemId) -> some View {
 		switch id {
 		case .home:
-			AppointmentsTab()
+			DashboardHomeTab(homeState: dashboardState.home.impl(), navigation: dashboardState.navigation)
 		case .business:
 			BusinessTab()
 		case .settings:
 			SettingsTab()
 		default:
-			fatalError("Unsupported tab \(state.id)")
+			fatalError("Unsupported tab \(item.id)")
 		}
 	}
 
@@ -72,7 +79,7 @@ struct DashboardTab: View {
 private func iconFrom(id: TabItemId) -> String {
 	return switch id {
 	case TabItemId.home:
-		"calendar.day.timeline.left"
+		"house.fill"
 	case TabItemId.business:
 		"point.3.connected.trianglepath.dotted"
 	case TabItemId.settings:

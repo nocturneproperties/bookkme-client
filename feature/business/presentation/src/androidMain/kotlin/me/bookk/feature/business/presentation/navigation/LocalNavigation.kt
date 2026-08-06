@@ -4,19 +4,19 @@ import androidx.compose.runtime.compositionLocalOf
 import kotlin.uuid.Uuid
 
 class BusinessNavigation(
-    val toAnalytics: () -> Unit,
-    val toClients: (Uuid) -> Unit,
-    val toEmployees: () -> Unit,
-    val toBusinessSettings: (Uuid) -> Unit,
-    val toBusinessServices: (Uuid) -> Unit,
-    val toBusinessPlugins: (Uuid) -> Unit,
-    val toAppointmentSettings: (Uuid) -> Unit,
-    val toAppointmentHistory: (Uuid) -> Unit,
-    val toAppointmentRequests: () -> Unit,
-    val toShopOrders: () -> Unit,
-    val toShopAssortment: () -> Unit,
-    val toShopWarehouse: () -> Unit,
-    val goBack: () -> Unit
+    val toAnalytics: () -> Unit = {},
+    val toClients: (Uuid) -> Unit = {},
+    val toEmployees: () -> Unit = {},
+    val toBusinessSettings: (Uuid) -> Unit = {},
+    val toBusinessServices: (Uuid) -> Unit = {},
+    val toBusinessPlugins: (Uuid) -> Unit = {},
+    val toAppointmentSettings: (Uuid) -> Unit = {},
+    val toAppointmentHistory: (Uuid) -> Unit = {},
+    val toAppointmentRequests: () -> Unit = {},
+    val toShopOrders: () -> Unit = {},
+    val toShopAssortment: () -> Unit = {},
+    val toShopWarehouse: () -> Unit = {},
+    val goBack: () -> Unit = {}
 )
 
 internal val LocalNavigation = compositionLocalOf {

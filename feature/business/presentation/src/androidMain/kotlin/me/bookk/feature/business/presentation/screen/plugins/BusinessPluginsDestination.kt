@@ -16,7 +16,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.Uuid
 
-internal fun NavGraphBuilder.pluginsScreen(navigation: BusinessNavigation) {
+fun NavGraphBuilder.pluginsScreen(navigation: BusinessNavigation) {
     composable<BusinessDestination.Plugins>(
         typeMap = mapOf(serializableNavTypeEntry<Uuid>())
     ) {

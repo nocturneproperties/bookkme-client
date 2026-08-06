@@ -13,13 +13,40 @@ import SwiftUI
 @Observable
 class IOSDashboardState: @MainActor DashboardState {
 	var navigation: any NavigationState
-	
+
 	var tabItems: any TabItemsState
-	
+
+	var home: any DashboardHomeState
+
+	var notifications: any PresentationNotificationState
+
 	init(initData:TabItemsStateInitData) {
 		navigation = IOSNavigationState()
 		tabItems = IOSTabItemsState(initData: initData)
+		home = IOSDashboardHomeState()
+		notifications = IOSNotificationState()
 	}
+}
+
+@MainActor
+@Observable
+class IOSDashboardHomeState: @MainActor DashboardHomeState {
+	var content: HomeContent
+	var onboarding: any OnboardingState
+
+	init() {
+		content = HomeContent.Loading.shared
+		onboarding = IOSOnboardingState()
+	}
+}
+
+@MainActor
+@Observable
+class IOSOnboardingState: @MainActor OnboardingState {
+	var isBusinessStepDone: Bool = false
+	var isPluginsStepUnlocked: Bool = false
+	var onCreateBusinessClick: (() -> Void)?
+	var onEnablePluginsClick: (() -> Void)?
 }
 
 @MainActor
@@ -44,11 +71,13 @@ class IOSTabItem: @MainActor TabItem {
 	var id: TabItemId
 	var text: any StringDesc
 	var badgeText: (any StringDesc)?
-	
+	var isEnabled: Bool
+
 	init(initData:TabItemInitData) {
 		badgeText = initData.badgeText
 		id = initData.id
 		text = initData.text
+		isEnabled = initData.isEnabled
 	}
 }
 
@@ -67,5 +96,17 @@ extension TabItemsState {
 extension TabItem {
 	func impl() -> IOSTabItem {
 		return self as! IOSTabItem
+	}
+}
+
+extension DashboardHomeState {
+	func impl() -> IOSDashboardHomeState {
+		return self as! IOSDashboardHomeState
+	}
+}
+
+extension OnboardingState {
+	func impl() -> IOSOnboardingState {
+		return self as! IOSOnboardingState
 	}
 }

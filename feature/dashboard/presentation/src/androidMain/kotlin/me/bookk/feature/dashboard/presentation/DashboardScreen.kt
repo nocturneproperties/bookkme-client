@@ -4,6 +4,7 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -11,8 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.CalendarViewDay
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -23,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -43,6 +46,7 @@ import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.dashboard.presentation.state.AndroidDashboardState
 import me.bookk.feature.dashboard.presentation.state.DashboardState
+import me.bookk.feature.dashboard.presentation.state.HomeContent
 import me.bookk.feature.dashboard.presentation.state.TabItem
 
 internal sealed class BottomNavDestination {
@@ -81,7 +85,7 @@ private fun getDestinationForId(item: TabItem.Id): BottomNavDestination {
 @Composable
 internal fun DashboardScreen(
     state: DashboardState,
-    appointmentsScreen: @Composable () -> Unit,
+    homeScreen: @Composable () -> Unit,
     businessScreen: @Composable () -> Unit,
     settingsScreen: @Composable () -> Unit
 ) {
@@ -107,7 +111,11 @@ internal fun DashboardScreen(
                 exitTransition = { ExitTransition.None }
             ) {
                 composable<BottomNavDestination.Home> {
-                    appointmentsScreen()
+                    when (state.home.content) {
+                        HomeContent.Loading -> HomeLoadingContent()
+                        HomeContent.Onboarding -> DashboardOnboardingScreen(state.home.onboarding)
+                        HomeContent.ActivePlugin -> homeScreen()
+                    }
                 }
                 composable<BottomNavDestination.Business> {
                     businessScreen()
@@ -128,6 +136,7 @@ internal fun DashboardScreen(
                         state.tabItems.items.forEach { item ->
                             NavigationBarItem(
                                 selected = item.id == state.tabItems.selectedItemId,
+                                enabled = item.isEnabled,
                                 label = { Text(item.text.localized()) },
                                 icon = { Icon(item.id.asIcon(), contentDescription = null) },
                                 onClick = { state.tabItems.selectedItemId = item.id },
@@ -162,9 +171,16 @@ internal fun DashboardScreen(
     )
 }
 
+@Composable
+private fun HomeLoadingContent() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
 private fun TabItem.Id.asIcon(): ImageVector {
     return when (this) {
-        TabItem.Id.HOME -> Icons.Filled.CalendarViewDay
+        TabItem.Id.HOME -> Icons.Filled.Home
         TabItem.Id.BUSINESS -> Icons.Filled.Business
         TabItem.Id.SETTINGS -> Icons.Filled.Settings
     }
@@ -176,7 +192,7 @@ private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         DashboardScreen(
             state = AndroidDashboardState(DashboardViewModel.createInitData()),
-            appointmentsScreen = {},
+            homeScreen = {},
             businessScreen = {},
             settingsScreen = {}
         )
@@ -189,7 +205,7 @@ private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         DashboardScreen(
             state = AndroidDashboardState(DashboardViewModel.createInitData()),
-            appointmentsScreen = {},
+            homeScreen = {},
             businessScreen = {},
             settingsScreen = {}
         )

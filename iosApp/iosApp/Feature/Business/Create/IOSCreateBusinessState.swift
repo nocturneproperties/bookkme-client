@@ -13,17 +13,20 @@ import shared
 class IOSCreateBusinessState: @MainActor CreateBusinessState {
 	
 	var appBar: any AppBarState
-	
+
 	var createBtn: any ButtonState
-	
+
 	var name: any TextFieldState
-	
+
+	var navigation: any NavigationState
+
 	var notifications: any PresentationNotificationState
-	
+
 	init(initData: CreateBusinessStateInitData) {
 		appBar = IOSAppBarState(title: initData.title)
 		createBtn = IOSButtonState(text: initData.buttonText, isEnabled: false)
 		name = IOSTextFieldState(supportingTextRes: initData.supportingText, placeholder: initData.hint)
+		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()
 	}
 	

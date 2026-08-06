@@ -3,13 +3,16 @@ package me.bookk.feature.business.presentation.screen.create.state
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
+import me.bookk.feature.business.presentation.screen.create.CreateBusinessNavigationDestination
 
 interface CreateBusinessState {
     val appBar: AppBarState
     val name: TextFieldState
     val createBtn: ButtonState
+    val navigation: NavigationState<CreateBusinessNavigationDestination>
 
     val notifications: PresentationNotificationState
 

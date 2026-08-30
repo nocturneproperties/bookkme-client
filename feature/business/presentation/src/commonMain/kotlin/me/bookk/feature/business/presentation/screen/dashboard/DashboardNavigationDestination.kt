@@ -4,7 +4,7 @@ import me.bookk.core.presentation.navigation.NavigationDestination
 import kotlin.uuid.Uuid
 
 sealed class DashboardNavigationDestination : NavigationDestination() {
-    data object Employees : DashboardNavigationDestination()
+    data class Employees(val id: Uuid) : DashboardNavigationDestination()
     data class Clients(val id: Uuid) : DashboardNavigationDestination()
     data object Analytics : DashboardNavigationDestination()
     data class Settings(val id: Uuid) : DashboardNavigationDestination()

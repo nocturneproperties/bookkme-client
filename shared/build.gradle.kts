@@ -128,6 +128,7 @@ kotlin {
             implementation(projects.feature.employees.domain.api)
             implementation(projects.feature.employees.domain.impl)
             implementation(projects.feature.employees.data)
+            api(projects.feature.employees.presentation)
             //Appointments
             implementation(projects.feature.appointments.domain.api)
             implementation(projects.feature.appointments.domain.impl)
@@ -171,6 +172,7 @@ kotlin {
             export(projects.feature.clients.presentation)
             export(projects.feature.services.presentation)
             export(projects.feature.appointments.presentation)
+            export(projects.feature.employees.presentation)
             export(projects.library.money)
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)

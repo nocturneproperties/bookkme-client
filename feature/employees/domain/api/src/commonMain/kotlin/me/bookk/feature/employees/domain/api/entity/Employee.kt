@@ -16,7 +16,10 @@ data class Employee(
     val services: List<Service>,
     val schedule: WorkingSchedule,
     val createdAt: Instant
-)
+) {
+    val fullName: String
+        get() = "$name $lastName"
+}
 
 enum class EmployeeRole {
     EMPLOYEE,

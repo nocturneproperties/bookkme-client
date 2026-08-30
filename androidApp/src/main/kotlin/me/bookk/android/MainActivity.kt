@@ -32,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import me.bookk.android.navigation.rememberAppointmentsNavigation
 import me.bookk.android.navigation.rememberAuthNavigation
 import me.bookk.android.navigation.rememberClientsNavigation
+import me.bookk.android.navigation.rememberEmployeesNavigation
 import me.bookk.android.navigation.rememberServicesNavigation
 import me.bookk.core.android.AndroidActivityAware
 import me.bookk.core.presentation.LocalUnauthorizedHandler
@@ -60,6 +61,8 @@ import me.bookk.feature.clients.presentation.ClientsDestinations
 import me.bookk.feature.clients.presentation.clientsGraph
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
 import me.bookk.feature.dashboard.presentation.navigation.dashboardGraph
+import me.bookk.feature.employees.presentation.EmployeesDestinations
+import me.bookk.feature.employees.presentation.employeesGraph
 import me.bookk.feature.services.presentation.ServicesDestination
 import me.bookk.feature.services.presentation.servicesGraph
 import me.bookk.feature.settings.presentation.SettingsTab
@@ -110,6 +113,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
     val controller = rememberNavController()
     val authNavigation = rememberAuthNavigation(controller)
     val clientsNavigation = rememberClientsNavigation(controller)
+    val employeesNavigation = rememberEmployeesNavigation(controller)
     val servicesNavigation = rememberServicesNavigation(controller)
     val appointmentsNavigation = rememberAppointmentsNavigation(controller)
     val destination = state.startDestination
@@ -146,12 +150,16 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
             ) {
                 authGraph(navigation = authNavigation)
                 clientsGraph(navigation = clientsNavigation)
+                employeesGraph(navigation = employeesNavigation)
                 servicesGraph(navigation = servicesNavigation)
                 appointmentsGraph(navigation = appointmentsNavigation)
                 dashboardGraph(
                     homeTab = { AppointmentsTab() },
                     businessTab = {
                         BusinessTab(
+                            showEmployees = {
+                                controller.navigate(EmployeesDestinations.EmployeeList(it))
+                            },
                             showClients = {
                                 controller.navigate(ClientsDestinations.Clients(it))
                             },

@@ -2,6 +2,7 @@ package me.bookk.feature.employees.data.datasource
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
@@ -18,6 +19,12 @@ import kotlin.uuid.Uuid
 internal class EmployeeDataSourceImpl(
     private val httpClient: HttpClient
 ) : DataSource(), EmployeeDataSource {
+    override suspend fun getEmployees(businessId: Uuid): List<Employee> = mapExceptions {
+        httpClient.get(Api.Employee(businessId = businessId))
+            .body<List<EmployeeRemote>>()
+            .map { it.toDomain() }
+    }
+
     override suspend fun updateEmployee(employee: Employee): Employee = mapExceptions {
         httpClient.put(Api.Employee.Id(Api.Employee(businessId = employee.businessId), employee.id)) {
             setBody(EmployeeRemote.fromDomain(employee))

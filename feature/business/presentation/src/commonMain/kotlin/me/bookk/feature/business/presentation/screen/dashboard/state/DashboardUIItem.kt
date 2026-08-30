@@ -15,20 +15,22 @@ sealed class BusinessDashboardSection(
     val title: StringDesc,
     val items: List<DashboardUIItem>
 ) {
-    class Business(
-        id: Uuid,
-        items: List<DashboardUIItem> = listOf(
-            Employees,
+    data class Business(
+        val id: Uuid
+    ) : BusinessDashboardSection(
+        BusinessRes.strings.business_dashboard_business.desc(),
+        listOf(
+            Employees(id),
             Clients(id),
             Services(id),
             Analytics,
             Settings(id),
             Plugins(id)
         )
-    ) : BusinessDashboardSection(BusinessRes.strings.business_dashboard_business.desc(), items) {
-        data object Employees : DashboardUIItem(
+    ) {
+        data class Employees(val id: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_employees.desc(),
-            DashboardNavigationDestination.Employees
+            DashboardNavigationDestination.Employees(id)
         )
 
         data class Clients(val id: Uuid) : DashboardUIItem(
@@ -41,17 +43,17 @@ sealed class BusinessDashboardSection(
             DashboardNavigationDestination.Analytics
         )
 
-        class Settings(id: Uuid) : DashboardUIItem(
+        data class Settings(val id: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_settings.desc(),
             DashboardNavigationDestination.Settings(id)
         )
 
-        class Services(id: Uuid) : DashboardUIItem(
+        data class Services(val id: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_services.desc(),
             DashboardNavigationDestination.Services(id)
         )
 
-        class Plugins(id: Uuid) : DashboardUIItem(
+        data class Plugins(val id: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_plugins.desc(),
             DashboardNavigationDestination.Plugins(id)
         )

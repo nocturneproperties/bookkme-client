@@ -14,6 +14,8 @@ import me.bookk.feature.clients.presentation.AndroidClientsStateFactory
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.dashboard.presentation.AndroidDashboardStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
+import me.bookk.feature.employees.presentation.AndroidEmployeesStateFactory
+import me.bookk.feature.employees.presentation.EmployeesStateFactory
 import me.bookk.feature.services.presentation.AndroidServicesStateFactory
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
@@ -43,6 +45,10 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
 
     override fun createDashboardFactory(): DashboardStateFactory {
         return AndroidDashboardStateFactory()
+    }
+
+    override fun createEmployeesFactory(): EmployeesStateFactory {
+        return AndroidEmployeesStateFactory()
     }
 
     override fun createPickOptionFactory(): PickOptionStateFactory {

@@ -21,6 +21,9 @@ struct BusinessTab: View {
 				.navigationDestination(for: ClientsDestinations.CreateClient.self) { type in
 					CreateClientScreen(businessId: type.businessId)
 				}
+				.navigationDestination(for: EmployeesDestinations.InviteEmployee.self) { type in
+					InviteEmployeeScreen(businessId: type.businessId)
+				}
 				.navigationDestination(for: ServicesDestination.AddService.self) { type in
 					AddServiceScreen(businessId: type.businessId)
 				}
@@ -36,6 +39,8 @@ struct BusinessTab: View {
 						BusinessSettingsScreen(id: type.id)
 					case let type as DashboardNavigationDestination.Clients:
 						ClientsListScreen(businessId: type.id)
+					case let type as DashboardNavigationDestination.Employees:
+						EmployeeListScreen(businessId: type.id)
 					case let type as DashboardNavigationDestination.Services:
 						ServiceListScreen(businessId: type.id)
 					case let type as DashboardNavigationDestination.Plugins:

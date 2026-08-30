@@ -8,13 +8,7 @@ sealed class BusinessDestination {
     data object Dashboard : BusinessDestination()
 
     @Serializable
-    data object Employees : BusinessDestination()
-
-    @Serializable
     data object Analytics : BusinessDestination()
-
-    @Serializable
-    data class Services(val id: Uuid) : BusinessDestination()
 
     @Serializable
     data class Settings(val id: Uuid) : BusinessDestination()

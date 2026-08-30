@@ -100,6 +100,7 @@ include(":feature:employees:data")
 include(":feature:employees:data:source")
 include(":feature:employees:domain:api")
 include(":feature:employees:domain:impl")
+include(":feature:employees:presentation")
 
 //Appointments
 include(":feature:appointments:data")

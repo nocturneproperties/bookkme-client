@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="employees_title">Employees</string>
+    <string name="employees_empty">You have no employees at the moment</string>
+
+    <string name="employees_invite_title">Invite employee</string>
+</resources>

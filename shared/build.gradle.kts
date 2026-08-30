@@ -124,6 +124,10 @@ kotlin {
             implementation(projects.feature.services.domain.impl)
             implementation(projects.feature.services.data)
             api(projects.feature.services.presentation)
+            //Employees
+            implementation(projects.feature.employees.domain.api)
+            implementation(projects.feature.employees.domain.impl)
+            implementation(projects.feature.employees.data)
             //Appointments
             implementation(projects.feature.appointments.domain.api)
             implementation(projects.feature.appointments.domain.impl)

@@ -95,6 +95,12 @@ include(":feature:services:domain:api")
 include(":feature:services:domain:impl")
 include(":feature:services:presentation")
 
+//Employees
+include(":feature:employees:data")
+include(":feature:employees:data:source")
+include(":feature:employees:domain:api")
+include(":feature:employees:domain:impl")
+
 //Appointments
 include(":feature:appointments:data")
 include(":feature:appointments:data:source")

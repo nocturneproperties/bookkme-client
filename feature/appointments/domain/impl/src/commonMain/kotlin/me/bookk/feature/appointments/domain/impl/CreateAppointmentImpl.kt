@@ -26,6 +26,7 @@ internal class CreateAppointmentImpl(
             businessId = draft.businessId,
             employee = EmployeeSnapshot(
                 id = profile.id,
+                userId = profile.id,
                 fullName = profile.fullName
             ),
             client = draft.client,

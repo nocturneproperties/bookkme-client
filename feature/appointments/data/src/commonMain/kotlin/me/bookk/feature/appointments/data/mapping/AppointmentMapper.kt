@@ -76,6 +76,7 @@ internal fun AppointmentCancellation.toRemote() = AppointmentCancellationRemote(
 
 private fun EmployeeSnapshot.toRemote() = EmployeeSnapshotRemote(
     id = id,
+    userId = userId,
     fullName = fullName
 )
 
@@ -112,6 +113,7 @@ internal fun Appointment.toEntity() = AppointmentEntity(
     userId = userId,
     businessId = businessId,
     employeeId = employee.id,
+    employeeUserId = employee.userId,
     employeeFullName = employee.fullName,
     date = date.toInstant(TimeZone.currentSystemDefault()),
     status = status.name,
@@ -139,7 +141,7 @@ internal fun AppointmentLocal.toDomain() = Appointment(
     id = entity.id,
     userId = entity.userId,
     businessId = entity.businessId,
-    employee = EmployeeSnapshot(id = entity.employeeId, fullName = entity.employeeFullName),
+    employee = EmployeeSnapshot(id = entity.employeeId, userId = entity.employeeUserId, fullName = entity.employeeFullName),
     date = entity.date.toLocalDateTime(TimeZone.currentSystemDefault()),
     client = ClientSnapshot(
         id = entity.clientId,
@@ -166,6 +168,7 @@ internal fun AppointmentRequest.toRequestEntity() = AppointmentRequestEntity(
     userId = userId,
     businessId = businessId,
     employeeId = employee.id,
+    employeeUserId = employee.userId,
     employeeFullName = employee.fullName,
     status = status.name,
     date = date,
@@ -193,7 +196,7 @@ internal fun AppointmentRequestLocal.toDomain() = AppointmentRequest(
     id = entity.id,
     userId = entity.userId,
     businessId = entity.businessId,
-    employee = EmployeeSnapshot(id = entity.employeeId, fullName = entity.employeeFullName),
+    employee = EmployeeSnapshot(id = entity.employeeId, userId = entity.employeeUserId, fullName = entity.employeeFullName),
     client = ClientSnapshot(
         id = entity.clientId,
         fullName = entity.clientFullName,

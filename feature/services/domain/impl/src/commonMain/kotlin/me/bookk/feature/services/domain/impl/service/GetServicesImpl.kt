@@ -14,6 +14,7 @@ internal class GetServicesImpl(
         return dataSource.getServices(businessId).also {
             groupsDataSource.saveGroupsInDB(it.map { it.group }.distinctBy { it.id })
             dataSource.saveServicesInDB(it)
+            dataSource.saveLastSyncedAt(businessId)
         }.sortedBy { it.createdAt }
     }
 
@@ -21,9 +22,8 @@ internal class GetServicesImpl(
         businessId: Uuid,
         onResultAvailable: suspend (List<Service>) -> Unit
     ) {
-        val services = dataSource.getServicesFromDb(businessId)
-        if (services.isNotEmpty()) {
-            onResultAvailable(services.sortedBy { it.createdAt })
+        if (dataSource.getLastSyncedAt(businessId) != null) {
+            onResultAvailable(dataSource.getServicesFromDb(businessId).sortedBy { it.createdAt })
         }
         onResultAvailable(invoke(businessId))
     }

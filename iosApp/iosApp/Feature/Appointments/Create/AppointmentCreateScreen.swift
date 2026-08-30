@@ -63,6 +63,7 @@ struct AppointmentCreateScreen: View {
 			TextButton(state.create)
 		}
 		.listSectionSpacing(.compact)
+        .scrollDismissesKeyboard(.immediately)
         .withNavigationBar(state.appBar)
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)

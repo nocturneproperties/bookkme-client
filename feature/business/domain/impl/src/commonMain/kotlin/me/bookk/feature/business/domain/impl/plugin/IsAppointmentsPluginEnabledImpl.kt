@@ -13,7 +13,7 @@ internal class IsAppointmentsPluginEnabledImpl(
     }
 
     override suspend fun cached(businessId: Uuid, onResultAvailable: suspend (Boolean) -> Unit) {
-        onResultAvailable(pluginDataSource.getAppointmentPluginAvailability(businessId))
+        pluginDataSource.getAppointmentPluginAvailability(businessId)?.let { onResultAvailable(it) }
 
         onResultAvailable(pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId).also {
             pluginDataSource.saveAppointmentPluginAvailability(businessId, it)

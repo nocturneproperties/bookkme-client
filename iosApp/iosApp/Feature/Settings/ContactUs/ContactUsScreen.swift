@@ -50,6 +50,7 @@ struct ContactUsScreen: View {
 			.listRowBackground(Color.clear)
 		}
 		.listSectionSpacing(.compact)
+		.scrollDismissesKeyboard(.immediately)
 		.navigationBarTitle(uiState.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.sendLifecycleEventsTo(viewModel)

@@ -23,7 +23,7 @@ internal class ObserveAppointmentsPluginEnabledImpl(
             .onStart { emit(BusinessEvent.PluginStateChanged) }
             .flatMapLatest {
                 flow {
-                    emit(pluginDataSource.getAppointmentPluginAvailability(businessId))
+                    pluginDataSource.getAppointmentPluginAvailability(businessId)?.let { emit(it) }
                     val availableOnRemote = pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId)
                     pluginDataSource.saveAppointmentPluginAvailability(businessId, availableOnRemote)
                     emit(availableOnRemote)

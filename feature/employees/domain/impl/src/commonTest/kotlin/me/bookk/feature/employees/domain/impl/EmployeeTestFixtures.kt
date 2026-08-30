@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.domain.impl
 
+import kotlinx.datetime.LocalDateTime
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
@@ -26,5 +27,5 @@ internal fun stubEmployeeInvitation(businessId: Uuid = Uuid.random()) = Employee
     invitedBy = Uuid.random(),
     email = "jane@example.com",
     status = EmployeeInvitationStatus.PENDING,
-    createdAt = Instant.fromEpochMilliseconds(0)
+    createdAt = LocalDateTime(2024, 1, 1, 0, 0)
 )

@@ -11,17 +11,78 @@ struct InviteEmployeeScreen: View {
 
 	var body: some View {
 		let uiState = IOSInviteEmployeeState.cast(viewModel.uiState)
-		Color.clear
-			.withNavigationBar(uiState.appBar)
-			.sendLifecycleEventsTo(viewModel)
-			.handleNotifications(uiState.notifications)
-			.handleNavigation(uiState.navigation) { destination in
-				switch destination {
-				case is InviteEmployeeDestinations.Back:
-					navigationStack.popLast()
-				default:
-					break
-				}
+		let invitationsList = IOSListState<InvitationItem>.cast(uiState.invitationsList)
+
+		ListGroup(listState: invitationsList, listStyle: .insetGrouped, content: { item in
+			InvitationRow(item: item)
+		}, header: {
+			Section {
+				SectionTextField(uiState.emailField)
+					.textFieldStyle(.inList)
+				
+				StateButton(uiState.sendButton)
+			} header: {
+				Text(uiState.descriptionText.localized())
 			}
+			.listRowSeparator(.hidden)
+		})
+		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
+		.withNavigationBar(uiState.appBar)
+		.sendLifecycleEventsTo(viewModel)
+		.handleNotifications(uiState.notifications)
+		.handleNavigation(uiState.navigation) { destination in
+			switch destination {
+			case is InviteEmployeeDestinations.Back:
+				navigationStack.popLast()
+			default:
+				break
+			}
+		}
+	}
+}
+
+private struct InvitationRow: View {
+	let item: InvitationItem
+
+	@State private var longPressCount = 0
+
+	var body: some View {
+		let statusColor = item.status.color.color
+		HStack(spacing: 12) {
+			Text(item.initials)
+				.font(.footnote.weight(.medium))
+				.foregroundStyle(AppColors.actionText)
+				.frame(width: 40, height: 40)
+				.background(AppColors.actionText.opacity(0.1))
+				.clipShape(Circle())
+
+			VStack(alignment: .leading, spacing: 2) {
+				Text(item.email)
+					.font(.body)
+					.foregroundStyle(AppColors.primary)
+					.lineLimit(1)
+				Text(item.sentOn.localized())
+					.font(.caption)
+					.foregroundStyle(AppColors.secondary)
+			}
+
+			Spacer()
+
+			Text(item.status.label.localized())
+				.font(.caption2)
+				.padding(.horizontal, 8)
+				.padding(.vertical, 4)
+				.background(statusColor.opacity(0.15))
+				.foregroundStyle(statusColor)
+				.clipShape(Capsule())
+				.lineLimit(1)
+		}
+		.contentShape(Rectangle())
+		.onLongPressGesture {
+			guard let onLongPress = item.onLongPress else { return }
+			longPressCount += 1
+			onLongPress()
+		}
+		.sensoryFeedback(.impact(weight: .medium), trigger: longPressCount)
 	}
 }

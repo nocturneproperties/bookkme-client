@@ -5,4 +5,5 @@ import kotlin.uuid.Uuid
 
 interface GetEmployeeInvitations {
     suspend operator fun invoke(businessId: Uuid): List<EmployeeInvitation>
+    suspend fun cached(businessId: Uuid, onResultAvailable: suspend (List<EmployeeInvitation>) -> Unit)
 }

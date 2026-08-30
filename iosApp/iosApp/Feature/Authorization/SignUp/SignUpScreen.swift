@@ -24,6 +24,7 @@ struct SignUpScreen: View {
 			}
 		}
 		.listSectionSpacing(.compact)
+		.scrollDismissesKeyboard(.immediately)
 		.withNavigationBar(uiState.appBar)
 		.sendLifecycleEventsTo(signUpVM)
 		.handleNotifications(uiState.notification)

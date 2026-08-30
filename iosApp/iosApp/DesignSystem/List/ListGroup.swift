@@ -52,6 +52,7 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 					}
 				}
 				.listStyle(listStyle)
+				.scrollDismissesKeyboard(.immediately)
 			} else {
 				ProgressView()
 			}

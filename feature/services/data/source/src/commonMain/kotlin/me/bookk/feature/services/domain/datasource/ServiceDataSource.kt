@@ -2,6 +2,7 @@ package me.bookk.feature.services.domain.datasource
 
 import library.money.api.Money
 import me.bookk.feature.services.domain.api.service.entity.Service
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 interface ServiceDataSource {
@@ -15,4 +16,6 @@ interface ServiceDataSource {
     suspend fun saveServiceInDB(service: Service)
     suspend fun deleteServiceFromDB(service: Service)
     suspend fun getServicesFromDb(businessId: Uuid): List<Service>
+    suspend fun getLastSyncedAt(businessId: Uuid): Instant?
+    suspend fun saveLastSyncedAt(businessId: Uuid)
 }

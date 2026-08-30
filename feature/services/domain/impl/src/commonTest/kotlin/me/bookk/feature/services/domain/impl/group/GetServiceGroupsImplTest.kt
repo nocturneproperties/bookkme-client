@@ -57,6 +57,7 @@ class GetServiceGroupsImplTest {
         val newer = stubGroup(businessId, 2000L)
         everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns listOf(newer, older)
         everySuspend { fixture.dataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
         whenn()
         val result = fixture.sut(businessId)
@@ -67,29 +68,35 @@ class GetServiceGroupsImplTest {
     }
 
     @Test
-    fun `saves groups in DB`() = runUnitTest {
+    fun `saves groups in DB and marks synced`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
         val groups = listOf(stubGroup(businessId))
         everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns groups
         everySuspend { fixture.dataSource.saveGroupsInDB(groups) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
         whenn()
         fixture.sut(businessId)
 
         then()
         verifySuspend { fixture.dataSource.saveGroupsInDB(groups) }
+        verifySuspend { fixture.dataSource.saveLastSyncedAt(businessId) }
     }
 
     @Test
-    fun `cached emits groups when non-empty`() = runUnitTest {
+    fun `cached calls onResultAvailable with DB then remote when business synced before`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        val groups = listOf(stubGroup(businessId))
-        everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns groups
+        val cached = listOf(stubGroup(businessId))
+        val remote = listOf(stubGroup(businessId), stubGroup(businessId))
+        everySuspend { fixture.dataSource.getLastSyncedAt(businessId) } returns Instant.fromEpochMilliseconds(0)
+        everySuspend { fixture.dataSource.getServiceGroupsFromDb(businessId) } returns cached
+        everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns remote
         everySuspend { fixture.dataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
         val received = mutableListOf<List<ServiceGroup>>()
 
         whenn()
@@ -98,4 +105,45 @@ class GetServiceGroupsImplTest {
         then()
         assertEquals(2, received.size)
     }
+
+    @Test
+    fun `cached skips DB callback when business never synced before, even if DB has stale rows`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val remote = listOf(stubGroup(businessId))
+        everySuspend { fixture.dataSource.getLastSyncedAt(businessId) } returns null
+        everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns remote
+        everySuspend { fixture.dataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+        val received = mutableListOf<List<ServiceGroup>>()
+
+        whenn()
+        fixture.sut.cached(businessId) { received.add(it) }
+
+        then()
+        assertEquals(1, received.size)
+    }
+
+    @Test
+    fun `cached calls onResultAvailable with empty DB list when synced before and business has no groups`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            everySuspend { fixture.dataSource.getLastSyncedAt(businessId) } returns Instant.fromEpochMilliseconds(0)
+            everySuspend { fixture.dataSource.getServiceGroupsFromDb(businessId) } returns emptyList()
+            everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns emptyList()
+            everySuspend { fixture.dataSource.saveGroupsInDB(any()) } returns Unit
+            everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+            val received = mutableListOf<List<ServiceGroup>>()
+
+            whenn()
+            fixture.sut.cached(businessId) { received.add(it) }
+
+            then()
+            assertEquals(2, received.size)
+            assertEquals(emptyList(), received[0])
+            assertEquals(emptyList(), received[1])
+        }
 }

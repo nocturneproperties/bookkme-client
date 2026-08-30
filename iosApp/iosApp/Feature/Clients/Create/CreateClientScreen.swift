@@ -38,6 +38,7 @@ struct CreateClientScreen: View {
 			TextButton(uiState.submit)
 		}
 		.listSectionSpacing(.compact)
+		.scrollDismissesKeyboard(.immediately)
 		.withNavigationBar(uiState.appBar)
 		.handleNotifications(uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)

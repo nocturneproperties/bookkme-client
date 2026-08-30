@@ -9,6 +9,7 @@ import library.cache.api.Preferences
 import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.feature.business.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.business.domain.datasource.PluginDataSource
 import kotlin.uuid.Uuid
@@ -16,7 +17,7 @@ import kotlin.uuid.Uuid
 internal class CommonPluginDataSource(
     private val httpClient: HttpClient,
     preferenceProvider: PreferenceProvider,
-) : DataSource(), PluginDataSource {
+) : DataSource(), PluginDataSource, LogOutAction {
 
     private val preferences = preferenceProvider.get("plugin_prefs")
 
@@ -36,8 +37,12 @@ internal class CommonPluginDataSource(
         preferences.set(Key.appointmentPluginAvailability(businessId), isAvailable)
     }
 
-    override suspend fun getAppointmentPluginAvailability(businessId: Uuid): Boolean {
-        return preferences.get(Key.appointmentPluginAvailability(businessId)) ?: false
+    override suspend fun getAppointmentPluginAvailability(businessId: Uuid): Boolean? {
+        return preferences.get(Key.appointmentPluginAvailability(businessId))
+    }
+
+    override suspend fun doOnLogOut() {
+        preferences.clear()
     }
 
     private object Key {

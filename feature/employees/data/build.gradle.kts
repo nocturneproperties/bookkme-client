@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.feature.employees.domain.api)
             implementation(projects.feature.employees.data.source)
+            implementation(projects.database)
             implementation(projects.library.cache.api)
             implementation(libs.ktor.client.resources)
         }

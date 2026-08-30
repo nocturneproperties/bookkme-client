@@ -16,6 +16,8 @@ import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.ClientsDao
+import me.bookk.database.dao.EmployeeDao
+import me.bookk.database.dao.EmployeeInvitationDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.ServiceDao
 import me.bookk.database.dao.ServiceGroupDao
@@ -33,6 +35,12 @@ import me.bookk.database.entity.BusinessDayScheduleEntity
 import me.bookk.database.entity.BusinessEntity
 import me.bookk.database.entity.BusinessWorkHourEntity
 import me.bookk.database.entity.ClientEntity
+import me.bookk.database.entity.EmployeeDayOffEntity
+import me.bookk.database.entity.EmployeeDayScheduleEntity
+import me.bookk.database.entity.EmployeeEntity
+import me.bookk.database.entity.EmployeeInvitationEntity
+import me.bookk.database.entity.EmployeeServiceSnapshotEntity
+import me.bookk.database.entity.EmployeeWorkHourEntity
 import me.bookk.database.entity.NotificationSettingsChannelEntity
 import me.bookk.database.entity.NotificationSettingsEntity
 import me.bookk.database.entity.ServiceEntity
@@ -58,16 +66,24 @@ import me.bookk.database.entity.UserProfileEntity
         AppointmentRequestEntity::class,
         AppointmentRequestServiceSnapshotEntity::class,
         NotificationSettingsEntity::class,
-        NotificationSettingsChannelEntity::class
+        NotificationSettingsChannelEntity::class,
+        EmployeeInvitationEntity::class,
+        EmployeeEntity::class,
+        EmployeeDayScheduleEntity::class,
+        EmployeeWorkHourEntity::class,
+        EmployeeDayOffEntity::class,
+        EmployeeServiceSnapshotEntity::class
     ],
-    version = 7,
+    version = 9,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7)
+        AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8),
+        AutoMigration(from = 8, to = 9)
     ]
 )
 @TypeConverters(
@@ -87,6 +103,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appointmentRequestDao(): AppointmentRequestDao
     abstract fun appointmentSettingsDao(): AppointmentSettingsDao
     abstract fun notificationSettingsDao(): NotificationSettingsDao
+    abstract fun employeeInvitationDao(): EmployeeInvitationDao
+    abstract fun employeeDao(): EmployeeDao
 
     companion object {
 

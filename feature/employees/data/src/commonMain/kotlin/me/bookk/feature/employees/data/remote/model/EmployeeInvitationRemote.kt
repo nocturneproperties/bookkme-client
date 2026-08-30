@@ -1,5 +1,7 @@
 package me.bookk.feature.employees.data.remote.model
 
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitationStatus
@@ -25,18 +27,24 @@ internal class EmployeeInvitationRemote(
         invitedBy = invitedBy,
         email = email,
         status = status.toDomain(),
-        createdAt = createdAt
+        createdAt = createdAt.toLocalDateTime(TimeZone.currentSystemDefault())
     )
 }
 
 @Serializable
 internal enum class EmployeeInvitationStatusRemote {
     PENDING,
-    APPROVED;
+    APPROVED,
+    REJECTED,
+    EXPIRED,
+    REVOKED;
 
     fun toDomain() = when (this) {
         PENDING -> EmployeeInvitationStatus.PENDING
         APPROVED -> EmployeeInvitationStatus.APPROVED
+        REJECTED -> EmployeeInvitationStatus.REJECTED
+        EXPIRED -> EmployeeInvitationStatus.EXPIRED
+        REVOKED -> EmployeeInvitationStatus.REVOKED
     }
 }
 

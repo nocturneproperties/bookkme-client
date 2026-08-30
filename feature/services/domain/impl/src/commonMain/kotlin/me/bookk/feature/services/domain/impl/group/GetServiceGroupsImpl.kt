@@ -11,6 +11,7 @@ internal class GetServiceGroupsImpl(
     override suspend fun invoke(businessId: Uuid): List<ServiceGroup> {
         return dataSource.getServiceGroups(businessId).also {
             dataSource.saveGroupsInDB(it)
+            dataSource.saveLastSyncedAt(businessId)
         }.sortedBy { it.createdAt }
     }
 
@@ -18,9 +19,8 @@ internal class GetServiceGroupsImpl(
         businessId: Uuid,
         onResultAvailable: suspend (List<ServiceGroup>) -> Unit
     ) {
-        val groups = dataSource.getServiceGroups(businessId)
-        if (groups.isNotEmpty()) {
-            onResultAvailable(groups.sortedBy { it.createdAt })
+        if (dataSource.getLastSyncedAt(businessId) != null) {
+            onResultAvailable(dataSource.getServiceGroupsFromDb(businessId).sortedBy { it.createdAt })
         }
         onResultAvailable(invoke(businessId))
     }

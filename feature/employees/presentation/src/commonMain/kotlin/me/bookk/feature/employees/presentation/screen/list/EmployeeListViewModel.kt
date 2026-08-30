@@ -30,10 +30,10 @@ class EmployeeListViewModel(
     }
 
     private fun loadEmployees() {
-        launch(
+        launchCached(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.refreshState.isRefreshing = true },
-            call = { getEmployees(businessId) },
+            call = { getEmployees.cached(businessId, it) },
             onComplete = {
                 val grouped = it
                     .sortedBy { employee -> employee.fullName.trim() }

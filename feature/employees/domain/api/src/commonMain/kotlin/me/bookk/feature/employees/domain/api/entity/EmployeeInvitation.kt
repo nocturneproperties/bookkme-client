@@ -1,6 +1,6 @@
 package me.bookk.feature.employees.domain.api.entity
 
-import kotlin.time.Instant
+import kotlinx.datetime.LocalDateTime
 import kotlin.uuid.Uuid
 
 data class EmployeeInvitation(
@@ -9,10 +9,13 @@ data class EmployeeInvitation(
     val invitedBy: Uuid,
     val email: String,
     val status: EmployeeInvitationStatus,
-    val createdAt: Instant
+    val createdAt: LocalDateTime
 )
 
 enum class EmployeeInvitationStatus {
     PENDING,
-    APPROVED
+    APPROVED,
+    REJECTED,
+    EXPIRED,
+    REVOKED
 }

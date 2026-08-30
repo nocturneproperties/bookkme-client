@@ -9,6 +9,20 @@ internal class GetEmployeeInvitationsImpl(
     private val dataSource: EmployeeInvitationDataSource
 ) : GetEmployeeInvitations {
     override suspend fun invoke(businessId: Uuid): List<EmployeeInvitation> {
-        return dataSource.getInvitations(businessId)
+        return dataSource.getInvitations(businessId).also {
+            dataSource.deleteInvitationsInDb()
+            dataSource.saveInvitationsInDb(it)
+            dataSource.saveLastSyncedAt(businessId)
+        }
+    }
+
+    override suspend fun cached(
+        businessId: Uuid,
+        onResultAvailable: suspend (List<EmployeeInvitation>) -> Unit
+    ) {
+        if (dataSource.getLastSyncedAt(businessId) != null) {
+            onResultAvailable(dataSource.getInvitationsFromDb(businessId))
+        }
+        onResultAvailable(invoke(businessId))
     }
 }

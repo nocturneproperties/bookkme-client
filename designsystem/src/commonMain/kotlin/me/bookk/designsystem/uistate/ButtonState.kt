@@ -16,7 +16,7 @@ fun ButtonState.startLoading() {
     isEnabled = false
 }
 
-fun ButtonState.stopLoading() {
+fun ButtonState.stopLoading(enable: Boolean = true) {
     isLoading = false
-    isEnabled = true
+    isEnabled = enable
 }

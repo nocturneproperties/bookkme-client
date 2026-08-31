@@ -16,15 +16,19 @@ struct InviteEmployeeScreen: View {
 		ListGroup(listState: invitationsList, listStyle: .insetGrouped, content: { item in
 			InvitationRow(item: item)
 		}, header: {
+			
+			SectionTextField(uiState.emailField, header: uiState.descriptionText.localized())
+				.textFieldStyle(.inList)
+				.textInputAutocapitalization(.never)
+				.disableAutocorrection(true)
+			
 			Section {
-				SectionTextField(uiState.emailField)
-					.textFieldStyle(.inList)
-				
 				StateButton(uiState.sendButton)
-			} header: {
-				Text(uiState.descriptionText.localized())
+					.listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 32, trailing: 0))
+					.listRowBackground(Color.clear)
 			}
-			.listRowSeparator(.hidden)
+			.listSectionSpacing(.compact)
+			
 		})
 		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
 		.withNavigationBar(uiState.appBar)

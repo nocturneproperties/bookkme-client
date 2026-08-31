@@ -72,8 +72,10 @@ struct StateButton: View {
     var body: some View {
 		Button(
 			action: {
-				onClick?()
-				state.onClick?()
+				withAnimation {
+					onClick?()
+					state.onClick?()
+				}
 			}
 		) {
 			if (state.isLoading) {

@@ -9,7 +9,7 @@
 import SwiftUI
 import shared
 
-struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyObject, T:Identifiable {
+struct ListGroup<T, S: ListStyle, Header: View, Content: View>:View where T:AnyObject, T:Identifiable {
 	
 	@Bindable
 	var listState: IOSListState<T>
@@ -22,18 +22,18 @@ struct ListGroup<T, S: ListStyle,Header: View, Content: View>:View where T:AnyOb
 	@ViewBuilder
 	let header: () -> Header
 	
-	init(listState: IOSListState<T>, listStyle: S, content: @escaping (T) -> Content, header: @escaping () -> Header) {
+	init(listState: IOSListState<T>, listStyle: S, @ViewBuilder content: @escaping (T) -> Content, @ViewBuilder header: @escaping () -> Header) {
 		self._listState = Bindable(wrappedValue: listState)
 		self.content = content
 		self.header = header
 		self.listStyle = listStyle
 	}
-	
-	init(listState: IOSListState<T>, content: @escaping (T) -> Content) where Header == EmptyView, S == PlainListStyle {
+
+	init(listState: IOSListState<T>, @ViewBuilder content: @escaping (T) -> Content) where Header == EmptyView, S == PlainListStyle {
 		self.init(listState: listState, listStyle: .plain, content: content) { EmptyView() }
 	}
-	
-	init(listState: IOSListState<T>, listStyle: S, content: @escaping (T) -> Content) where Header == EmptyView {
+
+	init(listState: IOSListState<T>, listStyle: S, @ViewBuilder content: @escaping (T) -> Content) where Header == EmptyView {
 		self.init(listState: listState, listStyle: listStyle, content: content) { EmptyView() }
 	}
 	

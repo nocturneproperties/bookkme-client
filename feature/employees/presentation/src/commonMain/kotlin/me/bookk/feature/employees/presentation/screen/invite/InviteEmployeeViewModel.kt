@@ -101,7 +101,7 @@ class InviteEmployeeViewModel(
                     else -> uiState.notifications.add(it.notification())
                 }
             },
-            onTerminate = { uiState.sendButton.stopLoading() }
+            onTerminate = { uiState.sendButton.stopLoading(enable = false) }
         )
     }
 

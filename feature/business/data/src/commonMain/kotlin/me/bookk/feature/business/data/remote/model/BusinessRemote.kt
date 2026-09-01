@@ -2,33 +2,35 @@ package me.bookk.feature.business.data.remote.model
 
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.core.data.TimeZoneSerializer
 import me.bookk.feature.business.domain.api.entity.Business
 import kotlin.uuid.Uuid
 
 @Serializable
 class BusinessRemote(
-    val id: Uuid,
-    val name: String,
-    val description: String,
-    val address: String,
+    @ProtoNumber(1) val id: Uuid,
+    @ProtoNumber(2) val name: String,
+    @ProtoNumber(3) val description: String,
+    @ProtoNumber(4) val address: String,
+    @ProtoNumber(5)
     @Serializable(with = TimeZoneSerializer::class)
     val timeZone: TimeZone,
-    val location: Location?,
-    val currencyCode: String,
-    val socials: List<Social>,
-    val schedule: ScheduleRemote
+    @ProtoNumber(6) val location: Location?,
+    @ProtoNumber(7) val currencyCode: String,
+    @ProtoNumber(8) val socials: List<Social>,
+    @ProtoNumber(9) val schedule: ScheduleRemote
 ) {
     @Serializable
     class Location(
-        val lat: Double,
-        val lng: Double
+        @ProtoNumber(1) val lat: Double,
+        @ProtoNumber(2) val lng: Double
     )
 
     @Serializable
     class Social(
-        val kind: SocialKind,
-        val value: String?
+        @ProtoNumber(1) val kind: SocialKind,
+        @ProtoNumber(2) val value: String?
     )
 
     enum class SocialKind(val domainKind: Business.SocialKind) {

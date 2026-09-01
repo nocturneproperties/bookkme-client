@@ -56,6 +56,10 @@ class ClientDetailsViewModel(
                             title = ClientsRes.strings.clients_create_email,
                             value = it.email.ifBlank { "-" },
                             onClick = { device.mail(it.email) }
+                        ),
+                        InfoLine(
+                            title = ClientsRes.strings.clients_details_description,
+                            value = it.description?.ifBlank { "-" } ?: "-"
                         )
                     )
                 )

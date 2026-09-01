@@ -5,6 +5,7 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
+import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
@@ -16,6 +17,7 @@ import me.bookk.database.dao.ClientsDao
 import me.bookk.feature.clients.data.mapping.toDbEntity
 import me.bookk.feature.clients.data.mapping.toDomain
 import me.bookk.feature.clients.data.mapping.toRemote
+import me.bookk.feature.clients.data.mapping.toUpdateRemote
 import me.bookk.feature.clients.data.remote.api.ClientsRouting.Api
 import me.bookk.feature.clients.data.remote.model.ClientRemote
 import me.bookk.feature.clients.domain.api.entity.Client
@@ -57,6 +59,16 @@ internal class CommonClientsDataSource(
         return mapExceptions {
             httpClient.post(Api.Clients(businessId = client.businessId)) {
                 setBody(client.toRemote())
+            }
+                .body<ClientRemote>()
+                .toDomain(client.businessId)
+        }
+    }
+
+    override suspend fun updateClient(client: Client): Client {
+        return mapExceptions {
+            httpClient.put(Api.Clients.Id(Api.Clients(businessId = client.businessId), id = client.id)) {
+                setBody(client.toUpdateRemote())
             }
                 .body<ClientRemote>()
                 .toDomain(client.businessId)

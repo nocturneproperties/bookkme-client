@@ -3,23 +3,20 @@ package me.bookk.feature.employees.data.remote.model
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitationStatus
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-/**
- * Field order is significant: the API speaks protobuf and none of the remote models declare
- * explicit `@ProtoNumber`s, so field numbers are assigned by declaration order.
- */
 @Serializable
 internal class EmployeeInvitationRemote(
-    val id: Uuid,
-    val businessId: Uuid,
-    val invitedBy: Uuid,
-    val email: String,
-    val status: EmployeeInvitationStatusRemote,
-    val createdAt: Instant
+    @ProtoNumber(1) val id: Uuid,
+    @ProtoNumber(2) val businessId: Uuid,
+    @ProtoNumber(3) val invitedBy: Uuid,
+    @ProtoNumber(4) val email: String,
+    @ProtoNumber(5) val status: EmployeeInvitationStatusRemote,
+    @ProtoNumber(6) val createdAt: Instant
 ) {
     fun toDomain() = EmployeeInvitation(
         id = id,
@@ -50,5 +47,5 @@ internal enum class EmployeeInvitationStatusRemote {
 
 @Serializable
 internal class EmployeeInvitationRequestRemote(
-    val email: String
+    @ProtoNumber(1) val email: String
 )

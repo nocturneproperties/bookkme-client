@@ -9,6 +9,7 @@ sealed interface Client {
     val phone: String
     val email: String
     val businessId: Uuid
+    val description: String?
     val fullName: String
 
     data class Detached(
@@ -17,7 +18,8 @@ sealed interface Client {
         override val lastName: String,
         override val phone: String,
         override val email: String,
-        override val businessId: Uuid
+        override val businessId: Uuid,
+        override val description: String? = null
     ) : Client {
         override val fullName: String = "$name $lastName"
     }
@@ -29,7 +31,8 @@ sealed interface Client {
         override val phone: String,
         override val email: String,
         override val businessId: Uuid,
-        val userId: Uuid
+        val userId: Uuid,
+        override val description: String? = null
     ) : Client {
         override val fullName: String = "$name $lastName"
     }

@@ -1,6 +1,7 @@
 package me.bookk.feature.appointments.data.remote.model
 
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -9,17 +10,19 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * The API speaks `application/x-protobuf` and none of the remote models declare explicit
- * `@ProtoNumber`s, so protobuf field numbers are assigned positionally by declaration order.
- * A reordered, added or removed property silently desyncs every field after it — the compiler
- * cannot catch it, so these tests pin the declaration order to the published schema.
+ * The API speaks `application/x-protobuf`. Every remote model pins its wire numbers explicitly
+ * via `@ProtoNumber` — a new field must get the next unused number and an existing number must
+ * never be reassigned, or the wire format silently desyncs from the published schema.
  *
  * Source: http://localhost/api/appointments/internal/swagger/documentation.yaml
  */
 class AppointmentSettingsRemoteContractTest {
 
-    private fun SerialDescriptor.fieldOrder(): List<String> =
-        (0 until elementsCount).map { getElementName(it) }
+    private fun SerialDescriptor.protoFields(): List<Pair<String, Int>> =
+        (0 until elementsCount).map { i ->
+            val number = getElementAnnotations(i).filterIsInstance<ProtoNumber>().single().number
+            getElementName(i) to number
+        }
 
     @Test
     fun `AppointmentSettings field order matches the backend schema`() = runUnitTest {
@@ -27,18 +30,18 @@ class AppointmentSettingsRemoteContractTest {
         val descriptor = AppointmentSettingsRemote.serializer().descriptor
 
         whenn()
-        val fields = descriptor.fieldOrder()
+        val fields = descriptor.protoFields()
 
         then()
         assertEquals(
             listOf(
-                "id",
-                "businessId",
-                "timeZone",
-                "schedule",
-                "automaticApproval",
-                "inBetweenBreakInMinutes",
-                "appointmentNote"
+                "id" to 1,
+                "businessId" to 2,
+                "timeZone" to 3,
+                "schedule" to 4,
+                "automaticApproval" to 5,
+                "inBetweenBreakInMinutes" to 6,
+                "appointmentNote" to 7
             ),
             fields
         )
@@ -50,11 +53,11 @@ class AppointmentSettingsRemoteContractTest {
         val descriptor = AppointmentSettingsUpdateRemote.serializer().descriptor
 
         whenn()
-        val fields = descriptor.fieldOrder()
+        val fields = descriptor.protoFields()
 
         then()
         assertEquals(
-            listOf("businessId", "automaticApproval", "inBetweenBreakInMinutes", "appointmentNote"),
+            listOf("businessId" to 1, "automaticApproval" to 2, "inBetweenBreakInMinutes" to 3, "appointmentNote" to 4),
             fields
         )
     }
@@ -65,10 +68,10 @@ class AppointmentSettingsRemoteContractTest {
         val descriptor = WorkingScheduleRemote.serializer().descriptor
 
         whenn()
-        val fields = descriptor.fieldOrder()
+        val fields = descriptor.protoFields()
 
         then()
-        assertEquals(listOf("days", "dayOffs"), fields)
+        assertEquals(listOf("days" to 1, "dayOffs" to 2), fields)
     }
 
     @Test
@@ -77,10 +80,10 @@ class AppointmentSettingsRemoteContractTest {
         val descriptor = DayOfWeekScheduleRemote.serializer().descriptor
 
         whenn()
-        val fields = descriptor.fieldOrder()
+        val fields = descriptor.protoFields()
 
         then()
-        assertEquals(listOf("workingTime", "isActive"), fields)
+        assertEquals(listOf("workingTime" to 1, "isActive" to 2), fields)
     }
 
     @Test
@@ -89,10 +92,10 @@ class AppointmentSettingsRemoteContractTest {
         val descriptor = WorkHourRemote.serializer().descriptor
 
         whenn()
-        val fields = descriptor.fieldOrder()
+        val fields = descriptor.protoFields()
 
         then()
-        assertEquals(listOf("from", "to"), fields)
+        assertEquals(listOf("from" to 1, "to" to 2), fields)
     }
 
     @Test
@@ -101,9 +104,9 @@ class AppointmentSettingsRemoteContractTest {
         val descriptor = DayOffRangeRemote.serializer().descriptor
 
         whenn()
-        val fields = descriptor.fieldOrder()
+        val fields = descriptor.protoFields()
 
         then()
-        assertEquals(listOf("start", "end"), fields)
+        assertEquals(listOf("start" to 1, "end" to 2), fields)
     }
 }

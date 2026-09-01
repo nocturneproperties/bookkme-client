@@ -1,23 +1,24 @@
 package me.bookk.feature.authorization.data.remote.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
 
 @Serializable
 class AuthChallengeResponse(
-    val requestId: String,
-    val challengeJson: String,
-    val challenge: String
+    @ProtoNumber(1) val requestId: String,
+    @ProtoNumber(2) val challengeJson: String,
+    @ProtoNumber(3) val challenge: String
 )
 
 @Serializable
 class VerifyAuthRequest(
-    val requestId: String,
-    val publicKeyCredentialJson: String,
-    val deviceInfo: DeviceInfo
+    @ProtoNumber(1) val requestId: String,
+    @ProtoNumber(2) val publicKeyCredentialJson: String,
+    @ProtoNumber(3) val deviceInfo: DeviceInfo
 ) {
     @Serializable
     data class DeviceInfo(
-        val deviceUUID: String,
-        val deviceName: String,
+        @ProtoNumber(1) val deviceUUID: String,
+        @ProtoNumber(2) val deviceName: String,
     )
 }

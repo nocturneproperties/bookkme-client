@@ -1,6 +1,7 @@
 package me.bookk.feature.services.domain.datasource
 
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 interface ServiceGroupDataSource {
@@ -12,4 +13,6 @@ interface ServiceGroupDataSource {
     suspend fun saveGroupInDB(group: ServiceGroup)
     suspend fun deleteGroupFromDB(group: ServiceGroup)
     suspend fun getServiceGroupsFromDb(businessId: Uuid): List<ServiceGroup>
+    suspend fun getLastSyncedAt(businessId: Uuid): Instant?
+    suspend fun saveLastSyncedAt(businessId: Uuid)
 }

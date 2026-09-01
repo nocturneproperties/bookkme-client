@@ -65,6 +65,26 @@ class ObserveAppointmentsPluginEnabledImplTest {
     }
 
     @Test
+    fun `skips cached emission and emits only remote availability when never synced before`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns null
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        val results = mutableListOf<Boolean>()
+        val job = launch(Dispatchers.Unconfined) {
+            fixture.sut(businessId).collect { results.add(it) }
+        }
+
+        whenn()
+        job.cancel()
+
+        then()
+        assertEquals(listOf(true), results)
+    }
+
+    @Test
     fun `refetches availability when a plugin state changed event is emitted`() = runUnitTest {
         given()
         val fixture = Fixture()

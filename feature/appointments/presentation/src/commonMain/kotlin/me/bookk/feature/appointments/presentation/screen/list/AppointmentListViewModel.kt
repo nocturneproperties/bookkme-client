@@ -110,7 +110,7 @@ class AppointmentListViewModel(
 
     private fun onNewDateSelected(date: LocalDate) {
         uiState.datePicker.pickedDate = date
-        onRefresh()
+        loadAppointments(businessId)
         uiState.dates.replace(createDateInfoFrom(date))
     }
 

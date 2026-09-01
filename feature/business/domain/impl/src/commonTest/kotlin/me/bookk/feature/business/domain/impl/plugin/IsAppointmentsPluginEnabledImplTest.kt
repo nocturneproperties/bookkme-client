@@ -88,7 +88,7 @@ class IsAppointmentsPluginEnabledImplTest {
     }
 
     @Test
-    fun `cached emits the cached value before the fetched value`() = runUnitTest {
+    fun `cached emits the cached value before the fetched value when previously synced`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
@@ -102,6 +102,23 @@ class IsAppointmentsPluginEnabledImplTest {
 
         then()
         assertEquals(listOf(false, true), results)
+    }
+
+    @Test
+    fun `cached skips the cached emission when never synced before`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns null
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        val results = mutableListOf<Boolean>()
+
+        whenn()
+        fixture.sut.cached(businessId) { results.add(it) }
+
+        then()
+        assertEquals(listOf(true), results)
     }
 
     @Test

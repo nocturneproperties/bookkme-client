@@ -12,6 +12,7 @@ import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
+import me.bookk.feature.employees.presentation.EmployeesStateFactory
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.presentation.StateFactoryCreator
@@ -47,6 +48,7 @@ private fun stateModule() = module {
     factory<SettingsStateFactory> { get<StateFactoryCreator>().createSettingsFactory() }
     factory<BusinessStateFactory> { get<StateFactoryCreator>().createBusinessFactory() }
     factory<ClientsStateFactory> { get<StateFactoryCreator>().createClientsFactory() }
+    factory<EmployeesStateFactory> { get<StateFactoryCreator>().createEmployeesFactory() }
     factory<ServicesStateFactory> { get<StateFactoryCreator>().createServicesFactory() }
     factory<CredentialModuleFactory> { get<StateFactoryCreator>().createCredentialModuleFactory() }
     factory<PickOptionStateFactory> { get<StateFactoryCreator>().createPickOptionFactory() }

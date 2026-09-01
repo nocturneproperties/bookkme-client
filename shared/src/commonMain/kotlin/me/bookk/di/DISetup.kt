@@ -8,6 +8,7 @@ import me.bookk.di.feature.authDiModule
 import me.bookk.di.feature.businessDiModule
 import me.bookk.di.feature.clientsDiModule
 import me.bookk.di.feature.dashboardDiModule
+import me.bookk.di.feature.employeesDiModule
 import me.bookk.di.feature.servicesDiModule
 import me.bookk.di.feature.settingsDiModule
 import me.bookk.presentation.StateFactoryCreator
@@ -39,6 +40,7 @@ private fun KoinApplication.installModules(creator: StateFactoryCreator) = modul
     businessDiModule(),
     clientsDiModule(),
     dashboardDiModule(),
+    employeesDiModule(),
     servicesDiModule(),
     settingsDiModule()
 )

@@ -65,6 +65,7 @@ class GetServicesImplTest {
         everySuspend { fixture.serviceDataSource.getServices(businessId) } returns listOf(newer, older)
         everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
         everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
 
         whenn()
         val result = fixture.sut(businessId)
@@ -75,7 +76,7 @@ class GetServicesImplTest {
     }
 
     @Test
-    fun `saves services and their groups in DB`() = runUnitTest {
+    fun `saves services and their groups in DB and marks synced`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
@@ -83,6 +84,7 @@ class GetServicesImplTest {
         everySuspend { fixture.serviceDataSource.getServices(businessId) } returns listOf(service)
         everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
         everySuspend { fixture.serviceDataSource.saveServicesInDB(listOf(service)) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
 
         whenn()
         fixture.sut(businessId)
@@ -90,19 +92,22 @@ class GetServicesImplTest {
         then()
         verifySuspend { fixture.serviceDataSource.saveServicesInDB(listOf(service)) }
         verifySuspend { fixture.groupDataSource.saveGroupsInDB(any()) }
+        verifySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) }
     }
 
     @Test
-    fun `cached calls onResultAvailable with DB then remote when DB non-empty`() = runUnitTest {
+    fun `cached calls onResultAvailable with DB then remote when business synced before`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
         val cached = listOf(stubService(businessId))
         val remote = listOf(stubService(businessId))
+        everySuspend { fixture.serviceDataSource.getLastSyncedAt(businessId) } returns Instant.fromEpochMilliseconds(0)
         everySuspend { fixture.serviceDataSource.getServicesFromDb(businessId) } returns cached
         everySuspend { fixture.serviceDataSource.getServices(businessId) } returns remote
         everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
         everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
         val received = mutableListOf<List<Service>>()
 
         whenn()
@@ -113,15 +118,16 @@ class GetServicesImplTest {
     }
 
     @Test
-    fun `cached skips DB callback when DB is empty`() = runUnitTest {
+    fun `cached skips DB callback when business never synced before, even if DB has stale rows`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
         val remote = listOf(stubService(businessId))
-        everySuspend { fixture.serviceDataSource.getServicesFromDb(businessId) } returns emptyList()
+        everySuspend { fixture.serviceDataSource.getLastSyncedAt(businessId) } returns null
         everySuspend { fixture.serviceDataSource.getServices(businessId) } returns remote
         everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
         everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
         val received = mutableListOf<List<Service>>()
 
         whenn()
@@ -130,4 +136,29 @@ class GetServicesImplTest {
         then()
         assertEquals(1, received.size)
     }
+
+    @Test
+    fun `cached calls onResultAvailable with empty DB list when synced before and business has no services`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            everySuspend {
+                fixture.serviceDataSource.getLastSyncedAt(businessId)
+            } returns Instant.fromEpochMilliseconds(0)
+            everySuspend { fixture.serviceDataSource.getServicesFromDb(businessId) } returns emptyList()
+            everySuspend { fixture.serviceDataSource.getServices(businessId) } returns emptyList()
+            everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
+            everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
+            everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
+            val received = mutableListOf<List<Service>>()
+
+            whenn()
+            fixture.sut.cached(businessId) { received.add(it) }
+
+            then()
+            assertEquals(2, received.size)
+            assertEquals(emptyList(), received[0])
+            assertEquals(emptyList(), received[1])
+        }
 }

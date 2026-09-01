@@ -44,6 +44,7 @@ struct BusinessDashboardScreenContent: View {
 					}
 				}
 			}
+			.scrollDismissesKeyboard(.immediately)
 		}
 	}
 }

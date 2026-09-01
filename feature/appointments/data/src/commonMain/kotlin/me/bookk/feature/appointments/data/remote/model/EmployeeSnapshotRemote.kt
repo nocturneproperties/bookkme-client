@@ -7,7 +7,8 @@ import kotlin.uuid.Uuid
 @Serializable
 data class EmployeeSnapshotRemote(
     val id: Uuid,
+    val userId: Uuid,
     val fullName: String
 ) {
-    fun toDomain() = EmployeeSnapshot(id = id, fullName = fullName)
+    fun toDomain() = EmployeeSnapshot(id = id, userId = userId, fullName = fullName)
 }

@@ -1,6 +1,7 @@
 package me.bookk.feature.clients.domain.datasource
 
 import me.bookk.feature.clients.domain.api.entity.Client
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 interface ClientsDataSource {
@@ -12,4 +13,6 @@ interface ClientsDataSource {
     suspend fun saveClientsInDb(clients: List<Client>)
     suspend fun deleteClientInDb(id: Uuid)
     suspend fun deleteClientsInDb()
+    suspend fun getLastSyncedAt(businessId: Uuid): Instant?
+    suspend fun saveLastSyncedAt(businessId: Uuid)
 }

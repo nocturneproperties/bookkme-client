@@ -18,6 +18,7 @@ class AppointmentEntity(
     val userId: Uuid,
     val businessId: Uuid,
     @ColumnInfo(defaultValue = "00000000-0000-0000-0000-000000000000") val employeeId: Uuid,
+    @ColumnInfo(defaultValue = "00000000-0000-0000-0000-000000000000") val employeeUserId: Uuid,
     @ColumnInfo(defaultValue = "") val employeeFullName: String,
     val date: Instant,
     val status: String,

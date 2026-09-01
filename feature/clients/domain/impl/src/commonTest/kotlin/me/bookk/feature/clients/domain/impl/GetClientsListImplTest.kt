@@ -20,6 +20,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,6 +57,7 @@ class GetClientsListImplTest {
         everySuspend { fixture.dataSource.getClients(businessId) } returns clients
         everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
         everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
         whenn()
         val result = fixture.sut(businessId)
@@ -65,7 +67,7 @@ class GetClientsListImplTest {
     }
 
     @Test
-    fun `deletes old clients then saves new ones`() = runUnitTest {
+    fun `deletes old clients then saves new ones and marks synced`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
@@ -73,6 +75,7 @@ class GetClientsListImplTest {
         everySuspend { fixture.dataSource.getClients(businessId) } returns clients
         everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
         everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
         whenn()
         fixture.sut(businessId)
@@ -80,19 +83,22 @@ class GetClientsListImplTest {
         then()
         verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteClientsInDb() }
         verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveClientsInDb(clients) }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveLastSyncedAt(businessId) }
     }
 
     @Test
-    fun `cached calls onResultAvailable with DB then remote when DB is non-empty`() = runUnitTest {
+    fun `cached calls onResultAvailable with DB then remote when business synced before`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
         val cached = listOf(stubClient(businessId))
         val remote = listOf(stubClient(businessId), stubClient(businessId))
+        everySuspend { fixture.dataSource.getLastSyncedAt(businessId) } returns Instant.fromEpochMilliseconds(0)
         everySuspend { fixture.dataSource.getClientsFromDb(businessId) } returns cached
         everySuspend { fixture.dataSource.getClients(businessId) } returns remote
         everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
         everySuspend { fixture.dataSource.saveClientsInDb(remote) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
         val received = mutableListOf<List<Client>>()
 
         whenn()
@@ -103,15 +109,16 @@ class GetClientsListImplTest {
     }
 
     @Test
-    fun `cached skips DB callback when DB is empty`() = runUnitTest {
+    fun `cached skips DB callback when business never synced before, even if DB has stale rows`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
         val remote = listOf(stubClient(businessId))
-        everySuspend { fixture.dataSource.getClientsFromDb(businessId) } returns emptyList()
+        everySuspend { fixture.dataSource.getLastSyncedAt(businessId) } returns null
         everySuspend { fixture.dataSource.getClients(businessId) } returns remote
         everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
         everySuspend { fixture.dataSource.saveClientsInDb(remote) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
         val received = mutableListOf<List<Client>>()
 
         whenn()
@@ -120,4 +127,25 @@ class GetClientsListImplTest {
         then()
         assertEquals<List<List<Client>>>(listOf(remote), received)
     }
+
+    @Test
+    fun `cached calls onResultAvailable with empty DB list when synced before and business has no clients`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            everySuspend { fixture.dataSource.getLastSyncedAt(businessId) } returns Instant.fromEpochMilliseconds(0)
+            everySuspend { fixture.dataSource.getClientsFromDb(businessId) } returns emptyList()
+            everySuspend { fixture.dataSource.getClients(businessId) } returns emptyList()
+            everySuspend { fixture.dataSource.deleteClientsInDb() } returns Unit
+            everySuspend { fixture.dataSource.saveClientsInDb(emptyList()) } returns Unit
+            everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+            val received = mutableListOf<List<Client>>()
+
+            whenn()
+            fixture.sut.cached(businessId) { received.add(it) }
+
+            then()
+            assertEquals<List<List<Client>>>(listOf(emptyList(), emptyList()), received)
+        }
 }

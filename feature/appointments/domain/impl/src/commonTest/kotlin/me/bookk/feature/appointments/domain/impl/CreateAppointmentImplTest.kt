@@ -101,6 +101,7 @@ class CreateAppointmentImplTest {
             fixture.appointmentDataSource.createAppointment(
                 matches({ "match" }) {
                     it.employee.id == fixture.userId &&
+                        it.employee.userId == fixture.userId &&
                         it.employee.fullName == "${fixture.profile.firstName} ${fixture.profile.lastName}"
                 }
             )

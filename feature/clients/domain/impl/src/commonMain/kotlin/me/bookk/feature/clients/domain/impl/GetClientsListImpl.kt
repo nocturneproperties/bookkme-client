@@ -12,6 +12,7 @@ internal class GetClientsListImpl(
         return clientsDataSource.getClients(businessId).also {
             clientsDataSource.deleteClientsInDb()
             clientsDataSource.saveClientsInDb(it)
+            clientsDataSource.saveLastSyncedAt(businessId)
         }
     }
 
@@ -19,8 +20,8 @@ internal class GetClientsListImpl(
         businessId: Uuid,
         onResultAvailable: suspend (List<Client>) -> Unit
     ) {
-        clientsDataSource.getClientsFromDb(businessId).let {
-            if (it.isNotEmpty()) onResultAvailable(it)
+        if (clientsDataSource.getLastSyncedAt(businessId) != null) {
+            onResultAvailable(clientsDataSource.getClientsFromDb(businessId))
         }
         onResultAvailable(invoke(businessId))
     }

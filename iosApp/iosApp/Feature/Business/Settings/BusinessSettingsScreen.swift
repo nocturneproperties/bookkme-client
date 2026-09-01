@@ -27,6 +27,7 @@ struct BusinessSettingsScreen: View {
 			}
 		}
 		.listSectionSpacing(.compact)
+		.scrollDismissesKeyboard(.immediately)
 		.withNavigationBar(viewModel.uiState.appBar)
 		.handleNotifications(viewModel.uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)

@@ -29,18 +29,15 @@ struct AppointmentListScreen: View {
 			AppointmentRequestRow(state: item)
 				.listRowSeparator(.hidden)
 		} header : {
-			VStack {
+			Section {
 				DateStrip(
 					selectedDate: state.datePicker.pickedDate ?? today,
 					days: dateList.typedItems,
 					onDateSelected: { state.datePicker.onDatePicked?($0) }
 				)
-				Divider()
-					.background(AppColors.divider)
+				.listRowBackground(AppColors.background)
+				.listRowInsets(EdgeInsets())
 			}
-			.listRowSeparator(.hidden)
-			.listRowBackground(AppColors.background)
-			.listRowInsets(EdgeInsets())
 		}
 		.toolbar {
 			ToolbarItem(placement: .navigation) {
@@ -63,6 +60,7 @@ struct AppointmentListScreen: View {
             AppointmentRequestSheet(businessId: businessId)
         }
 		.listSectionSpacing(.compact)
+		.contentMargins(.top, 8, for: .scrollContent)
 		.withNavigationBar(state.appBar)
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)

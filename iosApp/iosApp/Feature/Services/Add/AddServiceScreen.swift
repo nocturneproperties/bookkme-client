@@ -55,6 +55,7 @@ struct AddServiceScreen: View {
 			}
 		}
 		.listSectionSpacing(.compact)
+		.scrollDismissesKeyboard(.immediately)
 		.withNavigationBar(uiState.appBar)
 		.toolbar {
 			TextButton(uiState.create)

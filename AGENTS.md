@@ -211,6 +211,36 @@ When adding local caching for a new entity:
 3. **`data/src/commonMain`**: implement the save method in `Common<X>DataSource` (DB write only). Embed domain→entity conversion as private extensions inside the datasource file. Keep the network-fetch method a pure network call.
 4. **`domain/impl`**: call the save method from the use case after a successful fetch, using `.also { dataSource.saveFor*(...) }`.
 
+### Cache-then-remote (`cached()`) pattern
+
+When a use case exposes both `invoke()` and a `cached(businessId, onResultAvailable: suspend (T) -> Unit)` — emit the DB value first (if there is one worth showing), then the freshly-fetched remote value (see `GetClientsListImpl`, `GetEmployeesImpl`, `GetEmployeeInvitationsImpl`, `GetServicesImpl`, `GetServiceGroupsImpl` for the canonical shape):
+
+```kotlin
+override suspend fun invoke(businessId: Uuid): List<X> {
+    return dataSource.getX(businessId).also {
+        dataSource.deleteXInDb()
+        dataSource.saveXInDb(it)
+        dataSource.saveLastSyncedAt(businessId)
+    }
+}
+
+override suspend fun cached(businessId: Uuid, onResultAvailable: suspend (List<X>) -> Unit) {
+    if (dataSource.getLastSyncedAt(businessId) != null) {
+        onResultAvailable(dataSource.getXFromDb(businessId))
+    }
+    onResultAvailable(invoke(businessId))
+}
+```
+
+**Never gate the cached emission on `it.isNotEmpty()` (or, for a single value, on a falsy/default placeholder).** An empty list or a default `false`/`null`-coalesced value is indistinguishable from "never synced yet" — skipping the callback in both cases means a business that has genuinely zero items (or a plugin that's genuinely disabled) sits on a loading spinner until the redundant remote call returns, instead of showing the correct state immediately from cache. Track sync state explicitly instead:
+
+- **List/collection results**: add `getLastSyncedAt(businessId): Instant?` and `saveLastSyncedAt(businessId)` to the datasource interface, backed by a `PreferenceProvider` bucket (e.g. `preferenceProvider.get("<feature>_prefs")`, key `"last_synced_at_$businessId"`, value `Clock.System.now().toEpochMilliseconds()`) — not a new Room table. `cached()` checks `getLastSyncedAt(businessId) != null`, not the list's emptiness.
+- **Single nullable domain record** (e.g. `GetNotificationSettingsImpl`, `GetAppointmentSettingsImpl`): `null` from the DB is already unambiguous — there's no "confirmed absent" state for a 1:1 settings row — so `dataSource.getXFromDb()?.let { onResultAvailable(it) }` is correct as-is and needs no marker.
+- **Single Boolean/enum-like result** (e.g. `IsAppointmentsPluginEnabledImpl`): make the datasource getter return the nullable type (`Boolean?`) instead of defaulting the absent case to `false`, and only emit when non-null.
+- Every datasource method that reads a cache for `cached()` must actually read from DB/prefs — never reuse the remote-fetch method for the "cached" branch (that silently turns "cache-then-remote" into "remote-then-remote").
+
+Any new persisted marker (prefs bucket or DB table) must be cleared on logout: implement `LogOutAction` on the `Common<X>DataSource`/`<X>DataSourceImpl` class (`override suspend fun doOnLogOut() { preferences.clear(); xDao.clear() }`) and bind it in the feature's data DI module as `binds arrayOf(<X>DataSource::class, LogOutAction::class)` — never `bind` alone, or the logout hook silently never fires.
+
 ## Dependency Injection (Koin)
 
 - Presentation: `di/<Feature>Di.kt` (commonMain) declares `internal expect fun platform<Feature>DiModule(): Module` and a public `<feature>PresentationModule()`; actuals in `androidMain` (`viewModelOf`) and `iosMain` (`factoryOf` + `@UsedInSwift` accessors). ViewModel screen arguments are passed with `@InjectedParam` (`org.koin.core.annotation.InjectedParam`) on the constructor parameter + `parametersOf(...)` at the call site (`koinViewModel { parametersOf(id) }` on Android, `KoinPlatform.getKoin().get(parameters = { parametersOf(id) })` on iOS). **When a parameter is annotated with `@InjectedParam`, always keep `viewModelOf(::FooViewModel)` / `factoryOf(::FooViewModel)` in the DI module — never switch to the manual lambda form `viewModel { FooViewModel(it.get(), get(), ...) }`. Koin resolves `@InjectedParam` fields automatically from the `parametersOf` block.**
@@ -247,6 +277,7 @@ http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
 - **Mocking**: for "mock" build variants provide `RoutingMock` implementations or Ktor `MockEngine`.
 - **No string literals in screens**: never hardcode user-visible strings in Compose/SwiftUI screen files. All strings must be defined in the feature's `moko-resources/base/strings.xml`, accessed in Kotlin via `FeatureRes.strings.key.desc()` and rendered in Compose with `.localized()` / in Swift with `.localized()`. Dynamic strings with runtime values use the `.format(vararg args)` extension (e.g. `AppointmentsRes.strings.appointments_create_subtotal.format(count)`).
 - **Never comment code**: do not add `//`, `/* */`, or `/** KDoc */` comments to Kotlin or Swift source. Code must be self-explanatory through clear naming, small functions, and the existing architectural patterns — if a piece of logic needs a comment to be understood, restructure or rename it instead. This applies to new code and to edits of existing code; do not add comments to files you touch even to explain a change. Pre-existing comments in files you edit may be left as-is unless the user asks for them to be removed.
+- **No color resolution in screens**: when a state field needs a status-dependent color (a pill, a label, an icon tint), put a `me.bookk.designsystem.resources.color.ColorToken` on the state/item, computed in the ViewModel (or a `private fun <DomainEnum>.color(): ColorToken` beside the state, e.g. `AppointmentDetailsState.kt`'s `UIAppointmentStatus`) — never branch on the domain enum inside the Compose screen or SwiftUI view to pick a `Color`. Resolve the token to a themed color with the existing mapping only: `ColorToken.themed` (`@Composable` property, `me.bookk.designsystem.resources.color.ColorResolver.kt`) on Android, `ColorToken.color` (`iosApp/iosApp/DesignSystem/Colors+DesignColor.swift`) on iOS. Do not write a new per-screen `when`/`switch` over `ColorToken`.
 
 ## Design System – Screen Building Blocks
 

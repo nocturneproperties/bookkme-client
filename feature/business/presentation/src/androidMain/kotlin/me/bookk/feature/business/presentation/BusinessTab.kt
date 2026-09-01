@@ -16,6 +16,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun BusinessTab(
+    showEmployees: (id: Uuid) -> Unit,
     showClients: (id: Uuid) -> Unit,
     showServices: (id: Uuid) -> Unit,
     showAppointmentSettings: (businessId: Uuid) -> Unit,
@@ -35,7 +36,7 @@ fun BusinessTab(
             navigation = BusinessNavigation(
                 toAnalytics = { businessController.navigate(BusinessDestination.Analytics) },
                 toClients = { showClients(it) },
-                toEmployees = { businessController.navigate(BusinessDestination.Employees) },
+                toEmployees = { showEmployees(it) },
                 toBusinessSettings = { businessController.navigate(BusinessDestination.Settings(it)) },
                 toAppointmentSettings = { showAppointmentSettings(it) },
                 toAppointmentHistory = { showAppointmentHistory(it) },

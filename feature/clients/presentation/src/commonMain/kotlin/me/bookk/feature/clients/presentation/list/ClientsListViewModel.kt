@@ -92,6 +92,7 @@ class ClientsListViewModel(
         appBar.actions.replace(
             listOf(
                 AppBarAction(
+                    icon = DesignSystem.images.plus,
                     contentDescription = DesignSystem.strings.action_add.desc(),
                     onClick = weakVMClosure { it.uiState.navigation.push(AddClient(args.businessId)) }
                 )

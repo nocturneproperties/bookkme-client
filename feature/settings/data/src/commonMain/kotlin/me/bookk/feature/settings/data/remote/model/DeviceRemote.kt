@@ -1,18 +1,19 @@
 package me.bookk.feature.settings.data.remote.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.feature.settings.domain.api.entity.Device
 import me.bookk.feature.settings.domain.api.entity.DeviceLanguage
 import kotlin.uuid.Uuid
 
 @Serializable
 data class DeviceRemote(
-    val id: Uuid,
-    val authId: Uuid,
-    val deviceUuid: Uuid,
-    val userId: Uuid,
-    val notificationToken: String? = null,
-    val language: DeviceLanguageRemote
+    @ProtoNumber(1) val id: Uuid,
+    @ProtoNumber(2) val authId: Uuid,
+    @ProtoNumber(3) val deviceUuid: Uuid,
+    @ProtoNumber(4) val userId: Uuid,
+    @ProtoNumber(5) val notificationToken: String? = null,
+    @ProtoNumber(6) val language: DeviceLanguageRemote
 ) {
     fun toDomain() = Device(
         id = id,
@@ -36,4 +37,4 @@ enum class DeviceLanguageRemote {
 }
 
 @Serializable
-data class UpdateTokenRequestRemote(val token: String)
+data class UpdateTokenRequestRemote(@ProtoNumber(1) val token: String)

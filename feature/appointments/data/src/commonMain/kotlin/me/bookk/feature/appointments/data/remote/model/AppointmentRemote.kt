@@ -3,22 +3,23 @@ package me.bookk.feature.appointments.data.remote.model
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Serializable
 data class AppointmentRemote(
-    val id: Uuid,
-    val userId: Uuid,
-    val businessId: Uuid,
-    val employee: EmployeeSnapshotRemote,
-    val client: ClientSnapshotRemote,
-    val services: List<ServiceSnapshotRemote>,
-    val status: AppointmentStatusRemote,
-    val date: Instant,
-    val note: String,
-    val cancellationReason: String
+    @ProtoNumber(1) val id: Uuid,
+    @ProtoNumber(2) val userId: Uuid,
+    @ProtoNumber(3) val businessId: Uuid,
+    @ProtoNumber(4) val employee: EmployeeSnapshotRemote,
+    @ProtoNumber(5) val client: ClientSnapshotRemote,
+    @ProtoNumber(6) val services: List<ServiceSnapshotRemote>,
+    @ProtoNumber(7) val status: AppointmentStatusRemote,
+    @ProtoNumber(8) val date: Instant,
+    @ProtoNumber(9) val note: String,
+    @ProtoNumber(10) val cancellationReason: String
 ) {
     fun toDomain() = Appointment(
         id = id,

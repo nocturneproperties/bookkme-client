@@ -20,4 +20,8 @@ class IOSClientsStateFactory: @MainActor ClientsStateFactory {
 	func createClientDetailsState() -> any ClientDetailsState {
 		return IOSClientDetailsState()
 	}
+
+	func createEditClientState() -> any EditClientState {
+		return IOSEditClientState()
+	}
 }

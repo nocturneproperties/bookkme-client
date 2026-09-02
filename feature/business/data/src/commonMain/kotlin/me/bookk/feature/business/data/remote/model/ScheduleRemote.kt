@@ -4,6 +4,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
 import me.bookk.feature.business.domain.api.entity.WorkHour
@@ -12,13 +13,13 @@ import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 /**
  * Wire shape of the business working schedule.
  *
- * Field order is significant: the API speaks protobuf and none of the remote models declare
- * explicit `@ProtoNumber`s, so numbers are assigned by declaration order.
+ * Field numbers are pinned explicitly via `@ProtoNumber` since the API speaks protobuf; a new
+ * field must get the next unused number and an existing number must never be reassigned.
  */
 @Serializable
 class ScheduleRemote(
-    val days: Map<DayOfWeek, DayOfWeekScheduleRemote>,
-    val dayOffs: List<DayOffRangeRemote>
+    @ProtoNumber(1) val days: Map<DayOfWeek, DayOfWeekScheduleRemote>,
+    @ProtoNumber(2) val dayOffs: List<DayOffRangeRemote>
 ) {
     fun toDomain() = WorkingSchedule(
         days = days.mapValues { it.value.toDomain(it.key) },
@@ -28,8 +29,8 @@ class ScheduleRemote(
 
 @Serializable
 class DayOfWeekScheduleRemote(
-    val workingTime: List<WorkHourRemote>,
-    val isActive: Boolean
+    @ProtoNumber(1) val workingTime: List<WorkHourRemote>,
+    @ProtoNumber(2) val isActive: Boolean
 ) {
     fun toDomain(dayOfWeek: DayOfWeek) = DayOfWeekSchedule(
         dayOfWeek = dayOfWeek,
@@ -40,16 +41,16 @@ class DayOfWeekScheduleRemote(
 
 @Serializable
 class WorkHourRemote(
-    val from: LocalTime,
-    val to: LocalTime
+    @ProtoNumber(1) val from: LocalTime,
+    @ProtoNumber(2) val to: LocalTime
 ) {
     fun toDomain() = WorkHour(from = from, to = to)
 }
 
 @Serializable
 class DayOffRangeRemote(
-    val start: LocalDate,
-    val end: LocalDate
+    @ProtoNumber(1) val start: LocalDate,
+    @ProtoNumber(2) val end: LocalDate
 ) {
     fun toDomain() = DayOffRange(start = start, end = end)
 }

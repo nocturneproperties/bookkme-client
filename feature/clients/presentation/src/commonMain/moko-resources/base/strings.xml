@@ -12,6 +12,12 @@
     <string name="clients_create_phone_placeholder">2025550123</string>
     <string name="clients_create_email">Email</string>
     <string name="clients_create_email_placeholder">optional</string>
+    <string name="clients_details_description">Description</string>
     <string name="clients_delete_title">Delete client</string>
     <string name="clients_delete_desc">Are you sure you want to delete this client?</string>
+    <string name="clients_delete_button">Delete contact</string>
+
+    <string name="clients_edit_title">Edit client</string>
+    <string name="clients_edit_attached_info">This client is linked to an account, so their name, phone, and email are managed by the owner and can\'t be edited. Only description can be changed.</string>
+    <string name="clients_edit_description_placeholder">Additional details about the client that may be helpful</string>
 </resources>

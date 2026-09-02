@@ -31,6 +31,8 @@ struct ClientDetailsScreen: View {
 			switch dest {
 			case is ClientDetailsDestination.Back:
 				navigationStack.popLast()
+			case let dest as ClientDetailsDestination.Edit:
+				navigationStack.push(ClientsDestinations.EditClient(id: dest.id))
 			default :
 				break
 			}

@@ -64,7 +64,7 @@ struct StateTextField: View {
 	}
 
 	private var contentColor: Color {
-		(state.enabled && !state.readOnly) ? AppColors.primary : AppColors.secondary
+		(state.enabled || state.readOnly) ? AppColors.primary : AppColors.secondary
 	}
 
 	init(
@@ -172,7 +172,7 @@ struct SectionTextField: View {
 	}
 
 	private var contentColor: Color {
-		(state.enabled && !state.readOnly) ? AppColors.primary : AppColors.secondary
+		(state.enabled || state.readOnly) ? AppColors.primary : AppColors.secondary
 	}
 
 	init(

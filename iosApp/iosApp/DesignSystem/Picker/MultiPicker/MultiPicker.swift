@@ -25,6 +25,8 @@ struct MultiPicker<ItemContent: View, SheetContent: View>: View {
 				.multilineTextAlignment(.center)
 				.frame(maxWidth: .infinity)
 				.padding(.vertical, 16)
+				.alignmentGuide(.listRowSeparatorLeading) { d in d[.leading] }
+				.alignmentGuide(.listRowSeparatorTrailing) { d in d[.trailing] }
 		}
 		ForEach(state.selectedItems, id: \.pickerItemId) { item in
 			itemContent(item) {
@@ -38,6 +40,7 @@ struct MultiPicker<ItemContent: View, SheetContent: View>: View {
 				state.isPickerVisible = true
 			}
 			.buttonStyle(.textInList)
+			.contentShape(Rectangle())
 			.sheet(isPresented: Binding(
 				get: { state.isPickerVisible },
 				set: { state.isPickerVisible = $0 }

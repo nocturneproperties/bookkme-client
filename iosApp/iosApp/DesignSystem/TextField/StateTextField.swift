@@ -62,7 +62,11 @@ struct StateTextField: View {
 			}
 		)
 	}
-	
+
+	private var contentColor: Color {
+		(state.enabled && !state.readOnly) ? AppColors.primary : AppColors.secondary
+	}
+
 	init(
 		_ state: TextFieldState,
 		textEditor: Bool = false,
@@ -72,14 +76,14 @@ struct StateTextField: View {
 		self.isEditor = textEditor
 		self.onTextChanged = onTextChanged
 	}
-    
+
 	var body: some View {
 		HStack(spacing: 8) {
 			if let icon = state.startIcon?.toUIImage() {
 				Image(uiImage: icon)
 					.frame(width: 24, height: 24)
 			}
-			
+
 			LabeledContent {
 				TextField(
 					state.placeholder.localized(),
@@ -89,16 +93,17 @@ struct StateTextField: View {
 				.keyboardType(keyboardType)
 				.textContentType(contentType)
 				.font(.body)
-				.disabled(!state.enabled || state.readOnly)
+				.foregroundStyle(contentColor)
 			} label: {
 				let label = state.label.localized()
 				if !label.isEmpty {
 					Text(label)
 						.frame(minWidth: 100, alignment: .leading)
 						.lineLimit(1)
+						.foregroundStyle(contentColor)
 				}
 			}
-			
+
 			if let suffix = state.suffix {
 				Text(suffix.localized())
 					.font(.footnote)
@@ -106,6 +111,7 @@ struct StateTextField: View {
 			}
 		}
 		.contentShape(Rectangle())
+		.disabled(!state.enabled || state.readOnly)
 		.id(state.id)
 	}
 }
@@ -164,7 +170,11 @@ struct SectionTextField: View {
 			}
 		)
 	}
-	
+
+	private var contentColor: Color {
+		(state.enabled && !state.readOnly) ? AppColors.primary : AppColors.secondary
+	}
+
 	init(
 		_ state: TextFieldState,
 		header: String? = nil,
@@ -176,7 +186,7 @@ struct SectionTextField: View {
 		self.onTextChanged = onTextChanged
 		self.header = header
 	}
-	
+
 	var body: some View {
 		Section {
 			HStack(spacing: 8) {
@@ -184,7 +194,7 @@ struct SectionTextField: View {
 					Image(uiImage: icon)
 						.frame(width: 24, height: 24)
 				}
-				
+
 				LabeledContent {
 					TextField(
 						state.placeholder.localized(),
@@ -194,6 +204,7 @@ struct SectionTextField: View {
 					.keyboardType(keyboardType)
 					.textContentType(contentType)
 					.font(.body)
+					.foregroundStyle(contentColor)
 					.disabled(!state.enabled || state.readOnly)
 				} label: {
 					let label = state.label.localized()
@@ -201,6 +212,7 @@ struct SectionTextField: View {
 						Text(label)
 							.frame(minWidth: 100, alignment: .leading)
 							.lineLimit(1)
+							.foregroundStyle(contentColor)
 					}
 				}
 				

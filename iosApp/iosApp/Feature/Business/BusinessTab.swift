@@ -21,6 +21,9 @@ struct BusinessTab: View {
 				.navigationDestination(for: ClientsDestinations.CreateClient.self) { type in
 					CreateClientScreen(businessId: type.businessId)
 				}
+				.navigationDestination(for: ClientsDestinations.EditClient.self) { type in
+					EditClientScreen(id: type.id)
+				}
 				.navigationDestination(for: EmployeesDestinations.InviteEmployee.self) { type in
 					InviteEmployeeScreen(businessId: type.businessId)
 				}

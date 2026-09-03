@@ -4,22 +4,18 @@
     <string name="employees_empty">You have no employees at the moment</string>
 
     <string name="employees_invite_title">Invite employee</string>
-    <string name="employees_invite_description">Send an invitation by email</string>
-    <string name="employees_invite_email_placeholder">name@company.com</string>
-    <string name="employees_invite_email_invalid">Enter a valid email address</string>
-    <string name="employees_invite_send_button">Send invite</string>
-    <string name="employees_invite_error_exists">An invitation was already sent to this email</string>
-    <string name="employees_invite_error_employee_exists">This person is already part of your team</string>
+    <string name="employees_invite_description">Generate a code and share it with a future employee. This code can be entered by long pressing the Business tab at the bottom of the screen.\n\nIf you lost the code, revoke it and create a new one.</string>
+    <string name="employees_invite_generate_button">Generate new code</string>
+    <string name="employees_invite_code_copied">Code copied to clipboard</string>
     <string name="employees_invite_invitations_header">Invitations</string>
     <string name="employees_invite_invitations_empty">You have no invitations at the moment</string>
-    <string name="employees_invite_sent_on">Sent %s</string>
+    <string name="employees_invite_created_on">Created %s</string>
     <string name="employees_invite_status_pending">Pending</string>
-    <string name="employees_invite_status_accepted">Accepted</string>
-    <string name="employees_invite_status_rejected">Rejected</string>
+    <string name="employees_invite_status_redeemed">Redeemed</string>
     <string name="employees_invite_status_expired">Expired</string>
     <string name="employees_invite_status_revoked">Revoked</string>
     <string name="employees_invite_revoke_action">Revoke</string>
     <string name="employees_invite_revoke_dialog_title">Revoke invitation?</string>
-    <string name="employees_invite_revoke_dialog_message">The invitation sent to %s will no longer be valid</string>
+    <string name="employees_invite_revoke_dialog_message">This invitation will no longer be valid</string>
     <string name="employees_invite_revoke_error_already_processed">This invitation was already processed and can no longer be revoked</string>
 </resources>

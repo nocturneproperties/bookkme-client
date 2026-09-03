@@ -14,7 +14,7 @@ kotlin {
             implementation(projects.core.presentation)
             implementation(projects.designsystem)
             implementation(projects.feature.employees.domain.api)
-            implementation(projects.library.validation.api)
+            implementation(projects.library.device.api)
         }
     }
 }

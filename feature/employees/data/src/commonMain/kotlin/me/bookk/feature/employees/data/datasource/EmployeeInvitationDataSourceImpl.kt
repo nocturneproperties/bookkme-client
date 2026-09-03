@@ -4,7 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
-import io.ktor.client.request.setBody
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -16,9 +15,6 @@ import me.bookk.feature.employees.data.mapping.toDbEntity
 import me.bookk.feature.employees.data.mapping.toDomain
 import me.bookk.feature.employees.data.remote.api.EmployeeRouting.Api
 import me.bookk.feature.employees.data.remote.model.EmployeeInvitationRemote
-import me.bookk.feature.employees.data.remote.model.EmployeeInvitationRequestRemote
-import me.bookk.feature.employees.data.remote.model.EmployeeRemote
-import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
 import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
 import kotlin.time.Clock
@@ -32,10 +28,8 @@ internal class EmployeeInvitationDataSourceImpl(
 ) : DataSource(), EmployeeInvitationDataSource, LogOutAction {
 
     private val preferences = preferenceProvider.get("employee_invitations_prefs")
-    override suspend fun createInvitation(businessId: Uuid, email: String): EmployeeInvitation = mapExceptions {
-        httpClient.post(Api.EmployeeInvitation(businessId = businessId)) {
-            setBody(EmployeeInvitationRequestRemote(email = email))
-        }
+    override suspend fun createInvitation(businessId: Uuid): EmployeeInvitation = mapExceptions {
+        httpClient.post(Api.EmployeeInvitation(businessId = businessId))
             .body<EmployeeInvitationRemote>()
             .toDomain()
     }
@@ -75,29 +69,9 @@ internal class EmployeeInvitationDataSourceImpl(
         fun lastSyncedAt(businessId: Uuid) = Preferences.Key<Long>("last_synced_at_$businessId")
     }
 
-    override suspend fun approveInvitation(businessId: Uuid, id: Uuid): Employee = mapExceptions {
-        httpClient.post(Api.EmployeeInvitation.Approve(Api.EmployeeInvitation(businessId = businessId), id))
-            .body<EmployeeRemote>()
-            .toDomain()
-    }
-
-    override suspend fun rejectInvitation(businessId: Uuid, id: Uuid) {
-        mapExceptions {
-            httpClient.post(Api.EmployeeInvitation.Reject(Api.EmployeeInvitation(businessId = businessId), id))
-        }
-    }
-
     override suspend fun revokeInvitation(businessId: Uuid, id: Uuid) {
         mapExceptions {
             httpClient.post(Api.EmployeeInvitation.Revoke(Api.EmployeeInvitation(businessId = businessId), id))
         }
-    }
-
-    override suspend fun getPendingInvitationsForEmail(email: String): List<EmployeeInvitation> = mapExceptions {
-        httpClient.post(Api.PendingEmployeeInvitation()) {
-            setBody(EmployeeInvitationRequestRemote(email = email))
-        }
-            .body<List<EmployeeInvitationRemote>>()
-            .map { it.toDomain() }
     }
 }

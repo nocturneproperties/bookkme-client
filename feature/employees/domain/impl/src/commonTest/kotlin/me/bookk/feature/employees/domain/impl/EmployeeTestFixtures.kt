@@ -25,7 +25,7 @@ internal fun stubEmployeeInvitation(businessId: Uuid = Uuid.random()) = Employee
     id = Uuid.random(),
     businessId = businessId,
     invitedBy = Uuid.random(),
-    email = "jane@example.com",
+    code = "ABCD1234",
     status = EmployeeInvitationStatus.PENDING,
     createdAt = LocalDateTime(2024, 1, 1, 0, 0)
 )

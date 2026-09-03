@@ -1,6 +1,7 @@
 package me.bookk.feature.business.presentation.screen.dashboard
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -37,6 +38,7 @@ class BusinessDashboardViewModel(
         observeDashboardBusinessChanges()
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
+            .distinctUntilChanged()
             .onEach { business ->
                 uiState.appBar.title = business.name.desc()
                 businessId = business.id

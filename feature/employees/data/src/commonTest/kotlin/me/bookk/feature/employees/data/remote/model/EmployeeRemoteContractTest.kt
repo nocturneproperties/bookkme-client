@@ -63,18 +63,6 @@ class EmployeeRemoteContractTest {
     }
 
     @Test
-    fun `EmployeeInvitationRequest field order matches the backend schema`() = runUnitTest {
-        given()
-        val descriptor = EmployeeInvitationRequestRemote.serializer().descriptor
-
-        whenn()
-        val fields = descriptor.protoFields()
-
-        then()
-        assertEquals(listOf("email" to 1), fields)
-    }
-
-    @Test
     fun `EmployeeInvitation field order matches the backend schema`() = runUnitTest {
         given()
         val descriptor = EmployeeInvitationRemote.serializer().descriptor
@@ -84,7 +72,7 @@ class EmployeeRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("id" to 1, "businessId" to 2, "invitedBy" to 3, "email" to 4, "status" to 5, "createdAt" to 6),
+            listOf("id" to 1, "businessId" to 2, "invitedBy" to 3, "code" to 4, "status" to 5, "createdAt" to 6),
             fields
         )
     }

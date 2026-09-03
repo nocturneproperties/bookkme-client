@@ -7,13 +7,11 @@ import me.bookk.designsystem.uistate.ListState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.RefreshState
-import me.bookk.designsystem.uistate.TextFieldState
 
 interface InviteEmployeeState {
     val appBar: AppBarState
     var descriptionText: StringDesc
-    val emailField: TextFieldState
-    val sendButton: ButtonState
+    val generateCodeButton: ButtonState
     var invitationsHeader: StringDesc
     val invitationsList: ListState<InvitationItem>
     val refreshState: RefreshState

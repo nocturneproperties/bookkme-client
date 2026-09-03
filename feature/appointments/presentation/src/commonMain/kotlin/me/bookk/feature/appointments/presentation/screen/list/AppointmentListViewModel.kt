@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.presentation.screen.list
 
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -70,6 +71,7 @@ class AppointmentListViewModel(
         observeCurrentBusinessId()
             .flowOn(DispatcherProvider.io)
             .filterNotNull()
+            .distinctUntilChanged()
             .onEach {
                 businessId = it
                 if (uiState.requestsBusinessId != null) {

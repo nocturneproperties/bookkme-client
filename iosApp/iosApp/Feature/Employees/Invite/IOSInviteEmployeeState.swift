@@ -9,8 +9,7 @@ class IOSInviteEmployeeState: @MainActor InviteEmployeeState, NativeStateReprese
 
 	var appBar: any AppBarState
 	var descriptionText: any StringDesc
-	var emailField: any TextFieldState
-	var sendButton: any ButtonState
+	var generateCodeButton: any ButtonState
 	var invitationsHeader: any StringDesc
 	var invitationsList: any ListState
 	var refreshState: any RefreshState
@@ -20,8 +19,7 @@ class IOSInviteEmployeeState: @MainActor InviteEmployeeState, NativeStateReprese
 	init() {
 		self.appBar = IOSAppBarState()
 		self.descriptionText = RawStringDesc(string: "")
-		self.emailField = IOSTextFieldState()
-		self.sendButton = IOSButtonState()
+		self.generateCodeButton = IOSButtonState()
 		self.invitationsHeader = RawStringDesc(string: "")
 		self.invitationsList = IOSListState<InvitationItem>()
 		self.refreshState = IOSRefreshState()

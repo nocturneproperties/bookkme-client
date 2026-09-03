@@ -8,6 +8,7 @@ import platform.Foundation.currentLocale
 import platform.Foundation.localeIdentifier
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDevice
+import platform.UIKit.UIPasteboard
 
 class IosDeviceFacade : DeviceFacade {
 
@@ -44,5 +45,9 @@ class IosDeviceFacade : DeviceFacade {
 
     override fun mail(email: String) {
         openUrlPreview("mailto://$email")
+    }
+
+    override fun copyToClipboard(text: String) {
+        UIPasteboard.generalPasteboard.string = text
     }
 }

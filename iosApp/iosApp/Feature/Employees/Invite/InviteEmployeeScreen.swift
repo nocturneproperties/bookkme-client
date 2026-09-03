@@ -16,19 +16,14 @@ struct InviteEmployeeScreen: View {
 		ListGroup(listState: invitationsList, listStyle: .insetGrouped, content: { item in
 			InvitationRow(item: item)
 		}, header: {
-			
-			SectionTextField(uiState.emailField, header: uiState.descriptionText.localized())
-				.textFieldStyle(.inList)
-				.textInputAutocapitalization(.never)
-				.disableAutocorrection(true)
-			
 			Section {
-				StateButton(uiState.sendButton)
-					.listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 32, trailing: 0))
-					.listRowBackground(Color.clear)
+				Text(uiState.descriptionText.localized())
+					.font(.footnote)
+					.foregroundStyle(AppColors.secondary)
+				StateButton(uiState.generateCodeButton)
 			}
+			.listRowSeparator(.hidden)
 			.listSectionSpacing(.compact)
-			
 		})
 		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
 		.withNavigationBar(uiState.appBar)
@@ -48,24 +43,15 @@ struct InviteEmployeeScreen: View {
 private struct InvitationRow: View {
 	let item: InvitationItem
 
-	@State private var longPressCount = 0
-
 	var body: some View {
 		let statusColor = item.status.color.color
 		HStack(spacing: 12) {
-			Text(item.initials)
-				.font(.footnote.weight(.medium))
-				.foregroundStyle(AppColors.actionText)
-				.frame(width: 40, height: 40)
-				.background(AppColors.actionText.opacity(0.1))
-				.clipShape(Circle())
-
 			VStack(alignment: .leading, spacing: 2) {
-				Text(item.email)
+				Text(item.code.localized())
 					.font(.body)
 					.foregroundStyle(AppColors.primary)
 					.lineLimit(1)
-				Text(item.sentOn.localized())
+				Text(item.createdOn.localized())
 					.font(.caption)
 					.foregroundStyle(AppColors.secondary)
 			}
@@ -82,11 +68,8 @@ private struct InvitationRow: View {
 				.lineLimit(1)
 		}
 		.contentShape(Rectangle())
-		.onLongPressGesture {
-			guard let onLongPress = item.onLongPress else { return }
-			longPressCount += 1
-			onLongPress()
+		.onTapGesture {
+			item.onClick?()
 		}
-		.sensoryFeedback(.impact(weight: .medium), trigger: longPressCount)
 	}
 }

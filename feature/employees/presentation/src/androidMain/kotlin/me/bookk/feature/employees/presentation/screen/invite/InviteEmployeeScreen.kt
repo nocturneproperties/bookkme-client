@@ -13,10 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -69,16 +66,7 @@ fun InviteEmployeeScreen(state: InviteEmployeeState) {
                         TextField(state.emailField)
                         ActionButton(
                             modifier = Modifier.fillMaxWidth(),
-                            state = state.sendButton,
-                            startContent = {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .padding(end = 8.dp),
-                                    imageVector = Icons.AutoMirrored.Filled.Send,
-                                    contentDescription = null
-                                )
-                            }
+                            state = state.sendButton
                         )
                     }
                 }
@@ -87,6 +75,7 @@ fun InviteEmployeeScreen(state: InviteEmployeeState) {
                 PullToRefresh(state.refreshState, modifier = Modifier.weight(1f)) {
                     List(
                         state = state.invitationsList,
+                        modifier = Modifier.fillMaxSize(),
                         idProvider = InvitationItem::id
                     ) {
                         InvitationRow(it)

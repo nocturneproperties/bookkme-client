@@ -4,8 +4,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.get
+import io.ktor.client.plugins.resources.patch
 import io.ktor.client.plugins.resources.post
-import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
@@ -67,7 +67,7 @@ internal class CommonClientsDataSource(
 
     override suspend fun updateClient(client: Client): Client {
         return mapExceptions {
-            httpClient.put(Api.Clients.Id(Api.Clients(businessId = client.businessId), id = client.id)) {
+            httpClient.patch(Api.Clients.Id(Api.Clients(businessId = client.businessId), id = client.id)) {
                 setBody(client.toUpdateRemote())
             }
                 .body<ClientRemote>()

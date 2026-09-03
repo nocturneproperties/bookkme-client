@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDateTime
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.dashOnBlank
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -184,14 +185,14 @@ class AppointmentDetailsViewModel(
             ).takeIf { appointment.cancellationReason.isNotEmpty() },
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_phone,
-                value = appointment.client.phone,
-                onClick = weakVMClosure { vm -> vm.onPhoneClick(appointment.client.phone) }
-            ).takeIf { appointment.client.phone.isNotEmpty() },
+                value = appointment.client.phone.dashOnBlank(),
+                onClick = weakVMClosure { vm -> vm.onPhoneClick(appointment.client.phone!!) }
+            ).takeIf { !appointment.client.phone.isNullOrBlank() },
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_email,
-                value = appointment.client.email,
-                onClick = weakVMClosure { vm -> vm.onEmailClick(appointment.client.email) }
-            ).takeIf { appointment.client.email.isNotEmpty() },
+                value = appointment.client.email.dashOnBlank(),
+                onClick = weakVMClosure { vm -> vm.onEmailClick(appointment.client.email!!) }
+            ).takeIf { !appointment.client.email.isNullOrBlank() },
             InfoLine(
                 title = AppointmentsRes.strings.appointments_create_date,
                 value = dateFormat.format(appointment.date),

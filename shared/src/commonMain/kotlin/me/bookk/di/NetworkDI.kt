@@ -24,10 +24,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.protobuf.ProtoBuf
 import library.device.api.DeviceFacade
 import me.bookk.core.Logger
 import me.bookk.core.data.HttpClientType
+import me.bookk.core.data.dataSerializer
 import me.bookk.data.mock.MockedBackend
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.RefreshToken
@@ -60,7 +60,7 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
             }
         }
         install(ContentNegotiation) {
-            protobuf(ProtoBuf { encodeDefaults = true })
+            protobuf(dataSerializer)
         }
         install(HttpCache)
         install(Resources)

@@ -74,20 +74,23 @@ internal fun EditClientScreen(state: EditClientState) {
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                     minLines = 3
                 )
+            }
+        },
+        bottomBar = {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ActionButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state.submit
+                )
                 StateTextButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.deleteButton,
                     colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error)
                 )
             }
-        },
-        bottomBar = {
-            ActionButton(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                state = state.submit
-            )
         }
     )
 }

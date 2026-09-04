@@ -6,8 +6,10 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import library.money.api.Currency
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.uuid.Uuid
@@ -30,7 +32,8 @@ internal fun stubDayOff(
 
 internal fun stubBusiness(
     id: Uuid = Uuid.random(),
-    schedule: WorkingSchedule = stubWorkingSchedule()
+    schedule: WorkingSchedule = stubWorkingSchedule(),
+    permissions: BusinessPermissions = stubBusinessPermissions()
 ) = Business(
     id = id,
     name = "Test Business",
@@ -40,5 +43,14 @@ internal fun stubBusiness(
     currency = Currency("USD"),
     timeZone = TimeZone.UTC,
     socials = emptyMap(),
-    schedule = schedule
+    schedule = schedule,
+    permissions = permissions
+)
+
+internal fun stubBusinessPermissions() = BusinessPermissions(
+    business = ResourcePermission(),
+    employees = ResourcePermission(),
+    clients = ResourcePermission(),
+    services = ResourcePermission(),
+    appointments = ResourcePermission()
 )

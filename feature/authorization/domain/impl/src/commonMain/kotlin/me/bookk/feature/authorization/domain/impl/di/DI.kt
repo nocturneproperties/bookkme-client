@@ -22,8 +22,10 @@ import me.bookk.feature.authorization.domain.impl.UserProfileCRUDImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import kotlin.time.Clock
 
 fun authDomainModule() = module {
+    single<Clock> { Clock.System }
     factoryOf(::CreateAccountImpl) bind CreateAccount::class
     factoryOf(::GetTokenInfoImpl) bind GetTokenInfo::class
     factoryOf(::RefreshTokenImpl) bind RefreshToken::class

@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
+import io.ktor.client.request.setBody
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -14,7 +15,10 @@ import me.bookk.database.dao.EmployeeInvitationDao
 import me.bookk.feature.employees.data.mapping.toDbEntity
 import me.bookk.feature.employees.data.mapping.toDomain
 import me.bookk.feature.employees.data.remote.api.EmployeeRouting.Api
+import me.bookk.feature.employees.data.remote.model.EmployeeInvitationRedeemRequest
 import me.bookk.feature.employees.data.remote.model.EmployeeInvitationRemote
+import me.bookk.feature.employees.data.remote.model.EmployeeRemote
+import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
 import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
 import kotlin.time.Clock
@@ -73,5 +77,13 @@ internal class EmployeeInvitationDataSourceImpl(
         mapExceptions {
             httpClient.post(Api.EmployeeInvitation.Revoke(Api.EmployeeInvitation(businessId = businessId), id))
         }
+    }
+
+    override suspend fun redeemInvitation(code: String): Employee = mapExceptions {
+        httpClient.post(Api.EmployeeInvitationRedeem.Redeem()) {
+            setBody(EmployeeInvitationRedeemRequest(code))
+        }
+            .body<EmployeeRemote>()
+            .toDomain()
     }
 }

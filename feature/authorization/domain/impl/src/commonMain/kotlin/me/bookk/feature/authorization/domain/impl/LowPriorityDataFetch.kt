@@ -8,6 +8,7 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.clients.domain.api.GetClientsList
+import me.bookk.feature.employees.domain.api.GetEmployees
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.settings.domain.api.GetNotificationSettings
@@ -19,6 +20,7 @@ internal open class LowPriorityDataFetch(
     private val getServices: GetServices,
     private val getServiceGroups: GetServiceGroups,
     private val getClientsList: GetClientsList,
+    private val getEmployees: GetEmployees,
     private val getNotificationSettings: GetNotificationSettings,
     private val getAppointmentEnabled: IsAppointmentsPluginEnabled,
     private val getAppointmentSettings: GetAppointmentSettings,
@@ -34,6 +36,7 @@ internal open class LowPriorityDataFetch(
             getServices(business.id)
             getServiceGroups(business.id)
             getClientsList(business.id)
+            getEmployees(business.id)
             getAppointmentEnabled(business.id)
         }
         runCatching { getAppointmentSettings(business.id) }

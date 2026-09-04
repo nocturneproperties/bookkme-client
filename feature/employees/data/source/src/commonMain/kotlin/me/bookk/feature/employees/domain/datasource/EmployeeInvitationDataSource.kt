@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.domain.datasource
 
+import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -13,4 +14,5 @@ interface EmployeeInvitationDataSource {
     suspend fun getLastSyncedAt(businessId: Uuid): Instant?
     suspend fun saveLastSyncedAt(businessId: Uuid)
     suspend fun revokeInvitation(businessId: Uuid, id: Uuid)
+    suspend fun redeemInvitation(code: String): Employee
 }

@@ -41,10 +41,23 @@ class AppointmentSettingsRemoteContractTest {
                 "schedule" to 4,
                 "automaticApproval" to 5,
                 "inBetweenBreakInMinutes" to 6,
-                "appointmentNote" to 7
+                "appointmentNote" to 7,
+                "permissions" to 8
             ),
             fields
         )
+    }
+
+    @Test
+    fun `ResourcePermission field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = ResourcePermissionRemote.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("view" to 1, "update" to 2, "delete" to 3), fields)
     }
 
     @Test

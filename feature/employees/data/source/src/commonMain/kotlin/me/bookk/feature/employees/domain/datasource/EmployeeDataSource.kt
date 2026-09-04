@@ -1,5 +1,8 @@
 package me.bookk.feature.employees.domain.datasource
 
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.BusinessResource
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.api.entity.EmployeeRole
 import kotlin.time.Instant
@@ -14,4 +17,11 @@ interface EmployeeDataSource {
     suspend fun saveLastSyncedAt(businessId: Uuid)
     suspend fun updateEmployee(employee: Employee): Employee
     suspend fun promoteEmployee(businessId: Uuid, id: Uuid, role: EmployeeRole)
+    suspend fun getEmployeePermissions(businessId: Uuid, id: Uuid): BusinessPermissions
+    suspend fun setEmployeePermission(
+        businessId: Uuid,
+        id: Uuid,
+        resource: BusinessResource,
+        permission: ResourcePermission
+    ): BusinessPermissions
 }

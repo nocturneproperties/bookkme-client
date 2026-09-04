@@ -19,8 +19,10 @@ import me.bookk.core.data.dataSerializer
 import me.bookk.core.data.mock.MockRequestHandler
 import me.bookk.core.data.mock.RoutingMock
 import me.bookk.feature.business.data.remote.api.BusinessRouting
+import me.bookk.feature.business.data.remote.model.BusinessPermissionsRemote
 import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.BusinessUpdateRemote
+import me.bookk.feature.business.data.remote.model.ResourcePermissionRemote
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
 import me.bookk.feature.business.data.remote.model.toRemote
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
@@ -46,8 +48,20 @@ private var mockBusiness = BusinessRemote(
         BusinessRemote.Social(BusinessRemote.SocialKind.INSTAGRAM, "insta"),
         BusinessRemote.Social(BusinessRemote.SocialKind.TELEGRAM, "telegram")
     ),
-    schedule = WorkingSchedule().toRemote()
+    schedule = WorkingSchedule().toRemote(),
+    permissions = mockOwnerPermissions()
 )
+
+private fun mockOwnerPermissions(): BusinessPermissionsRemote {
+    val fullAccess = ResourcePermissionRemote(view = true, update = true, delete = true)
+    return BusinessPermissionsRemote(
+        business = fullAccess,
+        employees = fullAccess,
+        clients = fullAccess,
+        services = fullAccess,
+        appointments = fullAccess
+    )
+}
 
 private class GetBusinessesHandler : MockRequestHandler {
     override val method: HttpMethod = HttpMethod.Get
@@ -87,7 +101,8 @@ private class UpdateBusinessesHandler : MockRequestHandler {
             location = business.location,
             currencyCode = business.currencyCode,
             socials = business.socials,
-            schedule = business.schedule
+            schedule = business.schedule,
+            permissions = mockBusiness.permissions
         )
         return scope.respondOk()
     }

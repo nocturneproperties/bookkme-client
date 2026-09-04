@@ -20,6 +20,7 @@ import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
+import me.bookk.feature.business.domain.impl.stubBusinessPermissions
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -75,7 +76,8 @@ class RefreshBusinessInfoImplTest {
             currency = Currency("USD"),
             timeZone = TimeZone.UTC,
             socials = emptyMap(),
-        schedule = WorkingSchedule()
+            schedule = WorkingSchedule(),
+            permissions = stubBusinessPermissions()
         )
         val info = UserBusinessInfo(dashboardId = null, businesses = listOf(business))
         everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info

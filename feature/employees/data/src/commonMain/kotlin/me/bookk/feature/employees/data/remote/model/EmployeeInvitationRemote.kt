@@ -42,3 +42,8 @@ internal enum class EmployeeInvitationStatusRemote {
         REVOKED -> EmployeeInvitationStatus.REVOKED
     }
 }
+
+@Serializable
+internal class EmployeeInvitationRedeemRequest(
+    @ProtoNumber(1) val code: String
+)

@@ -75,7 +75,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         EmployeeDayOffEntity::class,
         EmployeeServiceSnapshotEntity::class
     ],
-    version = 12,
+    version = 14,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -87,7 +87,9 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         AutoMigration(from = 8, to = 9),
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11),
-        AutoMigration(from = 11, to = 12, spec = DeleteEmployeeInvitationEmail::class)
+        AutoMigration(from = 11, to = 12, spec = DeleteEmployeeInvitationEmail::class),
+        AutoMigration(from = 12, to = 13),
+        AutoMigration(from = 13, to = 14)
     ]
 )
 @TypeConverters(

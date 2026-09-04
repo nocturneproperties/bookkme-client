@@ -12,6 +12,12 @@ object EmployeeRouting {
             class Id(val parent: Employee, val id: Uuid) {
                 @Resource("/promote")
                 class Promote(val parent: Id)
+
+                @Resource("/permissions")
+                class Permissions(val parent: Id) {
+                    @Resource("/{resource}")
+                    class Grant(val parent: Permissions, val resource: String)
+                }
             }
         }
 
@@ -19,6 +25,12 @@ object EmployeeRouting {
         class EmployeeInvitation(val parent: Api = Api(), val businessId: Uuid) {
             @Resource("/{id}/revoke")
             class Revoke(val parent: EmployeeInvitation, val id: Uuid)
+        }
+
+        @Resource("/employee_invitation")
+        class EmployeeInvitationRedeem(val parent: Api = Api()) {
+            @Resource("/redeem")
+            class Redeem(val parent: EmployeeInvitationRedeem = EmployeeInvitationRedeem())
         }
     }
 }

@@ -76,4 +76,43 @@ class EmployeeRemoteContractTest {
             fields
         )
     }
+
+    @Test
+    fun `EmployeeInvitationRedeemRequest field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = EmployeeInvitationRedeemRequest.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("code" to 1), fields)
+    }
+
+    @Test
+    fun `ResourcePermission field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = ResourcePermissionRemote.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("view" to 1, "update" to 2, "delete" to 3), fields)
+    }
+
+    @Test
+    fun `BusinessPermissions field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = BusinessPermissionsRemote.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(
+            listOf("business" to 1, "employees" to 2, "clients" to 3, "services" to 4, "appointments" to 5),
+            fields
+        )
+    }
 }

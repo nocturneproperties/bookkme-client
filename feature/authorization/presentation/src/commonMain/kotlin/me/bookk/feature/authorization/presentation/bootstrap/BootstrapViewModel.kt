@@ -8,6 +8,7 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.feature.authorization.domain.api.GetSettingsColorScheme
+import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
 import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.presentation.AuthStateFactory
@@ -17,6 +18,7 @@ class BootstrapViewModel(
     private val isUserLoggedIn: IsUserLoggedIn,
     private val getSettingsColorScheme: GetSettingsColorScheme,
     private val logOut: LogOut,
+    private val initialAppDataFetch: InitialAppDataFetch,
     stateFactory: AuthStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -26,12 +28,21 @@ class BootstrapViewModel(
     init {
         observeAuthorizationStatus()
         observeThemeUpdates()
+        fetchInitialData()
     }
 
     fun logOut() {
         launch(
             launchIn = DispatcherProvider.io,
             call = { logOut.invoke() },
+            onError = { /*NOOP*/ }
+        )
+    }
+
+    private fun fetchInitialData() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { initialAppDataFetch() },
             onError = { /*NOOP*/ }
         )
     }

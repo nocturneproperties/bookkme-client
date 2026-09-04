@@ -38,6 +38,7 @@ import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 
@@ -231,7 +232,10 @@ internal fun AppointmentSettings.toEntity() = AppointmentSettingsEntity(
     timeZone = timeZone.id,
     automaticApproval = automaticApproval,
     inBetweenBreakInMinutes = inBetweenBreakInMinutes,
-    appointmentNote = appointmentNote
+    appointmentNote = appointmentNote,
+    permissionView = permissions.view,
+    permissionUpdate = permissions.update,
+    permissionDelete = permissions.delete
 )
 
 internal fun AppointmentSettings.toDayScheduleEntities() = schedule.days.map { (dayOfWeek, daySchedule) ->
@@ -282,5 +286,10 @@ internal fun AppointmentSettingsLocal.toDomain() = AppointmentSettings(
     ),
     automaticApproval = entity.automaticApproval,
     inBetweenBreakInMinutes = entity.inBetweenBreakInMinutes,
-    appointmentNote = entity.appointmentNote
+    appointmentNote = entity.appointmentNote,
+    permissions = ResourcePermission(
+        view = entity.permissionView,
+        update = entity.permissionUpdate,
+        delete = entity.permissionDelete
+    )
 )

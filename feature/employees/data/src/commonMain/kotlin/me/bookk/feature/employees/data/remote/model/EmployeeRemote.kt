@@ -2,6 +2,8 @@ package me.bookk.feature.employees.data.remote.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.api.entity.EmployeeRole
 import kotlin.time.Instant
@@ -70,4 +72,38 @@ internal enum class EmployeeRoleRemote {
             EmployeeRole.MANAGER -> MANAGER
         }
     }
+}
+
+@Serializable
+internal class ResourcePermissionRemote(
+    @ProtoNumber(1) val view: Boolean = false,
+    @ProtoNumber(2) val update: Boolean = false,
+    @ProtoNumber(3) val delete: Boolean = false
+) {
+    fun toDomain() = ResourcePermission(view = view, update = update, delete = delete)
+
+    companion object {
+        fun fromDomain(permission: ResourcePermission) = ResourcePermissionRemote(
+            view = permission.view,
+            update = permission.update,
+            delete = permission.delete
+        )
+    }
+}
+
+@Serializable
+internal class BusinessPermissionsRemote(
+    @ProtoNumber(1) val business: ResourcePermissionRemote,
+    @ProtoNumber(2) val employees: ResourcePermissionRemote,
+    @ProtoNumber(3) val clients: ResourcePermissionRemote,
+    @ProtoNumber(4) val services: ResourcePermissionRemote,
+    @ProtoNumber(5) val appointments: ResourcePermissionRemote
+) {
+    fun toDomain() = BusinessPermissions(
+        business = business.toDomain(),
+        employees = employees.toDomain(),
+        clients = clients.toDomain(),
+        services = services.toDomain(),
+        appointments = appointments.toDomain()
+    )
 }

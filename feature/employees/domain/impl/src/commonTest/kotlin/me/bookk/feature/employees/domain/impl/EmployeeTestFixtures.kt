@@ -1,6 +1,8 @@
 package me.bookk.feature.employees.domain.impl
 
 import kotlinx.datetime.LocalDateTime
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
@@ -28,4 +30,12 @@ internal fun stubEmployeeInvitation(businessId: Uuid = Uuid.random()) = Employee
     code = "ABCD1234",
     status = EmployeeInvitationStatus.PENDING,
     createdAt = LocalDateTime(2024, 1, 1, 0, 0)
+)
+
+internal fun stubBusinessPermissions() = BusinessPermissions(
+    business = ResourcePermission(),
+    employees = ResourcePermission(),
+    clients = ResourcePermission(),
+    services = ResourcePermission(),
+    appointments = ResourcePermission()
 )

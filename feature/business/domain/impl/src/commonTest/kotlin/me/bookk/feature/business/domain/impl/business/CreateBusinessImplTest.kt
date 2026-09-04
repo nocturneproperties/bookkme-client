@@ -21,6 +21,7 @@ import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
+import me.bookk.feature.business.domain.impl.stubBusinessPermissions
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -57,7 +58,8 @@ class CreateBusinessImplTest {
         currency = Currency("USD"),
         timeZone = TimeZone.UTC,
         socials = emptyMap(),
-        schedule = WorkingSchedule()
+        schedule = WorkingSchedule(),
+        permissions = stubBusinessPermissions()
     )
 
     @Test

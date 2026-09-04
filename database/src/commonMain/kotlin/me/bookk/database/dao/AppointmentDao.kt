@@ -9,6 +9,7 @@ import androidx.room.Upsert
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
 import me.bookk.database.relation.AppointmentLocal
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Dao
@@ -17,6 +18,13 @@ abstract class AppointmentDao {
     @Transaction
     @Query("SELECT * FROM appointment WHERE id = :id")
     abstract suspend fun getById(id: Uuid): AppointmentLocal
+
+    @Transaction
+    @Query("SELECT * FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay")
+    abstract suspend fun getForDate(businessId: Uuid, startOfDay: Instant, endOfDay: Instant): List<AppointmentLocal>
+
+    @Query("DELETE FROM appointment")
+    abstract suspend fun clear()
 
     @Upsert
     abstract suspend fun upsertAppointments(appointments: List<AppointmentEntity>)

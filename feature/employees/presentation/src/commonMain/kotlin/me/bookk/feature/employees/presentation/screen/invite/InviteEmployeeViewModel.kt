@@ -13,6 +13,7 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.loadCachedList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -45,9 +46,9 @@ class InviteEmployeeViewModel(
     }
 
     private fun loadInvitations() {
-        launchCached(
-            launchIn = DispatcherProvider.io,
-            onStart = { uiState.refreshState.isRefreshing = true },
+        loadCachedList(
+            listState = uiState.invitationsList,
+            refreshState = uiState.refreshState,
             call = { getEmployeeInvitations.cached(businessId, it) },
             onComplete = {
                 val items = it
@@ -55,11 +56,6 @@ class InviteEmployeeViewModel(
                     .map { invitation -> invitation.toItem() }
                 uiState.invitationsList.replace(items)
             },
-            onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = {
-                uiState.refreshState.isRefreshing = false
-                uiState.invitationsList.isInitialLoading = false
-            }
         )
     }
 

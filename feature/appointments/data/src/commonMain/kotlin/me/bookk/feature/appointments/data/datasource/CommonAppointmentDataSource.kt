@@ -6,8 +6,17 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.plus
+import library.cache.api.PreferenceProvider
+import library.cache.api.Preferences
+import library.cache.api.get
+import library.cache.api.set
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.AppointmentDao
 import me.bookk.feature.appointments.data.mapping.toDomain
 import me.bookk.feature.appointments.data.mapping.toEntity
@@ -19,12 +28,17 @@ import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 internal class CommonAppointmentDataSource(
     private val httpClient: HttpClient,
-    private val appointmentDao: AppointmentDao
-) : DataSource(), AppointmentDataSource {
+    private val appointmentDao: AppointmentDao,
+    preferenceProvider: PreferenceProvider
+) : DataSource(), AppointmentDataSource, LogOutAction {
+
+    private val preferences = preferenceProvider.get("appointments_prefs")
 
     override suspend fun getAppointment(id: Uuid): Appointment = mapExceptions {
         appointmentDao.getById(id).toDomain()
@@ -99,5 +113,33 @@ internal class CommonAppointmentDataSource(
                 services = appointment.toServiceEntities()
             )
         }
+    }
+
+    override suspend fun getAppointmentsForDateFromDb(
+        businessId: Uuid,
+        forDate: LocalDate
+    ): List<Appointment> = mapExceptions {
+        val timeZone = TimeZone.currentSystemDefault()
+        val startOfDay = forDate.atStartOfDayIn(timeZone)
+        val endOfDay = forDate.plus(1, DateTimeUnit.DAY).atStartOfDayIn(timeZone)
+        appointmentDao.getForDate(businessId, startOfDay, endOfDay).map { it.toDomain() }
+    }
+
+    override suspend fun getLastSyncedAt(businessId: Uuid, forDate: LocalDate): Instant? {
+        return preferences.get(Key.lastSyncedAt(businessId, forDate))?.let { Instant.fromEpochMilliseconds(it) }
+    }
+
+    override suspend fun saveLastSyncedAt(businessId: Uuid, forDate: LocalDate) {
+        preferences.set(Key.lastSyncedAt(businessId, forDate), Clock.System.now().toEpochMilliseconds())
+    }
+
+    override suspend fun doOnLogOut() {
+        preferences.clear()
+        appointmentDao.clear()
+    }
+
+    private object Key {
+        fun lastSyncedAt(businessId: Uuid, forDate: LocalDate) =
+            Preferences.Key<Long>("last_synced_at_${businessId}_$forDate")
     }
 }

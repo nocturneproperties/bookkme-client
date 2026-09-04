@@ -6,4 +6,10 @@ import kotlin.uuid.Uuid
 
 interface GetAppointmentsForBusiness {
     suspend operator fun invoke(businessId: Uuid, date: LocalDate): List<Appointment>
+
+    suspend fun cached(
+        businessId: Uuid,
+        date: LocalDate,
+        onResultAvailable: suspend (List<Appointment>) -> Unit
+    )
 }

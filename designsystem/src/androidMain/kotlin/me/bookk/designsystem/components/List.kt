@@ -44,6 +44,12 @@ fun <T> List(
         overscrollEffect = overscrollEffect
     ) {
         when {
+            state.errorState != null -> {
+                item {
+                    ErrorStateView(state.errorState!!)
+                }
+            }
+
             state.items.isNotEmpty() -> {
                 items(state.items, key = idProvider, itemContent = itemContent, contentType = contentType)
                 state.loadMore?.let { loadMore ->

@@ -1,6 +1,5 @@
 package me.bookk.feature.business.domain.impl.plugin
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
@@ -16,7 +15,6 @@ internal class ObserveAppointmentsPluginEnabledImpl(
     private val pluginDataSource: PluginDataSource
 ) : ObserveAppointmentsPluginEnabled {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(businessId: Uuid): Flow<Boolean> {
         return businessEvents
             .filterIsInstance<BusinessEvent.PluginStateChanged>()

@@ -38,10 +38,24 @@ struct ListGroup<T, S: ListStyle, Header: View, Content: View>:View where T:AnyO
 	}
 	
 	var body: some View {
-		Group {
-			if (!listState.isInitialLoading) {
-				List {
-					header()
+		GeometryReader { geo in
+			List {
+				header()
+				if (listState.items.isEmpty) {
+					ZStack {
+						if let errorState = listState.errorState {
+							ListErrorView(state: errorState)
+						} else if (listState.isInitialLoading) {
+							ProgressView()
+						} else if let emptyState = listState.emptyState {
+							ListEmptyView(state: emptyState)
+						}
+					}
+					.frame(maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
+					.listRowInsets(EdgeInsets())
+					.listRowBackground(Color.clear)
+					.listRowSeparator(.hidden)
+				} else {
 					ForEach(listState.typedItems) { item in
 						content(item)
 							.onAppear {
@@ -51,15 +65,9 @@ struct ListGroup<T, S: ListStyle, Header: View, Content: View>:View where T:AnyO
 							}
 					}
 				}
-				.listStyle(listStyle)
-				.scrollDismissesKeyboard(.immediately)
-			} else {
-				ProgressView()
 			}
-		}.overlay {
-			if let emptyState = listState.emptyState, !listState.isInitialLoading, listState.items.isEmpty {
-				ListEmptyView(state: emptyState)
-			}
+			.listStyle(listStyle)
+			.scrollDismissesKeyboard(.immediately)
 		}
 	}
 }

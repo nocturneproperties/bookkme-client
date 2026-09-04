@@ -4,6 +4,7 @@
     <string name="error_server">Our server ran into an issue. We're on it! Please refresh or come back shortly.</string>
     <string name="error_unexpected">Unexpected error. Contact support if needed.</string>
     <string name="error_empty">Can\'t be empty</string>
+    <string name="error_in_list">Unable to reach the server.\nCheck your internet connection and try again.</string>
 
     <string name="list_empty">List is empty</string>
 
@@ -27,6 +28,7 @@
     <string name="action_decline">Decline</string>
     <string name="action_approve">Approve</string>
     <string name="action_dismiss">Dismiss</string>
+    <string name="action_retry">Retry</string>
 
     <string name="message_delete">Are you sure you want to delete this item?</string>
 

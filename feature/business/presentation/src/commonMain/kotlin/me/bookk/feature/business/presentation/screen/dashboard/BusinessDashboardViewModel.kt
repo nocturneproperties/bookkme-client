@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.retry
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
@@ -43,10 +42,6 @@ class BusinessDashboardViewModel(
                 uiState.appBar.title = business.name.desc()
                 businessId = business.id
                 loadFeatures(business.id)
-            }
-            .retry {
-                uiState.notifications.add(errorMapper.mapToNotification(it))
-                true
             }
             .launchIn(viewModelScope)
     }

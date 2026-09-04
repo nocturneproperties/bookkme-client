@@ -12,5 +12,19 @@ internal class GetAppointmentsForBusinessImpl(
 
     override suspend fun invoke(businessId: Uuid, date: LocalDate): List<Appointment> =
         dataSource.getAppointmentsForDate(businessId, date)
-            .also { dataSource.saveAppointmentsInDB(it) }
+            .also {
+                dataSource.saveAppointmentsInDB(it)
+                dataSource.saveLastSyncedAt(businessId, date)
+            }
+
+    override suspend fun cached(
+        businessId: Uuid,
+        date: LocalDate,
+        onResultAvailable: suspend (List<Appointment>) -> Unit
+    ) {
+        if (dataSource.getLastSyncedAt(businessId, date) != null) {
+            onResultAvailable(dataSource.getAppointmentsForDateFromDb(businessId, date))
+        }
+        onResultAvailable(invoke(businessId, date))
+    }
 }

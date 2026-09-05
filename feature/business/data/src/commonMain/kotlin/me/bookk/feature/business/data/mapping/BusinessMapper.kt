@@ -15,8 +15,10 @@ import me.bookk.feature.business.data.remote.model.BusinessUpdateRemote
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
 import me.bookk.feature.business.data.remote.model.toRemote
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
@@ -36,7 +38,8 @@ internal fun BusinessRemote.toDomain(): Business {
         currency = Currency(currencyCode),
         timeZone = timeZone,
         socials = socials.map(BusinessRemote.Social::toDomain).associateBy { it.kind },
-        schedule = schedule.toDomain()
+        schedule = schedule.toDomain(),
+        permissions = permissions.toDomain()
     )
 }
 
@@ -61,7 +64,22 @@ internal fun Business.toLocal(): BusinessEntity {
         insta = socials[Business.SocialKind.INSTAGRAM]?.value,
         viber = socials[Business.SocialKind.VIBER]?.value,
         whatsApp = socials[Business.SocialKind.WHATSAPP]?.value,
-        telegram = socials[Business.SocialKind.TELEGRAM]?.value
+        telegram = socials[Business.SocialKind.TELEGRAM]?.value,
+        businessPermissionView = permissions.business.view,
+        businessPermissionUpdate = permissions.business.update,
+        businessPermissionDelete = permissions.business.delete,
+        employeesPermissionView = permissions.employees.view,
+        employeesPermissionUpdate = permissions.employees.update,
+        employeesPermissionDelete = permissions.employees.delete,
+        clientsPermissionView = permissions.clients.view,
+        clientsPermissionUpdate = permissions.clients.update,
+        clientsPermissionDelete = permissions.clients.delete,
+        servicesPermissionView = permissions.services.view,
+        servicesPermissionUpdate = permissions.services.update,
+        servicesPermissionDelete = permissions.services.delete,
+        appointmentsPermissionView = permissions.appointments.view,
+        appointmentsPermissionUpdate = permissions.appointments.update,
+        appointmentsPermissionDelete = permissions.appointments.delete
     )
 }
 
@@ -124,6 +142,33 @@ internal fun BusinessLocal.toDomain(): Business {
             dayOffs = dayOffs.map {
                 DayOffRange(start = LocalDate.parse(it.start), end = LocalDate.parse(it.end))
             }
+        ),
+        permissions = BusinessPermissions(
+            business = ResourcePermission(
+                view = entity.businessPermissionView,
+                update = entity.businessPermissionUpdate,
+                delete = entity.businessPermissionDelete
+            ),
+            employees = ResourcePermission(
+                view = entity.employeesPermissionView,
+                update = entity.employeesPermissionUpdate,
+                delete = entity.employeesPermissionDelete
+            ),
+            clients = ResourcePermission(
+                view = entity.clientsPermissionView,
+                update = entity.clientsPermissionUpdate,
+                delete = entity.clientsPermissionDelete
+            ),
+            services = ResourcePermission(
+                view = entity.servicesPermissionView,
+                update = entity.servicesPermissionUpdate,
+                delete = entity.servicesPermissionDelete
+            ),
+            appointments = ResourcePermission(
+                view = entity.appointmentsPermissionView,
+                update = entity.appointmentsPermissionUpdate,
+                delete = entity.appointmentsPermissionDelete
+            )
         )
     )
 }

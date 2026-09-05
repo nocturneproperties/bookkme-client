@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.presentation.screen.list
 
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -22,6 +23,7 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.loadCachedList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
@@ -70,6 +72,7 @@ class AppointmentListViewModel(
         observeCurrentBusinessId()
             .flowOn(DispatcherProvider.io)
             .filterNotNull()
+            .distinctUntilChanged()
             .onEach {
                 businessId = it
                 if (uiState.requestsBusinessId != null) {
@@ -84,13 +87,11 @@ class AppointmentListViewModel(
 
     private fun loadAppointments(businessId: Uuid) {
         val date = uiState.datePicker.pickedDate.orNow()
-        launch(
-            launchIn = DispatcherProvider.io,
-            onStart = { uiState.refresh.isRefreshing = true },
-            call = { getAppointmentsForBusiness(businessId, date) },
+        loadCachedList(
+            listState = uiState.appointments,
+            refreshState = uiState.refresh,
+            call = { getAppointmentsForBusiness.cached(businessId, date, it) },
             onComplete = ::mapItems,
-            onTerminate = { uiState.refresh.isRefreshing = false },
-            onError = { uiState.notifications.add(it.notification()) }
         )
     }
 
@@ -103,13 +104,14 @@ class AppointmentListViewModel(
                 uiState.requestsButton.text =
                     AppointmentsRes.strings.appointments_requests_count.format(it)
             },
-            onError = { uiState.notifications.add(it.notification()) },
+            onError = { /* Silently ignore */ },
             onTerminate = { uiState.requestsButton.stopLoading() }
         )
     }
 
     private fun onNewDateSelected(date: LocalDate) {
         uiState.datePicker.pickedDate = date
+        uiState.appointments.isInitialLoading = true
         loadAppointments(businessId)
         uiState.dates.replace(createDateInfoFrom(date))
     }

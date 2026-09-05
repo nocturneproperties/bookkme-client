@@ -25,9 +25,12 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.clients.domain.api.GetClientsList
+import me.bookk.feature.employees.domain.api.GetEmployees
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.settings.domain.api.GetNotificationSettings
@@ -62,7 +65,14 @@ class LowPriorityDataFetchTest {
         currency = Currency("USD"),
         timeZone = TimeZone.UTC,
         socials = emptyMap(),
-        schedule = WorkingSchedule()
+        schedule = WorkingSchedule(),
+        permissions = BusinessPermissions(
+            business = ResourcePermission(),
+            employees = ResourcePermission(),
+            clients = ResourcePermission(),
+            services = ResourcePermission(),
+            appointments = ResourcePermission()
+        )
     )
 
     private class Fixture {
@@ -71,6 +81,7 @@ class LowPriorityDataFetchTest {
         val getServices = mock<GetServices>()
         val getServiceGroups = mock<GetServiceGroups>()
         val getClientsList = mock<GetClientsList>()
+        val getEmployees = mock<GetEmployees>()
         val getNotificationSettings = mock<GetNotificationSettings>()
         val getAppointmentEnabled = mock<IsAppointmentsPluginEnabled>()
         val getAppointmentSettings = mock<GetAppointmentSettings>()
@@ -81,6 +92,7 @@ class LowPriorityDataFetchTest {
             getServices,
             getServiceGroups,
             getClientsList,
+            getEmployees,
             getNotificationSettings,
             getAppointmentEnabled,
             getAppointmentSettings,
@@ -93,6 +105,7 @@ class LowPriorityDataFetchTest {
         everySuspend { fixture.getServices(business.id) } returns emptyList()
         everySuspend { fixture.getServiceGroups(business.id) } returns emptyList()
         everySuspend { fixture.getClientsList(business.id) } returns emptyList()
+        everySuspend { fixture.getEmployees(business.id) } returns emptyList()
         everySuspend { fixture.getAppointmentEnabled(business.id) } returns true
         everySuspend { fixture.getAppointmentSettings(business.id) } returns AppointmentSettings.stub()
         everySuspend { fixture.updateNotificationToken() } returns Unit
@@ -112,6 +125,7 @@ class LowPriorityDataFetchTest {
         verifySuspend(VerifyMode.exactly(0)) { fixture.getServices(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getServiceGroups(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getClientsList(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getEmployees(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentEnabled(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentSettings(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.updateNotificationToken() }
@@ -147,6 +161,7 @@ class LowPriorityDataFetchTest {
         verifySuspend { fixture.getServices(business.id) }
         verifySuspend { fixture.getServiceGroups(business.id) }
         verifySuspend { fixture.getClientsList(business.id) }
+        verifySuspend { fixture.getEmployees(business.id) }
         verifySuspend { fixture.getAppointmentEnabled(business.id) }
         verifySuspend { fixture.getAppointmentSettings(business.id) }
         verifySuspend { fixture.updateNotificationToken() }

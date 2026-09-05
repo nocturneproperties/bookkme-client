@@ -13,7 +13,8 @@ data class Business(
     val currency: Currency,
     val timeZone: TimeZone,
     val socials: Map<SocialKind, Social>,
-    val schedule: WorkingSchedule
+    val schedule: WorkingSchedule,
+    val permissions: BusinessPermissions
 ) {
     data class Update(
         val id: Uuid,

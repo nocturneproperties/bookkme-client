@@ -14,7 +14,7 @@ internal class EmployeeInvitationRemote(
     @ProtoNumber(1) val id: Uuid,
     @ProtoNumber(2) val businessId: Uuid,
     @ProtoNumber(3) val invitedBy: Uuid,
-    @ProtoNumber(4) val email: String,
+    @ProtoNumber(4) val code: String?,
     @ProtoNumber(5) val status: EmployeeInvitationStatusRemote,
     @ProtoNumber(6) val createdAt: Instant
 ) {
@@ -22,7 +22,7 @@ internal class EmployeeInvitationRemote(
         id = id,
         businessId = businessId,
         invitedBy = invitedBy,
-        email = email,
+        code = code,
         status = status.toDomain(),
         createdAt = createdAt.toLocalDateTime(TimeZone.currentSystemDefault())
     )
@@ -31,21 +31,19 @@ internal class EmployeeInvitationRemote(
 @Serializable
 internal enum class EmployeeInvitationStatusRemote {
     PENDING,
-    APPROVED,
-    REJECTED,
+    REDEEMED,
     EXPIRED,
     REVOKED;
 
     fun toDomain() = when (this) {
         PENDING -> EmployeeInvitationStatus.PENDING
-        APPROVED -> EmployeeInvitationStatus.APPROVED
-        REJECTED -> EmployeeInvitationStatus.REJECTED
+        REDEEMED -> EmployeeInvitationStatus.REDEEMED
         EXPIRED -> EmployeeInvitationStatus.EXPIRED
         REVOKED -> EmployeeInvitationStatus.REVOKED
     }
 }
 
 @Serializable
-internal class EmployeeInvitationRequestRemote(
-    @ProtoNumber(1) val email: String
+internal class EmployeeInvitationRedeemRequest(
+    @ProtoNumber(1) val code: String
 )

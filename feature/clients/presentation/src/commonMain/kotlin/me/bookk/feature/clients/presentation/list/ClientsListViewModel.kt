@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.capitalizeChar
-import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.loadCachedList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -40,9 +40,9 @@ class ClientsListViewModel(
     }
 
     private fun loadClients() {
-        launchCached(
-            launchIn = DispatcherProvider.io,
-            onStart = { uiState.refreshState.isRefreshing = true },
+        loadCachedList(
+            listState = uiState.clientsList,
+            refreshState = uiState.refreshState,
             call = { getClientsList.cached(args.businessId, it) },
             onComplete = {
                 val grouped = it
@@ -59,11 +59,6 @@ class ClientsListViewModel(
                 items = grouped
                 uiState.clientsList.replace(grouped)
             },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = {
-                uiState.refreshState.isRefreshing = false
-                uiState.clientsList.isInitialLoading = false
-            }
         )
     }
 

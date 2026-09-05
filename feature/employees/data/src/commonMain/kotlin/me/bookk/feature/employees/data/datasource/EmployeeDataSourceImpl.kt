@@ -13,6 +13,9 @@ import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.EmployeeDao
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.BusinessResource
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.employees.data.mapping.toDayOffEntities
 import me.bookk.feature.employees.data.mapping.toDayScheduleEntities
 import me.bookk.feature.employees.data.mapping.toDomain
@@ -20,9 +23,11 @@ import me.bookk.feature.employees.data.mapping.toEntity
 import me.bookk.feature.employees.data.mapping.toServiceSnapshotEntities
 import me.bookk.feature.employees.data.mapping.toWorkHourEntities
 import me.bookk.feature.employees.data.remote.api.EmployeeRouting.Api
+import me.bookk.feature.employees.data.remote.model.BusinessPermissionsRemote
 import me.bookk.feature.employees.data.remote.model.EmployeeRemote
 import me.bookk.feature.employees.data.remote.model.EmployeeRoleRemote
 import me.bookk.feature.employees.data.remote.model.PromoteEmployeeRequestRemote
+import me.bookk.feature.employees.data.remote.model.ResourcePermissionRemote
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.api.entity.EmployeeRole
 import me.bookk.feature.employees.domain.datasource.EmployeeDataSource
@@ -95,4 +100,29 @@ internal class EmployeeDataSourceImpl(
             }
         }
     }
+
+    override suspend fun getEmployeePermissions(businessId: Uuid, id: Uuid): BusinessPermissions = mapExceptions {
+        val employeeId = Api.Employee.Id(Api.Employee(businessId = businessId), id)
+        httpClient.get(Api.Employee.Id.Permissions(employeeId))
+            .body<BusinessPermissionsRemote>()
+            .toDomain()
+    }
+
+    override suspend fun setEmployeePermission(
+        businessId: Uuid,
+        id: Uuid,
+        resource: BusinessResource,
+        permission: ResourcePermission
+    ): BusinessPermissions = mapExceptions {
+        val employeeId = Api.Employee.Id(Api.Employee(businessId = businessId), id)
+        val permissions = Api.Employee.Id.Permissions(employeeId)
+        httpClient.put(Api.Employee.Id.Permissions.Grant(permissions, resource.wireValue)) {
+            setBody(ResourcePermissionRemote.fromDomain(permission))
+        }
+            .body<BusinessPermissionsRemote>()
+            .toDomain()
+    }
+
+    private val BusinessResource.wireValue: String
+        get() = name.lowercase()
 }

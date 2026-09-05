@@ -1,9 +1,12 @@
 package library.device.impl
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
+import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import library.device.api.DeviceFacade
 import me.bookk.core.Logger
@@ -56,5 +59,10 @@ class AndroidDeviceFacade(
             .addFlags(FLAG_ACTIVITY_NEW_TASK)
         runCatching { appContext.startActivity(Intent.createChooser(intent, "Chooser Title")) }
             .onFailure { logger.e(it) }
+    }
+
+    override fun copyToClipboard(text: String) {
+        val clipboardManager = appContext.getSystemService<ClipboardManager>()
+        clipboardManager?.setPrimaryClip(ClipData.newPlainText(text, text))
     }
 }

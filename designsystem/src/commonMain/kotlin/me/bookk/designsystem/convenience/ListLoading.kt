@@ -1,0 +1,38 @@
+package me.bookk.designsystem.convenience
+
+import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.presentation.ViewModel
+import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.uistate.ListState
+import me.bookk.designsystem.uistate.RefreshState
+import me.bookk.designsystem.uistate.simple.ErrorState
+
+fun <T, Data>  ViewModel.loadCachedList(
+    listState: ListState<T>,
+    refreshState: RefreshState? = null,
+    call: suspend (suspend (Data) -> Unit) -> Unit,
+    onComplete: (suspend (Data) -> Unit),
+) {
+    launchCached(
+        launchIn = DispatcherProvider.io,
+        onStart = {
+            refreshState?.isRefreshing = true
+            listState.errorState = null
+        },
+        call = { call(it) },
+        onComplete = {
+            listState.isInitialLoading = false
+            onComplete(it)
+        },
+        onTerminate = { refreshState?.isRefreshing = false },
+        onError = {
+            if (listState.isInitialLoading) {
+                listState.errorState = ErrorState.default(
+                    onRetryClick = weakVMClosure {
+                        it.loadCachedList(listState, refreshState, call, onComplete)
+                    }
+                )
+            }
+        }
+    )
+}

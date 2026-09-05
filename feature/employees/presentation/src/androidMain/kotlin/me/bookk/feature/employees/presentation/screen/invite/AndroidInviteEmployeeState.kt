@@ -11,20 +11,17 @@ import me.bookk.designsystem.uistate.AndroidListState
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidRefreshState
-import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.ListState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.RefreshState
-import me.bookk.designsystem.uistate.TextFieldState
 
 internal class AndroidInviteEmployeeState : InviteEmployeeState {
     override val appBar: AppBarState = AndroidAppBarState()
     override var descriptionText: StringDesc by mutableStateOf("".desc())
-    override val emailField: TextFieldState = AndroidTextFieldState()
-    override val sendButton: ButtonState = AndroidButtonState()
+    override val generateCodeButton: ButtonState = AndroidButtonState()
     override var invitationsHeader: StringDesc by mutableStateOf("".desc())
     override val invitationsList: ListState<InvitationItem> = AndroidListState()
     override val refreshState: RefreshState = AndroidRefreshState()

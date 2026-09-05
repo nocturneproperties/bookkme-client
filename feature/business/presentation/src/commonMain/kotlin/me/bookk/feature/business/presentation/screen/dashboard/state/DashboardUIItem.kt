@@ -3,6 +3,7 @@ package me.bookk.feature.business.presentation.screen.dashboard.state
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.business.resources.BusinessRes
+import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 import kotlin.uuid.Uuid
 
@@ -15,18 +16,28 @@ sealed class BusinessDashboardSection(
     val title: StringDesc,
     val items: List<DashboardUIItem>
 ) {
-    data class Business(
-        val id: Uuid
+    class Business(
+        id: Uuid,
+        features: Set<DashboardFeature>,
+        items: List<DashboardUIItem> = buildList {
+            if (features.contains(DashboardFeature.EMPLOYEES)) {
+                add(Employees(id))
+            }
+            if (features.contains(DashboardFeature.CLIENTS)) {
+                add(Clients(id))
+            }
+            if (features.contains(DashboardFeature.SERVICES)) {
+                add(Services(id))
+            }
+            if (features.contains(DashboardFeature.BUSINESS)) {
+                add(Analytics)
+                add(Settings(id))
+                add(Plugins(id))
+            }
+        }
     ) : BusinessDashboardSection(
         BusinessRes.strings.business_dashboard_business.desc(),
-        listOf(
-            Employees(id),
-            Clients(id),
-            Services(id),
-            Analytics,
-            Settings(id),
-            Plugins(id)
-        )
+        items
     ) {
         data class Employees(val id: Uuid) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_employees.desc(),

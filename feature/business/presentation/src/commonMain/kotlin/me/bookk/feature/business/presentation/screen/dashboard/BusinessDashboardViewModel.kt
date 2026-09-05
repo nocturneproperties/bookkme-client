@@ -1,11 +1,11 @@
 package me.bookk.feature.business.presentation.screen.dashboard
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.retry
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
@@ -37,43 +37,49 @@ class BusinessDashboardViewModel(
         observeDashboardBusinessChanges()
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
+            .distinctUntilChanged()
             .onEach { business ->
                 uiState.appBar.title = business.name.desc()
                 businessId = business.id
                 loadFeatures(business.id)
-            }
-            .retry {
-                uiState.notifications.add(errorMapper.mapToNotification(it))
-                true
             }
             .launchIn(viewModelScope)
     }
 
     private fun observeEvents() {
         listenFor<BusinessEvent.PluginStateChanged> {
-            loadFeatures(businessId)
+            refreshFeatures(businessId)
         }.launchIn(viewModelScope)
     }
 
     private fun loadFeatures(businessId: Uuid) {
+        launchCached(
+            launchIn = DispatcherProvider.io,
+            call = { getAvailableDashboardFeatures.cached(businessId, it) },
+            onComplete = { features -> applyFeatures(businessId, features) },
+            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
+        )
+    }
+
+    private fun refreshFeatures(businessId: Uuid) {
         launch(
             launchIn = DispatcherProvider.io,
             call = { getAvailableDashboardFeatures() },
-            onComplete = { features ->
-                val sectionList = buildList {
-                    if (features.contains(DashboardFeature.BUSINESS)) {
-                        add(BusinessDashboardSection.Business(businessId))
-                    }
-                    if (features.contains(DashboardFeature.APPOINTMENTS)) {
-                        add(BusinessDashboardSection.Appointments(businessId))
-                    }
-                    if (features.contains(DashboardFeature.SHOP)) {
-                        add(BusinessDashboardSection.Shop())
-                    }
-                }
-                uiState.updateSections(sectionList)
-            },
+            onComplete = { features -> applyFeatures(businessId, features) },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
         )
+    }
+
+    private fun applyFeatures(businessId: Uuid, features: Set<DashboardFeature>) {
+        val sectionList = buildList {
+            add(BusinessDashboardSection.Business(businessId, features))
+            if (features.contains(DashboardFeature.APPOINTMENTS)) {
+                add(BusinessDashboardSection.Appointments(businessId))
+            }
+            if (features.contains(DashboardFeature.SHOP)) {
+                add(BusinessDashboardSection.Shop())
+            }
+        }
+        uiState.updateSections(sectionList)
     }
 }

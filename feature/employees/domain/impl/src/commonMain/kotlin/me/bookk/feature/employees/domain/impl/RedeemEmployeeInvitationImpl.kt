@@ -1,18 +1,17 @@
 package me.bookk.feature.employees.domain.impl
 
 import me.bookk.core.domain.entity.onBusinessError
-import me.bookk.feature.employees.domain.api.ApproveEmployeeInvitation
-import me.bookk.feature.employees.domain.api.ApproveEmployeeInvitation.Error
+import me.bookk.feature.employees.domain.api.RedeemEmployeeInvitation
+import me.bookk.feature.employees.domain.api.RedeemEmployeeInvitation.Error
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.datasource.EmployeeErrorCodes
 import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
-import kotlin.uuid.Uuid
 
-internal class ApproveEmployeeInvitationImpl(
+internal class RedeemEmployeeInvitationImpl(
     private val dataSource: EmployeeInvitationDataSource
-) : ApproveEmployeeInvitation {
-    override suspend fun invoke(businessId: Uuid, id: Uuid): Employee = runCatching {
-        dataSource.approveInvitation(businessId, id)
+) : RedeemEmployeeInvitation {
+    override suspend fun invoke(code: String): Employee = runCatching {
+        dataSource.redeemInvitation(code)
     }.onBusinessError { error ->
         when (error.errorCode) {
             EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED -> throw Error.AlreadyProcessed(error)

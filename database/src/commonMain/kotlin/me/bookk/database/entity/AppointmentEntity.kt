@@ -26,6 +26,6 @@ class AppointmentEntity(
     val cancellationReason: String,
     val clientId: Uuid,
     val clientFullName: String,
-    val clientPhone: String,
-    val clientEmail: String
+    val clientPhone: String?,
+    val clientEmail: String?
 )

@@ -8,4 +8,5 @@ interface DeviceFacade {
     fun openMapAt(lat: Double, lng: Double)
     fun dial(number: String)
     fun mail(email: String)
+    fun copyToClipboard(text: String)
 }

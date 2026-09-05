@@ -1,5 +1,6 @@
 package me.bookk.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -15,5 +16,8 @@ class AppointmentSettingsEntity(
     val timeZone: String,
     val automaticApproval: Boolean,
     val inBetweenBreakInMinutes: Int,
-    val appointmentNote: String
+    val appointmentNote: String,
+    @ColumnInfo(defaultValue = "0") val permissionView: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val permissionUpdate: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val permissionDelete: Boolean = false
 )

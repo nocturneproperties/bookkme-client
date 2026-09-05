@@ -10,6 +10,7 @@ import me.bookk.core.data.TimeZoneSerializer
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.uuid.Uuid
@@ -33,7 +34,8 @@ data class AppointmentSettingsRemote(
     @ProtoNumber(4) val schedule: WorkingScheduleRemote,
     @ProtoNumber(5) val automaticApproval: Boolean,
     @ProtoNumber(6) val inBetweenBreakInMinutes: Int,
-    @ProtoNumber(7) val appointmentNote: String
+    @ProtoNumber(7) val appointmentNote: String,
+    @ProtoNumber(8) val permissions: ResourcePermissionRemote
 ) {
     fun toDomain() = AppointmentSettings(
         id = id,
@@ -42,8 +44,18 @@ data class AppointmentSettingsRemote(
         schedule = schedule.toDomain(),
         automaticApproval = automaticApproval,
         inBetweenBreakInMinutes = inBetweenBreakInMinutes,
-        appointmentNote = appointmentNote
+        appointmentNote = appointmentNote,
+        permissions = permissions.toDomain()
     )
+}
+
+@Serializable
+data class ResourcePermissionRemote(
+    @ProtoNumber(1) val view: Boolean = false,
+    @ProtoNumber(2) val update: Boolean = false,
+    @ProtoNumber(3) val delete: Boolean = false
+) {
+    fun toDomain() = ResourcePermission(view = view, update = update, delete = delete)
 }
 
 @Serializable

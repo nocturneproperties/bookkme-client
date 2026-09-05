@@ -23,6 +23,7 @@ import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
 import kotlin.uuid.Uuid
@@ -89,7 +90,7 @@ private fun PreviewDark() {
         DashboardScreen(
             state = AndroidDashboardState().apply {
                 appBar.title = "Business name".desc()
-                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random()), BusinessDashboardSection.Appointments(Uuid.random()), BusinessDashboardSection.Shop()))
+                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random(), setOf(DashboardFeature.EMPLOYEES, DashboardFeature.CLIENTS, DashboardFeature.SERVICES, DashboardFeature.BUSINESS)), BusinessDashboardSection.Appointments(Uuid.random()), BusinessDashboardSection.Shop()))
             }
         )
     }
@@ -102,7 +103,7 @@ private fun PreviewLight() {
         DashboardScreen(
             state = AndroidDashboardState().apply {
                 appBar.title = "Business name".desc()
-                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random()), BusinessDashboardSection.Appointments(Uuid.random()), BusinessDashboardSection.Shop()))
+                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random(), setOf(DashboardFeature.EMPLOYEES, DashboardFeature.CLIENTS, DashboardFeature.SERVICES, DashboardFeature.BUSINESS)), BusinessDashboardSection.Appointments(Uuid.random()), BusinessDashboardSection.Shop()))
             }
         )
     }

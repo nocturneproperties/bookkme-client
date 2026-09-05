@@ -3,10 +3,10 @@ package me.bookk.feature.employees.presentation.screen.list
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.capitalizeChar
-import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.loadCachedList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -30,9 +30,9 @@ class EmployeeListViewModel(
     }
 
     private fun loadEmployees() {
-        launchCached(
-            launchIn = DispatcherProvider.io,
-            onStart = { uiState.refreshState.isRefreshing = true },
+        loadCachedList(
+            listState = uiState.employeesList,
+            refreshState = uiState.refreshState,
             call = { getEmployees.cached(businessId, it) },
             onComplete = {
                 val grouped = it
@@ -42,11 +42,6 @@ class EmployeeListViewModel(
                 items = grouped
                 uiState.employeesList.replace(grouped)
             },
-            onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = {
-                uiState.refreshState.isRefreshing = false
-                uiState.employeesList.isInitialLoading = false
-            }
         )
     }
 

@@ -25,7 +25,7 @@ class EmployeeInvitationEntity(
     val id: Uuid,
     val businessId: Uuid,
     val invitedBy: Uuid,
-    val email: String,
+    val code: String?,
     val status: String,
     val createdAt: Instant
 )

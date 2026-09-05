@@ -29,6 +29,8 @@ import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAcco
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
 import me.bookk.feature.authorization.domain.entity.TokenInfo
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 class CommonAuthorizationDataSource(
     private val httpClient: HttpClient,
@@ -104,9 +106,18 @@ class CommonAuthorizationDataSource(
         httpClient.authProvider<BearerAuthProvider>()?.clearToken()
     }
 
+    override suspend fun getLastInitialDataFetchAt(): Instant? {
+        return preferences.get(Key.lastInitialDataFetchAt)?.let { Instant.fromEpochMilliseconds(it) }
+    }
+
+    override suspend fun saveLastInitialDataFetchAt() {
+        preferences.set(Key.lastInitialDataFetchAt, Clock.System.now().toEpochMilliseconds())
+    }
+
     private object Key {
         val accessToken = Preferences.Key<String>("access_token")
         val refreshToken = Preferences.Key<String>("refresh_token")
         val authorized = Preferences.Key<Boolean>("authorized")
+        val lastInitialDataFetchAt = Preferences.Key<Long>("last_initial_data_fetch_at")
     }
 }

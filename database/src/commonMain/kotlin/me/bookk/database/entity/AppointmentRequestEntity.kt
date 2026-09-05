@@ -24,6 +24,6 @@ class AppointmentRequestEntity(
     val declineReason: String,
     val clientId: Uuid,
     val clientFullName: String,
-    val clientPhone: String,
-    val clientEmail: String
+    val clientPhone: String?,
+    val clientEmail: String?
 )

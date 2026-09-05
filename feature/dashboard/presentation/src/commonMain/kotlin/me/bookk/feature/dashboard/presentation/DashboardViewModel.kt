@@ -1,6 +1,7 @@
 package me.bookk.feature.dashboard.presentation
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -57,6 +58,7 @@ class DashboardViewModel(
                     observeAppointmentsPluginEnabled(id)
                         .map { enabled -> id to (if (enabled) HomeContent.ActivePlugin else HomeContent.Onboarding) }
                         .onStart { emit(id to HomeContent.Loading) }
+                        .catch {}
                 } else {
                     flowOf(id to HomeContent.Onboarding)
                 }

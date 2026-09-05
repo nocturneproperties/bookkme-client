@@ -12,6 +12,7 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.loadCachedList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -54,11 +55,10 @@ class AppointmentRequestViewModel(
     }
 
     private fun loadRequests() {
-        launchCached(
-            launchIn = DispatcherProvider.io,
+        loadCachedList(
+            listState = uiState.requests,
             call = { getAppointmentRequests.cached(businessId, it) },
             onComplete = { uiState.requests.replace(it.map(::createRequestItemState)) },
-            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 

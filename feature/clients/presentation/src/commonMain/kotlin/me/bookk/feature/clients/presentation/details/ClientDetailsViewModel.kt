@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.clients.resources.ClientsRes
+import me.bookk.core.dashOnBlank
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
@@ -47,24 +48,24 @@ class ClientDetailsViewModel(
         launch(
             launchIn = Dispatchers.Default,
             call = { getClient(id) },
-            onComplete = {
-                client = it
-                uiState.appBar.title = it.fullName.desc()
+            onComplete = { loadedClient ->
+                client = loadedClient
+                uiState.appBar.title = loadedClient.fullName.desc()
                 uiState.infoSections.replace(
                     listOf(
                         InfoLine(
                             title = ClientsRes.strings.clients_create_phone,
-                            value = it.phone,
-                            onClick = { device.dial(it.phone) }
+                            value = loadedClient.phone.dashOnBlank(),
+                            onClick = { loadedClient.phone?.let { device.dial(it) } }
                         ),
                         InfoLine(
                             title = ClientsRes.strings.clients_create_email,
-                            value = it.email.ifBlank { "-" },
-                            onClick = { device.mail(it.email) }
+                            value = loadedClient.email.dashOnBlank(),
+                            onClick = { loadedClient.email?.let { device.mail(it) } }
                         ),
                         InfoLine(
                             title = ClientsRes.strings.clients_details_description,
-                            value = it.description?.ifBlank { "-" } ?: "-"
+                            value = loadedClient.description.dashOnBlank()
                         )
                     )
                 )

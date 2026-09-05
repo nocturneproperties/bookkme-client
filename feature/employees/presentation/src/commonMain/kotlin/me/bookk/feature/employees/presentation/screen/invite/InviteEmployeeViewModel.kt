@@ -2,7 +2,7 @@ package me.bookk.feature.employees.presentation.screen.invite
 
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
-import library.validation.api.ValidateEmail
+import library.device.api.DeviceFacade
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -13,11 +13,9 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.loadCachedList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
-import me.bookk.designsystem.uistate.InputType
-import me.bookk.designsystem.uistate.clearError
-import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
@@ -35,7 +33,7 @@ class InviteEmployeeViewModel(
     private val createEmployeeInvitation: CreateEmployeeInvitation,
     private val getEmployeeInvitations: GetEmployeeInvitations,
     private val revokeEmployeeInvitation: RevokeEmployeeInvitation,
-    private val validateEmail: ValidateEmail,
+    private val device: DeviceFacade,
     private val dateLocalizer: DateLocalizer,
     stateFactory: EmployeesStateFactory,
     vmArgs: VmArgs
@@ -48,9 +46,9 @@ class InviteEmployeeViewModel(
     }
 
     private fun loadInvitations() {
-        launchCached(
-            launchIn = DispatcherProvider.io,
-            onStart = { uiState.refreshState.isRefreshing = true },
+        loadCachedList(
+            listState = uiState.invitationsList,
+            refreshState = uiState.refreshState,
             call = { getEmployeeInvitations.cached(businessId, it) },
             onComplete = {
                 val items = it
@@ -58,58 +56,38 @@ class InviteEmployeeViewModel(
                     .map { invitation -> invitation.toItem() }
                 uiState.invitationsList.replace(items)
             },
-            onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = {
-                uiState.refreshState.isRefreshing = false
-                uiState.invitationsList.isInitialLoading = false
-            }
         )
     }
 
-    private fun onEmailChanged(text: String) {
-        uiState.emailField.text = text
-        uiState.emailField.clearError()
-        uiState.sendButton.isEnabled = text.isNotBlank()
-    }
-
-    private fun onSendInvite() {
-        val email = uiState.emailField.text
-        if (validateEmail(email) !is ValidateEmail.Result.Valid) {
-            uiState.emailField.showError(EmployeesRes.strings.employees_invite_email_invalid.desc())
-            return
-        }
+    private fun onGenerateCode() {
         launch(
             launchIn = DispatcherProvider.io,
-            onStart = { uiState.sendButton.startLoading() },
-            call = { createEmployeeInvitation(businessId, email) },
+            onStart = { uiState.generateCodeButton.startLoading() },
+            call = { createEmployeeInvitation(businessId) },
             onComplete = {
-                uiState.emailField.text = ""
-                uiState.sendButton.isEnabled = false
+                it.code?.let { code -> copyCodeToClipboard(code) }
                 loadInvitations()
             },
-            onError = {
-                when (it) {
-                    is CreateEmployeeInvitation.Error.InvitationExists ->
-                        uiState.emailField.showError(EmployeesRes.strings.employees_invite_error_exists.desc())
-
-                    is CreateEmployeeInvitation.Error.EmployeeExists ->
-                        uiState.emailField.showError(EmployeesRes.strings.employees_invite_error_employee_exists.desc())
-
-                    is CreateEmployeeInvitation.Error.ValidationError ->
-                        uiState.emailField.showError(EmployeesRes.strings.employees_invite_email_invalid.desc())
-
-                    else -> uiState.notifications.add(it.notification())
-                }
-            },
-            onTerminate = { uiState.sendButton.stopLoading(enable = false) }
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.generateCodeButton.stopLoading() }
         )
     }
 
-    private fun onRevokeInvitationLongPress(id: Uuid, email: String) {
+    private fun copyCodeToClipboard(code: String) {
+        device.copyToClipboard(code)
+        uiState.notifications.add(
+            PresentationNotification.GlobalMessage(
+                text = EmployeesRes.strings.employees_invite_code_copied.desc(),
+                state = PresentationNotification.GlobalMessage.State.SUCCESS
+            )
+        )
+    }
+
+    private fun onRevokeInvitationClick(id: Uuid) {
         uiState.notifications.add(
             PresentationNotification.Message(
                 title = EmployeesRes.strings.employees_invite_revoke_dialog_title.desc(),
-                message = EmployeesRes.strings.employees_invite_revoke_dialog_message.format(email),
+                message = EmployeesRes.strings.employees_invite_revoke_dialog_message.desc(),
                 buttons = listOf(
                     ButtonDescriptor(text = DesignSystem.strings.action_cancel.desc()),
                     ButtonDescriptor(
@@ -146,14 +124,13 @@ class InviteEmployeeViewModel(
         val formatter = dateLocalizer.forStyle(DateStyle.D_MMM_YYYY_RELATIVE)
         return InvitationItem(
             id = id,
-            initials = email.substringBefore("@").take(2).uppercase(),
-            email = email,
-            sentOn = EmployeesRes.strings.employees_invite_sent_on.format(
+            code = MaskedInvitationCode,
+            createdOn = EmployeesRes.strings.employees_invite_created_on.format(
                 formatter.format(createdAt.date, relative = true)
             ),
             status = UIInvitationStatus(status),
-            onLongPress = if (status == EmployeeInvitationStatus.PENDING) {
-                weakVMClosure { it.onRevokeInvitationLongPress(id, email) }
+            onClick = if (status == EmployeeInvitationStatus.PENDING) {
+                weakVMClosure { it.onRevokeInvitationClick(id) }
             } else {
                 null
             }
@@ -166,13 +143,9 @@ class InviteEmployeeViewModel(
 
         descriptionText = EmployeesRes.strings.employees_invite_description.desc()
 
-        emailField.placeholder = EmployeesRes.strings.employees_invite_email_placeholder.desc()
-        emailField.inputType = InputType.EMAIL
-        emailField.onTextChanged = weakVMClosure { vm, text -> vm.onEmailChanged(text) }
-
-        sendButton.text = EmployeesRes.strings.employees_invite_send_button.desc()
-        sendButton.isEnabled = false
-        sendButton.onClick = weakVMClosure { it.onSendInvite() }
+        generateCodeButton.text = EmployeesRes.strings.employees_invite_generate_button.desc()
+        generateCodeButton.isEnabled = true
+        generateCodeButton.onClick = weakVMClosure { it.onGenerateCode() }
 
         invitationsHeader = EmployeesRes.strings.employees_invite_invitations_header.desc()
         refreshState.onRefresh = weakVMClosure { it.loadInvitations() }

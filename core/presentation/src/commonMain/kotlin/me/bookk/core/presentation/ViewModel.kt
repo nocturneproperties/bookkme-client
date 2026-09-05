@@ -21,7 +21,7 @@ expect abstract class ViewModel(
 
     protected fun onCleared()
 
-    protected fun <Output> launch(
+    fun <Output> launch(
         key: String? = null,
         launchBehaviour: LaunchBehaviour = LaunchBehaviour.DropOldest,
         launchIn: CoroutineContext,
@@ -32,7 +32,7 @@ expect abstract class ViewModel(
         onTerminate: (suspend () -> Unit)? = null,
     ): Job?
 
-    protected fun <Output> launchCached(
+    fun <Output> launchCached(
         key: String? = null,
         launchBehaviour: LaunchBehaviour = LaunchBehaviour.DropOldest,
         launchIn: CoroutineContext,

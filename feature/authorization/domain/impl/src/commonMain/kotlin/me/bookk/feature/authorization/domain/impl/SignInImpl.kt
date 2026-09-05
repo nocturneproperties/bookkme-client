@@ -28,7 +28,7 @@ internal class SignInImpl(
         val tokenInfo = verifyAuthorization(challenge, payload)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
         authorizationDataSource.invalidateClientTokens()
-        initialAppDataFetch()
+        initialAppDataFetch(ignoreLastFetchTimestamp = true)
         authorizationDataSource.setAuthorizationStatus(true)
     }
 

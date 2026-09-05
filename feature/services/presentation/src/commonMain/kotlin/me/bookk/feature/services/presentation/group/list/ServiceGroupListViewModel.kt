@@ -8,6 +8,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.loadCachedList
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
@@ -37,10 +38,10 @@ class ServiceGroupListViewModel(
     }
 
     private fun loadServiceGroups() {
-        launchCached(
-            launchIn = DispatcherProvider.io,
+        loadCachedList(
+            listState = uiState.groups,
+            refreshState = uiState.refreshState,
             call = { getServiceGroups.cached(businessId, it) },
-            onStart = { uiState.refreshState.isRefreshing = true },
             onComplete = { services ->
                 groups = services.map { group ->
                     group.ui(
@@ -50,8 +51,6 @@ class ServiceGroupListViewModel(
                 }
                 uiState.groups.replace(groups)
             },
-            onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.refreshState.isRefreshing = false }
         )
     }
 

@@ -4,7 +4,6 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
-import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -14,18 +13,18 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.feature.employees.domain.api.RejectEmployeeInvitation
+import me.bookk.feature.employees.domain.api.RedeemEmployeeInvitation
 import me.bookk.feature.employees.domain.datasource.EmployeeErrorCodes
 import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.uuid.Uuid
 import me.bookk.core.domain.entity.Error as DomainError
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class RejectEmployeeInvitationImplTest {
+class RedeemEmployeeInvitationImplTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -41,37 +40,51 @@ class RejectEmployeeInvitationImplTest {
 
     private class Fixture {
         val dataSource = mock<EmployeeInvitationDataSource>()
-        val sut = RejectEmployeeInvitationImpl(dataSource)
+        val sut = RedeemEmployeeInvitationImpl(dataSource)
     }
 
     @Test
-    fun `rejects invitation through datasource`() = runUnitTest {
+    fun `returns created employee from datasource`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val id = Uuid.random()
-        everySuspend { fixture.dataSource.rejectInvitation(businessId, id) } returns Unit
+        val code = "ABCD1234"
+        val employee = stubEmployee()
+        everySuspend { fixture.dataSource.redeemInvitation(code) } returns employee
 
         whenn()
-        fixture.sut(businessId, id)
+        val result = fixture.sut(code)
 
         then()
-        verifySuspend { fixture.dataSource.rejectInvitation(businessId, id) }
+        assertEquals(employee, result)
     }
 
     @Test
     fun `throws AlreadyProcessed on BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val id = Uuid.random()
-        everySuspend { fixture.dataSource.rejectInvitation(businessId, id) } throws
+        val code = "ABCD1234"
+        everySuspend { fixture.dataSource.redeemInvitation(code) } throws
             DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED, "msg")
 
         whenn()
         then()
-        assertFailsWith<RejectEmployeeInvitation.Error.AlreadyProcessed> {
-            fixture.sut(businessId, id)
+        assertFailsWith<RedeemEmployeeInvitation.Error.AlreadyProcessed> {
+            fixture.sut(code)
+        }
+    }
+
+    @Test
+    fun `throws EmployeeExists on BUSINESS_EMPLOYEE_EXISTS`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val code = "ABCD1234"
+        everySuspend { fixture.dataSource.redeemInvitation(code) } throws
+            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEE_EXISTS, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<RedeemEmployeeInvitation.Error.EmployeeExists> {
+            fixture.sut(code)
         }
     }
 }

@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.domain.api.entity
 
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -13,7 +14,8 @@ data class AppointmentSettings(
     val schedule: WorkingSchedule,
     val automaticApproval: Boolean,
     val inBetweenBreakInMinutes: Int,
-    val appointmentNote: String
+    val appointmentNote: String,
+    val permissions: ResourcePermission
 ) {
     companion object {
         fun stub(businessId: Uuid = Uuid.random()) = AppointmentSettings(businessId = businessId)
@@ -26,7 +28,8 @@ data class AppointmentSettings(
         schedule = WorkingSchedule(),
         automaticApproval = false,
         inBetweenBreakInMinutes = 10,
-        appointmentNote = ""
+        appointmentNote = "",
+        permissions = ResourcePermission()
     )
 
     fun isInWorkday(date: Instant): Boolean {

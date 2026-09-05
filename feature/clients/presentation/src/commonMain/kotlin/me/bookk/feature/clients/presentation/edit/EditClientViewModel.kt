@@ -52,19 +52,19 @@ class EditClientViewModel(
             call = { getClient(id) },
             onComplete = {
                 client = it
-                uiState.isAttachedInfoVisible = it !is Client.Integrated
-                uiState.name.enabled = it !is Client.Detached
-                uiState.lastName.enabled = it !is Client.Detached
-                uiState.phone.enabled = it !is Client.Detached
-                uiState.email.enabled = it !is Client.Detached
+                uiState.isAttachedInfoVisible = it is Client.Integrated
+                uiState.name.enabled = it is Client.Detached
+                uiState.lastName.enabled = it is Client.Detached
+                uiState.phone.enabled = it is Client.Detached
+                uiState.email.enabled = it is Client.Detached
                 uiState.name.text = it.name
                 uiState.name.isValid = validateName(it.name).isValid
                 uiState.lastName.text = it.lastName
                 uiState.lastName.isValid = it.lastName.length > 1
-                uiState.phone.text = it.phone
-                uiState.phone.isValid = it.phone.length > 4
-                uiState.email.text = it.email
-                uiState.email.isValid = it.email.isEmpty() || validateEmail(it.email).isValid
+                uiState.phone.text = it.phone.orEmpty()
+                uiState.phone.isValid = it.phone.orEmpty().length > 4
+                uiState.email.text = it.email.orEmpty()
+                uiState.email.isValid = it.email.orEmpty().isEmpty() || validateEmail(it.email.orEmpty()).isValid
                 uiState.description.text = it.description.orEmpty()
                 invalidateButton()
             },

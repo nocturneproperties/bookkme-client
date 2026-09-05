@@ -2,6 +2,7 @@ package me.bookk.feature.authorization.domain.datasource.authorization
 
 import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.authorization.domain.entity.TokenInfo
+import kotlin.time.Instant
 
 interface AuthorizationDataSource {
     suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?)
@@ -14,4 +15,6 @@ interface AuthorizationDataSource {
     suspend fun deleteAccount(request: DeleteAccountRequest)
     suspend fun setAuthorizationStatus(isAuthorized: Boolean)
     suspend fun invalidateClientTokens()
+    suspend fun getLastInitialDataFetchAt(): Instant?
+    suspend fun saveLastInitialDataFetchAt()
 }

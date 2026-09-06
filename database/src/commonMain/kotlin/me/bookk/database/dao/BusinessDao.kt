@@ -24,6 +24,10 @@ abstract class BusinessDao {
     @Query("select * from business where id = :businessId")
     abstract fun observeBusiness(businessId: Uuid): Flow<BusinessLocal?>
 
+    @Transaction
+    @Query("select * from business")
+    abstract fun observeAllBusinesses(): Flow<List<BusinessLocal>>
+
     @Insert
     abstract suspend fun insertBusiness(entity: BusinessEntity)
 

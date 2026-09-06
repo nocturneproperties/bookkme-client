@@ -91,6 +91,18 @@ internal class CommonBusinessDataSource(
             .mapErrors()
     }
 
+    override fun observeAllBusinessesInDb(): Flow<List<Business>> {
+        return businessDao.observeAllBusinesses()
+            .map { businesses -> businesses.map { it.toDomain() } }
+            .mapErrors()
+    }
+
+    override suspend fun setDashboardBusinessOnRemote(businessId: Uuid) {
+        mapExceptions {
+            httpClient.put(BusinessRouting.Api.Business.Id.Dashboard(parent = BusinessRouting.Api.Business.Id(id = businessId)))
+        }
+    }
+
     override suspend fun getBusinessesFromRemote(): UserBusinessInfo = mapExceptions {
         httpClient.get(BusinessRouting.Api.Business())
             .body<UserBusinessesRemote>()

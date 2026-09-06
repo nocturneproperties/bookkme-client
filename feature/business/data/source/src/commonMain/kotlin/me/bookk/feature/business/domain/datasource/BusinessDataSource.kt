@@ -19,6 +19,8 @@ interface BusinessDataSource {
     suspend fun getDashboardBusinessId(): Uuid?
     fun getDashboardBusinessIdFlow(): Flow<Uuid?>
     fun observeBusinessDBChanges(businessId: Uuid): Flow<Business?>
+    fun observeAllBusinessesInDb(): Flow<List<Business>>
+    suspend fun setDashboardBusinessOnRemote(businessId: Uuid)
     suspend fun saveDashboardFeatures(businessId: Uuid, features: Set<DashboardFeature>)
     suspend fun getDashboardFeatures(businessId: Uuid): Set<DashboardFeature>?
 }

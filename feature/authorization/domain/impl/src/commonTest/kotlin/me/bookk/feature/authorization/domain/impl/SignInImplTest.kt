@@ -71,7 +71,7 @@ class SignInImplTest {
         everySuspend { authorizationDataSource.verifyAuthorization(any()) } returns tokenInfo
         everySuspend { authorizationDataSource.saveAuthorizationTokens(tokenInfo) } returns Unit
         everySuspend { authorizationDataSource.invalidateClientTokens() } returns Unit
-        everySuspend { initialAppDataFetch(ignoreLastFetchTimestamp = true) } returns Unit
+        everySuspend { initialAppDataFetch.rawFetch() } returns Unit
         everySuspend { authorizationDataSource.setAuthorizationStatus(true) } returns Unit
     }
 
@@ -102,7 +102,7 @@ class SignInImplTest {
     }
 
     @Test
-    fun `ignores the last fetch timestamp when triggering the initial data fetch`() = runUnitTest {
+    fun `triggers a raw initial data fetch on success`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.setupHappyPath()
@@ -111,7 +111,7 @@ class SignInImplTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.initialAppDataFetch(ignoreLastFetchTimestamp = true) }
+        verifySuspend { fixture.initialAppDataFetch.rawFetch() }
     }
 
     @Test

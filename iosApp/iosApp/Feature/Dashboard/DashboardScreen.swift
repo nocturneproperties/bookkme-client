@@ -18,12 +18,38 @@ struct DashboardScreen: View {
 		DashboardTabs(state: dashboardVM.uiState.impl())
 	}
 }
+
 struct DashboardTabs: View {
 
 	@Bindable
 	var state: IOSDashboardState
 
+	@State private var isCreateBusinessSheetPresented = false
+	@StateObject private var onboardingNavigationStack = NavigationStackHolder()
+
 	var body: some View {
+		tabView
+			.handleNavigation(state.navigation, handler: handleNavigation)
+			.handleNotifications(state.notifications)
+			.sheet(isPresented: $isCreateBusinessSheetPresented) {
+				NavigationStack {
+					CreateBusinessScreen()
+				}
+			}
+	}
+
+	private func handleNavigation(_ destination: NavigationDestination) {
+		switch destination {
+		case is DashboardHomeNavigationDestination.CreateBusiness:
+			isCreateBusinessSheetPresented = true
+		case let destination as DashboardHomeNavigationDestination.EnablePlugins:
+			onboardingNavigationStack.push(destination)
+		default:
+			break
+		}
+	}
+
+	private var tabView: some View {
 		TabView(selection: Binding(
 			get: { state.tabItems.selectedItemId },
 			set: { newId in
@@ -33,7 +59,7 @@ struct DashboardTabs: View {
 			}
 		)) {
 			ForEach(state.tabItems.items, id:\.id) { item in
-				DashboardTab(item: item.impl(), dashboardState: state)
+				DashboardTab(item: item.impl(), dashboardState: state, onboardingNavigationStack: onboardingNavigationStack)
 			}
 		}
 	}
@@ -43,6 +69,7 @@ struct DashboardTab: View {
 
 	var item: IOSTabItem
 	var dashboardState: IOSDashboardState
+	var onboardingNavigationStack: NavigationStackHolder
 
 	var body: some View {
 		screenFromId(id: item.id)
@@ -64,7 +91,7 @@ struct DashboardTab: View {
 	private func screenFromId(id: TabItemId) -> some View {
 		switch id {
 		case .home:
-			DashboardHomeTab(homeState: dashboardState.home.impl(), navigation: dashboardState.navigation)
+			DashboardHomeTab(homeState: dashboardState.home.impl(), onboardingNavigationStack: onboardingNavigationStack)
 		case .business:
 			BusinessTab()
 		case .settings:
@@ -92,4 +119,3 @@ private func iconFrom(id: TabItemId) -> String {
 #Preview {
 	DashboardScreen()
 }
-

@@ -15,11 +15,17 @@ internal class InitialAppDataFetchImpl(
     private val clock: Clock
 ) : InitialAppDataFetch {
 
-    override suspend fun invoke(ignoreLastFetchTimestamp: Boolean) {
-        if (!ignoreLastFetchTimestamp && !isFetchDue()) return
-
+    override suspend fun timestampProtectedFetch() {
+        if (!isFetchDue()) return
         userProfileCRUD.updateFromRemote()
-        runCatching { refreshBusiness() }
+        runCatching { refreshBusiness(applyDashboardIdFromRemote = false) }
+        lowPriorityDataFetch()
+        authorizationDataSource.saveLastInitialDataFetchAt()
+    }
+
+    override suspend fun rawFetch() {
+        userProfileCRUD.updateFromRemote()
+        runCatching { refreshBusiness(applyDashboardIdFromRemote = true) }
         lowPriorityDataFetch()
         authorizationDataSource.saveLastInitialDataFetchAt()
     }

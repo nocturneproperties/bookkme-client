@@ -22,6 +22,16 @@
     <string name="business_dashboard_warehouse">Warehouse</string>
     <string name="business_dashboard_orders">Orders</string>
 
+    <string name="business_dashboard_switch_action">Switch business</string>
+    <string name="business_dashboard_switch_create">Create business</string>
+    <string name="business_dashboard_switch_join">Join business</string>
+    <string name="business_dashboard_switch_join_dialog_title">Join business</string>
+    <string name="business_dashboard_switch_join_dialog_message">Enter the invitation code shared with you by the business owner</string>
+    <string name="business_dashboard_switch_join_dialog_placeholder">Invitation code</string>
+    <string name="business_dashboard_switch_join_success">You have joined the business</string>
+    <string name="business_dashboard_switch_join_error_already_processed">This invitation was already used or is no longer valid</string>
+    <string name="business_dashboard_switch_join_error_employee_exists">You are already an employee of this business</string>
+
     <string name="business_settings_title">Business settings</string>
     <string name="business_settings_add_photo">Add photo</string>
     <string name="business_settings_name_title">Business name</string>

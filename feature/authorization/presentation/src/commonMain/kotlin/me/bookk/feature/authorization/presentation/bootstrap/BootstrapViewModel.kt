@@ -42,7 +42,7 @@ class BootstrapViewModel(
     private fun fetchInitialData() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { initialAppDataFetch() },
+            call = { initialAppDataFetch.timestampProtectedFetch() },
             onError = { /*NOOP*/ }
         )
     }

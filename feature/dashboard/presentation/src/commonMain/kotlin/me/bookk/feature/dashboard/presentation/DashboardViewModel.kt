@@ -16,6 +16,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessIdChanges
+import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.plugin.ObserveAppointmentsPluginEnabled
 import me.bookk.feature.dashboard.presentation.state.DashboardState
 import me.bookk.feature.dashboard.presentation.state.HomeContent
@@ -26,6 +27,7 @@ import kotlin.uuid.Uuid
 class DashboardViewModel(
     private val observeDashboardBusinessIdChanges: ObserveDashboardBusinessIdChanges,
     private val observeAppointmentsPluginEnabled: ObserveAppointmentsPluginEnabled,
+    private val refreshBusinessInfo: RefreshBusinessInfo,
     stateFactory: DashboardStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -35,7 +37,17 @@ class DashboardViewModel(
     private var businessId: Uuid? = null
 
     init {
+        requestSilentInformationRefresh()
         observeBusiness()
+    }
+
+    private fun requestSilentInformationRefresh() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { refreshBusinessInfo() },
+            onComplete = {},
+            onError = {}
+        )
     }
 
     private fun DashboardState.setup() = apply {

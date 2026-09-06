@@ -35,7 +35,7 @@ internal class CreateAccountImpl(
         val tokenInfo = finishRegistration(data)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
         authorizationDataSource.invalidateClientTokens()
-        initialAppDataFetch()
+        initialAppDataFetch.rawFetch()
         authorizationDataSource.setAuthorizationStatus(true)
     }
 

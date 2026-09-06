@@ -27,7 +27,7 @@ object EmployeeRouting {
             class Revoke(val parent: EmployeeInvitation, val id: Uuid)
         }
 
-        @Resource("/employee_invitation")
+        @Resource("/business/employee_invitation")
         class EmployeeInvitationRedeem(val parent: Api = Api()) {
             @Resource("/redeem")
             class Redeem(val parent: EmployeeInvitationRedeem = EmployeeInvitationRedeem())

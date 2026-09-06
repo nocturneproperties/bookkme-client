@@ -17,6 +17,9 @@ abstract class ClientsDao {
     @Query("select * from client where id = :id")
     abstract suspend fun getById(id: Uuid): ClientEntity
 
+    @Query("select id from client where businessId = :businessId")
+    abstract suspend fun getIds(businessId: Uuid): List<Uuid>
+
     @Upsert
     abstract suspend fun upsert(client: ClientEntity)
 
@@ -32,8 +35,8 @@ abstract class ClientsDao {
     @Query("delete from client where id = :clientId")
     abstract suspend fun deleteById(clientId: Uuid)
 
-    @Query("delete from client where businessId = :businessId")
-    abstract suspend fun deleteByBusinessId(businessId: Uuid)
+    @Query("delete from client where id in (:ids)")
+    abstract suspend fun deleteByIds(ids: List<Uuid>)
 
     @Query("delete from client")
     abstract suspend fun clear()

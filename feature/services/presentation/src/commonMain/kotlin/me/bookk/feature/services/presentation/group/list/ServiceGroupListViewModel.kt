@@ -1,30 +1,32 @@
 package me.bookk.feature.services.presentation.group.list
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.convenience.loadCachedList
+import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.services.domain.api.group.DeleteServiceGroup
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
-import me.bookk.feature.services.domain.api.group.ServiceGroupEvent
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
-import me.bookk.feature.services.domain.api.group.listenFor
 import me.bookk.feature.services.presentation.ServicesStateFactory
-import kotlin.uuid.Uuid
 
 class ServiceGroupListViewModel(
-    private val businessId: Uuid,
     private val getServiceGroups: GetServiceGroups,
     private val deleteServiceGroup: DeleteServiceGroup,
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     stateFactory: ServicesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -33,31 +35,37 @@ class ServiceGroupListViewModel(
     private var groups = listOf<ServiceGroupListState.ServiceGroupUI>()
 
     init {
+        observeGroups()
         loadServiceGroups()
-        listenGroupEvents()
+    }
+
+    private fun observeGroups() {
+        getServiceGroups.flow()
+            .flowOn(DispatcherProvider.io)
+            .onEach { renderGroups(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun renderGroups(serviceGroups: List<ServiceGroup>) {
+        if (serviceGroups.isEmpty() && uiState.groups.isInitialLoading) return
+        groups = serviceGroups.map { group ->
+            group.ui(
+                onItemClick = weakVMClosure { it.onGroupClicked(group) },
+                onDeleteClick = weakVMClosure { it.onDeleteClicked(group) }
+            )
+        }
+        uiState.groups.replace(groups)
     }
 
     private fun loadServiceGroups() {
-        loadCachedList(
+        loadList(
             listState = uiState.groups,
             refreshState = uiState.refreshState,
-            call = { getServiceGroups.cached(businessId, it) },
-            onComplete = { services ->
-                groups = services.map { group ->
-                    group.ui(
-                        onItemClick = weakVMClosure { it.onGroupClicked(group) },
-                        onDeleteClick = weakVMClosure { it.onDeleteClicked(group) }
-                    )
-                }
-                uiState.groups.replace(groups)
-            },
+            call = {
+                val businessId = observeCurrentBusinessId().filterNotNull().first()
+                getServiceGroups.refresh(businessId)
+            }
         )
-    }
-
-    private fun listenGroupEvents() {
-        listenFor<ServiceGroupEvent> {
-            loadServiceGroups()
-        }.launchIn(viewModelScope)
     }
 
     private fun onGroupClicked(group: ServiceGroup) {

@@ -5,11 +5,9 @@ struct ServiceGroupListScreen: View {
 	
 	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: ServiceGroupListViewModel
-	let businessId: KotlinUuid
-	
-	init(businessId: KotlinUuid) {
-		self.businessId = businessId
-		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceGroupListVM(businessId: businessId))
+
+	init() {
+		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceGroupListVM())
 	}
 	
 	var body: some View {
@@ -33,7 +31,7 @@ struct ServiceGroupListScreen: View {
 				.id(group.id)
 		}
 		.sheet(isPresented: uiState.isAddGroupDialogVisibleBinding) {
-			AddServiceGroupScreen(businessId: businessId) {
+			AddServiceGroupScreen {
 				uiState.isAddGroupDialogVisible.toggle()
 			}
 		}

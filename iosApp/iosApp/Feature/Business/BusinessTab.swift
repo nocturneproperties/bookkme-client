@@ -30,8 +30,8 @@ struct BusinessTab: View {
 				.navigationDestination(for: ServicesDestination.AddService.self) { type in
 					AddServiceScreen(businessId: type.businessId)
 				}
-				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { type in
-					ServiceGroupListScreen(businessId: type.businessId)
+				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { _ in
+					ServiceGroupListScreen()
 				}
 				.navigationDestination(for: AppointmentsDestination.Details.self) { dest in
 					AppointmentDetailsScreen(appointmentId: dest.appointmentId)

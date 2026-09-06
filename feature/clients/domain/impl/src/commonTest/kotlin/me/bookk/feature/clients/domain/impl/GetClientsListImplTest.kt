@@ -158,22 +158,62 @@ class GetClientsListImplTest {
     }
 
     @Test
-    fun `refresh fetches clients from remote and replaces the db contents`() = runUnitTest {
+    fun `refresh fetches clients from remote and saves them`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
         val clients = listOf(stubClient(businessId))
         everySuspend { fixture.dataSource.getClients(businessId) } returns clients
-        everySuspend { fixture.dataSource.deleteClientsInDb(businessId) } returns Unit
+        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns clients.map { it.id }
         everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
         whenn()
         val result = fixture.sut.refresh(businessId)
 
         then()
         assertEquals(clients, result)
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteClientsInDb(businessId) }
         verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveClientsInDb(clients) }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveLastSyncedAt(businessId) }
+    }
+
+    @Test
+    fun `refresh deletes local clients that are no longer present remotely`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val stillPresent = stubClient(businessId)
+        val remote = listOf(stillPresent)
+        val staleId = Uuid.random()
+        everySuspend { fixture.dataSource.getClients(businessId) } returns remote
+        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns listOf(stillPresent.id, staleId)
+        everySuspend { fixture.dataSource.deleteClientsInDb(listOf(staleId)) } returns Unit
+        everySuspend { fixture.dataSource.saveClientsInDb(remote) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+
+        whenn()
+        fixture.sut.refresh(businessId)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteClientsInDb(listOf(staleId)) }
+    }
+
+    @Test
+    fun `refresh does not call delete when nothing is stale`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val client = stubClient(businessId)
+        everySuspend { fixture.dataSource.getClients(businessId) } returns listOf(client)
+        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns listOf(client.id)
+        everySuspend { fixture.dataSource.saveClientsInDb(listOf(client)) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+
+        whenn()
+        fixture.sut.refresh(businessId)
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientsInDb(any()) }
     }
 
     @Test
@@ -189,6 +229,7 @@ class GetClientsListImplTest {
 
         then()
         assertEquals(error, thrown)
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getClientIdsInDb(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientsInDb(any()) }
     }
 }

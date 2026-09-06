@@ -12,10 +12,10 @@ import org.koin.mp.KoinPlatform
 import kotlin.uuid.Uuid
 
 internal actual fun platformServicesDiModule(): Module = module {
-    factory { ServiceGroupListViewModel(it.get(), get(), get(), get(),get()) }
+    factory { ServiceGroupListViewModel(get(), get(), get(), get(), get()) }
     factory { ServiceListViewModel(it.get(), get(), get(), get(), get()) }
     factory { AddServiceViewModel(it.get(), get(), get(), get(),  get(), get()) }
-    factory { AddGroupViewModel(it.get(), get(), get(), get()) }
+    factory { AddGroupViewModel(get(), get(), get(), get()) }
 }
 
 @UsedInSwift
@@ -27,9 +27,9 @@ fun addServiceVM(businessId: Uuid): AddServiceViewModel =
     KoinPlatform.getKoin().get { parametersOf(businessId) }
 
 @UsedInSwift
-fun serviceGroupListVM(businessId: Uuid): ServiceGroupListViewModel =
-    KoinPlatform.getKoin().get { parametersOf(businessId) }
+fun serviceGroupListVM(): ServiceGroupListViewModel =
+    KoinPlatform.getKoin().get()
 
 @UsedInSwift
-fun addGroupVM(businessId: Uuid): AddGroupViewModel =
-    KoinPlatform.getKoin().get { parametersOf(businessId) }
+fun addGroupVM(): AddGroupViewModel =
+    KoinPlatform.getKoin().get()

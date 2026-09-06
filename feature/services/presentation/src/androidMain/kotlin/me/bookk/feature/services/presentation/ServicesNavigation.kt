@@ -8,7 +8,7 @@ class ServicesNavigation(
     val toCreateService: (Uuid) -> Unit,
     val toServiceDetails: (Uuid) -> Unit,
     val toCreateServiceGroup: (Uuid) -> Unit,
-    val toServiceGroupList: (Uuid) -> Unit
+    val toServiceGroupList: () -> Unit
 )
 
 internal val LocalNavigation = compositionLocalOf {

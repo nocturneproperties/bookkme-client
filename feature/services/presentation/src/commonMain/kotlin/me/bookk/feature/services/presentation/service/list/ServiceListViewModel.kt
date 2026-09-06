@@ -138,7 +138,7 @@ class ServiceListViewModel(
         searchField.onTextChanged = weakVMClosure { vm, query -> vm.onSearchQueryChanged(query) }
         groupsSection = Action(
             title = ServicesRes.strings.services_create_groups.desc(),
-            onClick = weakVMClosure { uiState.navigation.push(ServiceGroups(businessId))  }
+            onClick = weakVMClosure { uiState.navigation.push(ServiceGroups) }
         )
         services.emptyState = EmptyState(
             image = DesignSystem.images.empty,

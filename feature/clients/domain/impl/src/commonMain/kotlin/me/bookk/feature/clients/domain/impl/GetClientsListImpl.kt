@@ -24,8 +24,13 @@ internal class GetClientsListImpl(
 
     override suspend fun refresh(businessId: Uuid): List<Client> {
         val clients = clientsDataSource.getClients(businessId)
-        clientsDataSource.deleteClientsInDb(businessId)
+        val freshIds = clients.map { it.id }.toSet()
+        val staleIds = clientsDataSource.getClientIdsInDb(businessId).filterNot { it in freshIds }
+        if (staleIds.isNotEmpty()) {
+            clientsDataSource.deleteClientsInDb(staleIds)
+        }
         clientsDataSource.saveClientsInDb(clients)
+        clientsDataSource.saveLastSyncedAt(businessId)
         return clients
     }
 }

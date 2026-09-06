@@ -28,7 +28,7 @@ internal fun NavGraphBuilder.serviceListScreen(navigation: ServicesNavigation) {
                     ServiceListDestination.Back -> navigation.onBack()
                     is ServiceListDestination.ServiceDetails -> {}
                     is ServiceListDestination.AddService -> navigation.toCreateService(it.businessId)
-                    is ServiceListDestination.ServiceGroups -> navigation.toServiceGroupList(it.businessId)
+                    ServiceListDestination.ServiceGroups -> navigation.toServiceGroupList()
                 }
             }
         }

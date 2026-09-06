@@ -9,6 +9,10 @@ import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import library.cache.api.PreferenceProvider
+import library.cache.api.Preferences
+import library.cache.api.get
+import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.ClientsDao
@@ -20,12 +24,17 @@ import me.bookk.feature.clients.data.remote.api.ClientsRouting.Api
 import me.bookk.feature.clients.data.remote.model.ClientRemote
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 internal class CommonClientsDataSource(
     private val httpClient: HttpClient,
-    private val clientsDao: ClientsDao
+    private val clientsDao: ClientsDao,
+    preferenceProvider: PreferenceProvider
 ) : DataSource(), ClientsDataSource, LogOutAction {
+
+    private val preferences = preferenceProvider.get("clients_prefs")
 
     override suspend fun getClients(businessId: Uuid): List<Client> {
         return mapExceptions {
@@ -81,11 +90,30 @@ internal class CommonClientsDataSource(
         mapExceptions { clientsDao.deleteById(id) }
     }
 
-    override suspend fun deleteClientsInDb(businessId: Uuid) {
-        mapExceptions { clientsDao.deleteByBusinessId(businessId) }
+    override suspend fun getClientIdsInDb(businessId: Uuid): List<Uuid> {
+        return mapExceptions { clientsDao.getIds(businessId) }
+    }
+
+    override suspend fun deleteClientsInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> clientsDao.deleteByIds(chunk) }
+        }
+    }
+
+    override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
+        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+    }
+
+    override suspend fun saveLastSyncedAt(businessId: Uuid) {
+        preferences.set(Key.lastSyncedAt(businessId), Clock.System.now().toEpochMilliseconds())
     }
 
     override suspend fun doOnLogOut() {
+        preferences.clear()
         clientsDao.clear()
+    }
+
+    private object Key {
+        fun lastSyncedAt(businessId: Uuid) = Preferences.Key<Long>("last_synced_at_$businessId")
     }
 }

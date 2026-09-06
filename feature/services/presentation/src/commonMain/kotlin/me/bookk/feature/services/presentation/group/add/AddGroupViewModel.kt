@@ -1,6 +1,8 @@
 package me.bookk.feature.services.presentation.group.add
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -10,6 +12,7 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.services.domain.api.group.CreateServiceGroup
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.presentation.ServicesStateFactory
@@ -17,8 +20,8 @@ import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 class AddGroupViewModel(
-    private val businessId: Uuid,
     private val createGroup: CreateServiceGroup,
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     stateFactory: ServicesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -33,16 +36,20 @@ class AddGroupViewModel(
     }
 
     private fun onCreate() {
-        val group = ServiceGroup(
-            id = Uuid.random(),
-            businessId = businessId,
-            name = uiState.name.text,
-            createdAt = Clock.System.now()
-        )
+        val name = uiState.name.text
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.create.startLoading() },
-            call = { createGroup(group) },
+            call = {
+                val businessId = observeCurrentBusinessId().filterNotNull().first()
+                val group = ServiceGroup(
+                    id = Uuid.random(),
+                    businessId = businessId,
+                    name = name,
+                    createdAt = Clock.System.now()
+                )
+                createGroup(group)
+            },
             onComplete = { uiState.navigation.push(AddGroupNavigation.Dismiss) },
             onError = {
                 when (it) {

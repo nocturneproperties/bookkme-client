@@ -58,7 +58,7 @@ class AddServiceViewModel(
     private fun loadGroups() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { getServiceGroups(businessId) },
+            call = { getServiceGroups.refresh(businessId) },
             onComplete = {
                 uiState.group.replaceOptions(it.map(AddServiceState::GroupUI))
             },

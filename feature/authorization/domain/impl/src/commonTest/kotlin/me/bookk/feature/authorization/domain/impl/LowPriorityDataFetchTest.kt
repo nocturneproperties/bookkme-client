@@ -103,7 +103,7 @@ class LowPriorityDataFetchTest {
     private fun stubHappyPath(fixture: Fixture, business: Business) {
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
         everySuspend { fixture.getServices(business.id) } returns emptyList()
-        everySuspend { fixture.getServiceGroups(business.id) } returns emptyList()
+        everySuspend { fixture.getServiceGroups.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getClientsList.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getEmployees(business.id) } returns emptyList()
         everySuspend { fixture.getAppointmentEnabled(business.id) } returns true
@@ -123,7 +123,7 @@ class LowPriorityDataFetchTest {
 
         then()
         verifySuspend(VerifyMode.exactly(0)) { fixture.getServices(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getServiceGroups(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getServiceGroups.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getClientsList.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getEmployees(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentEnabled(any()) }
@@ -159,7 +159,7 @@ class LowPriorityDataFetchTest {
 
         then()
         verifySuspend { fixture.getServices(business.id) }
-        verifySuspend { fixture.getServiceGroups(business.id) }
+        verifySuspend { fixture.getServiceGroups.refresh(business.id) }
         verifySuspend { fixture.getClientsList.refresh(business.id) }
         verifySuspend { fixture.getEmployees(business.id) }
         verifySuspend { fixture.getAppointmentEnabled(business.id) }

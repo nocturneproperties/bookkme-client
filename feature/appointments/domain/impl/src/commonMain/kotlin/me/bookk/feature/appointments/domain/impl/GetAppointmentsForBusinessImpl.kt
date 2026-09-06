@@ -1,30 +1,35 @@
 package me.bookk.feature.appointments.domain.impl
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
+import me.bookk.core.coroutine.flatMapLatestOrNull
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
+import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
 
 internal class GetAppointmentsForBusinessImpl(
-    private val dataSource: AppointmentDataSource
+    private val dataSource: AppointmentDataSource,
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId
 ) : GetAppointmentsForBusiness {
 
-    override suspend fun invoke(businessId: Uuid, date: LocalDate): List<Appointment> =
-        dataSource.getAppointmentsForDate(businessId, date)
-            .also {
-                dataSource.saveAppointmentsInDB(it)
-                dataSource.saveLastSyncedAt(businessId, date)
-            }
+    override fun flow(date: LocalDate): Flow<List<Appointment>> {
+        return observeCurrentBusinessId()
+            .flatMapLatestOrNull { businessId -> dataSource.observeAppointmentsForDateDBChanges(businessId, date) }
+            .map { it.orEmpty() }
+    }
 
-    override suspend fun cached(
-        businessId: Uuid,
-        date: LocalDate,
-        onResultAvailable: suspend (List<Appointment>) -> Unit
-    ) {
-        if (dataSource.getLastSyncedAt(businessId, date) != null) {
-            onResultAvailable(dataSource.getAppointmentsForDateFromDb(businessId, date))
+    override suspend fun refresh(businessId: Uuid, date: LocalDate): List<Appointment> {
+        val appointments = dataSource.getAppointmentsForDate(businessId, date)
+        val freshIds = appointments.map { it.id }.toSet()
+        val staleIds = dataSource.getAppointmentIdsForDateInDb(businessId, date).filterNot { it in freshIds }
+        if (staleIds.isNotEmpty()) {
+            dataSource.deleteAppointmentsInDb(staleIds)
         }
-        onResultAvailable(invoke(businessId, date))
+        dataSource.saveAppointmentsInDB(appointments)
+        dataSource.saveLastSyncedAt(businessId, date)
+        return appointments
     }
 }

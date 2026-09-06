@@ -2,8 +2,10 @@ package me.bookk.feature.appointments.presentation.screen.list
 
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -15,7 +17,6 @@ import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
-import me.bookk.core.orNow
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -23,7 +24,7 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.convenience.loadCachedList
+import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
@@ -55,8 +56,10 @@ class AppointmentListViewModel(
     val uiState: AppointmentListState = stateFactory.createAppointmentListState().setup()
 
     private var businessId = Uuid.random()
+    private val selectedDate = MutableStateFlow(LocalDate.today())
 
     init {
+        observeAppointments()
         observeCurrentBusiness()
         listenForUpdates()
     }
@@ -66,6 +69,19 @@ class AppointmentListViewModel(
             .launchIn(viewModelScope)
         listenFor<AppointmentEvent.Updated> { onRefresh() }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeAppointments() {
+        selectedDate
+            .flatMapLatest { date -> getAppointmentsForBusiness.flow(date) }
+            .flowOn(DispatcherProvider.io)
+            .onEach { renderAppointments(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun renderAppointments(appointments: List<Appointment>) {
+        if (appointments.isEmpty() && uiState.appointments.isInitialLoading) return
+        mapItems(appointments)
     }
 
     private fun observeCurrentBusiness() {
@@ -78,20 +94,18 @@ class AppointmentListViewModel(
                 if (uiState.requestsBusinessId != null) {
                     uiState.requestsBusinessId = it
                 }
-                loadAppointments(it)
+                loadAppointments()
                 loadRequestCount(it)
             }
             .retry()
             .launchIn(viewModelScope)
     }
 
-    private fun loadAppointments(businessId: Uuid) {
-        val date = uiState.datePicker.pickedDate.orNow()
-        loadCachedList(
+    private fun loadAppointments() {
+        loadList(
             listState = uiState.appointments,
             refreshState = uiState.refresh,
-            call = { getAppointmentsForBusiness.cached(businessId, date, it) },
-            onComplete = ::mapItems,
+            call = { getAppointmentsForBusiness.refresh(businessId, selectedDate.value) }
         )
     }
 
@@ -112,7 +126,8 @@ class AppointmentListViewModel(
     private fun onNewDateSelected(date: LocalDate) {
         uiState.datePicker.pickedDate = date
         uiState.appointments.isInitialLoading = true
-        loadAppointments(businessId)
+        selectedDate.value = date
+        loadAppointments()
         uiState.dates.replace(createDateInfoFrom(date))
     }
 
@@ -130,7 +145,7 @@ class AppointmentListViewModel(
     }
 
     private fun onRefresh() {
-        loadAppointments(businessId)
+        loadAppointments()
         loadRequestCount(businessId)
     }
 

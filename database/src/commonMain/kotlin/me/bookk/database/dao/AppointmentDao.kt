@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
 import me.bookk.database.relation.AppointmentLocal
@@ -22,6 +23,16 @@ abstract class AppointmentDao {
     @Transaction
     @Query("SELECT * FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay")
     abstract suspend fun getForDate(businessId: Uuid, startOfDay: Instant, endOfDay: Instant): List<AppointmentLocal>
+
+    @Transaction
+    @Query("SELECT * FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay")
+    abstract fun observeForDate(businessId: Uuid, startOfDay: Instant, endOfDay: Instant): Flow<List<AppointmentLocal>>
+
+    @Query("SELECT id FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay")
+    abstract suspend fun getIdsForDate(businessId: Uuid, startOfDay: Instant, endOfDay: Instant): List<Uuid>
+
+    @Query("DELETE FROM appointment WHERE id IN (:ids)")
+    abstract suspend fun deleteByIds(ids: List<Uuid>)
 
     @Query("DELETE FROM appointment")
     abstract suspend fun clear()

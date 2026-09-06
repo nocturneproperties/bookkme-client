@@ -1,26 +1,28 @@
 package me.bookk.feature.services.presentation.service.list
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.convenience.loadCachedList
+import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
-import me.bookk.feature.services.domain.api.group.ServiceGroupEvent
-import me.bookk.feature.services.domain.api.group.listenFor
+import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.services.domain.api.service.DeleteService
 import me.bookk.feature.services.domain.api.service.GetServices
-import me.bookk.feature.services.domain.api.service.ServiceEvent
-import me.bookk.feature.services.domain.api.service.listenFor
+import me.bookk.feature.services.domain.api.service.entity.Service
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddService
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.Back
@@ -28,12 +30,11 @@ import me.bookk.feature.services.presentation.service.list.ServiceListDestinatio
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceGroups
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceUI
-import kotlin.uuid.Uuid
 
 class ServiceListViewModel(
-    private val businessId: Uuid,
     private val getServices: GetServices,
     private val deleteService: DeleteService,
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     stateFactory: ServicesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -43,39 +44,42 @@ class ServiceListViewModel(
     private var items = listOf<ServiceGroupUI>()
 
     init {
+        observeServices()
         loadServiceList()
-        listenForEvents()
     }
 
-    private fun listenForEvents() {
-        listenFor<ServiceEvent> {
-            loadServiceList()
-        }.launchIn(viewModelScope)
-        listenFor<ServiceGroupEvent> {
-            loadServiceList()
-        }.launchIn(viewModelScope)
+    private fun observeServices() {
+        getServices.flow()
+            .flowOn(DispatcherProvider.io)
+            .onEach { renderServices(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun renderServices(services: List<Service>) {
+        if (services.isEmpty() && uiState.services.isInitialLoading) return
+        val grouped = services
+            .groupBy { it.group }
+            .map { (group, groupServices) ->
+                ServiceGroupUI(
+                    id = group.id.toString(),
+                    name = group.name,
+                    items = groupServices.map { ServiceUI(it) },
+                    onItemClick = weakVMClosure { vm, item -> vm.onServiceClick(item) },
+                    onItemDeleteClick = weakVMClosure { vm, item -> vm.onServiceDeleteClick(item) }
+                )
+            }
+        items = grouped
+        uiState.services.replace(items)
     }
 
     private fun loadServiceList() {
-        loadCachedList(
+        loadList(
             listState = uiState.services,
             refreshState = uiState.refreshState,
-            call = { getServices.cached(businessId, it) },
-            onComplete = { services ->
-                val grouped = services
-                    .groupBy { it.group }
-                    .map { (group, services) ->
-                        ServiceGroupUI(
-                            id = group.id.toString(),
-                            name = group.name,
-                            items = services.map { ServiceUI(it) },
-                            onItemClick = weakVMClosure { vm, item -> vm.onServiceClick(item) },
-                            onItemDeleteClick = weakVMClosure { vm, item -> vm.onServiceDeleteClick(item) }
-                        )
-                    }
-                items = grouped
-                uiState.services.replace(items)
-            },
+            call = {
+                val businessId = observeCurrentBusinessId().filterNotNull().first()
+                getServices.refresh(businessId)
+            }
         )
     }
 
@@ -98,6 +102,15 @@ class ServiceListViewModel(
             onStart = { uiState.refreshState.isRefreshing = true },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.refreshState.isRefreshing = false }
+        )
+    }
+
+    private fun onAddServiceClick() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { observeCurrentBusinessId().filterNotNull().first() },
+            onComplete = { uiState.navigation.push(AddService(it)) },
+            onError = { uiState.notifications.add(it.notification()) }
         )
     }
 
@@ -127,9 +140,7 @@ class ServiceListViewModel(
             listOf(
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure {
-                        it.uiState.navigation.push(AddService(it.businessId))
-                    }
+                    onClick = weakVMClosure { it.onAddServiceClick() }
                 )
             )
         )
@@ -138,7 +149,7 @@ class ServiceListViewModel(
         searchField.onTextChanged = weakVMClosure { vm, query -> vm.onSearchQueryChanged(query) }
         groupsSection = Action(
             title = ServicesRes.strings.services_create_groups.desc(),
-            onClick = weakVMClosure { uiState.navigation.push(ServiceGroups) }
+            onClick = weakVMClosure { it.uiState.navigation.push(ServiceGroups) }
         )
         services.emptyState = EmptyState(
             image = DesignSystem.images.empty,

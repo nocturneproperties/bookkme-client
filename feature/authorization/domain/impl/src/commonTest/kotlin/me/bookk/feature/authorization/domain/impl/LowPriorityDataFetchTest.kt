@@ -102,7 +102,7 @@ class LowPriorityDataFetchTest {
 
     private fun stubHappyPath(fixture: Fixture, business: Business) {
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        everySuspend { fixture.getServices(business.id) } returns emptyList()
+        everySuspend { fixture.getServices.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getServiceGroups.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getClientsList.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getEmployees(business.id) } returns emptyList()
@@ -122,7 +122,7 @@ class LowPriorityDataFetchTest {
         fixture.sut()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getServices(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getServices.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getServiceGroups.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getClientsList.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getEmployees(any()) }
@@ -144,7 +144,7 @@ class LowPriorityDataFetchTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getServices(business.id) }
+        verifySuspend { fixture.getServices.refresh(business.id) }
     }
 
     @Test
@@ -158,7 +158,7 @@ class LowPriorityDataFetchTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getServices(business.id) }
+        verifySuspend { fixture.getServices.refresh(business.id) }
         verifySuspend { fixture.getServiceGroups.refresh(business.id) }
         verifySuspend { fixture.getClientsList.refresh(business.id) }
         verifySuspend { fixture.getEmployees(business.id) }
@@ -174,7 +174,7 @@ class LowPriorityDataFetchTest {
         val fixture = Fixture()
         val business = stubBusiness()
         stubHappyPath(fixture, business)
-        everySuspend { fixture.getServices(business.id) } throws RuntimeException("network error")
+        everySuspend { fixture.getServices.refresh(business.id) } throws RuntimeException("network error")
 
         whenn()
         fixture.sut()

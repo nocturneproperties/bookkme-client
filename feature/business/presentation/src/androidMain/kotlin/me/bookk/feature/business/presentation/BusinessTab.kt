@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 fun BusinessTab(
     showEmployees: (id: Uuid) -> Unit,
     showClients: () -> Unit,
-    showServices: (id: Uuid) -> Unit,
+    showServices: () -> Unit,
     showAppointmentSettings: (businessId: Uuid) -> Unit,
     showAppointmentHistory: (businessId: Uuid) -> Unit
 ) {
@@ -40,7 +40,7 @@ fun BusinessTab(
                 toBusinessSettings = { businessController.navigate(BusinessDestination.Settings(it)) },
                 toAppointmentSettings = { showAppointmentSettings(it) },
                 toAppointmentHistory = { showAppointmentHistory(it) },
-                toBusinessServices = { showServices(it) },
+                toBusinessServices = { showServices() },
                 toBusinessPlugins = { businessController.navigate(BusinessDestination.Plugins(it)) },
                 toShopOrders = {},
                 toShopAssortment = {},

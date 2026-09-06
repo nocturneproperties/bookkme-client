@@ -13,14 +13,14 @@ import kotlin.uuid.Uuid
 
 internal actual fun platformServicesDiModule(): Module = module {
     factory { ServiceGroupListViewModel(get(), get(), get(), get(), get()) }
-    factory { ServiceListViewModel(it.get(), get(), get(), get(), get()) }
+    factory { ServiceListViewModel(get(), get(), get(), get(), get()) }
     factory { AddServiceViewModel(it.get(), get(), get(), get(),  get(), get()) }
     factory { AddGroupViewModel(get(), get(), get(), get()) }
 }
 
 @UsedInSwift
-fun serviceListVM(businessId: Uuid): ServiceListViewModel =
-    KoinPlatform.getKoin().get { parametersOf(businessId) }
+fun serviceListVM(): ServiceListViewModel =
+    KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun addServiceVM(businessId: Uuid): AddServiceViewModel =

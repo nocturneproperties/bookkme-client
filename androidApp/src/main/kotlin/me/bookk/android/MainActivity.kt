@@ -164,7 +164,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                                 controller.navigate(ClientsDestinations.Clients)
                             },
                             showServices = {
-                                controller.navigate(ServicesDestination.Services(it))
+                                controller.navigate(ServicesDestination.Services)
                             },
                             showAppointmentSettings = {
                                 controller.navigate(AppointmentsDestination.Settings(it))

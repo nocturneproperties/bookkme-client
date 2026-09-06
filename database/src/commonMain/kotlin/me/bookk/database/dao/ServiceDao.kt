@@ -6,6 +6,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import me.bookk.database.entity.ServiceEntity
 import me.bookk.database.relation.ServiceLocal
 import kotlin.uuid.Uuid
@@ -14,7 +15,10 @@ import kotlin.uuid.Uuid
 abstract class ServiceDao {
     @Query("select * from service where businessId = :businessId")
     @Transaction
-    abstract suspend fun get(businessId: Uuid): List<ServiceLocal>
+    abstract fun observe(businessId: Uuid): Flow<List<ServiceLocal>>
+
+    @Query("select id from service where businessId = :businessId")
+    abstract suspend fun getIds(businessId: Uuid): List<Uuid>
 
     @Query("select * from service where id = :id")
     @Transaction
@@ -34,6 +38,9 @@ abstract class ServiceDao {
 
     @Query("delete from service where id = :clientId")
     abstract suspend fun deleteById(clientId: Uuid)
+
+    @Query("delete from service where id in (:ids)")
+    abstract suspend fun deleteByIds(ids: List<Uuid>)
 
     @Query("delete from service")
     abstract suspend fun clear()

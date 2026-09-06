@@ -27,7 +27,7 @@ sealed class BusinessDashboardSection(
                 add(Clients)
             }
             if (features.contains(DashboardFeature.SERVICES)) {
-                add(Services(id))
+                add(Services)
             }
             if (features.contains(DashboardFeature.BUSINESS)) {
                 add(Analytics)
@@ -59,9 +59,9 @@ sealed class BusinessDashboardSection(
             DashboardNavigationDestination.Settings(id)
         )
 
-        data class Services(val id: Uuid) : DashboardUIItem(
+        data object Services : DashboardUIItem(
             BusinessRes.strings.business_dashboard_services.desc(),
-            DashboardNavigationDestination.Services(id)
+            DashboardNavigationDestination.Services
         )
 
         data class Plugins(val id: Uuid) : DashboardUIItem(

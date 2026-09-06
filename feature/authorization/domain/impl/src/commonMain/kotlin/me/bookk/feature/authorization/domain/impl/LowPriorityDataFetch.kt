@@ -33,7 +33,7 @@ internal open class LowPriorityDataFetch(
         val business = observeDashboardBusinessChanges().filterNotNull().firstOrNull() ?: return@launch
 
         runCatching {
-            getServices(business.id)
+            getServices.refresh(business.id)
             getServiceGroups.refresh(business.id)
             getClientsList.refresh(business.id)
             getEmployees(business.id)

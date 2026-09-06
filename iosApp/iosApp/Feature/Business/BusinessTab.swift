@@ -44,8 +44,8 @@ struct BusinessTab: View {
 						ClientsListScreen()
 					case let type as DashboardNavigationDestination.Employees:
 						EmployeeListScreen(businessId: type.id)
-					case let type as DashboardNavigationDestination.Services:
-						ServiceListScreen(businessId: type.id)
+					case is DashboardNavigationDestination.Services:
+						ServiceListScreen()
 					case let type as DashboardNavigationDestination.Plugins:
 						BusinessPluginsScreen(businessId: type.id)
 					case let type as DashboardNavigationDestination.AppointmentSettings:

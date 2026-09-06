@@ -7,6 +7,8 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -80,8 +82,20 @@ internal class ServiceDataSourceImpl(
         serviceDao.delete(service.toDb())
     }
 
-    override suspend fun getServicesFromDb(businessId: Uuid): List<Service> {
-        return serviceDao.get(businessId).map { it.toDomain() }
+    override fun observeServicesDBChanges(businessId: Uuid): Flow<List<Service>> {
+        return serviceDao.observe(businessId)
+            .map { services -> services.map { it.toDomain() } }
+            .mapErrors()
+    }
+
+    override suspend fun getServiceIdsInDb(businessId: Uuid): List<Uuid> {
+        return mapExceptions { serviceDao.getIds(businessId) }
+    }
+
+    override suspend fun deleteServicesInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> serviceDao.deleteByIds(chunk) }
+        }
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {

@@ -15,13 +15,15 @@ struct DashboardHomeTab: View {
 	var onboardingNavigationStack: NavigationStackHolder
 
 	var body: some View {
-		switch homeState.content {
-		case is HomeContent.Loading:
-			ProgressView()
-		case is HomeContent.Onboarding:
-			DashboardOnboardingHost(state: homeState.onboarding, navigationStack: onboardingNavigationStack)
-		default:
-			AppointmentsTab()
+		if let content = homeState.content {
+			switch content {
+			case is HomeContent.Onboarding:
+				DashboardOnboardingHost(state: homeState.onboarding, navigationStack: onboardingNavigationStack)
+			default:
+				AppointmentsTab()
+			}
+		} else {
+			EmptyView()
 		}
 	}
 }

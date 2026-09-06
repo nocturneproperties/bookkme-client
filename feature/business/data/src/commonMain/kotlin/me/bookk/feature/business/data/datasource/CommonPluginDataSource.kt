@@ -4,9 +4,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
+import kotlinx.coroutines.flow.Flow
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
+import library.cache.api.getFlow
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
@@ -39,6 +41,10 @@ internal class CommonPluginDataSource(
 
     override suspend fun getAppointmentPluginAvailability(businessId: Uuid): Boolean? {
         return preferences.get(Key.appointmentPluginAvailability(businessId))
+    }
+
+    override fun observeAppointmentPluginAvailability(businessId: Uuid): Flow<Boolean?> {
+        return preferences.getFlow(Key.appointmentPluginAvailability(businessId))
     }
 
     override suspend fun doOnLogOut() {

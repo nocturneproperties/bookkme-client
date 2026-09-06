@@ -1,13 +1,14 @@
 package me.bookk.feature.business.domain.impl.business
 
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
-import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
+import dev.mokkery.every
 import dev.mokkery.mock
-import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -15,19 +16,21 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
+import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
+import me.bookk.feature.business.domain.api.entity.DashboardOverview
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
-import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
-import me.bookk.feature.business.domain.datasource.BusinessDataSource
+import me.bookk.feature.business.domain.api.plugin.ObserveAppointmentsPluginEnabled
 import me.bookk.feature.business.domain.impl.stubBusiness
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetAvailableDashboardFeaturesImplTest {
@@ -42,6 +45,12 @@ class GetAvailableDashboardFeaturesImplTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    private class Fixture {
+        val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
+        val observeAppointmentsPluginEnabled = mock<ObserveAppointmentsPluginEnabled>()
+        val sut = GetAvailableDashboardFeaturesImpl(observeDashboardBusinessChanges, observeAppointmentsPluginEnabled)
     }
 
     private val noPermissions = BusinessPermissions(
@@ -60,28 +69,22 @@ class GetAvailableDashboardFeaturesImplTest {
         appointments = ResourcePermission(view = true)
     )
 
-    private class Fixture(businessId: Uuid, permissions: BusinessPermissions) {
-        val isAppointmentsPluginEnabled = mock<IsAppointmentsPluginEnabled>()
-        val businessDataSource = mock<BusinessDataSource>()
-        val sut = GetAvailableDashboardFeaturesImpl(isAppointmentsPluginEnabled, businessDataSource)
-        val business = stubBusiness(id = businessId, permissions = permissions)
-
-        init {
-            everySuspend { businessDataSource.getDashboardBusinessId() } returns businessId
-            everySuspend { businessDataSource.getBusinessById(businessId) } returns business
-            everySuspend { businessDataSource.saveDashboardFeatures(any(), any()) } returns Unit
-        }
+    private fun Fixture.stub(business: Business, isAppointmentsEnabled: Boolean) {
+        every { observeDashboardBusinessChanges() } returns flowOf(business)
+        every { observeAppointmentsPluginEnabled(business.id) } returns flowOf(isAppointmentsEnabled)
     }
+
+    private suspend fun Fixture.features(): Set<DashboardFeature> = sut().first()!!.features
 
     @Test
     fun `BUSINESS feature included when business view permission is granted`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val fixture = Fixture(businessId, fullPermissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } returns false
+        val fixture = Fixture()
+        val business = stubBusiness(permissions = fullPermissions)
+        fixture.stub(business, isAppointmentsEnabled = false)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.features()
 
         then()
         assertTrue(DashboardFeature.BUSINESS in result)
@@ -90,12 +93,12 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `BUSINESS feature excluded when business view permission is not granted`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val fixture = Fixture(businessId, noPermissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } returns false
+        val fixture = Fixture()
+        val business = stubBusiness(permissions = noPermissions)
+        fixture.stub(business, isAppointmentsEnabled = false)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.features()
 
         then()
         assertFalse(DashboardFeature.BUSINESS in result)
@@ -104,13 +107,13 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `EMPLOYEES feature included only when employees view permission is granted`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val permissions = noPermissions.copy(employees = ResourcePermission(view = true))
-        val fixture = Fixture(businessId, permissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } returns false
+        val fixture = Fixture()
+        val permissions = noPermissions.copy(employees = noPermissions.employees.copy(view = true))
+        val business = stubBusiness(permissions = permissions)
+        fixture.stub(business, isAppointmentsEnabled = false)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.features()
 
         then()
         assertEquals(setOf(DashboardFeature.EMPLOYEES), result)
@@ -119,13 +122,13 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `CLIENTS feature included only when clients view permission is granted`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val permissions = noPermissions.copy(clients = ResourcePermission(view = true))
-        val fixture = Fixture(businessId, permissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } returns false
+        val fixture = Fixture()
+        val permissions = noPermissions.copy(clients = noPermissions.clients.copy(view = true))
+        val business = stubBusiness(permissions = permissions)
+        fixture.stub(business, isAppointmentsEnabled = false)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.features()
 
         then()
         assertEquals(setOf(DashboardFeature.CLIENTS), result)
@@ -134,13 +137,13 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `SERVICES feature included only when services view permission is granted`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val permissions = noPermissions.copy(services = ResourcePermission(view = true))
-        val fixture = Fixture(businessId, permissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } returns false
+        val fixture = Fixture()
+        val permissions = noPermissions.copy(services = noPermissions.services.copy(view = true))
+        val business = stubBusiness(permissions = permissions)
+        fixture.stub(business, isAppointmentsEnabled = false)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.features()
 
         then()
         assertEquals(setOf(DashboardFeature.SERVICES), result)
@@ -149,12 +152,12 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `APPOINTMENTS feature included when plugin is enabled and view permission is granted`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val fixture = Fixture(businessId, fullPermissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(businessId) } returns true
+        val fixture = Fixture()
+        val business = stubBusiness(permissions = fullPermissions)
+        fixture.stub(business, isAppointmentsEnabled = true)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.features()
 
         then()
         assertTrue(DashboardFeature.APPOINTMENTS in result)
@@ -163,12 +166,12 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `APPOINTMENTS feature not included when plugin is disabled`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val fixture = Fixture(businessId, fullPermissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(businessId) } returns false
+        val fixture = Fixture()
+        val business = stubBusiness(permissions = fullPermissions)
+        fixture.stub(business, isAppointmentsEnabled = false)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.features()
 
         then()
         assertFalse(DashboardFeature.APPOINTMENTS in result)
@@ -177,93 +180,89 @@ class GetAvailableDashboardFeaturesImplTest {
     @Test
     fun `APPOINTMENTS feature not included when view permission is not granted`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val fixture = Fixture(businessId, noPermissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(businessId) } returns true
+        val fixture = Fixture()
+        val business = stubBusiness(permissions = noPermissions)
+        fixture.stub(business, isAppointmentsEnabled = true)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.features()
 
         then()
         assertFalse(DashboardFeature.APPOINTMENTS in result)
     }
 
     @Test
-    fun `returns empty set when no dashboard business id`() = runUnitTest {
+    fun `includes the business in the emitted overview`() = runUnitTest {
         given()
-        val fixture = Fixture(Uuid.random(), fullPermissions)
-        everySuspend { fixture.businessDataSource.getDashboardBusinessId() } returns null
+        val fixture = Fixture()
+        val business = stubBusiness(permissions = fullPermissions)
+        fixture.stub(business, isAppointmentsEnabled = false)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.sut().first()
 
         then()
-        assertTrue(result.isEmpty())
+        assertEquals(business, result?.business)
     }
 
     @Test
-    fun `APPOINTMENTS feature not included when plugin check throws`() = runUnitTest {
+    fun `emits null when there is no dashboard business`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val fixture = Fixture(businessId, fullPermissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } throws RuntimeException("error")
+        val fixture = Fixture()
+        every { fixture.observeDashboardBusinessChanges() } returns flowOf(null)
 
         whenn()
-        val result = fixture.sut()
+        val result = fixture.sut().first()
 
         then()
-        assertFalse(DashboardFeature.APPOINTMENTS in result)
+        assertNull(result)
     }
 
     @Test
-    fun `saves fetched features to the data source keyed by business id`() = runUnitTest {
+    fun `recomputes when the dashboard business changes`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val permissions = noPermissions.copy(clients = ResourcePermission(view = true))
-        val fixture = Fixture(businessId, permissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } returns false
-
-        whenn()
-        fixture.sut()
-
-        then()
-        verifySuspend {
-            fixture.businessDataSource.saveDashboardFeatures(businessId, setOf(DashboardFeature.CLIENTS))
+        val fixture = Fixture()
+        val businesses = MutableSharedFlow<Business?>(replay = 1)
+        val firstBusiness = stubBusiness(permissions = noPermissions)
+        val secondBusiness = stubBusiness(permissions = fullPermissions)
+        businesses.tryEmit(firstBusiness)
+        every { fixture.observeDashboardBusinessChanges() } returns businesses
+        every { fixture.observeAppointmentsPluginEnabled(firstBusiness.id) } returns flowOf(false)
+        every { fixture.observeAppointmentsPluginEnabled(secondBusiness.id) } returns flowOf(false)
+        val results = mutableListOf<DashboardOverview?>()
+        val job = launch(Dispatchers.Unconfined) {
+            fixture.sut().collect { results.add(it) }
         }
+
+        whenn()
+        businesses.emit(secondBusiness)
+
+        then()
+        job.cancel()
+        assertEquals(secondBusiness.id, results.last()?.business?.id)
+        assertFalse(DashboardFeature.BUSINESS in results.first()!!.features)
+        assertTrue(DashboardFeature.BUSINESS in results.last()!!.features)
     }
 
     @Test
-    fun `cached emits the cached value before the fetched value when previously synced`() = runUnitTest {
+    fun `recomputes when the plugin state changes for the same business`() = runUnitTest {
         given()
-        val businessId = Uuid.random()
-        val fixture = Fixture(businessId, fullPermissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } returns false
-        everySuspend {
-            fixture.businessDataSource.getDashboardFeatures(businessId)
-        } returns setOf(DashboardFeature.CLIENTS)
-        val results = mutableListOf<Set<DashboardFeature>>()
+        val fixture = Fixture()
+        val business = stubBusiness(permissions = fullPermissions)
+        val pluginState = MutableSharedFlow<Boolean>(replay = 1).apply { tryEmit(false) }
+        every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
+        every { fixture.observeAppointmentsPluginEnabled(business.id) } returns pluginState
+        val results = mutableListOf<DashboardOverview?>()
+        val job = launch(Dispatchers.Unconfined) {
+            fixture.sut().collect { results.add(it) }
+        }
 
         whenn()
-        fixture.sut.cached(businessId) { results.add(it) }
+        pluginState.emit(true)
 
         then()
-        assertEquals(setOf(DashboardFeature.CLIENTS), results.first())
-        assertTrue(DashboardFeature.BUSINESS in results.last())
-    }
-
-    @Test
-    fun `cached skips the cached emission when never synced before`() = runUnitTest {
-        given()
-        val businessId = Uuid.random()
-        val fixture = Fixture(businessId, fullPermissions)
-        everySuspend { fixture.isAppointmentsPluginEnabled(any()) } returns false
-        everySuspend { fixture.businessDataSource.getDashboardFeatures(businessId) } returns null
-        val results = mutableListOf<Set<DashboardFeature>>()
-
-        whenn()
-        fixture.sut.cached(businessId) { results.add(it) }
-
-        then()
-        assertEquals(1, results.size)
+        job.cancel()
+        assertFalse(DashboardFeature.APPOINTMENTS in results.first()!!.features)
+        assertTrue(DashboardFeature.APPOINTMENTS in results.last()!!.features)
     }
 }

@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.retry
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.coroutine.DispatcherProvider
@@ -69,7 +68,6 @@ class DashboardViewModel(
                 if (id != null) {
                     observeAppointmentsPluginEnabled(id)
                         .map { enabled -> id to (if (enabled) HomeContent.ActivePlugin else HomeContent.Onboarding) }
-                        .onStart { emit(id to HomeContent.Loading) }
                         .catch {}
                 } else {
                     flowOf(id to HomeContent.Onboarding)

@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
-import library.cache.api.get
 import library.cache.api.getFlow
 import library.cache.api.set
 import me.bookk.core.data.DataSource
@@ -29,7 +28,6 @@ import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.CreateBusinessRequest
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
 import me.bookk.feature.business.domain.api.entity.Business
-import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
 import kotlin.uuid.Uuid
@@ -117,23 +115,9 @@ internal class CommonBusinessDataSource(
         preferences.set(Key.dashboardId, id?.toString())
     }
 
-    override suspend fun getDashboardBusinessId(): Uuid? {
-        return preferences.get(Key.dashboardId)?.let { Uuid.parse(it) }
-    }
-
     override fun getDashboardBusinessIdFlow(): Flow<Uuid?> {
         return preferences.getFlow(Key.dashboardId)
             .map { it?.let { Uuid.parse(it) } }
-    }
-
-    override suspend fun saveDashboardFeatures(businessId: Uuid, features: Set<DashboardFeature>) {
-        preferences.set(Key.dashboardFeatures(businessId), features.joinToString(",") { it.name })
-    }
-
-    override suspend fun getDashboardFeatures(businessId: Uuid): Set<DashboardFeature>? {
-        return preferences.get(Key.dashboardFeatures(businessId))?.let { raw ->
-            raw.split(",").filter { it.isNotBlank() }.map { DashboardFeature.valueOf(it) }.toSet()
-        }
     }
 
     override suspend fun doOnLogOut() {
@@ -142,6 +126,5 @@ internal class CommonBusinessDataSource(
 
     private object Key {
         val dashboardId = Preferences.Key<String>("dashboard_id")
-        fun dashboardFeatures(businessId: Uuid) = Preferences.Key<String>("dashboard_features_$businessId")
     }
 }

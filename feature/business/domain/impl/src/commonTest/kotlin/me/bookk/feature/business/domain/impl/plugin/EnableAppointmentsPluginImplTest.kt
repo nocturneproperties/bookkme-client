@@ -50,6 +50,7 @@ class EnableAppointmentsPluginImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } returns Unit
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
 
         whenn()
         fixture.sut(businessId)
@@ -59,17 +60,49 @@ class EnableAppointmentsPluginImplTest {
     }
 
     @Test
+    fun `caches the plugin as enabled after a successful call`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } returns Unit
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+
+        whenn()
+        fixture.sut(businessId)
+
+        then()
+        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
+    }
+
+    @Test
     fun `throws AlreadyEnabled on PLUGIN_ALREADY_ENABLED error`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
         everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } throws
             DomainError.BusinessError(AppointmentsErrorCodes.PLUGIN_ALREADY_ENABLED, "msg")
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
 
         whenn()
         then()
         assertFailsWith<EnableAppointmentsPlugin.Error.AlreadyEnabled> {
             fixture.sut(businessId)
         }
+    }
+
+    @Test
+    fun `caches the plugin as enabled when it was already enabled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } throws
+            DomainError.BusinessError(AppointmentsErrorCodes.PLUGIN_ALREADY_ENABLED, "msg")
+        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+
+        whenn()
+        runCatching { fixture.sut(businessId) }
+
+        then()
+        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
     }
 }

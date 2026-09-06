@@ -1,12 +1,11 @@
 package me.bookk.feature.business.domain.impl.plugin
 
 import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
+import dev.mokkery.every
 import dev.mokkery.mock
-import dev.mokkery.verify.VerifyMode
-import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -15,8 +14,6 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.feature.business.domain.api.entity.BusinessEvent
-import me.bookk.feature.business.domain.api.entity.businessEvents
 import me.bookk.feature.business.domain.datasource.PluginDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -45,13 +42,12 @@ class ObserveAppointmentsPluginEnabledImplTest {
     }
 
     @Test
-    fun `emits cached availability then remote availability on initial collection`() = runUnitTest {
+    fun `emits the cached availability immediately on collection`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns false
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        val availability = MutableSharedFlow<Boolean?>(replay = 1).apply { tryEmit(false) }
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns availability
         val results = mutableListOf<Boolean>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut(businessId).collect { results.add(it) }
@@ -61,48 +57,46 @@ class ObserveAppointmentsPluginEnabledImplTest {
         job.cancel()
 
         then()
+        assertEquals(listOf(false), results)
+    }
+
+    @Test
+    fun `relays a later availability change without needing an explicit event`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val availability = MutableSharedFlow<Boolean?>(replay = 1).apply { tryEmit(false) }
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns availability
+        val results = mutableListOf<Boolean>()
+        val job = launch(Dispatchers.Unconfined) {
+            fixture.sut(businessId).collect { results.add(it) }
+        }
+
+        whenn()
+        availability.emit(true)
+
+        then()
+        job.cancel()
         assertEquals(listOf(false, true), results)
     }
 
     @Test
-    fun `skips cached emission and emits only remote availability when never synced before`() = runUnitTest {
+    fun `defaults to disabled before the availability has ever been cached`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns null
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        val availability = MutableSharedFlow<Boolean?>(replay = 1).apply { tryEmit(null) }
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns availability
         val results = mutableListOf<Boolean>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut(businessId).collect { results.add(it) }
         }
 
         whenn()
-        job.cancel()
-
-        then()
-        assertEquals(listOf(true), results)
-    }
-
-    @Test
-    fun `refetches availability when a plugin state changed event is emitted`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns false
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
-        val job = launch(Dispatchers.Unconfined) {
-            fixture.sut(businessId).collect { }
-        }
-
-        whenn()
-        businessEvents.emit(BusinessEvent.PluginStateChanged)
+        availability.emit(true)
 
         then()
         job.cancel()
-        verifySuspend(VerifyMode.exactly(2)) {
-            fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId)
-        }
+        assertEquals(listOf(false, true), results)
     }
 }

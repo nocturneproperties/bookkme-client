@@ -5,7 +5,7 @@ import kotlin.uuid.Uuid
 
 class BusinessNavigation(
     val toAnalytics: () -> Unit = {},
-    val toClients: (Uuid) -> Unit = {},
+    val toClients: () -> Unit = {},
     val toEmployees: (Uuid) -> Unit = {},
     val toBusinessSettings: (Uuid) -> Unit = {},
     val toBusinessServices: (Uuid) -> Unit = {},

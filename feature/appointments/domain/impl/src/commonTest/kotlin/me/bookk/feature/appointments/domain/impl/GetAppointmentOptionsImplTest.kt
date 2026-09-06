@@ -79,7 +79,7 @@ class GetAppointmentOptionsImplTest {
         val clients = listOf(stubClient(businessId))
         val services = listOf(stubService(businessId))
         everySuspend { fixture.getAppointmentSettings(businessId) } returns settings
-        everySuspend { fixture.getClients(businessId) } returns clients
+        everySuspend { fixture.getClients.refresh(businessId) } returns clients
         everySuspend { fixture.getServices(businessId) } returns services
 
         whenn()
@@ -100,7 +100,7 @@ class GetAppointmentOptionsImplTest {
         val businessId = Uuid.random()
         val client = stubClient(businessId)
         everySuspend { fixture.getAppointmentSettings(businessId) } returns AppointmentSettings.stub(businessId)
-        everySuspend { fixture.getClients(businessId) } returns listOf(client)
+        everySuspend { fixture.getClients.refresh(businessId) } returns listOf(client)
         everySuspend { fixture.getServices(businessId) } returns emptyList()
 
         whenn()
@@ -121,7 +121,7 @@ class GetAppointmentOptionsImplTest {
         val businessId = Uuid.random()
         val service = stubService(businessId)
         everySuspend { fixture.getAppointmentSettings(businessId) } returns AppointmentSettings.stub(businessId)
-        everySuspend { fixture.getClients(businessId) } returns emptyList()
+        everySuspend { fixture.getClients.refresh(businessId) } returns emptyList()
         everySuspend { fixture.getServices(businessId) } returns listOf(service)
 
         whenn()

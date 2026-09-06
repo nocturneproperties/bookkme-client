@@ -35,7 +35,7 @@ internal open class LowPriorityDataFetch(
         runCatching {
             getServices(business.id)
             getServiceGroups(business.id)
-            getClientsList(business.id)
+            getClientsList.refresh(business.id)
             getEmployees(business.id)
             getAppointmentEnabled(business.id)
         }

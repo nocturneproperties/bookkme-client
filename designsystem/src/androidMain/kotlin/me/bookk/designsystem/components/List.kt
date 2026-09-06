@@ -1,5 +1,10 @@
 package me.bookk.designsystem.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.OverscrollEffect
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -12,6 +17,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -43,6 +52,17 @@ fun <T> List(
         userScrollEnabled = userScrollEnabled,
         overscrollEffect = overscrollEffect
     ) {
+        item {
+            var lastBannerError by remember { mutableStateOf(state.bannerError) }
+            if (state.bannerError != null) lastBannerError = state.bannerError
+            AnimatedVisibility(
+                visible = state.bannerError != null,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                lastBannerError?.let { BannerErrorView(it) }
+            }
+        }
         when {
             state.errorState != null -> {
                 item {

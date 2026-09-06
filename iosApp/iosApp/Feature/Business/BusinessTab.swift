@@ -40,8 +40,8 @@ struct BusinessTab: View {
 					switch type {
 					case let type as DashboardNavigationDestination.Settings:
 						BusinessSettingsScreen(id: type.id)
-					case let type as DashboardNavigationDestination.Clients:
-						ClientsListScreen(businessId: type.id)
+					case is DashboardNavigationDestination.Clients:
+						ClientsListScreen()
 					case let type as DashboardNavigationDestination.Employees:
 						EmployeeListScreen(businessId: type.id)
 					case let type as DashboardNavigationDestination.Services:

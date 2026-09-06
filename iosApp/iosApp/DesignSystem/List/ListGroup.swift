@@ -38,37 +38,42 @@ struct ListGroup<T, S: ListStyle, Header: View, Content: View>:View where T:AnyO
 	}
 	
 	var body: some View {
-		GeometryReader { geo in
-			List {
-				header()
-				if (listState.items.isEmpty) {
-					ZStack {
-						if let errorState = listState.errorState {
-							ListErrorView(state: errorState)
-						} else if (listState.isInitialLoading) {
-							ProgressView()
-						} else if let emptyState = listState.emptyState {
-							ListEmptyView(state: emptyState)
-						}
-					}
-					.frame(maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
+		List {
+			if let bannerError = listState.bannerError {
+				ListBannerErrorView(state: bannerError)
 					.listRowInsets(EdgeInsets())
-					.listRowBackground(Color.clear)
 					.listRowSeparator(.hidden)
-				} else {
-					ForEach(listState.typedItems) { item in
-						content(item)
-							.onAppear {
-								if item.id == listState.typedItems.last?.id {
-									listState.loadMore?()
-								}
-							}
+					.transition(.move(edge: .top).combined(with: .opacity))
+			}
+			header()
+			if (listState.items.isEmpty) {
+				ZStack {
+					if let errorState = listState.errorState {
+						ListErrorView(state: errorState)
+					} else if (listState.isInitialLoading) {
+						ProgressView()
+					} else if let emptyState = listState.emptyState {
+						ListEmptyView(state: emptyState)
 					}
 				}
+				.frame(maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
+				.listRowInsets(EdgeInsets())
+				.listRowBackground(Color.clear)
+				.listRowSeparator(.hidden)
+			} else {
+				ForEach(listState.typedItems) { item in
+					content(item)
+						.onAppear {
+							if item.id == listState.typedItems.last?.id {
+								listState.loadMore?()
+							}
+						}
+				}
 			}
-			.listStyle(listStyle)
-			.scrollDismissesKeyboard(.immediately)
 		}
+		.listStyle(listStyle)
+		.animation(.easeInOut(duration: 0.25), value: listState.bannerError != nil)
+		.scrollDismissesKeyboard(.immediately)
 	}
 }
 

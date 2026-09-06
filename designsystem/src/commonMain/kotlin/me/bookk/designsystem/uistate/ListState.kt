@@ -1,5 +1,6 @@
 package me.bookk.designsystem.uistate
 
+import me.bookk.designsystem.uistate.simple.BannerErrorState
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.simple.ErrorState
 
@@ -8,6 +9,7 @@ interface ListState<T> : ViewState {
     var loadMore: (() -> Unit)?
     var emptyState: EmptyState?
     var errorState: ErrorState?
+    var bannerError: BannerErrorState?
     var isInitialLoading: Boolean
 
     fun append(list: List<T>)

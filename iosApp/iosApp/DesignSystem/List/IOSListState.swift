@@ -22,6 +22,7 @@ class IOSListState<T>: @MainActor IOSViewState, @MainActor ListState, NativeStat
     var items: [Any] { typedItems }
     var emptyState: EmptyState? = nil
     var errorState: ErrorState? = nil
+    var bannerError: BannerErrorState? = nil
     var loadMore: (() -> Void)? = nil
     var isInitialLoading: Bool = true
     

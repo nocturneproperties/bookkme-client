@@ -1,28 +1,31 @@
 package me.bookk.feature.clients.domain.impl
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import me.bookk.core.coroutine.flatMapLatestOrNull
+import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 import kotlin.uuid.Uuid
 
 internal class GetClientsListImpl(
-    private val clientsDataSource: ClientsDataSource
+    private val clientsDataSource: ClientsDataSource,
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges
 ) : GetClientsList {
-    override suspend fun invoke(businessId: Uuid): List<Client> {
-        return clientsDataSource.getClients(businessId).also {
-            clientsDataSource.deleteClientsInDb()
-            clientsDataSource.saveClientsInDb(it)
-            clientsDataSource.saveLastSyncedAt(businessId)
-        }
+
+    override fun flow(): Flow<List<Client>> {
+        return observeDashboardBusinessChanges()
+            .flatMapLatestOrNull { business ->
+                clientsDataSource.observeClientsDBChanges(business.id)
+            }
+            .map { it.orEmpty() }
     }
 
-    override suspend fun cached(
-        businessId: Uuid,
-        onResultAvailable: suspend (List<Client>) -> Unit
-    ) {
-        if (clientsDataSource.getLastSyncedAt(businessId) != null) {
-            onResultAvailable(clientsDataSource.getClientsFromDb(businessId))
-        }
-        onResultAvailable(invoke(businessId))
+    override suspend fun refresh(businessId: Uuid): List<Client> {
+        val clients = clientsDataSource.getClients(businessId)
+        clientsDataSource.deleteClientsInDb(businessId)
+        clientsDataSource.saveClientsInDb(clients)
+        return clients
     }
 }

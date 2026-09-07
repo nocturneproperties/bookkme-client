@@ -39,7 +39,7 @@ internal open class LowPriorityDataFetch(
             getEmployees(business.id)
             getAppointmentEnabled(business.id)
         }
-        runCatching { getAppointmentSettings(business.id) }
+        runCatching { getAppointmentSettings.refresh(business.id) }
         runCatching {
             updateNotificationToken()
             getNotificationSettings()

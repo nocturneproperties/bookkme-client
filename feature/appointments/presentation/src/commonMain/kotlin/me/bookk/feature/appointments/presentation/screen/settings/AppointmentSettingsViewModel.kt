@@ -1,6 +1,9 @@
 package me.bookk.feature.appointments.presentation.screen.settings
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -37,17 +40,26 @@ class AppointmentSettingsViewModel(
     val uiState: AppointmentSettingsState = stateFactory.createAppointmentSettingsState().setup()
 
     init {
+        observeSettings()
         loadSettings()
     }
 
+    private fun observeSettings() {
+        getAppointmentSettings.flow(businessId)
+            .flowOn(DispatcherProvider.io)
+            .onEach { settings ->
+                settings?.let {
+                    loadedSettings = it
+                    renderSettings(it)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     private fun loadSettings() {
-        launchCached(
+        launch(
             launchIn = DispatcherProvider.io,
-            call = { getAppointmentSettings.cached(businessId, it) },
-            onComplete = {
-                loadedSettings = it
-                renderSettings(it)
-            },
+            call = { getAppointmentSettings.refresh(businessId) },
             onError = { uiState.notifications.add(it.notification()) }
         )
     }

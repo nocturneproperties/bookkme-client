@@ -21,7 +21,7 @@ internal class GetAppointmentOptionsImpl(
     override suspend fun invoke(businessId: Uuid): AppointmentOptions = coroutineScope {
         val clients = async { getClients.refresh(businessId).snapshotClients() }
         val services = async { getServices.refresh(businessId).snapshotServices() }
-        val settings = async { getAppointmentSettings(businessId) }
+        val settings = async { getAppointmentSettings.refresh(businessId) }
         AppointmentOptions(
             settings = settings.await(),
             clients = clients.await(),

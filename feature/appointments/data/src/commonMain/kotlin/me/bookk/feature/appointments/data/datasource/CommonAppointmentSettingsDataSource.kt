@@ -5,6 +5,8 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.bookk.core.data.DataSource
 import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.feature.appointments.data.mapping.toDayOffEntities
@@ -40,10 +42,10 @@ internal class CommonAppointmentSettingsDataSource(
                 .toDomain()
         }
 
-    override suspend fun getAppointmentSettingsFromDB(businessId: Uuid): AppointmentSettings? =
-        mapExceptions {
-            appointmentSettingsDao.getByBusinessId(businessId)?.toDomain()
-        }
+    override fun observeAppointmentSettingsDBChanges(businessId: Uuid): Flow<AppointmentSettings?> =
+        appointmentSettingsDao.observeByBusinessId(businessId)
+            .map { it?.toDomain() }
+            .mapErrors()
 
     override suspend fun saveAppointmentSettingsInDB(settings: AppointmentSettings) {
         mapExceptions {

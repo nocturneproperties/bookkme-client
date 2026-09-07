@@ -48,7 +48,6 @@ import me.bookk.designsystem.theme.typography.secondary
 import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequestContent
 import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequestViewModel
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun AppointmentListScreen(
@@ -78,11 +77,11 @@ internal fun AppointmentListScreen(
         if (state.datePicker.isDatePickerVisible) {
             AppDatePicker(state.datePicker)
         }
-        state.requestsBusinessId?.let {
+        if (state.isRequestsVisible) {
             val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-            val requestViewModel: AppointmentRequestViewModel = koinViewModel { parametersOf(it) }
+            val requestViewModel: AppointmentRequestViewModel = koinViewModel()
             DesignSystemBottomSheet(
-                onDismiss = { state.requestsBusinessId = null },
+                onDismiss = { state.isRequestsVisible = false },
                 sheetState = sheetState,
             ) {
                 ObserveNotifications(requestViewModel.uiState.notifications)

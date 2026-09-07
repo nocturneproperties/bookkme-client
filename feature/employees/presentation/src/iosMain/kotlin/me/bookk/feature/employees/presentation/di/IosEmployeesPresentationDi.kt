@@ -11,13 +11,13 @@ import org.koin.mp.KoinPlatform
 import kotlin.uuid.Uuid
 
 internal actual fun platformEmployeesDiModule(): Module = module {
-    factoryOf(::EmployeeListViewModel)
+    factory { EmployeeListViewModel(get(), get(), get(), get()) }
     factoryOf(::InviteEmployeeViewModel)
 }
 
 @UsedInSwift
-fun employeeListVM(id: Uuid): EmployeeListViewModel =
-    KoinPlatform.getKoin().get(parameters = { parametersOf(id) })
+fun employeeListVM(): EmployeeListViewModel =
+    KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun inviteEmployeeVM(businessId: Uuid): InviteEmployeeViewModel =

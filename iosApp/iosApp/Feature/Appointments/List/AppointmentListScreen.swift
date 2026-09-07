@@ -52,12 +52,12 @@ struct AppointmentListScreen: View {
         )) {
             AppDatePicker(state: state.datePicker)
         }
-		.sheet(item: Binding(get: {
-			state.requestsBusinessId
+		.sheet(isPresented: Binding(get: {
+			state.isRequestsVisible
 		}, set: {
-			state.requestsBusinessId = $0
-		})) { businessId in
-            AppointmentRequestSheet(businessId: businessId)
+			state.isRequestsVisible = $0
+		})) {
+            AppointmentRequestSheet()
         }
 		.listSectionSpacing(.compact)
 		.contentMargins(.top, 8, for: .scrollContent)

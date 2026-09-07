@@ -91,9 +91,6 @@ class AppointmentListViewModel(
             .distinctUntilChanged()
             .onEach {
                 businessId = it
-                if (uiState.requestsBusinessId != null) {
-                    uiState.requestsBusinessId = it
-                }
                 loadAppointments()
                 loadRequestCount(it)
             }
@@ -154,7 +151,7 @@ class AppointmentListViewModel(
     }
 
     private fun showRequestsScreen() {
-        uiState.requestsBusinessId = businessId
+        uiState.isRequestsVisible = true
     }
 
     private fun onPickDateClick() {

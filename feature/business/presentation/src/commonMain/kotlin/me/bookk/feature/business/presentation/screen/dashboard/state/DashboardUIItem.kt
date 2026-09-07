@@ -21,7 +21,7 @@ sealed class BusinessDashboardSection(
         features: Set<DashboardFeature>,
         items: List<DashboardUIItem> = buildList {
             if (features.contains(DashboardFeature.EMPLOYEES)) {
-                add(Employees(id))
+                add(Employees)
             }
             if (features.contains(DashboardFeature.CLIENTS)) {
                 add(Clients)
@@ -31,7 +31,7 @@ sealed class BusinessDashboardSection(
             }
             if (features.contains(DashboardFeature.BUSINESS)) {
                 add(Analytics)
-                add(Settings(id))
+                add(Settings)
                 add(Plugins(id))
             }
         }
@@ -39,9 +39,9 @@ sealed class BusinessDashboardSection(
         BusinessRes.strings.business_dashboard_business.desc(),
         items
     ) {
-        data class Employees(val id: Uuid) : DashboardUIItem(
+        data object Employees : DashboardUIItem(
             BusinessRes.strings.business_dashboard_employees.desc(),
-            DashboardNavigationDestination.Employees(id)
+            DashboardNavigationDestination.Employees
         )
 
         data object Clients : DashboardUIItem(
@@ -54,9 +54,9 @@ sealed class BusinessDashboardSection(
             DashboardNavigationDestination.Analytics
         )
 
-        data class Settings(val id: Uuid) : DashboardUIItem(
+        data object Settings : DashboardUIItem(
             BusinessRes.strings.business_dashboard_settings.desc(),
-            DashboardNavigationDestination.Settings(id)
+            DashboardNavigationDestination.Settings
         )
 
         data object Services : DashboardUIItem(

@@ -6,6 +6,8 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -48,9 +50,10 @@ internal class EmployeeDataSourceImpl(
             .map { it.toDomain() }
     }
 
-    override suspend fun getEmployeesFromDb(businessId: Uuid): List<Employee> = mapExceptions {
-        employeeDao.getEmployees(businessId).map { it.toDomain() }
-    }
+    override fun observeEmployeesDBChanges(businessId: Uuid): Flow<List<Employee>> =
+        employeeDao.observeEmployees(businessId)
+            .map { employees -> employees.map { it.toDomain() } }
+            .mapErrors()
 
     override suspend fun saveEmployeesInDb(employees: List<Employee>) {
         mapExceptions {
@@ -64,8 +67,14 @@ internal class EmployeeDataSourceImpl(
         }
     }
 
-    override suspend fun deleteEmployeesInDb() {
-        mapExceptions { employeeDao.clear() }
+    override suspend fun getEmployeeIdsInDb(businessId: Uuid): List<Uuid> = mapExceptions {
+        employeeDao.getIdsForBusiness(businessId)
+    }
+
+    override suspend fun deleteEmployeesInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> employeeDao.deleteByIds(chunk) }
+        }
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {

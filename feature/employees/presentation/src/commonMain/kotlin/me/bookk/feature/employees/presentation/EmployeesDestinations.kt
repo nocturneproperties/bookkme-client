@@ -6,7 +6,7 @@ import kotlin.uuid.Uuid
 
 sealed class EmployeesDestinations : NavigationDestination() {
     @Serializable
-    data class EmployeeList(val id: Uuid) : EmployeesDestinations()
+    data object EmployeeList : EmployeesDestinations()
     @Serializable
     data class InviteEmployee(val businessId: Uuid) : EmployeesDestinations()
 }

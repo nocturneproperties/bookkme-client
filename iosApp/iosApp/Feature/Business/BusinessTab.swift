@@ -38,12 +38,12 @@ struct BusinessTab: View {
 				}
 				.navigationDestination(for: DashboardNavigationDestination.self) { type in
 					switch type {
-					case let type as DashboardNavigationDestination.Settings:
-						BusinessSettingsScreen(id: type.id)
+					case is DashboardNavigationDestination.Settings:
+						BusinessSettingsScreen()
 					case is DashboardNavigationDestination.Clients:
 						ClientsListScreen()
-					case let type as DashboardNavigationDestination.Employees:
-						EmployeeListScreen(businessId: type.id)
+					case is DashboardNavigationDestination.Employees:
+						EmployeeListScreen()
 					case is DashboardNavigationDestination.Services:
 						ServiceListScreen()
 					case let type as DashboardNavigationDestination.Plugins:

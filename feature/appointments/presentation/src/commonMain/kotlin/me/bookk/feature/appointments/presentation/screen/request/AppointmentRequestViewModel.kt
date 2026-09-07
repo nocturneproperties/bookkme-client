@@ -1,6 +1,10 @@
 package me.bookk.feature.appointments.presentation.screen.request
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -25,16 +29,16 @@ import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest.Error
 import me.bookk.feature.appointments.domain.api.DeclineAppointmentRequest
 import me.bookk.feature.appointments.domain.api.GetAppointmentRequests
+import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
-import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
 class AppointmentRequestViewModel(
-    @InjectedParam private val businessId: Uuid,
     private val getAppointmentRequests: GetAppointmentRequests,
     private val approveAppointmentRequest: ApproveAppointmentRequest,
     private val declineAppointmentRequest: DeclineAppointmentRequest,
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     stateFactory: AppointmentsStateFactory,
     dateLocalizer: DateLocalizer,
     vmArgs: VmArgs
@@ -62,7 +66,10 @@ class AppointmentRequestViewModel(
     }
 
     private fun observeRequests() {
-        getAppointmentRequests.flow(businessId)
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .distinctUntilChanged()
+            .flatMapLatest { getAppointmentRequests.flow(it) }
             .flowOn(DispatcherProvider.io)
             .onEach { uiState.requests.replace(it.map(::createRequestItemState)) }
             .launchIn(viewModelScope)
@@ -71,7 +78,10 @@ class AppointmentRequestViewModel(
     private fun loadRequests() {
         loadList(
             listState = uiState.requests,
-            call = { getAppointmentRequests.refresh(businessId) }
+            call = {
+                val businessId = observeCurrentBusinessId().filterNotNull().first()
+                getAppointmentRequests.refresh(businessId)
+            }
         )
     }
 
@@ -131,7 +141,10 @@ class AppointmentRequestViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { item.declineButton.startLoading() },
-            call = { declineAppointmentRequest(requestId, businessId, reason) },
+            call = {
+                val businessId = observeCurrentBusinessId().filterNotNull().first()
+                declineAppointmentRequest(requestId, businessId, reason)
+            },
             onComplete = { uiState.requests.replace(uiState.requests.items - item) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { item.declineButton.stopLoading() },

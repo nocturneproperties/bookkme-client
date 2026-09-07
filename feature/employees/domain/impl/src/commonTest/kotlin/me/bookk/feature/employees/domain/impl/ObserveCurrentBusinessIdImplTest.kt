@@ -1,34 +1,35 @@
-package me.bookk.feature.business.domain.impl.business
+package me.bookk.feature.employees.domain.impl
 
 import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
+import dev.mokkery.every
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import library.money.api.Currency
-import me.bookk.core.domain.entity.Error
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
-import me.bookk.feature.business.domain.datasource.BusinessDataSource
-import me.bookk.feature.business.domain.impl.stubBusinessPermissions
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetBusinessByIdImplTest {
+class ObserveCurrentBusinessIdImplTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -43,8 +44,8 @@ class GetBusinessByIdImplTest {
     }
 
     private class Fixture {
-        val dataSource = mock<BusinessDataSource>()
-        val sut = GetBusinessByIdImpl(dataSource)
+        val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
+        val sut = ObserveCurrentBusinessIdImpl(observeDashboardBusinessChanges)
     }
 
     private fun stubBusiness(id: Uuid = Uuid.random()) = Business(
@@ -57,36 +58,40 @@ class GetBusinessByIdImplTest {
         timeZone = TimeZone.UTC,
         socials = emptyMap(),
         schedule = WorkingSchedule(),
-        permissions = stubBusinessPermissions()
+        permissions = BusinessPermissions(
+            business = ResourcePermission(),
+            employees = ResourcePermission(),
+            clients = ResourcePermission(),
+            services = ResourcePermission(),
+            appointments = ResourcePermission()
+        )
     )
 
     @Test
-    fun `returns business when found`() = runUnitTest {
+    fun `emits business id when business is present`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val id = Uuid.random()
-        val expected = stubBusiness(id)
-        everySuspend { fixture.dataSource.getBusinessById(id) } returns expected
+        val businessId = Uuid.random()
+        val business = stubBusiness(id = businessId)
+        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(business)
 
         whenn()
-        val result = fixture.sut(id)
+        val result = fixture.sut().first()
 
         then()
-        assertEquals(expected, result)
+        assertEquals(businessId, result)
     }
 
     @Test
-    fun `throws when datasource returns null`() = runUnitTest {
+    fun `emits null when business is null`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val id = Uuid.random()
-        everySuspend { fixture.dataSource.getBusinessById(id) } returns null
+        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(null)
 
         whenn()
-        val thrown = runCatching { fixture.sut(id) }.exceptionOrNull()
+        val result = fixture.sut().first()
 
         then()
-        assertNotNull(thrown)
-        assertTrue(thrown is Error.InvalidApplicationState)
+        assertNull(result)
     }
 }

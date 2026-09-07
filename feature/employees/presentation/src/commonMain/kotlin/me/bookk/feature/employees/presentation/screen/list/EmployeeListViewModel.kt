@@ -1,23 +1,29 @@
 package me.bookk.feature.employees.presentation.screen.list
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.capitalizeChar
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.convenience.loadCachedList
+import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.employees.domain.api.GetEmployees
+import me.bookk.feature.employees.domain.api.ObserveCurrentBusinessId
+import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.presentation.EmployeesStateFactory
-import org.koin.core.annotation.InjectedParam
-import kotlin.uuid.Uuid
 
 class EmployeeListViewModel(
-    @InjectedParam private val businessId: Uuid,
     private val getEmployees: GetEmployees,
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     stateFactory: EmployeesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -26,22 +32,44 @@ class EmployeeListViewModel(
     private var items = listOf<EmployeeSection>()
 
     init {
+        observeEmployees()
         loadEmployees()
     }
 
+    private fun observeEmployees() {
+        getEmployees.flow()
+            .flowOn(DispatcherProvider.io)
+            .onEach { renderEmployees(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun renderEmployees(employees: List<Employee>) {
+        if (employees.isEmpty() && uiState.employeesList.isInitialLoading) return
+        val grouped = employees
+            .sortedBy { it.fullName.trim() }
+            .groupBy { it.name[0].toString().capitalizeChar() }
+            .map { entry -> EmployeeSection(id = entry.key, header = entry.key, items = entry.value) }
+        items = grouped
+        uiState.employeesList.replace(grouped)
+    }
+
     private fun loadEmployees() {
-        loadCachedList(
+        loadList(
             listState = uiState.employeesList,
             refreshState = uiState.refreshState,
-            call = { getEmployees.cached(businessId, it) },
-            onComplete = {
-                val grouped = it
-                    .sortedBy { employee -> employee.fullName.trim() }
-                    .groupBy { employee -> employee.name[0].toString().capitalizeChar() }
-                    .map { entry -> EmployeeSection(id = entry.key, header = entry.key, items = entry.value) }
-                items = grouped
-                uiState.employeesList.replace(grouped)
-            },
+            call = {
+                val businessId = observeCurrentBusinessId().filterNotNull().first()
+                getEmployees.refresh(businessId)
+            }
+        )
+    }
+
+    private fun onAddEmployeeClick() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { observeCurrentBusinessId().filterNotNull().first() },
+            onComplete = { uiState.navigation.push(EmployeeListDestinations.AddEmployee(it)) },
+            onError = { uiState.notifications.add(it.notification()) }
         )
     }
 
@@ -67,7 +95,7 @@ class EmployeeListViewModel(
                 AppBarAction(
                     icon = DesignSystem.images.plus,
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.uiState.navigation.push(EmployeeListDestinations.AddEmployee(businessId)) }
+                    onClick = weakVMClosure { it.onAddEmployeeClick() }
                 )
             )
         )

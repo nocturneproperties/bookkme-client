@@ -1,6 +1,12 @@
 package me.bookk.feature.business.presentation.screen.settings
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retry
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -28,7 +34,7 @@ import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
-import me.bookk.feature.business.domain.api.business.GetBusinessById
+import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.Business.Social
@@ -47,13 +53,11 @@ import me.bookk.feature.business.presentation.screen.settings.state.ScheduleStat
 import me.bookk.feature.business.presentation.screen.settings.state.TimeSettingState
 import me.bookk.feature.business.presentation.screen.settings.state.toCurrencyUI
 import kotlin.properties.Delegates
-import kotlin.uuid.Uuid
 
 class BusinessSettingsViewModel(
-    private val businessId: Uuid,
     private val deviceFacade: DeviceFacade,
-    private val getBusinessById: GetBusinessById,
     private val updateBusiness: UpdateBusiness,
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
     dateLocalizer: DateLocalizer,
     stateFactory: BusinessStateFactory,
     vmArgs: VmArgs
@@ -68,7 +72,7 @@ class BusinessSettingsViewModel(
     private var businessLocation: Business.Location? = null
 
     init {
-        loadBusinessDetails()
+        observeCurrentBusiness()
     }
 
     private fun BusinessSettingsState.setup() = apply {
@@ -78,38 +82,41 @@ class BusinessSettingsViewModel(
         setupDayOffs()
     }
 
-    private fun loadBusinessDetails() {
-        launch(
-            launchIn = DispatcherProvider.io,
-            call = { getBusinessById(businessId) },
-            onComplete = {
-                referenceBusiness = it
-                businessLocation = it.location
-                uiState.name.text = it.name
-                uiState.description.text = it.description
-                uiState.location.text = it.location?.toString().orEmpty()
-                uiState.address.text = it.address
-                uiState.currency.replaceOptions(Money.SupportedCurrency.entries.toCurrencyUI())
-                uiState.currency.selectedItem = uiState.currency.options.first { currencyUI ->
-                    currencyUI.domainValue == Money.SupportedCurrency.valueOf(it.currency.code())
-                }.also { uiState.currency.textField.updateText(it.displayName) }
-                uiState.currency.textField.placeholder = BusinessRes.strings.business_settings_currency_label.desc()
-                uiState.instagram.text = it.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
-                uiState.telegram.text = it.socials[SocialKind.TELEGRAM]?.value.orEmpty()
-                uiState.viber.text = it.socials[SocialKind.VIBER]?.value.orEmpty()
-                uiState.phone.text = it.socials[SocialKind.PHONE]?.value.orEmpty()
-                uiState.description.isValid = true
-                uiState.location.isValid = true
-                uiState.address.isValid = true
-                uiState.instagram.isValid = true
-                uiState.viber.isValid = true
-                uiState.telegram.isValid = true
-                uiState.name.isValid = true
-                uiState.phone.isValid = true
-                renderSchedule(it.schedule)
-            },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
-        )
+    private fun observeCurrentBusiness() {
+        observeDashboardBusinessChanges()
+            .flowOn(DispatcherProvider.io)
+            .filterNotNull()
+            .distinctUntilChanged()
+            .onEach { renderBusiness(it) }
+            .retry()
+            .launchIn(viewModelScope)
+    }
+
+    private fun renderBusiness(business: Business) {
+        referenceBusiness = business
+        businessLocation = business.location
+        uiState.name.text = business.name
+        uiState.description.text = business.description
+        uiState.location.text = business.location?.toString().orEmpty()
+        uiState.address.text = business.address
+        uiState.currency.replaceOptions(Money.SupportedCurrency.entries.toCurrencyUI())
+        uiState.currency.selectedItem = uiState.currency.options.first { currencyUI ->
+            currencyUI.domainValue == Money.SupportedCurrency.valueOf(business.currency.code())
+        }.also { uiState.currency.textField.updateText(it.displayName) }
+        uiState.currency.textField.placeholder = BusinessRes.strings.business_settings_currency_label.desc()
+        uiState.instagram.text = business.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
+        uiState.telegram.text = business.socials[SocialKind.TELEGRAM]?.value.orEmpty()
+        uiState.viber.text = business.socials[SocialKind.VIBER]?.value.orEmpty()
+        uiState.phone.text = business.socials[SocialKind.PHONE]?.value.orEmpty()
+        uiState.description.isValid = true
+        uiState.location.isValid = true
+        uiState.address.isValid = true
+        uiState.instagram.isValid = true
+        uiState.viber.isValid = true
+        uiState.telegram.isValid = true
+        uiState.name.isValid = true
+        uiState.phone.isValid = true
+        renderSchedule(business.schedule)
     }
 
     fun onSaveClick() {

@@ -105,7 +105,7 @@ class LowPriorityDataFetchTest {
         everySuspend { fixture.getServices.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getServiceGroups.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getClientsList.refresh(business.id) } returns emptyList()
-        everySuspend { fixture.getEmployees(business.id) } returns emptyList()
+        everySuspend { fixture.getEmployees.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getAppointmentEnabled(business.id) } returns true
         everySuspend { fixture.getAppointmentSettings.refresh(business.id) } returns AppointmentSettings.stub()
         everySuspend { fixture.updateNotificationToken() } returns Unit
@@ -125,7 +125,7 @@ class LowPriorityDataFetchTest {
         verifySuspend(VerifyMode.exactly(0)) { fixture.getServices.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getServiceGroups.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getClientsList.refresh(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getEmployees(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getEmployees.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentEnabled(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentSettings.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.updateNotificationToken() }
@@ -161,7 +161,7 @@ class LowPriorityDataFetchTest {
         verifySuspend { fixture.getServices.refresh(business.id) }
         verifySuspend { fixture.getServiceGroups.refresh(business.id) }
         verifySuspend { fixture.getClientsList.refresh(business.id) }
-        verifySuspend { fixture.getEmployees(business.id) }
+        verifySuspend { fixture.getEmployees.refresh(business.id) }
         verifySuspend { fixture.getAppointmentEnabled(business.id) }
         verifySuspend { fixture.getAppointmentSettings.refresh(business.id) }
         verifySuspend { fixture.updateNotificationToken() }

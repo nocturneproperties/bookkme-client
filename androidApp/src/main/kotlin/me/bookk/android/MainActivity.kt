@@ -158,7 +158,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                     businessTab = {
                         BusinessTab(
                             showEmployees = {
-                                controller.navigate(EmployeesDestinations.EmployeeList(it))
+                                controller.navigate(EmployeesDestinations.EmployeeList)
                             },
                             showClients = {
                                 controller.navigate(ClientsDestinations.Clients)

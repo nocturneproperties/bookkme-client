@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import me.bookk.database.entity.EmployeeDayOffEntity
 import me.bookk.database.entity.EmployeeDayScheduleEntity
 import me.bookk.database.entity.EmployeeEntity
@@ -18,7 +19,13 @@ import kotlin.uuid.Uuid
 abstract class EmployeeDao {
     @Transaction
     @Query("select * from employee where businessId = :businessId")
-    abstract suspend fun getEmployees(businessId: Uuid): List<EmployeeLocal>
+    abstract fun observeEmployees(businessId: Uuid): Flow<List<EmployeeLocal>>
+
+    @Query("select id from employee where businessId = :businessId")
+    abstract suspend fun getIdsForBusiness(businessId: Uuid): List<Uuid>
+
+    @Query("delete from employee where id in (:ids)")
+    abstract suspend fun deleteByIds(ids: List<Uuid>)
 
     @Upsert
     abstract suspend fun upsertEmployees(entities: List<EmployeeEntity>)

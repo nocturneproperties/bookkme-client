@@ -13,8 +13,8 @@ struct BusinessSettingsScreen: View {
 	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: BusinessSettingsViewModel
 	
-	init(id: shared.KotlinUuid) {
-		self._viewModel = StateViewModel(wrappedValue: IOSBusinessDiKt.businessSettingsVM(id: id))
+	init() {
+		self._viewModel = StateViewModel(wrappedValue: IOSBusinessDiKt.businessSettingsVM())
 	}
 	
 	var body: some View {

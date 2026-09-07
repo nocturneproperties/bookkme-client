@@ -1,5 +1,7 @@
 package me.bookk.feature.appointments.domain.impl
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.bookk.feature.appointments.domain.api.GetAppointmentRequests
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
@@ -10,22 +12,22 @@ internal class GetAppointmentRequestsImpl(
     private val dataSource: AppointmentRequestDataSource
 ) : GetAppointmentRequests {
 
-    override suspend fun invoke(businessId: Uuid): List<AppointmentRequest> {
-        return dataSource.getAppointmentRequests(businessId)
-            .also { dataSource.saveAppointmentRequestsInDB(it) }
+    override fun flow(businessId: Uuid): Flow<List<AppointmentRequest>> {
+        return dataSource.observeAppointmentRequestsDBChanges(businessId)
+            .map { requests ->
+                requests.filter { it.status == AppointmentRequestStatus.PENDING }.sortedBy { it.date }
+            }
     }
 
-
-    override suspend fun cached(
-        businessId: Uuid,
-        onResultAvailable: suspend (List<AppointmentRequest>) -> Unit
-    ) {
+    override suspend fun refresh(businessId: Uuid): List<AppointmentRequest> {
         val requests = dataSource.getAppointmentRequests(businessId)
-            .filter { it.status == AppointmentRequestStatus.PENDING }
-            .sortedBy { it.date }
-
-        onResultAvailable(requests)
-        onResultAvailable(invoke(businessId))
+        val freshIds = requests.map { it.id }.toSet()
+        val staleIds = dataSource.getAppointmentRequestIdsInDb(businessId).filterNot { it in freshIds }
+        if (staleIds.isNotEmpty()) {
+            dataSource.deleteAppointmentRequestsInDb(staleIds)
+        }
+        dataSource.saveAppointmentRequestsInDB(requests)
+        dataSource.saveLastSyncedAt(businessId)
+        return requests
     }
 }
-

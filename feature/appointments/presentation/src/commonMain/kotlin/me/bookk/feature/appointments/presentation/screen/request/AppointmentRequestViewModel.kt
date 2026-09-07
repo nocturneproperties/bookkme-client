@@ -1,6 +1,9 @@
 package me.bookk.feature.appointments.presentation.screen.request
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
@@ -12,7 +15,7 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.convenience.loadCachedList
+import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -42,6 +45,10 @@ class AppointmentRequestViewModel(
     private val timeFormatter = dateLocalizer.forStyle(DateStyle.SHORT)
     private val dateFormatter = dateLocalizer.forStyle(DateStyle.D_MMM_YYYY_RELATIVE)
 
+    init {
+        observeRequests()
+    }
+
     override fun onViewPresented() {
         super.onViewPresented()
         loadRequests()
@@ -54,11 +61,17 @@ class AppointmentRequestViewModel(
         )
     }
 
+    private fun observeRequests() {
+        getAppointmentRequests.flow(businessId)
+            .flowOn(DispatcherProvider.io)
+            .onEach { uiState.requests.replace(it.map(::createRequestItemState)) }
+            .launchIn(viewModelScope)
+    }
+
     private fun loadRequests() {
-        loadCachedList(
+        loadList(
             listState = uiState.requests,
-            call = { getAppointmentRequests.cached(businessId, it) },
-            onComplete = { uiState.requests.replace(it.map(::createRequestItemState)) },
+            call = { getAppointmentRequests.refresh(businessId) }
         )
     }
 

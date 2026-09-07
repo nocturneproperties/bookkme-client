@@ -113,7 +113,7 @@ class AppointmentListViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.requestsButton.startLoading() },
-            call = { getAppointmentRequests(businessId).size },
+            call = { getAppointmentRequests.refresh(businessId).size },
             onComplete = {
                 uiState.requestsButton.text =
                     AppointmentsRes.strings.appointments_requests_count.format(it)

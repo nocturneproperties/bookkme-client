@@ -14,6 +14,6 @@ import org.koin.dsl.module
 
 fun appointmentsDataModule() = module {
     singleOf(::CommonAppointmentDataSource) binds arrayOf(AppointmentDataSource::class, LogOutAction::class)
-    singleOf(::CommonAppointmentRequestDataSource) bind AppointmentRequestDataSource::class
+    singleOf(::CommonAppointmentRequestDataSource) binds arrayOf(AppointmentRequestDataSource::class, LogOutAction::class)
     singleOf(::CommonAppointmentSettingsDataSource) bind AppointmentSettingsDataSource::class
 }

@@ -13,6 +13,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -21,6 +22,7 @@ import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.list.ClientsListDestination.AddClient
+import kotlin.uuid.Uuid
 
 class ClientsListViewModel(
     private val getClientsList: GetClientsList,
@@ -34,7 +36,7 @@ class ClientsListViewModel(
 
     init {
         observeClients()
-        loadClients()
+        observeBusinessChanges()
     }
 
     private fun observeClients() {
@@ -61,14 +63,21 @@ class ClientsListViewModel(
         uiState.clientsList.replace(grouped)
     }
 
-    private fun loadClients() {
+    private fun observeBusinessChanges() {
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .flowOn(DispatcherProvider.io)
+            .resetListOnChange(uiState.clientsList)
+            .onEach { loadClients(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun loadClients(businessId: Uuid) {
         loadList(
             listState = uiState.clientsList,
+            notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = {
-                val businessId = observeCurrentBusinessId().filterNotNull().first()
-                getClientsList.refresh(businessId)
-            }
+            call = { getClientsList.refresh(businessId) }
         )
     }
 
@@ -115,7 +124,6 @@ class ClientsListViewModel(
         appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
-        refreshState.onRefresh = weakVMClosure { it.loadClients() }
         clientsList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = ClientsRes.strings.clients_empty.desc()

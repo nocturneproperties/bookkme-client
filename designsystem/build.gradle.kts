@@ -16,11 +16,14 @@ kotlin {
             implementation(projects.environment.api)
             implementation(projects.library.money)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
     }
 }
 
 multiplatformResources {
     resourcesPackage.set("me.bookk.designsystem.resources")
     resourcesClassName.set("DesignSystem")
-    iosMinimalDeploymentTarget
+    iosMinimalDeploymentTarget.set("26.0")
 }

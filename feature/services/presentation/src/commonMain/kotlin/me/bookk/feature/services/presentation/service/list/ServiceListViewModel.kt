@@ -13,6 +13,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
@@ -30,6 +31,7 @@ import me.bookk.feature.services.presentation.service.list.ServiceListDestinatio
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceGroups
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceUI
+import kotlin.uuid.Uuid
 
 class ServiceListViewModel(
     private val getServices: GetServices,
@@ -45,7 +47,7 @@ class ServiceListViewModel(
 
     init {
         observeServices()
-        loadServiceList()
+        observeBusinessChanges()
     }
 
     private fun observeServices() {
@@ -72,14 +74,21 @@ class ServiceListViewModel(
         uiState.services.replace(items)
     }
 
-    private fun loadServiceList() {
+    private fun observeBusinessChanges() {
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .flowOn(DispatcherProvider.io)
+            .resetListOnChange(uiState.services)
+            .onEach { loadServiceList(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun loadServiceList(businessId: Uuid) {
         loadList(
             listState = uiState.services,
+            notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = {
-                val businessId = observeCurrentBusinessId().filterNotNull().first()
-                getServices.refresh(businessId)
-            }
+            call = { getServices.refresh(businessId) }
         )
     }
 
@@ -155,7 +164,6 @@ class ServiceListViewModel(
             image = DesignSystem.images.empty,
             label = ServicesRes.strings.services_empty.desc()
         )
-        refreshState.onRefresh = weakVMClosure { it.loadServiceList() }
     }
 
 }

@@ -37,7 +37,7 @@ internal class CommonAppointmentRequestDataSource(
     preferenceProvider: PreferenceProvider
 ) : DataSource(), AppointmentRequestDataSource, LogOutAction {
 
-    private val preferences = preferenceProvider.get("appointments_prefs")
+    private val preferences = preferenceProvider.get("appointment_requests_prefs")
 
     override suspend fun createAppointmentRequest(request: AppointmentRequest, offerToken: String) =
         mapExceptions {

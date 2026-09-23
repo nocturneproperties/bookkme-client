@@ -23,7 +23,8 @@ struct DashboardHomeTab: View {
 				AppointmentsTab()
 			}
 		} else {
-			EmptyView()
+			ProgressView()
+				.frame(maxWidth: .infinity, maxHeight: .infinity)
 		}
 	}
 }

@@ -15,7 +15,7 @@ internal class RefreshBusinessInfoImpl(
         }
         businessDataSource.saveBusinessListInDB(data.businesses)
         data.businesses.forEach { business ->
-            runCatching { isAppointmentsPluginEnabled(business.id) }
+            runCatching { isAppointmentsPluginEnabled.refresh(business.id) }
         }
     }
 }

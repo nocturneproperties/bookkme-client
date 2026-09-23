@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,13 +45,23 @@ fun BannerErrorView(state: BannerErrorState, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.labelMedium,
             color = LocalColors.current.error
         )
-        Text(
-            DesignSystem.strings.action_retry.desc().localized(),
-            modifier = Modifier
-                .clickable(onClick = state.onRetryClick)
-                .padding(start = 8.dp),
-            style = MaterialTheme.typography.labelMedium,
-            color = LocalColors.current.error
-        )
+        if (state.isRetrying) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(16.dp),
+                strokeWidth = 2.dp,
+                color = LocalColors.current.error
+            )
+        } else {
+            Text(
+                DesignSystem.strings.action_retry.desc().localized(),
+                modifier = Modifier
+                    .clickable(onClick = state.onRetryClick)
+                    .padding(start = 8.dp),
+                style = MaterialTheme.typography.labelMedium,
+                color = LocalColors.current.error
+            )
+        }
     }
 }

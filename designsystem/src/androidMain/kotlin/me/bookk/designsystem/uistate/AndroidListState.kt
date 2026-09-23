@@ -24,12 +24,21 @@ class AndroidListState<T>(
     override fun append(list: List<T>) {
         items += list
         isInitialLoading = false
+        demoteErrorToBannerIfHasItems()
     }
 
     override fun replace(list: List<T>) {
         items.clear()
         items.addAll(list)
         isInitialLoading = false
+        demoteErrorToBannerIfHasItems()
+    }
+
+    private fun demoteErrorToBannerIfHasItems() {
+        val error = errorState ?: return
+        if (items.isEmpty()) return
+        bannerError = BannerErrorState.default(onRetryClick = error.onRetryClick)
+        errorState = null
     }
 
     override fun clear() {

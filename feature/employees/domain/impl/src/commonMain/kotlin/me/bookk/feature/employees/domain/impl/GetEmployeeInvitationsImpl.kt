@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.domain.impl
 
+import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.employees.domain.api.GetEmployeeInvitations
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
 import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
@@ -8,21 +9,19 @@ import kotlin.uuid.Uuid
 internal class GetEmployeeInvitationsImpl(
     private val dataSource: EmployeeInvitationDataSource
 ) : GetEmployeeInvitations {
-    override suspend fun invoke(businessId: Uuid): List<EmployeeInvitation> {
-        return dataSource.getInvitations(businessId).also {
-            dataSource.deleteInvitationsInDb()
-            dataSource.saveInvitationsInDb(it)
-            dataSource.saveLastSyncedAt(businessId)
-        }
-    }
 
-    override suspend fun cached(
-        businessId: Uuid,
-        onResultAvailable: suspend (List<EmployeeInvitation>) -> Unit
-    ) {
-        if (dataSource.getLastSyncedAt(businessId) != null) {
-            onResultAvailable(dataSource.getInvitationsFromDb(businessId))
+    override fun flow(businessId: Uuid): Flow<List<EmployeeInvitation>> =
+        dataSource.observeInvitationsDBChanges(businessId)
+
+    override suspend fun refresh(businessId: Uuid): List<EmployeeInvitation> {
+        val invitations = dataSource.getInvitations(businessId)
+        val freshIds = invitations.map { it.id }.toSet()
+        val staleIds = dataSource.getInvitationIdsInDb(businessId).filterNot { it in freshIds }
+        if (staleIds.isNotEmpty()) {
+            dataSource.deleteInvitationsInDb(staleIds)
         }
-        onResultAvailable(invoke(businessId))
+        dataSource.saveInvitationsInDb(invitations)
+        dataSource.saveLastSyncedAt(businessId)
+        return invitations
     }
 }

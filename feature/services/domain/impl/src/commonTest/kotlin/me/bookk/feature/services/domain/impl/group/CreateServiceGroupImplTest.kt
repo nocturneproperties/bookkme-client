@@ -3,12 +3,10 @@ package me.bookk.feature.services.domain.impl.group
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -17,9 +15,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.services.domain.api.group.CreateServiceGroup
-import me.bookk.feature.services.domain.api.group.ServiceGroupEvent
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
-import me.bookk.feature.services.domain.api.group.serviceGroupEvents
 import me.bookk.feature.services.domain.datasource.ServiceErrorCodes
 import me.bookk.feature.services.domain.datasource.ServiceGroupDataSource
 import kotlin.test.AfterTest
@@ -27,7 +23,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 import me.bookk.core.domain.entity.Error as DomainError
@@ -85,24 +80,6 @@ class CreateServiceGroupImplTest {
 
         then()
         verifySuspend { fixture.dataSource.saveGroupInDB(input) }
-    }
-
-    @Test
-    fun `emits Created event`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val input = stubGroup()
-        everySuspend { fixture.dataSource.createServiceGroup(input) } returns input
-        everySuspend { fixture.dataSource.saveGroupInDB(any()) } returns Unit
-        val events = mutableListOf<ServiceGroupEvent>()
-        val job = launch(Dispatchers.Unconfined) { serviceGroupEvents.collect { events.add(it) } }
-
-        whenn()
-        fixture.sut(input)
-
-        then()
-        job.cancel()
-        assertTrue(events.any { it is ServiceGroupEvent.Created })
     }
 
     @Test

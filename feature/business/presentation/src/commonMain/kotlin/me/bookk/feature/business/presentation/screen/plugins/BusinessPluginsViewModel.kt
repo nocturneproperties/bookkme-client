@@ -1,6 +1,10 @@
 package me.bookk.feature.business.presentation.screen.plugins
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -31,15 +35,23 @@ class BusinessPluginsViewModel(
     val uiState: BusinessPluginListState = stateFactory.createBusinessPluginListState().setup()
 
     init {
-        initPluginsState()
+        observePluginState()
+        loadPluginState()
     }
 
-    private fun initPluginsState() {
-        launchCached(
+    private fun observePluginState() {
+        isAppointmentsPluginEnabled.flow(businessId)
+            .flowOn(DispatcherProvider.io)
+            .filterNotNull()
+            .onEach { uiState.appointmentPlugin.isEnabled = it }
+            .launchIn(viewModelScope)
+    }
+
+    private fun loadPluginState() {
+        launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.appointmentPlugin.enable.startLoading() },
-            call = { isAppointmentsPluginEnabled.cached(businessId, it) },
-            onComplete = { uiState.appointmentPlugin.isEnabled = it },
+            call = { isAppointmentsPluginEnabled.refresh(businessId) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.appointmentPlugin.enable.stopLoading() }
         )

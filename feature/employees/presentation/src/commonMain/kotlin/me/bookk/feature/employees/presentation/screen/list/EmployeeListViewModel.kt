@@ -13,6 +13,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -20,6 +21,7 @@ import me.bookk.feature.employees.domain.api.GetEmployees
 import me.bookk.feature.employees.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.presentation.EmployeesStateFactory
+import kotlin.uuid.Uuid
 
 class EmployeeListViewModel(
     private val getEmployees: GetEmployees,
@@ -33,7 +35,7 @@ class EmployeeListViewModel(
 
     init {
         observeEmployees()
-        loadEmployees()
+        observeBusinessChanges()
     }
 
     private fun observeEmployees() {
@@ -53,14 +55,21 @@ class EmployeeListViewModel(
         uiState.employeesList.replace(grouped)
     }
 
-    private fun loadEmployees() {
+    private fun observeBusinessChanges() {
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .flowOn(DispatcherProvider.io)
+            .resetListOnChange(uiState.employeesList)
+            .onEach { loadEmployees(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun loadEmployees(businessId: Uuid) {
         loadList(
             listState = uiState.employeesList,
+            notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = {
-                val businessId = observeCurrentBusinessId().filterNotNull().first()
-                getEmployees.refresh(businessId)
-            }
+            call = { getEmployees.refresh(businessId) }
         )
     }
 
@@ -101,7 +110,6 @@ class EmployeeListViewModel(
         )
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
-        refreshState.onRefresh = weakVMClosure { it.loadEmployees() }
         employeesList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = EmployeesRes.strings.employees_empty.desc()

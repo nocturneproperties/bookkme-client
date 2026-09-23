@@ -1,8 +1,9 @@
 package me.bookk.feature.settings.domain.api
 
+import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.settings.domain.api.entity.NotificationSettings
 
 interface GetNotificationSettings {
-    suspend operator fun invoke(): NotificationSettings
-    suspend fun cached(onResultAvailable: suspend (NotificationSettings) -> Unit)
+    fun flow(): Flow<NotificationSettings?>
+    suspend fun refresh(): NotificationSettings
 }

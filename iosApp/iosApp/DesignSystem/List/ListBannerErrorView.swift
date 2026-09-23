@@ -21,18 +21,24 @@ struct ListBannerErrorView: View {
 				.font(.caption)
 				.foregroundStyle(AppColors.error)
 				.frame(maxWidth: .infinity, alignment: .leading)
-			Button {
-				state.onRetryClick()
-			} label: {
-				Text(DesignSystem.strings().action_retry.desc().localized())
-					.font(.caption)
-					.fontWeight(.semibold)
-					.foregroundStyle(AppColors.error)
+			if state.isRetrying {
+				ProgressView()
+					.controlSize(.small)
+					.tint(AppColors.error)
+			} else {
+				Button {
+					state.onRetryClick()
+				} label: {
+					Text(DesignSystem.strings().action_retry.desc().localized())
+						.font(.caption)
+						.fontWeight(.semibold)
+						.foregroundStyle(AppColors.error)
+				}
 			}
 		}
 		.padding(.horizontal, 16)
 		.padding(.vertical, 12)
 		.frame(maxWidth: .infinity)
-		.background(AppColors.error.opacity(0.12))
+		.background(AppColors.error.opacity(0.12), ignoresSafeAreaEdges: [])
 	}
 }

@@ -41,5 +41,14 @@ fun Project.findStringProperty(key: String, fileName: String): String {
     return properties.getProperty(key) ?: throw GradleException("$key not found in $fileName")
 }
 
+val Project.localProperties: Properties
+    get() = Properties().apply {
+        rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use(::load)
+    }
+
+fun Project.findLocalProperty(key: String): String? {
+    return providers.gradleProperty(key).orNull ?: localProperties.getProperty(key)
+}
+
 val Project.libs: LibrariesForLibs
     get() = the<LibrariesForLibs>()

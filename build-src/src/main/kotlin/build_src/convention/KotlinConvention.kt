@@ -7,12 +7,14 @@ import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+private val modulesWithAndroidResourcesInHostTests = setOf(":designsystem", ":shared")
+
 internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
         compileSdk = ApplicationConfig.COMPILE_SDK
         minSdk = ApplicationConfig.MIN_SDK
         androidResources { enable = true }
-        withHostTest {}
+        withHostTest { isIncludeAndroidResources = project.path in modulesWithAndroidResourcesInHostTests }
     }
 
     jvmToolchain(21)

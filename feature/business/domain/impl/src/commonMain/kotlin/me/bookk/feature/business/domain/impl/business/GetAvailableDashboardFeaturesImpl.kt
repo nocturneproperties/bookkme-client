@@ -8,17 +8,17 @@ import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatur
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.domain.api.entity.DashboardOverview
-import me.bookk.feature.business.domain.api.plugin.ObserveAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 
 internal class GetAvailableDashboardFeaturesImpl(
     private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
-    private val observeAppointmentsPluginEnabled: ObserveAppointmentsPluginEnabled
+    private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled
 ) : GetAvailableDashboardFeatures {
 
     override fun invoke(): Flow<DashboardOverview?> {
         return observeDashboardBusinessChanges()
             .flatMapLatestOrNull { business ->
-                observeAppointmentsPluginEnabled(business.id)
+                isAppointmentsPluginEnabled.flow(business.id)
                     .map { business to it }
             }
             .mapOrNull { (business, isAppointmentsEnabled) ->
@@ -30,7 +30,7 @@ internal class GetAvailableDashboardFeaturesImpl(
                         if (permissions.employees.view) add(DashboardFeature.EMPLOYEES)
                         if (permissions.clients.view) add(DashboardFeature.CLIENTS)
                         if (permissions.services.view) add(DashboardFeature.SERVICES)
-                        if (isAppointmentsEnabled && permissions.appointments.view) {
+                        if (isAppointmentsEnabled == true && permissions.appointments.view) {
                             add(DashboardFeature.APPOINTMENTS)
                         }
                     }

@@ -3,6 +3,7 @@ package me.bookk.core.presentation
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import me.bookk.core.presentation.error.ErrorDescription
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationNotification
 import kotlin.coroutines.CoroutineContext
@@ -32,18 +33,9 @@ expect abstract class ViewModel(
         onTerminate: (suspend () -> Unit)? = null,
     ): Job?
 
-    fun <Output> launchCached(
-        key: String? = null,
-        launchBehaviour: LaunchBehaviour = LaunchBehaviour.DropOldest,
-        launchIn: CoroutineContext,
-        call: suspend (suspend (Output) -> Unit) -> Unit,
-        onComplete: (suspend (Output) -> Unit),
-        onError: (suspend (Throwable) -> Unit),
-        onStart: (suspend () -> Unit)? = null,
-        onTerminate: (suspend () -> Unit)? = null,
-    ): Job?
+    fun Throwable.notification(): PresentationNotification
 
-    protected fun Throwable.notification(): PresentationNotification
+    fun Throwable.description(): ErrorDescription
 }
 
 enum class LaunchBehaviour {

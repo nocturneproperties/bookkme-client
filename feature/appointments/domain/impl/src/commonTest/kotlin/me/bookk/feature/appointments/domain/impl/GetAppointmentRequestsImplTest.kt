@@ -152,6 +152,33 @@ class GetAppointmentRequestsImplTest {
     }
 
     @Test
+    fun `refresh saves every fetched request but returns only pending ones sorted by date`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val earlier = stubAppointmentRequest(businessId = businessId)
+            .copy(date = Instant.fromEpochMilliseconds(0))
+        val later = stubAppointmentRequest(businessId = businessId)
+            .copy(date = Instant.fromEpochMilliseconds(1000))
+        val approved = stubAppointmentRequest(businessId = businessId)
+            .copy(status = AppointmentRequestStatus.APPROVED)
+        val remote = listOf(later, approved, earlier)
+        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } returns remote
+        everySuspend {
+            fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
+        } returns remote.map { it.id }
+        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(remote) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+
+        whenn()
+        val result = fixture.sut.refresh(businessId)
+
+        then()
+        assertEquals(listOf(earlier, later), result)
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentRequestsInDB(remote) }
+    }
+
+    @Test
     fun `refresh deletes local requests that are no longer present remotely`() = runUnitTest {
         given()
         val fixture = Fixture()

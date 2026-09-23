@@ -3,6 +3,7 @@ package me.bookk.feature.appointments.presentation.screen.list
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -25,6 +26,7 @@ import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
@@ -61,13 +63,14 @@ class AppointmentListViewModel(
     init {
         observeAppointments()
         observeCurrentBusiness()
+        observeAppointmentsKey()
         listenForUpdates()
     }
 
     private fun listenForUpdates() {
-        listenFor<AppointmentEvent.Created> { onRefresh() }
+        listenFor<AppointmentEvent.Created> { reload() }
             .launchIn(viewModelScope)
-        listenFor<AppointmentEvent.Updated> { onRefresh() }
+        listenFor<AppointmentEvent.Updated> { reload() }
             .launchIn(viewModelScope)
     }
 
@@ -91,18 +94,32 @@ class AppointmentListViewModel(
             .distinctUntilChanged()
             .onEach {
                 businessId = it
-                loadAppointments()
                 loadRequestCount(it)
             }
             .retry()
             .launchIn(viewModelScope)
     }
 
-    private fun loadAppointments() {
+    private fun observeAppointmentsKey() {
+        combine(observeCurrentBusinessId().filterNotNull(), selectedDate, ::Pair)
+            .flowOn(DispatcherProvider.io)
+            .resetListOnChange(uiState.appointments)
+            .onEach { (businessId, date) -> loadAppointments(businessId, date) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun reload() {
+        loadAppointments(businessId, selectedDate.value)
+        loadRequestCount(businessId)
+    }
+
+    private fun loadAppointments(businessId: Uuid, date: LocalDate) {
         loadList(
             listState = uiState.appointments,
+            notifications = uiState.notifications,
             refreshState = uiState.refresh,
-            call = { getAppointmentsForBusiness.refresh(businessId, selectedDate.value) }
+            onRefresh = weakVMClosure { it.loadRequestCount(it.businessId) },
+            call = { getAppointmentsForBusiness.refresh(businessId, date) }
         )
     }
 
@@ -121,10 +138,9 @@ class AppointmentListViewModel(
     }
 
     private fun onNewDateSelected(date: LocalDate) {
+        if (selectedDate.value == date) return
         uiState.datePicker.pickedDate = date
-        uiState.appointments.isInitialLoading = true
         selectedDate.value = date
-        loadAppointments()
         uiState.dates.replace(createDateInfoFrom(date))
     }
 
@@ -139,11 +155,6 @@ class AppointmentListViewModel(
                 isToday = weekDay == today
             )
         }
-    }
-
-    private fun onRefresh() {
-        loadAppointments()
-        loadRequestCount(businessId)
     }
 
     private fun onNewAppointmentClick() {
@@ -198,7 +209,6 @@ class AppointmentListViewModel(
         datePicker.pickedDate = LocalDate.today()
         dates.replace(createDateInfoFrom(LocalDate.today()))
         datePicker.onDatePicked = weakVMClosure { vm, date -> vm.onNewDateSelected(date) }
-        refresh.onRefresh = weakVMClosure { it.onRefresh() }
         appointments.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = AppointmentsRes.strings.appointments_list_empty.desc(),

@@ -1,6 +1,9 @@
 package me.bookk.feature.settings.presentation.notifications
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import library.permissions.api.PermissionManager
 import library.permissions.api.PermissionType
 import me.bookk.android.feature.settings.resources.SettingsRes
@@ -30,17 +33,26 @@ class NotificationSettingsViewModel(
     val uiState = settingsStateFactory.createNotificationSettingsState().setup()
 
     init {
+        observeSettings()
         loadSettings()
     }
 
+    private fun observeSettings() {
+        getNotificationSettings.flow()
+            .flowOn(DispatcherProvider.io)
+            .onEach { settings ->
+                settings?.let {
+                    loadedSettings = it
+                    renderSettings(it)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     private fun loadSettings() {
-        launchCached(
+        launch(
             launchIn = DispatcherProvider.io,
-            call = { getNotificationSettings.cached(it) },
-            onComplete = {
-                loadedSettings = it
-                renderSettings(it)
-            },
+            call = { getNotificationSettings.refresh() },
             onError = { uiState.notifications.add(it.notification()) }
         )
     }

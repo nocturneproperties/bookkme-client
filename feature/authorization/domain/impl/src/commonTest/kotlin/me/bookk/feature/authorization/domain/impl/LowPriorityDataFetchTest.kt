@@ -106,10 +106,10 @@ class LowPriorityDataFetchTest {
         everySuspend { fixture.getServiceGroups.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getClientsList.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getEmployees.refresh(business.id) } returns emptyList()
-        everySuspend { fixture.getAppointmentEnabled(business.id) } returns true
+        everySuspend { fixture.getAppointmentEnabled.refresh(business.id) } returns true
         everySuspend { fixture.getAppointmentSettings.refresh(business.id) } returns AppointmentSettings.stub()
         everySuspend { fixture.updateNotificationToken() } returns Unit
-        everySuspend { fixture.getNotificationSettings() } returns NotificationSettings.stub()
+        everySuspend { fixture.getNotificationSettings.refresh() } returns NotificationSettings.stub()
     }
 
     @Test
@@ -126,10 +126,10 @@ class LowPriorityDataFetchTest {
         verifySuspend(VerifyMode.exactly(0)) { fixture.getServiceGroups.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getClientsList.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getEmployees.refresh(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentEnabled(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentEnabled.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentSettings.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.updateNotificationToken() }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getNotificationSettings() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getNotificationSettings.refresh() }
     }
 
     @Test
@@ -162,10 +162,10 @@ class LowPriorityDataFetchTest {
         verifySuspend { fixture.getServiceGroups.refresh(business.id) }
         verifySuspend { fixture.getClientsList.refresh(business.id) }
         verifySuspend { fixture.getEmployees.refresh(business.id) }
-        verifySuspend { fixture.getAppointmentEnabled(business.id) }
+        verifySuspend { fixture.getAppointmentEnabled.refresh(business.id) }
         verifySuspend { fixture.getAppointmentSettings.refresh(business.id) }
         verifySuspend { fixture.updateNotificationToken() }
-        verifySuspend { fixture.getNotificationSettings() }
+        verifySuspend { fixture.getNotificationSettings.refresh() }
     }
 
     @Test
@@ -182,7 +182,7 @@ class LowPriorityDataFetchTest {
         then()
         verifySuspend { fixture.getAppointmentSettings.refresh(business.id) }
         verifySuspend { fixture.updateNotificationToken() }
-        verifySuspend { fixture.getNotificationSettings() }
+        verifySuspend { fixture.getNotificationSettings.refresh() }
     }
 
     @Test
@@ -198,7 +198,7 @@ class LowPriorityDataFetchTest {
 
         then()
         verifySuspend { fixture.updateNotificationToken() }
-        verifySuspend { fixture.getNotificationSettings() }
+        verifySuspend { fixture.getNotificationSettings.refresh() }
     }
 
     @Test

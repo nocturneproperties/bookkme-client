@@ -1,11 +1,19 @@
 package me.bookk.feature.business.domain.impl.plugin
 
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -18,8 +26,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -43,7 +51,53 @@ class IsAppointmentsPluginEnabledImplTest {
     }
 
     @Test
-    fun `returns true when plugin is available`() = runUnitTest {
+    fun `flow emits the cached availability`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns flowOf(true)
+
+        whenn()
+        val result = fixture.sut.flow(businessId).first()
+
+        then()
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun `flow emits null when availability was never cached`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns flowOf(null)
+
+        whenn()
+        val result = fixture.sut.flow(businessId).first()
+
+        then()
+        assertNull(result)
+    }
+
+    @Test
+    fun `flow relays a later availability change`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val availability = MutableSharedFlow<Boolean?>(replay = 1).apply { tryEmit(false) }
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns availability
+        val results = mutableListOf<Boolean?>()
+        val job = launch(Dispatchers.Unconfined) { fixture.sut.flow(businessId).collect { results.add(it) } }
+
+        whenn()
+        availability.emit(true)
+
+        then()
+        job.cancel()
+        assertEquals(listOf<Boolean?>(false, true), results)
+    }
+
+    @Test
+    fun `refresh returns the availability fetched from remote`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
@@ -51,14 +105,14 @@ class IsAppointmentsPluginEnabledImplTest {
         everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
 
         whenn()
-        val result = fixture.sut(businessId)
+        val result = fixture.sut.refresh(businessId)
 
         then()
-        assertTrue(result)
+        assertEquals(true, result)
     }
 
     @Test
-    fun `returns false when plugin is not available`() = runUnitTest {
+    fun `refresh saves the fetched availability`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
@@ -66,74 +120,24 @@ class IsAppointmentsPluginEnabledImplTest {
         everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, false) } returns Unit
 
         whenn()
-        val result = fixture.sut(businessId)
+        fixture.sut.refresh(businessId)
 
         then()
-        assertFalse(result)
+        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, false) }
     }
 
     @Test
-    fun `saves fetched availability to the data source`() = runUnitTest {
+    fun `refresh propagates a fetch error without saving`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } throws IllegalStateException()
 
         whenn()
-        fixture.sut(businessId)
+        val error = runCatching { fixture.sut.refresh(businessId) }.exceptionOrNull()
 
         then()
-        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
-    }
-
-    @Test
-    fun `cached emits the cached value before the fetched value when previously synced`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns false
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
-        val results = mutableListOf<Boolean>()
-
-        whenn()
-        fixture.sut.cached(businessId) { results.add(it) }
-
-        then()
-        assertEquals(listOf(false, true), results)
-    }
-
-    @Test
-    fun `cached skips the cached emission when never synced before`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns null
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
-        val results = mutableListOf<Boolean>()
-
-        whenn()
-        fixture.sut.cached(businessId) { results.add(it) }
-
-        then()
-        assertEquals(listOf(true), results)
-    }
-
-    @Test
-    fun `cached saves the freshly fetched availability to the data source`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.getAppointmentPluginAvailability(businessId) } returns false
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
-
-        whenn()
-        fixture.sut.cached(businessId) {}
-
-        then()
-        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
+        assertFailsWith<IllegalStateException> { throw error!! }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.pluginDataSource.saveAppointmentPluginAvailability(any(), any()) }
     }
 }

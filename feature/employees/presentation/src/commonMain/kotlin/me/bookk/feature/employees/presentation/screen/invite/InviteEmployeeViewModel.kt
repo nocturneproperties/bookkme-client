@@ -2,6 +2,9 @@ package me.bookk.feature.employees.presentation.screen.invite
 
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.coroutine.DispatcherProvider
@@ -13,7 +16,7 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.convenience.loadCachedList
+import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -42,20 +45,31 @@ class InviteEmployeeViewModel(
     val uiState: InviteEmployeeState = stateFactory.createInviteEmployeeState().setup()
 
     init {
+        observeInvitations()
         loadInvitations()
     }
 
+    private fun observeInvitations() {
+        getEmployeeInvitations.flow(businessId)
+            .flowOn(DispatcherProvider.io)
+            .onEach { renderInvitations(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun renderInvitations(invitations: List<EmployeeInvitation>) {
+        if (invitations.isEmpty() && uiState.invitationsList.isInitialLoading) return
+        val items = invitations
+            .sortedByDescending(EmployeeInvitation::createdAt)
+            .map { it.toItem() }
+        uiState.invitationsList.replace(items)
+    }
+
     private fun loadInvitations() {
-        loadCachedList(
+        loadList(
             listState = uiState.invitationsList,
+            notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = { getEmployeeInvitations.cached(businessId, it) },
-            onComplete = {
-                val items = it
-                    .sortedByDescending(EmployeeInvitation::createdAt)
-                    .map { invitation -> invitation.toItem() }
-                uiState.invitationsList.replace(items)
-            },
+            call = { getEmployeeInvitations.refresh(businessId) }
         )
     }
 
@@ -148,7 +162,6 @@ class InviteEmployeeViewModel(
         generateCodeButton.onClick = weakVMClosure { it.onGenerateCode() }
 
         invitationsHeader = EmployeesRes.strings.employees_invite_invitations_header.desc()
-        refreshState.onRefresh = weakVMClosure { it.loadInvitations() }
         invitationsList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = EmployeesRes.strings.employees_invite_invitations_empty.desc()

@@ -102,7 +102,7 @@ class RefreshBusinessInfoImplTest {
         val info = UserBusinessInfo(dashboardId = null, businesses = listOf(business))
         everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
         everySuspend { fixture.dataSource.saveBusinessListInDB(listOf(business)) } returns Unit
-        everySuspend { fixture.isAppointmentsPluginEnabled(business.id) } returns true
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(business.id) } returns true
 
         whenn()
         fixture.sut()
@@ -135,15 +135,15 @@ class RefreshBusinessInfoImplTest {
         val info = UserBusinessInfo(dashboardId = null, businesses = listOf(businessA, businessB))
         everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
         everySuspend { fixture.dataSource.saveBusinessListInDB(any()) } returns Unit
-        everySuspend { fixture.isAppointmentsPluginEnabled(businessA.id) } returns true
-        everySuspend { fixture.isAppointmentsPluginEnabled(businessB.id) } returns false
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(businessA.id) } returns true
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(businessB.id) } returns false
 
         whenn()
         fixture.sut()
 
         then()
-        verifySuspend { fixture.isAppointmentsPluginEnabled(businessA.id) }
-        verifySuspend { fixture.isAppointmentsPluginEnabled(businessB.id) }
+        verifySuspend { fixture.isAppointmentsPluginEnabled.refresh(businessA.id) }
+        verifySuspend { fixture.isAppointmentsPluginEnabled.refresh(businessB.id) }
     }
 
     @Test
@@ -154,7 +154,7 @@ class RefreshBusinessInfoImplTest {
         val info = UserBusinessInfo(dashboardId = null, businesses = listOf(business))
         everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
         everySuspend { fixture.dataSource.saveBusinessListInDB(any()) } returns Unit
-        everySuspend { fixture.isAppointmentsPluginEnabled(business.id) } throws RuntimeException("network down")
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(business.id) } throws RuntimeException("network down")
 
         whenn()
         fixture.sut()

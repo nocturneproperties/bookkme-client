@@ -22,7 +22,7 @@ import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.domain.api.entity.DashboardOverview
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
-import me.bookk.feature.business.domain.api.plugin.ObserveAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.business.domain.impl.stubBusiness
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -49,8 +49,8 @@ class GetAvailableDashboardFeaturesImplTest {
 
     private class Fixture {
         val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
-        val observeAppointmentsPluginEnabled = mock<ObserveAppointmentsPluginEnabled>()
-        val sut = GetAvailableDashboardFeaturesImpl(observeDashboardBusinessChanges, observeAppointmentsPluginEnabled)
+        val isAppointmentsPluginEnabled = mock<IsAppointmentsPluginEnabled>()
+        val sut = GetAvailableDashboardFeaturesImpl(observeDashboardBusinessChanges, isAppointmentsPluginEnabled)
     }
 
     private val noPermissions = BusinessPermissions(
@@ -69,9 +69,9 @@ class GetAvailableDashboardFeaturesImplTest {
         appointments = ResourcePermission(view = true)
     )
 
-    private fun Fixture.stub(business: Business, isAppointmentsEnabled: Boolean) {
+    private fun Fixture.stub(business: Business, isAppointmentsEnabled: Boolean?) {
         every { observeDashboardBusinessChanges() } returns flowOf(business)
-        every { observeAppointmentsPluginEnabled(business.id) } returns flowOf(isAppointmentsEnabled)
+        every { isAppointmentsPluginEnabled.flow(business.id) } returns flowOf(isAppointmentsEnabled)
     }
 
     private suspend fun Fixture.features(): Set<DashboardFeature> = sut().first()!!.features
@@ -227,8 +227,8 @@ class GetAvailableDashboardFeaturesImplTest {
         val secondBusiness = stubBusiness(permissions = fullPermissions)
         businesses.tryEmit(firstBusiness)
         every { fixture.observeDashboardBusinessChanges() } returns businesses
-        every { fixture.observeAppointmentsPluginEnabled(firstBusiness.id) } returns flowOf(false)
-        every { fixture.observeAppointmentsPluginEnabled(secondBusiness.id) } returns flowOf(false)
+        every { fixture.isAppointmentsPluginEnabled.flow(firstBusiness.id) } returns flowOf(false)
+        every { fixture.isAppointmentsPluginEnabled.flow(secondBusiness.id) } returns flowOf(false)
         val results = mutableListOf<DashboardOverview?>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut().collect { results.add(it) }
@@ -249,9 +249,9 @@ class GetAvailableDashboardFeaturesImplTest {
         given()
         val fixture = Fixture()
         val business = stubBusiness(permissions = fullPermissions)
-        val pluginState = MutableSharedFlow<Boolean>(replay = 1).apply { tryEmit(false) }
+        val pluginState = MutableSharedFlow<Boolean?>(replay = 1).apply { tryEmit(false) }
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.observeAppointmentsPluginEnabled(business.id) } returns pluginState
+        every { fixture.isAppointmentsPluginEnabled.flow(business.id) } returns pluginState
         val results = mutableListOf<DashboardOverview?>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut().collect { results.add(it) }
@@ -264,5 +264,18 @@ class GetAvailableDashboardFeaturesImplTest {
         job.cancel()
         assertFalse(DashboardFeature.APPOINTMENTS in results.first()!!.features)
         assertTrue(DashboardFeature.APPOINTMENTS in results.last()!!.features)
+    }
+
+    @Test
+    fun `APPOINTMENTS feature excluded while the plugin state is unknown`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stub(stubBusiness(permissions = fullPermissions), isAppointmentsEnabled = null)
+
+        whenn()
+        val features = fixture.features()
+
+        then()
+        assertFalse(DashboardFeature.APPOINTMENTS in features)
     }
 }

@@ -16,7 +16,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessIdChanges
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
-import me.bookk.feature.business.domain.api.plugin.ObserveAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.dashboard.presentation.state.DashboardState
 import me.bookk.feature.dashboard.presentation.state.HomeContent
 import me.bookk.feature.dashboard.presentation.state.TabItem
@@ -25,7 +25,7 @@ import kotlin.uuid.Uuid
 
 class DashboardViewModel(
     private val observeDashboardBusinessIdChanges: ObserveDashboardBusinessIdChanges,
-    private val observeAppointmentsPluginEnabled: ObserveAppointmentsPluginEnabled,
+    private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
     private val refreshBusinessInfo: RefreshBusinessInfo,
     stateFactory: DashboardStateFactory,
     vmArgs: VmArgs
@@ -66,8 +66,8 @@ class DashboardViewModel(
         observeDashboardBusinessIdChanges()
             .flatMapLatest { id ->
                 if (id != null) {
-                    observeAppointmentsPluginEnabled(id)
-                        .map { enabled -> id to (if (enabled) HomeContent.ActivePlugin else HomeContent.Onboarding) }
+                    isAppointmentsPluginEnabled.flow(id)
+                        .map { enabled -> id to (if (enabled == true) HomeContent.ActivePlugin else HomeContent.Onboarding) }
                         .catch {}
                 } else {
                     flowOf(id to HomeContent.Onboarding)

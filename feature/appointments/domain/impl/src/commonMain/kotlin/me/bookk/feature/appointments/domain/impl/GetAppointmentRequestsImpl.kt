@@ -14,9 +14,7 @@ internal class GetAppointmentRequestsImpl(
 
     override fun flow(businessId: Uuid): Flow<List<AppointmentRequest>> {
         return dataSource.observeAppointmentRequestsDBChanges(businessId)
-            .map { requests ->
-                requests.filter { it.status == AppointmentRequestStatus.PENDING }.sortedBy { it.date }
-            }
+            .map { it.pendingByDate() }
     }
 
     override suspend fun refresh(businessId: Uuid): List<AppointmentRequest> {
@@ -28,6 +26,9 @@ internal class GetAppointmentRequestsImpl(
         }
         dataSource.saveAppointmentRequestsInDB(requests)
         dataSource.saveLastSyncedAt(businessId)
-        return requests
+        return requests.pendingByDate()
     }
+
+    private fun List<AppointmentRequest>.pendingByDate(): List<AppointmentRequest> =
+        filter { it.status == AppointmentRequestStatus.PENDING }.sortedBy { it.date }
 }

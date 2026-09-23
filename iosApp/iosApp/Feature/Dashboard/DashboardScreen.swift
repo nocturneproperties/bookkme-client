@@ -85,6 +85,7 @@ struct DashboardTab: View {
 				.opacity(item.isEnabled ? 1 : 0.4)
 			}
 			.badge(item.badgeText?.localized())
+			.tag(item.id)
 	}
 
 	@ViewBuilder

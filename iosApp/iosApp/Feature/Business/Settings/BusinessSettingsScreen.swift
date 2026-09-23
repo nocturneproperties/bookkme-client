@@ -262,6 +262,6 @@ private struct TimeRow: View {
 
 #Preview {
 	NavigationStack {
-		BusinessSettingsScreen(id: shared.KotlinUuid.companion.random())
+		BusinessSettingsScreen()
 	}
 }

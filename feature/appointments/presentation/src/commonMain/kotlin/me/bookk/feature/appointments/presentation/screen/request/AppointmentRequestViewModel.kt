@@ -71,13 +71,19 @@ class AppointmentRequestViewModel(
             .distinctUntilChanged()
             .flatMapLatest { getAppointmentRequests.flow(it) }
             .flowOn(DispatcherProvider.io)
-            .onEach { uiState.requests.replace(it.map(::createRequestItemState)) }
+            .onEach { renderRequests(it) }
             .launchIn(viewModelScope)
+    }
+
+    private fun renderRequests(requests: List<AppointmentRequest>) {
+        if (requests.isEmpty() && uiState.requests.isInitialLoading) return
+        uiState.requests.replace(requests.map(::createRequestItemState))
     }
 
     private fun loadRequests() {
         loadList(
             listState = uiState.requests,
+            notifications = uiState.notifications,
             call = {
                 val businessId = observeCurrentBusinessId().filterNotNull().first()
                 getAppointmentRequests.refresh(businessId)

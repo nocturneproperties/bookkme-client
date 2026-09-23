@@ -2,7 +2,6 @@ package me.bookk.feature.services.presentation.group.list
 
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -13,6 +12,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
@@ -22,6 +22,7 @@ import me.bookk.feature.services.domain.api.group.DeleteServiceGroup
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.presentation.ServicesStateFactory
+import kotlin.uuid.Uuid
 
 class ServiceGroupListViewModel(
     private val getServiceGroups: GetServiceGroups,
@@ -36,7 +37,7 @@ class ServiceGroupListViewModel(
 
     init {
         observeGroups()
-        loadServiceGroups()
+        observeBusinessChanges()
     }
 
     private fun observeGroups() {
@@ -57,14 +58,21 @@ class ServiceGroupListViewModel(
         uiState.groups.replace(groups)
     }
 
-    private fun loadServiceGroups() {
+    private fun observeBusinessChanges() {
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .flowOn(DispatcherProvider.io)
+            .resetListOnChange(uiState.groups)
+            .onEach { loadServiceGroups(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun loadServiceGroups(businessId: Uuid) {
         loadList(
             listState = uiState.groups,
+            notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = {
-                val businessId = observeCurrentBusinessId().filterNotNull().first()
-                getServiceGroups.refresh(businessId)
-            }
+            call = { getServiceGroups.refresh(businessId) }
         )
     }
 
@@ -123,6 +131,5 @@ class ServiceGroupListViewModel(
             image = DesignSystem.images.empty,
             label = ServicesRes.strings.service_group_empty.desc()
         )
-        refreshState.onRefresh = weakVMClosure { it.loadServiceGroups() }
     }
 }

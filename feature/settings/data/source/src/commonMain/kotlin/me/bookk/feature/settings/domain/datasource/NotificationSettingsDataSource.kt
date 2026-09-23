@@ -1,5 +1,6 @@
 package me.bookk.feature.settings.domain.datasource
 
+import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.settings.domain.api.entity.Device
 import me.bookk.feature.settings.domain.api.entity.NotificationSettings
 import kotlin.uuid.Uuid
@@ -9,7 +10,7 @@ interface NotificationSettingsDataSource {
 
     suspend fun updateNotificationSettings(settings: NotificationSettings): NotificationSettings
 
-    suspend fun getNotificationSettingsFromDB(userId: Uuid): NotificationSettings?
+    fun observeNotificationSettingsDBChanges(userId: Uuid): Flow<NotificationSettings?>
 
     suspend fun saveNotificationSettingsInDB(settings: NotificationSettings)
 

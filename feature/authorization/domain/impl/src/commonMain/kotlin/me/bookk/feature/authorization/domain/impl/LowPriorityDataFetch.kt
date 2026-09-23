@@ -37,12 +37,12 @@ internal open class LowPriorityDataFetch(
             getServiceGroups.refresh(business.id)
             getClientsList.refresh(business.id)
             getEmployees.refresh(business.id)
-            getAppointmentEnabled(business.id)
+            getAppointmentEnabled.refresh(business.id)
         }
         runCatching { getAppointmentSettings.refresh(business.id) }
         runCatching {
             updateNotificationToken()
-            getNotificationSettings()
+            getNotificationSettings.refresh()
         }
 
     }

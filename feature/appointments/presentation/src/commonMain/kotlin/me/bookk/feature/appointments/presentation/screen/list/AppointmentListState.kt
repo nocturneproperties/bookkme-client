@@ -11,7 +11,6 @@ import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.RefreshState
 import me.bookk.feature.appointments.domain.api.entity.Appointment
-import kotlin.uuid.Uuid
 
 interface AppointmentListState {
     val appBar: AppBarState
@@ -20,7 +19,7 @@ interface AppointmentListState {
     val dates: ListState<DateInfo>
     val appointments: ListState<AppointmentItemState>
     val refresh: RefreshState
-    var requestsBusinessId: Uuid?
+    var isRequestsVisible: Boolean
     val notifications: PresentationNotificationState
     val navigation: NavigationState<AppointmentListDestinations>
 }

@@ -30,22 +30,22 @@ struct BusinessTab: View {
 				.navigationDestination(for: ServicesDestination.AddService.self) { type in
 					AddServiceScreen(businessId: type.businessId)
 				}
-				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { type in
-					ServiceGroupListScreen(businessId: type.businessId)
+				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { _ in
+					ServiceGroupListScreen()
 				}
 				.navigationDestination(for: AppointmentsDestination.Details.self) { dest in
 					AppointmentDetailsScreen(appointmentId: dest.appointmentId)
 				}
 				.navigationDestination(for: DashboardNavigationDestination.self) { type in
 					switch type {
-					case let type as DashboardNavigationDestination.Settings:
-						BusinessSettingsScreen(id: type.id)
-					case let type as DashboardNavigationDestination.Clients:
-						ClientsListScreen(businessId: type.id)
-					case let type as DashboardNavigationDestination.Employees:
-						EmployeeListScreen(businessId: type.id)
-					case let type as DashboardNavigationDestination.Services:
-						ServiceListScreen(businessId: type.id)
+					case is DashboardNavigationDestination.Settings:
+						BusinessSettingsScreen()
+					case is DashboardNavigationDestination.Clients:
+						ClientsListScreen()
+					case is DashboardNavigationDestination.Employees:
+						EmployeeListScreen()
+					case is DashboardNavigationDestination.Services:
+						ServiceListScreen()
 					case let type as DashboardNavigationDestination.Plugins:
 						BusinessPluginsScreen(businessId: type.id)
 					case let type as DashboardNavigationDestination.AppointmentSettings:

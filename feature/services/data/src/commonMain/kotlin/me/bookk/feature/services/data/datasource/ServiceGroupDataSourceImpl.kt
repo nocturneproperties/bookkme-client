@@ -6,6 +6,8 @@ import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -30,6 +32,7 @@ internal class ServiceGroupDataSourceImpl(
 ) : DataSource(), ServiceGroupDataSource, LogOutAction {
 
     private val preferences = preferenceProvider.get("service_groups_prefs")
+
     override suspend fun getServiceGroups(businessId: Uuid): List<ServiceGroup> = mapExceptions {
         httpClient.get(Api.ServiceGroup(businessId = businessId))
             .body<List<ServiceGroupRemote>>()
@@ -62,8 +65,20 @@ internal class ServiceGroupDataSourceImpl(
         serviceGroupDao.delete(group.toDb())
     }
 
-    override suspend fun getServiceGroupsFromDb(businessId: Uuid): List<ServiceGroup> = mapExceptions {
-        serviceGroupDao.get(businessId).map { it.toDomain() }
+    override suspend fun getServiceGroupIdsInDb(businessId: Uuid): List<Uuid> {
+        return mapExceptions { serviceGroupDao.getIds(businessId) }
+    }
+
+    override suspend fun deleteGroupsInDB(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> serviceGroupDao.deleteByIds(chunk) }
+        }
+    }
+
+    override fun observeServiceGroupsDBChanges(businessId: Uuid): Flow<List<ServiceGroup>> {
+        return serviceGroupDao.observe(businessId)
+            .map { groups -> groups.map { it.toDomain() } }
+            .mapErrors()
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {

@@ -5,6 +5,8 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -49,10 +51,10 @@ internal class CommonNotificationSettingsDataSource(
                 .toDomain()
         }
 
-    override suspend fun getNotificationSettingsFromDB(userId: Uuid): NotificationSettings? =
-        mapExceptions {
-            notificationSettingsDao.getByUserId(userId)?.toDomain()
-        }
+    override fun observeNotificationSettingsDBChanges(userId: Uuid): Flow<NotificationSettings?> =
+        notificationSettingsDao.observeByUserId(userId)
+            .map { it?.toDomain() }
+            .mapErrors()
 
     override suspend fun saveNotificationSettingsInDB(settings: NotificationSettings) {
         mapExceptions {

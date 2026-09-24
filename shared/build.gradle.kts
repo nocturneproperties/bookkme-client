@@ -1,5 +1,6 @@
 import build_src.constants.ApplicationConfig
 import build_src.constants.ProductFlavour
+import build_src.tools.findLocalProperty
 import build_src.tools.getCurrentVariant
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
@@ -15,6 +16,8 @@ kotlin {
         namespace = "me.bookk.shared"
     }
 }
+
+val proxyUrl = findLocalProperty("bookk.proxyUrl").orEmpty()
 
 buildkonfig {
     packageName = "me.bookk.shared"
@@ -33,6 +36,12 @@ buildkonfig {
             const = true
         )
         buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
+        buildConfigField(
+            STRING,
+            "PROXY_URL",
+            if (getCurrentVariant().contains("debug", ignoreCase = true)) proxyUrl else "",
+            const = true
+        )
     }
     defaultConfigs(ProductFlavour.DEV.title + "Debug") {
         buildConfigField(
@@ -145,6 +154,9 @@ kotlin {
             implementation(libs.logger)
             api(libs.kotlinx.datetime)
             api(libs.kmm.resources)
+        }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

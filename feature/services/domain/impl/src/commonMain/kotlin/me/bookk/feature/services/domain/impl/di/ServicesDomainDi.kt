@@ -1,6 +1,7 @@
 package me.bookk.feature.services.domain.impl.di
 
 import me.bookk.feature.services.domain.api.GetBusinessCurrency
+import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.services.domain.api.group.CreateServiceGroup
 import me.bookk.feature.services.domain.api.group.DeleteServiceGroup
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
@@ -10,6 +11,7 @@ import me.bookk.feature.services.domain.api.service.DeleteService
 import me.bookk.feature.services.domain.api.service.EditService
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.domain.impl.GetBusinessCurrencyImpl
+import me.bookk.feature.services.domain.impl.ObserveCurrentBusinessIdImpl
 import me.bookk.feature.services.domain.impl.group.CreateServiceGroupImpl
 import me.bookk.feature.services.domain.impl.group.DeleteServiceGroupImpl
 import me.bookk.feature.services.domain.impl.group.GetServiceGroupsImpl
@@ -32,6 +34,7 @@ fun servicesDomainModule() = module {
     factoryOf(::DeleteServiceGroupImpl) bind DeleteServiceGroup::class
     factoryOf(::GetServiceGroupsImpl) bind GetServiceGroups::class
     factoryOf(::GetBusinessCurrencyImpl) bind GetBusinessCurrency::class
+    factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class
 
     factoryOf(::CreateQuoteImpl) bind CreateQuote::class
 }

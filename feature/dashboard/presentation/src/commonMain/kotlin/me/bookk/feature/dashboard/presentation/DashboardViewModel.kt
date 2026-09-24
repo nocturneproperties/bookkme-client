@@ -1,22 +1,18 @@
 package me.bookk.feature.dashboard.presentation
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.retry
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessIdChanges
-import me.bookk.feature.business.domain.api.plugin.ObserveAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
+import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.dashboard.presentation.state.DashboardState
 import me.bookk.feature.dashboard.presentation.state.HomeContent
 import me.bookk.feature.dashboard.presentation.state.TabItem
@@ -25,7 +21,8 @@ import kotlin.uuid.Uuid
 
 class DashboardViewModel(
     private val observeDashboardBusinessIdChanges: ObserveDashboardBusinessIdChanges,
-    private val observeAppointmentsPluginEnabled: ObserveAppointmentsPluginEnabled,
+    private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
+    private val refreshBusinessInfo: RefreshBusinessInfo,
     stateFactory: DashboardStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -35,7 +32,17 @@ class DashboardViewModel(
     private var businessId: Uuid? = null
 
     init {
+        requestSilentInformationRefresh()
         observeBusiness()
+    }
+
+    private fun requestSilentInformationRefresh() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { refreshBusinessInfo() },
+            onComplete = {},
+            onError = {}
+        )
     }
 
     private fun DashboardState.setup() = apply {
@@ -55,24 +62,21 @@ class DashboardViewModel(
         observeDashboardBusinessIdChanges()
             .flatMapLatest { id ->
                 if (id != null) {
-                    observeAppointmentsPluginEnabled(id)
-                        .map { enabled -> id to (if (enabled) HomeContent.ActivePlugin else HomeContent.Onboarding) }
-                        .onStart { emit(id to HomeContent.Loading) }
-                        .catch {}
+                    isAppointmentsPluginEnabled.flow(id)
+                        .map { enabled -> id to (if (enabled == true) HomeContent.ActivePlugin else HomeContent.Onboarding) }
                 } else {
                     flowOf(id to HomeContent.Onboarding)
                 }
             }
             .flowOn(DispatcherProvider.io)
-            .onEach { (id, content) ->
+            .safeOnEach { (id, content) ->
                 businessId = id
                 uiState.tabItems.items.first { it.id == TabItem.Id.BUSINESS }.isEnabled = id != null
                 uiState.home.onboarding.isBusinessStepDone = id != null
                 uiState.home.onboarding.isPluginsStepUnlocked = id != null
                 uiState.home.content = content
             }
-            .retry()
-            .launchIn(viewModelScope)
+            .observe()
     }
 
     companion object {

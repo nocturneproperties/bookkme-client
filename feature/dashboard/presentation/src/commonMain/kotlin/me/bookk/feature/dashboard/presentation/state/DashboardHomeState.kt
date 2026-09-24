@@ -1,12 +1,11 @@
 package me.bookk.feature.dashboard.presentation.state
 
 interface DashboardHomeState {
-    var content: HomeContent
+    var content: HomeContent?
     val onboarding: OnboardingState
 }
 
 sealed class HomeContent {
-    data object Loading : HomeContent()
     data object Onboarding : HomeContent()
     data object ActivePlugin : HomeContent()
 }

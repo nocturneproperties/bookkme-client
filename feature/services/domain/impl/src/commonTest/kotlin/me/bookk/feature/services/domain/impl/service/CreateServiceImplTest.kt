@@ -2,12 +2,10 @@ package me.bookk.feature.services.domain.impl.service
 
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -15,15 +13,12 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.feature.services.domain.api.service.ServiceEvent
-import me.bookk.feature.services.domain.api.service.serviceEvents
 import me.bookk.feature.services.domain.datasource.ServiceDataSource
 import me.bookk.feature.services.domain.impl.stubService
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateServiceImplTest {
@@ -74,23 +69,5 @@ class CreateServiceImplTest {
 
         then()
         verifySuspend { fixture.dataSource.saveServiceInDB(input) }
-    }
-
-    @Test
-    fun `emits Created event`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val input = stubService()
-        everySuspend { fixture.dataSource.createService(input) } returns input
-        everySuspend { fixture.dataSource.saveServiceInDB(any()) } returns Unit
-        val events = mutableListOf<ServiceEvent>()
-        val job = launch(Dispatchers.Unconfined) { serviceEvents.collect { events.add(it) } }
-
-        whenn()
-        fixture.sut(input)
-
-        then()
-        job.cancel()
-        assertTrue(events.any { it is ServiceEvent.Created })
     }
 }

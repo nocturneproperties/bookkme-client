@@ -1,5 +1,6 @@
 package me.bookk.feature.appointments.domain.datasource
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
@@ -14,10 +15,17 @@ interface AppointmentDataSource {
         forDate: LocalDate
     ): List<Appointment>
 
-    suspend fun getAppointmentsForDateFromDb(
+    fun observeAppointmentsForDateDBChanges(
         businessId: Uuid,
         forDate: LocalDate
-    ): List<Appointment>
+    ): Flow<List<Appointment>>
+
+    suspend fun getAppointmentIdsForDateInDb(
+        businessId: Uuid,
+        forDate: LocalDate
+    ): List<Uuid>
+
+    suspend fun deleteAppointmentsInDb(ids: List<Uuid>)
 
     suspend fun getAppointmentHistory(
         businessId: Uuid,

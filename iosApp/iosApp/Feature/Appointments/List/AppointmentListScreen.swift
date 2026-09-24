@@ -38,6 +38,8 @@ struct AppointmentListScreen: View {
 				.listRowBackground(AppColors.background)
 				.listRowInsets(EdgeInsets())
 			}
+			.listSectionMargins(.horizontal, 0)
+			.listSectionSeparator(.hidden)
 		}
 		.toolbar {
 			ToolbarItem(placement: .navigation) {
@@ -52,12 +54,12 @@ struct AppointmentListScreen: View {
         )) {
             AppDatePicker(state: state.datePicker)
         }
-		.sheet(item: Binding(get: {
-			state.requestsBusinessId
+		.sheet(isPresented: Binding(get: {
+			state.isRequestsVisible
 		}, set: {
-			state.requestsBusinessId = $0
-		})) { businessId in
-            AppointmentRequestSheet(businessId: businessId)
+			state.isRequestsVisible = $0
+		})) {
+            AppointmentRequestSheet()
         }
 		.listSectionSpacing(.compact)
 		.contentMargins(.top, 8, for: .scrollContent)

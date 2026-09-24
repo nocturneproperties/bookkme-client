@@ -11,7 +11,7 @@ sealed class BusinessDestination {
     data object Analytics : BusinessDestination()
 
     @Serializable
-    data class Settings(val id: Uuid) : BusinessDestination()
+    data object Settings : BusinessDestination()
 
     @Serializable
     data class Plugins(val id: Uuid) : BusinessDestination()

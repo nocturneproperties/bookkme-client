@@ -1,9 +1,10 @@
 package me.bookk.feature.employees.domain.api
 
+import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.employees.domain.api.entity.Employee
 import kotlin.uuid.Uuid
 
 interface GetEmployees {
-    suspend operator fun invoke(businessId: Uuid): List<Employee>
-    suspend fun cached(businessId: Uuid, onResultAvailable: suspend (List<Employee>) -> Unit)
+    fun flow(): Flow<List<Employee>>
+    suspend fun refresh(businessId: Uuid): List<Employee>
 }

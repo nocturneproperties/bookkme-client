@@ -35,12 +35,10 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.services.presentation.group.add.AddGroupDialog
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState.ServiceGroupUI
-import kotlin.uuid.Uuid
 
 @Composable
 internal fun ServiceGroupListScreen(
-    state: ServiceGroupListState,
-    businessId: Uuid
+    state: ServiceGroupListState
 ) {
     CollapsingAppBarScaffold(
         modifier = Modifier
@@ -77,7 +75,7 @@ internal fun ServiceGroupListScreen(
             }
         }
         if (state.isAddGroupDialogVisible) {
-            AddGroupDialog(businessId) { state.isAddGroupDialogVisible = false }
+            AddGroupDialog { state.isAddGroupDialogVisible = false }
         }
     }
 }

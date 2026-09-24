@@ -13,9 +13,9 @@ struct ServiceListScreen: View {
 	
 	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: ServiceListViewModel
-	
-	init(businessId: KotlinUuid) {
-		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceListVM(businessId: businessId))
+
+	init() {
+		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceListVM())
 	}
 	
 	var body: some View {
@@ -43,8 +43,8 @@ struct ServiceListScreen: View {
 		.handleNotifications(uiState.notifications)
 		.handleNavigation(uiState.navigation) { destination in
 			switch destination {
-			case let destination as ServiceListDestination.ServiceGroups:
-				navigationStack.push(ServicesDestination.ServiceGroupList(businessId: destination.businessId))
+			case is ServiceListDestination.ServiceGroups:
+				navigationStack.push(ServicesDestination.ServiceGroupList.shared)
 				break
 			case let destination as ServiceListDestination.AddService:
 				navigationStack.push(ServicesDestination.AddService(businessId: destination.businessId))

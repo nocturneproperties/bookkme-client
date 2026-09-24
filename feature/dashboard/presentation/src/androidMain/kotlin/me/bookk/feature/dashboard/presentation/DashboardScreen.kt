@@ -4,7 +4,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.scaleIn
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -14,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -25,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -112,9 +109,9 @@ internal fun DashboardScreen(
             ) {
                 composable<BottomNavDestination.Home> {
                     when (state.home.content) {
-                        HomeContent.Loading -> HomeLoadingContent()
                         HomeContent.Onboarding -> DashboardOnboardingScreen(state.home.onboarding)
                         HomeContent.ActivePlugin -> homeScreen()
+                        null -> Unit
                     }
                 }
                 composable<BottomNavDestination.Business> {
@@ -169,13 +166,6 @@ internal fun DashboardScreen(
             }
         }
     )
-}
-
-@Composable
-private fun HomeLoadingContent() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
-    }
 }
 
 private fun TabItem.Id.asIcon(): ImageVector {

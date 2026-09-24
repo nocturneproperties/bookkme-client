@@ -6,6 +6,8 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -115,14 +117,35 @@ internal class CommonAppointmentDataSource(
         }
     }
 
-    override suspend fun getAppointmentsForDateFromDb(
+    override fun observeAppointmentsForDateDBChanges(
         businessId: Uuid,
         forDate: LocalDate
-    ): List<Appointment> = mapExceptions {
+    ): Flow<List<Appointment>> {
+        val (startOfDay, endOfDay) = forDate.dayBounds()
+        return appointmentDao.observeForDate(businessId, startOfDay, endOfDay)
+            .map { appointments -> appointments.map { it.toDomain() } }
+            .mapErrors()
+    }
+
+    override suspend fun getAppointmentIdsForDateInDb(
+        businessId: Uuid,
+        forDate: LocalDate
+    ): List<Uuid> = mapExceptions {
+        val (startOfDay, endOfDay) = forDate.dayBounds()
+        appointmentDao.getIdsForDate(businessId, startOfDay, endOfDay)
+    }
+
+    override suspend fun deleteAppointmentsInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> appointmentDao.deleteByIds(chunk) }
+        }
+    }
+
+    private fun LocalDate.dayBounds(): Pair<Instant, Instant> {
         val timeZone = TimeZone.currentSystemDefault()
-        val startOfDay = forDate.atStartOfDayIn(timeZone)
-        val endOfDay = forDate.plus(1, DateTimeUnit.DAY).atStartOfDayIn(timeZone)
-        appointmentDao.getForDate(businessId, startOfDay, endOfDay).map { it.toDomain() }
+        val startOfDay = atStartOfDayIn(timeZone)
+        val endOfDay = plus(1, DateTimeUnit.DAY).atStartOfDayIn(timeZone)
+        return startOfDay to endOfDay
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid, forDate: LocalDate): Instant? {

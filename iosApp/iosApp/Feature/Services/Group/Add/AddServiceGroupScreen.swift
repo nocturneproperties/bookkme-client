@@ -13,9 +13,9 @@ struct AddServiceGroupScreen: View {
 	
 	@StateViewModel var viewModel: AddGroupViewModel
 	let onDismiss: () -> Void
-	
-	init(businessId: KotlinUuid, onDismiss: @escaping () -> Void) {
-		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.addGroupVM(businessId: businessId))
+
+	init(onDismiss: @escaping () -> Void) {
+		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.addGroupVM())
 		self.onDismiss = onDismiss
 	}
 	

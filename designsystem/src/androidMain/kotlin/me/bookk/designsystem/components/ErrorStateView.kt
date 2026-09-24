@@ -19,6 +19,7 @@ import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.simple.ErrorState
@@ -37,8 +38,13 @@ fun LazyItemScope.ErrorStateView(state: ErrorState, modifier: Modifier = Modifie
             tint = LocalColors.current.error
         )
         Text(
-            state.errorText.localized(),
+            state.title.localized(),
             modifier = Modifier.padding(top = 24.dp),
+            style = MaterialTheme.typography.titleMedium.primary()
+        )
+        Text(
+            state.subtitle.localized(),
+            modifier = Modifier.padding(top = 4.dp),
             style = MaterialTheme.typography.bodyMedium.secondary()
         )
         val retryButtonState = remember(state) {

@@ -22,7 +22,7 @@ class IOSAppointmentListState: @MainActor AppointmentListState, NativeStateRepre
 	let dates: any ListState
 	let appointments: any ListState
 	let datePicker: any DatePickerState
-	var requestsBusinessId: KotlinUuid?
+	var isRequestsVisible: Bool = false
     let navigation: any NavigationState
     let notifications: any PresentationNotificationState
 

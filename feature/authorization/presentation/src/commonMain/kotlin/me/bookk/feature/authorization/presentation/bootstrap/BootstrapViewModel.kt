@@ -2,8 +2,6 @@ package me.bookk.feature.authorization.presentation.bootstrap
 
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
@@ -42,7 +40,7 @@ class BootstrapViewModel(
     private fun fetchInitialData() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { initialAppDataFetch() },
+            call = { initialAppDataFetch.timestampProtectedFetch() },
             onError = { /*NOOP*/ }
         )
     }
@@ -51,21 +49,21 @@ class BootstrapViewModel(
         isUserLoggedIn.asFlow()
             .distinctUntilChanged()
             .flowOn(DispatcherProvider.io)
-            .onEach { isLoggedIn ->
+            .safeOnEach { isLoggedIn ->
                 state.startDestination = if (isLoggedIn) {
                     BootstrapNavigationDestination.Main
                 } else {
                     BootstrapNavigationDestination.Login
                 }
             }
-            .launchIn(viewModelScope)
+            .observe()
     }
 
     private fun observeThemeUpdates() {
         getSettingsColorScheme.asFlow()
             .distinctUntilChanged()
             .flowOn(DispatcherProvider.io)
-            .onEach { state.colorScheme = UIColorScheme.from(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { state.colorScheme = UIColorScheme.from(it) }
+            .observe()
     }
 }

@@ -45,7 +45,7 @@ class AndroidTabItem(data: TabItem.InitData) : TabItem {
 }
 
 class AndroidDashboardHomeState : DashboardHomeState {
-    override var content: HomeContent by mutableStateOf(HomeContent.Loading)
+    override var content: HomeContent? by mutableStateOf(null)
     override val onboarding: OnboardingState = AndroidOnboardingState()
 }
 

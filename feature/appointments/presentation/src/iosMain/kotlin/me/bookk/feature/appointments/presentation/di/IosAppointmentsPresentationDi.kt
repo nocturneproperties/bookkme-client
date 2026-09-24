@@ -44,5 +44,5 @@ fun appointmentHistoryVM(businessId: Uuid): AppointmentHistoryViewModel =
     KoinPlatform.getKoin().get(parameters = { parametersOf(businessId) })
 
 @UsedInSwift
-fun appointmentRequestVM(businessId: Uuid): AppointmentRequestViewModel =
-    KoinPlatform.getKoin().get(parameters = { parametersOf(businessId) })
+fun appointmentRequestVM(): AppointmentRequestViewModel =
+    KoinPlatform.getKoin().get()

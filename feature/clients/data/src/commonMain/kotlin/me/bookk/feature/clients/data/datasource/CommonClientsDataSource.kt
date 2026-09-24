@@ -7,6 +7,8 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.patch
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -42,11 +44,10 @@ internal class CommonClientsDataSource(
         }
     }
 
-    override suspend fun getClientsFromDb(businessId: Uuid): List<Client> {
-        return mapExceptions {
-            clientsDao.getClients(businessId)
-                .map { it.toDomain() }
-        }
+    override fun observeClientsDBChanges(businessId: Uuid): Flow<List<Client>> {
+        return clientsDao.observeClients(businessId)
+            .map { clients -> clients.map { it.toDomain() } }
+            .mapErrors()
     }
 
     override suspend fun getClient(id: Uuid): Client {
@@ -89,8 +90,14 @@ internal class CommonClientsDataSource(
         mapExceptions { clientsDao.deleteById(id) }
     }
 
-    override suspend fun deleteClientsInDb() {
-        mapExceptions { clientsDao.clear() }
+    override suspend fun getClientIdsInDb(businessId: Uuid): List<Uuid> {
+        return mapExceptions { clientsDao.getIds(businessId) }
+    }
+
+    override suspend fun deleteClientsInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> clientsDao.deleteByIds(chunk) }
+        }
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {

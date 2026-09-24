@@ -21,17 +21,17 @@ sealed class BusinessDashboardSection(
         features: Set<DashboardFeature>,
         items: List<DashboardUIItem> = buildList {
             if (features.contains(DashboardFeature.EMPLOYEES)) {
-                add(Employees(id))
+                add(Employees)
             }
             if (features.contains(DashboardFeature.CLIENTS)) {
-                add(Clients(id))
+                add(Clients)
             }
             if (features.contains(DashboardFeature.SERVICES)) {
-                add(Services(id))
+                add(Services)
             }
             if (features.contains(DashboardFeature.BUSINESS)) {
                 add(Analytics)
-                add(Settings(id))
+                add(Settings)
                 add(Plugins(id))
             }
         }
@@ -39,14 +39,14 @@ sealed class BusinessDashboardSection(
         BusinessRes.strings.business_dashboard_business.desc(),
         items
     ) {
-        data class Employees(val id: Uuid) : DashboardUIItem(
+        data object Employees : DashboardUIItem(
             BusinessRes.strings.business_dashboard_employees.desc(),
-            DashboardNavigationDestination.Employees(id)
+            DashboardNavigationDestination.Employees
         )
 
-        data class Clients(val id: Uuid) : DashboardUIItem(
+        data object Clients : DashboardUIItem(
             BusinessRes.strings.business_dashboard_clients.desc(),
-            DashboardNavigationDestination.Clients(id)
+            DashboardNavigationDestination.Clients
         )
 
         data object Analytics : DashboardUIItem(
@@ -54,14 +54,14 @@ sealed class BusinessDashboardSection(
             DashboardNavigationDestination.Analytics
         )
 
-        data class Settings(val id: Uuid) : DashboardUIItem(
+        data object Settings : DashboardUIItem(
             BusinessRes.strings.business_dashboard_settings.desc(),
-            DashboardNavigationDestination.Settings(id)
+            DashboardNavigationDestination.Settings
         )
 
-        data class Services(val id: Uuid) : DashboardUIItem(
+        data object Services : DashboardUIItem(
             BusinessRes.strings.business_dashboard_services.desc(),
-            DashboardNavigationDestination.Services(id)
+            DashboardNavigationDestination.Services
         )
 
         data class Plugins(val id: Uuid) : DashboardUIItem(

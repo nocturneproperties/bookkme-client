@@ -2,7 +2,10 @@ package me.bookk.core.coroutine
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlin.time.Duration
 
@@ -35,4 +38,16 @@ fun <T> Flow<Result<T>>.resultOnError(action: suspend (Throwable) -> Unit): Flow
             action(it)
         }
     }
+}
+
+inline fun <T : Any, R> Flow<T?>.flatMapLatestOrNull(
+    crossinline transform: suspend (T) -> Flow<R>
+): Flow<R?> = flatMapLatest { value ->
+    if (value != null) transform(value) else flowOf(null)
+}
+
+inline fun <T : Any, R> Flow<T?>.mapOrNull(
+    crossinline transform: suspend (T) -> R
+): Flow<R?> = map { value ->
+    if (value != null) transform(value) else null
 }

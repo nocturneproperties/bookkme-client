@@ -31,11 +31,11 @@ class IOSDashboardState: @MainActor DashboardState {
 @MainActor
 @Observable
 class IOSDashboardHomeState: @MainActor DashboardHomeState {
-	var content: HomeContent
+	var content: HomeContent?
 	var onboarding: any OnboardingState
 
 	init() {
-		content = HomeContent.Loading.shared
+		content = nil
 		onboarding = IOSOnboardingState()
 	}
 }

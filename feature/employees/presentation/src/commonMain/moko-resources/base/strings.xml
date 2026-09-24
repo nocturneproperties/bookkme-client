@@ -18,4 +18,6 @@
     <string name="employees_invite_revoke_dialog_title">Revoke invitation?</string>
     <string name="employees_invite_revoke_dialog_message">This invitation will no longer be valid</string>
     <string name="employees_invite_revoke_error_already_processed">This invitation was already processed and can no longer be revoked</string>
+    <string name="employees_invite_generate_error_pending_limit">You have reached the limit of pending invitations. Revoke an unused invitation to generate a new code</string>
+    <string name="employees_invite_generate_error_daily_limit">You have reached the daily limit of invitations. Try again later</string>
 </resources>

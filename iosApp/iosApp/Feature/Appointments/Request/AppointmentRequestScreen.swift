@@ -13,9 +13,9 @@ struct AppointmentRequestSheet: View {
 
     @StateViewModel var viewModel: AppointmentRequestViewModel
 
-    init(businessId: KotlinUuid) {
+    init() {
         self._viewModel = StateViewModel(
-            wrappedValue: IosAppointmentsPresentationDiKt.appointmentRequestVM(businessId: businessId)
+            wrappedValue: IosAppointmentsPresentationDiKt.appointmentRequestVM()
         )
     }
 

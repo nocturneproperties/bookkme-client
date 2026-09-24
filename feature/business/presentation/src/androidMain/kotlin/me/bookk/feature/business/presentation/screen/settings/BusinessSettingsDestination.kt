@@ -4,9 +4,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import me.bookk.core.presentation.SendLifecycleEventsTo
-import me.bookk.core.presentation.navigation.UuidNavType
 import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
@@ -14,16 +12,10 @@ import me.bookk.feature.business.presentation.navigation.BusinessNavigation
 import me.bookk.feature.business.presentation.navigation.LocalNavigation
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsDestination
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
-import kotlin.reflect.typeOf
-import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
-    composable<BusinessDestination.Settings>(
-        typeMap = mapOf(typeOf<Uuid>() to UuidNavType)
-    ) {
-        val entry = it.toRoute<BusinessDestination.Settings>()
-        val viewModel: BusinessSettingsViewModel = koinViewModel { parametersOf(entry.id) }
+    composable<BusinessDestination.Settings> {
+        val viewModel: BusinessSettingsViewModel = koinViewModel()
         val backPressOwner = LocalOnBackPressedDispatcherOwner.current
         val listener = BusinessSettingsEventListener(
             onAddPhotoClick = viewModel::onAddPhotoClicked,

@@ -5,6 +5,7 @@ import kotlinx.coroutines.CancellationException
 import me.bookk.core.Logger
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.error.ButtonDescriptor
+import me.bookk.core.presentation.error.ErrorDescription
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.resources.DesignSystem
@@ -55,5 +56,27 @@ class ErrorMapperImpl : ErrorMapper {
                 buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
             )
         }
+    }
+
+    override fun mapToDescription(e: Throwable): ErrorDescription = when (e) {
+        is Error.NoConnectionError -> ErrorDescription(
+            title = DesignSystem.strings.error_connection_title.desc(),
+            message = DesignSystem.strings.error_connection_subtitle.desc()
+        )
+        is Error.UnknownApiError,
+        is Error.BadRequest,
+        is Error.InternalServerError -> ErrorDescription(
+            title = DesignSystem.strings.error_server_title.desc(),
+            message = DesignSystem.strings.error_server.desc()
+        )
+        is Error.BusinessError,
+        is Error.WrappedError -> ErrorDescription(
+            title = DesignSystem.strings.error_generic_title.desc(),
+            message = e.message.orEmpty().desc()
+        )
+        else -> ErrorDescription(
+            title = DesignSystem.strings.error_generic_title.desc(),
+            message = DesignSystem.strings.error_unexpected.desc()
+        )
     }
 }

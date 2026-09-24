@@ -102,14 +102,14 @@ class LowPriorityDataFetchTest {
 
     private fun stubHappyPath(fixture: Fixture, business: Business) {
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        everySuspend { fixture.getServices(business.id) } returns emptyList()
-        everySuspend { fixture.getServiceGroups(business.id) } returns emptyList()
-        everySuspend { fixture.getClientsList(business.id) } returns emptyList()
-        everySuspend { fixture.getEmployees(business.id) } returns emptyList()
-        everySuspend { fixture.getAppointmentEnabled(business.id) } returns true
-        everySuspend { fixture.getAppointmentSettings(business.id) } returns AppointmentSettings.stub()
+        everySuspend { fixture.getServices.refresh(business.id) } returns emptyList()
+        everySuspend { fixture.getServiceGroups.refresh(business.id) } returns emptyList()
+        everySuspend { fixture.getClientsList.refresh(business.id) } returns emptyList()
+        everySuspend { fixture.getEmployees.refresh(business.id) } returns emptyList()
+        everySuspend { fixture.getAppointmentEnabled.refresh(business.id) } returns true
+        everySuspend { fixture.getAppointmentSettings.refresh(business.id) } returns AppointmentSettings.stub()
         everySuspend { fixture.updateNotificationToken() } returns Unit
-        everySuspend { fixture.getNotificationSettings() } returns NotificationSettings.stub()
+        everySuspend { fixture.getNotificationSettings.refresh() } returns NotificationSettings.stub()
     }
 
     @Test
@@ -122,14 +122,14 @@ class LowPriorityDataFetchTest {
         fixture.sut()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getServices(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getServiceGroups(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getClientsList(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getEmployees(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentEnabled(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentSettings(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getServices.refresh(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getServiceGroups.refresh(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getClientsList.refresh(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getEmployees.refresh(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentEnabled.refresh(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getAppointmentSettings.refresh(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.updateNotificationToken() }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.getNotificationSettings() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getNotificationSettings.refresh() }
     }
 
     @Test
@@ -144,7 +144,7 @@ class LowPriorityDataFetchTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getServices(business.id) }
+        verifySuspend { fixture.getServices.refresh(business.id) }
     }
 
     @Test
@@ -158,14 +158,14 @@ class LowPriorityDataFetchTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getServices(business.id) }
-        verifySuspend { fixture.getServiceGroups(business.id) }
-        verifySuspend { fixture.getClientsList(business.id) }
-        verifySuspend { fixture.getEmployees(business.id) }
-        verifySuspend { fixture.getAppointmentEnabled(business.id) }
-        verifySuspend { fixture.getAppointmentSettings(business.id) }
+        verifySuspend { fixture.getServices.refresh(business.id) }
+        verifySuspend { fixture.getServiceGroups.refresh(business.id) }
+        verifySuspend { fixture.getClientsList.refresh(business.id) }
+        verifySuspend { fixture.getEmployees.refresh(business.id) }
+        verifySuspend { fixture.getAppointmentEnabled.refresh(business.id) }
+        verifySuspend { fixture.getAppointmentSettings.refresh(business.id) }
         verifySuspend { fixture.updateNotificationToken() }
-        verifySuspend { fixture.getNotificationSettings() }
+        verifySuspend { fixture.getNotificationSettings.refresh() }
     }
 
     @Test
@@ -174,15 +174,15 @@ class LowPriorityDataFetchTest {
         val fixture = Fixture()
         val business = stubBusiness()
         stubHappyPath(fixture, business)
-        everySuspend { fixture.getServices(business.id) } throws RuntimeException("network error")
+        everySuspend { fixture.getServices.refresh(business.id) } throws RuntimeException("network error")
 
         whenn()
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getAppointmentSettings(business.id) }
+        verifySuspend { fixture.getAppointmentSettings.refresh(business.id) }
         verifySuspend { fixture.updateNotificationToken() }
-        verifySuspend { fixture.getNotificationSettings() }
+        verifySuspend { fixture.getNotificationSettings.refresh() }
     }
 
     @Test
@@ -191,14 +191,14 @@ class LowPriorityDataFetchTest {
         val fixture = Fixture()
         val business = stubBusiness()
         stubHappyPath(fixture, business)
-        everySuspend { fixture.getAppointmentSettings(business.id) } throws RuntimeException("network error")
+        everySuspend { fixture.getAppointmentSettings.refresh(business.id) } throws RuntimeException("network error")
 
         whenn()
         fixture.sut()
 
         then()
         verifySuspend { fixture.updateNotificationToken() }
-        verifySuspend { fixture.getNotificationSettings() }
+        verifySuspend { fixture.getNotificationSettings.refresh() }
     }
 
     @Test

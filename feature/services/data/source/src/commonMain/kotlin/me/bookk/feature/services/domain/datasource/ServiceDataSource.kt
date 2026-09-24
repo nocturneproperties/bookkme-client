@@ -1,5 +1,6 @@
 package me.bookk.feature.services.domain.datasource
 
+import kotlinx.coroutines.flow.Flow
 import library.money.api.Money
 import me.bookk.feature.services.domain.api.service.entity.Service
 import kotlin.time.Instant
@@ -15,7 +16,9 @@ interface ServiceDataSource {
     suspend fun saveServicesInDB(services: List<Service>)
     suspend fun saveServiceInDB(service: Service)
     suspend fun deleteServiceFromDB(service: Service)
-    suspend fun getServicesFromDb(businessId: Uuid): List<Service>
+    fun observeServicesDBChanges(businessId: Uuid): Flow<List<Service>>
+    suspend fun getServiceIdsInDb(businessId: Uuid): List<Uuid>
+    suspend fun deleteServicesInDb(ids: List<Uuid>)
     suspend fun getLastSyncedAt(businessId: Uuid): Instant?
     suspend fun saveLastSyncedAt(businessId: Uuid)
 }

@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.domain.impl
 
+import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataSource
 import me.bookk.feature.authorization.domain.entity.UserProfile
@@ -19,6 +20,10 @@ internal class UserProfileCRUDImpl(
         return local ?: userProfileDataSource.getProfileFromBackend().also {
             userProfileDataSource.upsertProfile(it)
         }
+    }
+
+    override fun observe(): Flow<UserProfile?> {
+        return userProfileDataSource.observeProfileFromDatabase()
     }
 
     override suspend fun update(profile: UserProfile) {

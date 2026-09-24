@@ -5,6 +5,8 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
@@ -44,16 +46,23 @@ internal class EmployeeInvitationDataSourceImpl(
             .map { it.toDomain() }
     }
 
-    override suspend fun getInvitationsFromDb(businessId: Uuid): List<EmployeeInvitation> = mapExceptions {
-        employeeInvitationDao.getInvitations(businessId).map { it.toDomain() }
-    }
+    override fun observeInvitationsDBChanges(businessId: Uuid): Flow<List<EmployeeInvitation>> =
+        employeeInvitationDao.observeInvitations(businessId)
+            .map { invitations -> invitations.map { it.toDomain() } }
+            .mapErrors()
 
     override suspend fun saveInvitationsInDb(invitations: List<EmployeeInvitation>) {
         mapExceptions { employeeInvitationDao.upsert(invitations.map(EmployeeInvitation::toDbEntity)) }
     }
 
-    override suspend fun deleteInvitationsInDb() {
-        mapExceptions { employeeInvitationDao.clear() }
+    override suspend fun getInvitationIdsInDb(businessId: Uuid): List<Uuid> = mapExceptions {
+        employeeInvitationDao.getIdsForBusiness(businessId)
+    }
+
+    override suspend fun deleteInvitationsInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> employeeInvitationDao.deleteByIds(chunk) }
+        }
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {

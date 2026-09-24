@@ -22,6 +22,7 @@ class IOSListState<T>: @MainActor IOSViewState, @MainActor ListState, NativeStat
     var items: [Any] { typedItems }
     var emptyState: EmptyState? = nil
     var errorState: ErrorState? = nil
+    var bannerError: BannerErrorState? = nil
     var loadMore: (() -> Void)? = nil
     var isInitialLoading: Bool = true
     
@@ -35,6 +36,7 @@ class IOSListState<T>: @MainActor IOSViewState, @MainActor ListState, NativeStat
 		withAnimation {
 			typedItems.append(contentsOf: list as! [T])
 			isInitialLoading = false
+			demoteErrorToBannerIfHasItems()
 		}
     }
     
@@ -49,8 +51,15 @@ class IOSListState<T>: @MainActor IOSViewState, @MainActor ListState, NativeStat
 		withAnimation {
 			typedItems = list as! [T]
 			isInitialLoading = false
+			demoteErrorToBannerIfHasItems()
 		}
     }
+
+	private func demoteErrorToBannerIfHasItems() {
+		guard let error = errorState, !typedItems.isEmpty else { return }
+		bannerError = BannerErrorState.companion.default(onRetryClick: error.onRetryClick)
+		errorState = nil
+	}
 }
 
 @MainActor

@@ -73,11 +73,7 @@ struct AppBarHandler: ViewModifier {
 	func buttonRole(from type: ActionType) -> ButtonRole? {
 		switch(type) {
 		case .confirm:
-			if #available(iOS 26.0, *) {
-				return .confirm
-			} else {
-				return nil
-			}
+			return .confirm
 		case .negative:
 			return .destructive
 		case .cancel:

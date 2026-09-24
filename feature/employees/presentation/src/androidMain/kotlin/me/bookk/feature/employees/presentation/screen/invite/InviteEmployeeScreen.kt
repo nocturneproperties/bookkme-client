@@ -2,6 +2,7 @@ package me.bookk.feature.employees.presentation.screen.invite
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,16 +40,19 @@ fun InviteEmployeeScreen(state: InviteEmployeeState) {
                     .padding(pv)
                     .fillMaxSize()
             ) {
-                Header(
-                    modifier = Modifier.padding(top = 16.dp),
-                    text = state.descriptionText.localized()
-                )
                 AppCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            text = state.descriptionText.localized(),
+                            style = MaterialTheme.typography.bodyMedium.secondary()
+                        )
                         ActionButton(
                             modifier = Modifier.fillMaxWidth(),
                             state = state.generateCodeButton
@@ -63,7 +67,7 @@ fun InviteEmployeeScreen(state: InviteEmployeeState) {
                         modifier = Modifier.fillMaxSize(),
                         idProvider = InvitationItem::id
                     ) {
-                        InvitationRow(it)
+                        InvitationRow(Modifier.animateItem(), it)
                     }
                 }
             }
@@ -72,9 +76,9 @@ fun InviteEmployeeScreen(state: InviteEmployeeState) {
 }
 
 @Composable
-private fun InvitationRow(item: InvitationItem) {
+private fun InvitationRow(modifier: Modifier, item: InvitationItem) {
     val onClick = item.onClick
-    Column(Modifier.fillMaxWidth()) {
+    Column(modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

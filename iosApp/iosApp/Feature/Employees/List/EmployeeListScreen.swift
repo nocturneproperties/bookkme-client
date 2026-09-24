@@ -5,8 +5,8 @@ struct EmployeeListScreen: View {
 	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: EmployeeListViewModel
 
-	init(businessId: KotlinUuid) {
-		_viewModel = StateViewModel(wrappedValue: IosEmployeesPresentationDiKt.employeeListVM(id: businessId))
+	init() {
+		_viewModel = StateViewModel(wrappedValue: IosEmployeesPresentationDiKt.employeeListVM())
 	}
 
 	var body: some View {

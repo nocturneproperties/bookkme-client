@@ -4,6 +4,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import kotlin.test.Test
 import kotlin.test.assertEquals

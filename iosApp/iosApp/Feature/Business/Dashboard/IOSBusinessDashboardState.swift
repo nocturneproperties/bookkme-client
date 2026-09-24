@@ -20,12 +20,17 @@ class IOSBusinessDashboardState: @MainActor BusinessDashboardState {
 	var notifications: any PresentationNotificationState
 	
 	var sections: [BusinessDashboardSection] = []
-	
+
+	var businessMenu: any BusinessMenuState
+
+	var isCreateBusinessSheetVisible: Bool = false
+
 	init() {
 		self.appBar = IOSAppBarState(title: RawStringDesc(string: ""))
 		self.navigation =  IOSNavigationState()
 		self.notifications = IOSNotificationState()
 		self.sections = []
+		self.businessMenu = IOSBusinessMenuState()
 	}
 	
 	func updateSections(sections: [BusinessDashboardSection]) {

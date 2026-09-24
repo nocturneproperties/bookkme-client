@@ -82,10 +82,9 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetEmployees` | `GET /api/business/{businessId}/employee` | [Get employees](employees/get-employees.md) |
-| `UpdateEmployee` | `PUT /api/business/{businessId}/employee/{id}` | [Update employee](employees/update-employee.md) |
-| `PromoteEmployee` | `POST /api/business/{businessId}/employee/{id}/promote` | [Promote employee](employees/promote-employee.md) |
-| `GetEmployeePermissions` | `GET /api/business/{businessId}/employee/{id}/permissions` | [Get employee permissions](employees/get-employee-permissions.md) |
-| `SetEmployeePermission` | `PUT /api/business/{businessId}/employee/{id}/permissions/{resource}` | [Set employee permission](employees/set-employee-permission.md) |
+| `GetEmployee` | local only (`employee` tables) | [Get employee](employees/get-employee.md) |
+| `UpdateEmployee` | `PUT /api/business/{businessId}/employee/{id}` + `PUT /api/business/{businessId}/employee/{id}/permissions` (parallel) | [Update employee](employees/update-employee.md) |
+| `GetAssignableServices` | via `GetServices` | [Get assignable services](employees/get-assignable-services.md) |
 | `GetEmployeeInvitations` | `GET /api/business/{businessId}/employee_invitation` | [Get employee invitations](employees/get-employee-invitations.md) |
 | `CreateEmployeeInvitation` | `POST /api/business/{businessId}/employee_invitation` | [Create employee invitation](employees/create-employee-invitation.md) |
 | `RevokeEmployeeInvitation` | `POST /api/business/{businessId}/employee_invitation/{id}/revoke` | [Revoke employee invitation](employees/revoke-employee-invitation.md) |
@@ -151,6 +150,7 @@ don't need them, because they redraw from the table.
 | [Refresh business info](business/refresh-business-info.md) | `IsAppointmentsPluginEnabled.refresh` per business |
 | [Get available dashboard features](business/get-available-dashboard-features.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList`, `GetServices`, `GetAppointmentSettings` (parallel) |
+| [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Create appointment](appointments/create-appointment.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
 | [Create new passkey](settings/create-new-passkey.md) | `GetAvailablePasskeys` |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
@@ -167,4 +167,4 @@ These are recorded here and in the linked diagrams and are currently accepted as
 | [Cancel appointment](appointments/cancel-appointment.md) | The datasource method does both the network call and the DB write. |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | A refresh or switch failure after a successful redeem surfaces as an error, even though the user has joined. |
 | [preferences](../database/preferences.md) | `last_synced_at_*` markers are written by every list refresh but never read. |
-| Unused use cases | `CreateQuote`, `EditService`, `UpdateEmployee`, `PromoteEmployee`, `GetEmployeePermissions`, `SetEmployeePermission` and `IsUserLoggedIn()` (non-flow) have no production caller. `AppointmentRequestDataSource.createAppointmentRequest` has no use case. |
+| Unused use cases | `CreateQuote`, `EditService` and `IsUserLoggedIn()` (non-flow) have no production caller. `AppointmentRequestDataSource.createAppointmentRequest` has no use case. |

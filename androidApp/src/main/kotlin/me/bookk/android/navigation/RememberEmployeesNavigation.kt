@@ -10,6 +10,7 @@ import me.bookk.feature.employees.presentation.EmployeesNavigation
 fun rememberEmployeesNavigation(controller: NavController) = remember(controller) {
     EmployeesNavigation(
         toInviteEmployee = { controller.navigate(EmployeesDestinations.InviteEmployee(it)) },
+        toEditEmployee = { controller.navigate(EmployeesDestinations.EditEmployee(it)) },
         onBack = { controller.popBackStack() }
     )
 }

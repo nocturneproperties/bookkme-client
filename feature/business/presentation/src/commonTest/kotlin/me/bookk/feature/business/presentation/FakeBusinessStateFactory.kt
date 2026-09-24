@@ -3,19 +3,14 @@ package me.bookk.feature.business.presentation
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.test.FakeAppBarState
-import me.bookk.designsystem.test.FakeBooleanState
 import me.bookk.designsystem.test.FakeBusinessMenuState
 import me.bookk.designsystem.test.FakeButtonState
-import me.bookk.designsystem.test.FakeDateRangePickerState
 import me.bookk.designsystem.test.FakeListState
-import me.bookk.designsystem.test.FakeMultiPickerState
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
 import me.bookk.designsystem.test.FakePickerFieldState
+import me.bookk.designsystem.test.FakeScheduleState
 import me.bookk.designsystem.test.FakeTextFieldState
-import me.bookk.designsystem.test.FakeTimePickerFieldState
-import me.bookk.designsystem.test.FakeViewState
-import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.OptionalInfoLine
 import me.bookk.feature.business.presentation.screen.create.CreateBusinessNavigationDestination
@@ -29,10 +24,6 @@ import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginsDest
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsDestination
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
-import me.bookk.feature.business.presentation.screen.settings.state.DateRangePickerPresentation
-import me.bookk.feature.business.presentation.screen.settings.state.DaySettingsState
-import me.bookk.feature.business.presentation.screen.settings.state.ScheduleState
-import me.bookk.feature.business.presentation.screen.settings.state.TimeSettingState
 
 internal class FakeBusinessStateFactory : BusinessStateFactory {
     var createBusinessInitData: CreateBusinessState.InitData? = null
@@ -114,49 +105,9 @@ internal class FakeBusinessSettingsState : BusinessSettingsState {
     override val telegram = FakeTextFieldState()
     override val viber = FakeTextFieldState()
     override val schedule = FakeScheduleState()
-    override val dayOffs = FakeMultiPickerState<DateRangePickerPresentation>()
-    override val dateRange = FakeDateRangePickerState()
     override val pickLocation = FakeButtonState()
     override val testLocation = FakeButtonState()
     override val save = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<BusinessSettingsDestination>()
-
-    override fun createDaySettingState(): DaySettingsState {
-        return FakeDaySettingsState()
-    }
-}
-
-internal class FakeScheduleState : ScheduleState {
-    override val monday = FakeDaySettingsState()
-    override val tuesday = FakeDaySettingsState()
-    override val wednesday = FakeDaySettingsState()
-    override val thursday = FakeDaySettingsState()
-    override val friday = FakeDaySettingsState()
-    override val saturday = FakeDaySettingsState()
-    override val sunday = FakeDaySettingsState()
-    override val list = FakeListState<DaySettingsState>()
-}
-
-internal class FakeDaySettingsState : FakeViewState(), DaySettingsState {
-    override var isActive: BooleanState = FakeBooleanState()
-    override var dayIndicator: StringDesc = "".desc()
-    override var title: StringDesc = "".desc()
-    override val intervals: MutableList<TimeSettingState> = mutableListOf()
-    override val addTimeButton = FakeButtonState()
-    override var onDeleteInterval: (TimeSettingState) -> Unit = {}
-
-    override fun replaceIntervals(newIntervals: List<TimeSettingState>) {
-        intervals.clear()
-        intervals += newIntervals
-    }
-
-    override fun createTimeSettingState(): TimeSettingState {
-        return FakeTimeSettingState()
-    }
-}
-
-internal class FakeTimeSettingState : FakeViewState(), TimeSettingState {
-    override val timeFromPicker = FakeTimePickerFieldState()
-    override val timeToPicker = FakeTimePickerFieldState()
 }

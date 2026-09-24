@@ -40,4 +40,10 @@
     <string name="common_to">To</string>
     <string name="common_min">min.</string>
 
+    <string name="schedule_title">Schedule</string>
+    <string name="schedule_add_working_time">Add time block</string>
+    <string name="schedule_day_offs">Days off</string>
+    <string name="schedule_add_day_off">Add day off</string>
+    <string name="schedule_no_day_offs">No days off scheduled.</string>
+    <string name="schedule_pick_day_off_title">Pick a start and end date for a vacation/day-off block.</string>
 </resources>

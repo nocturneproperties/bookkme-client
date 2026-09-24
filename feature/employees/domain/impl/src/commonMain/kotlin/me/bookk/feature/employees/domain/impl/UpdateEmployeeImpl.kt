@@ -1,5 +1,7 @@
 package me.bookk.feature.employees.domain.impl
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import me.bookk.core.domain.entity.onBusinessError
 import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.api.UpdateEmployee.Error
@@ -10,13 +12,26 @@ import me.bookk.feature.employees.domain.datasource.EmployeeErrorCodes
 internal class UpdateEmployeeImpl(
     private val dataSource: EmployeeDataSource
 ) : UpdateEmployee {
-    override suspend fun invoke(employee: Employee): Employee = runCatching {
-        dataSource.updateEmployee(employee)
-    }.onBusinessError { error ->
-        when (error.errorCode) {
-            EmployeeErrorCodes.BUSINESS_EMPLOYEE_VALIDATION_ERROR -> throw Error.ValidationError(error)
-            EmployeeErrorCodes.BUSINESS_EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS -> throw Error.ActiveDayWithoutWorkHours(error)
-            EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE -> throw Error.InvalidDayOffRange(error)
+    override suspend fun invoke(employee: Employee): Employee {
+        return runCatching {
+            sendUpdates(employee)
+        }.onBusinessError { error ->
+            when (error.errorCode) {
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_VALIDATION_ERROR -> throw Error.ValidationError(error)
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS -> throw Error.ActiveDayWithoutWorkHours(error)
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE -> throw Error.InvalidDayOffRange(error)
+                EmployeeErrorCodes.BUSINESS_INSUFFICIENT_GRANT_PERMISSION -> throw Error.InsufficientGrant(error)
+            }
+        }.getOrThrow().also {
+            dataSource.saveEmployeesInDb(listOf(it))
         }
-    }.getOrThrow()
+    }
+
+    private suspend fun sendUpdates(employee: Employee) = coroutineScope {
+        val profile = async { dataSource.updateEmployee(employee) }
+        val permissions = async {
+            dataSource.updateEmployeePermissions(employee.businessId, employee.id, employee.permissions)
+        }
+        profile.await().copy(permissions = permissions.await().permissions)
+    }
 }

@@ -15,6 +15,8 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.business.domain.api.business.JoinBusiness
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.employees.domain.api.RedeemEmployeeInvitation
 import me.bookk.feature.employees.domain.api.entity.Employee
@@ -35,7 +37,14 @@ private fun stubEmployee() = Employee(
     userId = Uuid.random(),
     services = emptyList(),
     schedule = WorkingSchedule(),
-    createdAt = Instant.fromEpochMilliseconds(0)
+    createdAt = Instant.fromEpochMilliseconds(0),
+    permissions = BusinessPermissions(
+        business = ResourcePermission(),
+        employees = ResourcePermission(),
+        clients = ResourcePermission(),
+        services = ResourcePermission(),
+        appointments = ResourcePermission()
+    )
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)

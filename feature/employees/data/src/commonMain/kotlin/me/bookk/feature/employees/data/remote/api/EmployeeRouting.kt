@@ -10,14 +10,8 @@ object EmployeeRouting {
         class Employee(val parent: Api = Api(), val businessId: Uuid) {
             @Resource("/{id}")
             class Id(val parent: Employee, val id: Uuid) {
-                @Resource("/promote")
-                class Promote(val parent: Id)
-
                 @Resource("/permissions")
-                class Permissions(val parent: Id) {
-                    @Resource("/{resource}")
-                    class Grant(val parent: Permissions, val resource: String)
-                }
+                class Permissions(val parent: Id)
             }
         }
 

@@ -27,6 +27,21 @@ erDiagram
         string email "nullable"
         uuid userId "logical FK -> backend user.profile.id"
         instant createdAt
+        bool businessPermissionView "default 0"
+        bool businessPermissionUpdate "default 0"
+        bool businessPermissionDelete "default 0"
+        bool employeesPermissionView "default 0"
+        bool employeesPermissionUpdate "default 0"
+        bool employeesPermissionDelete "default 0"
+        bool clientsPermissionView "default 0"
+        bool clientsPermissionUpdate "default 0"
+        bool clientsPermissionDelete "default 0"
+        bool servicesPermissionView "default 0"
+        bool servicesPermissionUpdate "default 0"
+        bool servicesPermissionDelete "default 0"
+        bool appointmentsPermissionView "default 0"
+        bool appointmentsPermissionUpdate "default 0"
+        bool appointmentsPermissionDelete "default 0"
     }
 
     EMPLOYEE_DAY_SCHEDULE {
@@ -77,12 +92,16 @@ erDiagram
 `employee_service_snapshot` is a full copy of the service **and** its group. It deliberately has no foreign key
 to `service`, so employees can be cached before services are, or without them.
 
-- Written by: [Get employees](../operations/employees/get-employees.md) `refresh()` (`upsertAllWithChildren`)
-  and [Get employee invitations](../operations/employees/get-employee-invitations.md) `refresh()`.
-  None of the mutating employee use cases ([Update employee](../operations/employees/update-employee.md),
-  [Promote](../operations/employees/promote-employee.md), [Set permission](../operations/employees/set-employee-permission.md),
-  [Create](../operations/employees/create-employee-invitation.md) or [Revoke invitation](../operations/employees/revoke-employee-invitation.md))
-  writes to the database. The cache only catches up on the next `refresh()`.
+The `*Permission*` columns flatten the employee's `BusinessPermissions` (view/update/delete per resource), in
+the same way as the permission columns on `business`.
+
+- Written by: [Get employees](../operations/employees/get-employees.md) `refresh()` (`upsertAllWithChildren`),
+  [Update employee](../operations/employees/update-employee.md) (upserts the saved employee) and
+  [Get employee invitations](../operations/employees/get-employee-invitations.md) `refresh()`.
+  [Create](../operations/employees/create-employee-invitation.md) and [Revoke invitation](../operations/employees/revoke-employee-invitation.md)
+  do not write to the database. The invitation cache only catches up on the next `refresh()`.
+- Read by id: [Get employee](../operations/employees/get-employee.md) (`employeeDao.getEmployee`).
 - Sync markers: `employees_prefs` and `employee_invitations_prefs` / `last_synced_at_<businessId>`.
 - Cleared on logout: yes.
-- Migration note: 11 → 12 dropped `employee_invitation.email` (`DeleteEmployeeInvitationEmail` spec).
+- Migration notes: 11 → 12 dropped `employee_invitation.email` (`DeleteEmployeeInvitationEmail` spec).
+  14 → 15 added the 15 `employee.*Permission*` columns (auto-migration, all `DEFAULT 0`).

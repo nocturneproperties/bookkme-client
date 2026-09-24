@@ -49,7 +49,14 @@ class EmployeeListViewModel(
         val grouped = employees
             .sortedBy { it.fullName.trim() }
             .groupBy { it.name[0].toString().capitalizeChar() }
-            .map { entry -> EmployeeSection(id = entry.key, header = entry.key, items = entry.value) }
+            .map { entry ->
+                EmployeeSection(
+                    id = entry.key,
+                    header = entry.key,
+                    items = entry.value,
+                    onItemClick = weakVMClosure { vm, employee -> vm.onEmployeeClick(employee) }
+                )
+            }
         items = grouped
         uiState.employeesList.replace(grouped)
     }
@@ -80,6 +87,10 @@ class EmployeeListViewModel(
             onComplete = { uiState.navigation.push(EmployeeListDestinations.AddEmployee(it)) },
             onError = { uiState.notifications.add(it.notification()) }
         )
+    }
+
+    private fun onEmployeeClick(employee: Employee) {
+        uiState.navigation.push(EmployeeListDestinations.EditEmployee(employee.id))
     }
 
     private fun onSearchQueryChanged(query: String) {

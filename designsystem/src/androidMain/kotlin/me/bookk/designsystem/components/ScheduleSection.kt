@@ -1,4 +1,4 @@
-package me.bookk.feature.business.presentation.screen.settings
+package me.bookk.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -36,27 +36,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.designsystem.components.AlignStartTextButton
-import me.bookk.designsystem.components.AppCard
-import me.bookk.designsystem.components.DateRangePicker
-import me.bookk.designsystem.components.Header
-import me.bookk.designsystem.components.MultiPicker
-import me.bookk.designsystem.components.StateSwitch
-import me.bookk.designsystem.components.TimePickerField
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.secondary
-import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
-import me.bookk.feature.business.presentation.screen.settings.state.DateRangePickerPresentation
-import me.bookk.feature.business.presentation.screen.settings.state.DaySettingsState
-import me.bookk.feature.business.presentation.screen.settings.state.ScheduleState
-import me.bookk.feature.business.presentation.screen.settings.state.TimeSettingState
+import me.bookk.designsystem.uistate.schedule.DateRangePickerPresentation
+import me.bookk.designsystem.uistate.schedule.DaySettingsState
+import me.bookk.designsystem.uistate.schedule.ScheduleState
+import me.bookk.designsystem.uistate.schedule.TimeSettingState
 
 @Composable
-internal fun ScheduleSection(state: BusinessSettingsState) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        ScheduleStrip(state.schedule)
+fun ScheduleSection(state: ScheduleState, modifier: Modifier = Modifier) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        ScheduleStrip(state)
 
         MultiPicker(
             state.dayOffs,
@@ -103,7 +94,7 @@ private fun DayOffItem(
 private fun ScheduleStrip(schedule: ScheduleState) {
     var selectedState by remember(schedule) { mutableStateOf(schedule.monday) }
     Column(Modifier.fillMaxWidth()) {
-        Header(BusinessRes.strings.business_settings_schedule.desc().localized())
+        Header(DesignSystem.strings.schedule_title.desc().localized())
         Row(
             modifier = Modifier
                 .fillMaxWidth()

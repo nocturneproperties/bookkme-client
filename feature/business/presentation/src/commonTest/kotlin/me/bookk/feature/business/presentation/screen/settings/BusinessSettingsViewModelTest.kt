@@ -23,6 +23,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
@@ -318,18 +319,18 @@ class BusinessSettingsViewModelTest {
         val sut = Fixture().sutWith(stubBusiness())
         val start = LocalDate(2030, 1, 10)
         val end = LocalDate(2030, 1, 12)
-        sut.uiState.dateRange.startDate.datePicker.onDatePicked?.invoke(start)
-        sut.uiState.dateRange.endDate.datePicker.onDatePicked?.invoke(end)
+        sut.uiState.schedule.dateRange.startDate.datePicker.onDatePicked?.invoke(start)
+        sut.uiState.schedule.dateRange.endDate.datePicker.onDatePicked?.invoke(end)
 
         whenn()
-        sut.uiState.dateRange.onDateRangeSelected()
+        sut.uiState.schedule.dateRange.onDateRangeSelected()
 
         then()
-        val dayOff = sut.uiState.dayOffs.selectedItems.single()
+        val dayOff = sut.uiState.schedule.dayOffs.selectedItems.single()
         assertEquals(start, dayOff.dateFrom)
         assertEquals(end, dayOff.dateTo)
-        assertEquals(null, sut.uiState.dateRange.startDate.datePicker.pickedDate)
-        assertEquals(null, sut.uiState.dateRange.endDate.datePicker.pickedDate)
+        assertEquals(null, sut.uiState.schedule.dateRange.startDate.datePicker.pickedDate)
+        assertEquals(null, sut.uiState.schedule.dateRange.endDate.datePicker.pickedDate)
         assertTrue(sut.uiState.save.isEnabled)
     }
 
@@ -340,23 +341,23 @@ class BusinessSettingsViewModelTest {
         val start = LocalDate(2030, 1, 10)
 
         whenn()
-        sut.uiState.dateRange.startDate.datePicker.onDatePicked?.invoke(start)
+        sut.uiState.schedule.dateRange.startDate.datePicker.onDatePicked?.invoke(start)
 
         then()
-        assertEquals(start, sut.uiState.dateRange.endDate.datePicker.minDate)
+        assertEquals(start, sut.uiState.schedule.dateRange.endDate.datePicker.minDate)
     }
 
     @Test
     fun `ignores date range selection without end date`() = runUnitTest {
         given()
         val sut = Fixture().sutWith(stubBusiness())
-        sut.uiState.dateRange.startDate.datePicker.onDatePicked?.invoke(LocalDate(2030, 1, 10))
+        sut.uiState.schedule.dateRange.startDate.datePicker.onDatePicked?.invoke(LocalDate(2030, 1, 10))
 
         whenn()
-        sut.uiState.dateRange.onDateRangeSelected()
+        sut.uiState.schedule.dateRange.onDateRangeSelected()
 
         then()
-        assertTrue(sut.uiState.dayOffs.selectedItems.isEmpty())
+        assertTrue(sut.uiState.schedule.dayOffs.selectedItems.isEmpty())
     }
 
     @Test
@@ -364,13 +365,13 @@ class BusinessSettingsViewModelTest {
         given()
         val dayOff = DayOffRange(LocalDate(2030, 1, 10), LocalDate(2030, 1, 12))
         val sut = Fixture().sutWith(stubBusiness(schedule = stubWorkingSchedule().copy(dayOffs = listOf(dayOff))))
-        val rendered = sut.uiState.dayOffs.selectedItems.toList()
+        val rendered = sut.uiState.schedule.dayOffs.selectedItems.toList()
 
         whenn()
-        sut.uiState.dayOffs.onItemsRemoveRequested(rendered)
+        sut.uiState.schedule.dayOffs.onItemsRemoveRequested(rendered)
 
         then()
-        assertTrue(sut.uiState.dayOffs.selectedItems.isEmpty())
+        assertTrue(sut.uiState.schedule.dayOffs.selectedItems.isEmpty())
         assertTrue(sut.uiState.save.isEnabled)
     }
 

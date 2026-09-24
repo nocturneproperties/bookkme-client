@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.presentation.di
 
+import me.bookk.feature.employees.presentation.screen.edit.EditEmployeeViewModel
 import me.bookk.feature.employees.presentation.screen.invite.InviteEmployeeViewModel
 import me.bookk.feature.employees.presentation.screen.list.EmployeeListViewModel
 import org.koin.core.module.Module
@@ -10,4 +11,5 @@ import org.koin.dsl.module
 internal actual fun platformEmployeesDiModule(): Module = module {
     viewModel { EmployeeListViewModel(get(), get(), get(), get()) }
     viewModelOf(::InviteEmployeeViewModel)
+    viewModelOf(::EditEmployeeViewModel)
 }

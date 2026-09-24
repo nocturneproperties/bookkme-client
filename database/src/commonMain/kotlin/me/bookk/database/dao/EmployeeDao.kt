@@ -21,6 +21,10 @@ abstract class EmployeeDao {
     @Query("select * from employee where businessId = :businessId")
     abstract fun observeEmployees(businessId: Uuid): Flow<List<EmployeeLocal>>
 
+    @Transaction
+    @Query("select * from employee where id = :id")
+    abstract suspend fun getEmployee(id: Uuid): EmployeeLocal?
+
     @Query("select id from employee where businessId = :businessId")
     abstract suspend fun getIdsForBusiness(businessId: Uuid): List<Uuid>
 

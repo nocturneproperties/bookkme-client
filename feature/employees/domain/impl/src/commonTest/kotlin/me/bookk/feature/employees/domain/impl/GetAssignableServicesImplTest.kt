@@ -1,11 +1,13 @@
 package me.bookk.feature.employees.domain.impl
 
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
-import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -13,15 +15,15 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.feature.employees.domain.api.entity.EmployeeRole
-import me.bookk.feature.employees.domain.datasource.EmployeeDataSource
+import me.bookk.feature.services.domain.api.service.GetServices
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PromoteEmployeeImplTest {
+class GetAssignableServicesImplTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -36,22 +38,36 @@ class PromoteEmployeeImplTest {
     }
 
     private class Fixture {
-        val dataSource = mock<EmployeeDataSource>()
-        val sut = PromoteEmployeeImpl(dataSource)
+        val getServices = mock<GetServices>()
+        val sut = GetAssignableServicesImpl(getServices)
     }
 
     @Test
-    fun `promotes employee through datasource`() = runUnitTest {
+    fun `emits the business services`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val services = listOf(stubService(), stubService())
+        every { fixture.getServices.flow() } returns flowOf(services)
+
+        whenn()
+        val result = fixture.sut.flow().first()
+
+        then()
+        assertEquals(services, result)
+    }
+
+    @Test
+    fun `refresh returns the freshly fetched business services`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        val id = Uuid.random()
-        everySuspend { fixture.dataSource.promoteEmployee(businessId, id, EmployeeRole.MANAGER) } returns Unit
+        val services = listOf(stubService(businessId))
+        everySuspend { fixture.getServices.refresh(businessId) } returns services
 
         whenn()
-        fixture.sut(businessId, id, EmployeeRole.MANAGER)
+        val result = fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend { fixture.dataSource.promoteEmployee(businessId, id, EmployeeRole.MANAGER) }
+        assertEquals(services, result)
     }
 }

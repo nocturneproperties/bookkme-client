@@ -10,8 +10,10 @@ import me.bookk.database.entity.EmployeeEntity
 import me.bookk.database.entity.EmployeeServiceSnapshotEntity
 import me.bookk.database.entity.EmployeeWorkHourEntity
 import me.bookk.database.relation.EmployeeLocal
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.employees.domain.api.entity.Employee
@@ -27,7 +29,22 @@ internal fun Employee.toEntity(): EmployeeEntity {
         phone = phone,
         email = email,
         userId = userId,
-        createdAt = createdAt
+        createdAt = createdAt,
+        businessPermissionView = permissions.business.view,
+        businessPermissionUpdate = permissions.business.update,
+        businessPermissionDelete = permissions.business.delete,
+        employeesPermissionView = permissions.employees.view,
+        employeesPermissionUpdate = permissions.employees.update,
+        employeesPermissionDelete = permissions.employees.delete,
+        clientsPermissionView = permissions.clients.view,
+        clientsPermissionUpdate = permissions.clients.update,
+        clientsPermissionDelete = permissions.clients.delete,
+        servicesPermissionView = permissions.services.view,
+        servicesPermissionUpdate = permissions.services.update,
+        servicesPermissionDelete = permissions.services.delete,
+        appointmentsPermissionView = permissions.appointments.view,
+        appointmentsPermissionUpdate = permissions.appointments.update,
+        appointmentsPermissionDelete = permissions.appointments.delete
     )
 }
 
@@ -101,7 +118,22 @@ internal fun EmployeeLocal.toDomain(): Employee {
                 DayOffRange(start = LocalDate.parse(it.start), end = LocalDate.parse(it.end))
             }
         ),
-        createdAt = entity.createdAt
+        createdAt = entity.createdAt,
+        permissions = entity.toPermissions()
+    )
+}
+
+private fun EmployeeEntity.toPermissions(): BusinessPermissions {
+    return BusinessPermissions(
+        business = ResourcePermission(businessPermissionView, businessPermissionUpdate, businessPermissionDelete),
+        employees = ResourcePermission(employeesPermissionView, employeesPermissionUpdate, employeesPermissionDelete),
+        clients = ResourcePermission(clientsPermissionView, clientsPermissionUpdate, clientsPermissionDelete),
+        services = ResourcePermission(servicesPermissionView, servicesPermissionUpdate, servicesPermissionDelete),
+        appointments = ResourcePermission(
+            appointmentsPermissionView,
+            appointmentsPermissionUpdate,
+            appointmentsPermissionDelete
+        )
     )
 }
 

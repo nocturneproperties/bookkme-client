@@ -14,8 +14,11 @@ final class IOSScheduleState: @MainActor ScheduleState, NativeStateRepresentatio
     let friday: any DaySettingsState
     let saturday: any DaySettingsState
     let sunday: any DaySettingsState
-	
+
 	let list: any ListState
+
+	let dayOffs: any MultiPickerState
+	let dateRange: any DateRangePickerState
 
     init() {
         monday = IOSDaySettingsState()
@@ -26,5 +29,7 @@ final class IOSScheduleState: @MainActor ScheduleState, NativeStateRepresentatio
         saturday = IOSDaySettingsState()
         sunday = IOSDaySettingsState()
 		list = IOSListState<DaySettingsState>()
+		dayOffs = IOSMultiPickerState()
+		dateRange = IOSDateRangePickerState()
     }
 }

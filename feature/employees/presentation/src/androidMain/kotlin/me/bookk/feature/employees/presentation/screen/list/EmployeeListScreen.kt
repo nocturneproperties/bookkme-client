@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.presentation.screen.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,6 +71,7 @@ private fun EmployeeSectionItem(modifier: Modifier, section: EmployeeSection) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable { section.onItemClick(it) }
                     .height(48.dp),
                 contentAlignment = Alignment.CenterStart
             ) {

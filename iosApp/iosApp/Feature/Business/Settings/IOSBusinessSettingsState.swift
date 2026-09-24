@@ -33,8 +33,6 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 	var phone: any TextFieldState
 	
 	var schedule: any ScheduleState
-	var dayOffs: any MultiPickerState
-	var dateRange: any DateRangePickerState
 	
 	var notifications: any PresentationNotificationState
 	var navigation: any NavigationState
@@ -57,11 +55,5 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 		self.phone = IOSTextFieldState(placeholder: initData.phoneHint, startIcon: initData.phoneIcon)
 		self.navigation = IOSNavigationState()
 		self.schedule = IOSScheduleState()
-		self.dayOffs = IOSMultiPickerState()
-		self.dateRange = IOSDateRangePickerState()
-	}
-	
-	func createDaySettingState() -> any DaySettingsState {
-		return IOSDaySettingsState()
 	}
 }

@@ -40,6 +40,7 @@ import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.FlatTextField
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.PickerField
+import me.bookk.designsystem.components.ScheduleSection
 import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
@@ -77,7 +78,7 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     BusinessProfileCard(state)
-                    ScheduleSection(state)
+                    ScheduleSection(state.schedule)
                     BusinessLocationCard(state)
                     Column {
                         Header(BusinessRes.strings.business_settings_currency_title.desc().localized())

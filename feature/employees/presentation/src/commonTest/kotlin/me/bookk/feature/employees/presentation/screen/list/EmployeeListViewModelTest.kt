@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeTextFieldState
@@ -149,6 +150,23 @@ class EmployeeListViewModelTest {
 
         then()
         assertEquals(listOf<EmployeeListDestinations>(EmployeeListDestinations.AddEmployee(fixture.businessId)), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `navigates to edit the clicked employee`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val employee = stubEmployee()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.employees.value = listOf(employee)
+        val section = sut.uiState.employeesList.items.single()
+
+        whenn()
+        section.onItemClick(employee)
+
+        then()
+        assertEquals(listOf<EmployeeListDestinations>(EmployeeListDestinations.EditEmployee(employee.id)), sut.uiState.navigation.navigationDestination)
     }
 
     @Test

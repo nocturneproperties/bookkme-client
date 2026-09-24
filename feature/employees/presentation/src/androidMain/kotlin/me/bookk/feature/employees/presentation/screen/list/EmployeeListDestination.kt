@@ -20,6 +20,7 @@ internal fun NavGraphBuilder.employeeListScreen(navigation: EmployeesNavigation)
                 when (it) {
                     EmployeeListDestinations.Back -> navigation.onBack()
                     is EmployeeListDestinations.AddEmployee -> navigation.toInviteEmployee(it.businessId)
+                    is EmployeeListDestinations.EditEmployee -> navigation.toEditEmployee(it.id)
                 }
             }
         }

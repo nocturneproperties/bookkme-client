@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.presentation.screen.invite
 
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
@@ -81,7 +82,17 @@ class InviteEmployeeViewModel(
                 it.code?.let { code -> copyCodeToClipboard(code) }
                 loadInvitations()
             },
-            onError = { uiState.notifications.add(it.notification()) },
+            onError = {
+                when (it) {
+                    is CreateEmployeeInvitation.Error.PendingInvitationsLimitReached ->
+                        showSimpleMessage(EmployeesRes.strings.employees_invite_generate_error_pending_limit.desc())
+
+                    is CreateEmployeeInvitation.Error.DailyInvitationsLimitReached ->
+                        showSimpleMessage(EmployeesRes.strings.employees_invite_generate_error_daily_limit.desc())
+
+                    else -> uiState.notifications.add(it.notification())
+                }
+            },
             onTerminate = { uiState.generateCodeButton.stopLoading() }
         )
     }
@@ -121,16 +132,16 @@ class InviteEmployeeViewModel(
             onError = {
                 when (it) {
                     is RevokeEmployeeInvitation.Error.AlreadyProcessed ->
-                        uiState.notifications.add(
-                            PresentationNotification.Message.simple(
-                                EmployeesRes.strings.employees_invite_revoke_error_already_processed.desc()
-                            )
-                        )
+                        showSimpleMessage(EmployeesRes.strings.employees_invite_revoke_error_already_processed.desc())
 
                     else -> uiState.notifications.add(it.notification())
                 }
             }
         )
+    }
+
+    private fun showSimpleMessage(message: StringDesc) {
+        uiState.notifications.add(PresentationNotification.Message.simple(message))
     }
 
     private fun EmployeeInvitation.toItem(): InvitationItem {

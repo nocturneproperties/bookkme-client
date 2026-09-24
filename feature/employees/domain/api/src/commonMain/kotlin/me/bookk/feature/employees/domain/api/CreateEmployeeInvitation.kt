@@ -5,4 +5,9 @@ import kotlin.uuid.Uuid
 
 interface CreateEmployeeInvitation {
     suspend operator fun invoke(businessId: Uuid): EmployeeInvitation
+
+    sealed interface Error {
+        class PendingInvitationsLimitReached(cause: Throwable) : Error, Throwable(cause)
+        class DailyInvitationsLimitReached(cause: Throwable) : Error, Throwable(cause)
+    }
 }

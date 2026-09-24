@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -77,7 +79,7 @@ private fun BusinessMenuAction(businessMenu: BusinessMenuState) {
     Box {
         IconButton(onClick = { isBusinessMenuVisible = true }) {
             Icon(
-                imageVector = Icons.Filled.SwapHoriz,
+                imageVector = Icons.Filled.Business,
                 contentDescription = BusinessRes.strings.business_dashboard_switch_action.desc().localized(),
                 tint = LocalColors.current.actionText
             )
@@ -104,6 +106,7 @@ private fun BusinessMenuAction(businessMenu: BusinessMenuState) {
             HorizontalDivider()
             DropdownMenuItem(
                 text = { Text(BusinessRes.strings.business_dashboard_switch_create.desc().localized()) },
+                leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
                 onClick = {
                     isBusinessMenuVisible = false
                     businessMenu.onCreateClick?.invoke()
@@ -111,6 +114,7 @@ private fun BusinessMenuAction(businessMenu: BusinessMenuState) {
             )
             DropdownMenuItem(
                 text = { Text(BusinessRes.strings.business_dashboard_switch_join.desc().localized()) },
+                leadingIcon = { Icon(Icons.Filled.PersonAdd, contentDescription = null) },
                 onClick = {
                     isBusinessMenuVisible = false
                     businessMenu.onJoinClick?.invoke()

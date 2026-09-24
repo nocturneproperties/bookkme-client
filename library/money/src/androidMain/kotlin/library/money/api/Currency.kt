@@ -1,8 +1,8 @@
 package library.money.api
 
-import android.icu.text.DecimalFormatSymbols
-import android.icu.text.NumberFormat
 import org.joda.money.CurrencyUnit
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 
 actual class Currency actual constructor(
     code: String
@@ -10,7 +10,7 @@ actual class Currency actual constructor(
     private val currencyUnit: CurrencyUnit = CurrencyUnit.of(code)
     private val formatter by lazy {
         NumberFormat.getCurrencyInstance().apply {
-            currency = android.icu.util.Currency.getInstance(currencyUnit.code)
+            currency = java.util.Currency.getInstance(currencyUnit.code)
         }
     }
 

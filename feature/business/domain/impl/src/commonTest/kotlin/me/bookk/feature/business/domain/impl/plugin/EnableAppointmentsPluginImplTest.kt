@@ -4,6 +4,7 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -104,5 +105,25 @@ class EnableAppointmentsPluginImplTest {
 
         then()
         verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
+    }
+
+    @Test
+    fun `rethrows unexpected business errors without caching`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } throws
+            DomainError.BusinessError(UNKNOWN_ERROR_CODE, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<DomainError.BusinessError> {
+            fixture.sut(businessId)
+        }
+        verifySuspend(VerifyMode.not) { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
+    }
+
+    private companion object {
+        const val UNKNOWN_ERROR_CODE = 999_999
     }
 }

@@ -2,6 +2,7 @@ package me.bookk.feature.settings.domain.impl
 
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.domain.entity.businessOrThrow
+import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
@@ -12,12 +13,14 @@ import me.bookk.feature.settings.domain.api.DeleteAccount
 
 internal class DeleteAccountImpl(
     private val authorizationDataSource: AuthorizationDataSource,
-    private val passKeyManager: PassKeyManager
+    private val passKeyManager: PassKeyManager,
+    private val logOut: LogOut
 ) : DeleteAccount {
     override suspend fun invoke() {
         val challenge = authorizationDataSource.getAuthorizationChallenge()
         val payload = authorizeWithPasskey(challenge)
         deleteAccountOnRemote(challenge, payload)
+        logOut()
         authorizationDataSource.saveAuthorizationTokens(null)
         authorizationDataSource.setAuthorizationStatus(false)
     }
@@ -49,7 +52,7 @@ internal class DeleteAccountImpl(
                 )
             )
         }.getOrElse {
-            when (it.businessOrThrow().errorCode) {
+            throw when (it.businessOrThrow().errorCode) {
                 AuthErrorCodes.VERIFICATION_FAILED -> DeleteAccount.Error.AccountVerificationFailed()
                 else -> it
             }

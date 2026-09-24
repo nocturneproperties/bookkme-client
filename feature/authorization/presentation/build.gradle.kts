@@ -20,6 +20,10 @@ kotlin {
             implementation(projects.library.device.api)
             implementation(projects.library.validation.api)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+            implementation(projects.designsystem.testFixtures)
+        }
     }
 }
 

@@ -156,7 +156,10 @@ class AppointmentCreateViewModel(
                     else -> uiState.notifications.add(it.notification())
                 }
             },
-            onTerminate = { uiState.create.stopLoading() }
+            onTerminate = {
+                uiState.create.stopLoading()
+                invalidateButton()
+            }
         )
     }
 

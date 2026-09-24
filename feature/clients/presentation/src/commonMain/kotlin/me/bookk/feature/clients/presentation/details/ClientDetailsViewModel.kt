@@ -1,10 +1,10 @@
 package me.bookk.feature.clients.presentation.details
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.clients.resources.ClientsRes
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.dashOnBlank
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
@@ -44,7 +44,7 @@ class ClientDetailsViewModel(
 
     private fun loadClient() {
         launch(
-            launchIn = Dispatchers.Default,
+            launchIn = DispatcherProvider.io,
             call = { getClient(id) },
             onComplete = { loadedClient ->
                 client = loadedClient

@@ -71,6 +71,7 @@ class AppointmentDetailsViewModel(
                     is Error.AppointmentAlreadyCompleted -> {
                         renderAppointment(appointment.copy(status = AppointmentStatus.COMPLETED))
                     }
+                    else -> uiState.notifications.add(it.notification())
                 }
             }
         )

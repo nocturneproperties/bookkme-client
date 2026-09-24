@@ -29,7 +29,7 @@ internal class UserProfileCRUDImpl(
     override suspend fun update(profile: UserProfile) {
         userProfileDataSource.updateProfile(profile)
         userProfileDataSource.getProfileFromBackend().also {
-            userProfileDataSource.updateProfile(it)
+            userProfileDataSource.upsertProfile(it)
         }
     }
 

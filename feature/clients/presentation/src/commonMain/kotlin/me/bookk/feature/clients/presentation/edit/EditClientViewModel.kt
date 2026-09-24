@@ -1,7 +1,6 @@
 package me.bookk.feature.clients.presentation.edit
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.Dispatchers
 import library.validation.api.ValidateEmail
 import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
 import library.validation.api.ValidateName
@@ -48,7 +47,7 @@ class EditClientViewModel(
 
     private fun loadClient() {
         launch(
-            launchIn = Dispatchers.Default,
+            launchIn = DispatcherProvider.io,
             call = { getClient(id) },
             onComplete = {
                 client = it

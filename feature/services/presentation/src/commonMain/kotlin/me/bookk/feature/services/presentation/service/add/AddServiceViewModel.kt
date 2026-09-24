@@ -23,7 +23,7 @@ import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.add.AddServiceDestination.Back
 import kotlin.properties.Delegates
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 
 class AddServiceViewModel(
@@ -105,7 +105,7 @@ class AddServiceViewModel(
             businessId = businessId,
             group = group.domain,
             name = uiState.name.text,
-            duration = uiState.duration.text.toInt().seconds,
+            duration = uiState.duration.text.toInt().minutes,
             price = Money(uiState.price.text.toDouble(), currency),
             isAvailable = uiState.enabled.isChecked,
             createdAt = Clock.System.now()

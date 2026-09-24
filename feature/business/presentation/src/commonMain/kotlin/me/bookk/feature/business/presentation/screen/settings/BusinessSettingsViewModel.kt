@@ -434,10 +434,10 @@ class BusinessSettingsViewModel(
                 uiState.address.text != referenceBusiness.address ||
                 uiState.currency.selectedItem?.domainValue?.code != referenceBusiness.currency.code() ||
                 uiState.location.text != referenceBusiness.location?.toString().orEmpty() ||
-                uiState.instagram.text != referenceBusiness.socials[SocialKind.INSTAGRAM]?.value ||
-                uiState.telegram.text != referenceBusiness.socials[SocialKind.TELEGRAM]?.value ||
-                uiState.viber.text != referenceBusiness.socials[SocialKind.VIBER]?.value ||
-                uiState.phone.text != referenceBusiness.socials[SocialKind.PHONE]?.value ||
+                uiState.instagram.text != referenceBusiness.socials[SocialKind.INSTAGRAM]?.value.orEmpty() ||
+                uiState.telegram.text != referenceBusiness.socials[SocialKind.TELEGRAM]?.value.orEmpty() ||
+                uiState.viber.text != referenceBusiness.socials[SocialKind.VIBER]?.value.orEmpty() ||
+                uiState.phone.text != referenceBusiness.socials[SocialKind.PHONE]?.value.orEmpty() ||
                 isScheduleChanged()
         uiState.save.isEnabled = isAllFieldsValid && isChanged
     }

@@ -1,7 +1,9 @@
 package me.bookk.android
 
+import library.credentials.api.PasskeyCredentialUpdater
 import library.credentials.di.CredentialModuleFactory
 import library.credentials.impl.AndroidCredentialFactory
+import library.credentials.impl.AndroidPasskeyCredentialUpdater
 import library.picker.AndroidPickOptionStateFactory
 import library.picker.PickOptionStateFactory
 import me.bookk.feature.appointments.presentation.AndroidAppointmentsStateFactory
@@ -49,6 +51,10 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
 
     override fun createEmployeesFactory(): EmployeesStateFactory {
         return AndroidEmployeesStateFactory()
+    }
+
+    override fun createPasskeyCredentialUpdater(): PasskeyCredentialUpdater {
+        return AndroidPasskeyCredentialUpdater()
     }
 
     override fun createPickOptionFactory(): PickOptionStateFactory {

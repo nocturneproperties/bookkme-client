@@ -3,6 +3,7 @@ package me.bookk.feature.authorization.domain.datasource.registration
 interface PassKeyManager {
     suspend fun create(challenge: CreationRequest): PasskeyVerificationPayload
     suspend fun authorize(challenge: AuthorizationRequest): PasskeyVerificationPayload
+    suspend fun signalAccountDeleted(assertion: PasskeyVerificationPayload)
 
     data class CreationRequest(
         val userId: String,

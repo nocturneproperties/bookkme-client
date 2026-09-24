@@ -31,6 +31,11 @@ kotlin {
             implementation(projects.library.cache.api)
             implementation(libs.ktor.client.resources)
             implementation(libs.ktor.client.auth)
+            implementation(libs.kotlin.serialization)
+            implementation(projects.library.credentials.api)
+        }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
         }
     }
 }

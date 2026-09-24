@@ -38,6 +38,10 @@ class IOSStateFactoryCreator: @MainActor StateFactoryCreator {
 		return IOSEmployeesStateFactory()
 	}
 
+	func createPasskeyCredentialUpdater() -> any PasskeyCredentialUpdater {
+		return IOSPasskeyCredentialUpdater()
+	}
+
 	func createPickOptionFactory() -> any PickOptionStateFactory {
 		return IOSPickOptionFactory()
 	}

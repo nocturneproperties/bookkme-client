@@ -20,6 +20,7 @@ internal class DeleteAccountImpl(
         val challenge = authorizationDataSource.getAuthorizationChallenge()
         val payload = authorizeWithPasskey(challenge)
         deleteAccountOnRemote(challenge, payload)
+        runCatching { passKeyManager.signalAccountDeleted(payload) }
         logOut()
         authorizationDataSource.saveAuthorizationTokens(null)
         authorizationDataSource.setAuthorizationStatus(false)

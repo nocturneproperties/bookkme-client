@@ -59,6 +59,7 @@ class DeleteAccountImplTest {
                 challenge = "challenge-bytes"
             )
             everySuspend { passKeyManager.authorize(any()) } returns PasskeyVerificationPayload("{}")
+            everySuspend { passKeyManager.signalAccountDeleted(any()) } returns Unit
             everySuspend { authorizationDataSource.saveAuthorizationTokens(null) } returns Unit
             everySuspend { authorizationDataSource.setAuthorizationStatus(false) } returns Unit
         }
@@ -79,6 +80,7 @@ class DeleteAccountImplTest {
         val challenge = stubChallenge()
         everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns challenge
         everySuspend { fixture.passKeyManager.authorize(any()) } returns verificationPayload
+        everySuspend { fixture.passKeyManager.signalAccountDeleted(any()) } returns Unit
         everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
         everySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) } returns Unit
         everySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) } returns Unit
@@ -130,6 +132,54 @@ class DeleteAccountImplTest {
 
         then()
         verifySuspend { fixture.logOut() }
+    }
+
+    @Test
+    fun `signals the credential provider with the verified passkey after the account is deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture().stubVerifiedDeletion()
+        val assertion = PasskeyVerificationPayload("{\"id\":\"credential-id\"}")
+        everySuspend { fixture.passKeyManager.authorize(any()) } returns assertion
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend(VerifyMode.order) {
+            fixture.authorizationDataSource.deleteAccount(any())
+            fixture.passKeyManager.signalAccountDeleted(assertion)
+        }
+    }
+
+    @Test
+    fun `completes the deletion when signaling the credential provider fails`() = runUnitTest {
+        given()
+        val fixture = Fixture().stubVerifiedDeletion()
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+        everySuspend { fixture.passKeyManager.signalAccountDeleted(any()) } throws PassKeyManager.Error.Infrastructure()
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend { fixture.logOut() }
+        verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
+        verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) }
+    }
+
+    @Test
+    fun `does not signal the credential provider when remote deletion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture().stubVerifiedDeletion()
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
+            Error.BusinessError(AuthErrorCodes.VERIFICATION_FAILED, "msg")
+
+        whenn()
+        runCatching { fixture.sut() }
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
     }
 
     @Test

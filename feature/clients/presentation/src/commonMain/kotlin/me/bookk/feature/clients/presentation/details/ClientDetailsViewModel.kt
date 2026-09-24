@@ -3,8 +3,6 @@ package me.bookk.feature.clients.presentation.details
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.dashOnBlank
@@ -40,8 +38,8 @@ class ClientDetailsViewModel(
         loadClient()
         listenFor<ClientEvent.Updated>()
             .filter { it.client.id == id }
-            .onEach { loadClient() }
-            .launchIn(viewModelScope)
+            .safeOnEach { loadClient() }
+            .observe()
     }
 
     private fun loadClient() {

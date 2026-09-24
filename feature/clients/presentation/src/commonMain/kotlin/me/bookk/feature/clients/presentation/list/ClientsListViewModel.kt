@@ -4,8 +4,6 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
@@ -42,8 +40,9 @@ class ClientsListViewModel(
     private fun observeClients() {
         getClientsList.flow()
             .flowOn(DispatcherProvider.io)
-            .onEach { renderClients(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { renderClients(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun renderClients(clients: List<Client>) {
@@ -68,8 +67,9 @@ class ClientsListViewModel(
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.clientsList)
-            .onEach { loadClients(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { loadClients(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun loadClients(businessId: Uuid) {

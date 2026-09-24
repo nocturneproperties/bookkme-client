@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -60,12 +61,12 @@ class GetNotificationSettingsImplTest {
     )
 
     @Test
-    fun `flow emits the db value for the current user`() = runUnitTest {
+    fun `flow emits the db value for the stored user`() = runUnitTest {
         given()
         val fixture = Fixture()
         val userId = Uuid.random()
         val settings = NotificationSettings.stub(userId)
-        everySuspend { fixture.profileCRUD.get() } returns profile(userId)
+        every { fixture.profileCRUD.observe() } returns flowOf(profile(userId))
         every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns flowOf(settings)
 
         whenn()
@@ -80,7 +81,7 @@ class GetNotificationSettingsImplTest {
         given()
         val fixture = Fixture()
         val userId = Uuid.random()
-        everySuspend { fixture.profileCRUD.get() } returns profile(userId)
+        every { fixture.profileCRUD.observe() } returns flowOf(profile(userId))
         every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns flowOf(null)
 
         whenn()
@@ -91,11 +92,41 @@ class GetNotificationSettingsImplTest {
     }
 
     @Test
+    fun `flow emits null without touching the network when no profile is stored`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.profileCRUD.observe() } returns flowOf(null)
+
+        whenn()
+        val result = fixture.sut.flow().toList()
+
+        then()
+        assertEquals(listOf<NotificationSettings?>(null), result)
+        verifySuspend(VerifyMode.exactly(0)) { fixture.profileCRUD.get() }
+    }
+
+    @Test
+    fun `flow switches to the user settings once a profile is stored`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val userId = Uuid.random()
+        val settings = NotificationSettings.stub(userId)
+        every { fixture.profileCRUD.observe() } returns flowOf(null, profile(userId))
+        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns flowOf(settings)
+
+        whenn()
+        val result = fixture.sut.flow().toList()
+
+        then()
+        assertEquals(listOf(null, settings), result)
+    }
+
+    @Test
     fun `flow never fetches from remote`() = runUnitTest {
         given()
         val fixture = Fixture()
         val userId = Uuid.random()
-        everySuspend { fixture.profileCRUD.get() } returns profile(userId)
+        every { fixture.profileCRUD.observe() } returns flowOf(profile(userId))
         every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns flowOf(null)
 
         whenn()
@@ -103,13 +134,16 @@ class GetNotificationSettingsImplTest {
 
         then()
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getNotificationSettings() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.profileCRUD.get() }
     }
 
     @Test
     fun `refresh fetches from remote and saves in db`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val remote = NotificationSettings.stub(Uuid.random())
+        val userId = Uuid.random()
+        val remote = NotificationSettings.stub(userId)
+        everySuspend { fixture.profileCRUD.get() } returns profile(userId)
         everySuspend { fixture.dataSource.getNotificationSettings() } returns remote
         everySuspend { fixture.dataSource.saveNotificationSettingsInDB(remote) } returns Unit
 
@@ -122,9 +156,44 @@ class GetNotificationSettingsImplTest {
     }
 
     @Test
+    fun `refresh ensures the profile is stored before fetching settings`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val userId = Uuid.random()
+        val remote = NotificationSettings.stub(userId)
+        everySuspend { fixture.profileCRUD.get() } returns profile(userId)
+        everySuspend { fixture.dataSource.getNotificationSettings() } returns remote
+        everySuspend { fixture.dataSource.saveNotificationSettingsInDB(remote) } returns Unit
+
+        whenn()
+        fixture.sut.refresh()
+
+        then()
+        verifySuspend(VerifyMode.order) {
+            fixture.profileCRUD.get()
+            fixture.dataSource.getNotificationSettings()
+        }
+    }
+
+    @Test
+    fun `refresh propagates a profile fetch error without fetching settings`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.profileCRUD.get() } throws IllegalStateException()
+
+        whenn()
+        val error = runCatching { fixture.sut.refresh() }.exceptionOrNull()
+
+        then()
+        assertFailsWith<IllegalStateException> { throw error!! }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getNotificationSettings() }
+    }
+
+    @Test
     fun `refresh propagates a fetch error without saving`() = runUnitTest {
         given()
         val fixture = Fixture()
+        everySuspend { fixture.profileCRUD.get() } returns profile(Uuid.random())
         everySuspend { fixture.dataSource.getNotificationSettings() } throws IllegalStateException()
 
         whenn()

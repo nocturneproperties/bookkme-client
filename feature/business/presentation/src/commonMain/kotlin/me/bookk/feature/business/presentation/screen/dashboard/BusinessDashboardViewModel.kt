@@ -1,13 +1,9 @@
 package me.bookk.feature.business.presentation.screen.dashboard
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.retry
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -55,24 +51,23 @@ class BusinessDashboardViewModel(
             .filterNotNull()
             .distinctUntilChanged()
             .flowOn(DispatcherProvider.io)
-            .onEach { overview ->
+            .safeOnEach { overview ->
                 uiState.appBar.title = overview.business.name.desc()
                 uiState.businessMenu.selectedBusinessId = overview.business.id
                 businessId = overview.business.id
                 applyFeatures(overview.business.id, overview.features)
             }
-            .catch { uiState.notifications.add(errorMapper.mapToNotification(it)) }
-            .launchIn(viewModelScope)
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun observeUserBusinesses() {
         observeUserBusinessesChanges()
             .flowOn(DispatcherProvider.io)
-            .onEach { businesses ->
+            .safeOnEach { businesses ->
                 uiState.businessMenu.items = businesses.map { BusinessMenuItem(it.id, it.name) }
             }
-            .retry()
-            .launchIn(viewModelScope)
+            .observe()
     }
 
     private fun applyFeatures(businessId: Uuid, features: Set<DashboardFeature>) {

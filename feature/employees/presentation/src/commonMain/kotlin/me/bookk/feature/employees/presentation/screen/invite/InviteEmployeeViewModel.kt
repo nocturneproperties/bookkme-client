@@ -3,8 +3,6 @@ package me.bookk.feature.employees.presentation.screen.invite
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.coroutine.DispatcherProvider
@@ -52,8 +50,9 @@ class InviteEmployeeViewModel(
     private fun observeInvitations() {
         getEmployeeInvitations.flow(businessId)
             .flowOn(DispatcherProvider.io)
-            .onEach { renderInvitations(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { renderInvitations(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun renderInvitations(invitations: List<EmployeeInvitation>) {

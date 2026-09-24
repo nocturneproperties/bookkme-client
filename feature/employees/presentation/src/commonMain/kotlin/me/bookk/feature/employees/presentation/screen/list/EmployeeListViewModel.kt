@@ -4,8 +4,6 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
@@ -41,8 +39,9 @@ class EmployeeListViewModel(
     private fun observeEmployees() {
         getEmployees.flow()
             .flowOn(DispatcherProvider.io)
-            .onEach { renderEmployees(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { renderEmployees(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun renderEmployees(employees: List<Employee>) {
@@ -60,8 +59,9 @@ class EmployeeListViewModel(
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.employeesList)
-            .onEach { loadEmployees(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { loadEmployees(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun loadEmployees(businessId: Uuid) {

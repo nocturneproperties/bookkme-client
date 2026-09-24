@@ -8,9 +8,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.retry
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -68,18 +65,21 @@ class AppointmentListViewModel(
     }
 
     private fun listenForUpdates() {
-        listenFor<AppointmentEvent.Created> { reload() }
-            .launchIn(viewModelScope)
-        listenFor<AppointmentEvent.Updated> { reload() }
-            .launchIn(viewModelScope)
+        listenFor<AppointmentEvent.Created>()
+            .safeOnEach { reload() }
+            .observe()
+        listenFor<AppointmentEvent.Updated>()
+            .safeOnEach { reload() }
+            .observe()
     }
 
     private fun observeAppointments() {
         selectedDate
             .flatMapLatest { date -> getAppointmentsForBusiness.flow(date) }
             .flowOn(DispatcherProvider.io)
-            .onEach { renderAppointments(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { renderAppointments(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun renderAppointments(appointments: List<Appointment>) {
@@ -92,20 +92,20 @@ class AppointmentListViewModel(
             .flowOn(DispatcherProvider.io)
             .filterNotNull()
             .distinctUntilChanged()
-            .onEach {
+            .safeOnEach {
                 businessId = it
                 loadRequestCount(it)
             }
-            .retry()
-            .launchIn(viewModelScope)
+            .observe()
     }
 
     private fun observeAppointmentsKey() {
         combine(observeCurrentBusinessId().filterNotNull(), selectedDate, ::Pair)
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.appointments)
-            .onEach { (businessId, date) -> loadAppointments(businessId, date) }
-            .launchIn(viewModelScope)
+            .safeOnEach { (businessId, date) -> loadAppointments(businessId, date) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun reload() {

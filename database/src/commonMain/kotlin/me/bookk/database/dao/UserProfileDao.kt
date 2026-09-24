@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import me.bookk.database.entity.UserProfileEntity
 import kotlin.uuid.Uuid
 
@@ -13,6 +14,9 @@ abstract class UserProfileDao {
 
     @Query("select * from user_profile limit 1")
     abstract suspend fun queryProfile(): UserProfileEntity?
+
+    @Query("select * from user_profile limit 1")
+    abstract fun observeProfile(): Flow<UserProfileEntity?>
 
     @Upsert
     abstract suspend fun upsert(profile: UserProfileEntity)

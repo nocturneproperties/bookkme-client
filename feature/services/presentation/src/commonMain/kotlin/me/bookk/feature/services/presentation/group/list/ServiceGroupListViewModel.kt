@@ -3,8 +3,6 @@ package me.bookk.feature.services.presentation.group.list
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -43,8 +41,9 @@ class ServiceGroupListViewModel(
     private fun observeGroups() {
         getServiceGroups.flow()
             .flowOn(DispatcherProvider.io)
-            .onEach { renderGroups(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { renderGroups(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun renderGroups(serviceGroups: List<ServiceGroup>) {
@@ -63,8 +62,9 @@ class ServiceGroupListViewModel(
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.groups)
-            .onEach { loadServiceGroups(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { loadServiceGroups(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun loadServiceGroups(businessId: Uuid) {

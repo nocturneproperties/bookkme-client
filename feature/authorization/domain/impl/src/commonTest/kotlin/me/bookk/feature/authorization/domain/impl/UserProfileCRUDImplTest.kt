@@ -1,12 +1,15 @@
 package me.bookk.feature.authorization.domain.impl
 
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -91,6 +94,34 @@ class UserProfileCRUDImplTest {
         then()
         assertEquals(remote, result)
         verifySuspend { fixture.dataSource.upsertProfile(remote) }
+    }
+
+    @Test
+    fun `observe emits the stored profile`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val local = stubProfile()
+        every { fixture.dataSource.observeProfileFromDatabase() } returns flowOf(local)
+
+        whenn()
+        val result = fixture.sut.observe().toList()
+
+        then()
+        assertEquals(listOf<UserProfile?>(local), result)
+    }
+
+    @Test
+    fun `observe emits null without fetching from backend when nothing is stored`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.dataSource.observeProfileFromDatabase() } returns flowOf(null)
+
+        whenn()
+        val result = fixture.sut.observe().toList()
+
+        then()
+        assertEquals(listOf<UserProfile?>(null), result)
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getProfileFromBackend() }
     }
 
     @Test

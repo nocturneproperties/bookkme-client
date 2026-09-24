@@ -6,6 +6,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.bookk.core.Logger
@@ -14,6 +15,10 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.error.ErrorDescription
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.core.presentation.flow.RetryPolicy
+import me.bookk.core.presentation.flow.observeResiliently
+import me.bookk.core.presentation.flow.retryingWithBackoff
+import me.bookk.core.presentation.flow.safeOnEach
 import kotlin.coroutines.CoroutineContext
 
 actual abstract class ViewModel actual constructor(
@@ -22,7 +27,11 @@ actual abstract class ViewModel actual constructor(
     private val internalLogger = Logger.create("ViewModel")
     private val activeJobs = mutableMapOf<String, Job>()
     protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper
-    protected actual val viewModelScope = CoroutineScope(SupervisorJob() + DispatcherProvider.main)
+    protected actual val viewModelScope = CoroutineScope(
+        SupervisorJob() + DispatcherProvider.main + CoroutineExceptionHandler { context, throwable ->
+            viewModelScopeErrorHandler.handleException(context, throwable)
+        }
+    )
     protected actual open val viewModelScopeErrorHandler =
         CoroutineExceptionHandler { _, throwable ->
             handleError(throwable)
@@ -75,6 +84,26 @@ actual abstract class ViewModel actual constructor(
                 activeJobs[key] = it
             }
         }
+    }
+
+    actual fun <T> Flow<T>.safeOnEach(action: suspend (T) -> Unit): Flow<T> {
+        return safeOnEach(logError = ::handleError, action = action)
+    }
+
+    actual fun <T> Flow<T>.onError(action: suspend (Throwable) -> Unit): Flow<T> {
+        return retryingWithBackoff(
+            retryPolicy = RetryPolicy.Default,
+            logError = ::handleError,
+            onError = action,
+        )
+    }
+
+    actual fun <T> Flow<T>.observe(): Job {
+        return observeResiliently(
+            scope = viewModelScope,
+            retryPolicy = RetryPolicy.Default,
+            logError = ::handleError,
+        )
     }
 
     actual fun Throwable.notification(): PresentationNotification {

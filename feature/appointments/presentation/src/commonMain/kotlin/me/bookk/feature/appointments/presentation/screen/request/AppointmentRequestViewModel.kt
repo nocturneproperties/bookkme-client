@@ -6,8 +6,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
@@ -71,8 +69,9 @@ class AppointmentRequestViewModel(
             .distinctUntilChanged()
             .flatMapLatest { getAppointmentRequests.flow(it) }
             .flowOn(DispatcherProvider.io)
-            .onEach { renderRequests(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { renderRequests(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun renderRequests(requests: List<AppointmentRequest>) {

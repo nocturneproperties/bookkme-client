@@ -4,9 +4,6 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.retry
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -87,9 +84,9 @@ class BusinessSettingsViewModel(
             .flowOn(DispatcherProvider.io)
             .filterNotNull()
             .distinctUntilChanged()
-            .onEach { renderBusiness(it) }
-            .retry()
-            .launchIn(viewModelScope)
+            .safeOnEach { renderBusiness(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun renderBusiness(business: Business) {

@@ -1,14 +1,10 @@
 package me.bookk.feature.dashboard.presentation
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.retry
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -68,21 +64,19 @@ class DashboardViewModel(
                 if (id != null) {
                     isAppointmentsPluginEnabled.flow(id)
                         .map { enabled -> id to (if (enabled == true) HomeContent.ActivePlugin else HomeContent.Onboarding) }
-                        .catch {}
                 } else {
                     flowOf(id to HomeContent.Onboarding)
                 }
             }
             .flowOn(DispatcherProvider.io)
-            .onEach { (id, content) ->
+            .safeOnEach { (id, content) ->
                 businessId = id
                 uiState.tabItems.items.first { it.id == TabItem.Id.BUSINESS }.isEnabled = id != null
                 uiState.home.onboarding.isBusinessStepDone = id != null
                 uiState.home.onboarding.isPluginsStepUnlocked = id != null
                 uiState.home.content = content
             }
-            .retry()
-            .launchIn(viewModelScope)
+            .observe()
     }
 
     companion object {

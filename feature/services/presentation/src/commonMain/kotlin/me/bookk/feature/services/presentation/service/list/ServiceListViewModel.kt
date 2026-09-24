@@ -4,8 +4,6 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -53,8 +51,9 @@ class ServiceListViewModel(
     private fun observeServices() {
         getServices.flow()
             .flowOn(DispatcherProvider.io)
-            .onEach { renderServices(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { renderServices(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun renderServices(services: List<Service>) {
@@ -79,8 +78,9 @@ class ServiceListViewModel(
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.services)
-            .onEach { loadServiceList(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { loadServiceList(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
     }
 
     private fun loadServiceList(businessId: Uuid) {

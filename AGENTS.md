@@ -87,6 +87,15 @@ cd feature/.template
      )
      ```
      Handle known use-case errors with a `when (it)` in `onError`; fall back to `uiState.notifications.add(it.notification())`.
+   - Flows (`useCase.flow(...)`, `observe*()`, event streams) are collected with the base-class `safeOnEach` → `onError` → `observe()` operators — **never** `.onEach { }.launchIn(viewModelScope)`, `.retry()` or a terminal `.catch { }`:
+     ```kotlin
+     getClientsList.flow()
+         .flowOn(DispatcherProvider.io)
+         .safeOnEach { renderClients(it) }
+         .onError { uiState.notifications.add(it.notification()) }
+         .observe()
+     ```
+     `safeOnEach` runs the render action per value and routes an exception it throws to `handleError`, so one bad value never stops collection. `onError` catches upstream failures: it logs each one through `handleError`, calls its lambda only on the first failure of a streak, and resubscribes with exponential backoff (1 s doubling to a 30 s cap, reset after the next emission). `observe()` starts the collection in `viewModelScope` and applies the same backoff retry, logging only, for chains without `onError`. Always render in `safeOnEach`, not plain `onEach` — a failure in plain `onEach` would be treated as an upstream failure and retried. Add `onError` for flows that feed visible screen data; omit it for background observers (theme, auth status, event listeners, badges) — they are logged only. `flow()` implementations must stay local-only (DB/prefs): network work belongs in `refresh()`, whose errors are handled by `launch`'s `onError`.
 4. Add `fun createFooState(): FooState` to `BarStateFactory` (and one method per sub-state interface if the screen has reusable sub-states, e.g. `createBusinessPluginState()`).
 
 **androidMain**:
@@ -282,6 +291,7 @@ http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
 - **Mocking**: for "mock" build variants provide `RoutingMock` implementations or Ktor `MockEngine`.
 - **No string literals in screens**: never hardcode user-visible strings in Compose/SwiftUI screen files. All strings must be defined in the feature's `moko-resources/base/strings.xml`, accessed in Kotlin via `FeatureRes.strings.key.desc()` and rendered in Compose with `.localized()` / in Swift with `.localized()`. Dynamic strings with runtime values use the `.format(vararg args)` extension (e.g. `AppointmentsRes.strings.appointments_create_subtotal.format(count)`).
 - **Never comment code**: do not add `//`, `/* */`, or `/** KDoc */` comments to Kotlin or Swift source. Code must be self-explanatory through clear naming, small functions, and the existing architectural patterns — if a piece of logic needs a comment to be understood, restructure or rename it instead. This applies to new code and to edits of existing code; do not add comments to files you touch even to explain a change. Pre-existing comments in files you edit may be left as-is unless the user asks for them to be removed.
+- **Block bodies with `return`, not `=` expression bodies**: write Kotlin functions as `fun x(): T { return ... }`. Do not write `fun x(): T = a.b().c()` or `override fun flow(): Flow<T> =` followed by an operator chain. The only allowed expression body is a function whose whole body is a single call that takes a trailing lambda, e.g. ``fun `test name`() = runUnitTest { ... }``, `override suspend fun x() = mapExceptions { ... }`, `fun <T> Flow<T>.y(): Flow<T> = flow { ... }`. Apply this to new code and to functions you rewrite; do not mass-reformat untouched code.
 - **No color resolution in screens**: when a state field needs a status-dependent color (a pill, a label, an icon tint), put a `me.bookk.designsystem.resources.color.ColorToken` on the state/item, computed in the ViewModel (or a `private fun <DomainEnum>.color(): ColorToken` beside the state, e.g. `AppointmentDetailsState.kt`'s `UIAppointmentStatus`) — never branch on the domain enum inside the Compose screen or SwiftUI view to pick a `Color`. Resolve the token to a themed color with the existing mapping only: `ColorToken.themed` (`@Composable` property, `me.bookk.designsystem.resources.color.ColorResolver.kt`) on Android, `ColorToken.color` (`iosApp/iosApp/DesignSystem/Colors+DesignColor.swift`) on iOS. Do not write a new per-screen `when`/`switch` over `ColorToken`.
 
 ## Design System – Screen Building Blocks

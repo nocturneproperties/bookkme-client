@@ -3,6 +3,7 @@ package me.bookk.core.presentation
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import me.bookk.core.presentation.error.ErrorDescription
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationNotification
@@ -32,6 +33,12 @@ expect abstract class ViewModel(
         onStart: (suspend () -> Unit)? = null,
         onTerminate: (suspend () -> Unit)? = null,
     ): Job?
+
+    fun <T> Flow<T>.safeOnEach(action: suspend (T) -> Unit): Flow<T>
+
+    fun <T> Flow<T>.onError(action: suspend (Throwable) -> Unit): Flow<T>
+
+    fun <T> Flow<T>.observe(): Job
 
     fun Throwable.notification(): PresentationNotification
 

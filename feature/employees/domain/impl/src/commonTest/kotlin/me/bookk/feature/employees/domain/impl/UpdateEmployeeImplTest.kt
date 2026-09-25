@@ -20,6 +20,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
+import me.bookk.feature.employees.domain.api.IsBusinessOwner
 import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.datasource.EmployeeDataSource
@@ -48,7 +49,10 @@ class UpdateEmployeeImplTest {
 
     private class Fixture {
         val dataSource = mock<EmployeeDataSource>()
-        val sut = UpdateEmployeeImpl(dataSource)
+        val isBusinessOwner = mock<IsBusinessOwner> {
+            everySuspend { invoke(any()) } returns false
+        }
+        val sut = UpdateEmployeeImpl(dataSource, isBusinessOwner)
 
         fun stubSuccess(employee: Employee, profile: Employee = employee, permissions: Employee = employee) {
             everySuspend { dataSource.updateEmployee(employee) } returns profile
@@ -77,6 +81,40 @@ class UpdateEmployeeImplTest {
         verifySuspend(VerifyMode.exactly(1)) {
             fixture.dataSource.updateEmployeePermissions(employee.businessId, employee.id, employee.permissions)
         }
+    }
+
+    @Test
+    fun `does not send the permissions request for the business owner`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val owner = stubEmployee()
+        everySuspend { fixture.isBusinessOwner(owner) } returns true
+        everySuspend { fixture.dataSource.updateEmployee(owner) } returns owner
+        everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
+
+        whenn()
+        fixture.sut(owner)
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.dataSource.updateEmployeePermissions(any(), any(), any()) }
+    }
+
+    @Test
+    fun `saves and returns the profile response for the business owner`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val owner = stubEmployee()
+        val profileResponse = owner.copy(name = "Updated")
+        everySuspend { fixture.isBusinessOwner(owner) } returns true
+        everySuspend { fixture.dataSource.updateEmployee(owner) } returns profileResponse
+        everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
+
+        whenn()
+        val result = fixture.sut(owner)
+
+        then()
+        assertEquals(profileResponse, result)
+        verifySuspend { fixture.dataSource.saveEmployeesInDb(listOf(profileResponse)) }
     }
 
     @Test

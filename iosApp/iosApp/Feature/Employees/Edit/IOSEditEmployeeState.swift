@@ -13,6 +13,8 @@ class IOSEditEmployeeState: @MainActor EditEmployeeState, NativeStateRepresentat
 	let services: any OptionsMultiPickerState
 	let schedule: any ScheduleState
 	let permissions: any ListState
+	var isPermissionsVisible: Bool
+	var permissionsHint: (any StringDesc)?
 	let navigation: any NavigationState
 	let notifications: any PresentationNotificationState
 
@@ -23,6 +25,8 @@ class IOSEditEmployeeState: @MainActor EditEmployeeState, NativeStateRepresentat
 		services = IOSOptionsMultiPickerState()
 		schedule = IOSScheduleState()
 		permissions = IOSListState<ResourcePermissionState>()
+		isPermissionsVisible = false
+		permissionsHint = nil
 		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()
 	}

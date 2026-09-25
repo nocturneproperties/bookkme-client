@@ -69,10 +69,22 @@ internal fun EditEmployeeScreen(state: EditEmployeeState) {
             ScheduleSection(state.schedule)
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Header(EmployeesRes.strings.employees_edit_permissions.desc().localized())
-                state.permissions.items.forEach { ResourcePermissionCard(it) }
+                state.permissionsHint?.let { PermissionsHint(it.localized()) }
+                if (state.isPermissionsVisible) {
+                    state.permissions.items.forEach { ResourcePermissionCard(it) }
+                }
             }
         }
     }
+}
+
+@Composable
+private fun PermissionsHint(text: String) {
+    Text(
+        text = text,
+        modifier = Modifier.padding(horizontal = 16.dp),
+        style = MaterialTheme.typography.bodySmall.secondary()
+    )
 }
 
 @Composable

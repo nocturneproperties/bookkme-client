@@ -83,8 +83,9 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 |---|---|---|
 | `GetEmployees` | `GET /api/business/{businessId}/employee` | [Get employees](employees/get-employees.md) |
 | `GetEmployee` | local only (`employee` tables) | [Get employee](employees/get-employee.md) |
-| `UpdateEmployee` | `PUT /api/business/{businessId}/employee/{id}` + `PUT /api/business/{businessId}/employee/{id}/permissions` (parallel) | [Update employee](employees/update-employee.md) |
+| `UpdateEmployee` | `PUT /api/business/{businessId}/employee/{id}` + `PUT /api/business/{businessId}/employee/{id}/permissions` (parallel; permissions skipped for the owner) | [Update employee](employees/update-employee.md) |
 | `GetAssignableServices` | via `GetServices` | [Get assignable services](employees/get-assignable-services.md) |
+| `IsBusinessOwner` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Is business owner](employees/is-business-owner.md) |
 | `GetEmployeeInvitations` | `GET /api/business/{businessId}/employee_invitation` | [Get employee invitations](employees/get-employee-invitations.md) |
 | `CreateEmployeeInvitation` | `POST /api/business/{businessId}/employee_invitation` | [Create employee invitation](employees/create-employee-invitation.md) |
 | `RevokeEmployeeInvitation` | `POST /api/business/{businessId}/employee_invitation/{id}/revoke` | [Revoke employee invitation](employees/revoke-employee-invitation.md) |
@@ -151,6 +152,8 @@ don't need them, because they redraw from the table.
 | [Get available dashboard features](business/get-available-dashboard-features.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList`, `GetServices`, `GetAppointmentSettings` (parallel) |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
+| [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
+| [Update employee](employees/update-employee.md) | `IsBusinessOwner` |
 | [Create appointment](appointments/create-appointment.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
 | [Create new passkey](settings/create-new-passkey.md) | `GetAvailablePasskeys` |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |

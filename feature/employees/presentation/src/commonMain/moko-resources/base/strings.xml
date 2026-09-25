@@ -25,6 +25,7 @@
     <string name="employees_edit_services">Services</string>
     <string name="employees_edit_services_add">Add service</string>
     <string name="employees_edit_permissions">Permissions</string>
+    <string name="employees_edit_permissions_owner_hint">The business owner always has full access to every resource, so their permissions cannot be changed.</string>
     <string name="employees_edit_permission_business">Business</string>
     <string name="employees_edit_permission_employees">Employees</string>
     <string name="employees_edit_permission_clients">Clients</string>

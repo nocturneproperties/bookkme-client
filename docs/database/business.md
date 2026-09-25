@@ -45,6 +45,7 @@ erDiagram
         bool appointmentsPermissionView
         bool appointmentsPermissionUpdate
         bool appointmentsPermissionDelete
+        uuid ownerId "nullable; user id of the business owner"
     }
 
     BUSINESS_DAY_SCHEDULE {
@@ -72,6 +73,9 @@ erDiagram
 - Read by: [Observe dashboard business changes](../operations/business/observe-dashboard-business-changes.md)
   (which many features use to scope their lists), [Observe user businesses
   changes](../operations/business/observe-user-businesses-changes.md), [Update business](../operations/business/update-business.md)
-  (reads the current row before merging the edit), and [Get business currency](../operations/services/get-business-currency.md).
+  (reads the current row before merging the edit), [Get business currency](../operations/services/get-business-currency.md)
+  and [Is business owner](../operations/employees/is-business-owner.md) (compares `ownerId` with an employee's `userId`).
 - Cleared on logout: yes (`businessDao.clear()`). Businesses the user has left are not removed by a refresh,
   which only upserts, so they stay until the next logout.
+- Migration notes: 15 → 16 added the nullable `business.ownerId` column (auto-migration). Rows cached before
+  the migration keep `NULL` until the next [Refresh business info](../operations/business/refresh-business-info.md).

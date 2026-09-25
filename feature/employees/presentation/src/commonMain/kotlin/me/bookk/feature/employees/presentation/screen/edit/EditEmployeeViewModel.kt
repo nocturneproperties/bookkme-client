@@ -32,6 +32,7 @@ import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
+import me.bookk.feature.employees.domain.api.IsBusinessOwner
 import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.presentation.EmployeesStateFactory
@@ -42,6 +43,7 @@ class EditEmployeeViewModel(
     @InjectedParam private val employeeId: Uuid,
     private val getEmployee: GetEmployee,
     private val getAssignableServices: GetAssignableServices,
+    private val isBusinessOwner: IsBusinessOwner,
     private val updateEmployee: UpdateEmployee,
     private val device: DeviceFacade,
     private val stateFactory: EmployeesStateFactory,
@@ -97,10 +99,14 @@ class EditEmployeeViewModel(
     private fun loadEmployee() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { getEmployee(employeeId) },
-            onComplete = {
-                renderEmployee(it)
-                refreshServices(it.businessId)
+            call = {
+                val employee = getEmployee(employeeId)
+                employee to isBusinessOwner(employee)
+            },
+            onComplete = { (employee, isOwner) ->
+                renderOwnership(isOwner)
+                renderEmployee(employee)
+                refreshServices(employee.businessId)
             },
             onError = { uiState.notifications.add(it.notification()) }
         )
@@ -112,6 +118,11 @@ class EditEmployeeViewModel(
             call = { getAssignableServices.refresh(businessId) },
             onError = { uiState.notifications.add(it.notification()) }
         )
+    }
+
+    private fun renderOwnership(isOwner: Boolean) {
+        uiState.isPermissionsVisible = !isOwner
+        uiState.permissionsHint = if (isOwner) EmployeesRes.strings.employees_edit_permissions_owner_hint.desc() else null
     }
 
     private fun renderEmployee(employee: Employee) {

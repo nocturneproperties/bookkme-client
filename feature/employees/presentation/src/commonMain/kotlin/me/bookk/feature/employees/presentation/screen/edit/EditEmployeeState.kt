@@ -19,6 +19,8 @@ interface EditEmployeeState {
     val services: OptionsMultiPickerState<EmployeeServicePresentation>
     val schedule: ScheduleState
     val permissions: ListState<ResourcePermissionState>
+    var isPermissionsVisible: Boolean
+    var permissionsHint: StringDesc?
 
     val notifications: PresentationNotificationState
     val navigation: NavigationState<EditEmployeeDestinations>

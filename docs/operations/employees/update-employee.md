@@ -3,8 +3,13 @@
 # Update employee
 
 `UpdateEmployee(employee)` → `PUT /api/business/{businessId}/employee/{id}` **and**
-`PUT /api/business/{businessId}/employee/{id}/permissions`, sent concurrently
-· called from `EditEmployeeViewModel`
+`PUT /api/business/{businessId}/employee/{id}/permissions`, sent concurrently (the permissions request is skipped
+for the business owner) · called from `EditEmployeeViewModel`
+
+It first asks [Is business owner](is-business-owner.md). The backend rejects every permissions request for the
+owner with `BUSINESS_OWNER_PERMISSIONS_IMMUTABLE` (200030), because the owner always has full access. So for
+the owner only the profile request is sent, and its response, including the unchanged permissions, is saved and
+returned.
 
 The profile, services and schedule go in an `EmployeeUpdateModel`. The permissions go in an
 `EmployeePermissionsRequest`, which has one optional `ResourcePermission` field per resource (`business`,
@@ -20,7 +25,11 @@ below. The backend may already have applied the request that finished first. The
 
 ```mermaid
 flowchart TD
-    Start([invoke employee]) --> Par{{coroutineScope: both requests in parallel}}
+    Start([invoke employee]) --> Owner{IsBusinessOwner employee}
+    Owner -- yes --> NetO[EmployeeDataSource.updateEmployee<br/>PUT /api/business/businessId/employee/id<br/>body EmployeeUpdateModel]
+    NetO -- 2xx Employee --> Save
+    NetO -- business error --> Code
+    Owner -- no --> Par{{coroutineScope: both requests in parallel}}
     Par --> Net1[EmployeeDataSource.updateEmployee<br/>PUT /api/business/businessId/employee/id<br/>body EmployeeUpdateModel]
     Par --> Net2[EmployeeDataSource.updateEmployeePermissions<br/>PUT /api/business/businessId/employee/id/permissions<br/>body EmployeePermissionsRequest all 5 resources]
     Net1 -- 2xx Employee --> Merge[profile response + permissions of permissions response]

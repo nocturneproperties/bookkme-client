@@ -52,44 +52,29 @@ struct DashboardTabs: View {
 	private var tabView: some View {
 		TabView(selection: Binding(
 			get: { state.tabItems.selectedItemId },
-			set: { newId in
-				if state.tabItems.items.first(where: { $0.id == newId })?.isEnabled == true {
-					state.tabItems.selectedItemId = newId
-				}
-			}
+			set: { state.tabItems.selectedItemId = $0 }
 		)) {
-			ForEach(state.tabItems.items, id:\.id) { item in
-				DashboardTab(item: item.impl(), dashboardState: state, onboardingNavigationStack: onboardingNavigationStack)
+			ForEach(state.tabItems.items, id: \.id) { tabItem in
+				let item = tabItem.impl()
+				Tab(value: item.id) {
+					DashboardTabContent(id: item.id, dashboardState: state, onboardingNavigationStack: onboardingNavigationStack)
+				} label: {
+					Label(item.text.localized(), systemImage: iconFrom(id: item.id))
+				}
+				.badge(item.badgeText.map { Text($0.localized()) })
+				.disabled(!item.isEnabled)
 			}
 		}
 	}
 }
 
-struct DashboardTab: View {
+struct DashboardTabContent: View {
 
-	var item: IOSTabItem
+	var id: TabItemId
 	var dashboardState: IOSDashboardState
 	var onboardingNavigationStack: NavigationStackHolder
 
 	var body: some View {
-		screenFromId(id: item.id)
-			.tabItem {
-				Label(
-					title: {
-						Text(item.text.localized())
-					},
-					icon: {
-						Image(systemName: iconFrom(id: item.id))
-					}
-				)
-				.opacity(item.isEnabled ? 1 : 0.4)
-			}
-			.badge(item.badgeText?.localized())
-			.tag(item.id)
-	}
-
-	@ViewBuilder
-	private func screenFromId(id: TabItemId) -> some View {
 		switch id {
 		case .home:
 			DashboardHomeTab(homeState: dashboardState.home.impl(), onboardingNavigationStack: onboardingNavigationStack)
@@ -98,10 +83,9 @@ struct DashboardTab: View {
 		case .settings:
 			SettingsTab()
 		default:
-			fatalError("Unsupported tab \(item.id)")
+			fatalError("Unsupported tab \(id)")
 		}
 	}
-
 }
 
 private func iconFrom(id: TabItemId) -> String {

@@ -59,6 +59,8 @@ internal class FakeEditEmployeeState : EditEmployeeState {
     override val services = FakeOptionsMultiPickerState<EmployeeServicePresentation>()
     override val schedule = FakeScheduleState()
     override val permissions = FakeListState<ResourcePermissionState>()
+    override var isPermissionsVisible: Boolean = false
+    override var permissionsHint: StringDesc? = null
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<EditEmployeeDestinations>()
 }

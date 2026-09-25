@@ -1,7 +1,10 @@
 package me.bookk.feature.employees.domain.impl
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import library.money.api.Money
+import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
@@ -26,6 +29,20 @@ internal fun stubEmployee(businessId: Uuid = Uuid.random(), id: Uuid = Uuid.rand
     schedule = WorkingSchedule(),
     createdAt = Instant.fromEpochMilliseconds(0),
     permissions = stubBusinessPermissions()
+)
+
+internal fun stubBusiness(id: Uuid = Uuid.random(), ownerId: Uuid? = Uuid.random()) = Business(
+    id = id,
+    name = "Test Business",
+    description = "",
+    address = "",
+    location = null,
+    currency = Currency("USD"),
+    timeZone = TimeZone.UTC,
+    socials = emptyMap(),
+    schedule = WorkingSchedule(),
+    permissions = stubBusinessPermissions(),
+    ownerId = ownerId
 )
 
 internal fun stubEmployeeInvitation(businessId: Uuid = Uuid.random()) = EmployeeInvitation(

@@ -31,6 +31,8 @@ internal class AndroidEditEmployeeState : EditEmployeeState {
     override val services: OptionsMultiPickerState<EmployeeServicePresentation> = AndroidOptionsMultiPickerState()
     override val schedule: ScheduleState = AndroidScheduleState()
     override val permissions: ListState<ResourcePermissionState> = AndroidListState()
+    override var isPermissionsVisible: Boolean by mutableStateOf(false)
+    override var permissionsHint: StringDesc? by mutableStateOf(null)
     override val notifications: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<EditEmployeeDestinations> = AndroidNavigationState()
 }

@@ -5,6 +5,7 @@ import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
 import me.bookk.feature.employees.domain.api.GetEmployeeInvitations
 import me.bookk.feature.employees.domain.api.GetEmployees
+import me.bookk.feature.employees.domain.api.IsBusinessOwner
 import me.bookk.feature.employees.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.employees.domain.api.RedeemEmployeeInvitation
 import me.bookk.feature.employees.domain.api.RevokeEmployeeInvitation
@@ -14,6 +15,7 @@ import me.bookk.feature.employees.domain.impl.GetAssignableServicesImpl
 import me.bookk.feature.employees.domain.impl.GetEmployeeImpl
 import me.bookk.feature.employees.domain.impl.GetEmployeeInvitationsImpl
 import me.bookk.feature.employees.domain.impl.GetEmployeesImpl
+import me.bookk.feature.employees.domain.impl.IsBusinessOwnerImpl
 import me.bookk.feature.employees.domain.impl.ObserveCurrentBusinessIdImpl
 import me.bookk.feature.employees.domain.impl.RedeemEmployeeInvitationImpl
 import me.bookk.feature.employees.domain.impl.RevokeEmployeeInvitationImpl
@@ -32,4 +34,5 @@ fun employeesDomainModule() = module {
     factoryOf(::RevokeEmployeeInvitationImpl) bind RevokeEmployeeInvitation::class
     factoryOf(::RedeemEmployeeInvitationImpl) bind RedeemEmployeeInvitation::class
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class
+    factoryOf(::IsBusinessOwnerImpl) bind IsBusinessOwner::class
 }

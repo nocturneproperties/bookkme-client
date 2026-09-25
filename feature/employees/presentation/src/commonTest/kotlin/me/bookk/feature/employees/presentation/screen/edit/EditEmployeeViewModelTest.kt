@@ -15,6 +15,7 @@ import dev.mokkery.verify
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import library.device.api.DeviceFacade
+import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -30,6 +31,7 @@ import me.bookk.designsystem.test.assertSingle
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
+import me.bookk.feature.employees.domain.api.IsBusinessOwner
 import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.presentation.FakeEmployeesStateFactory
@@ -42,6 +44,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class EditEmployeeViewModelTest {
@@ -58,7 +61,7 @@ class EditEmployeeViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(val employee: Employee = stubEmployee()) {
+    private class Fixture(val employee: Employee = stubEmployee(), isOwner: Boolean = false) {
         val services = MutableStateFlow<List<Service>>(emptyList())
         val getEmployee = mock<GetEmployee> {
             everySuspend { invoke(employee.id) } returns employee
@@ -66,6 +69,9 @@ class EditEmployeeViewModelTest {
         val getAssignableServices = mock<GetAssignableServices> {
             every { flow() } returns services
             everySuspend { refresh(any()) } returns emptyList()
+        }
+        val isBusinessOwner = mock<IsBusinessOwner> {
+            everySuspend { invoke(any()) } returns isOwner
         }
         val updateEmployee = mock<UpdateEmployee>()
         val device = mock<DeviceFacade> {
@@ -79,6 +85,7 @@ class EditEmployeeViewModelTest {
             employeeId = employee.id,
             getEmployee = getEmployee,
             getAssignableServices = getAssignableServices,
+            isBusinessOwner = isBusinessOwner,
             updateEmployee = updateEmployee,
             device = device,
             dateLocalizer = FakeDateLocalizer(),
@@ -188,6 +195,46 @@ class EditEmployeeViewModelTest {
         assertEquals(5, sut.uiState.permissions.items.size)
         val clients = sut.permissionRow(2)
         assertEquals(listOf(true, true, false), listOf(clients.canView.isChecked, clients.canUpdate.isChecked, clients.canDelete.isChecked))
+    }
+
+    @Test
+    fun `shows permissions without a hint for a regular employee`() = runUnitTest {
+        given()
+        val fixture = Fixture(isOwner = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.isPermissionsVisible)
+        assertNull(sut.uiState.permissionsHint)
+    }
+
+    @Test
+    fun `hides permissions and explains why for the business owner`() = runUnitTest {
+        given()
+        val fixture = Fixture(isOwner = true)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.isPermissionsVisible)
+        assertEquals(EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(), sut.uiState.permissionsHint)
+    }
+
+    @Test
+    fun `keeps permissions hidden and hint empty while the employee is loading`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getEmployee(fixture.employee.id) } throws TestException()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.isPermissionsVisible)
+        assertNull(sut.uiState.permissionsHint)
     }
 
     @Test

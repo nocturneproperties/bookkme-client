@@ -3,6 +3,7 @@ package me.bookk.feature.employees.domain.impl
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import me.bookk.core.domain.entity.onBusinessError
+import me.bookk.feature.employees.domain.api.IsBusinessOwner
 import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.api.UpdateEmployee.Error
 import me.bookk.feature.employees.domain.api.entity.Employee
@@ -10,11 +11,16 @@ import me.bookk.feature.employees.domain.datasource.EmployeeDataSource
 import me.bookk.feature.employees.domain.datasource.EmployeeErrorCodes
 
 internal class UpdateEmployeeImpl(
-    private val dataSource: EmployeeDataSource
+    private val dataSource: EmployeeDataSource,
+    private val isBusinessOwner: IsBusinessOwner
 ) : UpdateEmployee {
     override suspend fun invoke(employee: Employee): Employee {
         return runCatching {
-            sendUpdates(employee)
+            if (isBusinessOwner(employee)) {
+                dataSource.updateEmployee(employee)
+            } else {
+                sendUpdates(employee)
+            }
         }.onBusinessError { error ->
             when (error.errorCode) {
                 EmployeeErrorCodes.BUSINESS_EMPLOYEE_VALIDATION_ERROR -> throw Error.ValidationError(error)

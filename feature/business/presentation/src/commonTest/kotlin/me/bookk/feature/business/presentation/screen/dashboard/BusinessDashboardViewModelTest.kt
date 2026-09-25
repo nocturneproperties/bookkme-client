@@ -1,5 +1,6 @@
 package me.bookk.feature.business.presentation.screen.dashboard
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -8,6 +9,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
+import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -21,6 +23,7 @@ import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.uistate.BusinessMenuItem
+import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
@@ -64,6 +67,7 @@ class BusinessDashboardViewModelTest {
         }
         val switchDashboardBusiness = mock<SwitchDashboardBusiness>()
         val joinBusiness = mock<JoinBusiness>()
+        val createBusiness = mock<CreateBusiness>()
         val errorMapper = FakeErrorMapper()
 
         fun sut() = BusinessDashboardViewModel(
@@ -71,6 +75,7 @@ class BusinessDashboardViewModelTest {
             observeUserBusinessesChanges = observeUserBusinessesChanges,
             switchDashboardBusiness = switchDashboardBusiness,
             joinBusiness = joinBusiness,
+            createBusiness = createBusiness,
             stateFactory = FakeBusinessStateFactory(),
             vmArgs = VmArgs(errorMapper)
         )
@@ -80,6 +85,15 @@ class BusinessDashboardViewModelTest {
         uiState.businessMenu.onJoinClick?.invoke()
         val dialog = uiState.notifications.presentationNotification.removeFirstInput()
         dialog.onConfirm(code)
+    }
+
+    private fun BusinessDashboardViewModel.submitBusinessName(name: String) {
+        uiState.businessMenu.onCreateClick?.invoke()
+        uiState.notifications.presentationNotification.removeFirstInput().onConfirm(name)
+    }
+
+    private fun BusinessDashboardViewModel.inputDialogs(): List<PresentationNotification.InputMessage> {
+        return uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.InputMessage>()
     }
 
     private fun List<PresentationNotification>.removeFirstInput(): PresentationNotification.InputMessage {
@@ -180,7 +194,7 @@ class BusinessDashboardViewModelTest {
     }
 
     @Test
-    fun `opens create business sheet on create click`() = runUnitTest {
+    fun `opens business name dialog on create click`() = runUnitTest {
         given()
         val sut = Fixture().sut()
 
@@ -188,7 +202,65 @@ class BusinessDashboardViewModelTest {
         sut.uiState.businessMenu.onCreateClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.isCreateBusinessSheetVisible)
+        assertEquals(BusinessRes.strings.create_business_title.desc(), sut.inputDialogs().single().title)
+    }
+
+    @Test
+    fun `creates business with entered name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createBusiness(any()) } returns stubBusiness()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitBusinessName("Salon")
+
+        then()
+        verifySuspend { fixture.createBusiness("Salon") }
+    }
+
+    @Test
+    fun `shows local error when business name is empty`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createBusiness(any()) } throws CreateBusiness.Error.EmptyName()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitBusinessName("")
+
+        then()
+        assertEquals(listOf(BusinessRes.strings.create_business_error_empty_name.desc()), sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().map { it.message })
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
+    fun `shows local error when invitation code is empty`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.joinBusiness(any()) } throws JoinBusiness.Error.EmptyCode()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitJoinCode("")
+
+        then()
+        assertEquals(listOf(BusinessRes.strings.business_dashboard_switch_join_error_empty_code.desc()), sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().map { it.message })
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
+    fun `shows mapped error when business creation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createBusiness(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitBusinessName("Salon")
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
     }
 
     @Test

@@ -13,8 +13,6 @@ import me.bookk.designsystem.test.FakeScheduleState
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.OptionalInfoLine
-import me.bookk.feature.business.presentation.screen.create.CreateBusinessNavigationDestination
-import me.bookk.feature.business.presentation.screen.create.state.CreateBusinessState
 import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
@@ -26,13 +24,7 @@ import me.bookk.feature.business.presentation.screen.settings.state.BusinessSett
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 
 internal class FakeBusinessStateFactory : BusinessStateFactory {
-    var createBusinessInitData: CreateBusinessState.InitData? = null
     var businessSettingsInitData: BusinessSettingsState.InitData? = null
-
-    override fun createBusinessState(initData: CreateBusinessState.InitData): CreateBusinessState {
-        createBusinessInitData = initData
-        return FakeCreateBusinessState()
-    }
 
     override fun createBusinessDashboardState(): BusinessDashboardState {
         return FakeBusinessDashboardState()
@@ -52,19 +44,10 @@ internal class FakeBusinessStateFactory : BusinessStateFactory {
     }
 }
 
-internal class FakeCreateBusinessState : CreateBusinessState {
-    override val appBar = FakeAppBarState()
-    override val name = FakeTextFieldState()
-    override val createBtn = FakeButtonState()
-    override val navigation = FakeNavigationState<CreateBusinessNavigationDestination>()
-    override val notifications = FakeNotificationState()
-}
-
 internal class FakeBusinessDashboardState : BusinessDashboardState {
     override val appBar = FakeAppBarState()
     override val sections: MutableList<BusinessDashboardSection> = mutableListOf()
     override val businessMenu = FakeBusinessMenuState()
-    override var isCreateBusinessSheetVisible: Boolean = false
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<DashboardNavigationDestination>()
 

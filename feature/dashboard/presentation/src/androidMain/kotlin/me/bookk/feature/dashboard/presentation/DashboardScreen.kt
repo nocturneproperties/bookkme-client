@@ -109,7 +109,9 @@ internal fun DashboardScreen(
             ) {
                 composable<BottomNavDestination.Home> {
                     when (state.home.content) {
-                        HomeContent.Onboarding -> DashboardOnboardingScreen(state.home.onboarding)
+                        HomeContent.NoBusiness -> DashboardOnboardingScreen(state.home.onboarding)
+                        HomeContent.SetupRequired -> DashboardSetupRequiredScreen(state.home.onboarding)
+                        HomeContent.AwaitingSetup -> DashboardAwaitingSetupScreen(state.home.onboarding)
                         HomeContent.ActivePlugin -> homeScreen()
                         null -> Unit
                     }

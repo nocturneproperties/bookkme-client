@@ -24,24 +24,16 @@ struct DashboardTabs: View {
 	@Bindable
 	var state: IOSDashboardState
 
-	@State private var isCreateBusinessSheetPresented = false
 	@StateObject private var onboardingNavigationStack = NavigationStackHolder()
 
 	var body: some View {
 		tabView
 			.handleNavigation(state.navigation, handler: handleNavigation)
 			.handleNotifications(state.notifications)
-			.sheet(isPresented: $isCreateBusinessSheetPresented) {
-				NavigationStack {
-					CreateBusinessScreen()
-				}
-			}
 	}
 
 	private func handleNavigation(_ destination: NavigationDestination) {
 		switch destination {
-		case is DashboardHomeNavigationDestination.CreateBusiness:
-			isCreateBusinessSheetPresented = true
 		case let destination as DashboardHomeNavigationDestination.EnablePlugins:
 			onboardingNavigationStack.push(destination)
 		default:

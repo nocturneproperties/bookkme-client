@@ -102,6 +102,7 @@ struct NotificationInputAlert: ViewModifier {
 	func body(content: Content) -> some View {
 		content
 			.onChange(of: data?.id) { _, newValue in
+				inputText = data?.initialText ?? ""
 				isPresented = newValue != nil
 			}
 			.alert(data?.title.localized() ?? "", isPresented: $isPresented, presenting: data) { message in

@@ -7,8 +7,10 @@ internal class JoinBusinessImpl(
     private val redeemEmployeeInvitation: RedeemEmployeeInvitation
 ) : JoinBusiness {
     override suspend fun invoke(code: String) {
+        val trimmedCode = code.trim()
+        if (trimmedCode.isEmpty()) throw JoinBusiness.Error.EmptyCode()
         try {
-            redeemEmployeeInvitation(code)
+            redeemEmployeeInvitation(trimmedCode)
         } catch (e: RedeemEmployeeInvitation.Error.AlreadyProcessed) {
             throw JoinBusiness.Error.AlreadyProcessed(e)
         } catch (e: RedeemEmployeeInvitation.Error.EmployeeExists) {

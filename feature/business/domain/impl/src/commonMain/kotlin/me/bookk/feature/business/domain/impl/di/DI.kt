@@ -5,6 +5,7 @@ import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatur
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessIdChanges
+import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
 import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
@@ -16,6 +17,7 @@ import me.bookk.feature.business.domain.impl.business.GetAvailableDashboardFeatu
 import me.bookk.feature.business.domain.impl.business.JoinBusinessImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessChangesImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessIdChangesImpl
+import me.bookk.feature.business.domain.impl.business.ObserveDashboardSetupStatusImpl
 import me.bookk.feature.business.domain.impl.business.ObserveUserBusinessesChangesImpl
 import me.bookk.feature.business.domain.impl.business.RefreshBusinessInfoImpl
 import me.bookk.feature.business.domain.impl.business.SwitchDashboardBusinessImpl
@@ -35,6 +37,7 @@ fun businessDomainModule() = module {
     factoryOf(::SwitchDashboardBusinessImpl) bind SwitchDashboardBusiness::class
     factoryOf(::JoinBusinessImpl) bind JoinBusiness::class
     factoryOf(::GetAvailableDashboardFeaturesImpl) bind GetAvailableDashboardFeatures::class
+    factoryOf(::ObserveDashboardSetupStatusImpl) bind ObserveDashboardSetupStatus::class
     factoryOf(::UpdateBusinessImpl) bind UpdateBusiness::class
     factoryOf(::EnableAppointmentsPluginImpl) bind EnableAppointmentsPlugin::class
     factoryOf(::IsAppointmentsPluginEnabledImpl) bind IsAppointmentsPluginEnabled::class

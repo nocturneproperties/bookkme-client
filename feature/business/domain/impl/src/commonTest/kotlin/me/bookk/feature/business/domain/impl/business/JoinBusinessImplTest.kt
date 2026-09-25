@@ -3,7 +3,9 @@ package me.bookk.feature.business.domain.impl.business
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -109,5 +111,31 @@ class JoinBusinessImplTest {
         assertFailsWith<JoinBusiness.Error.EmployeeExists> {
             fixture.sut(code)
         }
+    }
+
+    @Test
+    fun `redeems the trimmed invitation code`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.redeemEmployeeInvitation("ABCD1234") } returns stubEmployee()
+
+        whenn()
+        fixture.sut("  ABCD1234  ")
+
+        then()
+        verifySuspend { fixture.redeemEmployeeInvitation("ABCD1234") }
+    }
+
+    @Test
+    fun `throws EmptyCode without redeeming when code is blank`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = runCatching { fixture.sut("   ") }
+
+        then()
+        assertFailsWith<JoinBusiness.Error.EmptyCode> { result.getOrThrow() }
+        verifySuspend(VerifyMode.not) { fixture.redeemEmployeeInvitation(any()) }
     }
 }

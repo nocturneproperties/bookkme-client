@@ -17,6 +17,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.entity.Business
@@ -27,6 +28,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -126,5 +128,33 @@ class CreateBusinessImplTest {
 
         then()
         verifySuspend { fixture.switchDashboardBusiness(expected.id) }
+    }
+
+    @Test
+    fun `sends trimmed name to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
+
+        whenn()
+        fixture.sut("  My Salon  ")
+
+        then()
+        verifySuspend { fixture.dataSource.createBusiness("My Salon", "UAH", any()) }
+    }
+
+    @Test
+    fun `throws EmptyName without calling backend when name is blank`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = runCatching { fixture.sut("   ") }
+
+        then()
+        assertFailsWith<CreateBusiness.Error.EmptyName> { result.getOrThrow() }
+        verifySuspend(VerifyMode.not) { fixture.dataSource.createBusiness(any(), any(), any()) }
     }
 }

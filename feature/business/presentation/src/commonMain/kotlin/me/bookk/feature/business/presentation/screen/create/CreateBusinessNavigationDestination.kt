@@ -1,8 +1,0 @@
-package me.bookk.feature.business.presentation.screen.create
-
-import me.bookk.core.presentation.navigation.NavigationDestination
-
-sealed class CreateBusinessNavigationDestination : NavigationDestination() {
-    data object Main : CreateBusinessNavigationDestination()
-    data object Back : CreateBusinessNavigationDestination()
-}

@@ -1,9 +1,6 @@
 package me.bookk.feature.business.presentation.screen.dashboard
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidBusinessMenuState
@@ -20,7 +17,6 @@ internal class AndroidDashboardState : BusinessDashboardState {
     override val appBar: AppBarState = AndroidAppBarState("".desc(), size = TopBarSize.SMALL)
     override val sections = mutableStateListOf<BusinessDashboardSection>()
     override val businessMenu: BusinessMenuState = AndroidBusinessMenuState()
-    override var isCreateBusinessSheetVisible: Boolean by mutableStateOf(false)
     override val notifications: PresentationNotificationState = AndroidNotificationState()
     override val navigation = AndroidNavigationState<DashboardNavigationDestination>()
 

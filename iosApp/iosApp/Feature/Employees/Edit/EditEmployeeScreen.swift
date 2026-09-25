@@ -22,7 +22,7 @@ struct EditEmployeeScreen: View {
 				OptionsMultiPickerField(state.services) { item, onRemove in
 					EmployeeServiceItem(
 						service: item as! EmployeeServicePresentation,
-						onRemove: onRemove
+						onRemove: state.services.isEditable ? onRemove : nil
 					)
 				}
 				.listRowInsets(EdgeInsets())
@@ -49,7 +49,9 @@ struct EditEmployeeScreen: View {
 		}
 		.listSectionSpacing(.compact)
 		.toolbar {
-			TextButton(state.save)
+			if state.save.isVisible {
+				TextButton(state.save)
+			}
 		}
 		.withNavigationBar(state.appBar)
 		.sendLifecycleEventsTo(viewModel)
@@ -81,7 +83,7 @@ private struct ResourcePermissionSection: View {
 
 private struct EmployeeServiceItem: View {
 	let service: EmployeeServicePresentation
-	let onRemove: () -> Void
+	let onRemove: (() -> Void)?
 
 	var body: some View {
 		HStack(spacing: 0) {
@@ -98,19 +100,24 @@ private struct EmployeeServiceItem: View {
 			Text(service.price)
 				.font(.headline)
 				.foregroundStyle(AppColors.primary)
-			Button(action: onRemove) {
-				ZStack {
-					Circle()
-						.fill(AppColors.primary.opacity(0.1))
-						.frame(width: 28, height: 28)
-					Image(systemName: "minus")
-						.font(.body.bold())
-						.foregroundStyle(AppColors.secondary)
+			if let onRemove {
+				Button(action: onRemove) {
+					ZStack {
+						Circle()
+							.fill(AppColors.primary.opacity(0.1))
+							.frame(width: 28, height: 28)
+						Image(systemName: "minus")
+							.font(.body.bold())
+							.foregroundStyle(AppColors.secondary)
+					}
 				}
+				.buttonStyle(.plain)
+				.padding(.leading, 8)
+				.padding(.trailing, 16)
+			} else {
+				Spacer()
+					.frame(width: 16)
 			}
-			.buttonStyle(.plain)
-			.padding(.leading, 8)
-			.padding(.trailing, 16)
 		}
 		.padding(.vertical, 16)
 	}

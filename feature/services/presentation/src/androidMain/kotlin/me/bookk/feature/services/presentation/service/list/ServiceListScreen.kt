@@ -98,9 +98,11 @@ private fun ServiceSectionItem(modifier: Modifier, group: ServiceGroupUI) {
             Box(
                 modifier = Modifier
                     .combinedClickable(
-                        onLongClick = {
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            expanded = true
+                        onLongClick = group.onItemDeleteClick?.let {
+                            {
+                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                expanded = true
+                            }
                         },
                         onClick = { group.onItemClick(it) }
                     )
@@ -116,20 +118,22 @@ private fun ServiceSectionItem(modifier: Modifier, group: ServiceGroupUI) {
                     style = MaterialTheme.typography.bodyLarge.primary(),
                     textAlign = TextAlign.Start
                 )
-                DropdownMenu(
-                    expanded = expanded,
-                    containerColor = LocalColors.current.elevated,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                DesignSystem.strings.action_delete.desc().localized(),
-                                color = LocalColors.current.error
-                            )
-                        },
-                        onClick = { group.onItemDeleteClick(it) }
-                    )
+                group.onItemDeleteClick?.let { onItemDeleteClick ->
+                    DropdownMenu(
+                        expanded = expanded,
+                        containerColor = LocalColors.current.elevated,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    DesignSystem.strings.action_delete.desc().localized(),
+                                    color = LocalColors.current.error
+                                )
+                            },
+                            onClick = { onItemDeleteClick(it) }
+                        )
+                    }
                 }
             }
             HorizontalDivider(color = LocalColors.current.divider.copy(alpha = 0.5f))

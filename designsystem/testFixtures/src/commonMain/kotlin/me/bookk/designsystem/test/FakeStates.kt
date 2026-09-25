@@ -215,6 +215,7 @@ class FakeMultiPickerState<T : PickerPresentation> : FakeViewState(), MultiPicke
 
 class FakeOptionsMultiPickerState<T : PickerPresentation> : FakeViewState(), OptionsMultiPickerState<T> {
     override var pickerTitle: StringDesc = "".desc()
+    override var placeholder: StringDesc? = null
     override val options: MutableList<T> = mutableListOf()
     override val selectedItems: MutableList<T> = mutableListOf()
     override var onItemsPicked: (List<T>) -> Unit = {}

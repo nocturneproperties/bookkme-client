@@ -24,10 +24,11 @@ import me.bookk.feature.services.presentation.service.add.AddServiceDestination.
 import kotlin.properties.Delegates
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
 class AddServiceViewModel(
-    private val businessId: Uuid,
+    @InjectedParam private val businessId: Uuid,
     private val createService: CreateService,
     private val getServiceGroups: GetServiceGroups,
     private val getBusinessCurrency: GetBusinessCurrency,

@@ -19,6 +19,7 @@ final class IOSScheduleState: @MainActor ScheduleState, NativeStateRepresentatio
 
 	let dayOffs: any MultiPickerState
 	let dateRange: any DateRangePickerState
+	var isEditable: Bool
 
     init() {
         monday = IOSDaySettingsState()
@@ -31,5 +32,6 @@ final class IOSScheduleState: @MainActor ScheduleState, NativeStateRepresentatio
 		list = IOSListState<DaySettingsState>()
 		dayOffs = IOSMultiPickerState()
 		dateRange = IOSDateRangePickerState()
+		isEditable = true
     }
 }

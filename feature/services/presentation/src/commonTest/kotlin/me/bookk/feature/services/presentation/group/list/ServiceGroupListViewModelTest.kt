@@ -1,5 +1,9 @@
 package me.bookk.feature.services.presentation.group.list
 
+import kotlin.test.assertNull
+import kotlin.test.assertNotNull
+import me.bookk.feature.services.domain.api.entity.ServicesPermissions
+import me.bookk.feature.services.domain.api.GetServicesPermissions
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -14,6 +18,7 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeTextFieldState
@@ -51,7 +56,7 @@ class ServiceGroupListViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture {
+    private class Fixture(permissions: ServicesPermissions = ServicesPermissions(canEdit = true, canDelete = true)) {
         val businessId = Uuid.random()
         val groups = MutableStateFlow<List<ServiceGroup>>(emptyList())
         val getServiceGroups = mock<GetServiceGroups> {
@@ -62,12 +67,16 @@ class ServiceGroupListViewModelTest {
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
             every { invoke() } returns MutableStateFlow<Uuid?>(businessId)
         }
+        val getServicesPermissions = mock<GetServicesPermissions> {
+            everySuspend { invoke(any()) } returns permissions
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = ServiceGroupListViewModel(
             getServiceGroups = getServiceGroups,
             deleteServiceGroup = deleteServiceGroup,
             observeCurrentBusinessId = observeCurrentBusinessId,
+            getServicesPermissions = getServicesPermissions,
             stateFactory = FakeServicesStateFactory(),
             vmArgs = VmArgs(errorMapper)
         )
@@ -131,6 +140,58 @@ class ServiceGroupListViewModelTest {
     }
 
     @Test
+    fun `shows the add action for a user who can edit services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = true, canDelete = false))
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(1, sut.uiState.appBar.actions.items.size)
+    }
+
+    @Test
+    fun `hides the add action for a user who cannot edit services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = false, canDelete = true))
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `offers delete for a user who can delete services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = false, canDelete = true))
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.groups.value = listOf(stubGroup("Hair"))
+
+        then()
+        assertNotNull(sut.uiState.groups.items.single().onDeleteClick)
+    }
+
+    @Test
+    fun `does not offer delete for a user who cannot delete services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = true, canDelete = false))
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.groups.value = listOf(stubGroup("Hair"))
+
+        then()
+        assertNull(sut.uiState.groups.items.single().onDeleteClick)
+    }
+
+    @Test
     fun `opens add group dialog from app bar action`() = runUnitTest {
         given()
         val sut = Fixture().sut()
@@ -151,7 +212,7 @@ class ServiceGroupListViewModelTest {
         val sut = fixture.sut()
         advanceUntilIdle()
         fixture.groups.value = listOf(group)
-        sut.uiState.groups.items.single().onDeleteClick()
+        assertNotNull(sut.uiState.groups.items.single().onDeleteClick).invoke()
 
         whenn()
         sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
@@ -169,7 +230,7 @@ class ServiceGroupListViewModelTest {
         val sut = fixture.sut()
         advanceUntilIdle()
         fixture.groups.value = listOf(stubGroup())
-        sut.uiState.groups.items.single().onDeleteClick()
+        assertNotNull(sut.uiState.groups.items.single().onDeleteClick).invoke()
 
         whenn()
         sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)

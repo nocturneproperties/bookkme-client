@@ -21,5 +21,6 @@ class AppBarAction(
     val icon: ImageResource? = null,
     val contentDescription: StringDesc,
     val type: ActionType = ActionType.POSITIVE,
+    val isEnabled: Boolean = true,
     val onClick: () -> Unit
 )

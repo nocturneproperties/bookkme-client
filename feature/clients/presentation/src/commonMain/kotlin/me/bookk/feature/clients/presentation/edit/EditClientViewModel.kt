@@ -20,18 +20,21 @@ import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.EditClient
 import me.bookk.feature.clients.domain.api.GetClient
+import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.edit.EditClientDestination.Back
 import me.bookk.feature.clients.presentation.edit.EditClientDestination.Deleted
 import kotlin.properties.Delegates.notNull
+import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
 class EditClientViewModel(
-    private val id: Uuid,
+    @InjectedParam private val id: Uuid,
     private val getClient: GetClient,
     private val editClient: EditClient,
     private val deleteClient: DeleteClient,
+    private val getClientsPermissions: GetClientsPermissions,
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
     stateFactory: ClientsStateFactory,
@@ -48,9 +51,13 @@ class EditClientViewModel(
     private fun loadClient() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { getClient(id) },
-            onComplete = {
+            call = {
+                val client = getClient(id)
+                client to getClientsPermissions(client.businessId)
+            },
+            onComplete = { (it, permissions) ->
                 client = it
+                uiState.deleteButton.isVisible = permissions.canDelete
                 uiState.isAttachedInfoVisible = it is Client.Integrated
                 uiState.name.enabled = it is Client.Detached
                 uiState.lastName.enabled = it is Client.Detached
@@ -189,6 +196,7 @@ class EditClientViewModel(
         submit.onClick = weakVMClosure { it.onSubmit() }
 
         deleteButton.text = ClientsRes.strings.clients_delete_button.desc()
+        deleteButton.isVisible = false
         deleteButton.onClick = weakVMClosure { it.onDeleteClicked() }
         return this
     }

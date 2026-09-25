@@ -18,7 +18,9 @@ import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.services.domain.api.GetServicesPermissions
 import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
+import me.bookk.feature.services.domain.api.entity.ServicesPermissions
 import me.bookk.feature.services.domain.api.service.DeleteService
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.domain.api.service.entity.Service
@@ -35,6 +37,7 @@ class ServiceListViewModel(
     private val getServices: GetServices,
     private val deleteService: DeleteService,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
+    private val getServicesPermissions: GetServicesPermissions,
     stateFactory: ServicesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -42,6 +45,8 @@ class ServiceListViewModel(
     val uiState: ServiceListState = stateFactory.createServiceListState().setup()
 
     private var items = listOf<ServiceGroupUI>()
+    private var renderedServices: List<Service>? = null
+    private var permissions: ServicesPermissions? = null
 
     init {
         observeServices()
@@ -58,6 +63,8 @@ class ServiceListViewModel(
 
     private fun renderServices(services: List<Service>) {
         if (services.isEmpty() && uiState.services.isInitialLoading) return
+        renderedServices = services
+        val canDelete = permissions?.canDelete == true
         val grouped = services
             .groupBy { it.group }
             .map { (group, groupServices) ->
@@ -66,7 +73,7 @@ class ServiceListViewModel(
                     name = group.name,
                     items = groupServices.map { ServiceUI(it) },
                     onItemClick = weakVMClosure { vm, item -> vm.onServiceClick(item) },
-                    onItemDeleteClick = weakVMClosure { vm, item -> vm.onServiceDeleteClick(item) }
+                    onItemDeleteClick = if (canDelete) weakVMClosure { vm, item -> vm.onServiceDeleteClick(item) } else null
                 )
             }
         items = grouped
@@ -78,9 +85,38 @@ class ServiceListViewModel(
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.services)
-            .safeOnEach { loadServiceList(it) }
+            .safeOnEach {
+                loadServiceList(it)
+                loadPermissions(it)
+            }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun loadPermissions(businessId: Uuid) {
+        launch(
+            key = PERMISSIONS_KEY,
+            launchIn = DispatcherProvider.io,
+            call = { getServicesPermissions(businessId) },
+            onComplete = { renderPermissions(it) },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun renderPermissions(permissions: ServicesPermissions) {
+        this.permissions = permissions
+        val actions = if (permissions.canEdit) {
+            listOf(
+                AppBarAction(
+                    contentDescription = DesignSystem.strings.action_add.desc(),
+                    onClick = weakVMClosure { it.onAddServiceClick() }
+                )
+            )
+        } else {
+            emptyList()
+        }
+        uiState.appBar.actions.replace(actions)
+        renderedServices?.let { renderServices(it) }
     }
 
     private fun loadServiceList(businessId: Uuid) {
@@ -145,14 +181,6 @@ class ServiceListViewModel(
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(Back)
         }
-        appBar.actions.replace(
-            listOf(
-                AppBarAction(
-                    contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.onAddServiceClick() }
-                )
-            )
-        )
 
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, query -> vm.onSearchQueryChanged(query) }
@@ -166,4 +194,7 @@ class ServiceListViewModel(
         )
     }
 
+    private companion object {
+        const val PERMISSIONS_KEY = "service_list_permissions"
+    }
 }

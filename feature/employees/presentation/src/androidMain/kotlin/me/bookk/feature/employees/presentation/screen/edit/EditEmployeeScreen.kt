@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -42,10 +44,18 @@ import me.bookk.designsystem.theme.typography.secondary
 @Composable
 internal fun EditEmployeeScreen(state: EditEmployeeState) {
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .imePadding(),
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                actions = { StateTextButton(state = state.save) }
+                actions = {
+                    if (state.save.isVisible) {
+                        StateTextButton(state = state.save)
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -64,14 +74,16 @@ internal fun EditEmployeeScreen(state: EditEmployeeState) {
                 }
             }
             OptionsMultiPicker(state.services) { item, onItemRemove ->
-                ServiceItem(item, onItemRemove)
+                ServiceItem(item, onItemRemove.takeIf { state.services.isEditable })
             }
             ScheduleSection(state.schedule)
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Header(EmployeesRes.strings.employees_edit_permissions.desc().localized())
-                state.permissionsHint?.let { PermissionsHint(it.localized()) }
-                if (state.isPermissionsVisible) {
-                    state.permissions.items.forEach { ResourcePermissionCard(it) }
+            if (state.isPermissionsVisible || state.permissionsHint != null) {
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Header(EmployeesRes.strings.employees_edit_permissions.desc().localized())
+                    state.permissionsHint?.let { PermissionsHint(it.localized()) }
+                    if (state.isPermissionsVisible) {
+                        state.permissions.items.forEach { ResourcePermissionCard(it) }
+                    }
                 }
             }
         }
@@ -104,7 +116,7 @@ private fun ResourcePermissionCard(state: ResourcePermissionState) {
 @Composable
 private fun ServiceItem(
     service: EmployeeServicePresentation,
-    onItemRemove: () -> Unit
+    onItemRemove: (() -> Unit)?
 ) {
     Row(
         modifier = Modifier
@@ -124,20 +136,24 @@ private fun ServiceItem(
         }
         Spacer(Modifier.weight(1f))
         Text(service.price, style = MaterialTheme.typography.titleMedium.primary())
-        TextButton(onClick = onItemRemove) {
-            Box(
-                modifier = Modifier
-                    .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
-                    .size(28.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    "-",
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium.secondary()
-                )
+        if (onItemRemove != null) {
+            TextButton(onClick = onItemRemove) {
+                Box(
+                    modifier = Modifier
+                        .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
+                        .size(28.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "-",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium.secondary()
+                    )
+                }
             }
+        } else {
+            Spacer(Modifier.size(16.dp))
         }
     }
 }

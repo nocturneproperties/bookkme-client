@@ -29,6 +29,7 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
+import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
 import me.bookk.feature.employees.domain.api.IsBusinessOwner
@@ -61,7 +62,11 @@ class EditEmployeeViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(val employee: Employee = stubEmployee(), isOwner: Boolean = false) {
+    private class Fixture(
+        val employee: Employee = stubEmployee(),
+        isOwner: Boolean = false,
+        canEdit: Boolean = true
+    ) {
         val services = MutableStateFlow<List<Service>>(emptyList())
         val getEmployee = mock<GetEmployee> {
             everySuspend { invoke(employee.id) } returns employee
@@ -72,6 +77,9 @@ class EditEmployeeViewModelTest {
         }
         val isBusinessOwner = mock<IsBusinessOwner> {
             everySuspend { invoke(any()) } returns isOwner
+        }
+        val canEditEmployees = mock<CanEditEmployees> {
+            everySuspend { invoke(employee.businessId) } returns canEdit
         }
         val updateEmployee = mock<UpdateEmployee>()
         val device = mock<DeviceFacade> {
@@ -86,6 +94,7 @@ class EditEmployeeViewModelTest {
             getEmployee = getEmployee,
             getAssignableServices = getAssignableServices,
             isBusinessOwner = isBusinessOwner,
+            canEditEmployees = canEditEmployees,
             updateEmployee = updateEmployee,
             device = device,
             dateLocalizer = FakeDateLocalizer(),
@@ -156,6 +165,18 @@ class EditEmployeeViewModelTest {
     }
 
     @Test
+    fun `shows a placeholder while the employee provides no services`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(EmployeesRes.strings.employees_edit_services_empty.desc(), sut.uiState.services.placeholder)
+    }
+
+    @Test
     fun `offers the business services as options`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -208,6 +229,102 @@ class EditEmployeeViewModelTest {
         then()
         assertTrue(sut.uiState.isPermissionsVisible)
         assertNull(sut.uiState.permissionsHint)
+    }
+
+    @Test
+    fun `hides the permissions section for a user who cannot edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.isPermissionsVisible)
+        assertNull(sut.uiState.permissionsHint)
+    }
+
+    @Test
+    fun `hides the owner hint for a user who cannot edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(isOwner = true, canEdit = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.isPermissionsVisible)
+        assertNull(sut.uiState.permissionsHint)
+    }
+
+    @Test
+    fun `shows save for a user who can edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = true)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.save.isVisible)
+    }
+
+    @Test
+    fun `hides save for a user who cannot edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.save.isVisible)
+    }
+
+    @Test
+    fun `hides save while the employee is loading`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getEmployee(fixture.employee.id) } throws TestException()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.save.isVisible)
+    }
+
+    @Test
+    fun `keeps services and schedule editable for a user who can edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = true)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.services.isEditable)
+        assertTrue(sut.uiState.schedule.isEditable)
+        assertTrue(sut.uiState.schedule.dayOffs.isEditable)
+        assertTrue(sut.uiState.schedule.monday.isActive.isEnabled)
+    }
+
+    @Test
+    fun `makes services and schedule read-only for a user who cannot edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        val monday = sut.uiState.schedule.monday
+        assertFalse(sut.uiState.services.isEditable)
+        assertFalse(sut.uiState.schedule.isEditable)
+        assertFalse(sut.uiState.schedule.dayOffs.isEditable)
+        assertFalse(monday.isActive.isEnabled)
+        assertTrue(monday.intervals.isNotEmpty())
+        assertTrue(monday.intervals.none { it.timeFromPicker.textField.enabled || it.timeToPicker.textField.enabled })
     }
 
     @Test

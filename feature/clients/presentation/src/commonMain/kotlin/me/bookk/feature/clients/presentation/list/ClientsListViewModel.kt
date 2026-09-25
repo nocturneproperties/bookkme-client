@@ -16,6 +16,7 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.clients.domain.api.GetClientsList
+import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.ClientsStateFactory
@@ -25,6 +26,7 @@ import kotlin.uuid.Uuid
 class ClientsListViewModel(
     private val getClientsList: GetClientsList,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
+    private val getClientsPermissions: GetClientsPermissions,
     stateFactory: ClientsStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
@@ -67,9 +69,37 @@ class ClientsListViewModel(
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.clientsList)
-            .safeOnEach { loadClients(it) }
+            .safeOnEach {
+                loadClients(it)
+                loadEditAccess(it)
+            }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun loadEditAccess(businessId: Uuid) {
+        launch(
+            key = EDIT_ACCESS_KEY,
+            launchIn = DispatcherProvider.io,
+            call = { getClientsPermissions(businessId) },
+            onComplete = { renderAddAction(it.canEdit) },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun renderAddAction(canEdit: Boolean) {
+        val actions = if (canEdit) {
+            listOf(
+                AppBarAction(
+                    icon = DesignSystem.images.plus,
+                    contentDescription = DesignSystem.strings.action_add.desc(),
+                    onClick = weakVMClosure { it.onAddClientClick() }
+                )
+            )
+        } else {
+            emptyList()
+        }
+        uiState.appBar.actions.replace(actions)
     }
 
     private fun loadClients(businessId: Uuid) {
@@ -112,15 +142,6 @@ class ClientsListViewModel(
 
     private fun ClientsListState.setup(): ClientsListState {
         appBar.title = ClientsRes.strings.clients_title.desc()
-        appBar.actions.replace(
-            listOf(
-                AppBarAction(
-                    icon = DesignSystem.images.plus,
-                    contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.onAddClientClick() }
-                )
-            )
-        )
         appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
@@ -129,5 +150,9 @@ class ClientsListViewModel(
             label = ClientsRes.strings.clients_empty.desc()
         )
         return this
+    }
+
+    private companion object {
+        const val EDIT_ACCESS_KEY = "clients_list_edit_access"
     }
 }

@@ -1,5 +1,9 @@
 package me.bookk.feature.clients.presentation.list
 
+import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
+import me.bookk.feature.clients.domain.api.GetClientsPermissions
+import kotlinx.coroutines.CompletableDeferred
+import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -12,6 +16,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeTextFieldState
@@ -47,8 +52,9 @@ class ClientsListViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture {
+    private class Fixture(canEdit: Boolean = true) {
         val businessId = Uuid.random()
+        val editableBusinessIds = if (canEdit) mutableSetOf(businessId) else mutableSetOf()
         val clients = MutableStateFlow<List<Client>>(emptyList())
         val currentBusinessId = MutableStateFlow<Uuid?>(businessId)
         val getClientsList = mock<GetClientsList> {
@@ -58,11 +64,17 @@ class ClientsListViewModelTest {
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
             every { invoke() } returns currentBusinessId
         }
+        val getClientsPermissions = mock<GetClientsPermissions> {
+            everySuspend { invoke(any()) } calls { (id: Uuid) ->
+                ClientsPermissions(canEdit = id in editableBusinessIds, canDelete = false)
+            }
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = ClientsListViewModel(
             getClientsList = getClientsList,
             observeCurrentBusinessId = observeCurrentBusinessId,
+            getClientsPermissions = getClientsPermissions,
             stateFactory = FakeClientsStateFactory(),
             vmArgs = VmArgs(errorMapper)
         )
@@ -163,6 +175,60 @@ class ClientsListViewModelTest {
 
         then()
         assertEquals(listOf<ClientsListDestination>(ClientsListDestination.ClientDetails(client.id)), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `shows the add action for a user who can edit clients`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = true)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(1, sut.uiState.appBar.actions.items.size)
+    }
+
+    @Test
+    fun `hides the add action for a user who cannot edit clients`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `hides the add action after switching to a business where the user cannot edit clients`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = true)
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.currentBusinessId.value = Uuid.random()
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `ignores a stale edit access result after the business changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val firstBusinessPermissions = CompletableDeferred<ClientsPermissions>()
+        val secondBusinessId = Uuid.random()
+        everySuspend { fixture.getClientsPermissions(fixture.businessId) } calls { firstBusinessPermissions.await() }
+        val sut = fixture.sut()
+        fixture.currentBusinessId.value = secondBusinessId
+
+        whenn()
+        firstBusinessPermissions.complete(ClientsPermissions(canEdit = true, canDelete = true))
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
     }
 
     @Test

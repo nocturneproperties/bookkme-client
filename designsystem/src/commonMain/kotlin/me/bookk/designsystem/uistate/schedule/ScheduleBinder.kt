@@ -22,6 +22,12 @@ class ScheduleBinder(
     private val fullWeekdayFormat = dateLocalizer.forStyle(DateStyle.FULL_WEEKDAY)
     private val fullDateFormat = dateLocalizer.forStyle(DateStyle.D_MMM_YYYY_RELATIVE)
 
+    var isEditable: Boolean = true
+        set(value) {
+            field = value
+            applyEditable()
+        }
+
     init {
         setupDayOffs()
     }
@@ -39,6 +45,22 @@ class ScheduleBinder(
             renderDay(state.dayOf(dayOfWeek), byDay[dayOfWeek] ?: WeekdaySchedule(dayOfWeek, false, emptyList()))
         }
         state.list.replace(weekOrderedDays())
+        applyEditable()
+    }
+
+    private fun applyEditable() {
+        state.isEditable = isEditable
+        state.dayOffs.isEditable = isEditable
+        DayOfWeek.entries.forEach { dayOfWeek ->
+            val day = state.dayOf(dayOfWeek)
+            day.isActive.isEnabled = isEditable
+            day.intervals.forEach { it.applyEditable() }
+        }
+    }
+
+    private fun TimeSettingState.applyEditable() {
+        timeFromPicker.textField.enabled = isEditable
+        timeToPicker.textField.enabled = isEditable
     }
 
     fun snapshot(): WeekSchedule {

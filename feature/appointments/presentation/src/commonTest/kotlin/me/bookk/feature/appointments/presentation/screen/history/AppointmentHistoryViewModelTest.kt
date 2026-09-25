@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper

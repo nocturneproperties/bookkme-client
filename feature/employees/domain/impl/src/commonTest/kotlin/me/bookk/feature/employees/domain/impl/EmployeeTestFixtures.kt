@@ -31,7 +31,11 @@ internal fun stubEmployee(businessId: Uuid = Uuid.random(), id: Uuid = Uuid.rand
     permissions = stubBusinessPermissions()
 )
 
-internal fun stubBusiness(id: Uuid = Uuid.random(), ownerId: Uuid? = Uuid.random()) = Business(
+internal fun stubBusiness(
+    id: Uuid = Uuid.random(),
+    ownerId: Uuid? = Uuid.random(),
+    permissions: BusinessPermissions = stubBusinessPermissions()
+) = Business(
     id = id,
     name = "Test Business",
     description = "",
@@ -41,7 +45,7 @@ internal fun stubBusiness(id: Uuid = Uuid.random(), ownerId: Uuid? = Uuid.random
     timeZone = TimeZone.UTC,
     socials = emptyMap(),
     schedule = WorkingSchedule(),
-    permissions = stubBusinessPermissions(),
+    permissions = permissions,
     ownerId = ownerId
 )
 

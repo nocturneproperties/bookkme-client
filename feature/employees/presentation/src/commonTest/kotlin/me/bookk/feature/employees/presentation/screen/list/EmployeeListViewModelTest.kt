@@ -1,11 +1,13 @@
 package me.bookk.feature.employees.presentation.screen.list
 
+import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import me.bookk.core.presentation.VmArgs
@@ -19,6 +21,7 @@ import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
+import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetEmployees
 import me.bookk.feature.employees.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.employees.domain.api.entity.Employee
@@ -45,8 +48,9 @@ class EmployeeListViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture {
+    private class Fixture(canEdit: Boolean = true) {
         val businessId = Uuid.random()
+        val editableBusinessIds = if (canEdit) mutableSetOf(businessId) else mutableSetOf()
         val employees = MutableStateFlow<List<Employee>>(emptyList())
         val currentBusinessId = MutableStateFlow<Uuid?>(businessId)
         val getEmployees = mock<GetEmployees> {
@@ -56,11 +60,15 @@ class EmployeeListViewModelTest {
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
             every { invoke() } returns currentBusinessId
         }
+        val canEditEmployees = mock<CanEditEmployees> {
+            everySuspend { invoke(any()) } calls { (id: Uuid) -> id in editableBusinessIds }
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = EmployeeListViewModel(
             getEmployees = getEmployees,
             observeCurrentBusinessId = observeCurrentBusinessId,
+            canEditEmployees = canEditEmployees,
             stateFactory = FakeEmployeesStateFactory(),
             vmArgs = VmArgs(errorMapper)
         )
@@ -137,6 +145,76 @@ class EmployeeListViewModelTest {
 
         then()
         assertEquals(2, sut.uiState.employeesList.items.flatMap { it.items }.size)
+    }
+
+    @Test
+    fun `shows the add action for a user who can edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = true)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(1, sut.uiState.appBar.actions.items.size)
+    }
+
+    @Test
+    fun `hides the add action for a user who cannot edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `hides the add action after switching to a business where the user cannot edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = true)
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.currentBusinessId.value = Uuid.random()
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `shows the add action after switching to a business where the user can edit employees`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = false)
+        val sut = fixture.sut()
+        val editableBusinessId = Uuid.random()
+        fixture.editableBusinessIds += editableBusinessId
+
+        whenn()
+        fixture.currentBusinessId.value = editableBusinessId
+
+        then()
+        assertEquals(1, sut.uiState.appBar.actions.items.size)
+    }
+
+    @Test
+    fun `ignores a stale edit access result after the business changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val firstBusinessAccess = CompletableDeferred<Boolean>()
+        val secondBusinessId = Uuid.random()
+        everySuspend { fixture.canEditEmployees(fixture.businessId) } calls { firstBusinessAccess.await() }
+        everySuspend { fixture.canEditEmployees(secondBusinessId) } returns false
+        val sut = fixture.sut()
+        fixture.currentBusinessId.value = secondBusinessId
+
+        whenn()
+        firstBusinessAccess.complete(true)
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
     }
 
     @Test

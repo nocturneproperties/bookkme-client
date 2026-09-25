@@ -19,6 +19,7 @@ class FakeScheduleState : ScheduleState {
     override val list = FakeListState<DaySettingsState>()
     override val dayOffs = FakeMultiPickerState<DateRangePickerPresentation>()
     override val dateRange = FakeDateRangePickerState()
+    override var isEditable: Boolean = true
 }
 
 class FakeDaySettingsState : FakeViewState(), DaySettingsState {

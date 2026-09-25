@@ -19,6 +19,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
@@ -37,6 +38,7 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentOptions
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
+import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.feature.appointments.presentation.FakeAppointmentsStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -106,6 +108,18 @@ class AppointmentCreateViewModelTest {
         then()
         assertEquals(listOf(fixture.client), sut.uiState.clientPicker.options.map { it.domain })
         assertEquals(listOf(fixture.haircut, fixture.coloring), sut.uiState.servicePicker.options.map { it.item })
+    }
+
+    @Test
+    fun `shows a placeholder while no services are picked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(AppointmentsRes.strings.appointments_create_services_empty.desc(), sut.uiState.servicePicker.placeholder)
     }
 
     @Test

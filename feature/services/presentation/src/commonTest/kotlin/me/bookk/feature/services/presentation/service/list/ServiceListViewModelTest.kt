@@ -1,5 +1,12 @@
 package me.bookk.feature.services.presentation.service.list
 
+import kotlin.test.assertTrue
+import kotlin.test.assertNull
+import kotlin.test.assertNotNull
+import me.bookk.feature.services.domain.api.entity.ServicesPermissions
+import me.bookk.feature.services.domain.api.GetServicesPermissions
+import kotlinx.coroutines.CompletableDeferred
+import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -14,6 +21,7 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeTextFieldState
@@ -51,7 +59,7 @@ class ServiceListViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture {
+    private class Fixture(permissions: ServicesPermissions = ServicesPermissions(canEdit = true, canDelete = true)) {
         val businessId = Uuid.random()
         val services = MutableStateFlow<List<Service>>(emptyList())
         val currentBusinessId = MutableStateFlow<Uuid?>(businessId)
@@ -63,12 +71,16 @@ class ServiceListViewModelTest {
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
             every { invoke() } returns currentBusinessId
         }
+        val getServicesPermissions = mock<GetServicesPermissions> {
+            everySuspend { invoke(any()) } returns permissions
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = ServiceListViewModel(
             getServices = getServices,
             deleteService = deleteService,
             observeCurrentBusinessId = observeCurrentBusinessId,
+            getServicesPermissions = getServicesPermissions,
             stateFactory = FakeServicesStateFactory(),
             vmArgs = VmArgs(errorMapper)
         )
@@ -150,7 +162,7 @@ class ServiceListViewModelTest {
         advanceUntilIdle()
         fixture.services.value = listOf(service)
         val section = sut.uiState.services.items.single()
-        section.onItemDeleteClick(section.items.single())
+        assertNotNull(section.onItemDeleteClick).invoke(section.items.single())
 
         whenn()
         sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
@@ -169,13 +181,100 @@ class ServiceListViewModelTest {
         advanceUntilIdle()
         fixture.services.value = listOf(stubService())
         val section = sut.uiState.services.items.single()
-        section.onItemDeleteClick(section.items.single())
+        assertNotNull(section.onItemDeleteClick).invoke(section.items.single())
 
         whenn()
         sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    @Test
+    fun `shows the add action for a user who can edit services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = true, canDelete = false))
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(1, sut.uiState.appBar.actions.items.size)
+    }
+
+    @Test
+    fun `hides the add action for a user who cannot edit services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = false, canDelete = true))
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `offers delete for a user who can delete services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = false, canDelete = true))
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.services.value = listOf(stubService())
+
+        then()
+        assertNotNull(sut.uiState.services.items.single().onItemDeleteClick)
+    }
+
+    @Test
+    fun `does not offer delete for a user who cannot delete services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = true, canDelete = false))
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.services.value = listOf(stubService())
+
+        then()
+        assertNull(sut.uiState.services.items.single().onItemDeleteClick)
+    }
+
+    @Test
+    fun `offers delete on already rendered services once the permission arrives`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val permissions = CompletableDeferred<ServicesPermissions>()
+        everySuspend { fixture.getServicesPermissions(any()) } calls { permissions.await() }
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.services.value = listOf(stubService())
+
+        whenn()
+        permissions.complete(ServicesPermissions(canEdit = false, canDelete = true))
+
+        then()
+        assertNotNull(sut.uiState.services.items.single().onItemDeleteClick)
+    }
+
+    @Test
+    fun `ignores a stale permission result after the business changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val firstBusinessPermissions = CompletableDeferred<ServicesPermissions>()
+        val secondBusinessId = Uuid.random()
+        everySuspend { fixture.getServicesPermissions(fixture.businessId) } calls { firstBusinessPermissions.await() }
+        everySuspend { fixture.getServicesPermissions(secondBusinessId) } returns ServicesPermissions(canEdit = false, canDelete = false)
+        val sut = fixture.sut()
+        fixture.currentBusinessId.value = secondBusinessId
+
+        whenn()
+        firstBusinessPermissions.complete(ServicesPermissions(canEdit = true, canDelete = true))
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
     }
 
     @Test

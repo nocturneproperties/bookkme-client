@@ -16,6 +16,7 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeTextFieldState
@@ -27,6 +28,8 @@ import me.bookk.designsystem.test.tap
 import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.EditClient
 import me.bookk.feature.clients.domain.api.GetClient
+import me.bookk.feature.clients.domain.api.GetClientsPermissions
+import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
 import me.bookk.feature.clients.presentation.FakeValidateEmail
@@ -56,9 +59,12 @@ class EditClientViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture {
+    private class Fixture(canDelete: Boolean = true) {
         val id = Uuid.random()
         val getClient = mock<GetClient>()
+        val getClientsPermissions = mock<GetClientsPermissions> {
+            everySuspend { invoke(any()) } returns ClientsPermissions(canEdit = true, canDelete = canDelete)
+        }
         val editClient = mock<EditClient>()
         val deleteClient = mock<DeleteClient>()
         val errorMapper = FakeErrorMapper()
@@ -69,6 +75,7 @@ class EditClientViewModelTest {
             getClient = getClient,
             editClient = editClient,
             deleteClient = deleteClient,
+            getClientsPermissions = getClientsPermissions,
             validateName = FakeValidateName(),
             validateEmail = FakeValidateEmail(),
             stateFactory = FakeClientsStateFactory(),
@@ -175,6 +182,56 @@ class EditClientViewModelTest {
         fixture.errorMapper.assertMappedSingle(TestException::class)
         assertFalse(sut.uiState.submit.isLoading)
         assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `shows delete for a user who can delete clients`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDelete = true)
+
+        whenn()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        then()
+        assertTrue(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `hides delete for a user who cannot delete clients`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDelete = false)
+
+        whenn()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        then()
+        assertFalse(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `checks delete permission in the business of the client`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val client = stubDetachedClient()
+
+        whenn()
+        fixture.sutWith(client)
+
+        then()
+        verifySuspend { fixture.getClientsPermissions(client.businessId) }
+    }
+
+    @Test
+    fun `hides delete while the client is loading`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getClient(any()) } throws TestException()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.deleteButton.isVisible)
     }
 
     @Test

@@ -12,7 +12,7 @@ import org.koin.mp.KoinPlatform
 import kotlin.uuid.Uuid
 
 internal actual fun platformEmployeesDiModule(): Module = module {
-    factory { EmployeeListViewModel(get(), get(), get(), get()) }
+    factoryOf(::EmployeeListViewModel)
     factoryOf(::InviteEmployeeViewModel)
     factoryOf(::EditEmployeeViewModel)
 }

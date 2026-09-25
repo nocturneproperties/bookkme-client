@@ -15,6 +15,7 @@ import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetEmployees
 import me.bookk.feature.employees.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.employees.domain.api.entity.Employee
@@ -24,6 +25,7 @@ import kotlin.uuid.Uuid
 class EmployeeListViewModel(
     private val getEmployees: GetEmployees,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
+    private val canEditEmployees: CanEditEmployees,
     stateFactory: EmployeesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -66,9 +68,37 @@ class EmployeeListViewModel(
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.employeesList)
-            .safeOnEach { loadEmployees(it) }
+            .safeOnEach {
+                loadEmployees(it)
+                loadEditAccess(it)
+            }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun loadEditAccess(businessId: Uuid) {
+        launch(
+            key = EDIT_ACCESS_KEY,
+            launchIn = DispatcherProvider.io,
+            call = { canEditEmployees(businessId) },
+            onComplete = { renderAddAction(it) },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun renderAddAction(canEdit: Boolean) {
+        val actions = if (canEdit) {
+            listOf(
+                AppBarAction(
+                    icon = DesignSystem.images.plus,
+                    contentDescription = DesignSystem.strings.action_add.desc(),
+                    onClick = weakVMClosure { it.onAddEmployeeClick() }
+                )
+            )
+        } else {
+            emptyList()
+        }
+        uiState.appBar.actions.replace(actions)
     }
 
     private fun loadEmployees(businessId: Uuid) {
@@ -110,20 +140,15 @@ class EmployeeListViewModel(
     private fun EmployeeListState.setup() = apply {
         appBar.title = EmployeesRes.strings.employees_title.desc()
         appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(EmployeeListDestinations.Back) }
-        appBar.actions.replace(
-            listOf(
-                AppBarAction(
-                    icon = DesignSystem.images.plus,
-                    contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.onAddEmployeeClick() }
-                )
-            )
-        )
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
         employeesList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = EmployeesRes.strings.employees_empty.desc()
         )
+    }
+
+    private companion object {
+        const val EDIT_ACCESS_KEY = "employee_list_edit_access"
     }
 }

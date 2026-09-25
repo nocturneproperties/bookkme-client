@@ -1,5 +1,8 @@
 package me.bookk.designsystem.uistate.schedule
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import me.bookk.designsystem.uistate.AndroidDateRangePickerState
 import me.bookk.designsystem.uistate.AndroidListState
 import me.bookk.designsystem.uistate.AndroidMultiPickerState
@@ -20,4 +23,5 @@ class AndroidScheduleState : ScheduleState {
 
     override val dayOffs: MultiPickerState<DateRangePickerPresentation> = AndroidMultiPickerState()
     override val dateRange: DateRangePickerState = AndroidDateRangePickerState()
+    override var isEditable: Boolean by mutableStateOf(true)
 }

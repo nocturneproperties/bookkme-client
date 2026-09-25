@@ -63,6 +63,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `CreateClient` | `POST /api/business/{businessId}/clients` | [Create client](clients/create-client.md) |
 | `EditClient` | `PATCH /api/business/{businessId}/clients/{id}` | [Edit client](clients/edit-client.md) |
 | `DeleteClient` | `DELETE /api/business/{businessId}/clients/{id}` | [Delete client](clients/delete-client.md) |
+| `GetClientsPermissions` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Get clients permissions](clients/get-clients-permissions.md) |
 
 ## Services
 
@@ -77,6 +78,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `DeleteServiceGroup` | `DELETE /api/business/{businessId}/service_group/{id}` | [Delete service group](services/delete-service-group.md) |
 | `CreateQuote` | `POST /api/business/{businessId}/service/quote` | [Create quote](services/create-quote.md) |
 | `GetBusinessCurrency` | local only | [Get business currency](services/get-business-currency.md) |
+| `GetServicesPermissions` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Get services permissions](services/get-services-permissions.md) |
 
 ## Employees
 
@@ -87,6 +89,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `UpdateEmployee` | `PUT /api/business/{businessId}/employee/{id}` + `PUT /api/business/{businessId}/employee/{id}/permissions` (parallel; permissions skipped for the owner) | [Update employee](employees/update-employee.md) |
 | `GetAssignableServices` | via `GetServices` | [Get assignable services](employees/get-assignable-services.md) |
 | `IsBusinessOwner` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Is business owner](employees/is-business-owner.md) |
+| `CanEditEmployees` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Can edit employees](employees/can-edit-employees.md) |
 | `GetEmployeeInvitations` | `GET /api/business/{businessId}/employee_invitation` | [Get employee invitations](employees/get-employee-invitations.md) |
 | `CreateEmployeeInvitation` | `POST /api/business/{businessId}/employee_invitation` | [Create employee invitation](employees/create-employee-invitation.md) |
 | `RevokeEmployeeInvitation` | `POST /api/business/{businessId}/employee_invitation/{id}/revoke` | [Revoke employee invitation](employees/revoke-employee-invitation.md) |
@@ -155,6 +158,9 @@ don't need them, because they redraw from the table.
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList`, `GetServices`, `GetAppointmentSettings` (parallel) |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
+| [Can edit employees](employees/can-edit-employees.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
+| [Get clients permissions](clients/get-clients-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
+| [Get services permissions](services/get-services-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Update employee](employees/update-employee.md) | `IsBusinessOwner` |
 | [Create appointment](appointments/create-appointment.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
 | [Create new passkey](settings/create-new-passkey.md) | `GetAvailablePasskeys` |

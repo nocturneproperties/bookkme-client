@@ -30,6 +30,7 @@ import me.bookk.feature.business.domain.api.entity.DayOffRange
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
+import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
 import me.bookk.feature.employees.domain.api.IsBusinessOwner
@@ -44,6 +45,7 @@ class EditEmployeeViewModel(
     private val getEmployee: GetEmployee,
     private val getAssignableServices: GetAssignableServices,
     private val isBusinessOwner: IsBusinessOwner,
+    private val canEditEmployees: CanEditEmployees,
     private val updateEmployee: UpdateEmployee,
     private val device: DeviceFacade,
     private val stateFactory: EmployeesStateFactory,
@@ -66,9 +68,11 @@ class EditEmployeeViewModel(
         appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(EditEmployeeDestinations.Back) }
         save.text = DesignSystem.strings.action_save.desc()
         save.isEnabled = false
+        save.isVisible = false
         save.onClick = weakVMClosure { it.onSaveClick() }
         services.pickerTitle = EmployeesRes.strings.employees_edit_services.desc()
         services.addItemText = EmployeesRes.strings.employees_edit_services_add.desc()
+        services.placeholder = EmployeesRes.strings.employees_edit_services_empty.desc()
         services.onItemsPicked = weakVMClosure { vm, items -> vm.onServicesPicked(items) }
         services.onItemsRemoveRequested = weakVMClosure { vm, items -> vm.onServicesRemoved(items) }
     }
@@ -101,16 +105,18 @@ class EditEmployeeViewModel(
             launchIn = DispatcherProvider.io,
             call = {
                 val employee = getEmployee(employeeId)
-                employee to isBusinessOwner(employee)
+                EmployeeAccess(employee, isBusinessOwner(employee), canEditEmployees(employee.businessId))
             },
-            onComplete = { (employee, isOwner) ->
-                renderOwnership(isOwner)
-                renderEmployee(employee)
-                refreshServices(employee.businessId)
+            onComplete = { access ->
+                renderAccess(access)
+                renderEmployee(access.employee)
+                refreshServices(access.employee.businessId)
             },
             onError = { uiState.notifications.add(it.notification()) }
         )
     }
+
+    private class EmployeeAccess(val employee: Employee, val isOwner: Boolean, val canEdit: Boolean)
 
     private fun refreshServices(businessId: Uuid) {
         launch(
@@ -120,9 +126,16 @@ class EditEmployeeViewModel(
         )
     }
 
-    private fun renderOwnership(isOwner: Boolean) {
-        uiState.isPermissionsVisible = !isOwner
-        uiState.permissionsHint = if (isOwner) EmployeesRes.strings.employees_edit_permissions_owner_hint.desc() else null
+    private fun renderAccess(access: EmployeeAccess) {
+        uiState.save.isVisible = access.canEdit
+        uiState.services.isEditable = access.canEdit
+        scheduleBinder.isEditable = access.canEdit
+        uiState.isPermissionsVisible = access.canEdit && !access.isOwner
+        uiState.permissionsHint = if (access.canEdit && access.isOwner) {
+            EmployeesRes.strings.employees_edit_permissions_owner_hint.desc()
+        } else {
+            null
+        }
     }
 
     private fun renderEmployee(employee: Employee) {

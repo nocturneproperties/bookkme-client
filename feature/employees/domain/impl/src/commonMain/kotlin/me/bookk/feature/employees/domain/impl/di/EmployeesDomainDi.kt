@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.domain.impl.di
 
+import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.CreateEmployeeInvitation
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
@@ -10,6 +11,7 @@ import me.bookk.feature.employees.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.employees.domain.api.RedeemEmployeeInvitation
 import me.bookk.feature.employees.domain.api.RevokeEmployeeInvitation
 import me.bookk.feature.employees.domain.api.UpdateEmployee
+import me.bookk.feature.employees.domain.impl.CanEditEmployeesImpl
 import me.bookk.feature.employees.domain.impl.CreateEmployeeInvitationImpl
 import me.bookk.feature.employees.domain.impl.GetAssignableServicesImpl
 import me.bookk.feature.employees.domain.impl.GetEmployeeImpl
@@ -35,4 +37,5 @@ fun employeesDomainModule() = module {
     factoryOf(::RedeemEmployeeInvitationImpl) bind RedeemEmployeeInvitation::class
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class
     factoryOf(::IsBusinessOwnerImpl) bind IsBusinessOwner::class
+    factoryOf(::CanEditEmployeesImpl) bind CanEditEmployees::class
 }

@@ -58,7 +58,7 @@ fun ScheduleSection(state: ScheduleState, modifier: Modifier = Modifier) {
                 )
             },
             itemContent = { item, onItemRemove ->
-                DayOffItem(item, onItemRemove)
+                DayOffItem(item, onItemRemove.takeIf { state.dayOffs.isEditable })
             }
         )
     }
@@ -67,7 +67,7 @@ fun ScheduleSection(state: ScheduleState, modifier: Modifier = Modifier) {
 @Composable
 private fun DayOffItem(
     item: DateRangePickerPresentation,
-    onDeleteClick: () -> Unit
+    onDeleteClick: (() -> Unit)?
 ) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
@@ -80,12 +80,14 @@ private fun DayOffItem(
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleMedium
         )
-        IconButton(onClick = { onDeleteClick() }) {
-            Icon(
-                Icons.Filled.Delete,
-                contentDescription = DesignSystem.strings.action_delete.desc().localized(),
-                tint = LocalColors.current.error
-            )
+        if (onDeleteClick != null) {
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = DesignSystem.strings.action_delete.desc().localized(),
+                    tint = LocalColors.current.error
+                )
+            }
         }
     }
 }
@@ -120,7 +122,7 @@ private fun ScheduleStrip(schedule: ScheduleState) {
             }
         }
         AnimatedVisibility(selectedState.isVisible) {
-            ScheduleDay(selectedState)
+            ScheduleDay(selectedState, schedule.isEditable)
         }
     }
 }
@@ -161,7 +163,7 @@ private fun DayOfWeekCell(
 }
 
 @Composable
-private fun ScheduleDay(state: DaySettingsState) {
+private fun ScheduleDay(state: DaySettingsState, isEditable: Boolean) {
     AppCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -204,14 +206,16 @@ private fun ScheduleDay(state: DaySettingsState) {
                     TimeRow(
                         modifier = Modifier.padding(bottom = 8.dp, start = 16.dp),
                         timeSettings = interval,
-                        onDeleteClick = { state.onDeleteInterval(interval) }
+                        onDeleteClick = { state.onDeleteInterval(interval) }.takeIf { isEditable }
                     )
                 }
             }
-            AlignStartTextButton(
-                state.addTimeButton,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (isEditable) {
+                AlignStartTextButton(
+                    state.addTimeButton,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -220,7 +224,7 @@ private fun ScheduleDay(state: DaySettingsState) {
 private fun TimeRow(
     modifier: Modifier,
     timeSettings: TimeSettingState,
-    onDeleteClick: () -> Unit
+    onDeleteClick: (() -> Unit)?
 ) {
     Row(
         modifier = modifier,
@@ -236,8 +240,10 @@ private fun TimeRow(
 
         TimePickerField(timeSettings.timeToPicker, modifier = Modifier.weight(1f))
 
-        IconButton(onClick = onDeleteClick) {
-            Icon(Icons.Filled.Close, contentDescription = null)
+        if (onDeleteClick != null) {
+            IconButton(onClick = onDeleteClick) {
+                Icon(Icons.Filled.Close, contentDescription = null)
+            }
         }
     }
 }

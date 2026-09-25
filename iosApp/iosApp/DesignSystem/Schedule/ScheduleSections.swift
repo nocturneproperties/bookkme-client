@@ -12,7 +12,7 @@ struct ScheduleSections: View {
 			ScheduleStrip(schedule: scheduleDays)
 				.listRowInsets(EdgeInsets())
 			if let expanded = scheduleDays.first(where: { $0.isVisible }) {
-				ScheduleDay(state: expanded)
+				ScheduleDay(state: expanded, isEditable: schedule.isEditable)
 					.listRowInsets(EdgeInsets())
 			}
 		}
@@ -27,7 +27,7 @@ struct ScheduleSections: View {
 					}
 				},
 				itemContent: { item, onRemove in
-					DayOffItem(item: item, onDeleteClick: onRemove)
+					DayOffItem(item: item, onDeleteClick: schedule.dayOffs.isEditable ? onRemove : nil)
 				}
 			)
 		}
@@ -36,7 +36,7 @@ struct ScheduleSections: View {
 
 private struct DayOffItem: View {
     let item: PickerPresentation
-    let onDeleteClick: () -> Void
+    let onDeleteClick: (() -> Void)?
 
     var body: some View {
 		HStack(alignment: .center, spacing: 8) {
@@ -45,11 +45,13 @@ private struct DayOffItem: View {
 			Text(item.displayName.localized())
 				.font(.headline)
 				.frame(maxWidth: .infinity, alignment: .leading)
-			Button(action: onDeleteClick) {
-				Image(systemName: "trash")
-					.foregroundStyle(AppColors.error)
+			if let onDeleteClick {
+				Button(action: onDeleteClick) {
+					Image(systemName: "trash")
+						.foregroundStyle(AppColors.error)
+				}
+				.buttonStyle(.plain)
 			}
-			.buttonStyle(.plain)
 		}
     }
 }
@@ -97,6 +99,7 @@ private struct DayOfWeekCell: View {
 
 private struct ScheduleDay: View {
     let state: any DaySettingsState
+    let isEditable: Bool
 
     var body: some View {
 		HStack(spacing: 8) {
@@ -115,22 +118,24 @@ private struct ScheduleDay: View {
 		.padding(16)
 
 		ForEach(state.intervals, id: \.id) { interval in
-			TimeRow(timeSettings: interval) {
+			TimeRow(timeSettings: interval, onDeleteClick: isEditable ? {
 				withAnimation {
 					state.onDeleteInterval(interval)
 				}
-			}
+			} : nil)
 			.padding(.horizontal, 16)
 			.padding(.bottom, 8)
 		}
 
-		TextButton(state.addTimeButton)
+		if isEditable {
+			TextButton(state.addTimeButton)
+		}
     }
 }
 
 private struct TimeRow: View {
     let timeSettings: any TimeSettingState
-    let onDeleteClick: () -> Void
+    let onDeleteClick: (() -> Void)?
 
     var body: some View {
         HStack(spacing: 0) {
@@ -142,12 +147,14 @@ private struct TimeRow: View {
                 .padding(.horizontal, 8)
             TimePickerField(state: timeSettings.timeToPicker)
 				.textFieldStyle(.onElevated)
-            Button(action: onDeleteClick) {
-                Image(systemName: "xmark")
-                    .foregroundStyle(AppColors.secondary)
+            if let onDeleteClick {
+                Button(action: onDeleteClick) {
+                    Image(systemName: "xmark")
+                        .foregroundStyle(AppColors.secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 16)
             }
-            .buttonStyle(.plain)
-            .padding(.leading, 16)
         }.background(AppColors.elevated)
     }
 }

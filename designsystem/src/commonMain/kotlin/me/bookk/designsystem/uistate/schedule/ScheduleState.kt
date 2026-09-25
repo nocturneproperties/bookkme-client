@@ -22,6 +22,7 @@ interface ScheduleState {
 
     val dayOffs: MultiPickerState<DateRangePickerPresentation>
     val dateRange: DateRangePickerState
+    var isEditable: Boolean
 }
 
 interface DaySettingsState : ViewState {

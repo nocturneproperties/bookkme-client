@@ -16,12 +16,15 @@ import library.device.api.DeviceFacade
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.feature.clients.domain.api.GetClient
+import me.bookk.feature.clients.domain.api.GetClientsPermissions
+import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
 import me.bookk.feature.clients.domain.api.entity.ClientEvent
 import me.bookk.feature.clients.domain.api.entity.clientEvents
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
@@ -30,6 +33,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 class ClientDetailsViewModelTest {
@@ -46,9 +50,12 @@ class ClientDetailsViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture {
+    private class Fixture(canEdit: Boolean = true) {
         val id = Uuid.random()
         val getClient = mock<GetClient>()
+        val getClientsPermissions = mock<GetClientsPermissions> {
+            everySuspend { invoke(any()) } returns ClientsPermissions(canEdit = canEdit, canDelete = false)
+        }
         val device = mock<DeviceFacade> {
             every { dial(any()) } returns Unit
             every { mail(any()) } returns Unit
@@ -58,6 +65,7 @@ class ClientDetailsViewModelTest {
         fun sut() = ClientDetailsViewModel(
             id = id,
             getClient = getClient,
+            getClientsPermissions = getClientsPermissions,
             device = device,
             stateFactory = FakeClientsStateFactory(),
             vmArgs = VmArgs(errorMapper)
@@ -166,6 +174,45 @@ class ClientDetailsViewModelTest {
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    @Test
+    fun `shows the edit action for a user who can edit clients`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = true)
+        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(1, sut.uiState.appBar.actions.items.size)
+    }
+
+    @Test
+    fun `hides the edit action for a user who cannot edit clients`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = false)
+        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `hides the edit action while the client is loading`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getClient(any()) } throws TestException()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
     }
 
     @Test

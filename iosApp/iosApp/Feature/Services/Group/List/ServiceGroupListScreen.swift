@@ -18,14 +18,18 @@ struct ServiceGroupListScreen: View {
 				.transition(.opacity)
 				.animation(.easeInOut, value: listState.items.count)
 				.swipeActions(edge: .trailing, allowsFullSwipe: false) {
-					Button(DesignSystem.strings().action_delete.desc().localized()) {
-						group.onDeleteClick()
+					if let onDeleteClick = group.onDeleteClick {
+						Button(DesignSystem.strings().action_delete.desc().localized()) {
+							onDeleteClick()
+						}
+						.tint(.red)
 					}
-					.tint(.red)
 				}
 				.contextMenu {
-					Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
-						group.onDeleteClick()
+					if let onDeleteClick = group.onDeleteClick {
+						Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
+							onDeleteClick()
+						}
 					}
 				}
 				.id(group.id)

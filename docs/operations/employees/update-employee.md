@@ -4,12 +4,14 @@
 
 `UpdateEmployee(employee)` → `PUT /api/business/{businessId}/employee/{id}` **and**
 `PUT /api/business/{businessId}/employee/{id}/permissions`, sent concurrently (the permissions request is skipped
-for the business owner) · called from `EditEmployeeViewModel`
+when the edited employee is the business owner or the current user is not) · called from `EditEmployeeViewModel`
 
-It first asks [Is business owner](is-business-owner.md). The backend rejects every permissions request for the
-owner with `BUSINESS_OWNER_PERMISSIONS_IMMUTABLE` (200030), because the owner always has full access. So for
-the owner only the profile request is sent, and its response, including the unchanged permissions, is saved and
-returned.
+It first asks [Is business owner](is-business-owner.md) twice. Only the business owner may change permission
+levels, so when the current user is not the owner (`IsBusinessOwner(businessId)` is `false`) the permissions
+request is not sent. The backend also rejects every permissions request for the owner's own record with
+`BUSINESS_OWNER_PERMISSIONS_IMMUTABLE` (200030), because the owner always has full access, so it is skipped when
+`IsBusinessOwner(employee.userId, businessId)` is `true` as well. In both cases only the profile request is sent,
+and its response, including the unchanged permissions, is saved and returned.
 
 The profile, services and schedule go in an `EmployeeUpdateModel`. The permissions go in an
 `EmployeePermissionsRequest`, which has one optional `ResourcePermission` field per resource (`business`,
@@ -25,7 +27,9 @@ below. The backend may already have applied the request that finished first. The
 
 ```mermaid
 flowchart TD
-    Start([invoke employee]) --> Owner{IsBusinessOwner employee}
+    Start([invoke employee]) --> Cur{IsBusinessOwner businessId<br/>current user is owner}
+    Cur -- no --> NetO
+    Cur -- yes --> Owner{IsBusinessOwner employee.userId, businessId}
     Owner -- yes --> NetO[EmployeeDataSource.updateEmployee<br/>PUT /api/business/businessId/employee/id<br/>body EmployeeUpdateModel]
     NetO -- 2xx Employee --> Save
     NetO -- business error --> Code

@@ -50,7 +50,8 @@ class UpdateEmployeeImplTest {
     private class Fixture {
         val dataSource = mock<EmployeeDataSource>()
         val isBusinessOwner = mock<IsBusinessOwner> {
-            everySuspend { invoke(any()) } returns false
+            everySuspend { invoke(any(), any()) } returns false
+            everySuspend { invoke(any()) } returns true
         }
         val sut = UpdateEmployeeImpl(dataSource, isBusinessOwner)
 
@@ -88,7 +89,7 @@ class UpdateEmployeeImplTest {
         given()
         val fixture = Fixture()
         val owner = stubEmployee()
-        everySuspend { fixture.isBusinessOwner(owner) } returns true
+        everySuspend { fixture.isBusinessOwner(owner.userId, owner.businessId) } returns true
         everySuspend { fixture.dataSource.updateEmployee(owner) } returns owner
         everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
 
@@ -100,12 +101,28 @@ class UpdateEmployeeImplTest {
     }
 
     @Test
+    fun `does not send the permissions request when the current user is not the business owner`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val employee = stubEmployee().withEmployeesAccess()
+        everySuspend { fixture.isBusinessOwner(employee.businessId) } returns false
+        everySuspend { fixture.dataSource.updateEmployee(employee) } returns employee
+        everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
+
+        whenn()
+        fixture.sut(employee)
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.dataSource.updateEmployeePermissions(any(), any(), any()) }
+    }
+
+    @Test
     fun `saves and returns the profile response for the business owner`() = runUnitTest {
         given()
         val fixture = Fixture()
         val owner = stubEmployee()
         val profileResponse = owner.copy(name = "Updated")
-        everySuspend { fixture.isBusinessOwner(owner) } returns true
+        everySuspend { fixture.isBusinessOwner(owner.userId, owner.businessId) } returns true
         everySuspend { fixture.dataSource.updateEmployee(owner) } returns profileResponse
         everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
 

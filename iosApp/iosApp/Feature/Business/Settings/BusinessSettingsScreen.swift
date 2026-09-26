@@ -22,8 +22,10 @@ struct BusinessSettingsScreen: View {
 			BusinessSettingsContent(viewModel: viewModel)
 		}
 		.toolbar {
-			TextButton(viewModel.uiState.save) {
-				viewModel.onSaveClick()
+			if viewModel.uiState.save.isVisible {
+				TextButton(viewModel.uiState.save) {
+					viewModel.onSaveClick()
+				}
 			}
 		}
 		.listSectionSpacing(.compact)
@@ -74,10 +76,6 @@ struct BusinessSettingsContent: View {
 			StateTextField(state.location) { text in
 			}
 			.textFieldStyle(.inList)
-			
-			TextButton(state.pickLocation, textAlignment: .leading) {
-				viewModel.onPickLocationClicked()
-			}
 		} header : {
 			Text(BusinessRes.strings().business_settings_location_title.desc().localized())
 		} footer : {

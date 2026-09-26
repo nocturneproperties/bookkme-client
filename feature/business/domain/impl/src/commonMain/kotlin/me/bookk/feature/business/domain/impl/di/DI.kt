@@ -1,5 +1,6 @@
 package me.bookk.feature.business.domain.impl.di
 
+import me.bookk.feature.business.domain.api.business.CanEditBusiness
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
 import me.bookk.feature.business.domain.api.business.JoinBusiness
@@ -12,6 +13,7 @@ import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.impl.business.CanEditBusinessImpl
 import me.bookk.feature.business.domain.impl.business.CreateBusinessImpl
 import me.bookk.feature.business.domain.impl.business.GetAvailableDashboardFeaturesImpl
 import me.bookk.feature.business.domain.impl.business.JoinBusinessImpl
@@ -41,4 +43,5 @@ fun businessDomainModule() = module {
     factoryOf(::UpdateBusinessImpl) bind UpdateBusiness::class
     factoryOf(::EnableAppointmentsPluginImpl) bind EnableAppointmentsPlugin::class
     factoryOf(::IsAppointmentsPluginEnabledImpl) bind IsAppointmentsPluginEnabled::class
+    factoryOf(::CanEditBusinessImpl) bind CanEditBusiness::class
 }

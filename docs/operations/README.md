@@ -49,6 +49,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `JoinBusiness` | via `RedeemEmployeeInvitation` | [Join business](business/join-business.md) |
 | `EnableAppointmentsPlugin` | `POST /api/appointments/enabled/{businessId}` | [Enable appointments plugin](business/enable-appointments-plugin.md) |
 | `IsAppointmentsPluginEnabled` | `GET /api/appointments/enabled/{businessId}` | [Is appointments plugin enabled](business/is-appointments-plugin-enabled.md) |
+| `CanEditBusiness` | local only (`business` table) | [Can edit business](business/can-edit-business.md) |
 | `GetAvailableDashboardFeatures` | local only | [Get available dashboard features](business/get-available-dashboard-features.md) |
 | `ObserveDashboardSetupStatus` | local only | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) |
 | `ObserveDashboardBusinessChanges`, `ObserveDashboardBusinessIdChanges`, `ObserveCurrentBusinessId` (×4) | local only | [Observe dashboard business](business/observe-dashboard-business-changes.md) |
@@ -88,7 +89,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `GetEmployee` | local only (`employee` tables) | [Get employee](employees/get-employee.md) |
 | `UpdateEmployee` | `PUT /api/business/{businessId}/employee/{id}` + `PUT /api/business/{businessId}/employee/{id}/permissions` (parallel; permissions skipped for the owner) | [Update employee](employees/update-employee.md) |
 | `GetAssignableServices` | via `GetServices` | [Get assignable services](employees/get-assignable-services.md) |
-| `IsBusinessOwner` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Is business owner](employees/is-business-owner.md) |
+| `IsBusinessOwner` | local only (`business` table via `ObserveUserBusinessesChanges`; current-user overload also `UserProfileCRUD`) | [Is business owner](employees/is-business-owner.md) |
 | `CanEditEmployees` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Can edit employees](employees/can-edit-employees.md) |
 | `GetEmployeeInvitations` | `GET /api/business/{businessId}/employee_invitation` | [Get employee invitations](employees/get-employee-invitations.md) |
 | `CreateEmployeeInvitation` | `POST /api/business/{businessId}/employee_invitation` | [Create employee invitation](employees/create-employee-invitation.md) |
@@ -162,7 +163,7 @@ don't need them, because they redraw from the table.
 | [Get clients permissions](clients/get-clients-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Get services permissions](services/get-services-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Update employee](employees/update-employee.md) | `IsBusinessOwner` |
-| [Create appointment](appointments/create-appointment.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
+| [Create appointment](appointments/create-appointment.md), [Is business owner](employees/is-business-owner.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
 | [Create new passkey](settings/create-new-passkey.md) | `GetAvailablePasskeys` |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
 

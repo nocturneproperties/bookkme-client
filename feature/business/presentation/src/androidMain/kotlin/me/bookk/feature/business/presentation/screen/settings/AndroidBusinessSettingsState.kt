@@ -69,9 +69,6 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
         text = initData.saveButtonText,
         isEnabled = false
     )
-    override val pickLocation: ButtonState = AndroidButtonState(
-        text = initData.pickLocationText
-    )
 
     override val schedule: ScheduleState = AndroidScheduleState()
 

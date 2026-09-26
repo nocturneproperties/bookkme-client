@@ -80,9 +80,10 @@ internal fun EditEmployeeScreen(state: EditEmployeeState) {
             if (state.isPermissionsVisible || state.permissionsHint != null) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Header(EmployeesRes.strings.employees_edit_permissions.desc().localized())
-                    state.permissionsHint?.let { PermissionsHint(it.localized()) }
                     if (state.isPermissionsVisible) {
                         state.permissions.items.forEach { ResourcePermissionCard(it) }
+                    } else {
+                        state.permissionsHint?.let { PermissionsHint(it.localized()) }
                     }
                 }
             }

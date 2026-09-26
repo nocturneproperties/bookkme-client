@@ -25,7 +25,6 @@ interface BusinessSettingsState {
 
     val schedule: ScheduleState
 
-    val pickLocation: ButtonState
     val testLocation: ButtonState
     val save: ButtonState
 
@@ -48,7 +47,6 @@ interface BusinessSettingsState {
         val telegramHint: StringDesc,
         val instaIcon: ImageResource,
         val viberIcon: ImageResource,
-        val telegramIcon: ImageResource,
-        val pickLocationText: StringDesc
+        val telegramIcon: ImageResource
     )
 }

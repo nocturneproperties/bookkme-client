@@ -20,6 +20,7 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertEmpty
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
+import me.bookk.feature.business.domain.api.business.CanEditBusiness
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.business.presentation.FakeBusinessStateFactory
@@ -53,12 +54,16 @@ class BusinessPluginsViewModelTest {
             everySuspend { refresh(any()) } returns false
         }
         val enableAppointmentsPlugin = mock<EnableAppointmentsPlugin>()
+        val canEditBusiness = mock<CanEditBusiness> {
+            everySuspend { invoke(any()) } returns true
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = BusinessPluginsViewModel(
             businessId = businessId,
             isAppointmentsPluginEnabled = isAppointmentsPluginEnabled,
             enableAppointmentsPlugin = enableAppointmentsPlugin,
+            canEditBusiness = canEditBusiness,
             stateFactory = FakeBusinessStateFactory(),
             vmArgs = VmArgs(errorMapper)
         )
@@ -133,6 +138,46 @@ class BusinessPluginsViewModelTest {
         assertFalse(sut.uiState.appointmentPlugin.isEnabled)
         fixture.errorMapper.assertMappedSingle(TestException::class)
         sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+    }
+
+    @Test
+    fun `allows enabling the plugin when the user can edit the business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        verifySuspend { fixture.canEditBusiness(fixture.businessId) }
+        assertTrue(sut.uiState.appointmentPlugin.canEnable)
+    }
+
+    @Test
+    fun `hides enabling the plugin when the user cannot edit the business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.canEditBusiness(any()) } returns false
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.appointmentPlugin.canEnable)
+    }
+
+    @Test
+    fun `hides enabling the plugin when the permission check fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.canEditBusiness(any()) } throws TestException()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.appointmentPlugin.canEnable)
+        fixture.errorMapper.assertMappedSingle(TestException::class)
     }
 
     @Test

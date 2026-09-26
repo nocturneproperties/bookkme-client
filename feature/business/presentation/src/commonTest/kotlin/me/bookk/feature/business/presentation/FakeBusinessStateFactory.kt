@@ -68,6 +68,7 @@ internal class FakeBusinessPluginState : BusinessPluginState {
     override var title: StringDesc = "".desc()
     override var subtitle: StringDesc = "".desc()
     override var isEnabled: Boolean = false
+    override var canEnable: Boolean = false
     override var isExpanded: Boolean = false
     override val youCan = FakeListState<OptionalInfoLine>()
     override val clientCan = FakeListState<OptionalInfoLine>()
@@ -88,7 +89,6 @@ internal class FakeBusinessSettingsState : BusinessSettingsState {
     override val telegram = FakeTextFieldState()
     override val viber = FakeTextFieldState()
     override val schedule = FakeScheduleState()
-    override val pickLocation = FakeButtonState()
     override val testLocation = FakeButtonState()
     override val save = FakeButtonState()
     override val notifications = FakeNotificationState()

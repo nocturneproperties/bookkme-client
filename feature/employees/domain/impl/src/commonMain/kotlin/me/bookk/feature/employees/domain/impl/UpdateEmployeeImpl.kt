@@ -16,10 +16,10 @@ internal class UpdateEmployeeImpl(
 ) : UpdateEmployee {
     override suspend fun invoke(employee: Employee): Employee {
         return runCatching {
-            if (isBusinessOwner(employee)) {
-                dataSource.updateEmployee(employee)
-            } else {
+            if (canUpdatePermissions(employee)) {
                 sendUpdates(employee)
+            } else {
+                dataSource.updateEmployee(employee)
             }
         }.onBusinessError { error ->
             when (error.errorCode) {
@@ -31,6 +31,10 @@ internal class UpdateEmployeeImpl(
         }.getOrThrow().also {
             dataSource.saveEmployeesInDb(listOf(it))
         }
+    }
+
+    private suspend fun canUpdatePermissions(employee: Employee): Boolean {
+        return isBusinessOwner(employee.businessId) && !isBusinessOwner(employee.userId, employee.businessId)
     }
 
     private suspend fun sendUpdates(employee: Employee) = coroutineScope {

@@ -19,7 +19,8 @@ internal fun stubBusiness(
     id: Uuid = Uuid.random(),
     name: String = "Test Business",
     schedule: WorkingSchedule = stubWorkingSchedule(),
-    socials: Map<Business.SocialKind, Business.Social> = emptyMap()
+    socials: Map<Business.SocialKind, Business.Social> = emptyMap(),
+    permissions: BusinessPermissions = stubPermissions()
 ) = Business(
     id = id,
     name = name,
@@ -30,11 +31,13 @@ internal fun stubBusiness(
     timeZone = TimeZone.UTC,
     socials = socials,
     schedule = schedule,
-    permissions = BusinessPermissions(
-        business = ResourcePermission(),
-        employees = ResourcePermission(),
-        clients = ResourcePermission(),
-        services = ResourcePermission(),
-        appointments = ResourcePermission()
-    )
+    permissions = permissions
+)
+
+internal fun stubPermissions(business: ResourcePermission = ResourcePermission()) = BusinessPermissions(
+    business = business,
+    employees = ResourcePermission(),
+    clients = ResourcePermission(),
+    services = ResourcePermission(),
+    appointments = ResourcePermission()
 )

@@ -105,7 +105,12 @@ class EditEmployeeViewModel(
             launchIn = DispatcherProvider.io,
             call = {
                 val employee = getEmployee(employeeId)
-                EmployeeAccess(employee, isBusinessOwner(employee), canEditEmployees(employee.businessId))
+                EmployeeAccess(
+                    employee = employee,
+                    isOwner = isBusinessOwner(employee.userId, employee.businessId),
+                    canEdit = canEditEmployees(employee.businessId),
+                    canManagePermissions = isBusinessOwner(employee.businessId)
+                )
             },
             onComplete = { access ->
                 renderAccess(access)
@@ -116,7 +121,12 @@ class EditEmployeeViewModel(
         )
     }
 
-    private class EmployeeAccess(val employee: Employee, val isOwner: Boolean, val canEdit: Boolean)
+    private class EmployeeAccess(
+        val employee: Employee,
+        val isOwner: Boolean,
+        val canEdit: Boolean,
+        val canManagePermissions: Boolean
+    )
 
     private fun refreshServices(businessId: Uuid) {
         launch(
@@ -130,11 +140,12 @@ class EditEmployeeViewModel(
         uiState.save.isVisible = access.canEdit
         uiState.services.isEditable = access.canEdit
         scheduleBinder.isEditable = access.canEdit
-        uiState.isPermissionsVisible = access.canEdit && !access.isOwner
-        uiState.permissionsHint = if (access.canEdit && access.isOwner) {
-            EmployeesRes.strings.employees_edit_permissions_owner_hint.desc()
-        } else {
+        val isPermissionsEditable = access.canManagePermissions && !access.isOwner
+        uiState.isPermissionsVisible = isPermissionsEditable
+        uiState.permissionsHint = if (isPermissionsEditable) {
             null
+        } else {
+            EmployeesRes.strings.employees_edit_permissions_owner_hint.desc()
         }
     }
 

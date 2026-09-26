@@ -52,8 +52,13 @@ class BusinessSettingsViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
-    val uiState: BusinessSettingsState = stateFactory.createBusinessSettingsState(createInitData()).setup()
-    private val scheduleBinder = ScheduleBinder(uiState.schedule, dateLocalizer, weakVMClosure { it.invalidateSaveState() })
+    val uiState: BusinessSettingsState =
+        stateFactory.createBusinessSettingsState(createInitData()).setup()
+    private val scheduleBinder = ScheduleBinder(
+        state = uiState.schedule,
+        dateLocalizer = dateLocalizer,
+        onChanged = weakVMClosure { it.invalidateSaveState() }
+    )
     private var referenceBusiness: Business by Delegates.notNull()
     private var businessLocation: Business.Location? = null
 
@@ -62,6 +67,7 @@ class BusinessSettingsViewModel(
     }
 
     private fun BusinessSettingsState.setup() = apply {
+        save.isVisible = false
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(BusinessSettingsDestination.Back)
         }
@@ -88,7 +94,8 @@ class BusinessSettingsViewModel(
         uiState.currency.selectedItem = uiState.currency.options.first { currencyUI ->
             currencyUI.domainValue == Money.SupportedCurrency.valueOf(business.currency.code())
         }.also { uiState.currency.textField.updateText(it.displayName) }
-        uiState.currency.textField.placeholder = BusinessRes.strings.business_settings_currency_label.desc()
+        uiState.currency.textField.placeholder =
+            BusinessRes.strings.business_settings_currency_label.desc()
         uiState.instagram.text = business.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
         uiState.telegram.text = business.socials[SocialKind.TELEGRAM]?.value.orEmpty()
         uiState.viber.text = business.socials[SocialKind.VIBER]?.value.orEmpty()
@@ -102,6 +109,21 @@ class BusinessSettingsViewModel(
         uiState.name.isValid = true
         uiState.phone.isValid = true
         renderSchedule(business.schedule)
+        renderEditable(business.permissions.business.update)
+    }
+
+    private fun renderEditable(isEditable: Boolean) = with(uiState) {
+        name.enabled = isEditable
+        description.enabled = isEditable
+        address.enabled = isEditable
+        phone.enabled = isEditable
+        instagram.enabled = isEditable
+        telegram.enabled = isEditable
+        viber.enabled = isEditable
+        currency.textField.enabled = isEditable
+        photo.isEnabled = isEditable
+        save.isVisible = isEditable
+        scheduleBinder.isEditable = isEditable
     }
 
     fun onSaveClick() {
@@ -137,12 +159,14 @@ class BusinessSettingsViewModel(
                                 BusinessRes.strings.business_settings_active_day_without_work_hours_error.desc()
                             )
                         )
+
                     is UpdateBusiness.Error.InvalidDayOffRange ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings.business_settings_invalid_day_off_range_error.desc()
                             )
                         )
+
                     else -> uiState.notifications.add(errorMapper.mapToNotification(it))
                 }
             },
@@ -163,8 +187,10 @@ class BusinessSettingsViewModel(
         val formatted = name.toOneLine()
         uiState.name.text = formatted
         uiState.name.isValid = formatted.isNotBlank()
-        uiState.name.validationState = if (!uiState.name.isValid) ValidationState.ERROR else ValidationState.DEFAULT
-        uiState.name.supportingTextRes = DesignSystem.strings.error_empty.desc().takeIf { !uiState.name.isValid }
+        uiState.name.validationState =
+            if (!uiState.name.isValid) ValidationState.ERROR else ValidationState.DEFAULT
+        uiState.name.supportingTextRes =
+            DesignSystem.strings.error_empty.desc().takeIf { !uiState.name.isValid }
         invalidateSaveState()
     }
 
@@ -210,10 +236,6 @@ class BusinessSettingsViewModel(
         invalidateSaveState()
     }
 
-    fun onPickLocationClicked() {
-
-    }
-
     fun onAddPhotoClicked() {
 
     }
@@ -228,7 +250,15 @@ class BusinessSettingsViewModel(
 
     private fun WorkingSchedule.toWeekSchedule(): WeekSchedule {
         return WeekSchedule(
-            days = listOf(monday, tuesday, wednesday, thursday, friday, saturday, sunday).map { day ->
+            days = listOf(
+                monday,
+                tuesday,
+                wednesday,
+                thursday,
+                friday,
+                saturday,
+                sunday
+            ).map { day ->
                 WeekdaySchedule(
                     dayOfWeek = day.dayOfWeek,
                     isActive = day.isActive,
@@ -297,8 +327,7 @@ class BusinessSettingsViewModel(
             telegramHint = BusinessRes.strings.business_settings_telegram_hint.desc(),
             telegramIcon = DesignSystem.images.telegram,
             viberIcon = DesignSystem.images.viber,
-            instaIcon = DesignSystem.images.instagram,
-            pickLocationText = BusinessRes.strings.business_settings_location_pick.desc()
+            instaIcon = DesignSystem.images.instagram
         )
     }
 }

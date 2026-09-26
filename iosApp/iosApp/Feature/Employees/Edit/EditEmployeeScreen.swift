@@ -32,18 +32,16 @@ struct EditEmployeeScreen: View {
 
 			ScheduleSections(state: state.schedule)
 
-			if let hint = state.permissionsHint {
+			if state.isPermissionsVisible {
+				ForEach(state.permissions.items(ResourcePermissionState.self), id: \.id) { permission in
+					ResourcePermissionSection(state: permission)
+				}
+			} else if let hint = state.permissionsHint {
 				Section {
 				} header: {
 					Text(EmployeesRes.strings().employees_edit_permissions.desc().localized())
 				} footer: {
 					Text(hint.localized())
-				}
-			}
-
-			if state.isPermissionsVisible {
-				ForEach(state.permissions.items(ResourcePermissionState.self), id: \.id) { permission in
-					ResourcePermissionSection(state: permission)
 				}
 			}
 		}

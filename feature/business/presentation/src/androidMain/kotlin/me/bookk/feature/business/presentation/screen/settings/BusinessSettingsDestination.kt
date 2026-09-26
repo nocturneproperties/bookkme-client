@@ -27,7 +27,6 @@ internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
             onTelegramChanged = viewModel::onTelegramChanged,
             onCurrencySelected = viewModel::onCurrencySelected,
             onInstagramChanged = viewModel::onInstagramChanged,
-            onPickLocationClick = viewModel::onPickLocationClicked,
             onTestLocationClick = viewModel::onTestLocationClick,
             onPhoneChanged = viewModel::onPhoneChanged,
             onBackClick = { backPressOwner?.onBackPressedDispatcher?.onBackPressed() }

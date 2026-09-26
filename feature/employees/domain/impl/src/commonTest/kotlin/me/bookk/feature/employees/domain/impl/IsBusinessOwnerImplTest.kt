@@ -2,6 +2,7 @@ package me.bookk.feature.employees.domain.impl
 
 import dev.mokkery.answering.returns
 import dev.mokkery.every
+import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +14,8 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.authorization.domain.entity.UserProfile
 import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.entity.Business
 import kotlin.test.AfterTest
@@ -38,8 +41,17 @@ class IsBusinessOwnerImplTest {
     }
 
     private class Fixture {
+        val currentUserId = Uuid.random()
         val observeUserBusinessesChanges = mock<ObserveUserBusinessesChanges>()
-        val sut = IsBusinessOwnerImpl(observeUserBusinessesChanges)
+        val userProfileCRUD = mock<UserProfileCRUD> {
+            everySuspend { get() } returns UserProfile(
+                id = currentUserId,
+                firstName = "Jane",
+                lastName = "Doe",
+                email = "jane@bookk.me"
+            )
+        }
+        val sut = IsBusinessOwnerImpl(observeUserBusinessesChanges, userProfileCRUD)
 
         fun stubBusinesses(vararg businesses: Business) {
             every { observeUserBusinessesChanges.invoke() } returns flowOf(businesses.toList())
@@ -47,59 +59,60 @@ class IsBusinessOwnerImplTest {
     }
 
     @Test
-    fun `returns true when the employee user owns the employee business`() = runUnitTest {
+    fun `returns true when the user owns the business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val employee = stubEmployee()
-        fixture.stubBusinesses(stubBusiness(id = employee.businessId, ownerId = employee.userId))
+        val userId = Uuid.random()
+        val businessId = Uuid.random()
+        fixture.stubBusinesses(stubBusiness(id = businessId, ownerId = userId))
 
         whenn()
-        val result = fixture.sut(employee)
+        val result = fixture.sut(userId, businessId)
 
         then()
         assertTrue(result)
     }
 
     @Test
-    fun `returns false when another user owns the employee business`() = runUnitTest {
+    fun `returns false when another user owns the business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val employee = stubEmployee()
-        fixture.stubBusinesses(stubBusiness(id = employee.businessId, ownerId = Uuid.random()))
+        val businessId = Uuid.random()
+        fixture.stubBusinesses(stubBusiness(id = businessId, ownerId = Uuid.random()))
 
         whenn()
-        val result = fixture.sut(employee)
+        val result = fixture.sut(Uuid.random(), businessId)
 
         then()
         assertFalse(result)
     }
 
     @Test
-    fun `returns false when the employee user owns a different business`() = runUnitTest {
+    fun `returns false when the user owns a different business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val employee = stubEmployee()
+        val userId = Uuid.random()
+        val businessId = Uuid.random()
         fixture.stubBusinesses(
-            stubBusiness(id = Uuid.random(), ownerId = employee.userId),
-            stubBusiness(id = employee.businessId, ownerId = Uuid.random())
+            stubBusiness(id = Uuid.random(), ownerId = userId),
+            stubBusiness(id = businessId, ownerId = Uuid.random())
         )
 
         whenn()
-        val result = fixture.sut(employee)
+        val result = fixture.sut(userId, businessId)
 
         then()
         assertFalse(result)
     }
 
     @Test
-    fun `returns false when the employee business is not cached`() = runUnitTest {
+    fun `returns false when the business is not cached`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val employee = stubEmployee()
         fixture.stubBusinesses()
 
         whenn()
-        val result = fixture.sut(employee)
+        val result = fixture.sut(Uuid.random(), Uuid.random())
 
         then()
         assertFalse(result)
@@ -109,11 +122,52 @@ class IsBusinessOwnerImplTest {
     fun `returns false when the cached business has no owner yet`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val employee = stubEmployee()
-        fixture.stubBusinesses(stubBusiness(id = employee.businessId, ownerId = null))
+        val businessId = Uuid.random()
+        fixture.stubBusinesses(stubBusiness(id = businessId, ownerId = null))
 
         whenn()
-        val result = fixture.sut(employee)
+        val result = fixture.sut(Uuid.random(), businessId)
+
+        then()
+        assertFalse(result)
+    }
+
+    @Test
+    fun `returns true when the current user owns the business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        fixture.stubBusinesses(stubBusiness(id = businessId, ownerId = fixture.currentUserId))
+
+        whenn()
+        val result = fixture.sut(businessId)
+
+        then()
+        assertTrue(result)
+    }
+
+    @Test
+    fun `returns false when another user owns the current user business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        fixture.stubBusinesses(stubBusiness(id = businessId, ownerId = Uuid.random()))
+
+        whenn()
+        val result = fixture.sut(businessId)
+
+        then()
+        assertFalse(result)
+    }
+
+    @Test
+    fun `returns false for the current user when the business is not cached`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubBusinesses()
+
+        whenn()
+        val result = fixture.sut(Uuid.random())
 
         then()
         assertFalse(result)

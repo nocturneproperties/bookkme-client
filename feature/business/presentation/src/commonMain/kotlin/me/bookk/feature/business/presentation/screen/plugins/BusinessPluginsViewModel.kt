@@ -15,6 +15,7 @@ import me.bookk.designsystem.uistate.simple.OptionalInfoLine
 import me.bookk.designsystem.uistate.simple.optionalLine
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.feature.business.domain.api.business.CanEditBusiness
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.business.presentation.BusinessStateFactory
@@ -26,6 +27,7 @@ class BusinessPluginsViewModel(
     @InjectedParam private val businessId: Uuid,
     private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
     private val enableAppointmentsPlugin: EnableAppointmentsPlugin,
+    private val canEditBusiness: CanEditBusiness,
     stateFactory: BusinessStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -35,6 +37,7 @@ class BusinessPluginsViewModel(
     init {
         observePluginState()
         loadPluginState()
+        loadEditPermission()
     }
 
     private fun observePluginState() {
@@ -53,6 +56,15 @@ class BusinessPluginsViewModel(
             call = { isAppointmentsPluginEnabled.refresh(businessId) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.appointmentPlugin.enable.stopLoading() }
+        )
+    }
+
+    private fun loadEditPermission() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { canEditBusiness(businessId) },
+            onComplete = { uiState.appointmentPlugin.canEnable = it },
+            onError = { uiState.notifications.add(it.notification()) }
         )
     }
 

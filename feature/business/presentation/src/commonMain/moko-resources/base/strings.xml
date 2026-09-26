@@ -41,7 +41,7 @@
     <string name="business_settings_description_title">Description</string>
     <string name="business_settings_description_hint">Add a short description customers will see</string>
     <string name="business_settings_location_title">Location</string>
-    <string name="business_settings_location_hint">Business location</string>
+    <string name="business_settings_location_hint">22.2808283,114.1556772</string>
     <string name="business_settings_location_supporting">This location helps to find your location on maps app</string>
     <string name="business_settings_address_title">Address</string>
     <string name="business_settings_address_hint">No address set</string>
@@ -53,7 +53,6 @@
     <string name="business_settings_viber_hint">Viber number</string>
     <string name="business_settings_telegram_hint">Telegram tag</string>
     <string name="business_settings_location_test">Preview</string>
-    <string name="business_settings_location_pick">Pick on map</string>
     <string name="business_settings_updated">Settings updated</string>
 
     <string name="business_clients_title">Clients</string>

@@ -65,7 +65,8 @@ class EditEmployeeViewModelTest {
     private class Fixture(
         val employee: Employee = stubEmployee(),
         isOwner: Boolean = false,
-        canEdit: Boolean = true
+        canEdit: Boolean = true,
+        isCurrentUserOwner: Boolean = true
     ) {
         val services = MutableStateFlow<List<Service>>(emptyList())
         val getEmployee = mock<GetEmployee> {
@@ -76,7 +77,8 @@ class EditEmployeeViewModelTest {
             everySuspend { refresh(any()) } returns emptyList()
         }
         val isBusinessOwner = mock<IsBusinessOwner> {
-            everySuspend { invoke(any()) } returns isOwner
+            everySuspend { invoke(employee.userId, employee.businessId) } returns isOwner
+            everySuspend { invoke(employee.businessId) } returns isCurrentUserOwner
         }
         val canEditEmployees = mock<CanEditEmployees> {
             everySuspend { invoke(employee.businessId) } returns canEdit
@@ -232,29 +234,42 @@ class EditEmployeeViewModelTest {
     }
 
     @Test
-    fun `hides the permissions section for a user who cannot edit employees`() = runUnitTest {
+    fun `shows only the hint to a non-owner who can edit employees`() = runUnitTest {
         given()
-        val fixture = Fixture(canEdit = false)
+        val fixture = Fixture(canEdit = true, isCurrentUserOwner = false)
 
         whenn()
         val sut = fixture.sut()
 
         then()
         assertFalse(sut.uiState.isPermissionsVisible)
-        assertNull(sut.uiState.permissionsHint)
+        assertEquals(EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(), sut.uiState.permissionsHint)
     }
 
     @Test
-    fun `hides the owner hint for a user who cannot edit employees`() = runUnitTest {
+    fun `shows only the hint to a non-owner who cannot edit employees`() = runUnitTest {
         given()
-        val fixture = Fixture(isOwner = true, canEdit = false)
+        val fixture = Fixture(canEdit = false, isCurrentUserOwner = false)
 
         whenn()
         val sut = fixture.sut()
 
         then()
         assertFalse(sut.uiState.isPermissionsVisible)
-        assertNull(sut.uiState.permissionsHint)
+        assertEquals(EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(), sut.uiState.permissionsHint)
+    }
+
+    @Test
+    fun `shows only the hint to a non-owner viewing the business owner`() = runUnitTest {
+        given()
+        val fixture = Fixture(isOwner = true, isCurrentUserOwner = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.isPermissionsVisible)
+        assertEquals(EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(), sut.uiState.permissionsHint)
     }
 
     @Test

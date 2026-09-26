@@ -20,6 +20,7 @@ class IOSBusinessPluginState: @MainActor BusinessPluginState, NativeStateReprese
 	var subtitle: any StringDesc
 	
 	var isEnabled: Bool
+	var canEnable: Bool
 	var isExpanded: Bool
 	
 	let youCan: any ListState
@@ -33,6 +34,7 @@ class IOSBusinessPluginState: @MainActor BusinessPluginState, NativeStateReprese
 		title = RawStringDesc(string: "")
 		subtitle = RawStringDesc(string: "")
 		isEnabled = false
+		canEnable = false
 		isExpanded = false
 		youCan = IOSListState<OptionalInfoLine>()
 		clientCan = IOSListState<OptionalInfoLine>()

@@ -37,10 +37,12 @@ import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessCha
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.presentation.FakeBusinessStateFactory
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsDestination
 import me.bookk.feature.business.presentation.stubBusiness
+import me.bookk.feature.business.presentation.stubPermissions
 import me.bookk.feature.business.presentation.stubWorkingSchedule
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -458,6 +460,81 @@ class BusinessSettingsViewModelTest {
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    private fun BusinessSettingsViewModel.editableFields() = with(uiState) {
+        listOf(
+            name.enabled,
+            description.enabled,
+            address.enabled,
+            phone.enabled,
+            instagram.enabled,
+            telegram.enabled,
+            viber.enabled,
+            currency.textField.enabled,
+            photo.isEnabled,
+            schedule.isEditable
+        )
+    }
+
+    private fun editableBusiness() = stubBusiness(
+        permissions = stubPermissions(business = ResourcePermission(view = true, update = true))
+    )
+
+    private fun readOnlyBusiness() = stubBusiness(
+        permissions = stubPermissions(business = ResourcePermission(view = true))
+    )
+
+    @Test
+    fun `hides save while the business is loading`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.save.isVisible)
+    }
+
+    @Test
+    fun `shows save and unlocks every field with business edit permission`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(editableBusiness())
+
+        then()
+        assertTrue(sut.uiState.save.isVisible)
+        assertTrue(sut.editableFields().all { it })
+    }
+
+    @Test
+    fun `hides save and locks every field without business edit permission`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(readOnlyBusiness())
+
+        then()
+        assertFalse(sut.uiState.save.isVisible)
+        assertTrue(sut.editableFields().none { it })
+    }
+
+    @Test
+    fun `locks every field when business edit permission is revoked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(editableBusiness())
+
+        whenn()
+        fixture.business.value = readOnlyBusiness()
+
+        then()
+        assertFalse(sut.uiState.save.isVisible)
+        assertTrue(sut.editableFields().none { it })
     }
 
     @Test

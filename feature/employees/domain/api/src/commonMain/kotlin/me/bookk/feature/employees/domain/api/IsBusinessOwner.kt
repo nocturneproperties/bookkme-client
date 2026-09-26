@@ -1,7 +1,8 @@
 package me.bookk.feature.employees.domain.api
 
-import me.bookk.feature.employees.domain.api.entity.Employee
+import kotlin.uuid.Uuid
 
 interface IsBusinessOwner {
-    suspend operator fun invoke(employee: Employee): Boolean
+    suspend operator fun invoke(userId: Uuid, businessId: Uuid): Boolean
+    suspend operator fun invoke(businessId: Uuid): Boolean
 }

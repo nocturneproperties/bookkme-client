@@ -1,7 +1,8 @@
 package me.bookk.feature.business.domain.api.business
 
-import me.bookk.feature.business.domain.api.entity.DashboardFeature
+import kotlinx.coroutines.flow.Flow
+import me.bookk.feature.business.domain.api.entity.DashboardOverview
 
 interface GetAvailableDashboardFeatures {
-    suspend operator fun invoke(): Set<DashboardFeature>
+    operator fun invoke(): Flow<DashboardOverview?>
 }

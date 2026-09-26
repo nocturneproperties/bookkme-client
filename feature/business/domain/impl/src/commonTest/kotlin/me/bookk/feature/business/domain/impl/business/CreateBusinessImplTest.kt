@@ -17,14 +17,18 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
+import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
+import me.bookk.feature.business.domain.impl.stubBusinessPermissions
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,7 +49,8 @@ class CreateBusinessImplTest {
     private class Fixture {
         val dataSource = mock<BusinessDataSource>()
         val refreshBusinessInfo = mock<RefreshBusinessInfo>()
-        val sut = CreateBusinessImpl(dataSource, refreshBusinessInfo)
+        val switchDashboardBusiness = mock<SwitchDashboardBusiness>()
+        val sut = CreateBusinessImpl(dataSource, refreshBusinessInfo, switchDashboardBusiness)
     }
 
     private fun stubBusiness() = Business(
@@ -57,7 +62,8 @@ class CreateBusinessImplTest {
         currency = Currency("USD"),
         timeZone = TimeZone.UTC,
         socials = emptyMap(),
-        schedule = WorkingSchedule()
+        schedule = WorkingSchedule(),
+        permissions = stubBusinessPermissions()
     )
 
     @Test
@@ -68,6 +74,7 @@ class CreateBusinessImplTest {
         val expected = stubBusiness()
         everySuspend { fixture.dataSource.createBusiness(name, "UAH", any()) } returns expected
         everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
         val result = fixture.sut(name)
@@ -83,6 +90,7 @@ class CreateBusinessImplTest {
         val name = "My Salon"
         everySuspend { fixture.dataSource.createBusiness(name, "UAH", any()) } returns stubBusiness()
         everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
         fixture.sut(name)
@@ -97,11 +105,56 @@ class CreateBusinessImplTest {
         val fixture = Fixture()
         everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
         everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
         fixture.sut("My Salon")
 
         then()
         verifySuspend(VerifyMode.exactly(1)) { fixture.refreshBusinessInfo() }
+    }
+
+    @Test
+    fun `switches dashboard business to the newly created business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val expected = stubBusiness()
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns expected
+        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
+
+        whenn()
+        fixture.sut("My Salon")
+
+        then()
+        verifySuspend { fixture.switchDashboardBusiness(expected.id) }
+    }
+
+    @Test
+    fun `sends trimmed name to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
+
+        whenn()
+        fixture.sut("  My Salon  ")
+
+        then()
+        verifySuspend { fixture.dataSource.createBusiness("My Salon", "UAH", any()) }
+    }
+
+    @Test
+    fun `throws EmptyName without calling backend when name is blank`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = runCatching { fixture.sut("   ") }
+
+        then()
+        assertFailsWith<CreateBusiness.Error.EmptyName> { result.getOrThrow() }
+        verifySuspend(VerifyMode.not) { fixture.dataSource.createBusiness(any(), any(), any()) }
     }
 }

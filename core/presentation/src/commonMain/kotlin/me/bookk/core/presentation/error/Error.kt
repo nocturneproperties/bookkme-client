@@ -8,6 +8,7 @@ import kotlin.uuid.Uuid
 sealed interface PresentationNotification {
     data object Ignore : PresentationNotification
     data object Unauthorized : PresentationNotification
+    data object BusinessAccessSuspended : PresentationNotification
 
     //Message that displayed on top of everything even if you navigate between screens
     data class GlobalMessage(

@@ -14,7 +14,7 @@ data class InfoLine(
         title: StringResource,
         value: String,
         onClick: (() -> Unit)? = null,
-        id: String = value
+        id: String = title.toString() + value
     ) : this(
         id = id,
         title = title.desc(),

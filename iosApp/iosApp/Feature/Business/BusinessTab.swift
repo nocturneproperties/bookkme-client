@@ -11,6 +11,7 @@ import shared
 
 struct BusinessTab: View {
 	@StateObject var navigationStack = NavigationStackHolder()
+	let isEnabled: Bool
 
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
@@ -21,23 +22,34 @@ struct BusinessTab: View {
 				.navigationDestination(for: ClientsDestinations.CreateClient.self) { type in
 					CreateClientScreen(businessId: type.businessId)
 				}
+				.navigationDestination(for: ClientsDestinations.EditClient.self) { type in
+					EditClientScreen(id: type.id)
+				}
+				.navigationDestination(for: EmployeesDestinations.InviteEmployee.self) { type in
+					InviteEmployeeScreen(businessId: type.businessId)
+				}
+				.navigationDestination(for: EmployeesDestinations.EditEmployee.self) { type in
+					EditEmployeeScreen(id: type.id)
+				}
 				.navigationDestination(for: ServicesDestination.AddService.self) { type in
 					AddServiceScreen(businessId: type.businessId)
 				}
-				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { type in
-					ServiceGroupListScreen(businessId: type.businessId)
+				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { _ in
+					ServiceGroupListScreen()
 				}
 				.navigationDestination(for: AppointmentsDestination.Details.self) { dest in
 					AppointmentDetailsScreen(appointmentId: dest.appointmentId)
 				}
 				.navigationDestination(for: DashboardNavigationDestination.self) { type in
 					switch type {
-					case let type as DashboardNavigationDestination.Settings:
-						BusinessSettingsScreen(id: type.id)
-					case let type as DashboardNavigationDestination.Clients:
-						ClientsListScreen(businessId: type.id)
-					case let type as DashboardNavigationDestination.Services:
-						ServiceListScreen(businessId: type.id)
+					case is DashboardNavigationDestination.Settings:
+						BusinessSettingsScreen()
+					case is DashboardNavigationDestination.Clients:
+						ClientsListScreen()
+					case is DashboardNavigationDestination.Employees:
+						EmployeeListScreen()
+					case is DashboardNavigationDestination.Services:
+						ServiceListScreen()
 					case let type as DashboardNavigationDestination.Plugins:
 						BusinessPluginsScreen(businessId: type.id)
 					case let type as DashboardNavigationDestination.AppointmentSettings:
@@ -48,6 +60,10 @@ struct BusinessTab: View {
 						ProgressView()
 					}
 				}
-		}.environmentObject(navigationStack)
+		}
+		.onChange(of: isEnabled) { _, enabled in
+			if !enabled { navigationStack.resetPath() }
+		}
+		.environmentObject(navigationStack)
 	}
 }

@@ -13,6 +13,7 @@
     <string name="appointments_create_client_placeholder">Select client</string>
     <string name="appointments_create_services">Services</string>
     <string name="appointments_create_services_add">Add service</string>
+    <string name="appointments_create_services_empty">No services selected.</string>
     <string name="appointments_create_date">Date</string>
     <string name="appointments_create_date_placeholder">Pick date</string>
     <string name="appointments_create_time">Time</string>

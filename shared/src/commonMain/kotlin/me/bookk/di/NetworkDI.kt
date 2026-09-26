@@ -2,6 +2,8 @@ package me.bookk.di
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.ProxyBuilder
+import io.ktor.client.engine.ProxyConfig
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.UserAgent
@@ -18,16 +20,18 @@ import io.ktor.client.request.header
 import io.ktor.client.statement.request
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.URLProtocol
+import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.protobuf.protobuf
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.io.IOException
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.protobuf.ProtoBuf
 import library.device.api.DeviceFacade
 import me.bookk.core.Logger
 import me.bookk.core.data.HttpClientType
+import me.bookk.core.data.dataSerializer
 import me.bookk.data.mock.MockedBackend
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.RefreshToken
@@ -44,6 +48,11 @@ internal fun networkModule() = module {
     factory(named(HttpClientType.NO_AUTH)) { buildClient(installAuth = false) }
 }
 
+private fun debugProxy(url: Url): ProxyConfig = when (url.protocol) {
+    URLProtocol.SOCKS -> ProxyBuilder.socks(url.host, url.port)
+    else -> ProxyBuilder.http(url)
+}
+
 private val refreshMutex = Mutex()
 private val refreshLogger by lazy { Logger.create("Network") }
 
@@ -51,6 +60,11 @@ private val refreshLogger by lazy { Logger.create("Network") }
 private fun Scope.buildClient(installAuth: Boolean): HttpClient {
     val config: HttpClientConfig<*>.() -> Unit = {
         expectSuccess = true
+        if (BuildKonfig.DEBUG && BuildKonfig.PROXY_URL.isNotEmpty()) {
+            engine {
+                proxy = debugProxy(Url(BuildKonfig.PROXY_URL))
+            }
+        }
         install(Logging) {
             logger = LoggerImpl("KtorClient")
             level = if (BuildKonfig.DEBUG) {
@@ -60,7 +74,7 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
             }
         }
         install(ContentNegotiation) {
-            protobuf(ProtoBuf { encodeDefaults = true })
+            protobuf(dataSerializer)
         }
         install(HttpCache)
         install(Resources)

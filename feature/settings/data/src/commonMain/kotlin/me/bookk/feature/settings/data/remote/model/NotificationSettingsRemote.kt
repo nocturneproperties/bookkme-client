@@ -1,6 +1,7 @@
 package me.bookk.feature.settings.data.remote.model
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.feature.settings.domain.api.entity.NotificationChannel
 import me.bookk.feature.settings.domain.api.entity.NotificationChannelSettings
 import me.bookk.feature.settings.domain.api.entity.NotificationSettings
@@ -8,10 +9,10 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class NotificationSettingsRemote(
-    val id: Uuid,
-    val userId: Uuid,
-    val appointmentEnabled: Boolean,
-    val channels: List<NotificationChannelSettingsRemote>
+    @ProtoNumber(1) val id: Uuid,
+    @ProtoNumber(2) val userId: Uuid,
+    @ProtoNumber(3) val appointmentEnabled: Boolean,
+    @ProtoNumber(4) val channels: List<NotificationChannelSettingsRemote>
 ) {
     fun toDomain() = NotificationSettings(
         id = id,
@@ -23,10 +24,10 @@ data class NotificationSettingsRemote(
 
 @Serializable
 data class NotificationChannelSettingsRemote(
-    val id: Uuid,
-    val channel: NotificationChannelRemote,
-    val enabled: Boolean,
-    val availableToClients: Boolean
+    @ProtoNumber(1) val id: Uuid,
+    @ProtoNumber(2) val channel: NotificationChannelRemote,
+    @ProtoNumber(3) val enabled: Boolean,
+    @ProtoNumber(4) val availableToClients: Boolean
 ) {
     fun toDomain() = NotificationChannelSettings(
         id = id,
@@ -51,7 +52,7 @@ enum class NotificationChannelRemote {
 
 @Serializable
 data class UpdateNotificationSettingsRequestRemote(
-    val id: Uuid,
-    val appointmentEnabled: Boolean,
-    val channels: List<NotificationChannelSettingsRemote>
+    @ProtoNumber(1) val id: Uuid,
+    @ProtoNumber(2) val appointmentEnabled: Boolean,
+    @ProtoNumber(3) val channels: List<NotificationChannelSettingsRemote>
 )

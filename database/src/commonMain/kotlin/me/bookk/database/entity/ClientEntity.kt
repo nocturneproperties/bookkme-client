@@ -24,8 +24,9 @@ class ClientEntity(
     val id: Uuid,
     val name: String,
     val lastName: String,
-    val phone: String,
-    val email: String,
+    val phone: String?,
+    val email: String?,
     val businessId: Uuid,
-    val userId: Uuid?
+    val userId: Uuid?,
+    val description: String? = null
 )

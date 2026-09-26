@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import me.bookk.database.entity.NotificationSettingsChannelEntity
 import me.bookk.database.entity.NotificationSettingsEntity
 import me.bookk.database.relation.NotificationSettingsLocal
@@ -16,7 +17,10 @@ abstract class NotificationSettingsDao {
 
     @Transaction
     @Query("SELECT * FROM notification_settings WHERE userId = :userId")
-    abstract suspend fun getByUserId(userId: Uuid): NotificationSettingsLocal?
+    abstract fun observeByUserId(userId: Uuid): Flow<NotificationSettingsLocal?>
+
+    @Query("DELETE FROM notification_settings")
+    abstract suspend fun clear()
 
     @Upsert
     abstract suspend fun upsertSettings(settings: NotificationSettingsEntity)

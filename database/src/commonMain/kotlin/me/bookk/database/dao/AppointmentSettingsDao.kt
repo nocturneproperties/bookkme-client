@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import me.bookk.database.entity.AppointmentSettingsDayOffEntity
 import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
 import me.bookk.database.entity.AppointmentSettingsEntity
@@ -18,7 +19,10 @@ abstract class AppointmentSettingsDao {
 
     @Transaction
     @Query("SELECT * FROM appointment_settings WHERE businessId = :businessId")
-    abstract suspend fun getByBusinessId(businessId: Uuid): AppointmentSettingsLocal?
+    abstract fun observeByBusinessId(businessId: Uuid): Flow<AppointmentSettingsLocal?>
+
+    @Query("DELETE FROM appointment_settings")
+    abstract suspend fun clear()
 
     @Upsert
     abstract suspend fun upsertSettings(settings: AppointmentSettingsEntity)

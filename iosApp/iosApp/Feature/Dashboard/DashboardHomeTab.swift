@@ -12,47 +12,37 @@ import shared
 struct DashboardHomeTab: View {
 
 	var homeState: IOSDashboardHomeState
-	var navigation: any NavigationState
+	var onboardingNavigationStack: NavigationStackHolder
 
 	var body: some View {
-		switch homeState.content {
-		case is HomeContent.Loading:
+		if let content = homeState.content {
+			switch content {
+			case is HomeContent.NoBusiness:
+				DashboardOnboardingScreen(state: homeState.onboarding)
+			case is HomeContent.SetupRequired:
+				DashboardSetupRequiredHost(state: homeState.onboarding, navigationStack: onboardingNavigationStack)
+			case is HomeContent.AwaitingSetup:
+				DashboardAwaitingSetupScreen(state: homeState.onboarding)
+			default:
+				AppointmentsTab()
+			}
+		} else {
 			ProgressView()
-		case is HomeContent.Onboarding:
-			DashboardOnboardingHost(state: homeState.onboarding, navigation: navigation)
-		default:
-			AppointmentsTab()
+				.frame(maxWidth: .infinity, maxHeight: .infinity)
 		}
 	}
 }
 
-private struct DashboardOnboardingHost: View {
+private struct DashboardSetupRequiredHost: View {
 
-	@StateObject var navigationStack = NavigationStackHolder()
-	@State private var isCreateBusinessSheetPresented = false
 	var state: any OnboardingState
-	var navigation: any NavigationState
+	@ObservedObject var navigationStack: NavigationStackHolder
 
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
-			DashboardOnboardingScreen(state: state)
-				.handleNavigation(navigation) { dest in
-					switch dest {
-					case is DashboardHomeNavigationDestination.CreateBusiness:
-						isCreateBusinessSheetPresented = true
-					case let dest as DashboardHomeNavigationDestination.EnablePlugins:
-						navigationStack.push(dest)
-					default:
-						break
-					}
-				}
+			DashboardSetupRequiredScreen(state: state)
 				.navigationDestination(for: DashboardHomeNavigationDestination.EnablePlugins.self) { dest in
 					BusinessPluginsScreen(businessId: dest.businessId)
-				}
-				.sheet(isPresented: $isCreateBusinessSheetPresented) {
-					NavigationStack {
-						CreateBusinessScreen()
-					}
 				}
 		}
 		.environmentObject(navigationStack)

@@ -5,11 +5,14 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.feature.settings.data.mapping.toChannelEntities
 import me.bookk.feature.settings.data.mapping.toDomain
@@ -29,7 +32,7 @@ internal class CommonNotificationSettingsDataSource(
     private val httpClient: HttpClient,
     private val notificationSettingsDao: NotificationSettingsDao,
     preferenceProvider: PreferenceProvider
-) : DataSource(), NotificationSettingsDataSource {
+) : DataSource(), NotificationSettingsDataSource, LogOutAction {
 
     private val preferences = preferenceProvider.get("notification_prefs")
 
@@ -49,10 +52,10 @@ internal class CommonNotificationSettingsDataSource(
                 .toDomain()
         }
 
-    override suspend fun getNotificationSettingsFromDB(userId: Uuid): NotificationSettings? =
-        mapExceptions {
-            notificationSettingsDao.getByUserId(userId)?.toDomain()
-        }
+    override fun observeNotificationSettingsDBChanges(userId: Uuid): Flow<NotificationSettings?> =
+        notificationSettingsDao.observeByUserId(userId)
+            .map { it?.toDomain() }
+            .mapErrors()
 
     override suspend fun saveNotificationSettingsInDB(settings: NotificationSettings) {
         mapExceptions {
@@ -82,6 +85,10 @@ internal class CommonNotificationSettingsDataSource(
         return mapExceptions {
             preferences.get(Key.pendingNotificationToken)
         }
+    }
+
+    override suspend fun doOnLogOut() {
+        notificationSettingsDao.clear()
     }
 
     private object Key {

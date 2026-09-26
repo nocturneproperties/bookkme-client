@@ -15,6 +15,7 @@ import kotlin.uuid.Uuid
 
 internal fun stubEmployeeSnapshot() = EmployeeSnapshot(
     id = Uuid.random(),
+    userId = Uuid.random(),
     fullName = "John Doe"
 )
 

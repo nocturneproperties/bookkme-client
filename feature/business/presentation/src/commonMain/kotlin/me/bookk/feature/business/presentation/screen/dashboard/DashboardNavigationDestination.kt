@@ -5,11 +5,11 @@ import kotlin.uuid.Uuid
 
 sealed class DashboardNavigationDestination : NavigationDestination() {
     data object Employees : DashboardNavigationDestination()
-    data class Clients(val id: Uuid) : DashboardNavigationDestination()
+    data object Clients : DashboardNavigationDestination()
     data object Analytics : DashboardNavigationDestination()
-    data class Settings(val id: Uuid) : DashboardNavigationDestination()
+    data object Settings : DashboardNavigationDestination()
     data class Plugins(val id: Uuid) : DashboardNavigationDestination()
-    data class Services(val id: Uuid) : DashboardNavigationDestination()
+    data object Services : DashboardNavigationDestination()
     data class History(val businessId: Uuid) : DashboardNavigationDestination()
     data object Requests : DashboardNavigationDestination()
     data class AppointmentSettings(val businessId: Uuid) : DashboardNavigationDestination()

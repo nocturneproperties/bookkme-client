@@ -28,13 +28,10 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 	var save: any ButtonState
 	var telegram: any TextFieldState
 	var testLocation: any ButtonState
-	var pickLocation: any ButtonState
 	var viber: any TextFieldState
 	var phone: any TextFieldState
 	
 	var schedule: any ScheduleState
-	var dayOffs: any MultiPickerState
-	var dateRange: any DateRangePickerState
 	
 	var notifications: any PresentationNotificationState
 	var navigation: any NavigationState
@@ -53,15 +50,8 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 		self.telegram = IOSTextFieldState(placeholder: initData.telegramHint, startIcon: initData.telegramIcon)
 		self.testLocation = IOSButtonState(text: initData.testLocationText)
 		self.viber = IOSTextFieldState(placeholder: initData.viberHint, startIcon: initData.viberIcon)
-		self.pickLocation = IOSButtonState(text: initData.pickLocationText)
 		self.phone = IOSTextFieldState(placeholder: initData.phoneHint, startIcon: initData.phoneIcon)
 		self.navigation = IOSNavigationState()
 		self.schedule = IOSScheduleState()
-		self.dayOffs = IOSMultiPickerState()
-		self.dateRange = IOSDateRangePickerState()
-	}
-	
-	func createDaySettingState() -> any DaySettingsState {
-		return IOSDaySettingsState()
 	}
 }

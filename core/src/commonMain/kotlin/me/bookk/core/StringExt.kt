@@ -26,10 +26,6 @@ fun String.monogram(): String {
     }
 }
 
-/**
- * Formats the string as IBAN with spaces every 4 characters.
- * Example: "GB12NNNN00123421000013" -> "GB12 NNNN 0012 3421 0000 13"
- */
-fun String.formatAsIban(): String {
-    return replace(" ", "").chunked(4).joinToString(" ")
+fun String?.dashOnBlank(): String {
+    return this?.ifBlank { "-" } ?: "-"
 }

@@ -31,11 +31,11 @@ class IOSDashboardState: @MainActor DashboardState {
 @MainActor
 @Observable
 class IOSDashboardHomeState: @MainActor DashboardHomeState {
-	var content: HomeContent
+	var content: HomeContent?
 	var onboarding: any OnboardingState
 
 	init() {
-		content = HomeContent.Loading.shared
+		content = nil
 		onboarding = IOSOnboardingState()
 	}
 }
@@ -43,10 +43,12 @@ class IOSDashboardHomeState: @MainActor DashboardHomeState {
 @MainActor
 @Observable
 class IOSOnboardingState: @MainActor OnboardingState {
-	var isBusinessStepDone: Bool = false
-	var isPluginsStepUnlocked: Bool = false
+	var awaitingSetupMessage: any StringDesc = RawStringDesc(string: "")
 	var onCreateBusinessClick: (() -> Void)?
+	var onJoinBusinessClick: (() -> Void)?
 	var onEnablePluginsClick: (() -> Void)?
+	var businesses: [OnboardingBusinessItem] = []
+	var onBusinessClick: ((OnboardingBusinessItem) -> Void)?
 }
 
 @MainActor

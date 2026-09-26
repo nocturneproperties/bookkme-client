@@ -33,6 +33,7 @@ struct EditProfileScreen: View {
 			.textFieldStyle(.inList)
 		}
 		.listSectionSpacing(.compact)
+		.scrollDismissesKeyboard(.immediately)
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(state.notification)
 		.navigationTitle(state.appBar.title.localized())

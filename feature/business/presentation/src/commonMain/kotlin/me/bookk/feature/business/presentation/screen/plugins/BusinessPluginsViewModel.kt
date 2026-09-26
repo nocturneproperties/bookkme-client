@@ -1,6 +1,8 @@
 package me.bookk.feature.business.presentation.screen.plugins
 
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -13,6 +15,7 @@ import me.bookk.designsystem.uistate.simple.OptionalInfoLine
 import me.bookk.designsystem.uistate.simple.optionalLine
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.feature.business.domain.api.business.CanEditBusiness
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.business.presentation.BusinessStateFactory
@@ -24,6 +27,7 @@ class BusinessPluginsViewModel(
     @InjectedParam private val businessId: Uuid,
     private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
     private val enableAppointmentsPlugin: EnableAppointmentsPlugin,
+    private val canEditBusiness: CanEditBusiness,
     stateFactory: BusinessStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -31,17 +35,36 @@ class BusinessPluginsViewModel(
     val uiState: BusinessPluginListState = stateFactory.createBusinessPluginListState().setup()
 
     init {
-        initPluginsState()
+        observePluginState()
+        loadPluginState()
+        loadEditPermission()
     }
 
-    private fun initPluginsState() {
-        launchCached(
+    private fun observePluginState() {
+        isAppointmentsPluginEnabled.flow(businessId)
+            .flowOn(DispatcherProvider.io)
+            .filterNotNull()
+            .safeOnEach { uiState.appointmentPlugin.isEnabled = it }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
+    }
+
+    private fun loadPluginState() {
+        launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.appointmentPlugin.enable.startLoading() },
-            call = { isAppointmentsPluginEnabled.cached(businessId, it) },
-            onComplete = { uiState.appointmentPlugin.isEnabled = it },
+            call = { isAppointmentsPluginEnabled.refresh(businessId) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.appointmentPlugin.enable.stopLoading() }
+        )
+    }
+
+    private fun loadEditPermission() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { canEditBusiness(businessId) },
+            onComplete = { uiState.appointmentPlugin.canEnable = it },
+            onError = { uiState.notifications.add(it.notification()) }
         )
     }
 

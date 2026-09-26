@@ -1,12 +1,16 @@
 package me.bookk.feature.authorization.domain.impl
 
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -94,14 +98,42 @@ class UserProfileCRUDImplTest {
     }
 
     @Test
-    fun `update calls updateProfile and then syncs from backend`() = runUnitTest {
+    fun `observe emits the stored profile`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val local = stubProfile()
+        every { fixture.dataSource.observeProfileFromDatabase() } returns flowOf(local)
+
+        whenn()
+        val result = fixture.sut.observe().toList()
+
+        then()
+        assertEquals(listOf<UserProfile?>(local), result)
+    }
+
+    @Test
+    fun `observe emits null without fetching from backend when nothing is stored`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.dataSource.observeProfileFromDatabase() } returns flowOf(null)
+
+        whenn()
+        val result = fixture.sut.observe().toList()
+
+        then()
+        assertEquals(listOf<UserProfile?>(null), result)
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getProfileFromBackend() }
+    }
+
+    @Test
+    fun `update sends the profile then caches the server copy`() = runUnitTest {
         given()
         val fixture = Fixture()
         val updated = stubProfile()
         val backend = updated.copy(firstName = "Synced")
-        everySuspend { fixture.dataSource.updateProfile(updated) } returns Unit
+        everySuspend { fixture.dataSource.updateProfile(any()) } returns Unit
         everySuspend { fixture.dataSource.getProfileFromBackend() } returns backend
-        everySuspend { fixture.dataSource.updateProfile(backend) } returns Unit
+        everySuspend { fixture.dataSource.upsertProfile(any()) } returns Unit
 
         whenn()
         fixture.sut.update(updated)
@@ -110,8 +142,23 @@ class UserProfileCRUDImplTest {
         verifySuspend(VerifyMode.order) {
             fixture.dataSource.updateProfile(updated)
             fixture.dataSource.getProfileFromBackend()
-            fixture.dataSource.updateProfile(backend)
+            fixture.dataSource.upsertProfile(backend)
         }
+    }
+
+    @Test
+    fun `update sends the profile to the server only once`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateProfile(any()) } returns Unit
+        everySuspend { fixture.dataSource.getProfileFromBackend() } returns stubProfile()
+        everySuspend { fixture.dataSource.upsertProfile(any()) } returns Unit
+
+        whenn()
+        fixture.sut.update(stubProfile())
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.updateProfile(any()) }
     }
 
     @Test

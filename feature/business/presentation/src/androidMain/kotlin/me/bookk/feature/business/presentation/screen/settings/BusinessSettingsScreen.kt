@@ -40,6 +40,7 @@ import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.FlatTextField
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.PickerField
+import me.bookk.designsystem.components.ScheduleSection
 import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
@@ -54,10 +55,12 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
             AppTopBar(
                 state = state.appBar,
                 actions = {
-                    StateTextButton(
-                        state = state.save,
-                        onClick = LocalBusinessSettingsEventListener.current.onSaveClick
-                    )
+                    if (state.save.isVisible) {
+                        StateTextButton(
+                            state = state.save,
+                            onClick = LocalBusinessSettingsEventListener.current.onSaveClick
+                        )
+                    }
                 },
                 onNavigationIconClick = LocalBusinessSettingsEventListener.current.onBackClick
             )
@@ -77,7 +80,7 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     BusinessProfileCard(state)
-                    ScheduleSection(state)
+                    ScheduleSection(state.schedule)
                     BusinessLocationCard(state)
                     Column {
                         Header(BusinessRes.strings.business_settings_currency_title.desc().localized())
@@ -99,7 +102,11 @@ private fun BusinessProfileCard(state: BusinessSettingsState) {
     AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                PhotoBadge(onClick = listener.onAddPhotoClick, contentDescription = state.photo.text)
+                PhotoBadge(
+                    onClick = listener.onAddPhotoClick,
+                    contentDescription = state.photo.text,
+                    isEnabled = state.photo.isEnabled
+                )
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -139,13 +146,13 @@ private fun BusinessProfileCard(state: BusinessSettingsState) {
 }
 
 @Composable
-private fun PhotoBadge(onClick: () -> Unit, contentDescription: StringDesc) {
+private fun PhotoBadge(onClick: () -> Unit, contentDescription: StringDesc, isEnabled: Boolean) {
     Box(
         modifier = Modifier
             .size(56.dp)
             .clip(RoundedCornerShape(14.dp))
             .background(LocalColors.current.buttonPrimary)
-            .clickable(onClick = onClick),
+            .clickable(enabled = isEnabled, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -193,24 +200,15 @@ private fun BusinessLocationCard(state: BusinessSettingsState) {
                             .padding(horizontal = 10.dp, vertical = 6.dp)
                     )
                 }
-                Row(
+                FlatTextField(
+                    state = state.address,
+                    onValueChange = listener.onAddressChanged,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    FlatTextField(
-                        state = state.address,
-                        onValueChange = listener.onAddressChanged,
-                        modifier = Modifier.weight(1f),
-                        textStyle = MaterialTheme.typography.bodyLarge,
-                        singleLine = true
-                    )
-                    StateTextButton(
-                        state = state.pickLocation,
-                        onClick = listener.onPickLocationClick
-                    )
-                }
+                    textStyle = MaterialTheme.typography.bodyLarge,
+                    singleLine = true
+                )
             }
         }
     }

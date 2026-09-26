@@ -5,8 +5,8 @@ import kotlin.uuid.Uuid
 data class ClientSnapshot(
     val id: Uuid,
     val fullName: String,
-    val phone: String,
-    val email: String
+    val phone: String?,
+    val email: String?
 ) {
     companion object {
         fun stub() = ClientSnapshot(

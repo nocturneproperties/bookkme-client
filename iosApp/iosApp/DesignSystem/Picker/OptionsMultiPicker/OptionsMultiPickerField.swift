@@ -18,6 +18,16 @@ struct OptionsMultiPickerField<ItemView: View>: View {
 
     var body: some View {
         if state.isVisible {
+			if state.selectedItems.isEmpty, let placeholder = state.placeholder {
+				Text(placeholder.localized())
+					.font(.body)
+					.foregroundStyle(AppColors.secondary)
+					.multilineTextAlignment(.center)
+					.frame(maxWidth: .infinity)
+					.padding(.vertical, 16)
+					.alignmentGuide(.listRowSeparatorLeading) { d in d[.leading] }
+					.alignmentGuide(.listRowSeparatorTrailing) { d in d[.trailing] }
+			}
 			ForEach(state.selectedItems, id: \.pickerItemId) { item in
 				itemContent(item) {
 					withAnimation {

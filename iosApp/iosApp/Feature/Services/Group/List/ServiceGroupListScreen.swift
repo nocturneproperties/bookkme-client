@@ -5,11 +5,9 @@ struct ServiceGroupListScreen: View {
 	
 	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: ServiceGroupListViewModel
-	let businessId: KotlinUuid
-	
-	init(businessId: KotlinUuid) {
-		self.businessId = businessId
-		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceGroupListVM(businessId: businessId))
+
+	init() {
+		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceGroupListVM())
 	}
 	
 	var body: some View {
@@ -20,20 +18,24 @@ struct ServiceGroupListScreen: View {
 				.transition(.opacity)
 				.animation(.easeInOut, value: listState.items.count)
 				.swipeActions(edge: .trailing, allowsFullSwipe: false) {
-					Button(DesignSystem.strings().action_delete.desc().localized()) {
-						group.onDeleteClick()
+					if let onDeleteClick = group.onDeleteClick {
+						Button(DesignSystem.strings().action_delete.desc().localized()) {
+							onDeleteClick()
+						}
+						.tint(.red)
 					}
-					.tint(.red)
 				}
 				.contextMenu {
-					Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
-						group.onDeleteClick()
+					if let onDeleteClick = group.onDeleteClick {
+						Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
+							onDeleteClick()
+						}
 					}
 				}
 				.id(group.id)
 		}
 		.sheet(isPresented: uiState.isAddGroupDialogVisibleBinding) {
-			AddServiceGroupScreen(businessId: businessId) {
+			AddServiceGroupScreen {
 				uiState.isAddGroupDialogVisible.toggle()
 			}
 		}

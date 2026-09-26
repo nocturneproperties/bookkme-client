@@ -1,9 +1,7 @@
 package me.bookk.feature.services.domain.impl.service
 
 import me.bookk.feature.services.domain.api.service.CreateService
-import me.bookk.feature.services.domain.api.service.ServiceEvent
 import me.bookk.feature.services.domain.api.service.entity.Service
-import me.bookk.feature.services.domain.api.service.serviceEvents
 import me.bookk.feature.services.domain.datasource.ServiceDataSource
 
 internal class CreateServiceImpl(
@@ -12,7 +10,6 @@ internal class CreateServiceImpl(
     override suspend fun invoke(service: Service): Service {
         return dataSource.createService(service).also {
             dataSource.saveServiceInDB(it)
-            serviceEvents.emit(ServiceEvent.Created(it))
         }
     }
 }

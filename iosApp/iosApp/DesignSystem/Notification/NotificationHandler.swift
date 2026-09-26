@@ -13,6 +13,7 @@ import shared
 struct NotificationHandler: ViewModifier {
 	
 	@EnvironmentObject var logOutHandler: LogOutHandler
+	@EnvironmentObject var businessAccessSuspendedHandler: BusinessAccessSuspendedHandler
     
     @Bindable
     var notificationState: IOSNotificationState
@@ -43,6 +44,10 @@ struct NotificationHandler: ViewModifier {
 					case is PresentationNotificationUnauthorized:
 						notificationState.removeFirst()
 						logOutHandler.onLogOut()
+						break
+					case is PresentationNotificationBusinessAccessSuspended:
+						notificationState.removeFirst()
+						businessAccessSuspendedHandler.onBusinessAccessSuspended()
 						break
 					default:
 						notificationState.removeFirst()
@@ -102,6 +107,7 @@ struct NotificationInputAlert: ViewModifier {
 	func body(content: Content) -> some View {
 		content
 			.onChange(of: data?.id) { _, newValue in
+				inputText = data?.initialText ?? ""
 				isPresented = newValue != nil
 			}
 			.alert(data?.title.localized() ?? "", isPresented: $isPresented, presenting: data) { message in

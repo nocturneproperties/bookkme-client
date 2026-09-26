@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 
 sealed interface ClientEvent {
     data class Created(val client: Client) : ClientEvent
+    data class Updated(val client: Client) : ClientEvent
     data class Deleted(val client: Client) : ClientEvent
 }
 

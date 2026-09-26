@@ -10,7 +10,10 @@ object BusinessRouting {
         @Resource("/business")
         class Business(val parent: Api = Api()) {
             @Resource("/{id}")
-            class Id(val parent: Business = Business(), val id: Uuid)
+            class Id(val parent: Business = Business(), val id: Uuid) {
+                @Resource("/dashboard")
+                class Dashboard(val parent: Id)
+            }
         }
 
         @Resource("/business/{businessId}/clients")

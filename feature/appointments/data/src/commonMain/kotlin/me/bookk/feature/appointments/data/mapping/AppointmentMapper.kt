@@ -38,6 +38,7 @@ import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 
@@ -76,6 +77,7 @@ internal fun AppointmentCancellation.toRemote() = AppointmentCancellationRemote(
 
 private fun EmployeeSnapshot.toRemote() = EmployeeSnapshotRemote(
     id = id,
+    userId = userId,
     fullName = fullName
 )
 
@@ -112,6 +114,7 @@ internal fun Appointment.toEntity() = AppointmentEntity(
     userId = userId,
     businessId = businessId,
     employeeId = employee.id,
+    employeeUserId = employee.userId,
     employeeFullName = employee.fullName,
     date = date.toInstant(TimeZone.currentSystemDefault()),
     status = status.name,
@@ -139,7 +142,7 @@ internal fun AppointmentLocal.toDomain() = Appointment(
     id = entity.id,
     userId = entity.userId,
     businessId = entity.businessId,
-    employee = EmployeeSnapshot(id = entity.employeeId, fullName = entity.employeeFullName),
+    employee = EmployeeSnapshot(id = entity.employeeId, userId = entity.employeeUserId, fullName = entity.employeeFullName),
     date = entity.date.toLocalDateTime(TimeZone.currentSystemDefault()),
     client = ClientSnapshot(
         id = entity.clientId,
@@ -166,6 +169,7 @@ internal fun AppointmentRequest.toRequestEntity() = AppointmentRequestEntity(
     userId = userId,
     businessId = businessId,
     employeeId = employee.id,
+    employeeUserId = employee.userId,
     employeeFullName = employee.fullName,
     status = status.name,
     date = date,
@@ -193,7 +197,7 @@ internal fun AppointmentRequestLocal.toDomain() = AppointmentRequest(
     id = entity.id,
     userId = entity.userId,
     businessId = entity.businessId,
-    employee = EmployeeSnapshot(id = entity.employeeId, fullName = entity.employeeFullName),
+    employee = EmployeeSnapshot(id = entity.employeeId, userId = entity.employeeUserId, fullName = entity.employeeFullName),
     client = ClientSnapshot(
         id = entity.clientId,
         fullName = entity.clientFullName,
@@ -228,7 +232,10 @@ internal fun AppointmentSettings.toEntity() = AppointmentSettingsEntity(
     timeZone = timeZone.id,
     automaticApproval = automaticApproval,
     inBetweenBreakInMinutes = inBetweenBreakInMinutes,
-    appointmentNote = appointmentNote
+    appointmentNote = appointmentNote,
+    permissionView = permissions.view,
+    permissionUpdate = permissions.update,
+    permissionDelete = permissions.delete
 )
 
 internal fun AppointmentSettings.toDayScheduleEntities() = schedule.days.map { (dayOfWeek, daySchedule) ->
@@ -279,5 +286,10 @@ internal fun AppointmentSettingsLocal.toDomain() = AppointmentSettings(
     ),
     automaticApproval = entity.automaticApproval,
     inBetweenBreakInMinutes = entity.inBetweenBreakInMinutes,
-    appointmentNote = entity.appointmentNote
+    appointmentNote = entity.appointmentNote,
+    permissions = ResourcePermission(
+        view = entity.permissionView,
+        update = entity.permissionUpdate,
+        delete = entity.permissionDelete
+    )
 )

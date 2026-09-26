@@ -18,62 +18,66 @@ struct DashboardScreen: View {
 		DashboardTabs(state: dashboardVM.uiState.impl())
 	}
 }
+
 struct DashboardTabs: View {
 
 	@Bindable
 	var state: IOSDashboardState
 
+	@StateObject private var onboardingNavigationStack = NavigationStackHolder()
+
 	var body: some View {
+		tabView
+			.handleNavigation(state.navigation, handler: handleNavigation)
+			.handleNotifications(state.notifications)
+	}
+
+	private func handleNavigation(_ destination: NavigationDestination) {
+		switch destination {
+		case let destination as DashboardHomeNavigationDestination.EnablePlugins:
+			onboardingNavigationStack.push(destination)
+		default:
+			break
+		}
+	}
+
+	private var tabView: some View {
 		TabView(selection: Binding(
 			get: { state.tabItems.selectedItemId },
-			set: { newId in
-				if state.tabItems.items.first(where: { $0.id == newId })?.isEnabled == true {
-					state.tabItems.selectedItemId = newId
-				}
-			}
+			set: { state.tabItems.selectedItemId = $0 }
 		)) {
-			ForEach(state.tabItems.items, id:\.id) { item in
-				DashboardTab(item: item.impl(), dashboardState: state)
+			ForEach(state.tabItems.items, id: \.id) { tabItem in
+				let item = tabItem.impl()
+				Tab(value: item.id) {
+					DashboardTabContent(id: item.id, dashboardState: state, onboardingNavigationStack: onboardingNavigationStack)
+				} label: {
+					Label(item.text.localized(), systemImage: iconFrom(id: item.id))
+				}
+				.badge(item.badgeText.map { Text($0.localized()) })
+				.disabled(!item.isEnabled)
 			}
 		}
 	}
 }
 
-struct DashboardTab: View {
+struct DashboardTabContent: View {
 
-	var item: IOSTabItem
+	var id: TabItemId
 	var dashboardState: IOSDashboardState
+	var onboardingNavigationStack: NavigationStackHolder
 
 	var body: some View {
-		screenFromId(id: item.id)
-			.tabItem {
-				Label(
-					title: {
-						Text(item.text.localized())
-					},
-					icon: {
-						Image(systemName: iconFrom(id: item.id))
-					}
-				)
-				.opacity(item.isEnabled ? 1 : 0.4)
-			}
-			.badge(item.badgeText?.localized())
-	}
-
-	@ViewBuilder
-	private func screenFromId(id: TabItemId) -> some View {
 		switch id {
 		case .home:
-			DashboardHomeTab(homeState: dashboardState.home.impl(), navigation: dashboardState.navigation)
+			DashboardHomeTab(homeState: dashboardState.home.impl(), onboardingNavigationStack: onboardingNavigationStack)
 		case .business:
-			BusinessTab()
+			BusinessTab(isEnabled: dashboardState.tabItems.items.first { $0.id == .business }?.isEnabled ?? false)
 		case .settings:
 			SettingsTab()
 		default:
-			fatalError("Unsupported tab \(item.id)")
+			fatalError("Unsupported tab \(id)")
 		}
 	}
-
 }
 
 private func iconFrom(id: TabItemId) -> String {
@@ -92,4 +96,3 @@ private func iconFrom(id: TabItemId) -> String {
 #Preview {
 	DashboardScreen()
 }
-

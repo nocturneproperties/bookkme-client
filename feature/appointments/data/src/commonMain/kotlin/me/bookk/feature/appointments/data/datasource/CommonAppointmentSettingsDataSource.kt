@@ -5,7 +5,10 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.feature.appointments.data.mapping.toDayOffEntities
 import me.bookk.feature.appointments.data.mapping.toDayScheduleEntities
@@ -22,7 +25,7 @@ import kotlin.uuid.Uuid
 internal class CommonAppointmentSettingsDataSource(
     private val httpClient: HttpClient,
     private val appointmentSettingsDao: AppointmentSettingsDao
-) : DataSource(), AppointmentSettingsDataSource {
+) : DataSource(), AppointmentSettingsDataSource, LogOutAction {
 
     override suspend fun getAppointmentSettings(businessId: Uuid): AppointmentSettings =
         mapExceptions {
@@ -40,10 +43,10 @@ internal class CommonAppointmentSettingsDataSource(
                 .toDomain()
         }
 
-    override suspend fun getAppointmentSettingsFromDB(businessId: Uuid): AppointmentSettings? =
-        mapExceptions {
-            appointmentSettingsDao.getByBusinessId(businessId)?.toDomain()
-        }
+    override fun observeAppointmentSettingsDBChanges(businessId: Uuid): Flow<AppointmentSettings?> =
+        appointmentSettingsDao.observeByBusinessId(businessId)
+            .map { it?.toDomain() }
+            .mapErrors()
 
     override suspend fun saveAppointmentSettingsInDB(settings: AppointmentSettings) {
         mapExceptions {
@@ -54,5 +57,9 @@ internal class CommonAppointmentSettingsDataSource(
                 dayOffs = settings.toDayOffEntities()
             )
         }
+    }
+
+    override suspend fun doOnLogOut() {
+        appointmentSettingsDao.clear()
     }
 }

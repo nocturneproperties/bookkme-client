@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
-import library.cache.api.get
 import library.cache.api.getFlow
 import library.cache.api.set
 import me.bookk.core.data.DataSource
@@ -84,10 +83,32 @@ internal class CommonBusinessDataSource(
         }
     }
 
+    override suspend fun getBusinessIdsInDb(): List<Uuid> = mapExceptions {
+        businessDao.getIds()
+    }
+
+    override suspend fun deleteBusinessesInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> businessDao.deleteByIds(chunk) }
+        }
+    }
+
     override fun observeBusinessDBChanges(businessId: Uuid): Flow<Business?> {
         return businessDao.observeBusiness(businessId)
             .map { it?.toDomain() }
             .mapErrors()
+    }
+
+    override fun observeAllBusinessesInDb(): Flow<List<Business>> {
+        return businessDao.observeAllBusinesses()
+            .map { businesses -> businesses.map { it.toDomain() } }
+            .mapErrors()
+    }
+
+    override suspend fun setDashboardBusinessOnRemote(businessId: Uuid) {
+        mapExceptions {
+            httpClient.put(BusinessRouting.Api.Business.Id.Dashboard(parent = BusinessRouting.Api.Business.Id(id = businessId)))
+        }
     }
 
     override suspend fun getBusinessesFromRemote(): UserBusinessInfo = mapExceptions {
@@ -104,10 +125,6 @@ internal class CommonBusinessDataSource(
         preferences.set(Key.dashboardId, id?.toString())
     }
 
-    override suspend fun getDashboardBusinessId(): Uuid? {
-        return preferences.get(Key.dashboardId)?.let { Uuid.parse(it) }
-    }
-
     override fun getDashboardBusinessIdFlow(): Flow<Uuid?> {
         return preferences.getFlow(Key.dashboardId)
             .map { it?.let { Uuid.parse(it) } }
@@ -115,6 +132,7 @@ internal class CommonBusinessDataSource(
 
     override suspend fun doOnLogOut() {
         preferences.clear()
+        businessDao.clear()
     }
 
     private object Key {

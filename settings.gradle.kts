@@ -34,6 +34,7 @@ include(":core:data")
 include(":core:domain")
 include(":core:presentation")
 include(":core:testFixtures")
+include(":designsystem:testFixtures")
 include(":environment:api")
 include(":environment:impl")
 
@@ -94,6 +95,13 @@ include(":feature:services:data:source")
 include(":feature:services:domain:api")
 include(":feature:services:domain:impl")
 include(":feature:services:presentation")
+
+//Employees
+include(":feature:employees:data")
+include(":feature:employees:data:source")
+include(":feature:employees:domain:api")
+include(":feature:employees:domain:impl")
+include(":feature:employees:presentation")
 
 //Appointments
 include(":feature:appointments:data")

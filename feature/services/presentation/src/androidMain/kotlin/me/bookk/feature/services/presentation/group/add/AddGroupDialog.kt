@@ -14,17 +14,15 @@ import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.TextField
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
-import kotlin.uuid.Uuid
 
 @Composable
-internal fun AddGroupDialog(businessId: Uuid, onDismiss: () -> Unit) {
+internal fun AddGroupDialog(onDismiss: () -> Unit) {
     val customStoreOwner = remember {
         object : ViewModelStoreOwner {
             override val viewModelStore = ViewModelStore()
         }
     }
-    val viewModel: AddGroupViewModel = koinViewModel(viewModelStoreOwner = customStoreOwner) { parametersOf(businessId) }
+    val viewModel: AddGroupViewModel = koinViewModel(viewModelStoreOwner = customStoreOwner)
     val state = viewModel.uiState
     ObserveNotifications(state.notifications)
     ObserveNavigation(state.navigation) {

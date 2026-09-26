@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="employees_title">Employees</string>
+    <string name="employees_empty">You have no employees at the moment</string>
+
+    <string name="employees_invite_title">Invite employee</string>
+    <string name="employees_invite_description">Generate a code and share it with a future employee. This code can be entered by long pressing the Business tab at the bottom of the screen.\n\nIf you lost the code, revoke it and create a new one.</string>
+    <string name="employees_invite_generate_button">Generate new code</string>
+    <string name="employees_invite_code_copied">Code copied to clipboard</string>
+    <string name="employees_invite_invitations_header">Invitations</string>
+    <string name="employees_invite_invitations_empty">You have no invitations at the moment</string>
+    <string name="employees_invite_created_on">Created %s</string>
+    <string name="employees_invite_status_pending">Pending</string>
+    <string name="employees_invite_status_redeemed">Redeemed</string>
+    <string name="employees_invite_status_expired">Expired</string>
+    <string name="employees_invite_status_revoked">Revoked</string>
+    <string name="employees_invite_revoke_action">Revoke</string>
+    <string name="employees_invite_revoke_dialog_title">Revoke invitation?</string>
+    <string name="employees_invite_revoke_dialog_message">This invitation will no longer be valid</string>
+    <string name="employees_invite_revoke_error_already_processed">This invitation was already processed and can no longer be revoked</string>
+    <string name="employees_invite_generate_error_pending_limit">You have reached the limit of pending invitations. Revoke an unused invitation to generate a new code</string>
+    <string name="employees_invite_generate_error_daily_limit">You have reached the daily limit of invitations. Try again later</string>
+    <string name="employees_edit_phone">Phone</string>
+    <string name="employees_edit_email">Email</string>
+    <string name="employees_edit_services">Services</string>
+    <string name="employees_edit_services_add">Add service</string>
+    <string name="employees_edit_services_empty">No services assigned.</string>
+    <string name="employees_edit_permissions">Permissions</string>
+    <string name="employees_edit_permissions_owner_hint">Only the business owner can change permissions. The owner always has full access to every resource.</string>
+    <string name="employees_edit_permission_business">Business</string>
+    <string name="employees_edit_permission_employees">Employees</string>
+    <string name="employees_edit_permission_clients">Clients</string>
+    <string name="employees_edit_permission_services">Services</string>
+    <string name="employees_edit_permission_appointments">Appointments</string>
+    <string name="employees_edit_permission_view">View</string>
+    <string name="employees_edit_permission_update">Edit</string>
+    <string name="employees_edit_permission_delete">Delete</string>
+    <string name="employees_edit_updated">Employee updated</string>
+    <string name="employees_edit_error_validation">Employee name, phone or email is invalid</string>
+    <string name="employees_edit_error_active_day_without_work_hours">An active day must have at least one work hour</string>
+    <string name="employees_edit_error_invalid_day_off_range">Day off start date must be before the end date</string>
+    <string name="employees_edit_suspend">Suspend employee</string>
+    <string name="employees_edit_reinstate">Reinstate employee</string>
+    <string name="employees_edit_suspend_dialog_title">Suspend employee?</string>
+    <string name="employees_edit_suspend_dialog_message">%s will lose access to the business and can\'t be booked until reinstated. Their permissions are kept.</string>
+    <string name="employees_edit_reinstate_dialog_title">Reinstate employee?</string>
+    <string name="employees_edit_reinstate_dialog_message">%s will regain access to the business with their previous permissions and can be booked again.</string>
+    <string name="employees_edit_suspended">Employee suspended</string>
+    <string name="employees_edit_reinstated">Employee reinstated</string>
+    <string name="employees_edit_error_owner_suspension">The business owner can\'t be suspended</string>
+    <string name="employees_edit_error_insufficient_grant">You can\'t grant access you don\'t have yourself</string>
+</resources>

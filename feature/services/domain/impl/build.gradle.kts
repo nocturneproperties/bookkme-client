@@ -14,6 +14,7 @@ kotlin {
             implementation(projects.core.domain)
             implementation(projects.feature.services.domain.api)
             implementation(projects.feature.services.data.source)
+            implementation(projects.feature.business.domain.api)
         }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)

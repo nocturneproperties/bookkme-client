@@ -24,6 +24,10 @@ abstract class BusinessDao {
     @Query("select * from business where id = :businessId")
     abstract fun observeBusiness(businessId: Uuid): Flow<BusinessLocal?>
 
+    @Transaction
+    @Query("select * from business")
+    abstract fun observeAllBusinesses(): Flow<List<BusinessLocal>>
+
     @Insert
     abstract suspend fun insertBusiness(entity: BusinessEntity)
 
@@ -35,6 +39,12 @@ abstract class BusinessDao {
 
     @Query("delete from business")
     abstract suspend fun clear()
+
+    @Query("select id from business")
+    abstract suspend fun getIds(): List<Uuid>
+
+    @Query("delete from business where id in (:ids)")
+    abstract suspend fun deleteByIds(ids: List<Uuid>)
 
     @Query("DELETE FROM business_day_schedule WHERE businessId = :businessId")
     abstract suspend fun deleteDaySchedules(businessId: Uuid)

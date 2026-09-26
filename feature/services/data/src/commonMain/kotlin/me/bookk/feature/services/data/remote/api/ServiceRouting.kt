@@ -11,6 +11,9 @@ object ServiceRouting {
         class Service(val parent: Api = Api(), val businessId: Uuid) {
             @Resource("/{id}")
             class Id(val parent: Service, val id: Uuid)
+
+            @Resource("/quote")
+            class Quote(val parent: Service)
         }
 
         @Resource("/business/{businessId}/service_group")

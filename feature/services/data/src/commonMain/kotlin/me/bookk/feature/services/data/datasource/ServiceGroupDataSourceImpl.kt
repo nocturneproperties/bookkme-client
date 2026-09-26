@@ -6,7 +6,14 @@ import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import library.cache.api.PreferenceProvider
+import library.cache.api.Preferences
+import library.cache.api.get
+import library.cache.api.set
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.ServiceGroupDao
 import me.bookk.feature.services.data.mapper.toDb
 import me.bookk.feature.services.data.mapper.toDomain
@@ -14,12 +21,18 @@ import me.bookk.feature.services.data.remote.api.ServiceRouting.Api
 import me.bookk.feature.services.data.remote.model.ServiceGroupRemote
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.domain.datasource.ServiceGroupDataSource
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 internal class ServiceGroupDataSourceImpl(
     private val httpClient: HttpClient,
     private val serviceGroupDao: ServiceGroupDao,
-) : DataSource(), ServiceGroupDataSource {
+    preferenceProvider: PreferenceProvider
+) : DataSource(), ServiceGroupDataSource, LogOutAction {
+
+    private val preferences = preferenceProvider.get("service_groups_prefs")
+
     override suspend fun getServiceGroups(businessId: Uuid): List<ServiceGroup> = mapExceptions {
         httpClient.get(Api.ServiceGroup(businessId = businessId))
             .body<List<ServiceGroupRemote>>()
@@ -52,7 +65,36 @@ internal class ServiceGroupDataSourceImpl(
         serviceGroupDao.delete(group.toDb())
     }
 
-    override suspend fun getServiceGroupsFromDb(businessId: Uuid): List<ServiceGroup> = mapExceptions {
-        serviceGroupDao.get(businessId).map { it.toDomain() }
+    override suspend fun getServiceGroupIdsInDb(businessId: Uuid): List<Uuid> {
+        return mapExceptions { serviceGroupDao.getIds(businessId) }
+    }
+
+    override suspend fun deleteGroupsInDB(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> serviceGroupDao.deleteByIds(chunk) }
+        }
+    }
+
+    override fun observeServiceGroupsDBChanges(businessId: Uuid): Flow<List<ServiceGroup>> {
+        return serviceGroupDao.observe(businessId)
+            .map { groups -> groups.map { it.toDomain() } }
+            .mapErrors()
+    }
+
+    override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
+        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+    }
+
+    override suspend fun saveLastSyncedAt(businessId: Uuid) {
+        preferences.set(Key.lastSyncedAt(businessId), Clock.System.now().toEpochMilliseconds())
+    }
+
+    override suspend fun doOnLogOut() {
+        preferences.clear()
+        serviceGroupDao.clear()
+    }
+
+    private object Key {
+        fun lastSyncedAt(businessId: Uuid) = Preferences.Key<Long>("last_synced_at_$businessId")
     }
 }

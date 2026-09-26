@@ -1,9 +1,10 @@
 package me.bookk.feature.services.domain.api.group
 
+import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import kotlin.uuid.Uuid
 
 interface GetServiceGroups {
-    suspend operator fun invoke(businessId: Uuid): List<ServiceGroup>
-    suspend fun cached(businessId: Uuid, onResultAvailable: suspend (List<ServiceGroup>) -> Unit)
+    fun flow(): Flow<List<ServiceGroup>>
+    suspend fun refresh(businessId: Uuid): List<ServiceGroup>
 }

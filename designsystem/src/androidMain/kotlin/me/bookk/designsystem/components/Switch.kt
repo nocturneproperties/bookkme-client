@@ -49,7 +49,7 @@ fun StateSwitch(
         Row(
             modifier = Modifier
                 .clip(MaterialTheme.shapes.large)
-                .clickable {
+                .clickable(enabled = state.isEnabled) {
                     state.onCheckedChange?.invoke(!state.isChecked)
                 }
                 .padding(horizontal = 16.dp),
@@ -66,6 +66,7 @@ fun StateSwitch(
             }
             Switch(
                 checked = state.isChecked,
+                enabled = state.isEnabled,
                 colors = colors,
                 onCheckedChange = onCheckedChange
             )

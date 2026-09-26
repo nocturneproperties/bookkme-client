@@ -60,6 +60,7 @@ private struct PasskeyContent: View {
 		}
 		.contentMargins(.top, 0)
 		.animation(.default, value: state.passkeys)
+		.scrollDismissesKeyboard(.immediately)
 	}
 }
 

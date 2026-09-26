@@ -15,6 +15,9 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
     }
 }
 

@@ -33,6 +33,7 @@ struct AppointmentSettingsScreen: View {
 		.toolbar {
 			TextButton(state.save)
 		}
+        .scrollDismissesKeyboard(.immediately)
         .withNavigationBar(state.appBar)
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)

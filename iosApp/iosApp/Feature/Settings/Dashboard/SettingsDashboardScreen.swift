@@ -35,6 +35,7 @@ struct SettingsDashboardScreen: View {
 				}
 			}
 		}
+		.scrollDismissesKeyboard(.immediately)
 		.withNavigationBar(uiState.appBar)
 		.sendLifecycleEventsTo(settingsVM)
 		.handleNotifications(uiState.notification)

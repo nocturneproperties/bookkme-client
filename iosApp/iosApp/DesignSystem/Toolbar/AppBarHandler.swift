@@ -43,6 +43,8 @@ struct AppBarHandler: ViewModifier {
 					.frame(maxHeight: .infinity)
 				}
 			}
+			.disabled(!action.isEnabled)
+			.opacity(action.isEnabled ? 1 : 0.38)
 			.accessibilityLabel(action.contentDescription.localized())
 		}
 	}
@@ -73,11 +75,7 @@ struct AppBarHandler: ViewModifier {
 	func buttonRole(from type: ActionType) -> ButtonRole? {
 		switch(type) {
 		case .confirm:
-			if #available(iOS 26.0, *) {
-				return .confirm
-			} else {
-				return nil
-			}
+			return .confirm
 		case .negative:
 			return .destructive
 		case .cancel:

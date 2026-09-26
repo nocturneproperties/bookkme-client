@@ -22,5 +22,6 @@ struct PlainList<Content: View>: View {
 			content()
 		}
 		.listSectionSpacing(8)
+		.scrollDismissesKeyboard(.immediately)
 	}
 }

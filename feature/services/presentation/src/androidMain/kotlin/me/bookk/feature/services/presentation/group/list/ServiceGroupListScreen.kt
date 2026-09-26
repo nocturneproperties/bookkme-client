@@ -35,12 +35,10 @@ import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.services.presentation.group.add.AddGroupDialog
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState.ServiceGroupUI
-import kotlin.uuid.Uuid
 
 @Composable
 internal fun ServiceGroupListScreen(
-    state: ServiceGroupListState,
-    businessId: Uuid
+    state: ServiceGroupListState
 ) {
     CollapsingAppBarScaffold(
         modifier = Modifier
@@ -77,7 +75,7 @@ internal fun ServiceGroupListScreen(
             }
         }
         if (state.isAddGroupDialogVisible) {
-            AddGroupDialog(businessId) { state.isAddGroupDialogVisible = false }
+            AddGroupDialog { state.isAddGroupDialogVisible = false }
         }
     }
 }
@@ -90,9 +88,11 @@ private fun ServiceGroupItem(modifier: Modifier, item: ServiceGroupUI) {
         modifier = modifier
             .fillMaxWidth()
             .combinedClickable(
-                onLongClick = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    menuExpanded = true
+                onLongClick = item.onDeleteClick?.let {
+                    {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        menuExpanded = true
+                    }
                 },
                 onClick = { item.onItemClick() }
             )
@@ -102,19 +102,21 @@ private fun ServiceGroupItem(modifier: Modifier, item: ServiceGroupUI) {
     ) {
         Text(item.name)
     }
-    DropdownMenu(
-        expanded = menuExpanded,
-        containerColor = LocalColors.current.elevated,
-        onDismissRequest = { menuExpanded = false }
-    ) {
-        DropdownMenuItem(
-            text = {
-                Text(
-                    DesignSystem.strings.action_delete.desc().localized(),
-                    color = LocalColors.current.error
-                )
-            },
-            onClick = { item.onDeleteClick() }
-        )
+    item.onDeleteClick?.let { onDeleteClick ->
+        DropdownMenu(
+            expanded = menuExpanded,
+            containerColor = LocalColors.current.elevated,
+            onDismissRequest = { menuExpanded = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        DesignSystem.strings.action_delete.desc().localized(),
+                        color = LocalColors.current.error
+                    )
+                },
+                onClick = { onDeleteClick() }
+            )
+        }
     }
 }

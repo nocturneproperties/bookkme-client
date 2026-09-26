@@ -32,14 +32,18 @@ import androidx.navigation.compose.rememberNavController
 import me.bookk.android.navigation.rememberAppointmentsNavigation
 import me.bookk.android.navigation.rememberAuthNavigation
 import me.bookk.android.navigation.rememberClientsNavigation
+import me.bookk.android.navigation.rememberEmployeesNavigation
 import me.bookk.android.navigation.rememberServicesNavigation
 import me.bookk.core.android.AndroidActivityAware
+import me.bookk.core.presentation.BusinessAccessSuspendedHandler
+import me.bookk.core.presentation.LocalBusinessAccessSuspendedHandler
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.UnauthorizedHandler
 import me.bookk.designsystem.action.isKeyboardMovingDownOrInvisible
 import me.bookk.designsystem.action.keyboardMovingDirection
 import me.bookk.designsystem.components.DefaultSnackbarProvider
 import me.bookk.designsystem.components.LocalSnackbarProvider
+import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -54,12 +58,13 @@ import me.bookk.feature.authorization.presentation.navigation.authGraph
 import me.bookk.feature.business.presentation.BusinessTab
 import me.bookk.feature.business.presentation.navigation.BusinessDestination
 import me.bookk.feature.business.presentation.navigation.BusinessNavigation
-import me.bookk.feature.business.presentation.screen.create.CreateBusinessSheet
 import me.bookk.feature.business.presentation.screen.plugins.pluginsScreen
 import me.bookk.feature.clients.presentation.ClientsDestinations
 import me.bookk.feature.clients.presentation.clientsGraph
 import me.bookk.feature.dashboard.presentation.navigation.DashboardDestination
 import me.bookk.feature.dashboard.presentation.navigation.dashboardGraph
+import me.bookk.feature.employees.presentation.EmployeesDestinations
+import me.bookk.feature.employees.presentation.employeesGraph
 import me.bookk.feature.services.presentation.ServicesDestination
 import me.bookk.feature.services.presentation.servicesGraph
 import me.bookk.feature.settings.presentation.SettingsTab
@@ -96,7 +101,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavigationRoot(
                         state = viewModel.state,
-                        onUnauthorized = viewModel::logOut
+                        onUnauthorized = viewModel::logOut,
+                        onBusinessAccessSuspended = viewModel::onBusinessAccessSuspended
                     )
                 }
             }
@@ -106,10 +112,15 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalUuidApi::class)
 @Composable
-private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHandler) {
+private fun NavigationRoot(
+    state: BootstrapState,
+    onUnauthorized: UnauthorizedHandler,
+    onBusinessAccessSuspended: BusinessAccessSuspendedHandler
+) {
     val controller = rememberNavController()
     val authNavigation = rememberAuthNavigation(controller)
     val clientsNavigation = rememberClientsNavigation(controller)
+    val employeesNavigation = rememberEmployeesNavigation(controller)
     val servicesNavigation = rememberServicesNavigation(controller)
     val appointmentsNavigation = rememberAppointmentsNavigation(controller)
     val destination = state.startDestination
@@ -117,9 +128,16 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
         val snackBarState = remember { SnackbarHostState() }
         val snackBarScope = rememberCoroutineScope()
         val snackbarProvider = remember { DefaultSnackbarProvider(snackBarScope, snackBarState) }
+        val onSuspended = remember(controller, onBusinessAccessSuspended) {
+            BusinessAccessSuspendedHandler {
+                controller.popBackStack<DashboardDestination>(inclusive = false)
+                onBusinessAccessSuspended.onBusinessAccessSuspended()
+            }
+        }
 
         CompositionLocalProvider(
             LocalUnauthorizedHandler provides onUnauthorized,
+            LocalBusinessAccessSuspendedHandler provides onSuspended,
             LocalSnackbarProvider provides snackbarProvider
         ) {
             NavHost(
@@ -146,17 +164,21 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
             ) {
                 authGraph(navigation = authNavigation)
                 clientsGraph(navigation = clientsNavigation)
+                employeesGraph(navigation = employeesNavigation)
                 servicesGraph(navigation = servicesNavigation)
                 appointmentsGraph(navigation = appointmentsNavigation)
                 dashboardGraph(
                     homeTab = { AppointmentsTab() },
                     businessTab = {
                         BusinessTab(
+                            showEmployees = {
+                                controller.navigate(EmployeesDestinations.EmployeeList)
+                            },
                             showClients = {
-                                controller.navigate(ClientsDestinations.Clients(it))
+                                controller.navigate(ClientsDestinations.Clients)
                             },
                             showServices = {
-                                controller.navigate(ServicesDestination.Services(it))
+                                controller.navigate(ServicesDestination.Services)
                             },
                             showAppointmentSettings = {
                                 controller.navigate(AppointmentsDestination.Settings(it))
@@ -167,11 +189,11 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                         )
                     },
                     settingsTab = { SettingsTab() },
-                    createBusinessSheet = { onDismiss -> CreateBusinessSheet(onDismiss) },
                     onEnablePlugins = { controller.navigate(BusinessDestination.Plugins(it)) }
                 )
                 pluginsScreen(navigation = BusinessNavigation())
             }
+            ObserveNotifications(state.notifications)
         }
         Box(
             modifier = Modifier

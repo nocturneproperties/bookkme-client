@@ -22,6 +22,7 @@ interface BusinessPluginState {
     var title: StringDesc
     var subtitle: StringDesc
     var isEnabled: Boolean
+    var canEnable: Boolean
     var isExpanded: Boolean
     val youCan: ListState<OptionalInfoLine>
     val clientCan: ListState<OptionalInfoLine>

@@ -1,5 +1,6 @@
 import build_src.constants.ApplicationConfig
 import build_src.constants.ProductFlavour
+import build_src.tools.findLocalProperty
 import build_src.tools.getCurrentVariant
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
@@ -15,6 +16,8 @@ kotlin {
         namespace = "me.bookk.shared"
     }
 }
+
+val proxyUrl = findLocalProperty("bookk.proxyUrl").orEmpty()
 
 buildkonfig {
     packageName = "me.bookk.shared"
@@ -33,6 +36,12 @@ buildkonfig {
             const = true
         )
         buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
+        buildConfigField(
+            STRING,
+            "PROXY_URL",
+            if (getCurrentVariant().contains("debug", ignoreCase = true)) proxyUrl else "",
+            const = true
+        )
     }
     defaultConfigs(ProductFlavour.DEV.title + "Debug") {
         buildConfigField(
@@ -124,6 +133,11 @@ kotlin {
             implementation(projects.feature.services.domain.impl)
             implementation(projects.feature.services.data)
             api(projects.feature.services.presentation)
+            //Employees
+            implementation(projects.feature.employees.domain.api)
+            implementation(projects.feature.employees.domain.impl)
+            implementation(projects.feature.employees.data)
+            api(projects.feature.employees.presentation)
             //Appointments
             implementation(projects.feature.appointments.domain.api)
             implementation(projects.feature.appointments.domain.impl)
@@ -140,6 +154,9 @@ kotlin {
             implementation(libs.logger)
             api(libs.kotlinx.datetime)
             api(libs.kmm.resources)
+        }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -167,6 +184,7 @@ kotlin {
             export(projects.feature.clients.presentation)
             export(projects.feature.services.presentation)
             export(projects.feature.appointments.presentation)
+            export(projects.feature.employees.presentation)
             export(projects.library.money)
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)

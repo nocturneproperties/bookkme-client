@@ -13,7 +13,9 @@ fun TimePickerField(
         modifier = modifier,
         state = state.textField,
         interactionSource = singleClickInteractionSource {
-            state.timePicker.isTimePickerVisible = true
+            if (state.textField.enabled) {
+                state.timePicker.isTimePickerVisible = true
+            }
         }
     )
 

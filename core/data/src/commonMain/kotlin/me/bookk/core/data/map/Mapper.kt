@@ -2,10 +2,12 @@ package me.bookk.core.data.map
 
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
+import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.CancellationException
 import kotlinx.io.IOException
 import me.bookk.core.data.BuildKonfig
 import me.bookk.core.data.BusinessServerError
+import me.bookk.core.data.ServerErrorCodes
 import me.bookk.core.domain.entity.Error
 
 suspend fun Throwable.toDomain(): Error {
@@ -19,6 +21,8 @@ suspend fun Throwable.toDomain(): Error {
                 in 400..500 -> {
                     val body = runCatching { response.body<BusinessServerError>() }.getOrNull()
                     when {
+                        body != null && body.isAccessSuspended(response.status.value) ->
+                            Error.BusinessAccessSuspended(body.message)
                         body != null -> Error.BusinessError(body.errorCode, body.message)
                         response.status.value == 400 -> Error.BadRequest(this)
                         response.status.value == 500 -> Error.InternalServerError(this)
@@ -40,4 +44,8 @@ suspend fun Throwable.toDomain(): Error {
             Error.Unknown(this)
         }
     }
+}
+
+private fun BusinessServerError.isAccessSuspended(status: Int): Boolean {
+    return status == HttpStatusCode.Forbidden.value && errorCode == ServerErrorCodes.BUSINESS_EMPLOYEE_ACCESS_SUSPENDED
 }

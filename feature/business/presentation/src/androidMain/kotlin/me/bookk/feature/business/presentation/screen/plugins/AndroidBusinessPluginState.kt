@@ -17,6 +17,7 @@ internal class AndroidBusinessPluginState : BusinessPluginState {
     override var title: StringDesc by mutableStateOf("".desc())
     override var subtitle: StringDesc by mutableStateOf("".desc())
     override var isEnabled: Boolean by mutableStateOf(false)
+    override var canEnable: Boolean by mutableStateOf(false)
     override var isExpanded: Boolean by mutableStateOf(false)
     override val youCan: ListState<OptionalInfoLine> = AndroidListState()
     override val clientCan: ListState<OptionalInfoLine> = AndroidListState()

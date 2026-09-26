@@ -1,31 +1,34 @@
 package me.bookk.feature.clients.presentation.details
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filter
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.clients.resources.ClientsRes
+import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.dashOnBlank
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.error.ActionType
-import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.InfoLine
-import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.GetClient
+import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.clients.domain.api.entity.ClientEvent
+import me.bookk.feature.clients.domain.api.entity.listenFor
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.details.ClientDetailsDestination.Back
+import me.bookk.feature.clients.presentation.details.ClientDetailsDestination.Edit
 import kotlin.properties.Delegates.notNull
+import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
 class ClientDetailsViewModel(
-    private val id: Uuid,
+    @InjectedParam private val id: Uuid,
     private val getClient: GetClient,
-    private val deleteClient: DeleteClient,
+    private val getClientsPermissions: GetClientsPermissions,
     private val device: DeviceFacade,
     stateFactory: ClientsStateFactory,
     vmArgs: VmArgs
@@ -36,26 +39,38 @@ class ClientDetailsViewModel(
 
     init {
         loadClient()
+        listenFor<ClientEvent.Updated>()
+            .filter { it.client.id == id }
+            .safeOnEach { loadClient() }
+            .observe()
     }
 
     private fun loadClient() {
         launch(
-            launchIn = Dispatchers.Default,
-            call = { getClient(id) },
-            onComplete = {
-                client = it
-                uiState.appBar.title = it.fullName.desc()
+            launchIn = DispatcherProvider.io,
+            call = {
+                val client = getClient(id)
+                client to getClientsPermissions(client.businessId)
+            },
+            onComplete = { (loadedClient, permissions) ->
+                client = loadedClient
+                renderEditAction(permissions.canEdit)
+                uiState.appBar.title = loadedClient.fullName.desc()
                 uiState.infoSections.replace(
                     listOf(
                         InfoLine(
                             title = ClientsRes.strings.clients_create_phone,
-                            value = it.phone,
-                            onClick = { device.dial(it.phone) }
+                            value = loadedClient.phone.dashOnBlank(),
+                            onClick = { loadedClient.phone?.let { device.dial(it) } }
                         ),
                         InfoLine(
                             title = ClientsRes.strings.clients_create_email,
-                            value = it.email.ifBlank { "-" },
-                            onClick = { device.mail(it.email) }
+                            value = loadedClient.email.dashOnBlank(),
+                            onClick = { loadedClient.email?.let { device.mail(it) } }
+                        ),
+                        InfoLine(
+                            title = ClientsRes.strings.clients_details_description,
+                            value = loadedClient.description.dashOnBlank()
                         )
                     )
                 )
@@ -64,35 +79,26 @@ class ClientDetailsViewModel(
         )
     }
 
-    private fun onDeleteClient() {
-        uiState.notifications.add(
-            PresentationNotification.Message.deleteConfirmation(
-                message = ClientsRes.strings.clients_delete_desc.desc(),
-                onConfirmed = ::onDeleteConfirmed,
+    private fun renderEditAction(canEdit: Boolean) {
+        val actions = if (canEdit) {
+            listOf(
+                AppBarAction(
+                    contentDescription = DesignSystem.strings.action_edit.desc(),
+                    onClick = weakVMClosure { it.onEditClick() }
+                )
             )
-        )
+        } else {
+            emptyList()
+        }
+        uiState.appBar.actions.replace(actions)
     }
 
-    private fun onDeleteConfirmed() {
-        launch(
-            launchIn = Dispatchers.Default,
-            call = { deleteClient(client) },
-            onComplete = { uiState.navigation.push(Back) },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
-        )
+    private fun onEditClick() {
+        uiState.navigation.push(Edit(id))
     }
 
     private fun ClientDetailsState.setup() = apply {
         appBar.size = TopBarSize.LARGE
         appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
-        appBar.actions.replace(
-            listOf(
-                AppBarAction(
-                    contentDescription = DesignSystem.strings.action_delete.desc(),
-                    type = ActionType.NEGATIVE,
-                    onClick = weakVMClosure { it.onDeleteClient() }
-                )
-            )
-        )
     }
 }

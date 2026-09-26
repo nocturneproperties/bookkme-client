@@ -4,23 +4,37 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.get
+import io.ktor.client.plugins.resources.patch
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import library.cache.api.PreferenceProvider
+import library.cache.api.Preferences
+import library.cache.api.get
+import library.cache.api.set
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.ClientsDao
 import me.bookk.feature.clients.data.mapping.toDbEntity
 import me.bookk.feature.clients.data.mapping.toDomain
 import me.bookk.feature.clients.data.mapping.toRemote
+import me.bookk.feature.clients.data.mapping.toUpdateRemote
 import me.bookk.feature.clients.data.remote.api.ClientsRouting.Api
 import me.bookk.feature.clients.data.remote.model.ClientRemote
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 internal class CommonClientsDataSource(
     private val httpClient: HttpClient,
-    private val clientsDao: ClientsDao
-) : DataSource(), ClientsDataSource {
+    private val clientsDao: ClientsDao,
+    preferenceProvider: PreferenceProvider
+) : DataSource(), ClientsDataSource, LogOutAction {
+
+    private val preferences = preferenceProvider.get("clients_prefs")
 
     override suspend fun getClients(businessId: Uuid): List<Client> {
         return mapExceptions {
@@ -30,11 +44,10 @@ internal class CommonClientsDataSource(
         }
     }
 
-    override suspend fun getClientsFromDb(businessId: Uuid): List<Client> {
-        return mapExceptions {
-            clientsDao.getClients(businessId)
-                .map { it.toDomain() }
-        }
+    override fun observeClientsDBChanges(businessId: Uuid): Flow<List<Client>> {
+        return clientsDao.observeClients(businessId)
+            .map { clients -> clients.map { it.toDomain() } }
+            .mapErrors()
     }
 
     override suspend fun getClient(id: Uuid): Client {
@@ -47,6 +60,16 @@ internal class CommonClientsDataSource(
         return mapExceptions {
             httpClient.post(Api.Clients(businessId = client.businessId)) {
                 setBody(client.toRemote())
+            }
+                .body<ClientRemote>()
+                .toDomain(client.businessId)
+        }
+    }
+
+    override suspend fun updateClient(client: Client): Client {
+        return mapExceptions {
+            httpClient.patch(Api.Clients.Id(Api.Clients(businessId = client.businessId), id = client.id)) {
+                setBody(client.toUpdateRemote())
             }
                 .body<ClientRemote>()
                 .toDomain(client.businessId)
@@ -67,7 +90,30 @@ internal class CommonClientsDataSource(
         mapExceptions { clientsDao.deleteById(id) }
     }
 
-    override suspend fun deleteClientsInDb() {
-        mapExceptions { clientsDao.clear() }
+    override suspend fun getClientIdsInDb(businessId: Uuid): List<Uuid> {
+        return mapExceptions { clientsDao.getIds(businessId) }
+    }
+
+    override suspend fun deleteClientsInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> clientsDao.deleteByIds(chunk) }
+        }
+    }
+
+    override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
+        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+    }
+
+    override suspend fun saveLastSyncedAt(businessId: Uuid) {
+        preferences.set(Key.lastSyncedAt(businessId), Clock.System.now().toEpochMilliseconds())
+    }
+
+    override suspend fun doOnLogOut() {
+        preferences.clear()
+        clientsDao.clear()
+    }
+
+    private object Key {
+        fun lastSyncedAt(businessId: Uuid) = Preferences.Key<Long>("last_synced_at_$businessId")
     }
 }

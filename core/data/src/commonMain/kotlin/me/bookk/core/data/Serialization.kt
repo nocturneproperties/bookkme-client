@@ -10,7 +10,9 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.protobuf.ProtoBuf
 
 
-val dataSerializer = ProtoBuf { encodeDefaults = true }
+val dataSerializer = ProtoBuf {
+    encodeDefaults = false
+}
 
 object TimeZoneSerializer : KSerializer<TimeZone> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("TimeZone", PrimitiveKind.STRING)

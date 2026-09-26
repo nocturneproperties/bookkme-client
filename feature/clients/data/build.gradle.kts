@@ -20,5 +20,9 @@ kotlin {
             implementation(projects.library.cache.api)
             implementation(libs.ktor.client.resources)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+            implementation(libs.kotlin.serialization.core)
+        }
     }
 }

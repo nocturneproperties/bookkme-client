@@ -6,8 +6,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.LaunchBehaviour
@@ -48,8 +46,8 @@ class AppointmentHistoryViewModel(
             .debounce(SEARCH_DEBOUNCE_MS)
             .distinctUntilChanged()
             .flowOn(DispatcherProvider.io)
-            .onEach { loadHistory(it) }
-            .launchIn(viewModelScope)
+            .safeOnEach { loadHistory(it) }
+            .observe()
     }
 
     private fun loadHistory(query: String? = null, isRefresh: Boolean = false) {

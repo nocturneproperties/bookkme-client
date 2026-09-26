@@ -37,6 +37,7 @@ struct NotificationSettingsScreen: View {
 				Text(SettingsRes.strings().settings_notifications_types_footer.desc().localized())
 			}
 		}
+		.scrollDismissesKeyboard(.immediately)
 		.withNavigationBar(state.appBar)
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(state.notifications)

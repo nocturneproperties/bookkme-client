@@ -136,7 +136,9 @@ struct BusinessPluginCard: View {
 					.clipShape(RoundedRectangle(cornerRadius: 8))
 				}
 				
-				StateButton(state.enable)
+				if state.canEnable {
+					StateButton(state.enable)
+				}
 			}
 		}
 	}

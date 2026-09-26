@@ -161,12 +161,14 @@ internal fun BusinessPlugin(
                                 )
                             }
                         }
-                        ActionButton(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp),
-                            state = state.enable
-                        )
+                        if (state.canEnable) {
+                            ActionButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                                state = state.enable
+                            )
+                        }
                     }
                 }
             }

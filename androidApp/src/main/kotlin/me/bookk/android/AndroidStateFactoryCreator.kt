@@ -1,7 +1,9 @@
 package me.bookk.android
 
+import library.credentials.api.PasskeyCredentialUpdater
 import library.credentials.di.CredentialModuleFactory
 import library.credentials.impl.AndroidCredentialFactory
+import library.credentials.impl.AndroidPasskeyCredentialUpdater
 import library.picker.AndroidPickOptionStateFactory
 import library.picker.PickOptionStateFactory
 import me.bookk.feature.appointments.presentation.AndroidAppointmentsStateFactory
@@ -14,6 +16,8 @@ import me.bookk.feature.clients.presentation.AndroidClientsStateFactory
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.dashboard.presentation.AndroidDashboardStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
+import me.bookk.feature.employees.presentation.AndroidEmployeesStateFactory
+import me.bookk.feature.employees.presentation.EmployeesStateFactory
 import me.bookk.feature.services.presentation.AndroidServicesStateFactory
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
@@ -43,6 +47,14 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
 
     override fun createDashboardFactory(): DashboardStateFactory {
         return AndroidDashboardStateFactory()
+    }
+
+    override fun createEmployeesFactory(): EmployeesStateFactory {
+        return AndroidEmployeesStateFactory()
+    }
+
+    override fun createPasskeyCredentialUpdater(): PasskeyCredentialUpdater {
+        return AndroidPasskeyCredentialUpdater()
     }
 
     override fun createPickOptionFactory(): PickOptionStateFactory {

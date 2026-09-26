@@ -26,6 +26,7 @@ internal fun NavGraphBuilder.clientDetailsScreen(navigation: ClientsNavigation) 
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
                     ClientDetailsDestination.Back -> navigation.onBack()
+                    is ClientDetailsDestination.Edit -> navigation.toEditClient(it.id)
                 }
             }
         }

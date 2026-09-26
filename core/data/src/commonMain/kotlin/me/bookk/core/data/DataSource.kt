@@ -12,6 +12,10 @@ private val dataErrorLogger by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
 
 abstract class DataSource {
 
+    companion object {
+        const val DELETE_CHUNK_SIZE = 100
+    }
+
     suspend fun <T> mapExceptions(
         exceptionMapper: ((Error) -> Throwable)? = null,
         finally: (() -> Unit)? = null,

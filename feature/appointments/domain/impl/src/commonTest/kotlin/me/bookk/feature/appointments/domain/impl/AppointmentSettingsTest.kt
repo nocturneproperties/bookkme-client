@@ -13,6 +13,7 @@ import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.test.Test
@@ -51,7 +52,8 @@ class AppointmentSettingsTest {
         ),
         automaticApproval = false,
         inBetweenBreakInMinutes = 10,
-        appointmentNote = ""
+        appointmentNote = "",
+        permissions = ResourcePermission()
     )
 
     private fun instantAt(date: LocalDate, time: LocalTime) =

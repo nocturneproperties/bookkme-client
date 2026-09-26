@@ -58,6 +58,7 @@ internal class FakeEditEmployeeState : EditEmployeeState {
     override val contacts = FakeListState<InfoLine>()
     override val services = FakeOptionsMultiPickerState<EmployeeServicePresentation>()
     override val schedule = FakeScheduleState()
+    override val suspension = FakeButtonState()
     override val permissions = FakeListState<ResourcePermissionState>()
     override var isPermissionsVisible: Boolean = false
     override var permissionsHint: StringDesc? = null

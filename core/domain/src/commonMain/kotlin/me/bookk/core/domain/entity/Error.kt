@@ -9,12 +9,14 @@ sealed class Error(val error: String, cause: Throwable?) : Throwable(error, caus
     class BadRequest(cause: Throwable) : Error("BadRequest", cause)
     class Ignore(cause: Throwable) : Error("Exception can be ignored", cause)
     class Unknown(cause: Throwable) : Error("Unknown error", cause)
-    data object InvalidApplicationState : Error("Invalid app state", null)
+    class InvalidApplicationState : Error("Invalid app state", null)
 
     class BusinessError(
         val errorCode: Int,
         message: String
     ) : Error(message, null)
+
+    class BusinessAccessSuspended(message: String) : Error(message, null)
 
     class UnknownApiError(
         error: String,

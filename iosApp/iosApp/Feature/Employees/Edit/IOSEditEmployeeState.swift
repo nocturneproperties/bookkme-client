@@ -12,6 +12,7 @@ class IOSEditEmployeeState: @MainActor EditEmployeeState, NativeStateRepresentat
 	let contacts: any ListState
 	let services: any OptionsMultiPickerState
 	let schedule: any ScheduleState
+	let suspension: any ButtonState
 	let permissions: any ListState
 	var isPermissionsVisible: Bool
 	var permissionsHint: (any StringDesc)?
@@ -24,6 +25,7 @@ class IOSEditEmployeeState: @MainActor EditEmployeeState, NativeStateRepresentat
 		contacts = IOSListState<InfoLine>()
 		services = IOSOptionsMultiPickerState()
 		schedule = IOSScheduleState()
+		suspension = IOSButtonState(isVisible: false)
 		permissions = IOSListState<ResourcePermissionState>()
 		isPermissionsVisible = false
 		permissionsHint = nil

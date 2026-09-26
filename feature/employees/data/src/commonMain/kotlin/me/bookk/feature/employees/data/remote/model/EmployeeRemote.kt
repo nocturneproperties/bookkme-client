@@ -20,7 +20,8 @@ internal class EmployeeRemote(
     @ProtoNumber(8) val services: List<ServiceRemote>,
     @ProtoNumber(9) val schedule: ScheduleRemote,
     @ProtoNumber(10) val createdAt: Instant,
-    @ProtoNumber(11) val permissions: BusinessPermissionsRemote
+    @ProtoNumber(11) val permissions: BusinessPermissionsRemote,
+    @ProtoNumber(12) val suspendedAt: Instant? = null
 ) {
     fun toDomain() = Employee(
         id = id,
@@ -33,7 +34,8 @@ internal class EmployeeRemote(
         services = services.map { it.toDomain() },
         schedule = schedule.toDomain(),
         createdAt = createdAt,
-        permissions = permissions.toDomain()
+        permissions = permissions.toDomain(),
+        suspendedAt = suspendedAt
     )
 }
 
@@ -84,6 +86,11 @@ internal class EmployeePermissionsRequest(
         }
     }
 }
+
+@Serializable
+internal class EmployeeSuspensionRequest(
+    @ProtoNumber(1) val suspended: Boolean
+)
 
 @Serializable
 internal class ResourcePermissionRemote(

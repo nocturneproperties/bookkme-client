@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.employees.resources.EmployeesRes
+import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.Header
@@ -77,6 +78,9 @@ internal fun EditEmployeeScreen(state: EditEmployeeState) {
                 ServiceItem(item, onItemRemove.takeIf { state.services.isEditable })
             }
             ScheduleSection(state.schedule)
+            if (state.suspension.isVisible) {
+                ActionButton(state.suspension, Modifier.fillMaxWidth())
+            }
             if (state.isPermissionsVisible || state.permissionsHint != null) {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Header(EmployeesRes.strings.employees_edit_permissions.desc().localized())

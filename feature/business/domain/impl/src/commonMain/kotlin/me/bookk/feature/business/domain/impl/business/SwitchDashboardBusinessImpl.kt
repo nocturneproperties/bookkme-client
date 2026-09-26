@@ -7,8 +7,8 @@ import kotlin.uuid.Uuid
 internal class SwitchDashboardBusinessImpl(
     private val businessDataSource: BusinessDataSource
 ) : SwitchDashboardBusiness {
-    override suspend fun invoke(businessId: Uuid) {
+    override suspend fun invoke(businessId: Uuid?) {
         businessDataSource.saveDashboardBusinessId(businessId)
-        runCatching { businessDataSource.setDashboardBusinessOnRemote(businessId) }
+        runCatching { businessDataSource.setDashboardBusinessOnRemote(businessId ?: return) }
     }
 }

@@ -17,8 +17,12 @@ data class Employee(
     val services: List<Service>,
     val schedule: WorkingSchedule,
     val createdAt: Instant,
-    val permissions: BusinessPermissions
+    val permissions: BusinessPermissions,
+    val suspendedAt: Instant?
 ) {
+    val isSuspended: Boolean
+        get() = suspendedAt != null
+
     val fullName: String
         get() = "$name $lastName"
 }

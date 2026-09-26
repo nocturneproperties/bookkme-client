@@ -12,6 +12,8 @@ interface BusinessDataSource {
     suspend fun clearBusinessTable()
     suspend fun saveBusinessInDB(business: Business)
     suspend fun saveBusinessListInDB(businesses: List<Business>)
+    suspend fun getBusinessIdsInDb(): List<Uuid>
+    suspend fun deleteBusinessesInDb(ids: List<Uuid>)
     suspend fun getBusinessesFromRemote(): UserBusinessInfo
     suspend fun getBusinessById(id: Uuid): Business?
     suspend fun saveDashboardBusinessId(id: Uuid?)

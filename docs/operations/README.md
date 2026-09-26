@@ -12,6 +12,19 @@ diagrams show exactly which table a screen observes and what rewrites it. For th
 [Local database ER diagrams](../database/README.md). For the server-side behaviour behind each route, see
 bookk-server `docs/operations/`.
 
+**Business access suspended.** Every business-scoped route in the `business` and `appointments` services
+answers `403` with `BUSINESS_EMPLOYEE_ACCESS_SUSPENDED` (200034) when the caller is a suspended employee of that
+business. The diagrams do not repeat this branch. `Throwable.toDomain()` (`core/data/.../map/Mapper.kt`) turns
+that response into `Error.BusinessAccessSuspended` instead of `Error.BusinessError`, so `onBusinessError`
+blocks rethrow it untouched. `ErrorMapperImpl` maps it to `PresentationNotification.BusinessAccessSuspended`,
+which the platform notification observers hand to a root-level handler (`LocalBusinessAccessSuspendedHandler`
+on Android, the `BusinessAccessSuspendedHandler` environment object on iOS), the same way `Unauthorized` reaches
+`BootstrapViewModel.logOut()`. The handler calls `BootstrapViewModel.onBusinessAccessSuspended()`, which shows the
+"Access suspended" message and runs [Initiate business suspend](authorization/initiate-business-suspend.md), which
+clears the dashboard selection and reloads every business, so the dashboard falls back to its Get started screen
+where the user can pick one of the remaining businesses. The call is keyed with `LaunchBehaviour.DropLatest`, so suspensions reported
+while a refresh is running are dropped.
+
 Legend: `[(…)]` is a Room or DataStore access, `[…]` with an HTTP verb is a network call, and `([…])` is a
 terminal (return, emit or throw). "local only" means the use case never touches the network.
 
@@ -32,6 +45,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 |---|---|---|
 | `CreateAccount` | `POST /api/auth/passkey/sign_up/challenge`, `POST /api/auth/sign_up` | [Create account](authorization/create-account.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
+| `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
 | `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `GET /api/user/me`, `GET /api/business`, then per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
 | `LogOut` | `DELETE /api/auth/session` | [Log out](authorization/log-out.md) |
 | `RefreshToken` | `POST /api/auth/refresh` | [Refresh token](authorization/refresh-token.md) |
@@ -88,6 +102,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `GetEmployees` | `GET /api/business/{businessId}/employee` | [Get employees](employees/get-employees.md) |
 | `GetEmployee` | local only (`employee` tables) | [Get employee](employees/get-employee.md) |
 | `UpdateEmployee` | `PUT /api/business/{businessId}/employee/{id}` + `PUT /api/business/{businessId}/employee/{id}/permissions` (parallel; permissions skipped for the owner) | [Update employee](employees/update-employee.md) |
+| `SetEmployeeSuspension` | `PUT /api/business/{businessId}/employee/{id}/suspension` | [Set employee suspension](employees/set-employee-suspension.md) |
 | `GetAssignableServices` | via `GetServices` | [Get assignable services](employees/get-assignable-services.md) |
 | `IsBusinessOwner` | local only (`business` table via `ObserveUserBusinessesChanges`; current-user overload also `UserProfileCRUD`) | [Is business owner](employees/is-business-owner.md) |
 | `CanEditEmployees` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Can edit employees](employees/can-edit-employees.md) |
@@ -149,6 +164,7 @@ don't need them, because they redraw from the table.
 | Use case | Calls |
 |---|---|
 | [Create account](authorization/create-account.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
+| [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |
 | [Initial app data fetch](authorization/initial-app-data-fetch.md) | `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
 | [Create business](business/create-business.md) | `RefreshBusinessInfo`, `SwitchDashboardBusiness` |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | `RefreshBusinessInfo`, `SwitchDashboardBusiness` |
@@ -174,7 +190,7 @@ These are recorded here and in the linked diagrams and are currently accepted as
 | Where | Issue |
 |---|---|
 | [Update appointment](appointments/update-appointment.md) | Returns the input value, not the server result. |
-| [Refresh business info](business/refresh-business-info.md) | Upsert-only: a business the user has left stays cached until logout. The `notification_prefs` pending push token also survives logout. |
+| [Refresh business info](business/refresh-business-info.md) | Deleting a business the user has left does not remove its appointment rows, which reference the business only logically. The `notification_prefs` pending push token also survives logout. |
 | [Create business](business/create-business.md) | Currency hard-coded to `UAH`. |
 | [Cancel appointment](appointments/cancel-appointment.md) | The datasource method does both the network call and the DB write. |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | A refresh or switch failure after a successful redeem surfaces as an error, even though the user has joined. |

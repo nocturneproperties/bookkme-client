@@ -18,6 +18,7 @@ interface EditEmployeeState {
     val contacts: ListState<InfoLine>
     val services: OptionsMultiPickerState<EmployeeServicePresentation>
     val schedule: ScheduleState
+    val suspension: ButtonState
     val permissions: ListState<ResourcePermissionState>
     var isPermissionsVisible: Boolean
     var permissionsHint: StringDesc?

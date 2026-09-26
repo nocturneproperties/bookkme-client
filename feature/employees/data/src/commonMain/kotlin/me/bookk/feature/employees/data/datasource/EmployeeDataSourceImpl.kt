@@ -24,6 +24,7 @@ import me.bookk.feature.employees.data.mapping.toWorkHourEntities
 import me.bookk.feature.employees.data.remote.api.EmployeeRouting.Api
 import me.bookk.feature.employees.data.remote.model.EmployeePermissionsRequest
 import me.bookk.feature.employees.data.remote.model.EmployeeRemote
+import me.bookk.feature.employees.data.remote.model.EmployeeSuspensionRequest
 import me.bookk.feature.employees.data.remote.model.EmployeeUpdateRequest
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.domain.datasource.EmployeeDataSource
@@ -108,6 +109,15 @@ internal class EmployeeDataSourceImpl(
         val employeeId = Api.Employee.Id(Api.Employee(businessId = businessId), id)
         httpClient.put(Api.Employee.Id.Permissions(employeeId)) {
             setBody(EmployeePermissionsRequest.fromDomain(permissions))
+        }
+            .body<EmployeeRemote>()
+            .toDomain()
+    }
+
+    override suspend fun setEmployeeSuspension(businessId: Uuid, id: Uuid, suspended: Boolean): Employee = mapExceptions {
+        val employeeId = Api.Employee.Id(Api.Employee(businessId = businessId), id)
+        httpClient.put(Api.Employee.Id.Suspension(employeeId)) {
+            setBody(EmployeeSuspensionRequest(suspended = suspended))
         }
             .body<EmployeeRemote>()
             .toDomain()

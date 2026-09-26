@@ -7,3 +7,9 @@ fun interface UnauthorizedHandler {
 }
 
 val LocalUnauthorizedHandler = staticCompositionLocalOf { UnauthorizedHandler {} }
+
+fun interface BusinessAccessSuspendedHandler {
+    fun onBusinessAccessSuspended()
+}
+
+val LocalBusinessAccessSuspendedHandler = staticCompositionLocalOf { BusinessAccessSuspendedHandler {} }

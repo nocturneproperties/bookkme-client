@@ -12,6 +12,9 @@ object EmployeeRouting {
             class Id(val parent: Employee, val id: Uuid) {
                 @Resource("/permissions")
                 class Permissions(val parent: Id)
+
+                @Resource("/suspension")
+                class Suspension(val parent: Id)
             }
         }
 

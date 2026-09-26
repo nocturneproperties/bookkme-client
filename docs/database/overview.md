@@ -77,6 +77,9 @@ erDiagram
 
 Deleting one `business` row removes all of its clients, employees (and their schedules/snapshots),
 invitations, service groups and services. Its appointments, requests and appointment settings **survive**.
-Business rows are deleted only on logout (`businessDao.clear()`), which empties every table anyway. The cascades that do fire in practice are `service_group` → `service`
+Business rows are deleted on logout (`businessDao.clear()`), which empties every table anyway, and by
+[Refresh business info](../operations/business/refresh-business-info.md) for businesses missing from
+`GET /api/business` (`businessDao.deleteByIds`), which fires the cascade above and leaves that business's
+appointment rows behind. The other cascades that fire in practice are `service_group` → `service`
 ([Delete service group](../operations/services/delete-service-group.md)) and the parent-to-child aggregate
 cascades triggered by the `deleteByIds` stale-row deletion inside each `refresh()`.

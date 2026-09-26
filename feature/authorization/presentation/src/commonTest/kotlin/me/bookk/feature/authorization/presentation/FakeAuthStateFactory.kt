@@ -33,6 +33,7 @@ internal class FakeAuthStateFactory : AuthStateFactory {
 internal class FakeBootstrapState : BootstrapState {
     override var colorScheme: BootstrapState.UIColorScheme = BootstrapState.UIColorScheme.SYSTEM
     override var startDestination: BootstrapNavigationDestination? = null
+    override val notifications = FakeNotificationState()
 }
 
 internal class FakeSignInState(override val passkeyInfoCardData: PasskeyInfoCardData) : SignInState {

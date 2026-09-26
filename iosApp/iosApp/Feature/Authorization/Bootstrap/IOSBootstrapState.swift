@@ -16,6 +16,7 @@ class IOSBootstrapState: @MainActor BootstrapState {
 	var colorScheme: BootstrapStateUIColorScheme = BootstrapStateUIColorScheme.system
 	
     var navigation: any NavigationState = IOSNavigationState()
+	let notifications: any PresentationNotificationState = IOSNotificationState()
 
 }
 

@@ -32,6 +32,14 @@ struct EditEmployeeScreen: View {
 
 			ScheduleSections(state: state.schedule)
 
+			if state.suspension.isVisible {
+				Section {
+					StateButton(state.suspension)
+				}
+				.listRowInsets(EdgeInsets())
+				.listRowBackground(Color.clear)
+			}
+
 			if state.isPermissionsVisible {
 				ForEach(state.permissions.items(ResourcePermissionState.self), id: \.id) { permission in
 					ResourcePermissionSection(state: permission)

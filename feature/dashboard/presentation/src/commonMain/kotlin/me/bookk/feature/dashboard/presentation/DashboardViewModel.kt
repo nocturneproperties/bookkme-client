@@ -14,10 +14,13 @@ import me.bookk.designsystem.simple
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
+import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
+import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.entity.DashboardSetupStatus
 import me.bookk.feature.dashboard.presentation.state.DashboardState
 import me.bookk.feature.dashboard.presentation.state.HomeContent
+import me.bookk.feature.dashboard.presentation.state.OnboardingBusinessItem
 import me.bookk.feature.dashboard.presentation.state.TabItem
 import me.bookk.feature.dashboard.presentation.state.TabItemsState
 import kotlin.uuid.Uuid
@@ -25,6 +28,8 @@ import kotlin.uuid.Uuid
 class DashboardViewModel(
     private val observeDashboardSetupStatus: ObserveDashboardSetupStatus,
     private val refreshBusinessInfo: RefreshBusinessInfo,
+    private val observeUserBusinessesChanges: ObserveUserBusinessesChanges,
+    private val switchDashboardBusiness: SwitchDashboardBusiness,
     private val joinBusiness: JoinBusiness,
     private val createBusiness: CreateBusiness,
     stateFactory: DashboardStateFactory,
@@ -34,10 +39,12 @@ class DashboardViewModel(
     val uiState: DashboardState = stateFactory.createDashboardState(createInitData()).setup()
 
     private var setupRequiredBusinessId: Uuid? = null
+    private var lastSetupStatus: DashboardSetupStatus? = null
 
     init {
         requestSilentInformationRefresh()
         observeSetupStatus()
+        observeUserBusinesses()
     }
 
     private fun requestSilentInformationRefresh() {
@@ -53,6 +60,24 @@ class DashboardViewModel(
         home.onboarding.onCreateBusinessClick = weakVMClosure { it.showBusinessNameDialog() }
         home.onboarding.onJoinBusinessClick = weakVMClosure { it.onJoinBusinessClick() }
         home.onboarding.onEnablePluginsClick = weakVMClosure { it.onEnablePluginsClick() }
+        home.onboarding.onBusinessClick = weakVMClosure { vm, item -> vm.onBusinessSelected(item) }
+    }
+
+    private fun observeUserBusinesses() {
+        observeUserBusinessesChanges()
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { businesses ->
+                uiState.home.onboarding.businesses = businesses.map { OnboardingBusinessItem(it.id, it.name) }
+            }
+            .observe()
+    }
+
+    private fun onBusinessSelected(item: OnboardingBusinessItem) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { switchDashboardBusiness(item.id) },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
     }
 
     private fun onEnablePluginsClick() {
@@ -145,6 +170,10 @@ class DashboardViewModel(
     }
 
     private fun renderSetupStatus(status: DashboardSetupStatus) {
+        if (isDashboardBusinessLost(status)) {
+            uiState.tabItems.selectedItemId = TabItem.Id.HOME
+        }
+        lastSetupStatus = status
         setupRequiredBusinessId = (status as? DashboardSetupStatus.SetupRequired)?.businessId
         uiState.tabItems.items.first { it.id == TabItem.Id.BUSINESS }.isEnabled = status != DashboardSetupStatus.NoBusiness
         if (status is DashboardSetupStatus.AwaitingSetup) {
@@ -157,6 +186,11 @@ class DashboardViewModel(
             is DashboardSetupStatus.AwaitingSetup -> HomeContent.AwaitingSetup
             DashboardSetupStatus.Ready -> HomeContent.ActivePlugin
         }
+    }
+
+    private fun isDashboardBusinessLost(status: DashboardSetupStatus): Boolean {
+        val previous = lastSetupStatus
+        return status == DashboardSetupStatus.NoBusiness && previous != null && previous != DashboardSetupStatus.NoBusiness
     }
 
     companion object {

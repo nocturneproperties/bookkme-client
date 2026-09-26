@@ -16,9 +16,12 @@ import me.bookk.designsystem.uistate.simple.ErrorState
 
 internal class UnauthorizedTestError : Exception()
 
+internal class AccessSuspendedTestError : Exception()
+
 internal class FakeErrorMapper : ErrorMapper {
     override fun mapToNotification(e: Throwable): PresentationNotification = when (e) {
         is UnauthorizedTestError -> PresentationNotification.Unauthorized
+        is AccessSuspendedTestError -> PresentationNotification.BusinessAccessSuspended
         is CancellationException -> PresentationNotification.Ignore
         else -> PresentationNotification.GlobalMessage(text = "error".desc())
     }

@@ -13,6 +13,7 @@ import shared
 struct NotificationHandler: ViewModifier {
 	
 	@EnvironmentObject var logOutHandler: LogOutHandler
+	@EnvironmentObject var businessAccessSuspendedHandler: BusinessAccessSuspendedHandler
     
     @Bindable
     var notificationState: IOSNotificationState
@@ -43,6 +44,10 @@ struct NotificationHandler: ViewModifier {
 					case is PresentationNotificationUnauthorized:
 						notificationState.removeFirst()
 						logOutHandler.onLogOut()
+						break
+					case is PresentationNotificationBusinessAccessSuspended:
+						notificationState.removeFirst()
+						businessAccessSuspendedHandler.onBusinessAccessSuspended()
 						break
 					default:
 						notificationState.removeFirst()

@@ -46,7 +46,9 @@ class RefreshBusinessInfoImplTest {
     }
 
     private class Fixture {
-        val dataSource = mock<BusinessDataSource>()
+        val dataSource = mock<BusinessDataSource> {
+            everySuspend { getBusinessIdsInDb() } returns emptyList()
+        }
         val isAppointmentsPluginEnabled = mock<IsAppointmentsPluginEnabled>()
         val sut = RefreshBusinessInfoImpl(dataSource, isAppointmentsPluginEnabled)
     }
@@ -161,5 +163,73 @@ class RefreshBusinessInfoImplTest {
 
         then()
         verifySuspend { fixture.dataSource.saveBusinessListInDB(listOf(business)) }
+    }
+
+    @Test
+    fun `deletes local businesses missing from the remote response`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val kept = stubBusiness()
+        val removedA = Uuid.random()
+        val removedB = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns UserBusinessInfo(dashboardId = null, businesses = listOf(kept))
+        everySuspend { fixture.dataSource.getBusinessIdsInDb() } returns listOf(removedA, kept.id, removedB)
+        everySuspend { fixture.dataSource.deleteBusinessesInDb(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessListInDB(any()) } returns Unit
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteBusinessesInDb(listOf(removedA, removedB)) }
+    }
+
+    @Test
+    fun `deletes every local business when the remote response is empty`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val removed = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns UserBusinessInfo(dashboardId = null, businesses = emptyList())
+        everySuspend { fixture.dataSource.getBusinessIdsInDb() } returns listOf(removed)
+        everySuspend { fixture.dataSource.deleteBusinessesInDb(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessListInDB(any()) } returns Unit
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteBusinessesInDb(listOf(removed)) }
+    }
+
+    @Test
+    fun `does not delete anything when every local business is still remote`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns UserBusinessInfo(dashboardId = null, businesses = listOf(business))
+        everySuspend { fixture.dataSource.getBusinessIdsInDb() } returns listOf(business.id)
+        everySuspend { fixture.dataSource.saveBusinessListInDB(any()) } returns Unit
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.dataSource.deleteBusinessesInDb(any()) }
+    }
+
+    @Test
+    fun `does not delete local businesses when the remote fetch fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } throws RuntimeException("network down")
+        everySuspend { fixture.dataSource.getBusinessIdsInDb() } returns listOf(Uuid.random())
+
+        whenn()
+        runCatching { fixture.sut() }
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.dataSource.deleteBusinessesInDb(any()) }
     }
 }

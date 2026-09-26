@@ -28,7 +28,8 @@ internal fun stubEmployee(businessId: Uuid = Uuid.random(), id: Uuid = Uuid.rand
     services = emptyList(),
     schedule = WorkingSchedule(),
     createdAt = Instant.fromEpochMilliseconds(0),
-    permissions = stubBusinessPermissions()
+    permissions = stubBusinessPermissions(),
+    suspendedAt = null
 )
 
 internal fun stubBusiness(

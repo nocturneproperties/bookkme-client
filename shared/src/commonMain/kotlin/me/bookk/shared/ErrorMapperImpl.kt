@@ -36,11 +36,12 @@ class ErrorMapperImpl : ErrorMapper {
                     message = e.message.orEmpty().desc(),
                     buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
                 )
+                is Error.BusinessAccessSuspended -> PresentationNotification.BusinessAccessSuspended
                 is Error.Unknown -> PresentationNotification.Message(
                     message = DesignSystem.strings.error_unexpected.desc(),
                     buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
                 )
-                Error.InvalidApplicationState -> PresentationNotification.Message(
+                is Error.InvalidApplicationState -> PresentationNotification.Message(
                     message = DesignSystem.strings.error_unexpected.desc(),
                     buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
                 )
@@ -68,6 +69,10 @@ class ErrorMapperImpl : ErrorMapper {
         is Error.InternalServerError -> ErrorDescription(
             title = DesignSystem.strings.error_server_title.desc(),
             message = DesignSystem.strings.error_server.desc()
+        )
+        is Error.BusinessAccessSuspended -> ErrorDescription(
+            title = DesignSystem.strings.error_access_suspended_title.desc(),
+            message = DesignSystem.strings.error_access_suspended.desc()
         )
         is Error.BusinessError,
         is Error.WrappedError -> ErrorDescription(

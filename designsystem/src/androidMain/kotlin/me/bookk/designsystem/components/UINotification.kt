@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.LocalBusinessAccessSuspendedHandler
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
@@ -73,6 +74,12 @@ fun ObserveNotifications(state: PresentationNotificationState) {
             }
             PresentationNotification.Unauthorized -> {
                 LocalUnauthorizedHandler.current.onUnauthorized()
+                state.removeFirst()
+                return
+            }
+
+            PresentationNotification.BusinessAccessSuspended -> {
+                LocalBusinessAccessSuspendedHandler.current.onBusinessAccessSuspended()
                 state.removeFirst()
                 return
             }

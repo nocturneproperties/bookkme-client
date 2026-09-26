@@ -9,6 +9,7 @@
     <string name="dashboard_onboarding_create_subtitle">Set up your own: name, hours, location</string>
     <string name="dashboard_onboarding_join_title">Join a business</string>
     <string name="dashboard_onboarding_join_subtitle">Use the invitation code from the owner</string>
+    <string name="dashboard_onboarding_select_title">Or select one of your active businesses</string>
     <string name="dashboard_onboarding_setup_headline">Finish setting up</string>
     <string name="dashboard_onboarding_setup_subtitle">Turn on the plugins you need. Each one adds its own dashboard here.</string>
     <string name="dashboard_onboarding_plugins_title">Enable plugins</string>

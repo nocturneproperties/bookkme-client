@@ -35,12 +35,15 @@ import me.bookk.android.navigation.rememberClientsNavigation
 import me.bookk.android.navigation.rememberEmployeesNavigation
 import me.bookk.android.navigation.rememberServicesNavigation
 import me.bookk.core.android.AndroidActivityAware
+import me.bookk.core.presentation.BusinessAccessSuspendedHandler
+import me.bookk.core.presentation.LocalBusinessAccessSuspendedHandler
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.UnauthorizedHandler
 import me.bookk.designsystem.action.isKeyboardMovingDownOrInvisible
 import me.bookk.designsystem.action.keyboardMovingDirection
 import me.bookk.designsystem.components.DefaultSnackbarProvider
 import me.bookk.designsystem.components.LocalSnackbarProvider
+import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
@@ -98,7 +101,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavigationRoot(
                         state = viewModel.state,
-                        onUnauthorized = viewModel::logOut
+                        onUnauthorized = viewModel::logOut,
+                        onBusinessAccessSuspended = viewModel::onBusinessAccessSuspended
                     )
                 }
             }
@@ -108,7 +112,11 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalUuidApi::class)
 @Composable
-private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHandler) {
+private fun NavigationRoot(
+    state: BootstrapState,
+    onUnauthorized: UnauthorizedHandler,
+    onBusinessAccessSuspended: BusinessAccessSuspendedHandler
+) {
     val controller = rememberNavController()
     val authNavigation = rememberAuthNavigation(controller)
     val clientsNavigation = rememberClientsNavigation(controller)
@@ -123,6 +131,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
 
         CompositionLocalProvider(
             LocalUnauthorizedHandler provides onUnauthorized,
+            LocalBusinessAccessSuspendedHandler provides onBusinessAccessSuspended,
             LocalSnackbarProvider provides snackbarProvider
         ) {
             NavHost(
@@ -178,6 +187,7 @@ private fun NavigationRoot(state: BootstrapState, onUnauthorized: UnauthorizedHa
                 )
                 pluginsScreen(navigation = BusinessNavigation())
             }
+            ObserveNotifications(state.notifications)
         }
         Box(
             modifier = Modifier

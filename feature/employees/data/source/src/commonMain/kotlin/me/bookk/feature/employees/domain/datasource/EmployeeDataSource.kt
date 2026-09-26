@@ -17,4 +17,5 @@ interface EmployeeDataSource {
     suspend fun saveLastSyncedAt(businessId: Uuid)
     suspend fun updateEmployee(employee: Employee): Employee
     suspend fun updateEmployeePermissions(businessId: Uuid, id: Uuid, permissions: BusinessPermissions): Employee
+    suspend fun setEmployeeSuspension(businessId: Uuid, id: Uuid, suspended: Boolean): Employee
 }

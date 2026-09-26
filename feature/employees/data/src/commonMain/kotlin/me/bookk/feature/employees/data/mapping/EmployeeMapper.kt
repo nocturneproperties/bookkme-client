@@ -30,6 +30,7 @@ internal fun Employee.toEntity(): EmployeeEntity {
         email = email,
         userId = userId,
         createdAt = createdAt,
+        suspendedAt = suspendedAt,
         businessPermissionView = permissions.business.view,
         businessPermissionUpdate = permissions.business.update,
         businessPermissionDelete = permissions.business.delete,
@@ -119,7 +120,8 @@ internal fun EmployeeLocal.toDomain(): Employee {
             }
         ),
         createdAt = entity.createdAt,
-        permissions = entity.toPermissions()
+        permissions = entity.toPermissions(),
+        suspendedAt = entity.suspendedAt
     )
 }
 

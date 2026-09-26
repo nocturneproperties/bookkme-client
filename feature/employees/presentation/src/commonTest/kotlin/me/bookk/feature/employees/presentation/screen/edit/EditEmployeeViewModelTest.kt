@@ -12,11 +12,13 @@ import dev.mokkery.matcher.capture.capture
 import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -28,11 +30,13 @@ import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
+import me.bookk.designsystem.test.tap
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
 import me.bookk.feature.employees.domain.api.IsBusinessOwner
+import me.bookk.feature.employees.domain.api.SetEmployeeSuspension
 import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.presentation.FakeEmployeesStateFactory
@@ -47,6 +51,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class EditEmployeeViewModelTest {
 
@@ -84,6 +89,7 @@ class EditEmployeeViewModelTest {
             everySuspend { invoke(employee.businessId) } returns canEdit
         }
         val updateEmployee = mock<UpdateEmployee>()
+        val setEmployeeSuspension = mock<SetEmployeeSuspension>()
         val device = mock<DeviceFacade> {
             every { dial(any()) } returns Unit
             every { mail(any()) } returns Unit
@@ -98,6 +104,7 @@ class EditEmployeeViewModelTest {
             isBusinessOwner = isBusinessOwner,
             canEditEmployees = canEditEmployees,
             updateEmployee = updateEmployee,
+            setEmployeeSuspension = setEmployeeSuspension,
             device = device,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeEmployeesStateFactory(),
@@ -107,6 +114,17 @@ class EditEmployeeViewModelTest {
         fun stubUpdateEcho() {
             everySuspend { updateEmployee(capture(updates)) } calls { (updated: Employee) -> updated }
         }
+
+        fun stubSuspensionResult(suspendedAt: Instant?) {
+            everySuspend { setEmployeeSuspension(any(), any(), any()) } returns employee.copy(suspendedAt = suspendedAt)
+        }
+    }
+
+    private fun EditEmployeeViewModel.confirmSuspensionDialog(actionType: ActionType) {
+        uiState.suspension.onClick?.invoke()
+        val dialog = uiState.notifications.assertSingle<PresentationNotification.Message>()
+        uiState.notifications.removeFirst()
+        dialog.tap(actionType)
     }
 
     private fun EditEmployeeViewModel.permissionRow(index: Int): ResourcePermissionState {
@@ -557,5 +575,220 @@ class EditEmployeeViewModelTest {
 
         then()
         assertEquals(listOf<EditEmployeeDestinations>(EditEmployeeDestinations.Back), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `shows suspend to the business owner viewing an active employee`() = runUnitTest {
+        given()
+        val fixture = Fixture(isOwner = false, isCurrentUserOwner = true)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.suspension.isVisible)
+        assertEquals(EmployeesRes.strings.employees_edit_suspend.desc(), sut.uiState.suspension.text)
+    }
+
+    @Test
+    fun `shows reinstate to the business owner viewing a suspended employee`() = runUnitTest {
+        given()
+        val fixture = Fixture(stubEmployee(suspendedAt = Instant.fromEpochMilliseconds(1)))
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.suspension.isVisible)
+        assertEquals(EmployeesRes.strings.employees_edit_reinstate.desc(), sut.uiState.suspension.text)
+    }
+
+    @Test
+    fun `hides suspension from a user who is not the business owner`() = runUnitTest {
+        given()
+        val fixture = Fixture(canEdit = true, isCurrentUserOwner = false)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.suspension.isVisible)
+    }
+
+    @Test
+    fun `hides suspension on the business owner record`() = runUnitTest {
+        given()
+        val fixture = Fixture(isOwner = true, isCurrentUserOwner = true)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.suspension.isVisible)
+    }
+
+    @Test
+    fun `hides suspension while the employee is loading`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getEmployee(fixture.employee.id) } throws TestException()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.suspension.isVisible)
+    }
+
+    @Test
+    fun `asks for confirmation before suspending`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.suspension.onClick?.invoke()
+
+        then()
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(EmployeesRes.strings.employees_edit_suspend_dialog_title.desc(), dialog.title)
+        verifySuspend(VerifyMode.not) { fixture.setEmployeeSuspension(any(), any(), any()) }
+    }
+
+    @Test
+    fun `asks for confirmation before reinstating`() = runUnitTest {
+        given()
+        val fixture = Fixture(stubEmployee(suspendedAt = Instant.fromEpochMilliseconds(1)))
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.suspension.onClick?.invoke()
+
+        then()
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(EmployeesRes.strings.employees_edit_reinstate_dialog_title.desc(), dialog.title)
+    }
+
+    @Test
+    fun `does not suspend when the confirmation is cancelled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.CANCEL)
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.setEmployeeSuspension(any(), any(), any()) }
+    }
+
+    @Test
+    fun `suspends the employee once confirmed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSuspensionResult(Instant.fromEpochMilliseconds(1))
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.NEGATIVE)
+
+        then()
+        verifySuspend { fixture.setEmployeeSuspension(fixture.employee.businessId, fixture.employee.id, true) }
+    }
+
+    @Test
+    fun `reinstates the suspended employee once confirmed`() = runUnitTest {
+        given()
+        val fixture = Fixture(stubEmployee(suspendedAt = Instant.fromEpochMilliseconds(1)))
+        fixture.stubSuspensionResult(null)
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.POSITIVE)
+
+        then()
+        verifySuspend { fixture.setEmployeeSuspension(fixture.employee.businessId, fixture.employee.id, false) }
+    }
+
+    @Test
+    fun `offers reinstate and reports success after suspending`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSuspensionResult(Instant.fromEpochMilliseconds(1))
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(EmployeesRes.strings.employees_edit_reinstate.desc(), sut.uiState.suspension.text)
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        assertEquals(EmployeesRes.strings.employees_edit_suspended.desc(), message.text)
+        assertFalse(sut.uiState.suspension.isLoading)
+    }
+
+    @Test
+    fun `offers suspend again after reinstating`() = runUnitTest {
+        given()
+        val fixture = Fixture(stubEmployee(suspendedAt = Instant.fromEpochMilliseconds(1)))
+        fixture.stubSuspensionResult(null)
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.POSITIVE)
+
+        then()
+        assertEquals(EmployeesRes.strings.employees_edit_suspend.desc(), sut.uiState.suspension.text)
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        assertEquals(EmployeesRes.strings.employees_edit_reinstated.desc(), message.text)
+    }
+
+    @Test
+    fun `keeps unsaved edits after suspending`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSuspensionResult(Instant.fromEpochMilliseconds(1))
+        val sut = fixture.sut()
+        sut.permissionRow(0).canView.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.permissionRow(0).canView.isChecked)
+        assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `shows message when the business owner cannot be suspended`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.setEmployeeSuspension(any(), any(), any()) } throws
+            SetEmployeeSuspension.Error.OwnerSuspensionNotAllowed(TestException())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.NEGATIVE)
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(EmployeesRes.strings.employees_edit_error_owner_suspension.desc(), message.message)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        assertEquals(EmployeesRes.strings.employees_edit_suspend.desc(), sut.uiState.suspension.text)
+    }
+
+    @Test
+    fun `shows mapped error when suspension fails unexpectedly`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.setEmployeeSuspension(any(), any(), any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.NEGATIVE)
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+        assertFalse(sut.uiState.suspension.isLoading)
     }
 }

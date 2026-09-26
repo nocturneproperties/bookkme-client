@@ -75,7 +75,9 @@ erDiagram
   changes](../operations/business/observe-user-businesses-changes.md), [Update business](../operations/business/update-business.md)
   (reads the current row before merging the edit), [Get business currency](../operations/services/get-business-currency.md)
   and [Is business owner](../operations/employees/is-business-owner.md) (compares `ownerId` with an employee's `userId`).
-- Cleared on logout: yes (`businessDao.clear()`). Businesses the user has left are not removed by a refresh,
-  which only upserts, so they stay until the next logout.
+- Cleared on logout: yes (`businessDao.clear()`).
+- Deleted by: [Refresh business info](../operations/business/refresh-business-info.md) removes local businesses
+  missing from `GET /api/business` (`businessDao.deleteByIds`), cascading to their clients, employees,
+  invitations, service groups and services.
 - Migration notes: 15 → 16 added the nullable `business.ownerId` column (auto-migration). Rows cached before
   the migration keep `NULL` until the next [Refresh business info](../operations/business/refresh-business-info.md).

@@ -55,4 +55,6 @@ class AndroidOnboardingState : OnboardingState {
     override var onCreateBusinessClick: (() -> Unit)? by mutableStateOf(null)
     override var onJoinBusinessClick: (() -> Unit)? by mutableStateOf(null)
     override var onEnablePluginsClick: (() -> Unit)? by mutableStateOf(null)
+    override var businesses: List<OnboardingBusinessItem> by mutableStateOf(emptyList())
+    override var onBusinessClick: ((OnboardingBusinessItem) -> Unit)? by mutableStateOf(null)
 }

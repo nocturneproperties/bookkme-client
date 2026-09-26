@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.material.icons.filled.Storefront
@@ -58,6 +59,26 @@ internal fun DashboardOnboardingScreen(state: OnboardingState) {
                 subtitle = DashboardRes.strings.dashboard_onboarding_join_subtitle.desc().localized(),
                 onClick = { state.onJoinBusinessClick?.invoke() }
             )
+        }
+        if (state.businesses.isNotEmpty()) {
+            Text(
+                text = DashboardRes.strings.dashboard_onboarding_select_title.desc().localized(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = LocalColors.current.secondaryText,
+                textAlign = TextAlign.Center
+            )
+            state.businesses.forEach { business ->
+                AppCard(modifier = Modifier.fillMaxWidth()) {
+                    OnboardingActionRow(
+                        icon = Icons.Filled.Business,
+                        title = business.name,
+                        onClick = { state.onBusinessClick?.invoke(business) }
+                    )
+                }
+            }
         }
     }
 }
@@ -138,7 +159,7 @@ private fun OnboardingContent(
 private fun OnboardingActionRow(
     icon: ImageVector,
     title: String,
-    subtitle: String,
+    subtitle: String? = null,
     onClick: () -> Unit
 ) {
     Row(
@@ -161,11 +182,13 @@ private fun OnboardingActionRow(
                 style = MaterialTheme.typography.titleMedium,
                 color = LocalColors.current.primaryText
             )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = LocalColors.current.secondaryText
-            )
+            subtitle?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = LocalColors.current.secondaryText
+                )
+            }
         }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,

@@ -1,6 +1,7 @@
 package me.bookk.feature.dashboard.presentation.state
 
 import dev.icerock.moko.resources.desc.StringDesc
+import kotlin.uuid.Uuid
 
 interface DashboardHomeState {
     var content: HomeContent?
@@ -19,4 +20,11 @@ interface OnboardingState {
     var onCreateBusinessClick: (() -> Unit)?
     var onJoinBusinessClick: (() -> Unit)?
     var onEnablePluginsClick: (() -> Unit)?
+    var businesses: List<OnboardingBusinessItem>
+    var onBusinessClick: ((OnboardingBusinessItem) -> Unit)?
 }
+
+data class OnboardingBusinessItem(
+    val id: Uuid,
+    val name: String
+)

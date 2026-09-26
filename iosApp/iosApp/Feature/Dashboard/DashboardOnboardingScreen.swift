@@ -34,6 +34,21 @@ struct DashboardOnboardingScreen: View {
 				subtitle: DashboardRes.strings().dashboard_onboarding_join_subtitle.desc().localized(),
 				onClick: { state.onJoinBusinessClick?() }
 			)
+			if !state.businesses.isEmpty {
+				Text(DashboardRes.strings().dashboard_onboarding_select_title.desc().localized())
+					.font(.subheadline)
+					.foregroundColor(AppColors.secondary)
+					.multilineTextAlignment(.center)
+					.frame(maxWidth: .infinity)
+					.padding(.top, 12)
+				ForEach(state.businesses, id: \.id) { business in
+					OnboardingActionRow(
+						systemImage: "building.2",
+						title: business.name,
+						onClick: { state.onBusinessClick?(business) }
+					)
+				}
+			}
 		}
 	}
 }
@@ -130,7 +145,7 @@ private struct OnboardingActionRow: View {
 
 	let systemImage: String
 	let title: String
-	let subtitle: String
+	var subtitle: String? = nil
 	let onClick: () -> Void
 
 	var body: some View {
@@ -146,9 +161,11 @@ private struct OnboardingActionRow: View {
 						.font(.body)
 						.fontWeight(.medium)
 						.foregroundColor(AppColors.primary)
-					Text(subtitle)
-						.font(.caption)
-						.foregroundColor(AppColors.secondary)
+					if let subtitle {
+						Text(subtitle)
+							.font(.caption)
+							.foregroundColor(AppColors.secondary)
+					}
 				}
 
 				Spacer()

@@ -6,6 +6,7 @@ import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
 import me.bookk.feature.authorization.domain.api.LogOut
+import me.bookk.feature.authorization.domain.api.InitiateBusinessSuspend
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.SignIn
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
@@ -15,6 +16,7 @@ import me.bookk.feature.authorization.domain.impl.GetTokenInfoImpl
 import me.bookk.feature.authorization.domain.impl.InitialAppDataFetchImpl
 import me.bookk.feature.authorization.domain.impl.IsUserLoggedInImpl
 import me.bookk.feature.authorization.domain.impl.LogOutImpl
+import me.bookk.feature.authorization.domain.impl.InitiateBusinessSuspendImpl
 import me.bookk.feature.authorization.domain.impl.LowPriorityDataFetch
 import me.bookk.feature.authorization.domain.impl.RefreshTokenImpl
 import me.bookk.feature.authorization.domain.impl.SignInImpl
@@ -34,6 +36,7 @@ fun authDomainModule() = module {
     factoryOf(::UserProfileCRUDImpl) bind UserProfileCRUD::class
     factoryOf(::InitialAppDataFetchImpl) bind InitialAppDataFetch::class
     factory { LogOutImpl(getAll()) } bind LogOut::class
+    factoryOf(::InitiateBusinessSuspendImpl) bind InitiateBusinessSuspend::class
     factoryOf(::GetSettingsColorSchemeImpl) bind GetSettingsColorScheme::class
     factoryOf(::LowPriorityDataFetch)
 }

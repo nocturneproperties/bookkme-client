@@ -47,6 +47,8 @@ class IOSOnboardingState: @MainActor OnboardingState {
 	var onCreateBusinessClick: (() -> Void)?
 	var onJoinBusinessClick: (() -> Void)?
 	var onEnablePluginsClick: (() -> Void)?
+	var businesses: [OnboardingBusinessItem] = []
+	var onBusinessClick: ((OnboardingBusinessItem) -> Void)?
 }
 
 @MainActor

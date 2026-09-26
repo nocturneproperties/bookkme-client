@@ -63,6 +63,10 @@ private fun ViewModel.launchListLoad(
             when (val notification = error.notification()) {
                 PresentationNotification.Ignore -> Unit
                 PresentationNotification.Unauthorized -> notifications.add(notification)
+                PresentationNotification.BusinessAccessSuspended -> {
+                    notifications.add(notification)
+                    listState.showLoadingError(error.description(), retry)
+                }
                 else -> listState.showLoadingError(error.description(), retry)
             }
         },

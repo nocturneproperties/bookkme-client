@@ -45,5 +45,6 @@ class EmployeeEntity(
     @ColumnInfo(defaultValue = "0") val servicesPermissionDelete: Boolean = false,
     @ColumnInfo(defaultValue = "0") val appointmentsPermissionView: Boolean = false,
     @ColumnInfo(defaultValue = "0") val appointmentsPermissionUpdate: Boolean = false,
-    @ColumnInfo(defaultValue = "0") val appointmentsPermissionDelete: Boolean = false
+    @ColumnInfo(defaultValue = "0") val appointmentsPermissionDelete: Boolean = false,
+    val suspendedAt: Instant? = null
 )

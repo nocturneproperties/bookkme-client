@@ -3,6 +3,7 @@ package me.bookk.shared
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.error.ErrorDescription
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -96,6 +97,36 @@ class ErrorMapperImplTest {
             ErrorDescription(
                 title = DesignSystem.strings.error_generic_title.desc(),
                 message = DesignSystem.strings.error_unexpected.desc()
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `notifies business access suspended for the dashboard to handle`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = fixture.sut.mapToNotification(Error.BusinessAccessSuspended("Your access is suspended"))
+
+        then()
+        assertEquals(PresentationNotification.BusinessAccessSuspended, result)
+    }
+
+    @Test
+    fun `describes business access suspended as access suspended`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = fixture.sut.mapToDescription(Error.BusinessAccessSuspended("Your access is suspended"))
+
+        then()
+        assertEquals(
+            ErrorDescription(
+                title = DesignSystem.strings.error_access_suspended_title.desc(),
+                message = DesignSystem.strings.error_access_suspended.desc()
             ),
             result
         )

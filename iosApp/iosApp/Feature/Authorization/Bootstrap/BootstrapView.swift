@@ -6,15 +6,19 @@ struct BootstrapView: View {
 	@StateViewModel var bootstrapVM = IOSAuthDiKt.bootstrapVM()
     @State var initialDestination: BootstrapNavigationDestination? = nil
 	@State var logOutHandler = LogOutHandler {}
+	@State var businessAccessSuspendedHandler = BusinessAccessSuspendedHandler {}
 	
 	var body: some View {
 		ColorSchemeView(state: bootstrapVM.state) {
 			StartDestinationView(state: bootstrapVM.state.impl())
 		}
+		.handleNotifications(bootstrapVM.state.notifications)
 		.onAppear {
 			logOutHandler = LogOutHandler { bootstrapVM.logOut() }
+			businessAccessSuspendedHandler = BusinessAccessSuspendedHandler { bootstrapVM.onBusinessAccessSuspended() }
 		}
 		.environmentObject(logOutHandler)
+		.environmentObject(businessAccessSuspendedHandler)
 	}
 }
 

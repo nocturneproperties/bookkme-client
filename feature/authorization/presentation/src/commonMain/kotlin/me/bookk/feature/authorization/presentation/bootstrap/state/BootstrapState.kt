@@ -1,11 +1,13 @@
 package me.bookk.feature.authorization.presentation.bootstrap.state
 
+import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.feature.authorization.domain.entity.ColorScheme
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 
 interface BootstrapState {
     var colorScheme: UIColorScheme
     var startDestination: BootstrapNavigationDestination?
+    val notifications: PresentationNotificationState
 
     //UI model to prevent need of Settings Domain API module to be exported to objc header
     enum class UIColorScheme {

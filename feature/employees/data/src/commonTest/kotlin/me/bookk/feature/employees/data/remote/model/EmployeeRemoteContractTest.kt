@@ -48,7 +48,8 @@ class EmployeeRemoteContractTest {
                 "services" to 8,
                 "schedule" to 9,
                 "createdAt" to 10,
-                "permissions" to 11
+                "permissions" to 11,
+                "suspendedAt" to 12
             ),
             fields
         )
@@ -107,6 +108,30 @@ class EmployeeRemoteContractTest {
 
         then()
         assertEquals((1..5).flatMap { listOf((it shl 3 or 2).toByte()) + revokedResource }, bytes.toList())
+    }
+
+    @Test
+    fun `EmployeeSuspensionRequest field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = EmployeeSuspensionRequest.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("suspended" to 1), fields)
+    }
+
+    @Test
+    fun `reinstating writes the suspended flag to the wire`() = runUnitTest {
+        given()
+        val request = EmployeeSuspensionRequest(suspended = false)
+
+        whenn()
+        val bytes = dataSerializer.encodeToByteArray(EmployeeSuspensionRequest.serializer(), request)
+
+        then()
+        assertEquals(listOf<Byte>(8, 0), bytes.toList())
     }
 
     @Test

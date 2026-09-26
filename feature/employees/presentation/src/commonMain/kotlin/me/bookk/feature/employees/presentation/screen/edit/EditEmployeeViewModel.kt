@@ -2,6 +2,7 @@ package me.bookk.feature.employees.presentation.screen.edit
 
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.employees.resources.EmployeesRes
@@ -10,6 +11,8 @@ import me.bookk.core.dashOnBlank
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
+import me.bookk.core.presentation.error.ActionType
+import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
@@ -34,6 +37,7 @@ import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
 import me.bookk.feature.employees.domain.api.IsBusinessOwner
+import me.bookk.feature.employees.domain.api.SetEmployeeSuspension
 import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.api.entity.Employee
 import me.bookk.feature.employees.presentation.EmployeesStateFactory
@@ -47,6 +51,7 @@ class EditEmployeeViewModel(
     private val isBusinessOwner: IsBusinessOwner,
     private val canEditEmployees: CanEditEmployees,
     private val updateEmployee: UpdateEmployee,
+    private val setEmployeeSuspension: SetEmployeeSuspension,
     private val device: DeviceFacade,
     private val stateFactory: EmployeesStateFactory,
     dateLocalizer: DateLocalizer,
@@ -70,6 +75,8 @@ class EditEmployeeViewModel(
         save.isEnabled = false
         save.isVisible = false
         save.onClick = weakVMClosure { it.onSaveClick() }
+        suspension.isVisible = false
+        suspension.onClick = weakVMClosure { it.onSuspensionClick() }
         services.pickerTitle = EmployeesRes.strings.employees_edit_services.desc()
         services.addItemText = EmployeesRes.strings.employees_edit_services_add.desc()
         services.placeholder = EmployeesRes.strings.employees_edit_services_empty.desc()
@@ -142,6 +149,7 @@ class EditEmployeeViewModel(
         scheduleBinder.isEditable = access.canEdit
         val isPermissionsEditable = access.canManagePermissions && !access.isOwner
         uiState.isPermissionsVisible = isPermissionsEditable
+        uiState.suspension.isVisible = isPermissionsEditable
         uiState.permissionsHint = if (isPermissionsEditable) {
             null
         } else {
@@ -169,7 +177,16 @@ class EditEmployeeViewModel(
         uiState.services.replaceSelected(employee.services.map(::EmployeeServicePresentation))
         scheduleBinder.render(employee.schedule.toWeekSchedule())
         permissionStates.forEach { (resource, state) -> state.render(employee.permissions.of(resource)) }
+        renderSuspension(employee)
         invalidateSaveState()
+    }
+
+    private fun renderSuspension(employee: Employee) {
+        uiState.suspension.text = if (employee.isSuspended) {
+            EmployeesRes.strings.employees_edit_reinstate.desc()
+        } else {
+            EmployeesRes.strings.employees_edit_suspend.desc()
+        }
     }
 
     private fun ResourcePermissionState.render(permission: ResourcePermission) {
@@ -211,6 +228,67 @@ class EditEmployeeViewModel(
                 invalidateSaveState()
             }
         )
+    }
+
+    private fun onSuspensionClick() {
+        val employee = referenceEmployee ?: return
+        val suspend = !employee.isSuspended
+        uiState.notifications.add(
+            PresentationNotification.Message(
+                title = if (suspend) {
+                    EmployeesRes.strings.employees_edit_suspend_dialog_title.desc()
+                } else {
+                    EmployeesRes.strings.employees_edit_reinstate_dialog_title.desc()
+                },
+                message = if (suspend) {
+                    EmployeesRes.strings.employees_edit_suspend_dialog_message.format(employee.fullName)
+                } else {
+                    EmployeesRes.strings.employees_edit_reinstate_dialog_message.format(employee.fullName)
+                },
+                buttons = listOf(
+                    ButtonDescriptor(
+                        text = DesignSystem.strings.action_cancel.desc(),
+                        actionType = ActionType.CANCEL
+                    ),
+                    ButtonDescriptor(
+                        text = DesignSystem.strings.action_confirm.desc(),
+                        actionType = if (suspend) ActionType.NEGATIVE else ActionType.POSITIVE,
+                        onClick = weakVMClosure { it.setSuspension(employee, suspend) }
+                    )
+                )
+            )
+        )
+    }
+
+    private fun setSuspension(employee: Employee, suspend: Boolean) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.suspension.startLoading() },
+            call = { setEmployeeSuspension(employee.businessId, employee.id, suspend) },
+            onComplete = { updated ->
+                referenceEmployee = referenceEmployee?.copy(suspendedAt = updated.suspendedAt)
+                renderSuspension(updated)
+                uiState.notifications.add(GlobalMessage(updated.suspensionChangedMessage().desc()))
+            },
+            onError = { uiState.notifications.add(it.suspensionErrorNotification()) },
+            onTerminate = { uiState.suspension.stopLoading() }
+        )
+    }
+
+    private fun Employee.suspensionChangedMessage(): StringResource {
+        return if (isSuspended) {
+            EmployeesRes.strings.employees_edit_suspended
+        } else {
+            EmployeesRes.strings.employees_edit_reinstated
+        }
+    }
+
+    private fun Throwable.suspensionErrorNotification(): PresentationNotification {
+        return when (this) {
+            is SetEmployeeSuspension.Error.OwnerSuspensionNotAllowed ->
+                PresentationNotification.Message.simple(EmployeesRes.strings.employees_edit_error_owner_suspension.desc())
+            else -> notification()
+        }
     }
 
     private fun Throwable.saveErrorNotification(): PresentationNotification {

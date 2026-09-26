@@ -325,6 +325,33 @@ class ListLoadingTest {
     }
 
     @Test
+    fun `forwards business access suspended to notifications`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.load { throw AccessSuspendedTestError() }
+
+        then()
+        assertEquals(
+            listOf<PresentationNotification>(PresentationNotification.BusinessAccessSuspended),
+            fixture.notifications.presentationNotification
+        )
+    }
+
+    @Test
+    fun `shows a described list error for business access suspended`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.load { throw AccessSuspendedTestError() }
+
+        then()
+        assertEquals("message of AccessSuspendedTestError".desc(), fixture.listState.errorState?.subtitle)
+    }
+
+    @Test
     fun `does not show an error when the call is cancelled`() = runUnitTest {
         given()
         val fixture = Fixture()

@@ -9,6 +9,7 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import me.bookk.android.feature.dashboard.resources.DashboardRes
@@ -28,11 +29,15 @@ import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
+import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
+import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
+import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.entity.DashboardSetupStatus
 import me.bookk.feature.dashboard.presentation.state.DashboardHomeState
 import me.bookk.feature.dashboard.presentation.state.DashboardState
 import me.bookk.feature.dashboard.presentation.state.HomeContent
+import me.bookk.feature.dashboard.presentation.state.OnboardingBusinessItem
 import me.bookk.feature.dashboard.presentation.state.OnboardingState
 import me.bookk.feature.dashboard.presentation.state.TabItem
 import me.bookk.feature.dashboard.presentation.state.TabItemsState
@@ -80,6 +85,8 @@ class DashboardViewModelTest {
                 override var onCreateBusinessClick: (() -> Unit)? = null
                 override var onJoinBusinessClick: (() -> Unit)? = null
                 override var onEnablePluginsClick: (() -> Unit)? = null
+                override var businesses: List<OnboardingBusinessItem> = emptyList()
+                override var onBusinessClick: ((OnboardingBusinessItem) -> Unit)? = null
             }
         }
         override val notifications = FakeNotificationState()
@@ -93,6 +100,13 @@ class DashboardViewModelTest {
         val refreshBusinessInfo = mock<RefreshBusinessInfo> {
             everySuspend { invoke(any()) } returns Unit
         }
+        val userBusinesses = MutableStateFlow<List<Business>>(emptyList())
+        val observeUserBusinessesChanges = mock<ObserveUserBusinessesChanges> {
+            every { invoke() } returns userBusinesses
+        }
+        val switchDashboardBusiness = mock<SwitchDashboardBusiness> {
+            everySuspend { invoke(any()) } returns Unit
+        }
         val joinBusiness = mock<JoinBusiness>()
         val createBusiness = mock<CreateBusiness>()
         val errorMapper = FakeErrorMapper()
@@ -100,6 +114,8 @@ class DashboardViewModelTest {
         fun sut() = DashboardViewModel(
             observeDashboardSetupStatus = observeDashboardSetupStatus,
             refreshBusinessInfo = refreshBusinessInfo,
+            observeUserBusinessesChanges = observeUserBusinessesChanges,
+            switchDashboardBusiness = switchDashboardBusiness,
             joinBusiness = joinBusiness,
             createBusiness = createBusiness,
             stateFactory = object : DashboardStateFactory {
@@ -397,5 +413,139 @@ class DashboardViewModelTest {
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    @Test
+    fun `offers the user businesses for selection`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val salon = stubBusiness(name = "Salon")
+        val barber = stubBusiness(name = "Barber")
+        fixture.userBusinesses.value = listOf(salon, barber)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            listOf(OnboardingBusinessItem(salon.id, "Salon"), OnboardingBusinessItem(barber.id, "Barber")),
+            sut.uiState.home.onboarding.businesses
+        )
+    }
+
+    @Test
+    fun `offers no businesses for selection when the user has none`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.home.onboarding.businesses.isEmpty())
+    }
+
+    @Test
+    fun `updates the offered businesses when they change`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val salon = stubBusiness(name = "Salon")
+        fixture.userBusinesses.value = listOf(salon, stubBusiness(name = "Removed"))
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.userBusinesses.value = listOf(salon)
+
+        then()
+        assertEquals(listOf(OnboardingBusinessItem(salon.id, "Salon")), sut.uiState.home.onboarding.businesses)
+    }
+
+    @Test
+    fun `switches the dashboard to the selected business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val salon = stubBusiness(name = "Salon")
+        fixture.userBusinesses.value = listOf(salon)
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.onBusinessClick?.invoke(sut.uiState.home.onboarding.businesses.single())
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.switchDashboardBusiness(salon.id) }
+    }
+
+    @Test
+    fun `shows mapped error when switching the dashboard business fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.switchDashboardBusiness(any()) } throws TestException()
+        fixture.userBusinesses.value = listOf(stubBusiness())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.onBusinessClick?.invoke(sut.uiState.home.onboarding.businesses.single())
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    @Test
+    fun `opens home when the dashboard business is lost while on the business tab`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = DashboardSetupStatus.Ready
+        val sut = fixture.sut()
+        sut.uiState.tabItems.selectedItemId = TabItem.Id.BUSINESS
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.NoBusiness
+
+        then()
+        assertEquals(TabItem.Id.HOME, sut.uiState.tabItems.selectedItemId)
+    }
+
+    @Test
+    fun `opens home when the dashboard business is lost while on the settings tab`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup("Salon")
+        val sut = fixture.sut()
+        sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.NoBusiness
+
+        then()
+        assertEquals(TabItem.Id.HOME, sut.uiState.tabItems.selectedItemId)
+    }
+
+    @Test
+    fun `keeps the selected tab while the dashboard business stays available`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = DashboardSetupStatus.SetupRequired(Uuid.random())
+        val sut = fixture.sut()
+        sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.Ready
+
+        then()
+        assertEquals(TabItem.Id.SETTINGS, sut.uiState.tabItems.selectedItemId)
+    }
+
+    @Test
+    fun `keeps the selected tab when the user never had a dashboard business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.NoBusiness
+
+        then()
+        assertEquals(TabItem.Id.SETTINGS, sut.uiState.tabItems.selectedItemId)
     }
 }

@@ -8,6 +8,8 @@
     <string name="error_connection_subtitle">Check your internet connection and try again.</string>
     <string name="error_server_title">Server issue</string>
     <string name="error_generic_title">Something went wrong</string>
+    <string name="error_access_suspended_title">Access suspended</string>
+    <string name="error_access_suspended">Your access to this business is suspended. Contact the business owner to restore it.</string>
     <string name="error_refresh_failed">Couldn\'t refresh</string>
 
     <string name="list_empty">List is empty</string>

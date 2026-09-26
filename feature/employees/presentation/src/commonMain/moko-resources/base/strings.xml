@@ -39,5 +39,14 @@
     <string name="employees_edit_error_validation">Employee name, phone or email is invalid</string>
     <string name="employees_edit_error_active_day_without_work_hours">An active day must have at least one work hour</string>
     <string name="employees_edit_error_invalid_day_off_range">Day off start date must be before the end date</string>
+    <string name="employees_edit_suspend">Suspend employee</string>
+    <string name="employees_edit_reinstate">Reinstate employee</string>
+    <string name="employees_edit_suspend_dialog_title">Suspend employee?</string>
+    <string name="employees_edit_suspend_dialog_message">%s will lose access to the business and can\'t be booked until reinstated. Their permissions are kept.</string>
+    <string name="employees_edit_reinstate_dialog_title">Reinstate employee?</string>
+    <string name="employees_edit_reinstate_dialog_message">%s will regain access to the business with their previous permissions and can be booked again.</string>
+    <string name="employees_edit_suspended">Employee suspended</string>
+    <string name="employees_edit_reinstated">Employee reinstated</string>
+    <string name="employees_edit_error_owner_suspension">The business owner can\'t be suspended</string>
     <string name="employees_edit_error_insufficient_grant">You can\'t grant access you don\'t have yourself</string>
 </resources>

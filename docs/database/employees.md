@@ -42,6 +42,7 @@ erDiagram
         bool appointmentsPermissionView "default 0"
         bool appointmentsPermissionUpdate "default 0"
         bool appointmentsPermissionDelete "default 0"
+        instant suspendedAt "nullable, null = active"
     }
 
     EMPLOYEE_DAY_SCHEDULE {
@@ -93,10 +94,12 @@ erDiagram
 to `service`, so employees can be cached before services are, or without them.
 
 The `*Permission*` columns flatten the employee's `BusinessPermissions` (view/update/delete per resource), in
-the same way as the permission columns on `business`.
+the same way as the permission columns on `business`. `suspendedAt` is the moment the owner suspended the
+employee, or `null` while the employee is active (`Employee.isSuspended`).
 
 - Written by: [Get employees](../operations/employees/get-employees.md) `refresh()` (`upsertAllWithChildren`),
-  [Update employee](../operations/employees/update-employee.md) (upserts the saved employee) and
+  [Update employee](../operations/employees/update-employee.md) and
+  [Set employee suspension](../operations/employees/set-employee-suspension.md) (both upsert the returned employee) and
   [Get employee invitations](../operations/employees/get-employee-invitations.md) `refresh()`.
   [Create](../operations/employees/create-employee-invitation.md) and [Revoke invitation](../operations/employees/revoke-employee-invitation.md)
   do not write to the database. The invitation cache only catches up on the next `refresh()`.
@@ -105,3 +108,4 @@ the same way as the permission columns on `business`.
 - Cleared on logout: yes.
 - Migration notes: 11 → 12 dropped `employee_invitation.email` (`DeleteEmployeeInvitationEmail` spec).
   14 → 15 added the 15 `employee.*Permission*` columns (auto-migration, all `DEFAULT 0`).
+  16 → 17 added the nullable `employee.suspendedAt` column (auto-migration).

@@ -83,6 +83,16 @@ internal class CommonBusinessDataSource(
         }
     }
 
+    override suspend fun getBusinessIdsInDb(): List<Uuid> = mapExceptions {
+        businessDao.getIds()
+    }
+
+    override suspend fun deleteBusinessesInDb(ids: List<Uuid>) {
+        mapExceptions {
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> businessDao.deleteByIds(chunk) }
+        }
+    }
+
     override fun observeBusinessDBChanges(businessId: Uuid): Flow<Business?> {
         return businessDao.observeBusiness(businessId)
             .map { it?.toDomain() }

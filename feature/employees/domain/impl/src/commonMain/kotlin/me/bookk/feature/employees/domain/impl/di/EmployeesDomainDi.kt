@@ -10,6 +10,7 @@ import me.bookk.feature.employees.domain.api.IsBusinessOwner
 import me.bookk.feature.employees.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.employees.domain.api.RedeemEmployeeInvitation
 import me.bookk.feature.employees.domain.api.RevokeEmployeeInvitation
+import me.bookk.feature.employees.domain.api.SetEmployeeSuspension
 import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.impl.CanEditEmployeesImpl
 import me.bookk.feature.employees.domain.impl.CreateEmployeeInvitationImpl
@@ -21,6 +22,7 @@ import me.bookk.feature.employees.domain.impl.IsBusinessOwnerImpl
 import me.bookk.feature.employees.domain.impl.ObserveCurrentBusinessIdImpl
 import me.bookk.feature.employees.domain.impl.RedeemEmployeeInvitationImpl
 import me.bookk.feature.employees.domain.impl.RevokeEmployeeInvitationImpl
+import me.bookk.feature.employees.domain.impl.SetEmployeeSuspensionImpl
 import me.bookk.feature.employees.domain.impl.UpdateEmployeeImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
@@ -38,4 +40,5 @@ fun employeesDomainModule() = module {
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class
     factoryOf(::IsBusinessOwnerImpl) bind IsBusinessOwner::class
     factoryOf(::CanEditEmployeesImpl) bind CanEditEmployees::class
+    factoryOf(::SetEmployeeSuspensionImpl) bind SetEmployeeSuspension::class
 }

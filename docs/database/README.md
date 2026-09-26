@@ -22,7 +22,7 @@ grouped by the feature whose datasource **writes** the table.
 
 ## Conventions
 
-- **Version and migrations.** The schema is at `version = 16`. Every step from 1 to 16 is a Room
+- **Version and migrations.** The schema is at `version = 17`. Every step from 1 to 17 is a Room
   `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The builder also sets `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
   If a migration is missing, the cache is wiped instead of the app crashing, which is safe only because every
@@ -72,5 +72,5 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `appointment_settings` (+ 3 child tables) | `CommonAppointmentSettingsDataSource` | ✅ `appointmentSettingsDao.clear()` |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
 
-Every table is cleared on logout. [Refresh business info](../operations/business/refresh-business-info.md)
-still only upserts, so while signed in, a business the user has left stays in the cache until the next logout.
+Every table is cleared on logout. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)
+deletes businesses the user no longer has, together with their cascaded rows.

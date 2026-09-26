@@ -22,6 +22,10 @@ kotlin {
             api(libs.ktor.client.protobuf)
             api(projects.core.domain)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+            implementation(libs.ktor.client.negotiation)
+        }
     }
 }
 

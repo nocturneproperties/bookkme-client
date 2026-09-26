@@ -2,10 +2,13 @@ package me.bookk.feature.employees.data.remote.model
 
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.protobuf.ProtoNumber
+import me.bookk.core.data.dataSerializer
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -44,22 +47,78 @@ class EmployeeRemoteContractTest {
                 "userId" to 7,
                 "services" to 8,
                 "schedule" to 9,
-                "createdAt" to 10
+                "createdAt" to 10,
+                "permissions" to 11
             ),
             fields
         )
     }
 
     @Test
-    fun `PromoteEmployeeRequest field order matches the backend schema`() = runUnitTest {
+    fun `EmployeeUpdateModel field order matches the backend schema`() = runUnitTest {
         given()
-        val descriptor = PromoteEmployeeRequestRemote.serializer().descriptor
+        val descriptor = EmployeeUpdateRequest.serializer().descriptor
 
         whenn()
         val fields = descriptor.protoFields()
 
         then()
-        assertEquals(listOf("role" to 1), fields)
+        assertEquals(
+            listOf(
+                "id" to 1,
+                "businessId" to 2,
+                "name" to 3,
+                "lastName" to 4,
+                "phone" to 5,
+                "email" to 6,
+                "services" to 7,
+                "schedule" to 8
+            ),
+            fields
+        )
+    }
+
+    @Test
+    fun `EmployeePermissionsRequest field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = EmployeePermissionsRequest.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(
+            listOf("business" to 1, "employees" to 2, "clients" to 3, "services" to 4, "appointments" to 5),
+            fields
+        )
+    }
+
+    @Test
+    fun `permissions request writes every resource even when all its flags are revoked`() = runUnitTest {
+        given()
+        val revoked = ResourcePermission()
+        val request = EmployeePermissionsRequest.fromDomain(
+            BusinessPermissions(revoked, revoked, revoked, revoked, revoked)
+        )
+        val revokedResource = listOf<Byte>(6, 8, 0, 16, 0, 24, 0)
+
+        whenn()
+        val bytes = dataSerializer.encodeToByteArray(EmployeePermissionsRequest.serializer(), request)
+
+        then()
+        assertEquals((1..5).flatMap { listOf((it shl 3 or 2).toByte()) + revokedResource }, bytes.toList())
+    }
+
+    @Test
+    fun `revoked permission flags are still written to the wire`() = runUnitTest {
+        given()
+        val permission = ResourcePermissionRemote(view = false, update = false, delete = false)
+
+        whenn()
+        val bytes = dataSerializer.encodeToByteArray(ResourcePermissionRemote.serializer(), permission)
+
+        then()
+        assertEquals(listOf<Byte>(8, 0, 16, 0, 24, 0), bytes.toList())
     }
 
     @Test

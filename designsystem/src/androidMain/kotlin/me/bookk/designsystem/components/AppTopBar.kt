@@ -41,6 +41,8 @@ import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.TopBarSize
 
 
+private const val DISABLED_ACTION_ALPHA = 0.38f
+
 @Composable
 fun AppTopBar(
     state: AppBarState,
@@ -49,15 +51,15 @@ fun AppTopBar(
     actions: @Composable RowScope.() -> Unit = {
         state.actions.items.forEach {
             if (it.icon != null) {
-                IconButton(onClick = it.onClick) {
+                IconButton(onClick = it.onClick, enabled = it.isEnabled) {
                     Icon(
                         painter = it.icon.painter(),
                         contentDescription = it.contentDescription.localized(),
-                        tint = colors.actionIconContentColor
+                        tint = colors.actionIconContentColor.copy(alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA)
                     )
                 }
             } else {
-                TextButton(onClick = it.onClick) {
+                TextButton(onClick = it.onClick, enabled = it.isEnabled) {
                     Text(
                         it.contentDescription.localized(),
                         style = MaterialTheme.typography.bodyLarge.copy(
@@ -67,7 +69,7 @@ fun AppTopBar(
                                 ActionType.POSITIVE -> LocalColors.current.actionText
 
                                 ActionType.NEGATIVE -> LocalColors.current.error
-                            }
+                            }.copy(alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA)
                         )
                     )
                 }

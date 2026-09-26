@@ -33,6 +33,7 @@ import me.bookk.designsystem.theme.typography.secondary
 internal fun EditClientScreen(state: EditClientState) {
     Scaffold(
         modifier = Modifier
+            .fillMaxSize()
             .systemBarsPadding()
             .imePadding(),
         topBar = {
@@ -85,11 +86,13 @@ internal fun EditClientScreen(state: EditClientState) {
                     modifier = Modifier.fillMaxWidth(),
                     state = state.submit
                 )
-                StateTextButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = state.deleteButton,
-                    colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error)
-                )
+                if (state.deleteButton.isVisible) {
+                    StateTextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        state = state.deleteButton,
+                        colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error)
+                    )
+                }
             }
         }
     )

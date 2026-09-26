@@ -11,7 +11,6 @@ interface BusinessDashboardState {
     val appBar: AppBarState
     val sections: List<BusinessDashboardSection>
     val businessMenu: BusinessMenuState
-    var isCreateBusinessSheetVisible: Boolean
 
     val notifications: PresentationNotificationState
     val navigation: NavigationState<DashboardNavigationDestination>

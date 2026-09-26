@@ -5,7 +5,6 @@ import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.employees.domain.api.entity.Employee
-import me.bookk.feature.employees.domain.api.entity.EmployeeRole
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -20,7 +19,8 @@ internal class EmployeeRemote(
     @ProtoNumber(7) val userId: Uuid,
     @ProtoNumber(8) val services: List<ServiceRemote>,
     @ProtoNumber(9) val schedule: ScheduleRemote,
-    @ProtoNumber(10) val createdAt: Instant
+    @ProtoNumber(10) val createdAt: Instant,
+    @ProtoNumber(11) val permissions: BusinessPermissionsRemote
 ) {
     fun toDomain() = Employee(
         id = id,
@@ -32,53 +32,64 @@ internal class EmployeeRemote(
         userId = userId,
         services = services.map { it.toDomain() },
         schedule = schedule.toDomain(),
-        createdAt = createdAt
+        createdAt = createdAt,
+        permissions = permissions.toDomain()
     )
+}
 
+@Serializable
+internal class EmployeeUpdateRequest(
+    @ProtoNumber(1) val id: Uuid,
+    @ProtoNumber(2) val businessId: Uuid,
+    @ProtoNumber(3) val name: String,
+    @ProtoNumber(4) val lastName: String,
+    @ProtoNumber(5) val phone: String?,
+    @ProtoNumber(6) val email: String?,
+    @ProtoNumber(7) val services: List<ServiceRemote>,
+    @ProtoNumber(8) val schedule: ScheduleRemote
+) {
     companion object {
-        fun fromDomain(employee: Employee) = EmployeeRemote(
-            id = employee.id,
-            businessId = employee.businessId,
-            name = employee.name,
-            lastName = employee.lastName,
-            phone = employee.phone,
-            email = employee.email,
-            userId = employee.userId,
-            services = employee.services.map { ServiceRemote.fromDomain(it) },
-            schedule = ScheduleRemote.fromDomain(employee.schedule),
-            createdAt = employee.createdAt
-        )
+        fun fromDomain(employee: Employee): EmployeeUpdateRequest {
+            return EmployeeUpdateRequest(
+                id = employee.id,
+                businessId = employee.businessId,
+                name = employee.name,
+                lastName = employee.lastName,
+                phone = employee.phone,
+                email = employee.email,
+                services = employee.services.map { ServiceRemote.fromDomain(it) },
+                schedule = ScheduleRemote.fromDomain(employee.schedule)
+            )
+        }
     }
 }
 
 @Serializable
-internal class PromoteEmployeeRequestRemote(
-    @ProtoNumber(1) val role: EmployeeRoleRemote
-)
-
-@Serializable
-internal enum class EmployeeRoleRemote {
-    EMPLOYEE,
-    MANAGER;
-
-    fun toDomain() = when (this) {
-        EMPLOYEE -> EmployeeRole.EMPLOYEE
-        MANAGER -> EmployeeRole.MANAGER
-    }
-
+internal class EmployeePermissionsRequest(
+    @ProtoNumber(1) val business: ResourcePermissionRemote? = null,
+    @ProtoNumber(2) val employees: ResourcePermissionRemote? = null,
+    @ProtoNumber(3) val clients: ResourcePermissionRemote? = null,
+    @ProtoNumber(4) val services: ResourcePermissionRemote? = null,
+    @ProtoNumber(5) val appointments: ResourcePermissionRemote? = null
+) {
     companion object {
-        fun fromDomain(role: EmployeeRole) = when (role) {
-            EmployeeRole.EMPLOYEE -> EMPLOYEE
-            EmployeeRole.MANAGER -> MANAGER
+        fun fromDomain(permissions: BusinessPermissions): EmployeePermissionsRequest {
+            return EmployeePermissionsRequest(
+                business = ResourcePermissionRemote.fromDomain(permissions.business),
+                employees = ResourcePermissionRemote.fromDomain(permissions.employees),
+                clients = ResourcePermissionRemote.fromDomain(permissions.clients),
+                services = ResourcePermissionRemote.fromDomain(permissions.services),
+                appointments = ResourcePermissionRemote.fromDomain(permissions.appointments)
+            )
         }
     }
 }
 
 @Serializable
 internal class ResourcePermissionRemote(
-    @ProtoNumber(1) val view: Boolean = false,
-    @ProtoNumber(2) val update: Boolean = false,
-    @ProtoNumber(3) val delete: Boolean = false
+    @ProtoNumber(1) val view: Boolean,
+    @ProtoNumber(2) val update: Boolean,
+    @ProtoNumber(3) val delete: Boolean
 ) {
     fun toDomain() = ResourcePermission(view = view, update = update, delete = delete)
 

@@ -40,7 +40,6 @@ import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.BusinessMenuState
 import me.bookk.feature.business.domain.api.entity.DashboardFeature
-import me.bookk.feature.business.presentation.screen.create.CreateBusinessSheet
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
 import kotlin.uuid.Uuid
@@ -68,9 +67,6 @@ internal fun DashboardScreen(
             }
         }
     )
-    if (state.isCreateBusinessSheetVisible) {
-        CreateBusinessSheet(onDismiss = { state.isCreateBusinessSheetVisible = false })
-    }
 }
 
 @Composable

@@ -20,4 +20,24 @@
     <string name="employees_invite_revoke_error_already_processed">This invitation was already processed and can no longer be revoked</string>
     <string name="employees_invite_generate_error_pending_limit">You have reached the limit of pending invitations. Revoke an unused invitation to generate a new code</string>
     <string name="employees_invite_generate_error_daily_limit">You have reached the daily limit of invitations. Try again later</string>
+    <string name="employees_edit_phone">Phone</string>
+    <string name="employees_edit_email">Email</string>
+    <string name="employees_edit_services">Services</string>
+    <string name="employees_edit_services_add">Add service</string>
+    <string name="employees_edit_services_empty">No services assigned.</string>
+    <string name="employees_edit_permissions">Permissions</string>
+    <string name="employees_edit_permissions_owner_hint">Only the business owner can change permissions. The owner always has full access to every resource.</string>
+    <string name="employees_edit_permission_business">Business</string>
+    <string name="employees_edit_permission_employees">Employees</string>
+    <string name="employees_edit_permission_clients">Clients</string>
+    <string name="employees_edit_permission_services">Services</string>
+    <string name="employees_edit_permission_appointments">Appointments</string>
+    <string name="employees_edit_permission_view">View</string>
+    <string name="employees_edit_permission_update">Edit</string>
+    <string name="employees_edit_permission_delete">Delete</string>
+    <string name="employees_edit_updated">Employee updated</string>
+    <string name="employees_edit_error_validation">Employee name, phone or email is invalid</string>
+    <string name="employees_edit_error_active_day_without_work_hours">An active day must have at least one work hour</string>
+    <string name="employees_edit_error_invalid_day_off_range">Day off start date must be before the end date</string>
+    <string name="employees_edit_error_insufficient_grant">You can\'t grant access you don\'t have yourself</string>
 </resources>

@@ -15,7 +15,9 @@ import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.services.domain.api.GetServicesPermissions
 import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
+import me.bookk.feature.services.domain.api.entity.ServicesPermissions
 import me.bookk.feature.services.domain.api.group.DeleteServiceGroup
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
@@ -26,12 +28,15 @@ class ServiceGroupListViewModel(
     private val getServiceGroups: GetServiceGroups,
     private val deleteServiceGroup: DeleteServiceGroup,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
+    private val getServicesPermissions: GetServicesPermissions,
     stateFactory: ServicesStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
     val uiState: ServiceGroupListState = stateFactory.createServiceGroupListState().setup()
     private var groups = listOf<ServiceGroupListState.ServiceGroupUI>()
+    private var renderedGroups: List<ServiceGroup>? = null
+    private var permissions: ServicesPermissions? = null
 
     init {
         observeGroups()
@@ -48,10 +53,12 @@ class ServiceGroupListViewModel(
 
     private fun renderGroups(serviceGroups: List<ServiceGroup>) {
         if (serviceGroups.isEmpty() && uiState.groups.isInitialLoading) return
+        renderedGroups = serviceGroups
+        val canDelete = permissions?.canDelete == true
         groups = serviceGroups.map { group ->
             group.ui(
                 onItemClick = weakVMClosure { it.onGroupClicked(group) },
-                onDeleteClick = weakVMClosure { it.onDeleteClicked(group) }
+                onDeleteClick = if (canDelete) weakVMClosure { it.onDeleteClicked(group) } else null
             )
         }
         uiState.groups.replace(groups)
@@ -62,9 +69,38 @@ class ServiceGroupListViewModel(
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.groups)
-            .safeOnEach { loadServiceGroups(it) }
+            .safeOnEach {
+                loadServiceGroups(it)
+                loadPermissions(it)
+            }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun loadPermissions(businessId: Uuid) {
+        launch(
+            key = PERMISSIONS_KEY,
+            launchIn = DispatcherProvider.io,
+            call = { getServicesPermissions(businessId) },
+            onComplete = { renderPermissions(it) },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun renderPermissions(permissions: ServicesPermissions) {
+        this.permissions = permissions
+        val actions = if (permissions.canEdit) {
+            listOf(
+                AppBarAction(
+                    contentDescription = DesignSystem.strings.action_add.desc(),
+                    onClick = weakVMClosure { it.uiState.isAddGroupDialogVisible = true }
+                )
+            )
+        } else {
+            emptyList()
+        }
+        uiState.appBar.actions.replace(actions)
+        renderedGroups?.let { renderGroups(it) }
     }
 
     private fun loadServiceGroups(businessId: Uuid) {
@@ -115,14 +151,6 @@ class ServiceGroupListViewModel(
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(ServiceGroupListDestination.Back)
         }
-        appBar.actions.replace(
-            listOf(
-                AppBarAction(
-                    contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.uiState.isAddGroupDialogVisible = true }
-                )
-            )
-        )
 
         search.placeholder = DesignSystem.strings.action_search.desc()
         search.onTextChanged = weakVMClosure { vm, query -> vm.onSearchQueryChanged(query) }
@@ -131,5 +159,9 @@ class ServiceGroupListViewModel(
             image = DesignSystem.images.empty,
             label = ServicesRes.strings.service_group_empty.desc()
         )
+    }
+
+    private companion object {
+        const val PERMISSIONS_KEY = "service_group_list_permissions"
     }
 }

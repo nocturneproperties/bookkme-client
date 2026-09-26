@@ -21,6 +21,9 @@ abstract class AppointmentSettingsDao {
     @Query("SELECT * FROM appointment_settings WHERE businessId = :businessId")
     abstract fun observeByBusinessId(businessId: Uuid): Flow<AppointmentSettingsLocal?>
 
+    @Query("DELETE FROM appointment_settings")
+    abstract suspend fun clear()
+
     @Upsert
     abstract suspend fun upsertSettings(settings: AppointmentSettingsEntity)
 

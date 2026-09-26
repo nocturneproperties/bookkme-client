@@ -18,10 +18,11 @@ import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.clients.domain.api.CreateClient
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.ClientsStateFactory
+import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
 class CreateClientViewModel(
-    private val businessId: Uuid,
+    @InjectedParam private val businessId: Uuid,
     private val createClient: CreateClient,
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,

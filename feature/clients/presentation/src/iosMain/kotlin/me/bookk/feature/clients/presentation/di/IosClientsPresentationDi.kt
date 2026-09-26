@@ -6,16 +6,17 @@ import me.bookk.feature.clients.presentation.details.ClientDetailsViewModel
 import me.bookk.feature.clients.presentation.edit.EditClientViewModel
 import me.bookk.feature.clients.presentation.list.ClientsListViewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 import kotlin.uuid.Uuid
 
 internal actual fun platformClientsDiModule(): Module = module {
-    factory { ClientsListViewModel(get(), get(), get(), get()) }
-    factory { CreateClientViewModel(it.get(), get(), get(), get(), get(), get()) }
-    factory { ClientDetailsViewModel(it.get(), get(), get(), get(), get()) }
-    factory { EditClientViewModel(it.get(), get(), get(), get(), get(), get(), get(), get()) }
+    factoryOf(::ClientsListViewModel)
+    factoryOf(::CreateClientViewModel)
+    factoryOf(::ClientDetailsViewModel)
+    factoryOf(::EditClientViewModel)
 }
 
 @UsedInSwift

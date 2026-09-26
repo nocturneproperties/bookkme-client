@@ -34,6 +34,7 @@ include(":core:data")
 include(":core:domain")
 include(":core:presentation")
 include(":core:testFixtures")
+include(":designsystem:testFixtures")
 include(":environment:api")
 include(":environment:impl")
 

@@ -18,6 +18,10 @@ kotlin {
             implementation(projects.designsystem)
             implementation(projects.feature.business.domain.api)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+            implementation(projects.designsystem.testFixtures)
+        }
     }
 }
 

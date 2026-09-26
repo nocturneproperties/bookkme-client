@@ -42,7 +42,7 @@ fun <T : PickerPresentation> PickerField(
             TextField(
                 modifier = modifier,
                 interactionSource = singleClickInteractionSource {
-                    if (state.options.isNotEmpty()) {
+                    if (state.textField.enabled && state.options.isNotEmpty()) {
                         isSheetVisible = true
                     }
                 },
@@ -66,7 +66,7 @@ fun <T : PickerPresentation> PickerField(
             TextField(
                 modifier = modifier,
                 interactionSource = singleClickInteractionSource {
-                    if (state.options.isNotEmpty()) {
+                    if (state.textField.enabled && state.options.isNotEmpty()) {
                         isSheetVisible = true
                     }
                 },

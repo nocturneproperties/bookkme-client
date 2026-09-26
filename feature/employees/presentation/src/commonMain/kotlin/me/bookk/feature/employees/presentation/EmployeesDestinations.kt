@@ -9,4 +9,6 @@ sealed class EmployeesDestinations : NavigationDestination() {
     data object EmployeeList : EmployeesDestinations()
     @Serializable
     data class InviteEmployee(val businessId: Uuid) : EmployeesDestinations()
+    @Serializable
+    data class EditEmployee(val id: Uuid) : EmployeesDestinations()
 }

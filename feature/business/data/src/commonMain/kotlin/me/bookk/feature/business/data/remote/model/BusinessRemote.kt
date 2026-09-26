@@ -22,7 +22,8 @@ class BusinessRemote(
     @ProtoNumber(7) val currencyCode: String,
     @ProtoNumber(8) val socials: List<Social>,
     @ProtoNumber(9) val schedule: ScheduleRemote,
-    @ProtoNumber(10) val permissions: BusinessPermissionsRemote
+    @ProtoNumber(10) val permissions: BusinessPermissionsRemote,
+    @ProtoNumber(11) val ownerId: Uuid
 ) {
     @Serializable
     class Location(

@@ -48,7 +48,7 @@ internal class CommonUserProfileDataSource(
         httpClient.patch(UserRouting.Api.User.Me()) {
             setBody(userProfile.toRemote())
         }
-        profileDao.update(userProfile.toDb())
+        Unit
     }
 
     override suspend fun deleteProfile(id: Uuid) = mapExceptions {

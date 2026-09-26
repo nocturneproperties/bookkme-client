@@ -5,6 +5,7 @@ import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.error.ErrorDescription
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
+import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.resources.DesignSystem
 import kotlin.test.Test

@@ -33,6 +33,8 @@ struct EmployeeListScreen: View {
 				navigationStack.popLast()
 			case let destination as EmployeeListDestinations.AddEmployee:
 				navigationStack.push(EmployeesDestinations.InviteEmployee(businessId: destination.businessId))
+			case let destination as EmployeeListDestinations.EditEmployee:
+				navigationStack.push(EmployeesDestinations.EditEmployee(id: destination.id))
 			default:
 				break
 			}
@@ -46,15 +48,22 @@ struct EmployeeSectionRow: View {
 	var body: some View {
 		Section {
 			ForEach(section.items, id: \.id) { employee in
-				VStack {
-					Text(employee.fullName)
-						.font(.body)
-						.padding(.horizontal)
-						.frame(maxWidth: .infinity, minHeight: 44, alignment: .init(horizontal: .leading, vertical: .center))
-					Divider()
-						.padding(.leading)
-						.background(AppColors.divider)
-				}.listRowSeparator(.hidden)
+				Button {
+					section.onItemClick(employee)
+				} label: {
+					VStack {
+						Text(employee.fullName)
+							.font(.body)
+							.padding(.horizontal)
+							.frame(maxWidth: .infinity, minHeight: 44, alignment: .init(horizontal: .leading, vertical: .center))
+						Divider()
+							.padding(.leading)
+							.background(AppColors.divider)
+					}
+					.contentShape(Rectangle())
+				}
+				.buttonStyle(.plain)
+				.listRowSeparator(.hidden)
 			}
 		} header: {
 			VStack {

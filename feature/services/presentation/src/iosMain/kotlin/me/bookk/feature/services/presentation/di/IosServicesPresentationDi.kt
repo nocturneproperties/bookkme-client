@@ -6,16 +6,17 @@ import me.bookk.feature.services.presentation.group.list.ServiceGroupListViewMod
 import me.bookk.feature.services.presentation.service.add.AddServiceViewModel
 import me.bookk.feature.services.presentation.service.list.ServiceListViewModel
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 import kotlin.uuid.Uuid
 
 internal actual fun platformServicesDiModule(): Module = module {
-    factory { ServiceGroupListViewModel(get(), get(), get(), get(), get()) }
-    factory { ServiceListViewModel(get(), get(), get(), get(), get()) }
-    factory { AddServiceViewModel(it.get(), get(), get(), get(),  get(), get()) }
-    factory { AddGroupViewModel(get(), get(), get(), get()) }
+    factoryOf(::ServiceGroupListViewModel)
+    factoryOf(::ServiceListViewModel)
+    factoryOf(::AddServiceViewModel)
+    factoryOf(::AddGroupViewModel)
 }
 
 @UsedInSwift

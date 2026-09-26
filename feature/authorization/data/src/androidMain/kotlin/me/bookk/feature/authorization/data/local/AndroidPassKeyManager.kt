@@ -13,13 +13,17 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.credentials.exceptions.domerrors.NotAllowedError
 import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
+import library.credentials.api.PasskeyCredentialUpdater
 import me.bookk.core.android.AndroidActivityAware
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager.CreationRequest
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import org.json.JSONObject
 
-class AndroidPassKeyManager : AndroidActivityAware(), PassKeyManager {
+class AndroidPassKeyManager(
+    private val relyingParty: String,
+    private val credentialUpdater: PasskeyCredentialUpdater
+) : AndroidActivityAware(), PassKeyManager {
 
     override suspend fun create(challenge: CreationRequest): PasskeyVerificationPayload {
         return runCatching {
@@ -86,5 +90,13 @@ class AndroidPassKeyManager : AndroidActivityAware(), PassKeyManager {
                 else -> PassKeyManager.Error.Unknown(it)
             }
         }.getOrThrow()
+    }
+
+    override suspend fun signalAccountDeleted(assertion: PasskeyVerificationPayload) {
+        val passkey = PasskeyAssertion.from(assertion)
+        credentialUpdater.reportUnknownCredential(relyingParty, passkey.credentialId)
+        passkey.userHandle?.let {
+            credentialUpdater.reportNoAcceptedCredentials(relyingParty, it)
+        }
     }
 }

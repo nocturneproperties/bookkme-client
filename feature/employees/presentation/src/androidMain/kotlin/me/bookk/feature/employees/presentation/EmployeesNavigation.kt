@@ -5,12 +5,14 @@ import kotlin.uuid.Uuid
 
 class EmployeesNavigation(
     val toInviteEmployee: (Uuid) -> Unit,
+    val toEditEmployee: (Uuid) -> Unit,
     val onBack: () -> Unit
 )
 
 internal val LocalNavigation = compositionLocalOf {
     EmployeesNavigation(
         toInviteEmployee = {},
+        toEditEmployee = {},
         onBack = {}
     )
 }

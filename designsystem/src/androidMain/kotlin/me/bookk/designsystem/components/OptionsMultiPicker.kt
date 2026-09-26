@@ -4,6 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import kotlinx.coroutines.launch
 import me.bookk.designsystem.theme.typography.active
+import me.bookk.designsystem.theme.typography.secondary
 import me.bookk.designsystem.uistate.OptionsMultiPickerState
 import me.bookk.designsystem.uistate.PickerPresentation
 
@@ -34,6 +36,18 @@ fun <T : PickerPresentation> OptionsMultiPicker(
         Header(state.pickerTitle.localized())
         AppCard {
             Column(Modifier.animateContentSize()) {
+                val placeholder = state.placeholder
+                if (state.selectedItems.isEmpty() && placeholder != null) {
+                    Text(
+                        placeholder.localized(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp)
+                            .padding(top = 4.dp),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium.secondary()
+                    )
+                }
                 state.selectedItems.forEach {
                     itemContent(it) {
                         state.onItemsRemoveRequested(listOf(it))

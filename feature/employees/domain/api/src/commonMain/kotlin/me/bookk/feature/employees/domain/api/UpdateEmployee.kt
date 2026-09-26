@@ -9,5 +9,6 @@ interface UpdateEmployee {
         class ValidationError(cause: Throwable) : Error, Throwable(cause)
         class ActiveDayWithoutWorkHours(cause: Throwable) : Error, Throwable(cause)
         class InvalidDayOffRange(cause: Throwable) : Error, Throwable(cause)
+        class InsufficientGrant(cause: Throwable) : Error, Throwable(cause)
     }
 }

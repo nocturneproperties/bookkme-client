@@ -1,6 +1,7 @@
 package me.bookk.di
 
 import kotlinx.coroutines.CoroutineScope
+import library.credentials.api.PasskeyCredentialUpdater
 import library.credentials.di.CredentialModuleFactory
 import library.picker.PickOptionStateFactory
 import me.bookk.core.coroutine.createApplicationScope
@@ -51,6 +52,7 @@ private fun stateModule() = module {
     factory<EmployeesStateFactory> { get<StateFactoryCreator>().createEmployeesFactory() }
     factory<ServicesStateFactory> { get<StateFactoryCreator>().createServicesFactory() }
     factory<CredentialModuleFactory> { get<StateFactoryCreator>().createCredentialModuleFactory() }
+    single<PasskeyCredentialUpdater> { get<StateFactoryCreator>().createPasskeyCredentialUpdater() }
     factory<PickOptionStateFactory> { get<StateFactoryCreator>().createPickOptionFactory() }
     factory<AppointmentsStateFactory> { get<StateFactoryCreator>().createAppointmentsFactory() }
 }

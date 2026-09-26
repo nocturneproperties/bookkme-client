@@ -9,6 +9,7 @@ class IOSOptionsMultiPickerState: IOSViewState, @MainActor OptionsMultiPickerSta
     typealias KotlinType = OptionsMultiPickerState
 
     var pickerTitle: any StringDesc
+    var placeholder: (any StringDesc)?
     var options: [PickerPresentation]
     var selectedItems: [PickerPresentation]
     var onItemsPicked: ([PickerPresentation]) -> Void
@@ -18,6 +19,7 @@ class IOSOptionsMultiPickerState: IOSViewState, @MainActor OptionsMultiPickerSta
 
     init(
         pickerTitle: any StringDesc = RawStringDesc(string: ""),
+        placeholder: (any StringDesc)? = nil,
         options: [PickerPresentation] = [],
         selectedItems: [PickerPresentation] = [],
         onItemsPicked: @escaping ([PickerPresentation]) -> Void = { _ in },
@@ -26,6 +28,7 @@ class IOSOptionsMultiPickerState: IOSViewState, @MainActor OptionsMultiPickerSta
         isEditable: Bool = true
     ) {
         self.pickerTitle = pickerTitle
+        self.placeholder = placeholder
         self.options = options
         self.selectedItems = selectedItems
         self.onItemsPicked = onItemsPicked

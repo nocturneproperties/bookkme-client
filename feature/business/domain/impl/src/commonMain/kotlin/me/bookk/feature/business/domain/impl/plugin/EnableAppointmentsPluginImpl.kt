@@ -21,6 +21,6 @@ internal class EnableAppointmentsPluginImpl(
                     throw Error.AlreadyEnabled()
                 }
             }
-        }
+        }.getOrThrow()
     }
 }

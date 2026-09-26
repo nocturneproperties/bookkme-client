@@ -19,6 +19,9 @@ abstract class NotificationSettingsDao {
     @Query("SELECT * FROM notification_settings WHERE userId = :userId")
     abstract fun observeByUserId(userId: Uuid): Flow<NotificationSettingsLocal?>
 
+    @Query("DELETE FROM notification_settings")
+    abstract suspend fun clear()
+
     @Upsert
     abstract suspend fun upsertSettings(settings: NotificationSettingsEntity)
 

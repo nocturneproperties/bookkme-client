@@ -1,5 +1,6 @@
 package me.bookk.presentation
 
+import library.credentials.api.PasskeyCredentialUpdater
 import library.credentials.di.CredentialModuleFactory
 import library.picker.PickOptionStateFactory
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
@@ -19,6 +20,7 @@ interface StateFactoryCreator {
     fun createCredentialModuleFactory(): CredentialModuleFactory
     fun createDashboardFactory(): DashboardStateFactory
     fun createEmployeesFactory(): EmployeesStateFactory
+    fun createPasskeyCredentialUpdater(): PasskeyCredentialUpdater
     fun createPickOptionFactory(): PickOptionStateFactory
     fun createServicesFactory(): ServicesStateFactory
     fun createSettingsFactory(): SettingsStateFactory

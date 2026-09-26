@@ -88,9 +88,11 @@ private fun ServiceGroupItem(modifier: Modifier, item: ServiceGroupUI) {
         modifier = modifier
             .fillMaxWidth()
             .combinedClickable(
-                onLongClick = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    menuExpanded = true
+                onLongClick = item.onDeleteClick?.let {
+                    {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        menuExpanded = true
+                    }
                 },
                 onClick = { item.onItemClick() }
             )
@@ -100,19 +102,21 @@ private fun ServiceGroupItem(modifier: Modifier, item: ServiceGroupUI) {
     ) {
         Text(item.name)
     }
-    DropdownMenu(
-        expanded = menuExpanded,
-        containerColor = LocalColors.current.elevated,
-        onDismissRequest = { menuExpanded = false }
-    ) {
-        DropdownMenuItem(
-            text = {
-                Text(
-                    DesignSystem.strings.action_delete.desc().localized(),
-                    color = LocalColors.current.error
-                )
-            },
-            onClick = { item.onDeleteClick() }
-        )
+    item.onDeleteClick?.let { onDeleteClick ->
+        DropdownMenu(
+            expanded = menuExpanded,
+            containerColor = LocalColors.current.elevated,
+            onDismissRequest = { menuExpanded = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        DesignSystem.strings.action_delete.desc().localized(),
+                        color = LocalColors.current.error
+                    )
+                },
+                onClick = { onDeleteClick() }
+            )
+        }
     }
 }

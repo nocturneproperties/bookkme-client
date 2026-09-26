@@ -49,7 +49,8 @@ private var mockBusiness = BusinessRemote(
         BusinessRemote.Social(BusinessRemote.SocialKind.TELEGRAM, "telegram")
     ),
     schedule = WorkingSchedule().toRemote(),
-    permissions = mockOwnerPermissions()
+    permissions = mockOwnerPermissions(),
+    ownerId = Uuid.random()
 )
 
 private fun mockOwnerPermissions(): BusinessPermissionsRemote {
@@ -102,7 +103,8 @@ private class UpdateBusinessesHandler : MockRequestHandler {
             currencyCode = business.currencyCode,
             socials = business.socials,
             schedule = business.schedule,
-            permissions = mockBusiness.permissions
+            permissions = mockBusiness.permissions,
+            ownerId = mockBusiness.ownerId
         )
         return scope.respondOk()
     }

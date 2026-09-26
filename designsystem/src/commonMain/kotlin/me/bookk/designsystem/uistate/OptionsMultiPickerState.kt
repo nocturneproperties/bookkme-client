@@ -5,6 +5,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 interface OptionsMultiPickerState<T : PickerPresentation> : ViewState {
 
     var pickerTitle: StringDesc
+    var placeholder: StringDesc?
     val options: List<T>
     val selectedItems: List<T>
 

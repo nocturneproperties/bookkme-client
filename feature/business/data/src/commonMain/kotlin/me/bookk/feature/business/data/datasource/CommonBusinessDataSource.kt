@@ -122,6 +122,7 @@ internal class CommonBusinessDataSource(
 
     override suspend fun doOnLogOut() {
         preferences.clear()
+        businessDao.clear()
     }
 
     private object Key {

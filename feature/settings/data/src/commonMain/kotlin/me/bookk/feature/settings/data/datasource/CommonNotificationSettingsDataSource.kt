@@ -12,6 +12,7 @@ import library.cache.api.Preferences
 import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.feature.settings.data.mapping.toChannelEntities
 import me.bookk.feature.settings.data.mapping.toDomain
@@ -31,7 +32,7 @@ internal class CommonNotificationSettingsDataSource(
     private val httpClient: HttpClient,
     private val notificationSettingsDao: NotificationSettingsDao,
     preferenceProvider: PreferenceProvider
-) : DataSource(), NotificationSettingsDataSource {
+) : DataSource(), NotificationSettingsDataSource, LogOutAction {
 
     private val preferences = preferenceProvider.get("notification_prefs")
 
@@ -84,6 +85,10 @@ internal class CommonNotificationSettingsDataSource(
         return mapExceptions {
             preferences.get(Key.pendingNotificationToken)
         }
+    }
+
+    override suspend fun doOnLogOut() {
+        notificationSettingsDao.clear()
     }
 
     private object Key {

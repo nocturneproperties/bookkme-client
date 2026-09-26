@@ -8,5 +8,5 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal actual fun authDataPlatformModule(): Module = module {
-    factory { IosPassKeyManager(get(named("relyingParty"))) } bind PassKeyManager::class
+    factory { IosPassKeyManager(get(named("relyingParty")), get()) } bind PassKeyManager::class
 }

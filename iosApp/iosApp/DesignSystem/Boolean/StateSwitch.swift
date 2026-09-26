@@ -31,5 +31,6 @@ struct StateSwitch: View {
 				onToggledChanged(newValue)
 			}
 		))
+		.disabled(!state.isEnabled)
 	}
 }

@@ -13,8 +13,10 @@ internal class CreateBusinessImpl(
     private val switchDashboardBusiness: SwitchDashboardBusiness
 ) : CreateBusiness {
     override suspend fun invoke(name: String): Business {
+        val trimmedName = name.trim()
+        if (trimmedName.isEmpty()) throw CreateBusiness.Error.EmptyName()
         val business = businessDataSource.createBusiness(
-            name = name,
+            name = trimmedName,
             currencyCode = "UAH", //Temporary currency hardcode
             timeZone = TimeZone.currentSystemDefault()
         )

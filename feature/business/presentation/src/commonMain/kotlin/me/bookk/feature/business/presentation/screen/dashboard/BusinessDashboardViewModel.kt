@@ -13,6 +13,7 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.BusinessMenuItem
+import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
@@ -28,6 +29,7 @@ class BusinessDashboardViewModel(
     private val observeUserBusinessesChanges: ObserveUserBusinessesChanges,
     private val switchDashboardBusiness: SwitchDashboardBusiness,
     private val joinBusiness: JoinBusiness,
+    private val createBusiness: CreateBusiness,
     stateFactory: BusinessStateFactory,
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
@@ -42,7 +44,7 @@ class BusinessDashboardViewModel(
 
     private fun BusinessDashboardState.setup() = apply {
         businessMenu.onBusinessClick = weakVMClosure { vm, id -> vm.onBusinessMenuClick(id) }
-        businessMenu.onCreateClick = weakVMClosure { it.uiState.isCreateBusinessSheetVisible = true }
+        businessMenu.onCreateClick = weakVMClosure { it.onCreateClick() }
         businessMenu.onJoinClick = weakVMClosure { it.onJoinClick() }
     }
 
@@ -94,6 +96,36 @@ class BusinessDashboardViewModel(
         )
     }
 
+    private fun onCreateClick() {
+        uiState.notifications.add(
+            PresentationNotification.InputMessage(
+                title = BusinessRes.strings.create_business_title.desc(),
+                message = BusinessRes.strings.create_business_name_supporting.desc(),
+                placeholder = BusinessRes.strings.create_business_name_hint.desc(),
+                cancelText = DesignSystem.strings.action_cancel.desc(),
+                confirmText = DesignSystem.strings.action_create.desc(),
+                onConfirm = weakVMClosure { vm, name -> vm.onCreateSubmit(name) }
+            )
+        )
+    }
+
+    private fun onCreateSubmit(name: String) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { createBusiness(name) },
+            onComplete = {},
+            onError = {
+                when (it) {
+                    is CreateBusiness.Error.EmptyName -> uiState.notifications.add(
+                        PresentationNotification.Message.simple(BusinessRes.strings.create_business_error_empty_name.desc())
+                    )
+
+                    else -> uiState.notifications.add(it.notification())
+                }
+            }
+        )
+    }
+
     private fun onJoinClick() {
         uiState.notifications.add(
             PresentationNotification.InputMessage(
@@ -121,6 +153,13 @@ class BusinessDashboardViewModel(
             },
             onError = {
                 when (it) {
+                    is JoinBusiness.Error.EmptyCode ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                BusinessRes.strings.business_dashboard_switch_join_error_empty_code.desc()
+                            )
+                        )
+
                     is JoinBusiness.Error.AlreadyProcessed ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(

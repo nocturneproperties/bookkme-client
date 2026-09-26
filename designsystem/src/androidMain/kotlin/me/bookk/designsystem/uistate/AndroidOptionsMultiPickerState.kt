@@ -9,6 +9,7 @@ import dev.icerock.moko.resources.desc.desc
 
 class AndroidOptionsMultiPickerState<T : PickerPresentation> : AndroidViewState(), OptionsMultiPickerState<T> {
     override var pickerTitle: StringDesc by mutableStateOf("".desc())
+    override var placeholder: StringDesc? by mutableStateOf(null)
     override val options = mutableStateListOf<T>()
     override val selectedItems = mutableStateListOf<T>()
     override var onItemsPicked: (List<T>) -> Unit by mutableStateOf({})

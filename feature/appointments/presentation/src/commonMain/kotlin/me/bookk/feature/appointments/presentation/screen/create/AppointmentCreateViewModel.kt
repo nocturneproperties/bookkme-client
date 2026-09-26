@@ -156,7 +156,10 @@ class AppointmentCreateViewModel(
                     else -> uiState.notifications.add(it.notification())
                 }
             },
-            onTerminate = { uiState.create.stopLoading() }
+            onTerminate = {
+                uiState.create.stopLoading()
+                invalidateButton()
+            }
         )
     }
 
@@ -177,6 +180,7 @@ class AppointmentCreateViewModel(
 
         servicePicker.pickerTitle = AppointmentsRes.strings.appointments_create_services.desc()
         servicePicker.addItemText = AppointmentsRes.strings.appointments_create_services_add.desc()
+        servicePicker.placeholder = AppointmentsRes.strings.appointments_create_services_empty.desc()
         servicePicker.onItemsPicked = weakVMClosure { vm, items ->
             vm.onServicesPicked(items)
         }

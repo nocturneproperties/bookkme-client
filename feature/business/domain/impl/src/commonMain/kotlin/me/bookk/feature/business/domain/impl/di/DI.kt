@@ -1,21 +1,25 @@
 package me.bookk.feature.business.domain.impl.di
 
+import me.bookk.feature.business.domain.api.business.CanEditBusiness
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessIdChanges
+import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
 import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.impl.business.CanEditBusinessImpl
 import me.bookk.feature.business.domain.impl.business.CreateBusinessImpl
 import me.bookk.feature.business.domain.impl.business.GetAvailableDashboardFeaturesImpl
 import me.bookk.feature.business.domain.impl.business.JoinBusinessImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessChangesImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessIdChangesImpl
+import me.bookk.feature.business.domain.impl.business.ObserveDashboardSetupStatusImpl
 import me.bookk.feature.business.domain.impl.business.ObserveUserBusinessesChangesImpl
 import me.bookk.feature.business.domain.impl.business.RefreshBusinessInfoImpl
 import me.bookk.feature.business.domain.impl.business.SwitchDashboardBusinessImpl
@@ -35,7 +39,9 @@ fun businessDomainModule() = module {
     factoryOf(::SwitchDashboardBusinessImpl) bind SwitchDashboardBusiness::class
     factoryOf(::JoinBusinessImpl) bind JoinBusiness::class
     factoryOf(::GetAvailableDashboardFeaturesImpl) bind GetAvailableDashboardFeatures::class
+    factoryOf(::ObserveDashboardSetupStatusImpl) bind ObserveDashboardSetupStatus::class
     factoryOf(::UpdateBusinessImpl) bind UpdateBusiness::class
     factoryOf(::EnableAppointmentsPluginImpl) bind EnableAppointmentsPlugin::class
     factoryOf(::IsAppointmentsPluginEnabledImpl) bind IsAppointmentsPluginEnabled::class
+    factoryOf(::CanEditBusinessImpl) bind CanEditBusiness::class
 }

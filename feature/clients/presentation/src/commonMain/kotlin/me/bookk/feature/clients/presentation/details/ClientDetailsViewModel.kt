@@ -1,10 +1,10 @@
 package me.bookk.feature.clients.presentation.details
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.clients.resources.ClientsRes
+import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.dashOnBlank
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
@@ -14,6 +14,7 @@ import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.feature.clients.domain.api.GetClient
+import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.api.entity.ClientEvent
 import me.bookk.feature.clients.domain.api.entity.listenFor
@@ -21,11 +22,13 @@ import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.details.ClientDetailsDestination.Back
 import me.bookk.feature.clients.presentation.details.ClientDetailsDestination.Edit
 import kotlin.properties.Delegates.notNull
+import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
 class ClientDetailsViewModel(
-    private val id: Uuid,
+    @InjectedParam private val id: Uuid,
     private val getClient: GetClient,
+    private val getClientsPermissions: GetClientsPermissions,
     private val device: DeviceFacade,
     stateFactory: ClientsStateFactory,
     vmArgs: VmArgs
@@ -44,10 +47,14 @@ class ClientDetailsViewModel(
 
     private fun loadClient() {
         launch(
-            launchIn = Dispatchers.Default,
-            call = { getClient(id) },
-            onComplete = { loadedClient ->
+            launchIn = DispatcherProvider.io,
+            call = {
+                val client = getClient(id)
+                client to getClientsPermissions(client.businessId)
+            },
+            onComplete = { (loadedClient, permissions) ->
                 client = loadedClient
+                renderEditAction(permissions.canEdit)
                 uiState.appBar.title = loadedClient.fullName.desc()
                 uiState.infoSections.replace(
                     listOf(
@@ -72,6 +79,20 @@ class ClientDetailsViewModel(
         )
     }
 
+    private fun renderEditAction(canEdit: Boolean) {
+        val actions = if (canEdit) {
+            listOf(
+                AppBarAction(
+                    contentDescription = DesignSystem.strings.action_edit.desc(),
+                    onClick = weakVMClosure { it.onEditClick() }
+                )
+            )
+        } else {
+            emptyList()
+        }
+        uiState.appBar.actions.replace(actions)
+    }
+
     private fun onEditClick() {
         uiState.navigation.push(Edit(id))
     }
@@ -79,13 +100,5 @@ class ClientDetailsViewModel(
     private fun ClientDetailsState.setup() = apply {
         appBar.size = TopBarSize.LARGE
         appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
-        appBar.actions.replace(
-            listOf(
-                AppBarAction(
-                    contentDescription = DesignSystem.strings.action_edit.desc(),
-                    onClick = weakVMClosure { it.onEditClick() }
-                )
-            )
-        )
     }
 }

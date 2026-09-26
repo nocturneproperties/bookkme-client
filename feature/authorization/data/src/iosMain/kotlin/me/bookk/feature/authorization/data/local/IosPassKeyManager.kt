@@ -2,6 +2,7 @@ package me.bookk.feature.authorization.data.local
 
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import library.credentials.api.PasskeyCredentialUpdater
 import me.bookk.core.toNSData
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
@@ -13,7 +14,10 @@ import platform.UIKit.UIApplication
 import platform.darwin.NSObject
 import kotlin.io.encoding.Base64
 
-class IosPassKeyManager(val relyingParty: String) : PassKeyManager {
+class IosPassKeyManager(
+    val relyingParty: String,
+    private val credentialUpdater: PasskeyCredentialUpdater
+) : PassKeyManager {
 
     private var delegate: PasskeyControllerDelegate? = null
 
@@ -79,4 +83,12 @@ class IosPassKeyManager(val relyingParty: String) : PassKeyManager {
         }.also {
             delegate = null
         }
+
+    override suspend fun signalAccountDeleted(assertion: PasskeyVerificationPayload) {
+        val passkey = PasskeyAssertion.from(assertion)
+        credentialUpdater.reportUnknownCredential(relyingParty, passkey.credentialId)
+        passkey.userHandle?.let {
+            credentialUpdater.reportNoAcceptedCredentials(relyingParty, it)
+        }
+    }
 }

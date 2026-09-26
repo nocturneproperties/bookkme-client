@@ -43,6 +43,8 @@ struct AppBarHandler: ViewModifier {
 					.frame(maxHeight: .infinity)
 				}
 			}
+			.disabled(!action.isEnabled)
+			.opacity(action.isEnabled ? 1 : 0.38)
 			.accessibilityLabel(action.contentDescription.localized())
 		}
 	}

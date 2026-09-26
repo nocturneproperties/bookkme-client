@@ -30,14 +30,6 @@ struct BusinessDashboardScreen: View {
 				.accessibilityLabel(BusinessRes.strings().business_dashboard_switch_action.desc().localized())
 			}
 		}
-		.sheet(isPresented: Binding(
-			get: { state.isCreateBusinessSheetVisible },
-			set: { state.isCreateBusinessSheetVisible = $0 }
-		)) {
-			NavigationStack {
-				CreateBusinessScreen()
-			}
-		}
 		.handleNotifications(viewModel.uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)
 		.handleNavigation(viewModel.uiState.navigation) { destination in

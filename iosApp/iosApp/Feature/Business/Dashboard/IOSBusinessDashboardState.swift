@@ -23,7 +23,6 @@ class IOSBusinessDashboardState: @MainActor BusinessDashboardState {
 
 	var businessMenu: any BusinessMenuState
 
-	var isCreateBusinessSheetVisible: Bool = false
 
 	init() {
 		self.appBar = IOSAppBarState(title: RawStringDesc(string: ""))

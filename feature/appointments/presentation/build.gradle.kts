@@ -17,6 +17,10 @@ kotlin {
             implementation(projects.library.picker)
             implementation(projects.library.device.api)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+            implementation(projects.designsystem.testFixtures)
+        }
     }
 }
 

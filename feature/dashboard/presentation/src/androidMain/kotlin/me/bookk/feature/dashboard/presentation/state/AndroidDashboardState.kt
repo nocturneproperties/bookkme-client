@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
+import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.NavigationState
@@ -50,8 +51,8 @@ class AndroidDashboardHomeState : DashboardHomeState {
 }
 
 class AndroidOnboardingState : OnboardingState {
-    override var isBusinessStepDone: Boolean by mutableStateOf(false)
-    override var isPluginsStepUnlocked: Boolean by mutableStateOf(false)
+    override var awaitingSetupMessage: StringDesc by mutableStateOf("".desc())
     override var onCreateBusinessClick: (() -> Unit)? by mutableStateOf(null)
+    override var onJoinBusinessClick: (() -> Unit)? by mutableStateOf(null)
     override var onEnablePluginsClick: (() -> Unit)? by mutableStateOf(null)
 }

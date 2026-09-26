@@ -43,9 +43,9 @@ class IOSDashboardHomeState: @MainActor DashboardHomeState {
 @MainActor
 @Observable
 class IOSOnboardingState: @MainActor OnboardingState {
-	var isBusinessStepDone: Bool = false
-	var isPluginsStepUnlocked: Bool = false
+	var awaitingSetupMessage: any StringDesc = RawStringDesc(string: "")
 	var onCreateBusinessClick: (() -> Void)?
+	var onJoinBusinessClick: (() -> Void)?
 	var onEnablePluginsClick: (() -> Void)?
 }
 

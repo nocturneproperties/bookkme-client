@@ -4,10 +4,6 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
-import kotlinx.datetime.isoDayNumber
 import library.device.api.DeviceFacade
 import library.money.api.Currency
 import library.money.api.Money
@@ -16,19 +12,19 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
-import me.bookk.core.presentation.date.DateStyle
-import me.bookk.core.presentation.date.atNextWeekDay
-import me.bookk.core.presentation.date.startOfWeek
-import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
-import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.resources.toOneLine
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.ValidationState
+import me.bookk.designsystem.uistate.schedule.DayOffPeriod
+import me.bookk.designsystem.uistate.schedule.ScheduleBinder
+import me.bookk.designsystem.uistate.schedule.WeekSchedule
+import me.bookk.designsystem.uistate.schedule.WeekdaySchedule
+import me.bookk.designsystem.uistate.schedule.WorkingHours
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
@@ -44,10 +40,6 @@ import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsDestination
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
-import me.bookk.feature.business.presentation.screen.settings.state.DateRangePickerPresentation
-import me.bookk.feature.business.presentation.screen.settings.state.DaySettingsState
-import me.bookk.feature.business.presentation.screen.settings.state.ScheduleState
-import me.bookk.feature.business.presentation.screen.settings.state.TimeSettingState
 import me.bookk.feature.business.presentation.screen.settings.state.toCurrencyUI
 import kotlin.properties.Delegates
 
@@ -60,11 +52,13 @@ class BusinessSettingsViewModel(
     vmArgs: VmArgs
 ) : ViewModel(vmArgs) {
 
-    private val shortWeekdayFormat = dateLocalizer.forStyle(DateStyle.NARROW_WEEKDAY)
-    private val fullWeekdayFormat = dateLocalizer.forStyle(DateStyle.FULL_WEEKDAY)
-    private val fullDateFormat = dateLocalizer.forStyle(DateStyle.D_MMM_YYYY_RELATIVE)
-
-    val uiState: BusinessSettingsState = stateFactory.createBusinessSettingsState(createInitData()).setup()
+    val uiState: BusinessSettingsState =
+        stateFactory.createBusinessSettingsState(createInitData()).setup()
+    private val scheduleBinder = ScheduleBinder(
+        state = uiState.schedule,
+        dateLocalizer = dateLocalizer,
+        onChanged = weakVMClosure { it.invalidateSaveState() }
+    )
     private var referenceBusiness: Business by Delegates.notNull()
     private var businessLocation: Business.Location? = null
 
@@ -73,10 +67,10 @@ class BusinessSettingsViewModel(
     }
 
     private fun BusinessSettingsState.setup() = apply {
+        save.isVisible = false
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(BusinessSettingsDestination.Back)
         }
-        setupDayOffs()
     }
 
     private fun observeCurrentBusiness() {
@@ -100,7 +94,8 @@ class BusinessSettingsViewModel(
         uiState.currency.selectedItem = uiState.currency.options.first { currencyUI ->
             currencyUI.domainValue == Money.SupportedCurrency.valueOf(business.currency.code())
         }.also { uiState.currency.textField.updateText(it.displayName) }
-        uiState.currency.textField.placeholder = BusinessRes.strings.business_settings_currency_label.desc()
+        uiState.currency.textField.placeholder =
+            BusinessRes.strings.business_settings_currency_label.desc()
         uiState.instagram.text = business.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
         uiState.telegram.text = business.socials[SocialKind.TELEGRAM]?.value.orEmpty()
         uiState.viber.text = business.socials[SocialKind.VIBER]?.value.orEmpty()
@@ -114,6 +109,21 @@ class BusinessSettingsViewModel(
         uiState.name.isValid = true
         uiState.phone.isValid = true
         renderSchedule(business.schedule)
+        renderEditable(business.permissions.business.update)
+    }
+
+    private fun renderEditable(isEditable: Boolean) = with(uiState) {
+        name.enabled = isEditable
+        description.enabled = isEditable
+        address.enabled = isEditable
+        phone.enabled = isEditable
+        instagram.enabled = isEditable
+        telegram.enabled = isEditable
+        viber.enabled = isEditable
+        currency.textField.enabled = isEditable
+        photo.isEnabled = isEditable
+        save.isVisible = isEditable
+        scheduleBinder.isEditable = isEditable
     }
 
     fun onSaveClick() {
@@ -149,12 +159,14 @@ class BusinessSettingsViewModel(
                                 BusinessRes.strings.business_settings_active_day_without_work_hours_error.desc()
                             )
                         )
+
                     is UpdateBusiness.Error.InvalidDayOffRange ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings.business_settings_invalid_day_off_range_error.desc()
                             )
                         )
+
                     else -> uiState.notifications.add(errorMapper.mapToNotification(it))
                 }
             },
@@ -175,8 +187,10 @@ class BusinessSettingsViewModel(
         val formatted = name.toOneLine()
         uiState.name.text = formatted
         uiState.name.isValid = formatted.isNotBlank()
-        uiState.name.validationState = if (!uiState.name.isValid) ValidationState.ERROR else ValidationState.DEFAULT
-        uiState.name.supportingTextRes = DesignSystem.strings.error_empty.desc().takeIf { !uiState.name.isValid }
+        uiState.name.validationState =
+            if (!uiState.name.isValid) ValidationState.ERROR else ValidationState.DEFAULT
+        uiState.name.supportingTextRes =
+            DesignSystem.strings.error_empty.desc().takeIf { !uiState.name.isValid }
         invalidateSaveState()
     }
 
@@ -222,202 +236,50 @@ class BusinessSettingsViewModel(
         invalidateSaveState()
     }
 
-    fun onPickLocationClicked() {
-
-    }
-
     fun onAddPhotoClicked() {
 
     }
 
-    /**
-     * The working schedule and day offs belong to the business, so they are saved together with
-     * the rest of the business details through [UpdateBusiness].
-     */
-    private fun snapshotSchedule(): WorkingSchedule = with(uiState.schedule) {
-        WorkingSchedule(
+    private fun snapshotSchedule(): WorkingSchedule {
+        return scheduleBinder.snapshot().toWorkingSchedule()
+    }
+
+    private fun renderSchedule(workingSchedule: WorkingSchedule) {
+        scheduleBinder.render(workingSchedule.toWeekSchedule())
+    }
+
+    private fun WorkingSchedule.toWeekSchedule(): WeekSchedule {
+        return WeekSchedule(
             days = listOf(
-                monday.toDomain(DayOfWeek.MONDAY),
-                tuesday.toDomain(DayOfWeek.TUESDAY),
-                wednesday.toDomain(DayOfWeek.WEDNESDAY),
-                thursday.toDomain(DayOfWeek.THURSDAY),
-                friday.toDomain(DayOfWeek.FRIDAY),
-                saturday.toDomain(DayOfWeek.SATURDAY),
-                sunday.toDomain(DayOfWeek.SUNDAY)
-            ).associateBy { it.dayOfWeek },
-            dayOffs = uiState.dayOffs.selectedItems.map { DayOffRange(it.dateFrom, it.dateTo) }
-        )
-    }
-
-    private fun DaySettingsState.toDomain(dayOfWeek: DayOfWeek) = DayOfWeekSchedule(
-        dayOfWeek = dayOfWeek,
-        workingTime = intervals.mapNotNull { interval ->
-            val from = interval.timeFromPicker.timePicker.pickedTime
-            val to = interval.timeToPicker.timePicker.pickedTime
-            if (from != null && to != null) WorkHour(from, to) else null
-        },
-        isActive = isActive.isChecked
-    )
-
-    private fun renderSchedule(workingSchedule: WorkingSchedule) = with(uiState) {
-        dayOffs.replaceSelected(
-            workingSchedule.dayOffs.map {
-                DateRangePickerPresentation(
-                    dateFrom = it.start,
-                    dateTo = it.end,
-                    formatter = fullDateFormat
+                monday,
+                tuesday,
+                wednesday,
+                thursday,
+                friday,
+                saturday,
+                sunday
+            ).map { day ->
+                WeekdaySchedule(
+                    dayOfWeek = day.dayOfWeek,
+                    isActive = day.isActive,
+                    workingHours = day.workingTime.map { WorkingHours(it.from, it.to) }
                 )
-            }
+            },
+            dayOffs = dayOffs.map { DayOffPeriod(it.start, it.end) }
         )
-        dayOffs.onItemsRemoveRequested = weakVMClosure { vm, item ->
-            vm.uiState.dayOffs.replaceSelected(vm.uiState.dayOffs.selectedItems.minus(item))
-            vm.invalidateSaveState()
-        }
-        schedule.monday.render(workingSchedule.monday)
-        schedule.tuesday.render(workingSchedule.tuesday)
-        schedule.wednesday.render(workingSchedule.wednesday)
-        schedule.thursday.render(workingSchedule.thursday)
-        schedule.friday.render(workingSchedule.friday)
-        schedule.saturday.render(workingSchedule.saturday)
-        schedule.sunday.render(workingSchedule.sunday)
-
-        val days = mutableListOf(
-            schedule.monday,
-            schedule.tuesday,
-            schedule.wednesday,
-            schedule.thursday,
-            schedule.friday,
-            schedule.saturday,
-            schedule.sunday
-        )
-        val firstDayOfWeek = LocalDate.today().startOfWeek().dayOfWeek
-        for (i in 0 until (firstDayOfWeek.isoDayNumber - 1)) {
-            days.add(days.removeAt(i))
-        }
-
-        schedule.list.replace(days)
     }
 
-    private fun DaySettingsState.render(daySchedule: DayOfWeekSchedule): DaySettingsState {
-        val dayOfWeek = daySchedule.dayOfWeek
-        id = dayOfWeek.hashCode().toString()
-        isActive.isChecked = daySchedule.isActive
-        isActive.onCheckedChange = weakVMClosure { vm, isChecked ->
-            vm.uiState.schedule.dayOf(dayOfWeek).isActive.isChecked = isChecked
-            vm.invalidateSaveState()
-        }
-        val weekday = LocalDate.atNextWeekDay(dayOfWeek)
-        dayIndicator = shortWeekdayFormat.format(weekday).desc()
-        title = fullWeekdayFormat.format(weekday).desc()
-        addTimeButton.icon = DesignSystem.images.plus
-        addTimeButton.text = BusinessRes.strings.business_settings_add_working_time.desc()
-        addTimeButton.onClick = weakVMClosure { vm ->
-            val day = vm.uiState.schedule.dayOf(dayOfWeek)
-            day.replaceIntervals(day.intervals + day.createTimeSettingState().let { vm.renderInterval(it) })
-            vm.invalidateSaveState()
-        }
-        onDeleteInterval = weakVMClosure { vm, interval ->
-            val day = vm.uiState.schedule.dayOf(dayOfWeek)
-            day.replaceIntervals(day.intervals - interval)
-            vm.invalidateSaveState()
-        }
-        replaceIntervals(
-            daySchedule.workingTime.map { time ->
-                renderInterval(createTimeSettingState(), time)
-            }
-        )
-
-        return this
-    }
-
-    private fun renderInterval(
-        interval: TimeSettingState,
-        hour: WorkHour? = null
-    ): TimeSettingState = with(interval) {
-        timeFromPicker.textField.placeholder = DesignSystem.strings.common_from.desc()
-        timeToPicker.textField.placeholder = DesignSystem.strings.common_to.desc()
-
-        timeFromPicker.textField.text = hour?.let { fullWeekdayFormat.format(it.from) }.orEmpty()
-        timeToPicker.textField.text = hour?.let { fullWeekdayFormat.format(it.to) }.orEmpty()
-
-        timeFromPicker.timePicker.pickedTime = hour?.from
-        timeToPicker.timePicker.pickedTime = hour?.to
-
-        val format = fullWeekdayFormat
-        val notifyChanged = weakVMClosure { vm -> vm.invalidateSaveState() }
-
-        val setFrom = weakSelfClosure { state: TimeSettingState, time: LocalTime ->
-            state.timeFromPicker.textField.text = format.format(time)
-            state.timeFromPicker.timePicker.pickedTime = time
-        }
-        timeFromPicker.timePicker.onTimePicked = { time ->
-            setFrom(time)
-            notifyChanged()
-        }
-
-        val setTo = weakSelfClosure { state: TimeSettingState, time: LocalTime ->
-            state.timeToPicker.textField.text = format.format(time)
-            state.timeToPicker.timePicker.pickedTime = time
-        }
-        timeToPicker.timePicker.onTimePicked = { time ->
-            setTo(time)
-            notifyChanged()
-        }
-        this
-    }
-
-    private fun BusinessSettingsState.setupDayOffs() {
-        dayOffs.pickerTitle = BusinessRes.strings.business_settings_day_offs.desc()
-        dayOffs.placeholder = BusinessRes.strings.business_settings_no_day_offs.desc()
-        dayOffs.addItemButton.text = BusinessRes.strings.business_settings_add_day_off.desc()
-        dayOffs.addItemButton.icon = DesignSystem.images.plus
-
-        dateRange.title = BusinessRes.strings.business_settings_pick_day_off_title.desc()
-        dateRange.startDate.textField.placeholder = DesignSystem.strings.common_from.desc()
-        dateRange.endDate.textField.placeholder = DesignSystem.strings.common_to.desc()
-        dateRange.startDate.datePicker.minDate = LocalDate.today()
-        dateRange.startDate.datePicker.onDatePicked = weakSelfClosure { it, date ->
-            it.dateRange.startDate.datePicker.pickedDate = date
-            it.dateRange.startDate.textField.text = fullDateFormat.format(date)
-
-            it.dateRange.endDate.datePicker.minDate = date
-        }
-        dateRange.endDate.datePicker.onDatePicked = weakSelfClosure { it, date ->
-            it.dateRange.endDate.datePicker.pickedDate = date
-            it.dateRange.endDate.textField.text = fullDateFormat.format(date)
-
-            it.dateRange.startDate.datePicker.maxDate = date
-        }
-        dateRange.onDateRangeSelected = weakVMClosure { vm ->
-            val state = vm.uiState
-            val startDate = state.dateRange.startDate.datePicker.pickedDate
-            val endDate = state.dateRange.endDate.datePicker.pickedDate
-            if (startDate != null && endDate != null) {
-                val newItem = DateRangePickerPresentation(
-                    dateFrom = startDate,
-                    dateTo = endDate,
-                    formatter = vm.fullDateFormat
+    private fun WeekSchedule.toWorkingSchedule(): WorkingSchedule {
+        return WorkingSchedule(
+            days = days.associate { day ->
+                day.dayOfWeek to DayOfWeekSchedule(
+                    dayOfWeek = day.dayOfWeek,
+                    workingTime = day.workingHours.map { WorkHour(it.from, it.to) },
+                    isActive = day.isActive
                 )
-                state.dayOffs.replaceSelected(state.dayOffs.selectedItems + newItem)
-                state.dateRange.startDate.datePicker.pickedDate = null
-                state.dateRange.startDate.textField.text = ""
-                state.dateRange.startDate.datePicker.maxDate = null
-                state.dateRange.endDate.datePicker.pickedDate = null
-                state.dateRange.endDate.textField.text = ""
-                state.dateRange.endDate.datePicker.minDate = null
-                vm.invalidateSaveState()
-            }
-        }
-    }
-
-    private fun ScheduleState.dayOf(dayOfWeek: DayOfWeek): DaySettingsState = when (dayOfWeek) {
-        DayOfWeek.MONDAY -> monday
-        DayOfWeek.TUESDAY -> tuesday
-        DayOfWeek.WEDNESDAY -> wednesday
-        DayOfWeek.THURSDAY -> thursday
-        DayOfWeek.FRIDAY -> friday
-        DayOfWeek.SATURDAY -> saturday
-        else -> sunday
+            },
+            dayOffs = dayOffs.map { DayOffRange(it.start, it.end) }
+        )
     }
 
     private fun invalidateSaveState() {
@@ -434,10 +296,10 @@ class BusinessSettingsViewModel(
                 uiState.address.text != referenceBusiness.address ||
                 uiState.currency.selectedItem?.domainValue?.code != referenceBusiness.currency.code() ||
                 uiState.location.text != referenceBusiness.location?.toString().orEmpty() ||
-                uiState.instagram.text != referenceBusiness.socials[SocialKind.INSTAGRAM]?.value ||
-                uiState.telegram.text != referenceBusiness.socials[SocialKind.TELEGRAM]?.value ||
-                uiState.viber.text != referenceBusiness.socials[SocialKind.VIBER]?.value ||
-                uiState.phone.text != referenceBusiness.socials[SocialKind.PHONE]?.value ||
+                uiState.instagram.text != referenceBusiness.socials[SocialKind.INSTAGRAM]?.value.orEmpty() ||
+                uiState.telegram.text != referenceBusiness.socials[SocialKind.TELEGRAM]?.value.orEmpty() ||
+                uiState.viber.text != referenceBusiness.socials[SocialKind.VIBER]?.value.orEmpty() ||
+                uiState.phone.text != referenceBusiness.socials[SocialKind.PHONE]?.value.orEmpty() ||
                 isScheduleChanged()
         uiState.save.isEnabled = isAllFieldsValid && isChanged
     }
@@ -465,8 +327,7 @@ class BusinessSettingsViewModel(
             telegramHint = BusinessRes.strings.business_settings_telegram_hint.desc(),
             telegramIcon = DesignSystem.images.telegram,
             viberIcon = DesignSystem.images.viber,
-            instaIcon = DesignSystem.images.instagram,
-            pickLocationText = BusinessRes.strings.business_settings_location_pick.desc()
+            instaIcon = DesignSystem.images.instagram
         )
     }
 }

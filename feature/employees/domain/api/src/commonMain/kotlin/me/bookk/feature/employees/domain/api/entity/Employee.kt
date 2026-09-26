@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.domain.api.entity
 
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.services.domain.api.service.entity.Service
 import kotlin.time.Instant
@@ -15,13 +16,9 @@ data class Employee(
     val userId: Uuid,
     val services: List<Service>,
     val schedule: WorkingSchedule,
-    val createdAt: Instant
+    val createdAt: Instant,
+    val permissions: BusinessPermissions
 ) {
     val fullName: String
         get() = "$name $lastName"
-}
-
-enum class EmployeeRole {
-    EMPLOYEE,
-    MANAGER
 }

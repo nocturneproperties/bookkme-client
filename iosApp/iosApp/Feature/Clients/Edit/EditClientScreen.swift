@@ -45,9 +45,11 @@ struct EditClientScreen: View {
 					.lineLimit(3...5)
 					.textFieldStyle(.inList)
 			}
-			Section {
-				TextButton(uiState.deleteButton)
-					.buttonStyle(.negativeAction)
+			if uiState.deleteButton.isVisible {
+				Section {
+					TextButton(uiState.deleteButton)
+						.buttonStyle(.negativeAction)
+				}
 			}
 		}
 		.toolbar {

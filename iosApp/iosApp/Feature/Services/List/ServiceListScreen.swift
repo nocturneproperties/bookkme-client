@@ -75,14 +75,18 @@ struct ServiceGroupSection: View {
 				}
 				.buttonStyle(.plain)
 				.swipeActions(edge: .trailing, allowsFullSwipe: false) {
-					Button(DesignSystem.strings().action_delete.desc().localized()) {
-						section.onItemDeleteClick(service)
+					if let onItemDeleteClick = section.onItemDeleteClick {
+						Button(DesignSystem.strings().action_delete.desc().localized()) {
+							onItemDeleteClick(service)
+						}
+						.tint(.red)
 					}
-					.tint(.red)
 				}
 				.contextMenu {
-					Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
-						section.onItemDeleteClick(service)
+					if let onItemDeleteClick = section.onItemDeleteClick {
+						Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
+							onItemDeleteClick(service)
+						}
 					}
 				}
 				.id(service.id)

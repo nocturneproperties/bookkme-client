@@ -13,6 +13,7 @@ class AndroidNotificationState : PresentationNotificationState {
     }
 
     override fun removeFirst() {
+        if (presentationNotification.isEmpty()) return
         presentationNotification.removeAt(0)
     }
 }

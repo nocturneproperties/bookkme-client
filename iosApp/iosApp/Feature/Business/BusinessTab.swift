@@ -11,6 +11,7 @@ import shared
 
 struct BusinessTab: View {
 	@StateObject var navigationStack = NavigationStackHolder()
+	let isEnabled: Bool
 
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
@@ -59,6 +60,10 @@ struct BusinessTab: View {
 						ProgressView()
 					}
 				}
-		}.environmentObject(navigationStack)
+		}
+		.onChange(of: isEnabled) { _, enabled in
+			if !enabled { navigationStack.resetPath() }
+		}
+		.environmentObject(navigationStack)
 	}
 }

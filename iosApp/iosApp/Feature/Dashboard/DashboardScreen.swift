@@ -71,7 +71,7 @@ struct DashboardTabContent: View {
 		case .home:
 			DashboardHomeTab(homeState: dashboardState.home.impl(), onboardingNavigationStack: onboardingNavigationStack)
 		case .business:
-			BusinessTab()
+			BusinessTab(isEnabled: dashboardState.tabItems.items.first { $0.id == .business }?.isEnabled ?? false)
 		case .settings:
 			SettingsTab()
 		default:

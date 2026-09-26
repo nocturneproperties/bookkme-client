@@ -128,10 +128,16 @@ private fun NavigationRoot(
         val snackBarState = remember { SnackbarHostState() }
         val snackBarScope = rememberCoroutineScope()
         val snackbarProvider = remember { DefaultSnackbarProvider(snackBarScope, snackBarState) }
+        val onSuspended = remember(controller, onBusinessAccessSuspended) {
+            BusinessAccessSuspendedHandler {
+                controller.popBackStack<DashboardDestination>(inclusive = false)
+                onBusinessAccessSuspended.onBusinessAccessSuspended()
+            }
+        }
 
         CompositionLocalProvider(
             LocalUnauthorizedHandler provides onUnauthorized,
-            LocalBusinessAccessSuspendedHandler provides onBusinessAccessSuspended,
+            LocalBusinessAccessSuspendedHandler provides onSuspended,
             LocalSnackbarProvider provides snackbarProvider
         ) {
             NavHost(

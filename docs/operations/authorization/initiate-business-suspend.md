@@ -14,7 +14,9 @@ depending on the business feature's domain API. It first clears the local dashbo
 business with `applyDashboardIdFromRemote = false`, so the cleared selection stays cleared and businesses the
 user no longer has are deleted. With no dashboard business the dashboard switches to its Home tab (it does so
 whenever its setup status goes from having a business to `NoBusiness`) and shows the Get started screen, which
-lists the remaining businesses so the user can pick one. If the refresh fails, the selection stays cleared and
+lists the remaining businesses so the user can pick one. Screens opened from the Business tab are closed: on
+Android the root handler pops the back stack to the dashboard before calling `BootstrapViewModel`, and on iOS
+`BusinessTab` resets its navigation stack when the dashboard disables the tab. If the refresh fails, the selection stays cleared and
 the list shows whatever is cached.
 
 `BootstrapViewModel` shows the "Access suspended" message when the call starts and launches it keyed with

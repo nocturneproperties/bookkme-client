@@ -100,7 +100,6 @@ internal fun PriceAdjustmentDraft?.toCompleteRequestRemote(): CompleteAppointmen
 
 internal fun AppointmentCancellation.toRemote() = AppointmentCancellationRemote(
     id = id,
-    businessId = businessId,
     reason = reason
 )
 

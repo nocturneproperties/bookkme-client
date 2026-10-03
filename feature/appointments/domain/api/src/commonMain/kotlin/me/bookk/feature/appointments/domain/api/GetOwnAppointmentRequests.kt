@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import kotlin.uuid.Uuid
 
-interface GetAppointmentRequests {
+interface GetOwnAppointmentRequests {
     fun flow(businessId: Uuid): Flow<List<AppointmentRequest>>
     suspend fun refresh(businessId: Uuid): List<AppointmentRequest>
 }

@@ -1,7 +1,6 @@
 package me.bookk.feature.appointments.presentation.screen.details
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +11,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.bookk.designsystem.components.ActionButton
@@ -20,11 +18,13 @@ import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.DateTimePicker
 import me.bookk.designsystem.components.InfoSection
 import me.bookk.designsystem.components.List
+import me.bookk.designsystem.components.OptionsMultiPicker
 import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.components.stateButtonColors
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.ButtonState
-import me.bookk.designsystem.uistate.simple.InfoLine
+import me.bookk.feature.appointments.presentation.screen.create.ServiceItem
+import me.bookk.feature.appointments.presentation.screen.create.SubtotalRow
 
 @Composable
 internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
@@ -54,12 +54,16 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
                     Modifier.padding(top = 4.dp),
                     color = LocalColors.current.divider
                 )
-                List(state.infoSections) {
-                    if (it.id == AppointmentDetailsState.APPOINTMENT_DATE_ID) {
-                        DateInfoSection(it, state.rescheduleButton)
-                    } else {
-                        InfoSection(it)
+                List(
+                    state.infoSections,
+                    footer = {
+                        Column {
+                            RescheduleAction(state.rescheduleButton)
+                            ServicesSection(state)
+                        }
                     }
+                ) {
+                    InfoSection(it)
                 }
             }
             if (state.dateTimePicker.isDatePickerVisible) {
@@ -92,11 +96,29 @@ private fun CompletionActions(completeButton: ButtonState, noShowButton: ButtonS
 }
 
 @Composable
-private fun DateInfoSection(section: InfoLine, rescheduleButtonState: ButtonState) {
-    Box {
-        InfoSection(section)
-        if (rescheduleButtonState.isVisible) {
-            StateTextButton(rescheduleButtonState, modifier = Modifier.align(Alignment.CenterEnd))
+private fun ServicesSection(state: AppointmentDetailsState) {
+    if (!state.servicePicker.isVisible) return
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        OptionsMultiPicker(state.servicePicker) { item, _ ->
+            ServiceItem(item, onItemRemove = null)
+        }
+        if (state.subtotalPrice.isNotEmpty()) {
+            SubtotalRow(state.subtotalLabel, state.subtotalPrice)
         }
     }
+}
+
+@Composable
+private fun RescheduleAction(rescheduleButton: ButtonState) {
+    if (!rescheduleButton.isVisible) return
+    ActionButton(
+        rescheduleButton,
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
+            .fillMaxWidth()
+    )
 }

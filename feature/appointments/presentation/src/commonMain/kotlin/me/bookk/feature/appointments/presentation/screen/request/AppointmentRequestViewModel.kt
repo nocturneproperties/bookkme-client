@@ -26,14 +26,14 @@ import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest.Error
 import me.bookk.feature.appointments.domain.api.DeclineAppointmentRequest
-import me.bookk.feature.appointments.domain.api.GetAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import kotlin.uuid.Uuid
 
 class AppointmentRequestViewModel(
-    private val getAppointmentRequests: GetAppointmentRequests,
+    private val getOwnAppointmentRequests: GetOwnAppointmentRequests,
     private val approveAppointmentRequest: ApproveAppointmentRequest,
     private val declineAppointmentRequest: DeclineAppointmentRequest,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
@@ -67,7 +67,7 @@ class AppointmentRequestViewModel(
         observeCurrentBusinessId()
             .filterNotNull()
             .distinctUntilChanged()
-            .flatMapLatest { getAppointmentRequests.flow(it) }
+            .flatMapLatest { getOwnAppointmentRequests.flow(it) }
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderRequests(it) }
             .onError { uiState.notifications.add(it.notification()) }
@@ -85,7 +85,7 @@ class AppointmentRequestViewModel(
             notifications = uiState.notifications,
             call = {
                 val businessId = observeCurrentBusinessId().filterNotNull().first()
-                getAppointmentRequests.refresh(businessId)
+                getOwnAppointmentRequests.refresh(businessId)
             }
         )
     }

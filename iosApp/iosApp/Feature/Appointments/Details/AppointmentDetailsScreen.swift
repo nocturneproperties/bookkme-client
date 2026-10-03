@@ -23,17 +23,32 @@ struct AppointmentDetailsScreen: View {
 	var body: some View {
 		let uiState = viewModel.uiState
 		let listState = IOSListState<InfoLine>.cast(uiState.infoSections)
-		ListGroup(listState: listState, listStyle: .plain, content: { section in
-			Group {
-				if (section.id == AppointmentDetailsStateCompanion().APPOINTMENT_DATE_ID) {
-					RescheduleInfoSection(section: section, rescheduleButton: uiState.rescheduleButton)
-				} else {
-					InfoSection(section: section)
-				}
-			}
+		ListGroup(listState: listState, listStyle: .insetGrouped, content: { section in
+			InfoLineRow(line: section)
 		}, header: {
-			StatusLabel(status: uiState.status)
-				.listRowSeparator(.hidden)
+			Section {
+				StatusLabel(status: uiState.status)
+					.listRowBackground(Color.clear)
+					.listRowInsets(EdgeInsets())
+			}
+			.listSectionSeparator(.hidden)
+			.listSectionSpacing(0)
+		}, footer: {
+			if uiState.rescheduleButton.isVisible {
+				Section {
+					StateButton(uiState.rescheduleButton)
+						.listRowInsets(EdgeInsets())
+						.listRowBackground(Color.clear)
+				}
+				.listSectionSpacing(.compact)
+			}
+			if uiState.servicePicker.isVisible {
+				ServicesSection(
+					servicePicker: uiState.servicePicker,
+					subtotalLabel: uiState.subtotalLabel,
+					subtotalPrice: uiState.subtotalPrice
+				)
+			}
 		})
 		.sheet(isPresented: Binding(
 			get: { uiState.dateTimePicker.isDatePickerVisible },
@@ -77,16 +92,43 @@ private struct CompletionActions: View {
 	}
 }
 
-private struct RescheduleInfoSection: View {
-	let section: InfoLine
-	let rescheduleButton: ButtonState
-	
+private struct InfoLineRow: View {
+	let line: InfoLine
+
 	var body: some View {
-		HStack {
-			InfoSection(section: section)
-			if rescheduleButton.isVisible {
-				TextButton(rescheduleButton)
-					.buttonStyle(.textAction)
+		if let onClick = line.onClick {
+			Button(action: onClick) {
+				content
+					.contentShape(Rectangle())
+			}
+			.buttonStyle(.plain)
+		} else {
+			content
+		}
+	}
+
+	private var content: some View {
+		LabeledContent(line.title.localized(), value: line.value.localized())
+	}
+}
+
+private struct ServicesSection: View {
+	let servicePicker: any OptionsMultiPickerState
+	let subtotalLabel: any StringDesc
+	let subtotalPrice: String
+
+	var body: some View {
+		Section {
+			OptionsMultiPickerField(servicePicker) { item, _ in
+				AppointmentServiceItem(service: item as! ServicePickerPresentation)
+			}
+			.listRowInsets(EdgeInsets())
+		} header: {
+			Text(servicePicker.pickerTitle.localized())
+		} footer: {
+			if !subtotalPrice.isEmpty {
+				AppointmentSubtotalRow(label: subtotalLabel, price: subtotalPrice)
+					.listRowInsets(EdgeInsets())
 			}
 		}
 	}

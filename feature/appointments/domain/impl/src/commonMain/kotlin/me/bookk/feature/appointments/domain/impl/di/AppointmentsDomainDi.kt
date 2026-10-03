@@ -9,9 +9,9 @@ import me.bookk.feature.appointments.domain.api.DeclineAppointmentRequest
 import me.bookk.feature.appointments.domain.api.GetAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentHistory
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
-import me.bookk.feature.appointments.domain.api.GetAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
+import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.MarkAppointmentNoShow
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
@@ -26,9 +26,9 @@ import me.bookk.feature.appointments.domain.impl.DeclineAppointmentRequestImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentHistoryImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentOptionsImpl
-import me.bookk.feature.appointments.domain.impl.GetAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentSettingsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentsForBusinessImpl
+import me.bookk.feature.appointments.domain.impl.GetOwnAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.MarkAppointmentNoShowImpl
 import me.bookk.feature.appointments.domain.impl.ObserveAppointmentOptionsImpl
 import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessIdImpl
@@ -51,7 +51,7 @@ fun appointmentsDomainModule() = module {
     factoryOf(::MarkAppointmentNoShowImpl) bind MarkAppointmentNoShow::class
     factoryOf(::UpdateAppointmentImpl) bind UpdateAppointment::class
     factoryOf(::UpdateAppointmentSettingsImpl) bind UpdateAppointmentSettings::class
-    factoryOf(::GetAppointmentRequestsImpl) bind GetAppointmentRequests::class
+    factoryOf(::GetOwnAppointmentRequestsImpl) bind GetOwnAppointmentRequests::class
     factoryOf(::ApproveAppointmentRequestImpl) bind ApproveAppointmentRequest::class
     factoryOf(::DeclineAppointmentRequestImpl) bind DeclineAppointmentRequest::class
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class

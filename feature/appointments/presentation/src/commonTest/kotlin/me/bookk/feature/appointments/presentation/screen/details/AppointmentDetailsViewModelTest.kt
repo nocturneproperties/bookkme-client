@@ -1,6 +1,8 @@
 package me.bookk.feature.appointments.presentation.screen.details
 
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.StringResource
+import dev.icerock.moko.resources.format
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -21,6 +23,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
@@ -107,8 +110,16 @@ class AppointmentDetailsViewModelTest {
         }
     }
 
+    private fun AppointmentDetailsViewModel.action(description: StringResource) =
+        uiState.appBar.actions.items.single { it.contentDescription == description.desc() }
+
+    private fun AppointmentDetailsViewModel.cancelAction() = action(DesignSystem.strings.action_cancel)
+
+    private fun AppointmentDetailsViewModel.actionDescriptions() =
+        uiState.appBar.actions.items.map { it.contentDescription }
+
     private fun AppointmentDetailsViewModel.confirmCancellation(reason: String) {
-        uiState.appBar.actions.items.single().onClick()
+        cancelAction().onClick()
         val dialog = uiState.notifications.assertSingle<PresentationNotification.InputMessage>()
         uiState.notifications.removeFirst()
         dialog.onConfirm(reason)
@@ -131,7 +142,7 @@ class AppointmentDetailsViewModelTest {
         then()
         assertEquals(appointment.client.fullName.desc(), sut.uiState.appBar.title)
         assertEquals(ColorToken.ActionText, sut.uiState.status.color)
-        assertEquals(1, sut.uiState.appBar.actions.items.size)
+        assertEquals(listOf(DesignSystem.strings.action_cancel.desc()), sut.actionDescriptions())
         assertTrue(sut.uiState.rescheduleButton.isVisible)
         assertEquals(appointment.date, sut.uiState.dateTimePicker.pickedDate)
     }
@@ -160,7 +171,8 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(fixture.appointment(client = client).copy(note = ""))
 
         then()
-        assertEquals(3, sut.uiState.infoSections.items.size)
+        assertFalse(AppointmentsRes.strings.appointments_details_phone.desc() in sut.infoTitles())
+        assertFalse(AppointmentsRes.strings.appointments_details_email.desc() in sut.infoTitles())
     }
 
     @Test
@@ -191,6 +203,7 @@ class AppointmentDetailsViewModelTest {
         then()
         verifySuspend { fixture.cancelAppointment(fixture.appointmentId, fixture.businessId, "Client asked") }
         assertEquals(ColorToken.Error, sut.uiState.status.color)
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
         assertFalse(sut.uiState.rescheduleButton.isVisible)
     }
 
@@ -266,6 +279,26 @@ class AppointmentDetailsViewModelTest {
         verifySuspend { fixture.updateAppointment(appointment.copy(date = newDate)) }
         assertEquals(newDate, sut.uiState.dateTimePicker.pickedDate)
         assertFalse(sut.uiState.rescheduleButton.isLoading)
+    }
+
+    @Test
+    fun `shows loading on reschedule button while rescheduling`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment()
+        lateinit var sut: AppointmentDetailsViewModel
+        var isLoadingDuringUpdate: Boolean? = null
+        everySuspend { fixture.updateAppointment(any()) } calls { (updated: Appointment) ->
+            isLoadingDuringUpdate = sut.uiState.rescheduleButton.isLoading
+            updated
+        }
+        sut = fixture.sutWith(appointment)
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        assertEquals(true, isLoadingDuringUpdate)
     }
 
     @Test
@@ -590,5 +623,118 @@ class AppointmentDetailsViewModelTest {
         then()
         val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
         assertEquals(AppointmentsRes.strings.appointments_details_employee_suspended_error.desc(), message.message)
+    }
+
+    @Test
+    fun `shows booked services in a read-only picker`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val haircut = ServiceSnapshot.stub().copy(name = "Haircut")
+        val beard = ServiceSnapshot.stub().copy(name = "Beard")
+        val appointment = fixture.appointment().copy(services = listOf(haircut, beard))
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        assertEquals(listOf(haircut, beard), sut.uiState.servicePicker.selectedItems.map { it.item })
+        assertFalse(sut.uiState.servicePicker.isEditable)
+    }
+
+    @Test
+    fun `gives every booked service its own picker id when a service is booked twice`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val haircut = ServiceSnapshot.stub()
+        val appointment = fixture.appointment().copy(services = listOf(haircut, haircut))
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        val ids = sut.uiState.servicePicker.selectedItems.map { it.pickerItemId }
+        assertEquals(2, ids.toSet().size)
+    }
+
+    @Test
+    fun `shows subtotal of booked services`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment().copy(services = listOf(ServiceSnapshot.stub(), ServiceSnapshot.stub()))
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        assertEquals(AppointmentsRes.strings.appointments_create_subtotal.format(2), sut.uiState.subtotalLabel)
+        assertEquals(appointment.total, sut.uiState.subtotalPrice)
+    }
+
+    @Test
+    fun `keeps services and estimated revenue out of the info lines`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment()
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        assertFalse(AppointmentsRes.strings.appointments_create_services.desc() in sut.infoTitles())
+        assertFalse(sut.uiState.infoSections.items.any { it.value == appointment.total.desc() })
+    }
+
+    @Test
+    fun `renders appointment date among the info lines`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment()
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        assertEquals(appointment.date.toString().desc(), sut.infoValue(AppointmentsRes.strings.appointments_create_date))
+    }
+
+    @Test
+    fun `renders rescheduled date among the info lines`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val newDate = LocalDateTime(2030, 2, 2, 12, 0)
+        val appointment = fixture.appointment()
+        everySuspend { fixture.updateAppointment(any()) } returns appointment.copy(date = newDate)
+        val sut = fixture.sutWith(appointment)
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(newDate)
+
+        then()
+        assertEquals(newDate.toString().desc(), sut.infoValue(AppointmentsRes.strings.appointments_create_date))
+    }
+
+    @Test
+    fun `hides services until the appointment is loaded`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getAppointment(any()) } throws TestException()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.servicePicker.isVisible)
+    }
+
+    @Test
+    fun `shows services once the appointment is loaded`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(fixture.appointment())
+
+        then()
+        assertTrue(sut.uiState.servicePicker.isVisible)
     }
 }

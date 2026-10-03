@@ -82,6 +82,9 @@ internal class FakeAppointmentDetailsState : AppointmentDetailsState {
     override val completeButton = FakeButtonState()
     override val noShowButton = FakeButtonState()
     override val infoSections = FakeListState<InfoLine>()
+    override val servicePicker = FakeOptionsMultiPickerState<ServicePickerPresentation>()
+    override var subtotalLabel: StringDesc = "".desc()
+    override var subtotalPrice: String = ""
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<AppointmentDetailsDestination>()
 }

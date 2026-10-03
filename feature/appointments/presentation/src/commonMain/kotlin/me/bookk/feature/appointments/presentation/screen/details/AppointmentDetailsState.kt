@@ -9,9 +9,11 @@ import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.DateTimePickerState
 import me.bookk.designsystem.uistate.ListState
 import me.bookk.designsystem.uistate.NavigationState
+import me.bookk.designsystem.uistate.OptionsMultiPickerState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
+import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPresentation
 
 interface AppointmentDetailsState {
     val appBar: AppBarState
@@ -21,13 +23,12 @@ interface AppointmentDetailsState {
     val completeButton: ButtonState
     val noShowButton: ButtonState
     val infoSections: ListState<InfoLine>
+    val servicePicker: OptionsMultiPickerState<ServicePickerPresentation>
+    var subtotalLabel: StringDesc
+    var subtotalPrice: String
 
     val notifications: PresentationNotificationState
     val navigation: NavigationState<AppointmentDetailsDestination>
-
-    companion object {
-        const val APPOINTMENT_DATE_ID = "appointment_date"
-    }
 }
 
 class UIAppointmentStatus(

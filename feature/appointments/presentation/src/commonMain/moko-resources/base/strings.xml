@@ -25,7 +25,6 @@
     <string name="appointments_create_time_error">Appointments for this time are forbidden by settings</string>
 
     <string name="appointments_details_status">Status</string>
-    <string name="appointments_details_total">Estimated revenue</string>
     <string name="appointments_details_note">Note</string>
     <string name="appointments_details_phone">Contact number</string>
     <string name="appointments_details_cancellation_reason">Cancellation reason</string>

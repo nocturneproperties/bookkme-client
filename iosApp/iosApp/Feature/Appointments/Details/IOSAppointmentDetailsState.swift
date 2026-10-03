@@ -16,6 +16,9 @@ class IOSAppointmentDetailsState: @MainActor AppointmentDetailsState {
 	var appBar: any AppBarState
 	var status: UIAppointmentStatus
 	var infoSections: any ListState
+	let servicePicker: any OptionsMultiPickerState
+	var subtotalLabel: any StringDesc
+	var subtotalPrice: String
 	let rescheduleButton: any ButtonState
 	let completeButton: any ButtonState
 	let noShowButton: any ButtonState
@@ -27,6 +30,9 @@ class IOSAppointmentDetailsState: @MainActor AppointmentDetailsState {
 		appBar = IOSAppBarState()
 		status = UIAppointmentStatus(label: RawStringDesc(string: ""), color: .actiontext)
 		infoSections = IOSListState<InfoLine>()
+		servicePicker = IOSOptionsMultiPickerState()
+		subtotalLabel = RawStringDesc(string: "")
+		subtotalPrice = ""
 		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()
 		rescheduleButton = IOSButtonState()

@@ -33,7 +33,7 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetAppointmentRequestsImplTest {
+class GetOwnAppointmentRequestsImplTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -49,7 +49,7 @@ class GetAppointmentRequestsImplTest {
 
     private class Fixture {
         val dataSource = mock<AppointmentRequestDataSource>()
-        val sut = GetAppointmentRequestsImpl(dataSource)
+        val sut = GetOwnAppointmentRequestsImpl(dataSource)
     }
 
     @Test
@@ -126,7 +126,7 @@ class GetAppointmentRequestsImplTest {
         fixture.sut.flow(businessId).first()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getAppointmentRequests(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getOwnAppointmentRequests(any()) }
     }
 
     @Test
@@ -135,7 +135,7 @@ class GetAppointmentRequestsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val requests = listOf(stubAppointmentRequest(businessId = businessId))
-        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } returns requests
+        everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } returns requests
         everySuspend {
             fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
         } returns requests.map { it.id }
@@ -163,7 +163,7 @@ class GetAppointmentRequestsImplTest {
         val approved = stubAppointmentRequest(businessId = businessId)
             .copy(status = AppointmentRequestStatus.APPROVED)
         val remote = listOf(later, approved, earlier)
-        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } returns remote
+        everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } returns remote
         everySuspend {
             fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
         } returns remote.map { it.id }
@@ -186,7 +186,7 @@ class GetAppointmentRequestsImplTest {
         val stillPresent = stubAppointmentRequest(businessId = businessId)
         val remote = listOf(stillPresent)
         val staleId = Uuid.random()
-        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } returns remote
+        everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } returns remote
         everySuspend {
             fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
         } returns listOf(stillPresent.id, staleId)
@@ -207,7 +207,7 @@ class GetAppointmentRequestsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val request = stubAppointmentRequest(businessId = businessId)
-        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } returns listOf(request)
+        everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } returns listOf(request)
         everySuspend {
             fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
         } returns listOf(request.id)
@@ -227,7 +227,7 @@ class GetAppointmentRequestsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val error = IllegalStateException("network down")
-        everySuspend { fixture.dataSource.getAppointmentRequests(businessId) } throws error
+        everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } throws error
 
         whenn()
         val thrown = assertFailsWith<IllegalStateException> { fixture.sut.refresh(businessId) }

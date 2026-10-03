@@ -37,7 +37,10 @@ object AppointmentRouting {
             class Requests(
                 val parent: Appointment = Appointment(),
                 val businessId: Uuid,
-            )
+            ) {
+                @Resource("/mine")
+                class Own(val parent: Requests)
+            }
 
             @Resource("/request")
             class Request(val parent: Appointment = Appointment())

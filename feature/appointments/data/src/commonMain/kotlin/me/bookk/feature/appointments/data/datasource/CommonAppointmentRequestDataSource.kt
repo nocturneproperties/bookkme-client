@@ -55,12 +55,11 @@ internal class CommonAppointmentRequestDataSource(
                 .toDomain()
         }
 
-    override suspend fun getAppointmentRequests(businessId: Uuid): List<AppointmentRequest> =
-        mapExceptions {
-            httpClient.get(Api.Appointment.Requests(businessId = businessId))
-                .body<List<AppointmentRequestRemote>>()
-                .map { it.toDomain() }
-        }
+    override suspend fun getOwnAppointmentRequests(businessId: Uuid) = mapExceptions {
+        httpClient.get(Api.Appointment.Requests.Own(Api.Appointment.Requests(businessId = businessId)))
+            .body<List<AppointmentRequestRemote>>()
+            .map { it.toDomain() }
+    }
 
     override fun observeAppointmentRequestsDBChanges(businessId: Uuid): Flow<List<AppointmentRequest>> {
         return appointmentRequestDao.observeForBusiness(businessId)
@@ -89,7 +88,7 @@ internal class CommonAppointmentRequestDataSource(
     override suspend fun declineAppointmentRequest(requestId: Uuid, businessId: Uuid, reason: String) =
         mapExceptions {
             httpClient.post(Api.Appointment.RequestDecline(id = requestId)) {
-                setBody(AppointmentCancellationRemote(id = requestId, businessId = businessId, reason = reason))
+                setBody(AppointmentCancellationRemote(id = requestId, reason = reason))
             }
             Unit
         }

@@ -125,8 +125,9 @@ erDiagram
   deletion in [Get appointments for business](../operations/appointments/get-appointments-for-business.md)
   covers only that window. The sync marker is per date:
   `appointments_prefs` / `last_synced_at_<businessId>_<yyyy-MM-dd>`.
-- **Requests are stored in every status**, but both `flow()` and `refresh()` of [Get appointment
-  requests](../operations/appointments/get-appointment-requests.md) filter to `PENDING` and sort by `date`.
+- **Only the signed-in user's own requests are stored**, fetched from `/request/{businessId}/mine`. Both
+  `flow()` and `refresh()` of [Get own appointment
+  requests](../operations/appointments/get-own-appointment-requests.md) filter to `PENDING` and sort by `date`.
   Sync marker: `appointment_requests_prefs` / `last_synced_at_<businessId>`.
 - **Repeated services.** The backend stores one `ServiceSnapshot` per booked count. Locally they collapse into one
   `appointment_service_snapshot` row per service id with a `count` (its PK is `(appointmentId, id)`), and

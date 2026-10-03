@@ -6,8 +6,11 @@
 · called from `AppointmentRequestViewModel`
 
 After the network call succeeds, the declined `appointment_request` row is deleted in a separate datasource
-call, so every [Get appointment requests](get-appointment-requests.md) `flow()` subscriber (the requests list
+call, so every [Get own appointment requests](get-own-appointment-requests.md) `flow()` subscriber (the requests list
 and the request count on the appointment list) drops it at once.
+
+The request body is `AppointmentCancellation { id = 1, reason = 3 }`. Field 2 (`businessId`) was removed by the
+backend and stays retired. `businessId` is still passed through to the datasource but is not sent.
 
 ```mermaid
 flowchart TD

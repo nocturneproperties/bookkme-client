@@ -12,7 +12,7 @@ interface AppointmentRequestDataSource {
 
     suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment
 
-    suspend fun getAppointmentRequests(businessId: Uuid): List<AppointmentRequest>
+    suspend fun getOwnAppointmentRequests(businessId: Uuid): List<AppointmentRequest>
 
     fun observeAppointmentRequestsDBChanges(businessId: Uuid): Flow<List<AppointmentRequest>>
 

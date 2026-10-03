@@ -122,7 +122,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `CancelAppointment` | `POST /api/appointments/{id}/cancel` | [Cancel appointment](appointments/cancel-appointment.md) |
 | `CompleteAppointment` | `POST /api/appointments/{id}/complete` | [Complete appointment](appointments/complete-appointment.md) |
 | `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show` | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
-| `GetAppointmentRequests` | `GET /api/appointments/request/{businessId}` | [Get appointment requests](appointments/get-appointment-requests.md) |
+| `GetOwnAppointmentRequests` | `GET /api/appointments/request/{businessId}/mine` | [Get own appointment requests](appointments/get-own-appointment-requests.md) |
 | `CreateAppointmentRequest` | `POST /api/appointments/request` | [Create appointment request](appointments/create-appointment-request.md) |
 | `ApproveAppointmentRequest` | `POST /api/appointments` | [Approve appointment request](appointments/approve-appointment-request.md) |
 | `DeclineAppointmentRequest` | `POST /api/appointments/request/{id}/decline` | [Decline appointment request](appointments/decline-appointment-request.md) |
@@ -181,4 +181,4 @@ These are recorded here and in the linked diagrams and are currently accepted as
 | [Create business](business/create-business.md) | Currency hard-coded to `UAH`. |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | A refresh or switch failure after a successful redeem surfaces as an error, even though the user has joined. |
 | [preferences](../database/preferences.md) | `last_synced_at_*` markers are written by every list refresh but never read. |
-| Unused use cases | `CreateQuote`, `EditService` and `IsUserLoggedIn()` (non-flow) have no production caller. `AppointmentRequestDataSource.createAppointmentRequest` has no use case. |
+| Unused use cases | `CreateQuote`, `EditService`, `IsUserLoggedIn()` (non-flow) and `CreateAppointmentRequest` have no production caller. |

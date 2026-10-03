@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.presentation.screen.details
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.format
 import kotlinx.datetime.LocalDateTime
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
@@ -33,7 +34,7 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentCompletedBy
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.PriceAdjustment
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
-import me.bookk.feature.appointments.presentation.screen.details.AppointmentDetailsState.Companion.APPOINTMENT_DATE_ID
+import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPresentation
 import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
@@ -238,12 +239,25 @@ class AppointmentDetailsViewModel(
         uiState.completeButton.isVisible = appointment.canBeCompleted()
         uiState.noShowButton.isVisible = appointment.canBeMarkedNoShow()
         uiState.infoSections.replace(createSections(appointment))
+        renderServices(appointment)
+    }
+
+    private fun renderServices(appointment: Appointment) {
+        uiState.servicePicker.isVisible = true
+        uiState.servicePicker.replaceSelected(
+            appointment.services.mapIndexed { index, service ->
+                ServicePickerPresentation(service).copy(pickerItemId = "${service.id}_$index")
+            }
+        )
+        uiState.subtotalLabel = AppointmentsRes.strings.appointments_create_subtotal.format(appointment.services.size)
+        uiState.subtotalPrice = appointment.total
     }
 
     private fun AppointmentDetailsState.setup() = apply {
         appBar.size = TopBarSize.LARGE
         appBar.onBackClick =
             weakVMClosure { it.uiState.navigation.push(AppointmentDetailsDestination.Back) }
+
 
         rescheduleButton.onClick = weakVMClosure { it.onRescheduleClick() }
         rescheduleButton.text = AppointmentsRes.strings.appointments_details_reschedule.desc()
@@ -253,6 +267,10 @@ class AppointmentDetailsViewModel(
 
         noShowButton.onClick = weakVMClosure { it.onNoShowClick() }
         noShowButton.text = AppointmentsRes.strings.appointments_details_no_show.desc()
+
+        servicePicker.isEditable = false
+        servicePicker.isVisible = false
+        servicePicker.pickerTitle = AppointmentsRes.strings.appointments_create_services.desc()
     }
 
     private fun appBarActions(appointment: Appointment): List<AppBarAction> {
@@ -266,8 +284,14 @@ class AppointmentDetailsViewModel(
         )
     }
 
+    private fun dateLine(appointment: Appointment): InfoLine {
+        return InfoLine(
+            title = AppointmentsRes.strings.appointments_create_date,
+            value = dateLocalizer.forStyle(DateStyle.MEDIUM).format(appointment.date, relative = true)
+        )
+    }
+
     private fun createSections(appointment: Appointment): List<InfoLine> {
-        val dateFormat = dateLocalizer.forStyle(DateStyle.MEDIUM)
         return listOfNotNull(
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_cancellation_reason,
@@ -283,19 +307,7 @@ class AppointmentDetailsViewModel(
                 value = appointment.client.email.dashOnBlank(),
                 onClick = weakVMClosure { vm -> vm.onEmailClick(appointment.client.email!!) }
             ).takeIf { !appointment.client.email.isNullOrBlank() },
-            InfoLine(
-                title = AppointmentsRes.strings.appointments_create_date,
-                value = dateFormat.format(appointment.date, relative = true),
-                id = APPOINTMENT_DATE_ID
-            ),
-            InfoLine(
-                title = AppointmentsRes.strings.appointments_create_services,
-                value = appointment.services.joinToString { it.name }
-            ),
-            InfoLine(
-                title = AppointmentsRes.strings.appointments_details_total,
-                value = appointment.total
-            ),
+            dateLine(appointment),
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_note,
                 value = appointment.note

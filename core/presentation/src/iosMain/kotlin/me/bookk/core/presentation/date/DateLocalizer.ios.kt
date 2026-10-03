@@ -34,10 +34,10 @@ actual enum class DateStyle(
             matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle)
         },
         dateTimeModifier = {
-            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle, timeStyle = NSDateFormatterMediumStyle)
+            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle, timeStyle = NSDateFormatterShortStyle)
         },
         sameYearDateTimeModifier = {
-            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle, timeStyle = NSDateFormatterMediumStyle)
+            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle, timeStyle = NSDateFormatterShortStyle)
         },
         sameYearDateModifier = {
             matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle)

@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModelStoreOwner
 import me.bookk.core.domain.entity.KeyValueData
 import me.bookk.designsystem.components.DesignSystemBottomSheet
 import me.bookk.designsystem.components.ObserveNavigation
+import dev.icerock.moko.resources.desc.StringDesc
+import me.bookk.designsystem.uistate.OptionsMultiPickerState
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PickerPresentation
 import org.koin.androidx.compose.koinViewModel
@@ -20,7 +22,7 @@ import org.koin.core.parameter.parametersOf
 fun PickOptionFullScreenDialog(
     args: PickerScreenArgs,
     onDismiss: () -> Unit,
-    onResultSelected: (KeyValueData) -> Unit
+    onResultSelected: (List<KeyValueData>) -> Unit
 ) {
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     DesignSystemBottomSheet(
@@ -39,7 +41,7 @@ fun PickOptionFullScreenDialog(
         ObserveNavigation(state = viewModel.uiState.navigation) { destination ->
             when (destination) {
                 is PickerNavigationDestination.FinishWithResult -> {
-                    onResultSelected(destination.pickResult)
+                    onResultSelected(destination.pickResults)
                 }
 
                 PickerNavigationDestination.Back -> {
@@ -54,12 +56,44 @@ fun PickOptionFullScreenDialog(
 fun <T : PickerPresentation> standardScreenPicker() = @Composable { state: PickerFieldState<T>,
                                                                     onDismiss: () -> Unit,
                                                                     onItemPicked: (T) -> Unit ->
+    PresentationPickOptionDialog(
+        id = state.id,
+        title = state.pickerTitle,
+        options = state.options,
+        choice = PickerScreenArgs.Choice.SINGLE,
+        onDismiss = onDismiss,
+        onItemsPicked = { it.firstOrNull()?.let(onItemPicked) }
+    )
+}
+
+fun <T : PickerPresentation> standardOptionsScreenPicker() = @Composable { state: OptionsMultiPickerState<T>,
+                                                                           onDismiss: () -> Unit,
+                                                                           onItemsPicked: (List<T>) -> Unit ->
+    PresentationPickOptionDialog(
+        id = state.id,
+        title = state.pickerTitle,
+        options = state.options,
+        choice = PickerScreenArgs.Choice.MULTIPLE,
+        onDismiss = onDismiss,
+        onItemsPicked = onItemsPicked
+    )
+}
+
+@Composable
+private fun <T : PickerPresentation> PresentationPickOptionDialog(
+    id: String,
+    title: StringDesc,
+    options: List<T>,
+    choice: PickerScreenArgs.Choice,
+    onDismiss: () -> Unit,
+    onItemsPicked: (List<T>) -> Unit
+) {
     val context = LocalContext.current
-    val args = remember(state.options) {
+    val args = remember(options) {
         PickerScreenArgs(
-            id = state.id,
-            title = state.pickerTitle.toString(context),
-            options = state.options.map { presentation ->
+            id = id,
+            title = title.toString(context),
+            options = options.map { presentation ->
                 PickerScreenArgs.PickerData(
                     iconUrl = presentation.displayIconUrl,
                     data = KeyValueData(
@@ -68,12 +102,11 @@ fun <T : PickerPresentation> standardScreenPicker() = @Composable { state: Picke
                     )
                 )
             },
-            choice = PickerScreenArgs.Choice.SINGLE
+            choice = choice
         )
     }
-    PickOptionFullScreenDialog(args, onDismiss) { pickedItem ->
-        state.options
-            .firstOrNull { it.pickerItemId == pickedItem.key }
-            ?.let { onItemPicked(it) }
+    PickOptionFullScreenDialog(args, onDismiss) { pickedItems ->
+        val pickedKeys = pickedItems.map { it.key }.toSet()
+        onItemsPicked(options.filter { it.pickerItemId in pickedKeys })
     }
 }

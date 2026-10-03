@@ -19,5 +19,6 @@ class AppointmentSettingsEntity(
     val appointmentNote: String,
     @ColumnInfo(defaultValue = "0") val permissionView: Boolean = false,
     @ColumnInfo(defaultValue = "0") val permissionUpdate: Boolean = false,
-    @ColumnInfo(defaultValue = "0") val permissionDelete: Boolean = false
+    @ColumnInfo(defaultValue = "0") val permissionDelete: Boolean = false,
+    @ColumnInfo(defaultValue = "1") val automaticCompletion: Boolean = true
 )

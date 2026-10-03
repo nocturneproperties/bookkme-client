@@ -53,7 +53,8 @@ class AppointmentSettingsTest {
         automaticApproval = false,
         inBetweenBreakInMinutes = 10,
         appointmentNote = "",
-        permissions = ResourcePermission()
+        permissions = ResourcePermission(),
+        automaticCompletion = true
     )
 
     private fun instantAt(date: LocalDate, time: LocalTime) =

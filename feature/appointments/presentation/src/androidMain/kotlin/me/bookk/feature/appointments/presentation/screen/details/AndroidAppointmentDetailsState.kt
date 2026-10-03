@@ -24,6 +24,8 @@ internal class AndroidAppointmentDetailsState : AppointmentDetailsState {
     override var status: UIAppointmentStatus by mutableStateOf(UIAppointmentStatus(AppointmentStatus.SCHEDULED))
     override val dateTimePicker: DateTimePickerState = AndroidDateTimePickerState()
     override val rescheduleButton: ButtonState = AndroidButtonState()
+    override val completeButton: ButtonState = AndroidButtonState()
+    override val noShowButton: ButtonState = AndroidButtonState()
     override val infoSections: ListState<InfoLine> = AndroidListState()
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()

@@ -12,10 +12,6 @@ changing either side.
 flowchart TD
     Start([invoke client]) --> Net[ClientsDataSource.updateClient<br/>PATCH /api/business/businessId/clients/id]
     Net -- 2xx updated --> Save[(saveClientsInDb listOf updated)]
-    Save --> Emit[clientEvents.emit ClientEvent.Updated]
-    Emit --> R([return updated Client])
+    Save --> R([return updated Client])
     Net -- error --> EX([rethrow])
 ```
-
-**Emits:** `ClientEvent.Updated`. **Consumed by:** `ClientDetailsViewModel`, which re-renders the open
-details screen with the updated client.

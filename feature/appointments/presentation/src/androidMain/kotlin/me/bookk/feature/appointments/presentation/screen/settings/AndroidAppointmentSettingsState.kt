@@ -15,6 +15,7 @@ import me.bookk.designsystem.uistate.TextFieldState
 internal class AndroidAppointmentSettingsState : AppointmentSettingsState {
     override val appBar: AppBarState = AndroidAppBarState()
     override val automaticApproval: BooleanState = AndroidBooleanState()
+    override val automaticCompletion: BooleanState = AndroidBooleanState()
     override val note: TextFieldState = AndroidTextFieldState()
     override val minimalBreak: TextFieldState = AndroidTextFieldState()
     override val save: ButtonState = AndroidButtonState()

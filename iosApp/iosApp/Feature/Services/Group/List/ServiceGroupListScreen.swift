@@ -34,11 +34,6 @@ struct ServiceGroupListScreen: View {
 				}
 				.id(group.id)
 		}
-		.sheet(isPresented: uiState.isAddGroupDialogVisibleBinding) {
-			AddServiceGroupScreen {
-				uiState.isAddGroupDialogVisible.toggle()
-			}
-		}
 		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
 		.searchable(
 			text: uiState.search.binding(),

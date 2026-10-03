@@ -5,8 +5,6 @@ import me.bookk.feature.appointments.domain.api.CancelAppointment
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
-import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
-import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
 
@@ -26,12 +24,13 @@ internal class CancelAppointmentImpl(
         )
         return runCatching {
             appointmentDataSource.cancelAppointment(cancellation).also {
-                appointmentEvents.emit(AppointmentEvent.Cancelled(it))
+                appointmentDataSource.saveAppointmentInDB(it)
             }
         }.onBusinessError {
             when (it.errorCode) {
                 AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED -> throw CancelAppointment.Error.AppointmentAlreadyCancelled()
                 AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED -> throw CancelAppointment.Error.AppointmentAlreadyCompleted()
+                AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW -> throw CancelAppointment.Error.AppointmentMarkedNoShow()
             }
         }.getOrThrow()
     }

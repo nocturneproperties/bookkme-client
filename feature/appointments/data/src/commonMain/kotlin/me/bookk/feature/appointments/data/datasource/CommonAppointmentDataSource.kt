@@ -20,15 +20,19 @@ import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.AppointmentDao
+import me.bookk.feature.appointments.data.mapping.toAdjustmentServiceEntities
+import me.bookk.feature.appointments.data.mapping.toCompleteRequestRemote
 import me.bookk.feature.appointments.data.mapping.toDomain
 import me.bookk.feature.appointments.data.mapping.toEntity
 import me.bookk.feature.appointments.data.mapping.toRemote
 import me.bookk.feature.appointments.data.mapping.toServiceEntities
+import me.bookk.feature.appointments.data.mapping.toUpdateRemote
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.appointments.data.remote.model.AppointmentPaginationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
+import me.bookk.feature.appointments.domain.api.entity.PriceAdjustmentDraft
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -48,10 +52,11 @@ internal class CommonAppointmentDataSource(
 
     override suspend fun getAppointmentsForDate(
         businessId: Uuid,
-        forDate: LocalDate
+        forDate: LocalDate,
+        employeeId: Uuid?
     ): List<Appointment> =
         mapExceptions {
-            httpClient.get(Api.Appointment.List(businessId = businessId, date = forDate))
+            httpClient.get(Api.Appointment.List(businessId = businessId, date = forDate, employeeId = employeeId))
                 .body<List<AppointmentRemote>>()
                 .map { it.toDomain() }
         }
@@ -76,7 +81,8 @@ internal class CommonAppointmentDataSource(
     ) = mapExceptions {
         appointmentDao.upsertWithServices(
             appointments = appointments.map { it.toEntity() },
-            services = appointments.flatMap { it.toServiceEntities() }
+            services = appointments.flatMap { it.toServiceEntities() },
+            adjustmentServices = appointments.flatMap { it.toAdjustmentServiceEntities() }
         )
     }
 
@@ -96,43 +102,59 @@ internal class CommonAppointmentDataSource(
             }
                 .body<AppointmentRemote>()
                 .toDomain()
-                .also { appointmentDao.updateStatus(it.id, it.status.name, it.cancellationReason) }
         }
 
     override suspend fun updateAppointment(appointment: Appointment): Appointment =
         mapExceptions {
             httpClient.put(Api.Appointment.Id(id = appointment.id)) {
-                setBody(appointment.toRemote())
+                setBody(appointment.toUpdateRemote())
             }
                 .body<AppointmentRemote>()
                 .toDomain()
         }
 
+    override suspend fun completeAppointment(id: Uuid, priceAdjustment: PriceAdjustmentDraft?) = mapExceptions {
+        httpClient.post(Api.Appointment.Complete(id = id)) {
+            setBody(priceAdjustment.toCompleteRequestRemote())
+        }
+            .body<AppointmentRemote>()
+            .toDomain()
+    }
+
+    override suspend fun markAppointmentNoShow(id: Uuid) = mapExceptions {
+        httpClient.post(Api.Appointment.NoShow(id = id))
+            .body<AppointmentRemote>()
+            .toDomain()
+    }
+
     override suspend fun saveAppointmentInDB(appointment: Appointment) {
         mapExceptions {
             appointmentDao.upsertWithServices(
                 appointments = listOf(appointment.toEntity()),
-                services = appointment.toServiceEntities()
+                services = appointment.toServiceEntities(),
+                adjustmentServices = appointment.toAdjustmentServiceEntities()
             )
         }
     }
 
     override fun observeAppointmentsForDateDBChanges(
         businessId: Uuid,
-        forDate: LocalDate
+        forDate: LocalDate,
+        employeeId: Uuid?
     ): Flow<List<Appointment>> {
         val (startOfDay, endOfDay) = forDate.dayBounds()
-        return appointmentDao.observeForDate(businessId, startOfDay, endOfDay)
+        return appointmentDao.observeForDate(businessId, startOfDay, endOfDay, employeeId)
             .map { appointments -> appointments.map { it.toDomain() } }
             .mapErrors()
     }
 
     override suspend fun getAppointmentIdsForDateInDb(
         businessId: Uuid,
-        forDate: LocalDate
+        forDate: LocalDate,
+        employeeId: Uuid?
     ): List<Uuid> = mapExceptions {
         val (startOfDay, endOfDay) = forDate.dayBounds()
-        appointmentDao.getIdsForDate(businessId, startOfDay, endOfDay)
+        appointmentDao.getIdsForDate(businessId, startOfDay, endOfDay, employeeId)
     }
 
     override suspend fun deleteAppointmentsInDb(ids: List<Uuid>) {

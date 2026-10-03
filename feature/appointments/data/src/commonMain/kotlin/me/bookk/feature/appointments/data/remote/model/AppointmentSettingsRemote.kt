@@ -35,7 +35,8 @@ data class AppointmentSettingsRemote(
     @ProtoNumber(5) val automaticApproval: Boolean,
     @ProtoNumber(6) val inBetweenBreakInMinutes: Int,
     @ProtoNumber(7) val appointmentNote: String,
-    @ProtoNumber(8) val permissions: ResourcePermissionRemote
+    @ProtoNumber(8) val permissions: ResourcePermissionRemote,
+    @ProtoNumber(9) val automaticCompletion: Boolean = true
 ) {
     fun toDomain() = AppointmentSettings(
         id = id,
@@ -45,7 +46,8 @@ data class AppointmentSettingsRemote(
         automaticApproval = automaticApproval,
         inBetweenBreakInMinutes = inBetweenBreakInMinutes,
         appointmentNote = appointmentNote,
-        permissions = permissions.toDomain()
+        permissions = permissions.toDomain(),
+        automaticCompletion = automaticCompletion
     )
 }
 
@@ -63,7 +65,8 @@ data class AppointmentSettingsUpdateRemote(
     @ProtoNumber(1) val businessId: Uuid,
     @ProtoNumber(2) val automaticApproval: Boolean,
     @ProtoNumber(3) val inBetweenBreakInMinutes: Int,
-    @ProtoNumber(4) val appointmentNote: String
+    @ProtoNumber(4) val appointmentNote: String,
+    @ProtoNumber(5) val automaticCompletion: Boolean?
 )
 
 @Serializable

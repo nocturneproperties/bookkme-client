@@ -3,11 +3,12 @@ package me.bookk.feature.appointments.domain.datasource
 import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 interface AppointmentRequestDataSource {
-    suspend fun createAppointmentRequest(request: AppointmentRequest, offerToken: String)
+    suspend fun createAppointmentRequest(draft: AppointmentRequestDraft)
 
     suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment
 

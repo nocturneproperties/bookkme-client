@@ -1,6 +1,5 @@
 package me.bookk.feature.services.presentation
 
-import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.test.FakeAppBarState
 import me.bookk.designsystem.test.FakeBooleanState
@@ -13,8 +12,6 @@ import me.bookk.designsystem.test.FakeRefreshState
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.FakeViewState
 import me.bookk.designsystem.uistate.simple.Action
-import me.bookk.feature.services.presentation.group.add.AddGroupNavigation
-import me.bookk.feature.services.presentation.group.add.AddGroupState
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListDestination
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState
 import me.bookk.feature.services.presentation.service.add.AddServiceDestination
@@ -26,7 +23,6 @@ internal class FakeServicesStateFactory : ServicesStateFactory {
     override fun createServiceListState(): ServiceListState = FakeServiceListState()
     override fun createServiceState(): AddServiceState = FakeAddServiceState()
     override fun createServiceGroupListState(): ServiceGroupListState = FakeServiceGroupListState()
-    override fun createAddGroupState(): AddGroupState = FakeAddGroupState()
 }
 
 internal class FakeServiceListState : ServiceListState {
@@ -56,15 +52,6 @@ internal class FakeServiceGroupListState : ServiceGroupListState {
     override val search = FakeTextFieldState()
     override val groups = FakeListState<ServiceGroupListState.ServiceGroupUI>()
     override val refreshState = FakeRefreshState()
-    override var isAddGroupDialogVisible: Boolean = false
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<ServiceGroupListDestination>()
-}
-
-internal class FakeAddGroupState : AddGroupState {
-    override var title: StringDesc = "".desc()
-    override val name = FakeTextFieldState()
-    override val create = FakeButtonState()
-    override val notifications = FakeNotificationState()
-    override val navigation = FakeNavigationState<AddGroupNavigation>()
 }

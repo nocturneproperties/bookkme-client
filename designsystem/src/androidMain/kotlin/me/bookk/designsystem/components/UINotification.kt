@@ -3,6 +3,8 @@ package me.bookk.designsystem.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.core.presentation.LocalBusinessAccessSuspendedHandler
@@ -81,6 +83,15 @@ fun ObserveNotifications(state: PresentationNotificationState) {
             PresentationNotification.BusinessAccessSuspended -> {
                 LocalBusinessAccessSuspendedHandler.current.onBusinessAccessSuspended()
                 state.removeFirst()
+                return
+            }
+
+            PresentationNotification.SuccessHaptic -> {
+                val haptics = LocalHapticFeedback.current
+                LaunchedEffect(notification) {
+                    haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                    state.removeFirst()
+                }
                 return
             }
 

@@ -18,6 +18,8 @@ interface AppointmentDetailsState {
     var status: UIAppointmentStatus
     val dateTimePicker: DateTimePickerState
     val rescheduleButton: ButtonState
+    val completeButton: ButtonState
+    val noShowButton: ButtonState
     val infoSections: ListState<InfoLine>
 
     val notifications: PresentationNotificationState
@@ -42,10 +44,12 @@ private fun AppointmentStatus.label(): StringDesc = when (this) {
     AppointmentStatus.SCHEDULED -> AppointmentsRes.strings.appointments_status_scheduled.desc()
     AppointmentStatus.COMPLETED -> AppointmentsRes.strings.appointments_status_completed.desc()
     AppointmentStatus.CANCELLED -> AppointmentsRes.strings.appointments_status_cancelled.desc()
+    AppointmentStatus.NO_SHOW -> AppointmentsRes.strings.appointments_status_no_show.desc()
 }
 
 private fun AppointmentStatus.color(): ColorToken = when (this) {
     AppointmentStatus.SCHEDULED -> ColorToken.ActionText
     AppointmentStatus.COMPLETED -> ColorToken.Success
     AppointmentStatus.CANCELLED -> ColorToken.Error
+    AppointmentStatus.NO_SHOW -> ColorToken.SecondaryText
 }

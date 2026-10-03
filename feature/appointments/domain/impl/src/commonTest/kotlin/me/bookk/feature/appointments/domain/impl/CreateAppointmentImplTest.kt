@@ -9,7 +9,6 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -21,9 +20,7 @@ import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
-import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
-import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.entity.UserProfile
@@ -32,7 +29,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 import me.bookk.core.domain.entity.Error as DomainError
 
@@ -60,6 +56,7 @@ class CreateAppointmentImplTest {
 
         init {
             everySuspend { userProfileCRUD.get() } returns profile
+            everySuspend { appointmentDataSource.saveAppointmentInDB(any()) } returns Unit
         }
     }
 
@@ -127,19 +124,17 @@ class CreateAppointmentImplTest {
     }
 
     @Test
-    fun `emits Created event on success`() = runUnitTest {
+    fun `saves created appointment in DB`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
-        val events = mutableListOf<AppointmentEvent>()
-        val job = launch(Dispatchers.Unconfined) { appointmentEvents.collect { events.add(it) } }
+        val created = stubAppointment()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns created
 
         whenn()
         fixture.sut(stubDraft())
 
         then()
-        job.cancel()
-        assertTrue(events.any { it is AppointmentEvent.Created })
+        verifySuspend { fixture.appointmentDataSource.saveAppointmentInDB(created) }
     }
 
     @Test

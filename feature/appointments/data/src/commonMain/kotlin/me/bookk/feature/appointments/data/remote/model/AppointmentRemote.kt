@@ -19,7 +19,9 @@ data class AppointmentRemote(
     @ProtoNumber(7) val status: AppointmentStatusRemote,
     @ProtoNumber(8) val date: Instant,
     @ProtoNumber(9) val note: String,
-    @ProtoNumber(10) val cancellationReason: String
+    @ProtoNumber(10) val cancellationReason: String,
+    @ProtoNumber(11) val completedBy: AppointmentCompletedByRemote? = null,
+    @ProtoNumber(12) val priceAdjustment: PriceAdjustmentRemote? = null
 ) {
     fun toDomain() = Appointment(
         id = id,
@@ -31,6 +33,8 @@ data class AppointmentRemote(
         status = status.toDomain(),
         date = date.toLocalDateTime(TimeZone.currentSystemDefault()),
         note = note,
-        cancellationReason = cancellationReason
+        cancellationReason = cancellationReason,
+        completedBy = completedBy?.toDomain(),
+        priceAdjustment = priceAdjustment?.toDomain()
     )
 }

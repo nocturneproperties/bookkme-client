@@ -85,12 +85,14 @@ class AppointmentSettingsViewModel(
 
     private fun snapshotState(): AppointmentSettings = loadedSettings.copy(
         automaticApproval = uiState.automaticApproval.isChecked,
+        automaticCompletion = uiState.automaticCompletion.isChecked,
         inBetweenBreakInMinutes = uiState.minimalBreak.text.toIntOrNull() ?: DEFAULT_BREAK_MINUTES,
         appointmentNote = uiState.note.text
     )
 
     private fun renderSettings(settings: AppointmentSettings) = with(uiState) {
         automaticApproval.isChecked = settings.automaticApproval
+        automaticCompletion.isChecked = settings.automaticCompletion
         note.text = settings.appointmentNote
         minimalBreak.text = settings.inBetweenBreakInMinutes.toString()
     }
@@ -98,6 +100,7 @@ class AppointmentSettingsViewModel(
     private fun AppointmentSettingsState.setup() = apply {
         setupAppBar()
         setupAutomaticApproval()
+        setupAutomaticCompletion()
         setupMinimalBreak()
         setupNote()
         setupSaveButton()
@@ -119,6 +122,16 @@ class AppointmentSettingsViewModel(
             AppointmentsRes.strings.appointments_settings_automatic_approval.desc()
         automaticApproval.onCheckedChange = weakVMClosure { vm, v ->
             vm.uiState.automaticApproval.isChecked = v
+        }
+    }
+
+    private fun AppointmentSettingsState.setupAutomaticCompletion() {
+        automaticCompletion.text =
+            AppointmentsRes.strings.appointments_settings_automatic_completion.desc()
+        automaticCompletion.supportingTextRes =
+            AppointmentsRes.strings.appointments_settings_automatic_completion_footer.desc()
+        automaticCompletion.onCheckedChange = weakVMClosure { vm, v ->
+            vm.uiState.automaticCompletion.isChecked = v
         }
     }
 

@@ -42,7 +42,8 @@ class AppointmentSettingsRemoteContractTest {
                 "automaticApproval" to 5,
                 "inBetweenBreakInMinutes" to 6,
                 "appointmentNote" to 7,
-                "permissions" to 8
+                "permissions" to 8,
+                "automaticCompletion" to 9
             ),
             fields
         )
@@ -70,7 +71,13 @@ class AppointmentSettingsRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("businessId" to 1, "automaticApproval" to 2, "inBetweenBreakInMinutes" to 3, "appointmentNote" to 4),
+            listOf(
+                "businessId" to 1,
+                "automaticApproval" to 2,
+                "inBetweenBreakInMinutes" to 3,
+                "appointmentNote" to 4,
+                "automaticCompletion" to 5
+            ),
             fields
         )
     }

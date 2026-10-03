@@ -205,4 +205,33 @@ class AppointmentSettingsViewModelTest {
         then()
         assertEquals(listOf<AppointmentSettingsDestination>(AppointmentSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
     }
+
+    @Test
+    fun `renders cached automatic completion`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(automaticCompletion = false)
+
+        then()
+        assertFalse(sut.uiState.automaticCompletion.isChecked)
+    }
+
+    @Test
+    fun `saves toggled automatic completion`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls { (s: AppointmentSettings) -> s }
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(automaticCompletion = true)
+        sut.uiState.automaticCompletion.onCheckedChange?.invoke(false)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        assertFalse(fixture.updates.get().automaticCompletion)
+    }
 }

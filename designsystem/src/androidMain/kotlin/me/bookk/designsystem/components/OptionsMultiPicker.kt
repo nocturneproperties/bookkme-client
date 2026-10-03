@@ -23,12 +23,14 @@ import kotlinx.coroutines.launch
 import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.theme.typography.secondary
 import me.bookk.designsystem.uistate.OptionsMultiPickerState
+import me.bookk.designsystem.uistate.PickerFieldState.PickerType
 import me.bookk.designsystem.uistate.PickerPresentation
 
 @Composable
 fun <T : PickerPresentation> OptionsMultiPicker(
     state: OptionsMultiPickerState<T>,
     modifier: Modifier = Modifier,
+    screenPicker: @Composable (state: OptionsMultiPickerState<T>, onDismiss: () -> Unit, onItemsPicked: (List<T>) -> Unit) -> Unit = { _, _, _ -> },
     itemContent: @Composable (T, () -> Unit) -> Unit
 ) {
     var isDialogVisible by remember { mutableStateOf(false) }
@@ -71,7 +73,16 @@ fun <T : PickerPresentation> OptionsMultiPicker(
             }
         }
     }
-    if (isDialogVisible) {
+    if (isDialogVisible && state.pickerType == PickerType.SCREEN) {
+        screenPicker(
+            state,
+            { isDialogVisible = false },
+            {
+                state.onItemsPicked(it)
+                isDialogVisible = false
+            }
+        )
+    } else if (isDialogVisible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         val scope = rememberCoroutineScope()
         SelectorBottomSheet(

@@ -7,6 +7,6 @@ sealed class PickerNavigationDestination : NavigationDestination() {
     data object Back : PickerNavigationDestination()
     data class FinishWithResult(
         val resultId: String,
-        val pickResult: KeyValueData
+        val pickResults: List<KeyValueData>
     ) : PickerNavigationDestination()
 }

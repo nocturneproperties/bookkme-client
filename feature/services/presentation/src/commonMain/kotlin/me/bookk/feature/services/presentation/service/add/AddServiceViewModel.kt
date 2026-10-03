@@ -8,6 +8,7 @@ import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
@@ -115,7 +116,10 @@ class AddServiceViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.create.startLoading() },
             call = { createService(service) },
-            onComplete = { uiState.navigation.push(Back) },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                uiState.navigation.push(Back)
+            },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.create.stopLoading() }
         )

@@ -1,5 +1,6 @@
 package me.bookk.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
@@ -27,5 +28,6 @@ class AppointmentServiceSnapshotEntity(
     val groupId: Uuid,
     val priceCurrency: String,
     val priceValue: Long,
-    val duration: Duration
+    val duration: Duration,
+    @ColumnInfo(defaultValue = "1") val count: Int = 1
 )

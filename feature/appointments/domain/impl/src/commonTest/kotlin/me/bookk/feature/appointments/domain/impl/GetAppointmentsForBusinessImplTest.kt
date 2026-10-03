@@ -75,7 +75,7 @@ class GetAppointmentsForBusinessImplTest {
         val businessId = Uuid.random()
         val appointments = listOf(stubAppointment(businessId = businessId))
         every { fixture.observeCurrentBusinessId() } returns flowOf(businessId)
-        every { fixture.dataSource.observeAppointmentsForDateDBChanges(businessId, date) } returns flowOf(appointments)
+        every { fixture.dataSource.observeAppointmentsForDateDBChanges(businessId, date, null) } returns flowOf(appointments)
 
         whenn()
         val result = fixture.sut.flow(date).first()
@@ -96,10 +96,10 @@ class GetAppointmentsForBusinessImplTest {
         businessIds.tryEmit(firstBusinessId)
         every { fixture.observeCurrentBusinessId() } returns businessIds
         every {
-            fixture.dataSource.observeAppointmentsForDateDBChanges(firstBusinessId, date)
+            fixture.dataSource.observeAppointmentsForDateDBChanges(firstBusinessId, date, null)
         } returns flowOf(firstAppointments)
         every {
-            fixture.dataSource.observeAppointmentsForDateDBChanges(secondBusinessId, date)
+            fixture.dataSource.observeAppointmentsForDateDBChanges(secondBusinessId, date, null)
         } returns flowOf(secondAppointments)
         val results = mutableListOf<List<Appointment>>()
         val job = launch(Dispatchers.Unconfined) {
@@ -121,13 +121,13 @@ class GetAppointmentsForBusinessImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         every { fixture.observeCurrentBusinessId() } returns flowOf(businessId)
-        every { fixture.dataSource.observeAppointmentsForDateDBChanges(businessId, date) } returns flowOf(emptyList())
+        every { fixture.dataSource.observeAppointmentsForDateDBChanges(businessId, date, null) } returns flowOf(emptyList())
 
         whenn()
         fixture.sut.flow(date).first()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getAppointmentsForDate(any(), any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getAppointmentsForDate(any(), any(), any()) }
     }
 
     @Test
@@ -136,9 +136,9 @@ class GetAppointmentsForBusinessImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val appointments = listOf(stubAppointment(businessId = businessId))
-        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date) } returns appointments
+        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date, null) } returns appointments
         everySuspend {
-            fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date)
+            fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date, null)
         } returns appointments.map { it.id }
         everySuspend { fixture.dataSource.saveAppointmentsInDB(appointments) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId, date) } returns Unit
@@ -160,9 +160,9 @@ class GetAppointmentsForBusinessImplTest {
         val stillPresent = stubAppointment(businessId = businessId)
         val remote = listOf(stillPresent)
         val staleId = Uuid.random()
-        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date) } returns remote
+        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date, null) } returns remote
         everySuspend {
-            fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date)
+            fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date, null)
         } returns listOf(stillPresent.id, staleId)
         everySuspend { fixture.dataSource.deleteAppointmentsInDb(listOf(staleId)) } returns Unit
         everySuspend { fixture.dataSource.saveAppointmentsInDB(remote) } returns Unit
@@ -181,9 +181,9 @@ class GetAppointmentsForBusinessImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val appointment = stubAppointment(businessId = businessId)
-        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date) } returns listOf(appointment)
+        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date, null) } returns listOf(appointment)
         everySuspend {
-            fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date)
+            fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date, null)
         } returns listOf(appointment.id)
         everySuspend { fixture.dataSource.saveAppointmentsInDB(listOf(appointment)) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId, date) } returns Unit
@@ -201,14 +201,74 @@ class GetAppointmentsForBusinessImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val error = IllegalStateException("network down")
-        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date) } throws error
+        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date, null) } throws error
 
         whenn()
         val thrown = assertFailsWith<IllegalStateException> { fixture.sut.refresh(businessId, date) }
 
         then()
         assertEquals(error, thrown)
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getAppointmentIdsForDateInDb(any(), any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getAppointmentIdsForDateInDb(any(), any(), any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveAppointmentsInDB(any()) }
+    }
+
+    @Test
+    fun `flow observes only the db appointments of the requested employee`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val employeeId = Uuid.random()
+        val appointments = listOf(stubAppointment(businessId = businessId))
+        every { fixture.observeCurrentBusinessId() } returns flowOf(businessId)
+        every {
+            fixture.dataSource.observeAppointmentsForDateDBChanges(businessId, date, employeeId)
+        } returns flowOf(appointments)
+
+        whenn()
+        val result = fixture.sut.flow(date, employeeId).first()
+
+        then()
+        assertEquals(appointments, result)
+    }
+
+    @Test
+    fun `refresh for an employee fetches and prunes only that employee's appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val employeeId = Uuid.random()
+        val remote = listOf(stubAppointment(businessId = businessId))
+        val staleId = Uuid.random()
+        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date, employeeId) } returns remote
+        everySuspend {
+            fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date, employeeId)
+        } returns listOf(remote.single().id, staleId)
+        everySuspend { fixture.dataSource.deleteAppointmentsInDb(listOf(staleId)) } returns Unit
+        everySuspend { fixture.dataSource.saveAppointmentsInDB(remote) } returns Unit
+
+        whenn()
+        val result = fixture.sut.refresh(businessId, date, employeeId)
+
+        then()
+        assertEquals(remote, result)
+        verifySuspend { fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date, employeeId) }
+        verifySuspend { fixture.dataSource.deleteAppointmentsInDb(listOf(staleId)) }
+    }
+
+    @Test
+    fun `refresh for an employee does not mark the whole day as synced`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val employeeId = Uuid.random()
+        everySuspend { fixture.dataSource.getAppointmentsForDate(businessId, date, employeeId) } returns emptyList()
+        everySuspend { fixture.dataSource.getAppointmentIdsForDateInDb(businessId, date, employeeId) } returns emptyList()
+        everySuspend { fixture.dataSource.saveAppointmentsInDB(emptyList()) } returns Unit
+
+        whenn()
+        fixture.sut.refresh(businessId, date, employeeId)
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveLastSyncedAt(any(), any()) }
     }
 }

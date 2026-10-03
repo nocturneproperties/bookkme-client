@@ -9,6 +9,7 @@ interface ClientsDataSource {
     suspend fun getClients(businessId: Uuid): List<Client>
     fun observeClientsDBChanges(businessId: Uuid): Flow<List<Client>>
     suspend fun getClient(id: Uuid): Client
+    fun observeClientDBChanges(id: Uuid): Flow<Client?>
     suspend fun createClient(client: Client): Client
     suspend fun updateClient(client: Client): Client
     suspend fun deleteClient(businessId: Uuid, id: Uuid)

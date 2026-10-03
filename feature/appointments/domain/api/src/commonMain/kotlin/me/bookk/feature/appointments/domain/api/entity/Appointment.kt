@@ -14,11 +14,26 @@ data class Appointment(
     val status: AppointmentStatus,
     val date: LocalDateTime,
     val note: String,
-    val cancellationReason: String
+    val cancellationReason: String,
+    val completedBy: AppointmentCompletedBy? = null,
+    val priceAdjustment: PriceAdjustment? = null
 ) {
 
     val total: String by lazy(LazyThreadSafetyMode.NONE) {
         services.map { it.price }.reduce { acc, money -> acc + money }.toString()
+    }
+
+    fun canBeCompleted(now: LocalDateTime = LocalDateTime.now()): Boolean {
+        return status == AppointmentStatus.SCHEDULED && hasStarted(now)
+    }
+
+    fun canBeMarkedNoShow(now: LocalDateTime = LocalDateTime.now()): Boolean {
+        val markableStatus = status == AppointmentStatus.SCHEDULED || status == AppointmentStatus.COMPLETED
+        return markableStatus && hasStarted(now)
+    }
+
+    private fun hasStarted(now: LocalDateTime): Boolean {
+        return date <= now
     }
 
     companion object {

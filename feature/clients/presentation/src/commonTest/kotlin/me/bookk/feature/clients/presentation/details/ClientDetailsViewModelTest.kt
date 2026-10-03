@@ -2,16 +2,13 @@ package me.bookk.feature.clients.presentation.details
 
 import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.sequentiallyReturns
-import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
 import library.device.api.DeviceFacade
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.test.given
@@ -22,11 +19,11 @@ import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
+import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.clients.domain.api.GetClient
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
+import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
-import me.bookk.feature.clients.domain.api.entity.ClientEvent
-import me.bookk.feature.clients.domain.api.entity.clientEvents
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
 import me.bookk.feature.clients.presentation.stubDetachedClient
 import kotlin.test.AfterTest
@@ -52,7 +49,10 @@ class ClientDetailsViewModelTest {
 
     private class Fixture(canEdit: Boolean = true) {
         val id = Uuid.random()
-        val getClient = mock<GetClient>()
+        val client = MutableStateFlow<Client?>(null)
+        val getClient = mock<GetClient> {
+            every { flow(id) } returns client
+        }
         val getClientsPermissions = mock<GetClientsPermissions> {
             everySuspend { invoke(any()) } returns ClientsPermissions(canEdit = canEdit, canDelete = false)
         }
@@ -76,7 +76,7 @@ class ClientDetailsViewModelTest {
     fun `renders client name and contact lines`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id, name = "Anna", lastName = "Smith")
+        fixture.client.value = stubDetachedClient(id = fixture.id, name = "Anna", lastName = "Smith")
 
         whenn()
         val sut = fixture.sut()
@@ -90,7 +90,7 @@ class ClientDetailsViewModelTest {
     fun `dials client phone on phone line click`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id, phone = "+380501")
+        fixture.client.value = stubDetachedClient(id = fixture.id, phone = "+380501")
         val sut = fixture.sut()
 
         whenn()
@@ -104,7 +104,7 @@ class ClientDetailsViewModelTest {
     fun `mails client on email line click`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id, email = "a@b.c")
+        fixture.client.value = stubDetachedClient(id = fixture.id, email = "a@b.c")
         val sut = fixture.sut()
 
         whenn()
@@ -118,7 +118,7 @@ class ClientDetailsViewModelTest {
     fun `does not dial when client has no phone`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id, phone = null)
+        fixture.client.value = stubDetachedClient(id = fixture.id, phone = null)
         val sut = fixture.sut()
 
         whenn()
@@ -129,45 +129,24 @@ class ClientDetailsViewModelTest {
     }
 
     @Test
-    fun `reloads client when it is updated`() = runUnitTest {
+    fun `re-renders when the stored client changes`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val updated = stubDetachedClient(id = fixture.id, name = "Maria")
-        everySuspend { fixture.getClient(any()) } sequentiallyReturns listOf(
-            stubDetachedClient(id = fixture.id, name = "Anna"),
-            updated
-        )
+        fixture.client.value = stubDetachedClient(id = fixture.id, name = "Anna")
         val sut = fixture.sut()
 
         whenn()
-        launch(Dispatchers.Unconfined) { clientEvents.emit(ClientEvent.Updated(updated)) }
+        fixture.client.value = stubDetachedClient(id = fixture.id, name = "Maria")
 
         then()
         assertEquals("Maria Smith".desc(), sut.uiState.appBar.title)
     }
 
     @Test
-    fun `ignores updates of other clients`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } sequentiallyReturns listOf(
-            stubDetachedClient(id = fixture.id, name = "Anna"),
-            stubDetachedClient(id = fixture.id, name = "Maria")
-        )
-        val sut = fixture.sut()
-
-        whenn()
-        launch(Dispatchers.Unconfined) { clientEvents.emit(ClientEvent.Updated(stubDetachedClient())) }
-
-        then()
-        assertEquals("Anna Smith".desc(), sut.uiState.appBar.title)
-    }
-
-    @Test
     fun `shows mapped error when client cannot be loaded`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } throws TestException()
+        every { fixture.getClient.flow(any()) } returns failOnceThenSuspend()
 
         whenn()
         fixture.sut()
@@ -180,7 +159,7 @@ class ClientDetailsViewModelTest {
     fun `shows the edit action for a user who can edit clients`() = runUnitTest {
         given()
         val fixture = Fixture(canEdit = true)
-        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id)
+        fixture.client.value = stubDetachedClient(id = fixture.id)
 
         whenn()
         val sut = fixture.sut()
@@ -193,7 +172,7 @@ class ClientDetailsViewModelTest {
     fun `hides the edit action for a user who cannot edit clients`() = runUnitTest {
         given()
         val fixture = Fixture(canEdit = false)
-        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id)
+        fixture.client.value = stubDetachedClient(id = fixture.id)
 
         whenn()
         val sut = fixture.sut()
@@ -206,7 +185,6 @@ class ClientDetailsViewModelTest {
     fun `hides the edit action while the client is loading`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } throws TestException()
 
         whenn()
         val sut = fixture.sut()
@@ -219,7 +197,7 @@ class ClientDetailsViewModelTest {
     fun `navigates to edit on edit action`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id)
+        fixture.client.value = stubDetachedClient(id = fixture.id)
         val sut = fixture.sut()
 
         whenn()
@@ -233,7 +211,7 @@ class ClientDetailsViewModelTest {
     fun `pushes back destination on back click`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getClient(any()) } returns stubDetachedClient(id = fixture.id)
+        fixture.client.value = stubDetachedClient(id = fixture.id)
         val sut = fixture.sut()
 
         whenn()

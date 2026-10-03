@@ -39,6 +39,9 @@ struct AppointmentDetailsScreen: View {
 			get: { uiState.dateTimePicker.isDatePickerVisible },
 			set: { uiState.dateTimePicker.isDatePickerVisible = $0 }
 		)) { DateTimePicker(uiState.dateTimePicker) }
+		.safeAreaInset(edge: .bottom) {
+			CompletionActions(completeButton: uiState.completeButton, noShowButton: uiState.noShowButton)
+		}
 		.withNavigationBar(uiState.appBar)
 		.handleNotifications(uiState.notifications)
 		.sendLifecycleEventsTo(viewModel)
@@ -49,6 +52,27 @@ struct AppointmentDetailsScreen: View {
 			default :
 				break
 			}
+		}
+	}
+}
+
+private struct CompletionActions: View {
+	let completeButton: ButtonState
+	let noShowButton: ButtonState
+
+	var body: some View {
+		if completeButton.isVisible || noShowButton.isVisible {
+			VStack(spacing: 8) {
+				if completeButton.isVisible {
+					StateButton(completeButton)
+				}
+				if noShowButton.isVisible {
+					TextButton(noShowButton)
+						.buttonStyle(.negativeAction)
+				}
+			}
+			.padding()
+			.background(.bar)
 		}
 	}
 }

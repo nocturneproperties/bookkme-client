@@ -34,6 +34,20 @@
     <string name="appointments_status_scheduled">Scheduled</string>
     <string name="appointments_status_completed">Completed</string>
     <string name="appointments_status_cancelled">Cancelled</string>
+    <string name="appointments_status_no_show">No-show</string>
+    <string name="appointments_details_complete">Mark as completed</string>
+    <string name="appointments_details_no_show">Client didn\'t show up</string>
+    <string name="appointments_details_no_show_confirm">Mark this appointment as a no-show?</string>
+    <string name="appointments_details_no_show_action">Mark no-show</string>
+    <string name="appointments_details_not_started_error">This appointment hasn\'t started yet.</string>
+    <string name="appointments_details_not_scheduled_error">This appointment is no longer scheduled and can\'t be changed.</string>
+    <string name="appointments_details_employee_suspended_error">The assigned employee is suspended and can\'t be booked.</string>
+    <string name="appointments_details_completed_by">Completed</string>
+    <string name="appointments_details_completed_by_system">Automatically</string>
+    <string name="appointments_details_completed_by_user">Manually</string>
+    <string name="appointments_details_final_price">Final price</string>
+    <string name="appointments_details_additional_services">Additional services</string>
+    <string name="appointments_details_price_adjustment_reason">Price adjustment reason</string>
 
     <string name="appointments_details_cancel">Are you sure you want to cancel this appointment?\nClient attached to the system will receive notification.</string>
     <string name="appointments_details_cancel_reason">reason(optional)</string>
@@ -43,6 +57,8 @@
     <string name="appointments_settings_from">From</string>
     <string name="appointments_settings_to">To</string>
     <string name="appointments_settings_automatic_approval">Auto-approve requests</string>
+    <string name="appointments_settings_automatic_completion">Auto-complete appointments</string>
+    <string name="appointments_settings_automatic_completion_footer">Scheduled appointments are marked as completed once they end.</string>
     <string name="appointments_settings_break_footer">Minimal break between appointments</string>
     <string name="appointments_settings_note_header">Note to clients</string>
     <string name="appointments_settings_note_placeholder">Shown before any booking (optional)</string>

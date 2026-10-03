@@ -14,11 +14,11 @@ struct PickOptionScreen: View {
 	@Environment(\.dismiss) var dismiss
 	@StateViewModel var viewModel: PickOptionViewModel
 	
-	let onItemSelected: (KeyValueData) -> Void
+	let onItemsSelected: ([KeyValueData]) -> Void
 	
-	init(args: PickerScreenArgs, onItemSelected: @escaping (KeyValueData) -> Void) {
+	init(args: PickerScreenArgs, onItemsSelected: @escaping ([KeyValueData]) -> Void) {
 		_viewModel = StateViewModel(wrappedValue: IOSPickerDiKt.pickOptionVM(args: args))
-		self.onItemSelected = onItemSelected
+		self.onItemsSelected = onItemsSelected
 	}
 	
 	var body: some View {
@@ -32,12 +32,17 @@ struct PickOptionScreen: View {
 			placement: .navigationBarDrawer(displayMode: .always),
 			prompt: uiState.queryField.placeholder.localized()
 		)
+		.toolbar {
+			if uiState.selectButton.isVisible {
+				TextButton(uiState.selectButton)
+			}
+		}
 		.withNavigationBar(uiState.appBar)
 		.sendLifecycleEventsTo(viewModel)
 		.handleNavigation(uiState.navigation) { event in
 			switch event {
 			case let event as PickerNavigationDestination.FinishWithResult:
-				onItemSelected(event.pickResult)
+				onItemsSelected(event.pickResults)
 				break  
 			case is PickerNavigationDestination.Back:
 				dismiss()

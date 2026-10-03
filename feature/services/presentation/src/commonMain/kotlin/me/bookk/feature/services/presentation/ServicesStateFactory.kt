@@ -1,6 +1,5 @@
 package me.bookk.feature.services.presentation
 
-import me.bookk.feature.services.presentation.group.add.AddGroupState
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState
 
 import me.bookk.feature.services.presentation.service.add.AddServiceState
@@ -10,5 +9,4 @@ interface ServicesStateFactory {
     fun createServiceListState(): ServiceListState
     fun createServiceState(): AddServiceState
     fun createServiceGroupListState(): ServiceGroupListState
-    fun createAddGroupState(): AddGroupState
 }

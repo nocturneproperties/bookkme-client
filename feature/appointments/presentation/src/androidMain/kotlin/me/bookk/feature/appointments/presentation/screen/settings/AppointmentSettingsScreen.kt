@@ -55,6 +55,7 @@ private fun RequestsSettings(state: AppointmentSettingsState) {
         Column {
             Header(AppointmentsRes.strings.appointments_settings_requests.desc().localized())
             StateSwitch(state.automaticApproval, modifier = Modifier.fillMaxWidth())
+            StateSwitch(state.automaticCompletion, modifier = Modifier.fillMaxWidth())
         }
         TextField(state.minimalBreak)
         Column {

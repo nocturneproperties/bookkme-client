@@ -17,6 +17,8 @@ class IOSAppointmentDetailsState: @MainActor AppointmentDetailsState {
 	var status: UIAppointmentStatus
 	var infoSections: any ListState
 	let rescheduleButton: any ButtonState
+	let completeButton: any ButtonState
+	let noShowButton: any ButtonState
 	let dateTimePicker: any DateTimePickerState
 	var navigation: any NavigationState
 	var notifications: any PresentationNotificationState
@@ -28,6 +30,8 @@ class IOSAppointmentDetailsState: @MainActor AppointmentDetailsState {
 		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()
 		rescheduleButton = IOSButtonState()
+		completeButton = IOSButtonState()
+		noShowButton = IOSButtonState()
 		dateTimePicker = IOSDateTimePickerState()
 	}
 }

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.StringDesc
+import library.picker.standardOptionsScreenPicker
 import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
@@ -61,7 +62,10 @@ internal fun AppointmentCreateScreen(
                 modifier = Modifier.padding(top = 16.dp),
                 screenPicker = standardScreenPicker()
             )
-            OptionsMultiPicker(state.servicePicker) { item, onItemRemove ->
+            OptionsMultiPicker(
+                state.servicePicker,
+                screenPicker = standardOptionsScreenPicker()
+            ) { item, onItemRemove ->
                 ServiceItem(item, onItemRemove)
             }
             if (state.subtotalPrice.isNotEmpty()) {

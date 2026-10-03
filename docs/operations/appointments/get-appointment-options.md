@@ -2,26 +2,24 @@
 
 # Get appointment options
 
-`GetAppointmentOptions(businessId)` → composes three other use cases' `refresh()`
-· called from `AppointmentCreateViewModel`
+`GetAppointmentOptions(businessId)` → composes two other use cases' `refresh()`
+· called from `AppointmentCreateViewModel` on start
 
-Loads everything the create-appointment form needs **in parallel** (`coroutineScope` + three `async`), then
-maps clients and services down to the snapshot types an appointment stores. Each branch is a full
-network refresh that also rewrites its cache table. If any branch fails, the scope cancels the other two and
-rethrows.
+Refreshes the clients and services the create-appointment form offers **in parallel** (`coroutineScope` + two
+`async`), then maps them down to the snapshot types an appointment stores. Each branch is a full network
+refresh that also rewrites its cache table, so [Observe appointment options](observe-appointment-options.md)
+re-emits the fresh lists. The screen renders from that flow, not from this result. If either branch fails, the
+scope cancels the other and rethrows.
 
 ```mermaid
 flowchart TD
     Start([invoke businessId]) --> Fork{{coroutineScope}}
     Fork --> C[GetClientsList.refresh businessId<br/>→ snapshotClients]
     Fork --> S[GetServices.refresh businessId<br/>→ snapshotServices]
-    Fork --> T[GetAppointmentSettings.refresh businessId]
     C --> Join{{await all}}
     S --> Join
-    T --> Join
-    Join -- all ok --> R([AppointmentOptions settings, clients, services])
-    Join -- any failed --> EX([cancel siblings, rethrow])
+    Join -- all ok --> R([AppointmentOptions clients, services])
+    Join -- any failed --> EX([cancel sibling, rethrow])
 ```
 
-Composes [Get clients list](../clients/get-clients-list.md), [Get services](../services/get-services.md) and
-[Get appointment settings](get-appointment-settings.md).
+Composes [Get clients list](../clients/get-clients-list.md) and [Get services](../services/get-services.md).

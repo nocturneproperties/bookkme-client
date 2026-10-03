@@ -79,6 +79,8 @@ internal class FakeAppointmentDetailsState : AppointmentDetailsState {
     override var status: UIAppointmentStatus = UIAppointmentStatus("".desc(), ColorToken.ActionText)
     override val dateTimePicker = FakeDateTimePickerState()
     override val rescheduleButton = FakeButtonState()
+    override val completeButton = FakeButtonState()
+    override val noShowButton = FakeButtonState()
     override val infoSections = FakeListState<InfoLine>()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<AppointmentDetailsDestination>()
@@ -87,6 +89,7 @@ internal class FakeAppointmentDetailsState : AppointmentDetailsState {
 internal class FakeAppointmentSettingsState : AppointmentSettingsState {
     override val appBar = FakeAppBarState()
     override val automaticApproval = FakeBooleanState()
+    override val automaticCompletion = FakeBooleanState()
     override val note = FakeTextFieldState()
     override val minimalBreak = FakeTextFieldState()
     override val save = FakeButtonState()

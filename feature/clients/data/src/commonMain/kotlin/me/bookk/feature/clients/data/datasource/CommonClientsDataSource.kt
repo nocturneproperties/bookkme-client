@@ -56,6 +56,12 @@ internal class CommonClientsDataSource(
         }
     }
 
+    override fun observeClientDBChanges(id: Uuid): Flow<Client?> {
+        return clientsDao.observeById(id)
+            .map { it?.toDomain() }
+            .mapErrors()
+    }
+
     override suspend fun createClient(client: Client): Client {
         return mapExceptions {
             httpClient.post(Api.Clients(businessId = client.businessId)) {

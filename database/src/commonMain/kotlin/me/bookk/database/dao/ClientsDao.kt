@@ -17,6 +17,9 @@ abstract class ClientsDao {
     @Query("select * from client where id = :id")
     abstract suspend fun getById(id: Uuid): ClientEntity
 
+    @Query("select * from client where id = :id")
+    abstract fun observeById(id: Uuid): Flow<ClientEntity?>
+
     @Query("select id from client where businessId = :businessId")
     abstract suspend fun getIds(businessId: Uuid): List<Uuid>
 

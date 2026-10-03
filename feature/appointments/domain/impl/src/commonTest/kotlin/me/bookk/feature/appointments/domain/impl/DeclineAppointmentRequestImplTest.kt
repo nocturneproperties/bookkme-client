@@ -3,6 +3,7 @@ package me.bookk.feature.appointments.domain.impl
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +41,9 @@ class DeclineAppointmentRequestImplTest {
     }
 
     private class Fixture {
-        val dataSource = mock<AppointmentRequestDataSource>()
+        val dataSource = mock<AppointmentRequestDataSource> {
+            everySuspend { deleteAppointmentRequestsInDb(any()) } returns Unit
+        }
         val sut = DeclineAppointmentRequestImpl(dataSource)
     }
 
@@ -58,6 +61,21 @@ class DeclineAppointmentRequestImplTest {
 
         then()
         verifySuspend { fixture.dataSource.declineAppointmentRequest(requestId, businessId, reason) }
+    }
+
+    @Test
+    fun `removes declined request from DB`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val requestId = Uuid.random()
+        val businessId = Uuid.random()
+        everySuspend { fixture.dataSource.declineAppointmentRequest(requestId, businessId, "reason") } returns Unit
+
+        whenn()
+        fixture.sut(requestId, businessId, "reason")
+
+        then()
+        verifySuspend { fixture.dataSource.deleteAppointmentRequestsInDb(listOf(requestId)) }
     }
 
     @Test

@@ -2,7 +2,7 @@
 
 One Mermaid flowchart per domain use case (`feature/<name>/domain/api`, implemented in `domain/impl`),
 grouped by feature. The mobile client has no routes of its own. A use case is the unit that turns a UI action
-into network calls, local database or DataStore writes, and in-process events, so each diagram shows those
+into network calls and local database or DataStore writes, so each diagram shows those
 steps. Its nodes name the actual datasource methods, HTTP routes, backend error codes and domain `Error`
 types.
 
@@ -35,7 +35,6 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 - [Employees](#employees)
 - [Appointments](#appointments)
 - [Settings](#settings)
-- [In-process event map](#in-process-event-map)
 - [Use cases composed of other use cases](#use-cases-composed-of-other-use-cases)
 - [Known issues found while documenting](#known-issues-found-while-documenting)
 
@@ -74,7 +73,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetClientsList` | `GET /api/business/{businessId}/clients` | [Get clients list](clients/get-clients-list.md) (reference list steps) |
-| `GetClient` | local only | [Get client](clients/get-client.md) |
+| `GetClient` | local only (`flow` observes the row) | [Get client](clients/get-client.md) |
 | `CreateClient` | `POST /api/business/{businessId}/clients` | [Create client](clients/create-client.md) |
 | `EditClient` | `PATCH /api/business/{businessId}/clients/{id}` | [Edit client](clients/edit-client.md) |
 | `DeleteClient` | `DELETE /api/business/{businessId}/clients/{id}` | [Delete client](clients/delete-client.md) |
@@ -115,18 +114,22 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=` | [Get appointments for business](appointments/get-appointments-for-business.md) |
+| `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=[&employeeId=]` | [Get appointments for business](appointments/get-appointments-for-business.md) |
 | `GetAppointment` | local only | [Get appointment](appointments/get-appointment.md) |
 | `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}` (paged) | [Get appointment history](appointments/get-appointment-history.md) |
 | `CreateAppointment` | `POST /api/appointments/instant` | [Create appointment](appointments/create-appointment.md) |
 | `UpdateAppointment` | `PUT /api/appointments/{id}` | [Update appointment](appointments/update-appointment.md) |
 | `CancelAppointment` | `POST /api/appointments/{id}/cancel` | [Cancel appointment](appointments/cancel-appointment.md) |
+| `CompleteAppointment` | `POST /api/appointments/{id}/complete` | [Complete appointment](appointments/complete-appointment.md) |
+| `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show` | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
 | `GetAppointmentRequests` | `GET /api/appointments/request/{businessId}` | [Get appointment requests](appointments/get-appointment-requests.md) |
+| `CreateAppointmentRequest` | `POST /api/appointments/request` | [Create appointment request](appointments/create-appointment-request.md) |
 | `ApproveAppointmentRequest` | `POST /api/appointments` | [Approve appointment request](appointments/approve-appointment-request.md) |
 | `DeclineAppointmentRequest` | `POST /api/appointments/request/{id}/decline` | [Decline appointment request](appointments/decline-appointment-request.md) |
 | `GetAppointmentSettings` | `GET /api/appointments/settings/{businessId}` | [Get appointment settings](appointments/get-appointment-settings.md) |
 | `UpdateAppointmentSettings` | `PUT /api/appointments/settings/{businessId}` | [Update appointment settings](appointments/update-appointment-settings.md) |
-| `GetAppointmentOptions` | composes three refreshes | [Get appointment options](appointments/get-appointment-options.md) |
+| `GetAppointmentOptions` | composes two refreshes | [Get appointment options](appointments/get-appointment-options.md) |
+| `ObserveAppointmentOptions` | local only | [Observe appointment options](appointments/observe-appointment-options.md) |
 
 ## Settings
 
@@ -143,22 +146,6 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `DeleteAccount` | `DELETE /api/auth/account` | [Delete account](settings/delete-account.md) |
 | `SendContactForm` | `POST /api/user/contactus` | [Send contact form](settings/send-contact-form.md) |
 
-## In-process event map
-
-Some features publish domain events on a package-level `MutableSharedFlow` (`extraBufferCapacity = 100`,
-`DROP_OLDEST`). Subscribers use `listenFor<T>()`. These events are for work that a Room observer cannot do,
-such as refetching a *different* list or re-rendering a screen that holds a non-observable copy. Most screens
-don't need them, because they redraw from the table.
-
-| Event | Producer(s) | Consumer(s) |
-|---|---|---|
-| `AppointmentEvent.Created` | [Create appointment](appointments/create-appointment.md), [Approve appointment request](appointments/approve-appointment-request.md) | `AppointmentListViewModel.reload()` |
-| `AppointmentEvent.Updated` | [Update appointment](appointments/update-appointment.md) | `AppointmentListViewModel.reload()` |
-| `AppointmentEvent.Cancelled` | [Cancel appointment](appointments/cancel-appointment.md) | none |
-| `ClientEvent.Created` | [Create client](clients/create-client.md) | none |
-| `ClientEvent.Updated` | [Edit client](clients/edit-client.md) | `ClientDetailsViewModel` |
-| `ClientEvent.Deleted` | [Delete client](clients/delete-client.md) | none |
-
 ## Use cases composed of other use cases
 
 | Use case | Calls |
@@ -172,7 +159,8 @@ don't need them, because they redraw from the table.
 | [Refresh business info](business/refresh-business-info.md) | `IsAppointmentsPluginEnabled.refresh` per business |
 | [Get available dashboard features](business/get-available-dashboard-features.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
 | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
-| [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList`, `GetServices`, `GetAppointmentSettings` (parallel) |
+| [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |
+| [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Can edit employees](employees/can-edit-employees.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
@@ -189,10 +177,8 @@ These are recorded here and in the linked diagrams and are currently accepted as
 
 | Where | Issue |
 |---|---|
-| [Update appointment](appointments/update-appointment.md) | Returns the input value, not the server result. |
 | [Refresh business info](business/refresh-business-info.md) | Deleting a business the user has left does not remove its appointment rows, which reference the business only logically. The `notification_prefs` pending push token also survives logout. |
 | [Create business](business/create-business.md) | Currency hard-coded to `UAH`. |
-| [Cancel appointment](appointments/cancel-appointment.md) | The datasource method does both the network call and the DB write. |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | A refresh or switch failure after a successful redeem surfaces as an error, even though the user has joined. |
 | [preferences](../database/preferences.md) | `last_synced_at_*` markers are written by every list refresh but never read. |
 | Unused use cases | `CreateQuote`, `EditService` and `IsUserLoggedIn()` (non-flow) have no production caller. `AppointmentRequestDataSource.createAppointmentRequest` has no use case. |

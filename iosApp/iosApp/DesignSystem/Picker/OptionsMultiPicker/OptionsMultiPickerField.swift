@@ -7,6 +7,7 @@ struct OptionsMultiPickerField<ItemView: View>: View {
     private let itemContent: (PickerPresentation, @escaping () -> Void) -> ItemView
 
     @State private var isSheetPresented = false
+    @State private var pickerArgs: PickerScreenArgs? = nil
 
     init(
         _ state: OptionsMultiPickerState,
@@ -25,6 +26,7 @@ struct OptionsMultiPickerField<ItemView: View>: View {
 					.multilineTextAlignment(.center)
 					.frame(maxWidth: .infinity)
 					.padding(.vertical, 16)
+					.padding(.horizontal, 16)
 					.alignmentGuide(.listRowSeparatorLeading) { d in d[.leading] }
 					.alignmentGuide(.listRowSeparatorTrailing) { d in d[.trailing] }
 			}
@@ -37,16 +39,16 @@ struct OptionsMultiPickerField<ItemView: View>: View {
 			}
 			if state.isEditable {
 				Button {
-					isSheetPresented = true
+					openPicker()
 				} label: {
-					Text(state.addItemText.localized())
-						.font(.callout)
-						.fontWeight(.medium)
-						.foregroundStyle(AppColors.actionText)
-						.frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
-						.padding(.horizontal, 16)
+					HStack {
+						Image(resource: DesignSystem.images().plus)
+						Text(state.addItemText.localized())
+					}
+					.frame(maxWidth: .infinity, minHeight: 48)
+					.contentShape(Rectangle())
 				}
-				.buttonStyle(.plain)
+				.buttonStyle(.textInList)
 				.sheet(isPresented: $isSheetPresented) {
 					PickerBottomSheet(
 						title: state.pickerTitle.localized(),
@@ -60,9 +62,34 @@ struct OptionsMultiPickerField<ItemView: View>: View {
 						}
 					)
 				}
+				.fullScreenCover(item: $pickerArgs) { args in
+					NavigationStack {
+						PickOptionScreen(args: args) { items in
+							let pickedKeys = Set(items.map(\.key))
+							withAnimation {
+								state.onItemsPicked(state.options.filter { pickedKeys.contains($0.pickerItemId) })
+							}
+							pickerArgs = nil
+						}
+					}
+				}
 			}
         }
     }
+
+	private func openPicker() {
+		switch state.pickerType {
+		case .screen:
+			pickerArgs = PickerScreenArgs.from(
+				id: state.id,
+				title: state.pickerTitle,
+				options: state.options,
+				choice: .multiple
+			)
+		default:
+			isSheetPresented = true
+		}
+	}
 }
 
 #Preview {
@@ -76,7 +103,7 @@ struct OptionsMultiPickerField<ItemView: View>: View {
         selectedItems: [
             MinimalPickerPresentation(pickerItemId: "1", displayName: RawStringDesc(string: "Haircut")),
         ],
-        addItemText: RawStringDesc(string: "+ Add service")
+        addItemText: RawStringDesc(string: "Add service")
     )
 
     VStack {

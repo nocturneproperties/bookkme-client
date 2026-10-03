@@ -2,8 +2,11 @@ package me.bookk.feature.appointments.presentation.screen.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -11,6 +14,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import me.bookk.designsystem.components.ActionButton
@@ -46,10 +50,7 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
                     .padding(pv)
                     .fillMaxSize(),
             ) {
-                StatusLabel(
-                    status = state.status,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                StatusRow(state.status, state.rescheduleButton)
                 HorizontalDivider(
                     Modifier.padding(top = 4.dp),
                     color = LocalColors.current.divider
@@ -57,10 +58,7 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
                 List(
                     state.infoSections,
                     footer = {
-                        Column {
-                            RescheduleAction(state.rescheduleButton)
-                            ServicesSection(state)
-                        }
+                        ServicesSection(state)
                     }
                 ) {
                     InfoSection(it)
@@ -112,13 +110,18 @@ private fun ServicesSection(state: AppointmentDetailsState) {
 }
 
 @Composable
-private fun RescheduleAction(rescheduleButton: ButtonState) {
-    if (!rescheduleButton.isVisible) return
-    ActionButton(
-        rescheduleButton,
+private fun StatusRow(status: UIAppointmentStatus, rescheduleButton: ButtonState) {
+    Row(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp)
             .fillMaxWidth()
-    )
+            .padding(start = 16.dp, end = 4.dp)
+            .heightIn(min = 48.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        StatusLabel(status = status)
+        Spacer(Modifier.weight(1f))
+        if (rescheduleButton.isVisible) {
+            StateTextButton(rescheduleButton)
+        }
+    }
 }

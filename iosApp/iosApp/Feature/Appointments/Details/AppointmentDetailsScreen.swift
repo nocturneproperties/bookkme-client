@@ -27,21 +27,20 @@ struct AppointmentDetailsScreen: View {
 			InfoLineRow(line: section)
 		}, header: {
 			Section {
-				StatusLabel(status: uiState.status)
-					.listRowBackground(Color.clear)
+				HStack {
+					StatusLabel(status: uiState.status)
+					if uiState.rescheduleButton.isVisible {
+						TextButton(uiState.rescheduleButton, textAlignment: .trailing)
+							.buttonStyle(.textAction)
+					}
+				}
+				.frame(minHeight: 44)
+				.listRowBackground(Color.clear)
 					.listRowInsets(EdgeInsets())
 			}
 			.listSectionSeparator(.hidden)
 			.listSectionSpacing(0)
 		}, footer: {
-			if uiState.rescheduleButton.isVisible {
-				Section {
-					StateButton(uiState.rescheduleButton)
-						.listRowInsets(EdgeInsets())
-						.listRowBackground(Color.clear)
-				}
-				.listSectionSpacing(.compact)
-			}
 			if uiState.servicePicker.isVisible {
 				ServicesSection(
 					servicePicker: uiState.servicePicker,

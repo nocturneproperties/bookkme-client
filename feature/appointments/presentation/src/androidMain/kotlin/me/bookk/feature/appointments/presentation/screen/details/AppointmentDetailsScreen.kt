@@ -42,7 +42,7 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
             }
         },
         bottomBar = {
-            CompletionActions(state.completeButton, state.noShowButton)
+            CompleteAction(state.completeButton)
         },
         content = { pv ->
             Column(
@@ -50,7 +50,7 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
                     .padding(pv)
                     .fillMaxSize(),
             ) {
-                StatusRow(state.status, state.rescheduleButton)
+                StatusRow(state.status, state.noShowButton, state.rescheduleButton)
                 HorizontalDivider(
                     Modifier.padding(top = 4.dp),
                     color = LocalColors.current.divider
@@ -72,25 +72,14 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
 }
 
 @Composable
-private fun CompletionActions(completeButton: ButtonState, noShowButton: ButtonState) {
-    if (!completeButton.isVisible && !noShowButton.isVisible) return
-    Column(
+private fun CompleteAction(completeButton: ButtonState) {
+    if (!completeButton.isVisible) return
+    ActionButton(
+        completeButton,
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        if (completeButton.isVisible) {
-            ActionButton(completeButton, modifier = Modifier.fillMaxWidth())
-        }
-        if (noShowButton.isVisible) {
-            StateTextButton(
-                noShowButton,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error)
-            )
-        }
-    }
+            .fillMaxWidth()
+    )
 }
 
 @Composable
@@ -110,7 +99,11 @@ private fun ServicesSection(state: AppointmentDetailsState) {
 }
 
 @Composable
-private fun StatusRow(status: UIAppointmentStatus, rescheduleButton: ButtonState) {
+private fun StatusRow(
+    status: UIAppointmentStatus,
+    noShowButton: ButtonState,
+    rescheduleButton: ButtonState
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -120,6 +113,12 @@ private fun StatusRow(status: UIAppointmentStatus, rescheduleButton: ButtonState
     ) {
         StatusLabel(status = status)
         Spacer(Modifier.weight(1f))
+        if (noShowButton.isVisible) {
+            StateTextButton(
+                noShowButton,
+                colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error)
+            )
+        }
         if (rescheduleButton.isVisible) {
             StateTextButton(rescheduleButton)
         }

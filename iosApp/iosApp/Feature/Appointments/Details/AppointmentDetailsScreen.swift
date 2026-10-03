@@ -29,9 +29,16 @@ struct AppointmentDetailsScreen: View {
 			Section {
 				HStack {
 					StatusLabel(status: uiState.status)
+					Spacer()
+					if uiState.noShowButton.isVisible {
+						TextButton(uiState.noShowButton, textAlignment: .trailing)
+							.buttonStyle(.negativeAction)
+							.fixedSize()
+					}
 					if uiState.rescheduleButton.isVisible {
 						TextButton(uiState.rescheduleButton, textAlignment: .trailing)
 							.buttonStyle(.textAction)
+							.fixedSize()
 					}
 				}
 				.frame(minHeight: 44)
@@ -54,7 +61,7 @@ struct AppointmentDetailsScreen: View {
 			set: { uiState.dateTimePicker.isDatePickerVisible = $0 }
 		)) { DateTimePicker(uiState.dateTimePicker) }
 		.safeAreaInset(edge: .bottom) {
-			CompletionActions(completeButton: uiState.completeButton, noShowButton: uiState.noShowButton)
+			CompleteAction(completeButton: uiState.completeButton)
 		}
 		.withNavigationBar(uiState.appBar)
 		.handleNotifications(uiState.notifications)
@@ -70,23 +77,14 @@ struct AppointmentDetailsScreen: View {
 	}
 }
 
-private struct CompletionActions: View {
+private struct CompleteAction: View {
 	let completeButton: ButtonState
-	let noShowButton: ButtonState
 
 	var body: some View {
-		if completeButton.isVisible || noShowButton.isVisible {
-			VStack(spacing: 8) {
-				if completeButton.isVisible {
-					StateButton(completeButton)
-				}
-				if noShowButton.isVisible {
-					TextButton(noShowButton)
-						.buttonStyle(.negativeAction)
-				}
-			}
-			.padding()
-			.background(.bar)
+		if completeButton.isVisible {
+			StateButton(completeButton)
+				.padding()
+				.background(.bar)
 		}
 	}
 }

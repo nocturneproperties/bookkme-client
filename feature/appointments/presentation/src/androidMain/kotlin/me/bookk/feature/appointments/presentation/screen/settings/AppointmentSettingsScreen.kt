@@ -52,7 +52,7 @@ internal fun AppointmentSettingsScreen(
 @Composable
 private fun RequestsSettings(state: AppointmentSettingsState) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Column {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Header(AppointmentsRes.strings.appointments_settings_requests.desc().localized())
             StateSwitch(state.automaticApproval, modifier = Modifier.fillMaxWidth())
             StateSwitch(state.automaticCompletion, modifier = Modifier.fillMaxWidth())

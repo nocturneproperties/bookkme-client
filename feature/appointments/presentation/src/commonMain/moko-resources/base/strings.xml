@@ -35,7 +35,7 @@
     <string name="appointments_status_cancelled">Cancelled</string>
     <string name="appointments_status_no_show">No-show</string>
     <string name="appointments_details_complete">Mark as completed</string>
-    <string name="appointments_details_no_show">Client didn\'t show up</string>
+    <string name="appointments_details_no_show">No-show</string>
     <string name="appointments_details_no_show_confirm">Mark this appointment as a no-show?</string>
     <string name="appointments_details_no_show_action">Mark no-show</string>
     <string name="appointments_details_not_started_error">This appointment hasn\'t started yet.</string>

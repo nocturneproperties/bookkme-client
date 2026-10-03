@@ -33,10 +33,10 @@ fun FormatStyle.getDatePattern(): String {
     )
 }
 
-fun FormatStyle.getDateTimePattern(): String {
+fun FormatStyle.getDateTimePattern(timeOverride: FormatStyle? = null): String {
     return DateTimeFormatterBuilder.getLocalizedDateTimePattern(
         this,
-        this,
+        timeOverride ?: this,
         Chronology.ofLocale(Locale.getDefault()),
         Locale.getDefault()
     )

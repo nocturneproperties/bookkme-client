@@ -26,6 +26,7 @@ internal class AndroidDateFormatter(
         return when {
             daysTillToday == 0 -> relativeFormatter.format(Direction.THIS, AbsoluteUnit.DAY).capitalizeChar()
             daysTillToday == 1 -> relativeFormatter.format(Direction.LAST, AbsoluteUnit.DAY).capitalizeChar()
+            daysTillToday == -1 -> relativeFormatter.format(Direction.NEXT, AbsoluteUnit.DAY).capitalizeChar()
             sameYear -> formatters.dateTimeSameYear.format(date.toJavaLocalDateTime()).orEmpty()
             else -> formatters.dateTime.format(date.toJavaLocalDateTime()).orEmpty()
         }

@@ -4,6 +4,7 @@ import library.device.api.DeviceFacade
 import platform.Foundation.NSLocale
 import platform.Foundation.NSURL
 import platform.Foundation.canonicalLanguageIdentifierFromString
+import platform.Foundation.currencyCode
 import platform.Foundation.currentLocale
 import platform.Foundation.localeIdentifier
 import platform.UIKit.UIApplication
@@ -18,6 +19,10 @@ class IosDeviceFacade : DeviceFacade {
 
     override fun getLocaleId(): String {
         return NSLocale.canonicalLanguageIdentifierFromString(NSLocale.currentLocale.localeIdentifier)
+    }
+
+    override fun getCurrencyCode(): String? {
+        return NSLocale.currentLocale.currencyCode
     }
 
     override fun getDeviceName(): String {

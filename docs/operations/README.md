@@ -180,7 +180,6 @@ These are recorded here and in the linked diagrams and are currently accepted as
 | Where | Issue |
 |---|---|
 | [Refresh business info](business/refresh-business-info.md) | Deleting a business the user has left does not remove its appointment rows, which reference the business only logically. The `notification_prefs` pending push token also survives logout. |
-| [Create business](business/create-business.md) | Currency hard-coded to `UAH`. |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | A refresh or switch failure after a successful redeem surfaces as an error, even though the user has joined. |
 | [preferences](../database/preferences.md) | `last_synced_at_*` markers are written by every list refresh but never read. |
 | Unused use cases | `CreateQuote`, `EditService`, `IsUserLoggedIn()` (non-flow) and `CreateAppointmentRequest` have no production caller. |

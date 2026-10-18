@@ -10,6 +10,7 @@ import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import library.device.api.DeviceFacade
 import me.bookk.core.Logger
+import java.util.Currency
 import java.util.Locale
 
 
@@ -25,6 +26,12 @@ class AndroidDeviceFacade(
 
     override fun getLocaleId(): String {
         return Locale.getDefault(Locale.Category.FORMAT).toLanguageTag()
+    }
+
+    override fun getCurrencyCode(): String? {
+        return runCatching { Currency.getInstance(Locale.getDefault(Locale.Category.FORMAT)) }
+            .getOrNull()
+            ?.currencyCode
     }
 
     override fun getDeviceName(): String {

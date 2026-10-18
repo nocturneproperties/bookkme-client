@@ -13,6 +13,7 @@ kotlin {
             implementation(projects.feature.business.domain.api)
             implementation(projects.feature.business.data.source)
             implementation(projects.feature.employees.domain.api)
+            implementation(projects.library.device.api)
         }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)

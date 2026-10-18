@@ -34,6 +34,9 @@ struct BusinessTab: View {
 				.navigationDestination(for: ServicesDestination.AddService.self) { type in
 					AddServiceScreen(businessId: type.businessId)
 				}
+				.navigationDestination(for: ServicesDestination.EditService.self) { type in
+					EditServiceScreen(serviceId: type.serviceId)
+				}
 				.navigationDestination(for: ServicesDestination.ServiceGroupList.self) { _ in
 					ServiceGroupListScreen()
 				}

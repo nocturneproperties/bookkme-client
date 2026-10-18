@@ -3,6 +3,7 @@ package me.bookk.feature.services.presentation.di
 import me.bookk.core.UsedInSwift
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListViewModel
 import me.bookk.feature.services.presentation.service.add.AddServiceViewModel
+import me.bookk.feature.services.presentation.service.edit.EditServiceViewModel
 import me.bookk.feature.services.presentation.service.list.ServiceListViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -15,6 +16,7 @@ internal actual fun platformServicesDiModule(): Module = module {
     factoryOf(::ServiceGroupListViewModel)
     factoryOf(::ServiceListViewModel)
     factoryOf(::AddServiceViewModel)
+    factoryOf(::EditServiceViewModel)
 }
 
 @UsedInSwift
@@ -24,6 +26,10 @@ fun serviceListVM(): ServiceListViewModel =
 @UsedInSwift
 fun addServiceVM(businessId: Uuid): AddServiceViewModel =
     KoinPlatform.getKoin().get { parametersOf(businessId) }
+
+@UsedInSwift
+fun editServiceVM(serviceId: Uuid): EditServiceViewModel =
+    KoinPlatform.getKoin().get { parametersOf(serviceId) }
 
 @UsedInSwift
 fun serviceGroupListVM(): ServiceGroupListViewModel =

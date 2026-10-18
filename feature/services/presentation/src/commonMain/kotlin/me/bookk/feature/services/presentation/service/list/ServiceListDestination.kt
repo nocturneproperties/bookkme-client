@@ -8,5 +8,5 @@ sealed class ServiceListDestination : NavigationDestination() {
     data class AddService(val businessId: Uuid) : ServiceListDestination()
 
     data object ServiceGroups : ServiceListDestination()
-    data class ServiceDetails(val id: Uuid) : ServiceListDestination()
+    data class EditService(val id: Uuid) : ServiceListDestination()
 }

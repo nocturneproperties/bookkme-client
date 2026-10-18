@@ -6,7 +6,7 @@ import kotlin.uuid.Uuid
 class ServicesNavigation(
     val onBack: () -> Unit,
     val toCreateService: (Uuid) -> Unit,
-    val toServiceDetails: (Uuid) -> Unit,
+    val toEditService: (Uuid) -> Unit,
     val toCreateServiceGroup: (Uuid) -> Unit,
     val toServiceGroupList: () -> Unit
 )
@@ -15,7 +15,7 @@ internal val LocalNavigation = compositionLocalOf {
     ServicesNavigation(
         onBack = {},
         toCreateService = {},
-        toServiceDetails = {},
+        toEditService = {},
         toServiceGroupList = {},
         toCreateServiceGroup = {}
     )

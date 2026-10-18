@@ -136,7 +136,7 @@ class ServiceListViewModelTest {
     }
 
     @Test
-    fun `navigates to service details on item click`() = runUnitTest {
+    fun `navigates to edit service on item click`() = runUnitTest {
         given()
         val fixture = Fixture()
         val service = stubService()
@@ -149,7 +149,7 @@ class ServiceListViewModelTest {
         section.onItemClick(section.items.single())
 
         then()
-        assertEquals(listOf<ServiceListDestination>(ServiceListDestination.ServiceDetails(service.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(listOf<ServiceListDestination>(ServiceListDestination.EditService(service.id)), sut.uiState.navigation.navigationDestination)
     }
 
     @Test

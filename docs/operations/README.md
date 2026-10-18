@@ -84,6 +84,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetServices` | `GET /api/business/{businessId}/service` | [Get services](services/get-services.md) |
+| `GetService` | local only | [Get service](services/get-service.md) |
 | `CreateService` | `POST /api/business/{businessId}/service` | [Create service](services/create-service.md) |
 | `EditService` | `PUT /api/business/{businessId}/service/{id}` | [Edit service](services/edit-service.md) |
 | `DeleteService` | `DELETE /api/business/{businessId}/service/{id}` | [Delete service](services/delete-service.md) |

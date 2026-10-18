@@ -30,6 +30,7 @@ import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.CreateService
 import me.bookk.feature.services.domain.api.service.entity.Service
 import me.bookk.feature.services.presentation.FakeServicesStateFactory
+import me.bookk.feature.services.presentation.service.ServiceGroupOption
 import me.bookk.feature.services.presentation.stubGroup
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -79,7 +80,7 @@ class AddServiceViewModelTest {
 
     @Suppress("UNCHECKED_CAST")
     private fun AddServiceViewModel.fillValidForm(duration: String = "30", price: String = "12,5") {
-        (uiState.group as FakePickerFieldState<AddServiceState.GroupUI>).pick(uiState.group.options.first())
+        (uiState.group as FakePickerFieldState<ServiceGroupOption>).pick(uiState.group.options.first())
         (uiState.name as FakeTextFieldState).type("Haircut")
         (uiState.duration as FakeTextFieldState).type(duration)
         (uiState.price as FakeTextFieldState).type(price)

@@ -22,7 +22,7 @@ abstract class ServiceDao {
 
     @Query("select * from service where id = :id")
     @Transaction
-    abstract suspend fun getById(id: Uuid): ServiceLocal
+    abstract suspend fun getById(id: Uuid): ServiceLocal?
 
     @Upsert
     abstract suspend fun upsert(client: ServiceEntity)

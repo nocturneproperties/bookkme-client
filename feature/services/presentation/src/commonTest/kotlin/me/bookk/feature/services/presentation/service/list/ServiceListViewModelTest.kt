@@ -153,6 +153,40 @@ class ServiceListViewModelTest {
     }
 
     @Test
+    fun `does not navigate to edit service for a user who cannot edit services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = false, canDelete = true))
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.services.value = listOf(stubService())
+        val section = sut.uiState.services.items.single()
+
+        whenn()
+        section.onItemClick(section.items.single())
+
+        then()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `does not navigate to edit service before permissions are loaded`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val permissions = CompletableDeferred<ServicesPermissions>()
+        everySuspend { fixture.getServicesPermissions(any()) } calls { permissions.await() }
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.services.value = listOf(stubService())
+        val section = sut.uiState.services.items.single()
+
+        whenn()
+        section.onItemClick(section.items.single())
+
+        then()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
     fun `deletes service after confirmation`() = runUnitTest {
         given()
         val fixture = Fixture()

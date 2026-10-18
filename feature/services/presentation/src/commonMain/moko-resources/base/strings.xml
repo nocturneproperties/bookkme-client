@@ -17,6 +17,7 @@
     <string name="services_create_visible">Visible to clients</string>
 
     <string name="services_edit_title">Edit service</string>
+    <string name="services_delete_button">Delete service</string>
 
     <string name="services_group_pick">Select group</string>
 

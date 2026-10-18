@@ -9,6 +9,7 @@ import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import library.money.api.Money
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -22,6 +23,8 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.feature.appointments.domain.api.GetAppointmentHistory
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.PriceAdjustment
+import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.presentation.FakeAppointmentsStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -134,6 +137,28 @@ class AppointmentHistoryViewModelTest {
         then()
         verifySuspend { fixture.getAppointmentHistory.reload(fixture.businessId, "anna") }
         assertFalse(sut.uiState.refresh.isRefreshing)
+    }
+
+    @Test
+    fun `shows adjusted services and price for an adjusted appointment`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = Appointment.stub().copy(
+            priceAdjustment = PriceAdjustment(
+                additionalServices = listOf(ServiceSnapshot.stub().copy(name = "Coloring")),
+                price = Money(250.0, Money.SupportedCurrency.USD),
+                reason = null
+            )
+        )
+        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns listOf(appointment)
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        val item = sut.uiState.appointments.items.single()
+        assertEquals("Coloring", item.serviceName)
+        assertEquals(Money(250.0, Money.SupportedCurrency.USD).toString(), item.earnings)
     }
 
     @Test

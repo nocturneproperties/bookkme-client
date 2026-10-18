@@ -21,6 +21,9 @@ import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.CreateService
 import me.bookk.feature.services.domain.api.service.entity.Service
 import me.bookk.feature.services.presentation.ServicesStateFactory
+import me.bookk.feature.services.presentation.service.ServiceGroupOption
+import me.bookk.feature.services.presentation.service.toDurationInput
+import me.bookk.feature.services.presentation.service.toPriceInput
 import me.bookk.feature.services.presentation.service.add.AddServiceDestination.Back
 import kotlin.properties.Delegates
 import kotlin.time.Clock
@@ -62,7 +65,7 @@ class AddServiceViewModel(
             launchIn = DispatcherProvider.io,
             call = { getServiceGroups.refresh(businessId) },
             onComplete = {
-                uiState.group.replaceOptions(it.map(AddServiceState::GroupUI))
+                uiState.group.replaceOptions(it.map(::ServiceGroupOption))
             },
             onError = { uiState.notifications.add(it.notification()) }
         )
@@ -75,12 +78,12 @@ class AddServiceViewModel(
     }
 
     private fun onDurationChanged(text: String) {
-        uiState.duration.text = text.filter { it.isDigit() }
+        uiState.duration.text = text.toDurationInput()
         uiState.duration.isValid = uiState.duration.text.isNotEmpty()
         invalidateButton()
     }
 
-    private fun onGroupSelected(group: AddServiceState.GroupUI) {
+    private fun onGroupSelected(group: ServiceGroupOption) {
         uiState.group.textField.updateText(group.displayName)
         uiState.group.selectedItem = group
         uiState.group.textField.isValid = true
@@ -88,10 +91,7 @@ class AddServiceViewModel(
     }
 
     private fun onPriceChanged(price: String) {
-        val symbols = listOf('.', ',')
-        uiState.price.text = price
-            .filter { it.isDigit() || it in symbols }
-            .replace(",", ".")
+        uiState.price.text = price.toPriceInput()
         uiState.price.isValid = uiState.price.text.toFloatOrNull() != null
         invalidateButton()
     }

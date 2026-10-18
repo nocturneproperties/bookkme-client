@@ -28,7 +28,7 @@ struct AddServiceScreen: View {
 	var body: some View {
 		let uiState = IOSAddServiceState.cast(viewModel.uiState)
 		List {
-			Section("") {
+			Section {
 				PickerField(uiState.group)
 					.textFieldStyle(.inListTrailing)
 				StateTextField(uiState.name)
@@ -38,6 +38,8 @@ struct AddServiceScreen: View {
 						focusedField = .duration
 					}
 					.textFieldStyle(.inListTrailing)
+			}
+			Section {
 				StateTextField(uiState.duration)
 					.focused($focusedField, equals: .duration)
 					.submitLabel(.next)

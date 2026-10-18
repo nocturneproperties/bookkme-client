@@ -15,6 +15,7 @@ import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListDestination
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState
 import me.bookk.feature.services.presentation.service.add.AddServiceDestination
+import me.bookk.feature.services.presentation.service.ServiceGroupOption
 import me.bookk.feature.services.presentation.service.add.AddServiceState
 import me.bookk.feature.services.presentation.service.edit.EditServiceDestination
 import me.bookk.feature.services.presentation.service.edit.EditServiceState
@@ -40,7 +41,7 @@ internal class FakeServiceListState : ServiceListState {
 
 internal class FakeAddServiceState : FakeViewState(), AddServiceState {
     override val appBar = FakeAppBarState()
-    override val group = FakePickerFieldState<AddServiceState.GroupUI>()
+    override val group = FakePickerFieldState<ServiceGroupOption>()
     override val name = FakeTextFieldState()
     override val duration = FakeTextFieldState()
     override val price = FakeTextFieldState()
@@ -61,6 +62,13 @@ internal class FakeServiceGroupListState : ServiceGroupListState {
 
 internal class FakeEditServiceState : EditServiceState {
     override val appBar = FakeAppBarState()
+    override val group = FakePickerFieldState<ServiceGroupOption>()
+    override val name = FakeTextFieldState()
+    override val duration = FakeTextFieldState()
+    override val price = FakeTextFieldState()
+    override val available = FakeBooleanState()
+    override val submit = FakeButtonState()
+    override val deleteButton = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<EditServiceDestination>()
 }

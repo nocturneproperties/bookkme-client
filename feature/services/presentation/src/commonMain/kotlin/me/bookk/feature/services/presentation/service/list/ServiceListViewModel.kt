@@ -129,6 +129,7 @@ class ServiceListViewModel(
     }
 
     private fun onServiceClick(serviceUI: ServiceUI) {
+        if (permissions?.canEdit != true) return
         uiState.navigation.push(EditService(serviceUI.domain.id))
     }
 

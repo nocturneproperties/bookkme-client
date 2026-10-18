@@ -158,10 +158,18 @@ private struct AppointmentRequestRow: View {
 
 					Spacer()
 
-					Text(state.earnings)
-						.font(.subheadline)
-						.fontWeight(.semibold)
-						.foregroundStyle(AppColors.primary)
+					HStack(spacing: 4) {
+						if let completedMark = state.completedMark {
+							Image(systemName: "checkmark.circle.fill")
+								.font(.footnote)
+								.foregroundStyle(completedMark.color.color)
+								.accessibilityLabel(completedMark.label.localized())
+						}
+						Text(state.earnings)
+							.font(.subheadline)
+							.fontWeight(.semibold)
+							.foregroundStyle(AppColors.primary)
+					}
 				}
 				.frame(maxWidth: .infinity)
 				.contentShape(Rectangle())

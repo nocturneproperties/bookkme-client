@@ -7,7 +7,6 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.core.presentation.memory.weakSelfClosure
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
@@ -79,7 +78,7 @@ class AppointmentSettingsViewModel(
                 )
             },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.save.stopLoading() }
+            onTerminate = { uiState.save.stopLoading(enable = hasUnsavedChanges()) }
         )
     }
 
@@ -90,11 +89,23 @@ class AppointmentSettingsViewModel(
         appointmentNote = uiState.note.text
     )
 
-    private fun renderSettings(settings: AppointmentSettings) = with(uiState) {
-        automaticApproval.isChecked = settings.automaticApproval
-        automaticCompletion.isChecked = settings.automaticCompletion
-        note.text = settings.appointmentNote
-        minimalBreak.text = settings.inBetweenBreakInMinutes.toString()
+    private fun hasUnsavedChanges(): Boolean {
+        return snapshotState() != loadedSettings
+    }
+
+    private fun renderSaveAvailability() {
+        if (uiState.save.isLoading) return
+        uiState.save.isEnabled = hasUnsavedChanges()
+    }
+
+    private fun renderSettings(settings: AppointmentSettings) {
+        with(uiState) {
+            automaticApproval.isChecked = settings.automaticApproval
+            automaticCompletion.isChecked = settings.automaticCompletion
+            note.text = settings.appointmentNote
+            minimalBreak.text = settings.inBetweenBreakInMinutes.toString()
+        }
+        renderSaveAvailability()
     }
 
     private fun AppointmentSettingsState.setup() = apply {
@@ -108,13 +119,17 @@ class AppointmentSettingsViewModel(
 
     private fun AppointmentSettingsState.setupSaveButton() {
         save.text = DesignSystem.strings.action_save.desc()
+        save.isEnabled = false
         save.onClick = weakVMClosure { it.onSaveClick() }
     }
 
     private fun AppointmentSettingsState.setupNote() {
         note.placeholder = AppointmentsRes.strings.appointments_settings_note_placeholder.desc()
         note.maxLength = NOTE_MAX_LENGTH
-        note.onTextChanged = weakSelfClosure { state, v -> state.note.text = v }
+        note.onTextChanged = weakVMClosure { vm, v ->
+            vm.uiState.note.text = v
+            vm.renderSaveAvailability()
+        }
     }
 
     private fun AppointmentSettingsState.setupAutomaticApproval() {
@@ -122,6 +137,7 @@ class AppointmentSettingsViewModel(
             AppointmentsRes.strings.appointments_settings_automatic_approval.desc()
         automaticApproval.onCheckedChange = weakVMClosure { vm, v ->
             vm.uiState.automaticApproval.isChecked = v
+            vm.renderSaveAvailability()
         }
     }
 
@@ -132,6 +148,7 @@ class AppointmentSettingsViewModel(
             AppointmentsRes.strings.appointments_settings_automatic_completion_footer.desc()
         automaticCompletion.onCheckedChange = weakVMClosure { vm, v ->
             vm.uiState.automaticCompletion.isChecked = v
+            vm.renderSaveAvailability()
         }
     }
 
@@ -147,8 +164,9 @@ class AppointmentSettingsViewModel(
         minimalBreak.label = AppointmentsRes.strings.appointments_settings_minimal_break.desc()
         minimalBreak.suffix = DesignSystem.strings.common_min.desc()
         minimalBreak.inputType = InputType.DIGIT
-        minimalBreak.onTextChanged = weakSelfClosure { state, v ->
-            state.minimalBreak.text = v.filter { it.isDigit() }
+        minimalBreak.onTextChanged = weakVMClosure { vm, v ->
+            vm.uiState.minimalBreak.text = v.filter { it.isDigit() }
+            vm.renderSaveAvailability()
         }
         minimalBreak.supportingTextRes = AppointmentsRes.strings.appointments_settings_break_footer.desc()
     }

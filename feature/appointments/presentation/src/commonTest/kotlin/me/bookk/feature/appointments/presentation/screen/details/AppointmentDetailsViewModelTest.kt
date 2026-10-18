@@ -131,7 +131,7 @@ class AppointmentDetailsViewModelTest {
         uiState.infoSections.items.single { it.title == title.desc() }.value
 
     @Test
-    fun `renders scheduled appointment with cancel action and reschedule`() = runUnitTest {
+    fun `renders upcoming scheduled appointment with cancel action and reschedule`() = runUnitTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.appointment()
@@ -145,6 +145,18 @@ class AppointmentDetailsViewModelTest {
         assertEquals(listOf(DesignSystem.strings.action_cancel.desc()), sut.actionDescriptions())
         assertTrue(sut.uiState.rescheduleButton.isVisible)
         assertEquals(appointment.date, sut.uiState.dateTimePicker.pickedDate)
+    }
+
+    @Test
+    fun `hides reschedule for scheduled appointment that has started`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(fixture.startedAppointment())
+
+        then()
+        assertFalse(sut.uiState.rescheduleButton.isVisible)
     }
 
     @Test

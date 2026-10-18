@@ -235,7 +235,7 @@ class AppointmentDetailsViewModel(
         uiState.appBar.actions.replace(appBarActions(appointment))
         uiState.dateTimePicker.pickedDate = appointment.date
         uiState.dateTimePicker.onDatePicked = weakVMClosure { vm, v -> vm.onDatePicked(v) }
-        uiState.rescheduleButton.isVisible = appointment.status == AppointmentStatus.SCHEDULED
+        uiState.rescheduleButton.isVisible = appointment.canBeRescheduled()
         uiState.completeButton.isVisible = appointment.canBeCompleted()
         uiState.noShowButton.isVisible = appointment.canBeMarkedNoShow()
         uiState.infoSections.replace(createSections(appointment))

@@ -32,6 +32,10 @@ data class Appointment(
         return markableStatus && hasStarted(now)
     }
 
+    fun canBeRescheduled(now: LocalDateTime = LocalDateTime.now()): Boolean {
+        return status == AppointmentStatus.SCHEDULED && !hasStarted(now)
+    }
+
     private fun hasStarted(now: LocalDateTime): Boolean {
         return date <= now
     }

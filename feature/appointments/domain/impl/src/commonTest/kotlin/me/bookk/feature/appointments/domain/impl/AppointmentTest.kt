@@ -64,4 +64,28 @@ class AppointmentTest {
         then()
         assertEquals(false, markable)
     }
+
+    @Test
+    fun `only a scheduled appointment that has not started can be rescheduled`() = runUnitTest {
+        given()
+        val statuses = AppointmentStatus.entries
+
+        whenn()
+        val reschedulable = statuses.filter { appointment(it).canBeRescheduled(now = beforeStart) }
+
+        then()
+        assertEquals(listOf(AppointmentStatus.SCHEDULED), reschedulable)
+    }
+
+    @Test
+    fun `scheduled appointment cannot be rescheduled once it starts`() = runUnitTest {
+        given()
+        val appointment = appointment(AppointmentStatus.SCHEDULED)
+
+        whenn()
+        val reschedulable = appointment.canBeRescheduled(now = start)
+
+        then()
+        assertEquals(false, reschedulable)
+    }
 }

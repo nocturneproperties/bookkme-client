@@ -1,6 +1,8 @@
 package me.bookk.feature.appointments.domain.impl
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import library.money.api.Currency
 import library.money.api.Money
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
@@ -9,6 +11,10 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
+import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.domain.api.service.entity.Service
@@ -89,4 +95,24 @@ internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
     price = Money(1000L, Money.SupportedCurrency.USD),
     isAvailable = true,
     createdAt = Instant.fromEpochMilliseconds(0)
+)
+
+internal fun stubBusiness(id: Uuid = Uuid.random(), employeeId: Uuid? = Uuid.random()) = Business(
+    id = id,
+    name = "Test Business",
+    description = "",
+    address = "",
+    location = null,
+    currency = Currency("USD"),
+    timeZone = TimeZone.UTC,
+    socials = emptyMap(),
+    schedule = WorkingSchedule(),
+    permissions = BusinessPermissions(
+        business = ResourcePermission(),
+        employees = ResourcePermission(),
+        clients = ResourcePermission(),
+        services = ResourcePermission(),
+        appointments = ResourcePermission()
+    ),
+    employeeId = employeeId
 )

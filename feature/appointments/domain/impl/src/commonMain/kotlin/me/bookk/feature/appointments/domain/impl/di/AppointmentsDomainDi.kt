@@ -14,6 +14,7 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
 import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.MarkAppointmentNoShow
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
+import me.bookk.feature.appointments.domain.api.ObserveCurrentBusiness
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.UpdateAppointment
 import me.bookk.feature.appointments.domain.api.UpdateAppointmentSettings
@@ -32,6 +33,7 @@ import me.bookk.feature.appointments.domain.impl.GetOwnAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.MarkAppointmentNoShowImpl
 import me.bookk.feature.appointments.domain.impl.ObserveAppointmentOptionsImpl
 import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessIdImpl
+import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentSettingsImpl
 import org.koin.core.module.dsl.factoryOf
@@ -55,5 +57,6 @@ fun appointmentsDomainModule() = module {
     factoryOf(::ApproveAppointmentRequestImpl) bind ApproveAppointmentRequest::class
     factoryOf(::DeclineAppointmentRequestImpl) bind DeclineAppointmentRequest::class
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class
+    factoryOf(::ObserveCurrentBusinessImpl) bind ObserveCurrentBusiness::class
     factoryOf(::GetAppointmentsForBusinessImpl) bind GetAppointmentsForBusiness::class
 }

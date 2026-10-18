@@ -9,7 +9,7 @@ The name is trimmed first. A blank name throws `CreateBusiness.Error.EmptyName` 
 The currency is **hard-coded to `"UAH"`** (a temporary placeholder in code) and the time zone is taken from the
 device. The created business is not written to the database directly. Instead the use case re-syncs the whole
 business list and then selects the new business, so the new row and its permission columns come from
-`GET /api/business`.
+`GET /api/business/mine`.
 
 ```mermaid
 flowchart TD

@@ -3,7 +3,7 @@
 # Initiate business suspend
 
 `InitiateBusinessSuspend()` → [Switch dashboard business](../business/switch-dashboard-business.md)`(null)`, then
-[Refresh business info](../business/refresh-business-info.md) (`GET /api/business`)
+[Refresh business info](../business/refresh-business-info.md) (`GET /api/business/mine`)
 · called from `BootstrapViewModel.onBusinessAccessSuspended()`, which the platform notification handlers invoke
 when any screen posts `PresentationNotification.BusinessAccessSuspended`. That happens on an
 `Error.BusinessAccessSuspended`, which is an HTTP 403 with `BUSINESS_EMPLOYEE_ACCESS_SUSPENDED` (200034).
@@ -26,7 +26,7 @@ yields one message and one refresh. A failure is only logged.
 ```mermaid
 flowchart TD
     Start([invoke]) --> Clear[SwitchDashboardBusiness null<br/>business_prefs: dashboard_id := null<br/>no server call]
-    Clear --> Refresh[RefreshBusinessInfo applyDashboardIdFromRemote = false<br/>GET /api/business]
+    Clear --> Refresh[RefreshBusinessInfo applyDashboardIdFromRemote = false<br/>GET /api/business/mine]
     Refresh -- success --> Save[(delete missing businesses<br/>saveBusinessListInDB<br/>per-business plugin refresh)]
     Save --> R([return])
     Refresh -- error --> EX([rethrow, selection stays cleared])

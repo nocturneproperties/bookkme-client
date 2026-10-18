@@ -10,5 +10,6 @@ interface CreateAppointment {
         class DateIsNotAllowed : Throwable(), Error
         class TimeIsNotAllowed : Throwable(), Error
         class AppointmentOverlap : Throwable(),Error
+        class NotAnEmployee : Throwable(), Error
     }
 }

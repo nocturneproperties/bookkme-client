@@ -310,6 +310,23 @@ class AppointmentCreateViewModelTest {
     }
 
     @Test
+    fun `explains that only employees can create appointments when the caller is not an employee`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createAppointment(any()) } throws CreateAppointment.Error.NotAnEmployee()
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.uiState.create.onClick?.invoke()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(AppointmentsRes.strings.appointments_create_not_employee_error.desc(), message.message)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
     fun `marks date field invalid when date is not allowed`() = runUnitTest {
         given()
         val fixture = Fixture()

@@ -2,12 +2,15 @@ package me.bookk.feature.appointments.presentation.screen.list
 
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -32,15 +35,16 @@ import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
-import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
+import me.bookk.feature.appointments.domain.api.ObserveCurrentBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.CurrentBusiness
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.AppointmentDetails
 import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.CreateAppointment
 import kotlin.uuid.Uuid
 
 class AppointmentListViewModel(
-    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
+    private val observeCurrentBusiness: ObserveCurrentBusiness,
     private val getAppointmentsForBusiness: GetAppointmentsForBusiness,
     private val getOwnAppointmentRequests: GetOwnAppointmentRequests,
     private val dateLocalizer: DateLocalizer,
@@ -57,18 +61,35 @@ class AppointmentListViewModel(
 
     init {
         observeAppointments()
-        observeCurrentBusiness()
+        observeBusinessId()
         observeAppointmentsKey()
         observeRequestCount()
     }
 
+    private fun currentBusiness(): Flow<CurrentBusiness> {
+        return observeCurrentBusiness()
+            .filterNotNull()
+            .distinctUntilChanged()
+    }
+
+    private fun currentBusinessId(): Flow<Uuid> {
+        return currentBusiness()
+            .map { it.id }
+            .distinctUntilChanged()
+    }
+
     private fun observeAppointments() {
-        selectedDate
-            .flatMapLatest { date -> getAppointmentsForBusiness.flow(date) }
+        combine(currentBusiness(), selectedDate, ::Pair)
+            .flatMapLatest { (business, date) -> employeeAppointments(business, date) }
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderAppointments(it) }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun employeeAppointments(business: CurrentBusiness, date: LocalDate): Flow<List<Appointment>> {
+        val employeeId = business.employeeId ?: return flowOf(emptyList())
+        return getAppointmentsForBusiness.flow(date, employeeId)
     }
 
     private fun renderAppointments(appointments: List<Appointment>) {
@@ -76,11 +97,9 @@ class AppointmentListViewModel(
         mapItems(appointments)
     }
 
-    private fun observeCurrentBusiness() {
-        observeCurrentBusinessId()
+    private fun observeBusinessId() {
+        currentBusinessId()
             .flowOn(DispatcherProvider.io)
-            .filterNotNull()
-            .distinctUntilChanged()
             .safeOnEach {
                 businessId = it
                 refreshRequests(it)
@@ -89,9 +108,7 @@ class AppointmentListViewModel(
     }
 
     private fun observeRequestCount() {
-        observeCurrentBusinessId()
-            .filterNotNull()
-            .distinctUntilChanged()
+        currentBusinessId()
             .flatMapLatest { getOwnAppointmentRequests.flow(it) }
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderRequestCount(it.size) }
@@ -103,22 +120,27 @@ class AppointmentListViewModel(
     }
 
     private fun observeAppointmentsKey() {
-        combine(observeCurrentBusinessId().filterNotNull(), selectedDate, ::Pair)
+        combine(currentBusiness(), selectedDate, ::Pair)
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.appointments)
-            .safeOnEach { (businessId, date) -> loadAppointments(businessId, date) }
+            .safeOnEach { (business, date) -> loadAppointments(business, date) }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
     }
 
-    private fun loadAppointments(businessId: Uuid, date: LocalDate) {
+    private fun loadAppointments(business: CurrentBusiness, date: LocalDate) {
         loadList(
             listState = uiState.appointments,
             notifications = uiState.notifications,
             refreshState = uiState.refresh,
             onRefresh = weakVMClosure { it.refreshRequests(it.businessId) },
-            call = { getAppointmentsForBusiness.refresh(businessId, date) }
+            call = { refreshEmployeeAppointments(business, date) }
         )
+    }
+
+    private suspend fun refreshEmployeeAppointments(business: CurrentBusiness, date: LocalDate): List<Appointment> {
+        val employeeId = business.employeeId ?: return emptyList()
+        return getAppointmentsForBusiness.refresh(business.id, date, employeeId)
     }
 
     private fun refreshRequests(businessId: Uuid) {

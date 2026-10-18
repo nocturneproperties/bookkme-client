@@ -46,6 +46,8 @@ erDiagram
         bool appointmentsPermissionUpdate
         bool appointmentsPermissionDelete
         uuid ownerId "nullable; user id of the business owner"
+        uuid employeeId "nullable; current user's own employee record id, null while not an active employee"
+        uuid clientId "nullable; current user's own client record id"
     }
 
     BUSINESS_DAY_SCHEDULE {
@@ -75,9 +77,15 @@ erDiagram
   changes](../operations/business/observe-user-businesses-changes.md), [Update business](../operations/business/update-business.md)
   (reads the current row before merging the edit), [Get business currency](../operations/services/get-business-currency.md)
   and [Is business owner](../operations/employees/is-business-owner.md) (compares `ownerId` with an employee's `userId`).
+  `employeeId` is read by [Observe dashboard business](../operations/business/observe-dashboard-business-changes.md)
+  (`ObserveCurrentBusiness` in appointments, which scopes the appointment list to the caller) and by
+  [Create appointment](../operations/appointments/create-appointment.md). `clientId` is stored but not read yet.
 - Cleared on logout: yes (`businessDao.clear()`).
 - Deleted by: [Refresh business info](../operations/business/refresh-business-info.md) removes local businesses
-  missing from `GET /api/business` (`businessDao.deleteByIds`), cascading to their clients, employees,
+  missing from `GET /api/business/mine` (`businessDao.deleteByIds`), cascading to their clients, employees,
   invitations, service groups and services.
 - Migration notes: 15 → 16 added the nullable `business.ownerId` column (auto-migration). Rows cached before
   the migration keep `NULL` until the next [Refresh business info](../operations/business/refresh-business-info.md).
+  18 → 19 added the nullable `business.employeeId` and `business.clientId` columns (auto-migration), with the same
+  `NULL`-until-refresh behaviour: until then the appointment list is empty and creating an appointment fails with
+  `NotAnEmployee`.

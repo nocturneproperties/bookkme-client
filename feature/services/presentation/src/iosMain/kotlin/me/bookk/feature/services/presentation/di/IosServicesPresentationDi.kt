@@ -1,7 +1,6 @@
 package me.bookk.feature.services.presentation.di
 
 import me.bookk.core.UsedInSwift
-import me.bookk.feature.services.presentation.group.add.AddGroupViewModel
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListViewModel
 import me.bookk.feature.services.presentation.service.add.AddServiceViewModel
 import me.bookk.feature.services.presentation.service.list.ServiceListViewModel
@@ -16,7 +15,6 @@ internal actual fun platformServicesDiModule(): Module = module {
     factoryOf(::ServiceGroupListViewModel)
     factoryOf(::ServiceListViewModel)
     factoryOf(::AddServiceViewModel)
-    factoryOf(::AddGroupViewModel)
 }
 
 @UsedInSwift
@@ -29,8 +27,4 @@ fun addServiceVM(businessId: Uuid): AddServiceViewModel =
 
 @UsedInSwift
 fun serviceGroupListVM(): ServiceGroupListViewModel =
-    KoinPlatform.getKoin().get()
-
-@UsedInSwift
-fun addGroupVM(): AddGroupViewModel =
     KoinPlatform.getKoin().get()

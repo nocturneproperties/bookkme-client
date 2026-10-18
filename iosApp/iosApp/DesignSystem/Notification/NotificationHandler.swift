@@ -41,6 +41,10 @@ struct NotificationHandler: ViewModifier {
 						confirmCount += 1
 						notificationState.removeFirst()
 						break
+					case is PresentationNotificationSuccessHaptic:
+						confirmCount += 1
+						notificationState.removeFirst()
+						break
 					case is PresentationNotificationUnauthorized:
 						notificationState.removeFirst()
 						logOutHandler.onLogOut()

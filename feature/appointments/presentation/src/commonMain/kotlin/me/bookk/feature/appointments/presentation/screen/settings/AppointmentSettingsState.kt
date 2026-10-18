@@ -10,6 +10,7 @@ import me.bookk.designsystem.uistate.TextFieldState
 interface AppointmentSettingsState {
     val appBar: AppBarState
     val automaticApproval: BooleanState
+    val automaticCompletion: BooleanState
     val note: TextFieldState
     val minimalBreak: TextFieldState
     val save: ButtonState

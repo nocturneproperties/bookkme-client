@@ -22,7 +22,7 @@ grouped by the feature whose datasource **writes** the table.
 
 ## Conventions
 
-- **Version and migrations.** The schema is at `version = 17`. Every step from 1 to 17 is a Room
+- **Version and migrations.** The schema is at `version = 18`. Every step from 1 to 18 is a Room
   `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The builder also sets `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
   If a migration is missing, the cache is wiped instead of the app crashing, which is safe only because every
@@ -66,7 +66,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `service_group` | `ServiceGroupDataSourceImpl` | ✅ (also cascades to `service`) |
 | `employee` (+ 4 child tables) | `EmployeeDataSourceImpl` | ✅ |
 | `employee_invitation` | `EmployeeInvitationDataSourceImpl` | ✅ |
-| `appointment` (+ snapshot) | `CommonAppointmentDataSource` | ✅ |
+| `appointment` (+ service snapshot, adjustment services) | `CommonAppointmentDataSource` | ✅ `appointmentDao.clear()`, children cascade |
 | `appointment_request` (+ snapshot) | `CommonAppointmentRequestDataSource` | ✅ |
 | `business` (+ 3 schedule tables) | `CommonBusinessDataSource` | ✅ `businessDao.clear()` after `business_prefs.clear()`, which also cascades to any client/employee/service rows still left |
 | `appointment_settings` (+ 3 child tables) | `CommonAppointmentSettingsDataSource` | ✅ `appointmentSettingsDao.clear()` |

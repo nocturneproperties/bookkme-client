@@ -30,12 +30,10 @@ import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
-import me.bookk.feature.appointments.domain.api.GetAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.Appointment
-import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
-import me.bookk.feature.appointments.domain.api.entity.listenFor
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.AppointmentDetails
 import me.bookk.feature.appointments.presentation.screen.list.AppointmentListDestinations.CreateAppointment
@@ -44,7 +42,7 @@ import kotlin.uuid.Uuid
 class AppointmentListViewModel(
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     private val getAppointmentsForBusiness: GetAppointmentsForBusiness,
-    private val getAppointmentRequests: GetAppointmentRequests,
+    private val getOwnAppointmentRequests: GetOwnAppointmentRequests,
     private val dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
     vmArgs: VmArgs
@@ -61,16 +59,7 @@ class AppointmentListViewModel(
         observeAppointments()
         observeCurrentBusiness()
         observeAppointmentsKey()
-        listenForUpdates()
-    }
-
-    private fun listenForUpdates() {
-        listenFor<AppointmentEvent.Created>()
-            .safeOnEach { reload() }
-            .observe()
-        listenFor<AppointmentEvent.Updated>()
-            .safeOnEach { reload() }
-            .observe()
+        observeRequestCount()
     }
 
     private fun observeAppointments() {
@@ -94,9 +83,23 @@ class AppointmentListViewModel(
             .distinctUntilChanged()
             .safeOnEach {
                 businessId = it
-                loadRequestCount(it)
+                refreshRequests(it)
             }
             .observe()
+    }
+
+    private fun observeRequestCount() {
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .distinctUntilChanged()
+            .flatMapLatest { getOwnAppointmentRequests.flow(it) }
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { renderRequestCount(it.size) }
+            .observe()
+    }
+
+    private fun renderRequestCount(count: Int) {
+        uiState.requestsButton.text = AppointmentsRes.strings.appointments_requests_count.format(count)
     }
 
     private fun observeAppointmentsKey() {
@@ -108,30 +111,21 @@ class AppointmentListViewModel(
             .observe()
     }
 
-    private fun reload() {
-        loadAppointments(businessId, selectedDate.value)
-        loadRequestCount(businessId)
-    }
-
     private fun loadAppointments(businessId: Uuid, date: LocalDate) {
         loadList(
             listState = uiState.appointments,
             notifications = uiState.notifications,
             refreshState = uiState.refresh,
-            onRefresh = weakVMClosure { it.loadRequestCount(it.businessId) },
+            onRefresh = weakVMClosure { it.refreshRequests(it.businessId) },
             call = { getAppointmentsForBusiness.refresh(businessId, date) }
         )
     }
 
-    private fun loadRequestCount(businessId: Uuid) {
+    private fun refreshRequests(businessId: Uuid) {
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.requestsButton.startLoading() },
-            call = { getAppointmentRequests.refresh(businessId).size },
-            onComplete = {
-                uiState.requestsButton.text =
-                    AppointmentsRes.strings.appointments_requests_count.format(it)
-            },
+            call = { getOwnAppointmentRequests.refresh(businessId) },
             onError = { /* Silently ignore */ },
             onTerminate = { uiState.requestsButton.stopLoading() }
         )

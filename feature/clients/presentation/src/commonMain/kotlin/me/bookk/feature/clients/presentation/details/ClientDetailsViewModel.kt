@@ -1,7 +1,9 @@
 package me.bookk.feature.clients.presentation.details
 
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.coroutine.DispatcherProvider
@@ -16,12 +18,9 @@ import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.feature.clients.domain.api.GetClient
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import me.bookk.feature.clients.domain.api.entity.Client
-import me.bookk.feature.clients.domain.api.entity.ClientEvent
-import me.bookk.feature.clients.domain.api.entity.listenFor
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.details.ClientDetailsDestination.Back
 import me.bookk.feature.clients.presentation.details.ClientDetailsDestination.Edit
-import kotlin.properties.Delegates.notNull
 import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
@@ -35,47 +34,41 @@ class ClientDetailsViewModel(
 ) : ViewModel(vmArgs) {
 
     val uiState: ClientDetailsState = stateFactory.createClientDetailsState().setup()
-    private var client: Client by notNull()
 
     init {
-        loadClient()
-        listenFor<ClientEvent.Updated>()
-            .filter { it.client.id == id }
-            .safeOnEach { loadClient() }
+        observeClient()
+    }
+
+    private fun observeClient() {
+        getClient.flow(id)
+            .filterNotNull()
+            .mapLatest { it to getClientsPermissions(it.businessId) }
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { (client, permissions) -> renderClient(client, permissions.canEdit) }
+            .onError { uiState.notifications.add(it.notification()) }
             .observe()
     }
 
-    private fun loadClient() {
-        launch(
-            launchIn = DispatcherProvider.io,
-            call = {
-                val client = getClient(id)
-                client to getClientsPermissions(client.businessId)
-            },
-            onComplete = { (loadedClient, permissions) ->
-                client = loadedClient
-                renderEditAction(permissions.canEdit)
-                uiState.appBar.title = loadedClient.fullName.desc()
-                uiState.infoSections.replace(
-                    listOf(
-                        InfoLine(
-                            title = ClientsRes.strings.clients_create_phone,
-                            value = loadedClient.phone.dashOnBlank(),
-                            onClick = { loadedClient.phone?.let { device.dial(it) } }
-                        ),
-                        InfoLine(
-                            title = ClientsRes.strings.clients_create_email,
-                            value = loadedClient.email.dashOnBlank(),
-                            onClick = { loadedClient.email?.let { device.mail(it) } }
-                        ),
-                        InfoLine(
-                            title = ClientsRes.strings.clients_details_description,
-                            value = loadedClient.description.dashOnBlank()
-                        )
-                    )
+    private fun renderClient(client: Client, canEdit: Boolean) {
+        renderEditAction(canEdit)
+        uiState.appBar.title = client.fullName.desc()
+        uiState.infoSections.replace(
+            listOf(
+                InfoLine(
+                    title = ClientsRes.strings.clients_create_phone,
+                    value = client.phone.dashOnBlank(),
+                    onClick = { client.phone?.let { device.dial(it) } }
+                ),
+                InfoLine(
+                    title = ClientsRes.strings.clients_create_email,
+                    value = client.email.dashOnBlank(),
+                    onClick = { client.email?.let { device.mail(it) } }
+                ),
+                InfoLine(
+                    title = ClientsRes.strings.clients_details_description,
+                    value = client.description.dashOnBlank()
                 )
-            },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
+            )
         )
     }
 

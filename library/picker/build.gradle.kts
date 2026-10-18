@@ -15,6 +15,10 @@ kotlin {
             implementation(projects.core.domain)
             implementation(projects.designsystem)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+            implementation(projects.designsystem.testFixtures)
+        }
     }
 }
 

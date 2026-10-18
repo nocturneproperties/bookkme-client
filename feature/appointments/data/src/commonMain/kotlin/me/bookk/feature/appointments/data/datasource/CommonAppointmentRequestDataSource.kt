@@ -20,12 +20,12 @@ import me.bookk.feature.appointments.data.mapping.toRequestEntity
 import me.bookk.feature.appointments.data.mapping.toRequestServiceEntities
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRemote
-import me.bookk.feature.appointments.data.remote.model.AppointmentOfferRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestIdRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
 import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSource
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -39,13 +39,12 @@ internal class CommonAppointmentRequestDataSource(
 
     private val preferences = preferenceProvider.get("appointment_requests_prefs")
 
-    override suspend fun createAppointmentRequest(request: AppointmentRequest, offerToken: String) =
-        mapExceptions {
-            httpClient.post(Api.Appointment.Request()) {
-                setBody(AppointmentOfferRemote(request = request.toRemote(), offerToken = offerToken))
-            }
-            Unit
+    override suspend fun createAppointmentRequest(draft: AppointmentRequestDraft) = mapExceptions {
+        httpClient.post(Api.Appointment.Request()) {
+            setBody(draft.toRemote())
         }
+        Unit
+    }
 
     override suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment =
         mapExceptions {
@@ -56,12 +55,11 @@ internal class CommonAppointmentRequestDataSource(
                 .toDomain()
         }
 
-    override suspend fun getAppointmentRequests(businessId: Uuid): List<AppointmentRequest> =
-        mapExceptions {
-            httpClient.get(Api.Appointment.Requests(businessId = businessId))
-                .body<List<AppointmentRequestRemote>>()
-                .map { it.toDomain() }
-        }
+    override suspend fun getOwnAppointmentRequests(businessId: Uuid) = mapExceptions {
+        httpClient.get(Api.Appointment.Requests.Own(Api.Appointment.Requests(businessId = businessId)))
+            .body<List<AppointmentRequestRemote>>()
+            .map { it.toDomain() }
+    }
 
     override fun observeAppointmentRequestsDBChanges(businessId: Uuid): Flow<List<AppointmentRequest>> {
         return appointmentRequestDao.observeForBusiness(businessId)
@@ -90,7 +88,7 @@ internal class CommonAppointmentRequestDataSource(
     override suspend fun declineAppointmentRequest(requestId: Uuid, businessId: Uuid, reason: String) =
         mapExceptions {
             httpClient.post(Api.Appointment.RequestDecline(id = requestId)) {
-                setBody(AppointmentCancellationRemote(id = requestId, businessId = businessId, reason = reason))
+                setBody(AppointmentCancellationRemote(id = requestId, reason = reason))
             }
             Unit
         }

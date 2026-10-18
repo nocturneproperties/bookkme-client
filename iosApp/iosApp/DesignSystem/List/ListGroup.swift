@@ -9,28 +9,40 @@
 import SwiftUI
 import shared
 
-struct ListGroup<T, S: ListStyle, Header: View, Content: View>: View where T: AnyObject, T: Identifiable {
+struct ListGroup<T, S: ListStyle, Header: View, Footer: View, Content: View>: View where T: AnyObject, T: Identifiable {
 
 	let listState: IOSListState<T>
 	let listStyle: S
 	let content: (T) -> Content
 	let header: () -> Header
+	let footer: () -> Footer
 
 	@State private var placeholderAreaTop: CGFloat = 0
 	@State private var headerBottom: CGFloat = 0
 
-	init(listState: IOSListState<T>, listStyle: S, @ViewBuilder content: @escaping (T) -> Content, @ViewBuilder header: @escaping () -> Header) {
+	init(
+		listState: IOSListState<T>,
+		listStyle: S,
+		@ViewBuilder content: @escaping (T) -> Content,
+		@ViewBuilder header: @escaping () -> Header,
+		@ViewBuilder footer: @escaping () -> Footer
+	) {
 		self.listState = listState
 		self.listStyle = listStyle
 		self.content = content
 		self.header = header
+		self.footer = footer
 	}
 
-	init(listState: IOSListState<T>, @ViewBuilder content: @escaping (T) -> Content) where Header == EmptyView, S == PlainListStyle {
+	init(listState: IOSListState<T>, listStyle: S, @ViewBuilder content: @escaping (T) -> Content, @ViewBuilder header: @escaping () -> Header) where Footer == EmptyView {
+		self.init(listState: listState, listStyle: listStyle, content: content, header: header) { EmptyView() }
+	}
+
+	init(listState: IOSListState<T>, @ViewBuilder content: @escaping (T) -> Content) where Header == EmptyView, Footer == EmptyView, S == PlainListStyle {
 		self.init(listState: listState, listStyle: .plain, content: content) { EmptyView() }
 	}
 
-	init(listState: IOSListState<T>, listStyle: S, @ViewBuilder content: @escaping (T) -> Content) where Header == EmptyView {
+	init(listState: IOSListState<T>, listStyle: S, @ViewBuilder content: @escaping (T) -> Content) where Header == EmptyView, Footer == EmptyView {
 		self.init(listState: listState, listStyle: listStyle, content: content) { EmptyView() }
 	}
 
@@ -59,6 +71,8 @@ struct ListGroup<T, S: ListStyle, Header: View, Content: View>: View where T: An
 					LoadMoreTrigger(itemCount: listState.typedItems.count, loadMore: loadMore)
 				}
 			}
+
+			footer()
 		}
 		.listStyle(listStyle)
 		.onPreferenceChange(HeaderBottomKey.self) { headerBottom = $0 }

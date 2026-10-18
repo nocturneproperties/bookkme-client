@@ -3,7 +3,7 @@
 # Create service group
 
 `CreateServiceGroup(group)` → `POST /api/business/{businessId}/service_group`
-· called from `AddGroupViewModel`
+· called from `ServiceGroupListViewModel`
 
 ```mermaid
 flowchart TD

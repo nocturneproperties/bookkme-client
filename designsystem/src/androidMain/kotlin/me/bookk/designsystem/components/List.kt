@@ -40,6 +40,8 @@ fun <T> List(
     flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
     userScrollEnabled: Boolean = true,
     overscrollEffect: OverscrollEffect? = rememberOverscrollEffect(),
+    header: (@Composable LazyItemScope.() -> Unit)? = null,
+    footer: (@Composable LazyItemScope.() -> Unit)? = null,
     itemContent: @Composable LazyItemScope.(T) -> Unit
 ) {
     LazyColumn(
@@ -63,6 +65,7 @@ fun <T> List(
                 lastBannerError?.let { BannerErrorView(it) }
             }
         }
+        header?.let { item(content = it) }
         when {
             state.errorState != null -> {
                 item {
@@ -89,5 +92,6 @@ fun <T> List(
                 }
             }
         }
+        footer?.let { item(content = it) }
     }
 }

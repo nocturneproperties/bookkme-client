@@ -7,7 +7,7 @@ import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-private val modulesWithAndroidResourcesInHostTests = setOf(":designsystem", ":shared")
+private val modulesWithAndroidResourcesInHostTests = setOf(":designsystem", ":shared", ":library:picker")
 
 private fun Project.hasAndroidResourcesInHostTests(): Boolean {
     return path in modulesWithAndroidResourcesInHostTests || path.endsWith(":presentation")

@@ -13,20 +13,24 @@ import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.GetServicesPermissions
 import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.services.domain.api.entity.ServicesPermissions
+import me.bookk.feature.services.domain.api.group.CreateServiceGroup
 import me.bookk.feature.services.domain.api.group.DeleteServiceGroup
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.presentation.ServicesStateFactory
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 class ServiceGroupListViewModel(
     private val getServiceGroups: GetServiceGroups,
     private val deleteServiceGroup: DeleteServiceGroup,
+    private val createServiceGroup: CreateServiceGroup,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     private val getServicesPermissions: GetServicesPermissions,
     stateFactory: ServicesStateFactory,
@@ -37,6 +41,7 @@ class ServiceGroupListViewModel(
     private var groups = listOf<ServiceGroupListState.ServiceGroupUI>()
     private var renderedGroups: List<ServiceGroup>? = null
     private var permissions: ServicesPermissions? = null
+    private var businessId: Uuid? = null
 
     init {
         observeGroups()
@@ -70,6 +75,7 @@ class ServiceGroupListViewModel(
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.groups)
             .safeOnEach {
+                businessId = it
                 loadServiceGroups(it)
                 loadPermissions(it)
             }
@@ -93,7 +99,7 @@ class ServiceGroupListViewModel(
             listOf(
                 AppBarAction(
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.uiState.isAddGroupDialogVisible = true }
+                    onClick = weakVMClosure { it.onAddGroupClicked() }
                 )
             )
         } else {
@@ -109,6 +115,52 @@ class ServiceGroupListViewModel(
             notifications = uiState.notifications,
             refreshState = uiState.refreshState,
             call = { getServiceGroups.refresh(businessId) }
+        )
+    }
+
+    private fun onAddGroupClicked() {
+        uiState.notifications.add(
+            PresentationNotification.InputMessage(
+                title = ServicesRes.strings.services_group_add_title.desc(),
+                message = ServicesRes.strings.services_group_add_message.desc(),
+                placeholder = ServicesRes.strings.services_create_name.desc(),
+                cancelText = DesignSystem.strings.action_cancel.desc(),
+                confirmText = DesignSystem.strings.action_create.desc(),
+                onConfirm = weakVMClosure { vm, name -> vm.createGroup(name) }
+            )
+        )
+    }
+
+    private fun createGroup(name: String) {
+        val businessId = businessId ?: return
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.refreshState.isRefreshing = true },
+            call = {
+                createServiceGroup(
+                    ServiceGroup(
+                        id = Uuid.random(),
+                        businessId = businessId,
+                        name = name,
+                        createdAt = Clock.System.now()
+                    )
+                )
+            },
+            onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
+            onError = {
+                when (it) {
+                    is CreateServiceGroup.Error.InvalidName -> uiState.notifications.add(
+                        PresentationNotification.Message.simple(ServicesRes.strings.services_group_add_name_invalid.desc())
+                    )
+
+                    is CreateServiceGroup.Error.NameExists -> uiState.notifications.add(
+                        PresentationNotification.Message.simple(ServicesRes.strings.services_group_add_name_exists.desc())
+                    )
+
+                    else -> uiState.notifications.add(it.notification())
+                }
+            },
+            onTerminate = { uiState.refreshState.isRefreshing = false }
         )
     }
 

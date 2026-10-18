@@ -3,6 +3,7 @@ package me.bookk.feature.appointments.presentation.screen.create
 import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.matcher.capture.Capture
@@ -11,6 +12,7 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -28,14 +30,16 @@ import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
+import me.bookk.designsystem.test.failOnceThenSuspend
+import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
+import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.AppointmentOptions
-import me.bookk.feature.appointments.domain.api.entity.AppointmentSettings
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
@@ -68,12 +72,17 @@ class AppointmentCreateViewModelTest {
         val client = ClientSnapshot.stub()
         val haircut = ServiceSnapshot(Uuid.random(), "Haircut", Uuid.random(), Money(10000L, Money.SupportedCurrency.UAH), 30.minutes)
         val coloring = ServiceSnapshot(Uuid.random(), "Coloring", Uuid.random(), Money(5000L, Money.SupportedCurrency.UAH), 60.minutes)
-        val getAppointmentOptions = mock<GetAppointmentOptions> {
-            everySuspend { invoke(any()) } returns AppointmentOptions(
-                settings = AppointmentSettings.stub(),
+        val options = MutableStateFlow(
+            AppointmentOptions(
                 clients = listOf(client),
                 services = listOf(haircut, coloring)
             )
+        )
+        val observeAppointmentOptions = mock<ObserveAppointmentOptions> {
+            every { invoke() } returns options
+        }
+        val getAppointmentOptions = mock<GetAppointmentOptions> {
+            everySuspend { invoke(any()) } returns options.value
         }
         val createAppointment = mock<CreateAppointment>()
         val errorMapper = FakeErrorMapper()
@@ -82,6 +91,7 @@ class AppointmentCreateViewModelTest {
         fun sut() = AppointmentCreateViewModel(
             businessId = businessId,
             getAppointmentOptions = getAppointmentOptions,
+            observeAppointmentOptions = observeAppointmentOptions,
             createAppointment = createAppointment,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeAppointmentsStateFactory(),
@@ -108,6 +118,61 @@ class AppointmentCreateViewModelTest {
         then()
         assertEquals(listOf(fixture.client), sut.uiState.clientPicker.options.map { it.domain })
         assertEquals(listOf(fixture.haircut, fixture.coloring), sut.uiState.servicePicker.options.map { it.item })
+    }
+
+    @Test
+    fun `refreshes appointment options of business on start`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend { fixture.getAppointmentOptions(fixture.businessId) }
+    }
+
+    @Test
+    fun `updates picker options when observed options change`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        val newClient = ClientSnapshot.stub()
+
+        whenn()
+        fixture.options.value = AppointmentOptions(
+            clients = listOf(fixture.client, newClient),
+            services = listOf(fixture.coloring)
+        )
+
+        then()
+        assertEquals(listOf(fixture.client, newClient), sut.uiState.clientPicker.options.map { it.domain })
+        assertEquals(listOf(fixture.coloring), sut.uiState.servicePicker.options.map { it.item })
+    }
+
+    @Test
+    fun `shows mapped error when options observation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.observeAppointmentOptions() } returns failOnceThenSuspend()
+
+        whenn()
+        fixture.sut()
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    @Test
+    fun `picks services on a chooser screen`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(PickerFieldState.PickerType.SCREEN, sut.uiState.servicePicker.pickerType)
     }
 
     @Test

@@ -87,7 +87,7 @@ cd feature/.template
      )
      ```
      Handle known use-case errors with a `when (it)` in `onError`; fall back to `uiState.notifications.add(it.notification())`.
-   - Flows (`useCase.flow(...)`, `observe*()`, event streams) are collected with the base-class `safeOnEach` → `onError` → `observe()` operators — **never** `.onEach { }.launchIn(viewModelScope)`, `.retry()` or a terminal `.catch { }`:
+   - Flows (`useCase.flow(...)`, `observe*()`) are collected with the base-class `safeOnEach` → `onError` → `observe()` operators — **never** `.onEach { }.launchIn(viewModelScope)`, `.retry()` or a terminal `.catch { }`:
      ```kotlin
      getClientsList.flow()
          .flowOn(DispatcherProvider.io)
@@ -95,7 +95,7 @@ cd feature/.template
          .onError { uiState.notifications.add(it.notification()) }
          .observe()
      ```
-     `safeOnEach` runs the render action per value and routes an exception it throws to `handleError`, so one bad value never stops collection. `onError` catches upstream failures: it logs each one through `handleError`, calls its lambda only on the first failure of a streak, and resubscribes with exponential backoff (1 s doubling to a 30 s cap, reset after the next emission). `observe()` starts the collection in `viewModelScope` and applies the same backoff retry, logging only, for chains without `onError`. Always render in `safeOnEach`, not plain `onEach` — a failure in plain `onEach` would be treated as an upstream failure and retried. Add `onError` for flows that feed visible screen data; omit it for background observers (theme, auth status, event listeners, badges) — they are logged only. `flow()` implementations must stay local-only (DB/prefs): network work belongs in `refresh()`, whose errors are handled by `launch`'s `onError`.
+     `safeOnEach` runs the render action per value and routes an exception it throws to `handleError`, so one bad value never stops collection. `onError` catches upstream failures: it logs each one through `handleError`, calls its lambda only on the first failure of a streak, and resubscribes with exponential backoff (1 s doubling to a 30 s cap, reset after the next emission). `observe()` starts the collection in `viewModelScope` and applies the same backoff retry, logging only, for chains without `onError`. Always render in `safeOnEach`, not plain `onEach` — a failure in plain `onEach` would be treated as an upstream failure and retried. Add `onError` for flows that feed visible screen data; omit it for background observers (theme, auth status, badges) — they are logged only. `flow()` implementations must stay local-only (DB/prefs): network work belongs in `refresh()`, whose errors are handled by `launch`'s `onError`.
 4. Add `fun createFooState(): FooState` to `BarStateFactory` (and one method per sub-state interface if the screen has reusable sub-states, e.g. `createBusinessPluginState()`).
 
 **androidMain**:
@@ -279,7 +279,7 @@ http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
 ## AI Agent Interaction Rules
 
 - **Keep the local database ER diagrams current.** `docs/database/` documents the Room schema as Mermaid ER diagrams, one file per owning feature (`docs/database/<feature>.md`, indexed from `docs/database/README.md`), plus `overview.md` (real FKs vs logical references) and `preferences.md` (every `PreferenceProvider` bucket, its keys and whether logout clears it). Any change to an entity, relation, DAO write path, `AppDatabase` version/migration, prefs bucket/key, or `LogOutAction` binding must update the matching file (and the "What logout clears" table in `docs/database/README.md`) in the same change.
-- **Keep the operation activity diagrams current.** `docs/operations/<feature>/<use-case>.md` holds one Mermaid flowchart per domain use case, indexed in `docs/operations/README.md`. Nodes carry the actual datasource calls, HTTP routes, backend error codes → domain `Error` mapping, Room/DataStore writes and emitted events. Adding a use case, or changing an existing one's network calls, cache writes, error mapping, event emission or composed use cases, must add or update its diagram and its row in the README in the same change. Keep the README's "In-process event map" and "Use cases composed of other use cases" tables in sync with producers/consumers. Validate Mermaid syntax before committing — a diagram that fails to parse renders as an error block on GitHub.
+- **Keep the operation activity diagrams current.** `docs/operations/<feature>/<use-case>.md` holds one Mermaid flowchart per domain use case, indexed in `docs/operations/README.md`. Nodes carry the actual datasource calls, HTTP routes, backend error codes → domain `Error` mapping, Room/DataStore writes. Adding a use case, or changing an existing one's network calls, cache writes, error mapping or composed use cases, must add or update its diagram and its row in the README in the same change. Keep the README's "Use cases composed of other use cases" table in sync. Validate Mermaid syntax before committing — a diagram that fails to parse renders as an error block on GitHub.
 - **Use the newest screen as reference** (currently `BusinessPlugins`). Never copy from screens that pass `InitData` into state factories — that pattern is deprecated.
 - **A "new screen" task is not done until both platforms are wired**: commonMain state/VM/destinations, Android state/screen/nav/DI/factory, iOS Kotlin DI accessor, Swift state/screen, Swift factory method, and navigation registration on both platforms.
 - **Respect layer boundaries**: Ktor models, SQL, platform APIs stay in `data`; `presentation` only sees use cases and domain entities; ViewModels never touch data sources directly.
@@ -632,22 +632,6 @@ fun `returns created business`() = runUnitTest {
 }
 ```
 Import: `import me.bookk.core.test.given`, `import me.bookk.core.test.whenn`, `import me.bookk.core.test.then`, `import me.bookk.core.test.runUnitTest`. The `testFixtures` of `:core` are added to `commonTest` by the convention plugin automatically.
-
-**SharedFlow event tests** — package-level `MutableSharedFlow` instances (`appointmentEvents`, `clientEvents`, `serviceEvents`, `serviceGroupEvents`) require `Dispatchers.Unconfined` on the subscriber coroutine for the event to be delivered synchronously during `emit()`. With `UnconfinedTestDispatcher`, the emitter queues the subscriber continuation in the test scheduler but doesn't run it until the test coroutine suspends — if `job.cancel()` happens before that suspension, the event is lost. Pattern that works (with given/when/then):
-```kotlin
-given()
-val fixture = Fixture()
-everySuspend { fixture.dataSource.doThing(any()) } returns result
-val events = mutableListOf<SomeEvent>()
-val job = launch(Dispatchers.Unconfined) { someEvents.collect { events.add(it) } }
-
-whenn()
-fixture.sut(args)
-
-then()
-job.cancel()
-assertTrue(events.any { it is SomeEvent.Created })
-```
 
 **`invoke()` as operator** — some use case interfaces declare `suspend fun invoke(...)` without the `operator` modifier. These cannot be called with `fixture.sut(args)` shorthand; use `fixture.sut.invoke(args)` in tests.
 

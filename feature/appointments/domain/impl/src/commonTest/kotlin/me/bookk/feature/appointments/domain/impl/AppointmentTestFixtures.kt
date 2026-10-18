@@ -9,6 +9,9 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
+import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
+import me.bookk.feature.services.domain.api.service.entity.Service
 import kotlin.time.Duration
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -66,4 +69,24 @@ internal fun stubAppointmentRequest(
     date = Instant.fromEpochMilliseconds(0),
     note = "",
     declineReason = ""
+)
+
+internal fun stubClient(businessId: Uuid = Uuid.random()) = Client.Detached(
+    id = Uuid.random(),
+    name = "John",
+    lastName = "Doe",
+    phone = "123",
+    email = "john@example.com",
+    businessId = businessId
+)
+
+internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
+    id = Uuid.random(),
+    businessId = businessId,
+    group = ServiceGroup(id = Uuid.random(), businessId = businessId, name = "Group", createdAt = Instant.fromEpochMilliseconds(0)),
+    name = "Haircut",
+    duration = Duration.parse("30m"),
+    price = Money(1000L, Money.SupportedCurrency.USD),
+    isAvailable = true,
+    createdAt = Instant.fromEpochMilliseconds(0)
 )

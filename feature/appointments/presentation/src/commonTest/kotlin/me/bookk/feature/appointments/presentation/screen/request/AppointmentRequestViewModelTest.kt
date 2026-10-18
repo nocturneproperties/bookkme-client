@@ -25,7 +25,7 @@ import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest
 import me.bookk.feature.appointments.domain.api.DeclineAppointmentRequest
-import me.bookk.feature.appointments.domain.api.GetAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
@@ -57,7 +57,7 @@ class AppointmentRequestViewModelTest {
     private class Fixture {
         val businessId = Uuid.random()
         val requests = MutableStateFlow<List<AppointmentRequest>>(emptyList())
-        val getAppointmentRequests = mock<GetAppointmentRequests> {
+        val getOwnAppointmentRequests = mock<GetOwnAppointmentRequests> {
             every { flow(any()) } returns requests
             everySuspend { refresh(any()) } returns emptyList()
         }
@@ -69,7 +69,7 @@ class AppointmentRequestViewModelTest {
         val errorMapper = FakeErrorMapper()
 
         fun sut() = AppointmentRequestViewModel(
-            getAppointmentRequests = getAppointmentRequests,
+            getOwnAppointmentRequests = getOwnAppointmentRequests,
             approveAppointmentRequest = approveAppointmentRequest,
             declineAppointmentRequest = declineAppointmentRequest,
             observeCurrentBusinessId = observeCurrentBusinessId,
@@ -100,7 +100,7 @@ class AppointmentRequestViewModelTest {
         sut.onViewPresented()
 
         then()
-        verifySuspend { fixture.getAppointmentRequests.refresh(fixture.businessId) }
+        verifySuspend { fixture.getOwnAppointmentRequests.refresh(fixture.businessId) }
     }
 
     @Test
@@ -248,7 +248,7 @@ class AppointmentRequestViewModelTest {
     fun `shows mapped error when request observation fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        every { fixture.getAppointmentRequests.flow(any()) } returns failOnceThenSuspend()
+        every { fixture.getOwnAppointmentRequests.flow(any()) } returns failOnceThenSuspend()
 
         whenn()
         fixture.sut()

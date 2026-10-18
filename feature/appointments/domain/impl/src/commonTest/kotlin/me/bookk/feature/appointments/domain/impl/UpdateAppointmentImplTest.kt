@@ -7,7 +7,6 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -17,14 +16,12 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.UpdateAppointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
-import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
-import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 import me.bookk.core.domain.entity.Error as DomainError
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -62,24 +59,6 @@ class UpdateAppointmentImplTest {
         then()
         verifySuspend { fixture.dataSource.updateAppointment(appointment) }
         verifySuspend { fixture.dataSource.saveAppointmentInDB(updated) }
-    }
-
-    @Test
-    fun `emits Updated event on success`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val appointment = stubAppointment()
-        everySuspend { fixture.dataSource.updateAppointment(appointment) } returns appointment
-        everySuspend { fixture.dataSource.saveAppointmentInDB(appointment) } returns Unit
-        val events = mutableListOf<AppointmentEvent>()
-        val job = launch(Dispatchers.Unconfined) { appointmentEvents.collect { events.add(it) } }
-
-        whenn()
-        fixture.sut(appointment)
-
-        then()
-        job.cancel()
-        assertTrue(events.any { it is AppointmentEvent.Updated })
     }
 
     @Test
@@ -123,6 +102,82 @@ class UpdateAppointmentImplTest {
         whenn()
         then()
         assertFailsWith<UpdateAppointment.Error.AppointmentOverlap> {
+            fixture.sut(appointment)
+        }
+    }
+
+    @Test
+    fun `returns appointment stored by the backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = stubAppointment()
+        val stored = appointment.copy(note = "stored")
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } returns stored
+        everySuspend { fixture.dataSource.saveAppointmentInDB(stored) } returns Unit
+
+        whenn()
+        val result = fixture.sut(appointment)
+
+        then()
+        assertEquals(stored, result)
+    }
+
+    @Test
+    fun `throws AppointmentNotScheduled on APPOINTMENT_ALREADY_CANCELED error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = stubAppointment()
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<UpdateAppointment.Error.AppointmentNotScheduled> {
+            fixture.sut(appointment)
+        }
+    }
+
+    @Test
+    fun `throws AppointmentNotScheduled on APPOINTMENT_ALREADY_COMPLETED error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = stubAppointment()
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<UpdateAppointment.Error.AppointmentNotScheduled> {
+            fixture.sut(appointment)
+        }
+    }
+
+    @Test
+    fun `throws AppointmentNotScheduled on APPOINTMENT_MARKED_NO_SHOW error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = stubAppointment()
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<UpdateAppointment.Error.AppointmentNotScheduled> {
+            fixture.sut(appointment)
+        }
+    }
+
+    @Test
+    fun `throws EmployeeSuspended on BUSINESS_EMPLOYEE_SUSPENDED error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = stubAppointment()
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<UpdateAppointment.Error.EmployeeSuspended> {
             fixture.sut(appointment)
         }
     }

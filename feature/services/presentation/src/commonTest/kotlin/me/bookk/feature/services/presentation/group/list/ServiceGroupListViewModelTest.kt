@@ -4,11 +4,16 @@ import kotlin.test.assertNull
 import kotlin.test.assertNotNull
 import me.bookk.feature.services.domain.api.entity.ServicesPermissions
 import me.bookk.feature.services.domain.api.GetServicesPermissions
+import dev.icerock.moko.resources.desc.desc
+import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
+import dev.mokkery.matcher.capture.Capture
+import dev.mokkery.matcher.capture.capture
+import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +34,8 @@ import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.test.tap
 import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
+import me.bookk.android.feature.services.resources.ServicesRes
+import me.bookk.feature.services.domain.api.group.CreateServiceGroup
 import me.bookk.feature.services.domain.api.group.DeleteServiceGroup
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
@@ -64,6 +71,8 @@ class ServiceGroupListViewModelTest {
             everySuspend { refresh(any()) } returns emptyList()
         }
         val deleteServiceGroup = mock<DeleteServiceGroup>()
+        val createServiceGroup = mock<CreateServiceGroup>()
+        val created = Capture.slot<ServiceGroup>()
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
             every { invoke() } returns MutableStateFlow<Uuid?>(businessId)
         }
@@ -75,11 +84,19 @@ class ServiceGroupListViewModelTest {
         fun sut() = ServiceGroupListViewModel(
             getServiceGroups = getServiceGroups,
             deleteServiceGroup = deleteServiceGroup,
+            createServiceGroup = createServiceGroup,
             observeCurrentBusinessId = observeCurrentBusinessId,
             getServicesPermissions = getServicesPermissions,
             stateFactory = FakeServicesStateFactory(),
             vmArgs = VmArgs(errorMapper)
         )
+    }
+
+    private fun ServiceGroupListViewModel.submitGroupName(name: String) {
+        uiState.appBar.actions.items.single().onClick()
+        val dialog = uiState.notifications.assertSingle<PresentationNotification.InputMessage>()
+        uiState.notifications.removeFirst()
+        dialog.onConfirm(name)
     }
 
     @Test
@@ -192,7 +209,7 @@ class ServiceGroupListViewModelTest {
     }
 
     @Test
-    fun `opens add group dialog from app bar action`() = runUnitTest {
+    fun `opens create group input dialog from app bar action`() = runUnitTest {
         given()
         val sut = Fixture().sut()
 
@@ -200,7 +217,81 @@ class ServiceGroupListViewModelTest {
         sut.uiState.appBar.actions.items.single().onClick()
 
         then()
-        assertTrue(sut.uiState.isAddGroupDialogVisible)
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.InputMessage>()
+        assertEquals(ServicesRes.strings.services_group_add_title.desc(), dialog.title)
+    }
+
+    @Test
+    fun `creates group for current business when dialog is confirmed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createServiceGroup(capture(fixture.created)) } calls { (group: ServiceGroup) -> group }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitGroupName("Hair")
+
+        then()
+        assertEquals("Hair", fixture.created.get().name)
+        assertEquals(fixture.businessId, fixture.created.get().businessId)
+    }
+
+    @Test
+    fun `plays success haptic when group is created`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createServiceGroup(any()) } calls { (group: ServiceGroup) -> group }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitGroupName("Hair")
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `shows name exists message when group name is taken`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createServiceGroup(any()) } throws CreateServiceGroup.Error.NameExists(TestException())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitGroupName("Hair")
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(ServicesRes.strings.services_group_add_name_exists.desc(), message.message)
+    }
+
+    @Test
+    fun `shows invalid name message when group name is rejected`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createServiceGroup(any()) } throws CreateServiceGroup.Error.InvalidName(TestException())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitGroupName("H")
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(ServicesRes.strings.services_group_add_name_invalid.desc(), message.message)
+    }
+
+    @Test
+    fun `shows mapped error when group creation fails unexpectedly`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createServiceGroup(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitGroupName("Hair")
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
     }
 
     @Test

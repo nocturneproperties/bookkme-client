@@ -9,5 +9,7 @@ interface UpdateAppointment {
         class DateIsNotAllowed : Throwable(), Error
         class TimeIsNotAllowed : Throwable(), Error
         class AppointmentOverlap : Throwable(), Error
+        class AppointmentNotScheduled : Throwable(), Error
+        class EmployeeSuspended : Throwable(), Error
     }
 }

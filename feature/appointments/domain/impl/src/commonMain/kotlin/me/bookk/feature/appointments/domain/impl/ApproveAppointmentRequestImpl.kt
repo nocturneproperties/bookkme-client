@@ -4,19 +4,20 @@ import me.bookk.core.domain.entity.onBusinessError
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
-import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
-import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
+import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSource
 import kotlin.uuid.Uuid
 
 internal class ApproveAppointmentRequestImpl(
-    private val dataSource: AppointmentRequestDataSource
+    private val dataSource: AppointmentRequestDataSource,
+    private val appointmentDataSource: AppointmentDataSource
 ) : ApproveAppointmentRequest {
 
     override suspend fun invoke(requestId: Uuid): Appointment {
         return runCatching {
             dataSource.createAppointmentFromRequest(requestId).also {
-                appointmentEvents.emit(AppointmentEvent.Created(it))
+                appointmentDataSource.saveAppointmentInDB(it)
+                dataSource.deleteAppointmentRequestsInDb(listOf(requestId))
             }
         }.onBusinessError {
             when (it.errorCode) {

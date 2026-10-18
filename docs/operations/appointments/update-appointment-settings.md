@@ -7,6 +7,10 @@
 
 Server-first: the database is only written with the server's response, never with the submitted value.
 
+The body is `AppointmentSettingsUpdate(businessId, automaticApproval, inBetweenBreakInMinutes,
+appointmentNote, automaticCompletion?)`. `automaticCompletion` (#5) is nullable on the wire, and the
+backend keeps the stored value when it is omitted. The client always sends the toggle's value.
+
 ```mermaid
 flowchart TD
     Start([invoke settings]) --> Net[AppointmentSettingsDataSource.updateAppointmentSettings<br/>PUT /api/appointments/settings/businessId]

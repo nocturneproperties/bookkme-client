@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
+import me.bookk.feature.appointments.domain.api.entity.PriceAdjustmentDraft
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -12,17 +13,20 @@ interface AppointmentDataSource {
 
     suspend fun getAppointmentsForDate(
         businessId: Uuid,
-        forDate: LocalDate
+        forDate: LocalDate,
+        employeeId: Uuid?
     ): List<Appointment>
 
     fun observeAppointmentsForDateDBChanges(
         businessId: Uuid,
-        forDate: LocalDate
+        forDate: LocalDate,
+        employeeId: Uuid?
     ): Flow<List<Appointment>>
 
     suspend fun getAppointmentIdsForDateInDb(
         businessId: Uuid,
-        forDate: LocalDate
+        forDate: LocalDate,
+        employeeId: Uuid?
     ): List<Uuid>
 
     suspend fun deleteAppointmentsInDb(ids: List<Uuid>)
@@ -39,6 +43,10 @@ interface AppointmentDataSource {
     suspend fun cancelAppointment(cancellation: AppointmentCancellation): Appointment
 
     suspend fun updateAppointment(appointment: Appointment): Appointment
+
+    suspend fun completeAppointment(id: Uuid, priceAdjustment: PriceAdjustmentDraft?): Appointment
+
+    suspend fun markAppointmentNoShow(id: Uuid): Appointment
 
     suspend fun saveAppointmentsInDB(appointments: List<Appointment>)
 

@@ -13,6 +13,7 @@ internal class DeclineAppointmentRequestImpl(
     override suspend fun invoke(requestId: Uuid, businessId: Uuid, reason: String) =
         runCatching {
             dataSource.declineAppointmentRequest(requestId, businessId, reason)
+            dataSource.deleteAppointmentRequestsInDb(listOf(requestId))
         }.onBusinessError {
             when (it.errorCode) {
                 AppointmentErrorCodes.REQUEST_ALREADY_DECLINED -> throw DeclineAppointmentRequest.Error.AlreadyDeclined()

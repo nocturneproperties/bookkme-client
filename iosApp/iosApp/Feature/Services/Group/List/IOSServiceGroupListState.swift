@@ -13,14 +13,6 @@ class IOSServiceGroupListState: @MainActor ServiceGroupListState, NativeStateRep
 	var groups: any ListState
 	var refreshState: any RefreshState
 	var search: any TextFieldState
-	var isAddGroupDialogVisible: Bool
-	var isAddGroupDialogVisibleBinding: Binding<Bool> {
-		Binding(
-			get: { self.isAddGroupDialogVisible },
-			set: { self.isAddGroupDialogVisible = $0 }
-		)
-	}
-
 	
 	var navigation: any NavigationState
 	var notifications: any PresentationNotificationState
@@ -32,7 +24,6 @@ class IOSServiceGroupListState: @MainActor ServiceGroupListState, NativeStateRep
 		groups = IOSListState<ServiceGroupListStateServiceGroupUI>()
 		refreshState = IOSRefreshState()
 		search = IOSTextFieldState()
-		isAddGroupDialogVisible = false
 	}
 }
 

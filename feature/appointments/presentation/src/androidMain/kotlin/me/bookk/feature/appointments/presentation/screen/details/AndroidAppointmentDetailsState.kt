@@ -3,12 +3,15 @@ package me.bookk.feature.appointments.presentation.screen.details
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import dev.icerock.moko.resources.desc.StringDesc
+import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidDateTimePickerState
 import me.bookk.designsystem.uistate.AndroidListState
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
+import me.bookk.designsystem.uistate.AndroidOptionsMultiPickerState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.DateTimePickerState
@@ -17,14 +20,24 @@ import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
+import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPresentation
 
 internal class AndroidAppointmentDetailsState : AppointmentDetailsState {
     override val appBar: AppBarState = AndroidAppBarState()
 
     override var status: UIAppointmentStatus by mutableStateOf(UIAppointmentStatus(AppointmentStatus.SCHEDULED))
+    override var statusNote: StringDesc? by mutableStateOf(null)
     override val dateTimePicker: DateTimePickerState = AndroidDateTimePickerState()
     override val rescheduleButton: ButtonState = AndroidButtonState()
+    override val completeButton: ButtonState = AndroidButtonState()
+    override val completion: AppointmentCompletionState = AndroidAppointmentCompletionState()
+    override val noShowButton: ButtonState = AndroidButtonState()
     override val infoSections: ListState<InfoLine> = AndroidListState()
+    override val servicePicker = AndroidOptionsMultiPickerState<ServicePickerPresentation>()
+    override var totalLabel: StringDesc by mutableStateOf("".desc())
+    override var totalPrice: String by mutableStateOf("")
+    override var originalPrice: String? by mutableStateOf(null)
+    override val priceAdjustment: PriceAdjustmentSectionState = AndroidPriceAdjustmentSectionState()
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<AppointmentDetailsDestination> = AndroidNavigationState()

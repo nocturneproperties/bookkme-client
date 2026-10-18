@@ -9,9 +9,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -31,13 +29,11 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertEmpty
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
-import me.bookk.feature.appointments.domain.api.GetAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.Appointment
-import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
-import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
 import me.bookk.feature.appointments.presentation.FakeAppointmentsStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -63,6 +59,7 @@ class AppointmentListViewModelTest {
     private class Fixture {
         val businessId = Uuid.random()
         val appointments = MutableStateFlow<List<Appointment>>(emptyList())
+        val requests = MutableStateFlow<List<AppointmentRequest>>(emptyList())
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
             every { invoke() } returns MutableStateFlow<Uuid?>(businessId)
         }
@@ -70,7 +67,8 @@ class AppointmentListViewModelTest {
             every { flow(any()) } returns appointments
             everySuspend { refresh(any(), any()) } returns emptyList()
         }
-        val getAppointmentRequests = mock<GetAppointmentRequests> {
+        val getOwnAppointmentRequests = mock<GetOwnAppointmentRequests> {
+            every { flow(any()) } returns requests
             everySuspend { refresh(any()) } returns emptyList()
         }
         val errorMapper = FakeErrorMapper()
@@ -78,7 +76,7 @@ class AppointmentListViewModelTest {
         fun sut() = AppointmentListViewModel(
             observeCurrentBusinessId = observeCurrentBusinessId,
             getAppointmentsForBusiness = getAppointmentsForBusiness,
-            getAppointmentRequests = getAppointmentRequests,
+            getOwnAppointmentRequests = getOwnAppointmentRequests,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeAppointmentsStateFactory(),
             vmArgs = VmArgs(errorMapper)
@@ -98,13 +96,25 @@ class AppointmentListViewModelTest {
     }
 
     @Test
-    fun `shows pending request count`() = runUnitTest {
+    fun `refreshes requests of current business on start`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getAppointmentRequests.refresh(any()) } returns List(3) { AppointmentRequest.stub() }
 
         whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend { fixture.getOwnAppointmentRequests.refresh(fixture.businessId) }
+    }
+
+    @Test
+    fun `shows cached pending request count`() = runUnitTest {
+        given()
+        val fixture = Fixture()
         val sut = fixture.sut()
+
+        whenn()
+        fixture.requests.value = List(3) { AppointmentRequest.stub() }
 
         then()
         assertEquals(AppointmentsRes.strings.appointments_requests_count.format(3), sut.uiState.requestsButton.text)
@@ -114,7 +124,7 @@ class AppointmentListViewModelTest {
     fun `ignores request count failure`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getAppointmentRequests.refresh(any()) } throws TestException()
+        everySuspend { fixture.getOwnAppointmentRequests.refresh(any()) } throws TestException()
 
         whenn()
         val sut = fixture.sut()
@@ -180,32 +190,6 @@ class AppointmentListViewModelTest {
 
         then()
         assertEquals(LocalDate.today(), sut.uiState.dates.items.single { it.isToday }.date)
-    }
-
-    @Test
-    fun `reloads when an appointment is created`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.sut()
-
-        whenn()
-        launch(Dispatchers.Unconfined) { appointmentEvents.emit(AppointmentEvent.Created(Appointment.stub())) }
-
-        then()
-        verifySuspend(VerifyMode.exactly(2)) { fixture.getAppointmentsForBusiness.refresh(fixture.businessId, LocalDate.today()) }
-    }
-
-    @Test
-    fun `reloads when an appointment is updated`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.sut()
-
-        whenn()
-        launch(Dispatchers.Unconfined) { appointmentEvents.emit(AppointmentEvent.Updated(Appointment.stub())) }
-
-        then()
-        verifySuspend(VerifyMode.exactly(2)) { fixture.getAppointmentRequests.refresh(fixture.businessId) }
     }
 
     @Test

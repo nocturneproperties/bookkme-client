@@ -24,6 +24,13 @@ struct AppointmentSettingsScreen: View {
 					Text(footer.localized())
 				}
 			}
+			Section {
+				StateSwitch(state: state.automaticCompletion)
+			} footer: {
+				if let footer = state.automaticCompletion.supportingTextRes {
+					Text(footer.localized())
+				}
+			}
 			Section(AppointmentsRes.strings().appointments_settings_note_header.desc().localized()) {
 				StateTextField(state.note, textEditor: true)
 					.lineLimit(3...5)

@@ -205,4 +205,149 @@ class AppointmentSettingsViewModelTest {
         then()
         assertEquals(listOf<AppointmentSettingsDestination>(AppointmentSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
     }
+
+    @Test
+    fun `renders cached automatic completion`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(automaticCompletion = false)
+
+        then()
+        assertFalse(sut.uiState.automaticCompletion.isChecked)
+    }
+
+    @Test
+    fun `disables save when loaded settings are unchanged`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(appointmentNote = "Bring ID")
+
+        then()
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `enables save when automatic approval is toggled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
+
+        whenn()
+        sut.uiState.automaticApproval.onCheckedChange?.invoke(true)
+
+        then()
+        assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `enables save when automatic completion is toggled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
+
+        whenn()
+        sut.uiState.automaticCompletion.onCheckedChange?.invoke(false)
+
+        then()
+        assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `enables save when minimal break is edited`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
+
+        whenn()
+        (sut.uiState.minimalBreak as FakeTextFieldState).type("25")
+
+        then()
+        assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `enables save when note is edited`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
+
+        whenn()
+        (sut.uiState.note as FakeTextFieldState).type("Bring ID")
+
+        then()
+        assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `disables save when edit is reverted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
+        sut.uiState.automaticApproval.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.automaticApproval.onCheckedChange?.invoke(false)
+
+        then()
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `disables save after settings are saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointmentSettings(any()) } calls { (s: AppointmentSettings) -> s }
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
+        sut.uiState.automaticApproval.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `keeps save enabled when save of changed settings fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointmentSettings(any()) } throws TestException()
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
+        sut.uiState.automaticApproval.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `saves toggled automatic completion`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls { (s: AppointmentSettings) -> s }
+        val sut = fixture.sut()
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(automaticCompletion = true)
+        sut.uiState.automaticCompletion.onCheckedChange?.invoke(false)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        assertFalse(fixture.updates.get().automaticCompletion)
+    }
 }

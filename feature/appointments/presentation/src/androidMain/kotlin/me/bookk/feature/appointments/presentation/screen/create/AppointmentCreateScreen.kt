@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.StringDesc
+import library.picker.standardOptionsScreenPicker
 import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
@@ -61,7 +62,11 @@ internal fun AppointmentCreateScreen(
                 modifier = Modifier.padding(top = 16.dp),
                 screenPicker = standardScreenPicker()
             )
-            OptionsMultiPicker(state.servicePicker) { item, onItemRemove ->
+            OptionsMultiPicker(
+                state.servicePicker,
+                showDividers = true,
+                screenPicker = standardOptionsScreenPicker()
+            ) { item, onItemRemove ->
                 ServiceItem(item, onItemRemove)
             }
             if (state.subtotalPrice.isNotEmpty()) {
@@ -76,70 +81,5 @@ internal fun AppointmentCreateScreen(
                     .padding(top = 16.dp)
             )
         }
-    }
-}
-
-@Composable
-private fun SubtotalRow(label: StringDesc, price: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            label.localized(),
-            style = MaterialTheme.typography.bodyMedium.secondary()
-        )
-        Text(
-            price,
-            style = MaterialTheme.typography.titleMedium.primary()
-        )
-    }
-}
-
-@Composable
-private fun ServiceItem(
-    service: ServicePickerPresentation,
-    onItemRemove: () -> Unit
-) {
-    Column {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(Modifier.padding(start = 16.dp)) {
-                Text(
-                    service.displayName.localized(),
-                    style = MaterialTheme.typography.titleMedium.primary()
-                )
-                Text(
-                    service.duration.localized(),
-                    style = MaterialTheme.typography.labelMedium.secondary()
-                )
-            }
-            Spacer(Modifier.weight(1f))
-            Text(service.price, style = MaterialTheme.typography.titleMedium.primary())
-            TextButton(onClick = { onItemRemove() }) {
-                Box(
-                    modifier = Modifier
-                        .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
-                        .size(28.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "-",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyLarge.secondary(),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
-        HorizontalDivider(color = LocalColors.current.divider)
     }
 }

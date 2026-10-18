@@ -15,21 +15,26 @@ internal class GetAppointmentsForBusinessImpl(
     private val observeCurrentBusinessId: ObserveCurrentBusinessId
 ) : GetAppointmentsForBusiness {
 
-    override fun flow(date: LocalDate): Flow<List<Appointment>> {
+    override fun flow(date: LocalDate, employeeId: Uuid?): Flow<List<Appointment>> {
         return observeCurrentBusinessId()
-            .flatMapLatestOrNull { businessId -> dataSource.observeAppointmentsForDateDBChanges(businessId, date) }
+            .flatMapLatestOrNull { businessId ->
+                dataSource.observeAppointmentsForDateDBChanges(businessId, date, employeeId)
+            }
             .map { it.orEmpty() }
     }
 
-    override suspend fun refresh(businessId: Uuid, date: LocalDate): List<Appointment> {
-        val appointments = dataSource.getAppointmentsForDate(businessId, date)
+    override suspend fun refresh(businessId: Uuid, date: LocalDate, employeeId: Uuid?): List<Appointment> {
+        val appointments = dataSource.getAppointmentsForDate(businessId, date, employeeId)
         val freshIds = appointments.map { it.id }.toSet()
-        val staleIds = dataSource.getAppointmentIdsForDateInDb(businessId, date).filterNot { it in freshIds }
+        val staleIds = dataSource.getAppointmentIdsForDateInDb(businessId, date, employeeId)
+            .filterNot { it in freshIds }
         if (staleIds.isNotEmpty()) {
             dataSource.deleteAppointmentsInDb(staleIds)
         }
         dataSource.saveAppointmentsInDB(appointments)
-        dataSource.saveLastSyncedAt(businessId, date)
+        if (employeeId == null) {
+            dataSource.saveLastSyncedAt(businessId, date)
+        }
         return appointments
     }
 }

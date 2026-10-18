@@ -19,7 +19,27 @@ enum PickerBottomSheetDetent: CustomPresentationDetent {
 }
 
 extension PickerScreenArgs: @retroactive Identifiable {
-	
+	static func from(
+		id: String,
+		title: any StringDesc,
+		options: [PickerPresentation],
+		choice: PickerScreenArgs.Choice
+	) -> PickerScreenArgs {
+		PickerScreenArgs(
+			id: id,
+			title: title.localized(),
+			options: options.map { presentation in
+				PickerScreenArgs.PickerData(
+					data: KeyValueData(
+						key: presentation.pickerItemId,
+						value: presentation.displayName.localized()
+					),
+					iconUrl: presentation.displayIconUrl
+				)
+			},
+			choice: choice
+		)
+	}
 }
 
 struct PickerField: View {
@@ -64,19 +84,11 @@ struct PickerField: View {
 					guard !state.options.isEmpty else { return }
 					isSheetPresented = true
 				case .screen:
-					pickerArgs = PickerScreenArgs(
+					pickerArgs = PickerScreenArgs.from(
 						id: state.id,
-						title: state.pickerTitle.localized(),
-						options: state.options.map { presentation in
-							PickerScreenArgs.PickerData(
-								data: KeyValueData(
-									key: presentation.pickerItemId,
-									value: presentation.displayName.localized()
-								),
-								iconUrl: presentation.displayIconUrl
-							)
-						},
-						choice: PickerScreenArgs.Choice.single
+						title: state.pickerTitle,
+						options: state.options,
+						choice: .single
 					)
 				default:
 					break
@@ -94,8 +106,9 @@ struct PickerField: View {
 				)
 			}.fullScreenCover(item: $pickerArgs) { args in
 				NavigationStack {
-					PickOptionScreen(args: args) { item in
-						if let choice = state.options.first(where: { $0.pickerItemId == item.key }) {
+					PickOptionScreen(args: args) { items in
+						if let item = items.first,
+						   let choice = state.options.first(where: { $0.pickerItemId == item.key }) {
 							onItemPicked(choice)
 							pickerArgs = nil
 						}

@@ -9,7 +9,6 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -19,15 +18,12 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.CancelAppointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
-import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
-import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 import me.bookk.core.domain.entity.Error as DomainError
 
@@ -47,7 +43,9 @@ class CancelAppointmentImplTest {
     }
 
     private class Fixture {
-        val dataSource = mock<AppointmentDataSource>()
+        val dataSource = mock<AppointmentDataSource> {
+            everySuspend { saveAppointmentInDB(any()) } returns Unit
+        }
         val sut = CancelAppointmentImpl(dataSource)
     }
 
@@ -88,19 +86,17 @@ class CancelAppointmentImplTest {
     }
 
     @Test
-    fun `emits Cancelled event on success`() = runUnitTest {
+    fun `saves cancelled appointment in DB`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.cancelAppointment(any()) } returns stubAppointment()
-        val events = mutableListOf<AppointmentEvent>()
-        val job = launch(Dispatchers.Unconfined) { appointmentEvents.collect { events.add(it) } }
+        val cancelled = stubAppointment()
+        everySuspend { fixture.dataSource.cancelAppointment(any()) } returns cancelled
 
         whenn()
         fixture.sut(Uuid.random(), Uuid.random(), "reason")
 
         then()
-        job.cancel()
-        assertTrue(events.any { it is AppointmentEvent.Cancelled })
+        verifySuspend { fixture.dataSource.saveAppointmentInDB(cancelled) }
     }
 
     @Test
@@ -127,6 +123,20 @@ class CancelAppointmentImplTest {
         whenn()
         then()
         assertFailsWith<CancelAppointment.Error.AppointmentAlreadyCompleted> {
+            fixture.sut(Uuid.random(), Uuid.random(), "reason")
+        }
+    }
+
+    @Test
+    fun `throws AppointmentMarkedNoShow on APPOINTMENT_MARKED_NO_SHOW error code`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.cancelAppointment(any()) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<CancelAppointment.Error.AppointmentMarkedNoShow> {
             fixture.sut(Uuid.random(), Uuid.random(), "reason")
         }
     }

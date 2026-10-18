@@ -11,6 +11,7 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
     let appBar: any AppBarState
 
     let automaticApproval: any BooleanState
+    let automaticCompletion: any BooleanState
     let note: any TextFieldState
     let minimalBreak: any TextFieldState
 
@@ -22,6 +23,7 @@ class IOSAppointmentSettingsState: @MainActor AppointmentSettingsState, NativeSt
     init() {
         appBar = IOSAppBarState()
         automaticApproval = IOSBooleanState()
+        automaticCompletion = IOSBooleanState()
         note = IOSTextFieldState()
         minimalBreak = IOSTextFieldState()
         save = IOSButtonState()

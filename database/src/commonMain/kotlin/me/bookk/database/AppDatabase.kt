@@ -22,6 +22,7 @@ import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.ServiceDao
 import me.bookk.database.dao.ServiceGroupDao
 import me.bookk.database.dao.UserProfileDao
+import me.bookk.database.entity.AppointmentAdjustmentServiceEntity
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentRequestEntity
 import me.bookk.database.entity.AppointmentRequestServiceSnapshotEntity
@@ -60,6 +61,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         ServiceGroupEntity::class,
         AppointmentEntity::class,
         AppointmentServiceSnapshotEntity::class,
+        AppointmentAdjustmentServiceEntity::class,
         AppointmentSettingsEntity::class,
         AppointmentSettingsDayScheduleEntity::class,
         AppointmentSettingsWorkHourEntity::class,
@@ -75,7 +77,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         EmployeeDayOffEntity::class,
         EmployeeServiceSnapshotEntity::class
     ],
-    version = 17,
+    version = 18,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -92,7 +94,8 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
         AutoMigration(from = 15, to = 16),
-        AutoMigration(from = 16, to = 17)
+        AutoMigration(from = 16, to = 17),
+        AutoMigration(from = 17, to = 18)
     ]
 )
 @TypeConverters(

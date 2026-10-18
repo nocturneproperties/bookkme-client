@@ -59,8 +59,9 @@ class PickOptionViewModel(
     }
 
     private fun onItemsPicked() {
-        val pickedItem = options.firstOrNull { it.checkBox.isChecked } ?: return
-        uiState.navigation.push(FinishWithResult(pickArgs.id, pickedItem.identity))
+        val pickedItems = options.filter { it.checkBox.isChecked }.map { it.identity }
+        if (pickedItems.isEmpty()) return
+        uiState.navigation.push(FinishWithResult(pickArgs.id, pickedItems))
     }
 
     private fun onFilterChanged(newFilter: String) {

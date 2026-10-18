@@ -12,22 +12,22 @@ actual enum class DateStyle(
     SHORT(
         FormatStyle.SHORT.getDatePattern(),
         FormatStyle.SHORT.getDateTimePattern(),
-        FormatStyle.SHORT.getDatePattern(),
         FormatStyle.SHORT.getDateTimePattern(),
+        FormatStyle.SHORT.getDatePattern(),
         FormatStyle.SHORT.getTimePattern(),
     ),
     MEDIUM(
         FormatStyle.MEDIUM.getDatePattern(),
         FormatStyle.MEDIUM.getDateTimePattern(),
+        FormatStyle.MEDIUM.getDateTimePattern(timeOverride = FormatStyle.SHORT),
         FormatStyle.MEDIUM.getDatePattern(),
-        FormatStyle.MEDIUM.getDateTimePattern(),
         FormatStyle.MEDIUM.getTimePattern(),
     ),
     LONG(
         FormatStyle.LONG.getDatePattern(),
         FormatStyle.LONG.getDateTimePattern(),
-        FormatStyle.LONG.getDatePattern(),
         FormatStyle.LONG.getDateTimePattern(),
+        FormatStyle.LONG.getDatePattern(),
         FormatStyle.LONG.getTimePattern(),
     ),
     D_MMM_YYYY_RELATIVE(

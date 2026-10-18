@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.presentation.screen.create
 
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -25,7 +26,9 @@ import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
+import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.entity.AppointmentDraft
+import me.bookk.feature.appointments.domain.api.entity.AppointmentOptions
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import org.koin.core.annotation.InjectedParam
@@ -34,6 +37,7 @@ import kotlin.uuid.Uuid
 class AppointmentCreateViewModel(
     @InjectedParam private val businessId: Uuid,
     private val getAppointmentOptions: GetAppointmentOptions,
+    private val observeAppointmentOptions: ObserveAppointmentOptions,
     private val createAppointment: CreateAppointment,
     dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
@@ -44,19 +48,29 @@ class AppointmentCreateViewModel(
     private val dateFormat = dateLocalizer.forStyle(DateStyle.SHORT)
 
     init {
-        loadAppointmentParameters()
+        observeOptions()
+        refreshOptions()
     }
 
-    private fun loadAppointmentParameters() {
+    private fun observeOptions() {
+        observeAppointmentOptions()
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { renderOptions(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
+    }
+
+    private fun refreshOptions() {
         launch(
             launchIn = DispatcherProvider.io,
             call = { getAppointmentOptions(businessId) },
-            onComplete = {
-                uiState.clientPicker.replaceOptions(it.clients.map(ClientSnapshot::pickerItem))
-                uiState.servicePicker.replaceOptions(it.services.map(::ServicePickerPresentation))
-            },
             onError = { uiState.notifications.add(it.notification()) }
         )
+    }
+
+    private fun renderOptions(options: AppointmentOptions) {
+        uiState.clientPicker.replaceOptions(options.clients.map(ClientSnapshot::pickerItem))
+        uiState.servicePicker.replaceOptions(options.services.map(::ServicePickerPresentation))
     }
 
     private fun onClientSelected(client: SimplePickerPresentation<ClientSnapshot>?) {
@@ -179,6 +193,7 @@ class AppointmentCreateViewModel(
         clientPicker.onItemPicked = weakVMClosure { vm, item -> vm.onClientSelected(item) }
 
         servicePicker.pickerTitle = AppointmentsRes.strings.appointments_create_services.desc()
+        servicePicker.pickerType = PickerFieldState.PickerType.SCREEN
         servicePicker.addItemText = AppointmentsRes.strings.appointments_create_services_add.desc()
         servicePicker.placeholder = AppointmentsRes.strings.appointments_create_services_empty.desc()
         servicePicker.onItemsPicked = weakVMClosure { vm, items ->

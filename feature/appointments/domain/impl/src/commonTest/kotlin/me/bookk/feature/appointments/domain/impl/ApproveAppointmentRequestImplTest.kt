@@ -3,10 +3,11 @@ package me.bookk.feature.appointments.domain.impl
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -16,15 +17,13 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
-import me.bookk.feature.appointments.domain.api.entity.AppointmentEvent
-import me.bookk.feature.appointments.domain.api.entity.appointmentEvents
+import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 import me.bookk.core.domain.entity.Error as DomainError
 
@@ -44,8 +43,13 @@ class ApproveAppointmentRequestImplTest {
     }
 
     private class Fixture {
-        val dataSource = mock<AppointmentRequestDataSource>()
-        val sut = ApproveAppointmentRequestImpl(dataSource)
+        val dataSource = mock<AppointmentRequestDataSource> {
+            everySuspend { deleteAppointmentRequestsInDb(any()) } returns Unit
+        }
+        val appointmentDataSource = mock<AppointmentDataSource> {
+            everySuspend { saveAppointmentInDB(any()) } returns Unit
+        }
+        val sut = ApproveAppointmentRequestImpl(dataSource, appointmentDataSource)
     }
 
     @Test
@@ -64,20 +68,32 @@ class ApproveAppointmentRequestImplTest {
     }
 
     @Test
-    fun `emits Created event on success`() = runUnitTest {
+    fun `saves created appointment in DB`() = runUnitTest {
         given()
         val fixture = Fixture()
         val requestId = Uuid.random()
-        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } returns stubAppointment()
-        val events = mutableListOf<AppointmentEvent>()
-        val job = launch(Dispatchers.Unconfined) { appointmentEvents.collect { events.add(it) } }
+        val created = stubAppointment()
+        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } returns created
 
         whenn()
         fixture.sut(requestId)
 
         then()
-        job.cancel()
-        assertTrue(events.any { it is AppointmentEvent.Created })
+        verifySuspend { fixture.appointmentDataSource.saveAppointmentInDB(created) }
+    }
+
+    @Test
+    fun `removes approved request from DB`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val requestId = Uuid.random()
+        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } returns stubAppointment()
+
+        whenn()
+        fixture.sut(requestId)
+
+        then()
+        verifySuspend { fixture.dataSource.deleteAppointmentRequestsInDb(listOf(requestId)) }
     }
 
     @Test

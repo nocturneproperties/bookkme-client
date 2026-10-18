@@ -13,6 +13,7 @@ import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import library.money.api.Money
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -23,6 +24,7 @@ import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
+import me.bookk.designsystem.test.assertSingle
 import me.bookk.feature.services.domain.api.GetBusinessCurrency
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.CreateService
@@ -190,6 +192,36 @@ class AddServiceViewModelTest {
         assertEquals(Money(12.5, Money.SupportedCurrency.UAH), service.price)
         assertTrue(service.isAvailable)
         assertEquals(listOf<AddServiceDestination>(AddServiceDestination.Back), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `plays success haptic when service is created`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createService(any()) } calls { (service: Service) -> service }
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.uiState.create.onClick?.invoke()
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `does not play success haptic when service creation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createService(any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.uiState.create.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

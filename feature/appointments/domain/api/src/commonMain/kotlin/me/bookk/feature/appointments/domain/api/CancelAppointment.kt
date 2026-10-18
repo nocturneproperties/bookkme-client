@@ -9,5 +9,6 @@ interface CancelAppointment {
     sealed interface Error {
         class AppointmentAlreadyCancelled : Throwable(), Error
         class AppointmentAlreadyCompleted : Throwable(), Error
+        class AppointmentMarkedNoShow : Throwable(), Error
     }
 }

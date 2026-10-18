@@ -18,14 +18,18 @@ import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPre
 interface AppointmentDetailsState {
     val appBar: AppBarState
     var status: UIAppointmentStatus
+    var statusNote: StringDesc?
     val dateTimePicker: DateTimePickerState
     val rescheduleButton: ButtonState
     val completeButton: ButtonState
+    val completion: AppointmentCompletionState
     val noShowButton: ButtonState
     val infoSections: ListState<InfoLine>
     val servicePicker: OptionsMultiPickerState<ServicePickerPresentation>
-    var subtotalLabel: StringDesc
-    var subtotalPrice: String
+    var totalLabel: StringDesc
+    var totalPrice: String
+    var originalPrice: String?
+    val priceAdjustment: PriceAdjustmentSectionState
 
     val notifications: PresentationNotificationState
     val navigation: NavigationState<AppointmentDetailsDestination>

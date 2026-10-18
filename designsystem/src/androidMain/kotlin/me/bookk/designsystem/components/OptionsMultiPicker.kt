@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import kotlinx.coroutines.launch
+import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.theme.typography.secondary
 import me.bookk.designsystem.uistate.OptionsMultiPickerState
@@ -30,6 +32,7 @@ import me.bookk.designsystem.uistate.PickerPresentation
 fun <T : PickerPresentation> OptionsMultiPicker(
     state: OptionsMultiPickerState<T>,
     modifier: Modifier = Modifier,
+    showDividers: Boolean = false,
     screenPicker: @Composable (state: OptionsMultiPickerState<T>, onDismiss: () -> Unit, onItemsPicked: (List<T>) -> Unit) -> Unit = { _, _, _ -> },
     itemContent: @Composable (T, () -> Unit) -> Unit
 ) {
@@ -50,9 +53,13 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                         style = MaterialTheme.typography.bodyMedium.secondary()
                     )
                 }
-                state.selectedItems.forEach {
-                    itemContent(it) {
-                        state.onItemsRemoveRequested(listOf(it))
+                state.selectedItems.forEachIndexed { index, item ->
+                    itemContent(item) {
+                        state.onItemsRemoveRequested(listOf(item))
+                    }
+                    val isFollowedByContent = index < state.selectedItems.lastIndex || state.isEditable
+                    if (showDividers && isFollowedByContent) {
+                        HorizontalDivider(color = LocalColors.current.divider)
                     }
                 }
                 if (state.isEditable) {

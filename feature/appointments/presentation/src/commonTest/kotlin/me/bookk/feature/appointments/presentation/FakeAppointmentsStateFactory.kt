@@ -24,8 +24,10 @@ import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.presentation.screen.create.AppointmentCreateDestination
 import me.bookk.feature.appointments.presentation.screen.create.AppointmentCreateState
 import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPresentation
+import me.bookk.feature.appointments.presentation.screen.details.AppointmentCompletionState
 import me.bookk.feature.appointments.presentation.screen.details.AppointmentDetailsDestination
 import me.bookk.feature.appointments.presentation.screen.details.AppointmentDetailsState
+import me.bookk.feature.appointments.presentation.screen.details.PriceAdjustmentSectionState
 import me.bookk.feature.appointments.presentation.screen.details.UIAppointmentStatus
 import me.bookk.feature.appointments.presentation.screen.history.AppointmentHistoryDestinations
 import me.bookk.feature.appointments.presentation.screen.history.AppointmentHistoryItemState
@@ -77,16 +79,37 @@ internal class FakeAppointmentCreateState : AppointmentCreateState {
 internal class FakeAppointmentDetailsState : AppointmentDetailsState {
     override val appBar = FakeAppBarState()
     override var status: UIAppointmentStatus = UIAppointmentStatus("".desc(), ColorToken.ActionText)
+    override var statusNote: StringDesc? = null
     override val dateTimePicker = FakeDateTimePickerState()
     override val rescheduleButton = FakeButtonState()
     override val completeButton = FakeButtonState()
+    override val completion = FakeAppointmentCompletionState()
     override val noShowButton = FakeButtonState()
     override val infoSections = FakeListState<InfoLine>()
     override val servicePicker = FakeOptionsMultiPickerState<ServicePickerPresentation>()
-    override var subtotalLabel: StringDesc = "".desc()
-    override var subtotalPrice: String = ""
+    override var totalLabel: StringDesc = "".desc()
+    override var totalPrice: String = ""
+    override var originalPrice: String? = null
+    override val priceAdjustment = FakePriceAdjustmentSectionState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<AppointmentDetailsDestination>()
+}
+
+internal class FakeAppointmentCompletionState : AppointmentCompletionState {
+    override var isSheetVisible: Boolean = false
+    override var title: StringDesc = "".desc()
+    override val servicePicker = FakeOptionsMultiPickerState<ServicePickerPresentation>()
+    override var servicesHint: StringDesc = "".desc()
+    override val price = FakeTextFieldState()
+    override val note = FakeTextFieldState()
+    override val confirmButton = FakeButtonState()
+}
+
+internal class FakePriceAdjustmentSectionState : PriceAdjustmentSectionState {
+    override var isVisible: Boolean = false
+    override var reasonTitle: StringDesc = "".desc()
+    override var reason: StringDesc? = null
+    override val servicePicker = FakeOptionsMultiPickerState<ServicePickerPresentation>()
 }
 
 internal class FakeAppointmentSettingsState : AppointmentSettingsState {

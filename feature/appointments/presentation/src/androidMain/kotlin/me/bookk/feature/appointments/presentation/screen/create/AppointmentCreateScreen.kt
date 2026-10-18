@@ -64,6 +64,7 @@ internal fun AppointmentCreateScreen(
             )
             OptionsMultiPicker(
                 state.servicePicker,
+                showDividers = true,
                 screenPicker = standardOptionsScreenPicker()
             ) { item, onItemRemove ->
                 ServiceItem(item, onItemRemove)

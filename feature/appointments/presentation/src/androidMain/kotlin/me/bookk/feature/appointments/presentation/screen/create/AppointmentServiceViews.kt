@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,7 +36,6 @@ import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.TimePickerField
 import me.bookk.designsystem.modifier.topShadow
 import me.bookk.designsystem.theme.color.AppColors
-import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
 
@@ -66,48 +64,45 @@ internal fun ServiceItem(
     service: ServicePickerPresentation,
     onItemRemove: (() -> Unit)?
 ) {
-    Column {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(Modifier.padding(start = 16.dp)) {
-                Text(
-                    service.displayName.localized(),
-                    style = MaterialTheme.typography.titleMedium.primary()
-                )
-                Text(
-                    service.duration.localized(),
-                    style = MaterialTheme.typography.labelMedium.secondary()
-                )
-            }
-            Spacer(Modifier.weight(1f))
+    Row(
+        modifier = Modifier
+            .padding(vertical = 16.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.padding(start = 16.dp)) {
             Text(
-                service.price,
-                modifier = Modifier.padding(end = if (onItemRemove == null) 16.dp else 0.dp),
+                service.displayName.localized(),
                 style = MaterialTheme.typography.titleMedium.primary()
             )
-            if (onItemRemove != null) {
-                TextButton(onClick = onItemRemove) {
-                    Box(
-                        modifier = Modifier
-                            .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
-                            .size(28.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "-",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodyLarge.secondary(),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+            Text(
+                service.duration.localized(),
+                style = MaterialTheme.typography.labelMedium.secondary()
+            )
+        }
+        Spacer(Modifier.weight(1f))
+        Text(
+            service.price,
+            modifier = Modifier.padding(end = if (onItemRemove == null) 16.dp else 0.dp),
+            style = MaterialTheme.typography.titleMedium.primary()
+        )
+        if (onItemRemove != null) {
+            TextButton(onClick = onItemRemove) {
+                Box(
+                    modifier = Modifier
+                        .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
+                        .size(28.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "-",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyLarge.secondary(),
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
-        HorizontalDivider(color = LocalColors.current.divider)
     }
 }

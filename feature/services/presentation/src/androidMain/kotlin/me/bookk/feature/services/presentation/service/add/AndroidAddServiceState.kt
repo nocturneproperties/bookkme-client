@@ -15,11 +15,11 @@ import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
-import me.bookk.feature.services.presentation.service.add.AddServiceState.GroupUI
+import me.bookk.feature.services.presentation.service.ServiceGroupOption
 
 internal class AndroidAddServiceState : AndroidViewState(), AddServiceState {
     override val appBar: AppBarState = AndroidAppBarState()
-    override val group: PickerFieldState<GroupUI> = AndroidPickerFieldState()
+    override val group: PickerFieldState<ServiceGroupOption> = AndroidPickerFieldState()
     override val name: TextFieldState = AndroidTextFieldState()
     override val duration: TextFieldState = AndroidTextFieldState()
     override val price: TextFieldState = AndroidTextFieldState()

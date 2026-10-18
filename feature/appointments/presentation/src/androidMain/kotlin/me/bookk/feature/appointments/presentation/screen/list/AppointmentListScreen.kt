@@ -16,7 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.localized
 import kotlinx.datetime.LocalDate
 import me.bookk.core.presentation.SendLifecycleEventsTo
 import me.bookk.core.presentation.date.today
@@ -42,9 +46,11 @@ import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.StateTextButton
+import me.bookk.designsystem.resources.color.themed
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
+import me.bookk.feature.appointments.presentation.screen.details.UIAppointmentStatus
 import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequestContent
 import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequestViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -199,10 +205,26 @@ private fun AppointmentRequestItem(
                     style = MaterialTheme.typography.bodyMedium.secondary()
                 )
             }
-            Text(
-                text = state.earnings,
-                style = MaterialTheme.typography.titleSmall.primary()
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                state.completedMark?.let { CompletedMark(it) }
+                Text(
+                    text = state.earnings,
+                    style = MaterialTheme.typography.titleSmall.primary()
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun CompletedMark(status: UIAppointmentStatus) {
+    Icon(
+        modifier = Modifier.size(16.dp),
+        imageVector = Icons.Filled.CheckCircle,
+        contentDescription = status.label.localized(),
+        tint = status.color.themed
+    )
 }

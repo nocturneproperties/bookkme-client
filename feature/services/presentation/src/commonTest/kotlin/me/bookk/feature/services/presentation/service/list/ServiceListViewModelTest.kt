@@ -136,7 +136,7 @@ class ServiceListViewModelTest {
     }
 
     @Test
-    fun `navigates to service details on item click`() = runUnitTest {
+    fun `navigates to edit service on item click`() = runUnitTest {
         given()
         val fixture = Fixture()
         val service = stubService()
@@ -149,7 +149,41 @@ class ServiceListViewModelTest {
         section.onItemClick(section.items.single())
 
         then()
-        assertEquals(listOf<ServiceListDestination>(ServiceListDestination.ServiceDetails(service.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(listOf<ServiceListDestination>(ServiceListDestination.EditService(service.id)), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `does not navigate to edit service for a user who cannot edit services`() = runUnitTest {
+        given()
+        val fixture = Fixture(ServicesPermissions(canEdit = false, canDelete = true))
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.services.value = listOf(stubService())
+        val section = sut.uiState.services.items.single()
+
+        whenn()
+        section.onItemClick(section.items.single())
+
+        then()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `does not navigate to edit service before permissions are loaded`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val permissions = CompletableDeferred<ServicesPermissions>()
+        everySuspend { fixture.getServicesPermissions(any()) } calls { permissions.await() }
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.services.value = listOf(stubService())
+        val section = sut.uiState.services.items.single()
+
+        whenn()
+        section.onItemClick(section.items.single())
+
+        then()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
     }
 
     @Test

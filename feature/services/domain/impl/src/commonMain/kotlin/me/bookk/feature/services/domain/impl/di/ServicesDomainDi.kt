@@ -10,6 +10,7 @@ import me.bookk.feature.services.domain.api.quote.CreateQuote
 import me.bookk.feature.services.domain.api.service.CreateService
 import me.bookk.feature.services.domain.api.service.DeleteService
 import me.bookk.feature.services.domain.api.service.EditService
+import me.bookk.feature.services.domain.api.service.GetService
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.domain.impl.GetBusinessCurrencyImpl
 import me.bookk.feature.services.domain.impl.GetServicesPermissionsImpl
@@ -21,6 +22,7 @@ import me.bookk.feature.services.domain.impl.quote.CreateQuoteImpl
 import me.bookk.feature.services.domain.impl.service.CreateServiceImpl
 import me.bookk.feature.services.domain.impl.service.DeleteServiceImpl
 import me.bookk.feature.services.domain.impl.service.EditServiceImpl
+import me.bookk.feature.services.domain.impl.service.GetServiceImpl
 import me.bookk.feature.services.domain.impl.service.GetServicesImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
@@ -31,6 +33,7 @@ fun servicesDomainModule() = module {
     factoryOf(::DeleteServiceImpl) bind DeleteService::class
     factoryOf(::EditServiceImpl) bind EditService::class
     factoryOf(::GetServicesImpl) bind GetServices::class
+    factoryOf(::GetServiceImpl) bind GetService::class
 
     factoryOf(::CreateServiceGroupImpl) bind CreateServiceGroup::class
     factoryOf(::DeleteServiceGroupImpl) bind DeleteServiceGroup::class

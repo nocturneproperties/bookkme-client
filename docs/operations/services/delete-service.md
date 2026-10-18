@@ -3,7 +3,7 @@
 # Delete service
 
 `DeleteService(service)` → `DELETE /api/business/{businessId}/service/{id}`
-· called from `ServiceListViewModel`
+· called from `ServiceListViewModel` and `EditServiceViewModel`
 
 ```mermaid
 flowchart TD

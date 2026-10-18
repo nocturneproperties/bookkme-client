@@ -88,6 +88,10 @@ internal class ServiceDataSourceImpl(
             .mapErrors()
     }
 
+    override suspend fun getServiceFromDb(id: Uuid): Service? {
+        return mapExceptions { serviceDao.getById(id)?.toDomain() }
+    }
+
     override suspend fun getServiceIdsInDb(businessId: Uuid): List<Uuid> {
         return mapExceptions { serviceDao.getIds(businessId) }
     }

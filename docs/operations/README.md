@@ -44,8 +44,8 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 |---|---|---|
 | `CreateAccount` | `POST /api/auth/passkey/sign_up/challenge`, `POST /api/auth/sign_up` | [Create account](authorization/create-account.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
-| `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
-| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `GET /api/user/me`, `GET /api/business`, then per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
+| `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
+| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `GET /api/user/me`, `GET /api/business/mine`, then per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
 | `LogOut` | `DELETE /api/auth/session` | [Log out](authorization/log-out.md) |
 | `RefreshToken` | `POST /api/auth/refresh` | [Refresh token](authorization/refresh-token.md) |
 | `UserProfileCRUD` | `GET` / `PATCH /api/user/me` | [User profile CRUD](authorization/user-profile-crud.md) |
@@ -57,7 +57,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 |---|---|---|
 | `CreateBusiness` | `POST /api/business` | [Create business](business/create-business.md) |
 | `UpdateBusiness` | `PUT /api/business/{id}` | [Update business](business/update-business.md) |
-| `RefreshBusinessInfo` | `GET /api/business` | [Refresh business info](business/refresh-business-info.md) |
+| `RefreshBusinessInfo` | `GET /api/business/mine` | [Refresh business info](business/refresh-business-info.md) |
 | `SwitchDashboardBusiness` | `PUT /api/business/{id}/dashboard` (best-effort) | [Switch dashboard business](business/switch-dashboard-business.md) |
 | `JoinBusiness` | via `RedeemEmployeeInvitation` | [Join business](business/join-business.md) |
 | `EnableAppointmentsPlugin` | `POST /api/appointments/enabled/{businessId}` | [Enable appointments plugin](business/enable-appointments-plugin.md) |
@@ -65,7 +65,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `CanEditBusiness` | local only (`business` table) | [Can edit business](business/can-edit-business.md) |
 | `GetAvailableDashboardFeatures` | local only | [Get available dashboard features](business/get-available-dashboard-features.md) |
 | `ObserveDashboardSetupStatus` | local only | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) |
-| `ObserveDashboardBusinessChanges`, `ObserveDashboardBusinessIdChanges`, `ObserveCurrentBusinessId` (×4) | local only | [Observe dashboard business](business/observe-dashboard-business-changes.md) |
+| `ObserveDashboardBusinessChanges`, `ObserveDashboardBusinessIdChanges`, `ObserveCurrentBusinessId` (×4), `ObserveCurrentBusiness` | local only | [Observe dashboard business](business/observe-dashboard-business-changes.md) |
 | `ObserveUserBusinessesChanges` | local only | [Observe user businesses](business/observe-user-businesses-changes.md) |
 
 ## Clients
@@ -84,6 +84,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetServices` | `GET /api/business/{businessId}/service` | [Get services](services/get-services.md) |
+| `GetService` | local only | [Get service](services/get-service.md) |
 | `CreateService` | `POST /api/business/{businessId}/service` | [Create service](services/create-service.md) |
 | `EditService` | `PUT /api/business/{businessId}/service/{id}` | [Edit service](services/edit-service.md) |
 | `DeleteService` | `DELETE /api/business/{businessId}/service/{id}` | [Delete service](services/delete-service.md) |
@@ -163,6 +164,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
+| [Create appointment](appointments/create-appointment.md) | `ObserveUserBusinessesChanges` (cross-feature, for the caller's employee id) |
 | [Can edit employees](employees/can-edit-employees.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Get clients permissions](clients/get-clients-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Get services permissions](services/get-services-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |

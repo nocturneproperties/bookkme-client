@@ -112,7 +112,7 @@ internal class CommonBusinessDataSource(
     }
 
     override suspend fun getBusinessesFromRemote(): UserBusinessInfo = mapExceptions {
-        httpClient.get(BusinessRouting.Api.Business())
+        httpClient.get(BusinessRouting.Api.Business.Mine())
             .body<UserBusinessesRemote>()
             .toUserBusinesses()
     }

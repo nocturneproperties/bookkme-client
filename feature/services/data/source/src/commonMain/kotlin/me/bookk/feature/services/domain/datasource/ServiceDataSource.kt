@@ -17,6 +17,7 @@ interface ServiceDataSource {
     suspend fun saveServiceInDB(service: Service)
     suspend fun deleteServiceFromDB(service: Service)
     fun observeServicesDBChanges(businessId: Uuid): Flow<List<Service>>
+    suspend fun getServiceFromDb(id: Uuid): Service?
     suspend fun getServiceIdsInDb(businessId: Uuid): List<Uuid>
     suspend fun deleteServicesInDb(ids: List<Uuid>)
     suspend fun getLastSyncedAt(businessId: Uuid): Instant?

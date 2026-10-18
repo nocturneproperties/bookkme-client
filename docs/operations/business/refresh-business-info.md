@@ -2,11 +2,14 @@
 
 # Refresh business info
 
-`RefreshBusinessInfo(applyDashboardIdFromRemote = false)` → `GET /api/business`
+`RefreshBusinessInfo(applyDashboardIdFromRemote = false)` → `GET /api/business/mine`
 · called from `DashboardViewModel`, [Initiate business suspend](../authorization/initiate-business-suspend.md), [Create business](create-business.md), [Redeem employee
 invitation](../employees/redeem-employee-invitation.md) and [Initial app data fetch](../authorization/initial-app-data-fetch.md)
 
-Fetches every business the user can access, together with the server-side dashboard selection. The server's
+Fetches every business the user owns or is an active employee of, together with the server-side dashboard
+selection. Each business carries the caller's own standing in it: permissions, `employeeId` (their employee
+record id, `null` while their access is suspended) and `clientId` (their client record id, if any). These are
+stored on the `business` row like any other column. The server's
 dashboard id overwrites the local one only when `applyDashboardIdFromRemote` is true, which happens only in
 `rawFetch()` right after sign-in or sign-up. If the local selection is `null` or points at a business that was
 just deleted, it is left as is: the dashboard then shows its Get started screen, which lists the remaining
@@ -22,7 +25,7 @@ business.
 
 ```mermaid
 flowchart TD
-    Start([invoke applyDashboardIdFromRemote]) --> Net[BusinessDataSource.getBusinessesFromRemote<br/>GET /api/business]
+    Start([invoke applyDashboardIdFromRemote]) --> Net[BusinessDataSource.getBusinessesFromRemote<br/>GET /api/business/mine]
     Net --> Apply{applyDashboardIdFromRemote?}
     Apply -- yes --> SaveId[business_prefs: dashboard_id := data.dashboardId]
     Apply -- no --> Ids

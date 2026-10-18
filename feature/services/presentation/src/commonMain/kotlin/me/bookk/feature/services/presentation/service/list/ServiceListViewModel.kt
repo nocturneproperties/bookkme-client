@@ -27,7 +27,7 @@ import me.bookk.feature.services.domain.api.service.entity.Service
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddService
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.Back
-import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceDetails
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.EditService
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceGroups
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceUI
@@ -129,7 +129,8 @@ class ServiceListViewModel(
     }
 
     private fun onServiceClick(serviceUI: ServiceUI) {
-        uiState.navigation.push(ServiceDetails(serviceUI.domain.id))
+        if (permissions?.canEdit != true) return
+        uiState.navigation.push(EditService(serviceUI.domain.id))
     }
 
     private fun onServiceDeleteClick(serviceUI: ServiceUI) {

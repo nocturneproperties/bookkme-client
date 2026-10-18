@@ -45,7 +45,9 @@ class BusinessRemoteContractTest {
                 "socials" to 8,
                 "schedule" to 9,
                 "permissions" to 10,
-                "ownerId" to 11
+                "ownerId" to 11,
+                "employeeId" to 12,
+                "clientId" to 13
             ),
             fields
         )

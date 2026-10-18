@@ -16,6 +16,9 @@
     <string name="services_create_price_placeholder">Payment amount</string>
     <string name="services_create_visible">Visible to clients</string>
 
+    <string name="services_edit_title">Edit service</string>
+    <string name="services_delete_button">Delete service</string>
+
     <string name="services_group_pick">Select group</string>
 
     <string name="services_group_add_title">Create service group</string>

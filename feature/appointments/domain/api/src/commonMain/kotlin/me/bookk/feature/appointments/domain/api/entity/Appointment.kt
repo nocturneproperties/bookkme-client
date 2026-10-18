@@ -1,6 +1,7 @@
 package me.bookk.feature.appointments.domain.api.entity
 
 import kotlinx.datetime.LocalDateTime
+import library.money.api.Money
 import me.bookk.core.now
 import kotlin.uuid.Uuid
 
@@ -19,8 +20,20 @@ data class Appointment(
     val priceAdjustment: PriceAdjustment? = null
 ) {
 
+    val providedServices: List<ServiceSnapshot> by lazy(LazyThreadSafetyMode.NONE) {
+        priceAdjustment?.additionalServices?.ifEmpty { null } ?: services
+    }
+
+    val bookedPrice: Money by lazy(LazyThreadSafetyMode.NONE) {
+        services.map { it.price }.reduce { acc, money -> acc + money }
+    }
+
+    val finalPrice: Money by lazy(LazyThreadSafetyMode.NONE) {
+        priceAdjustment?.price ?: bookedPrice
+    }
+
     val total: String by lazy(LazyThreadSafetyMode.NONE) {
-        services.map { it.price }.reduce { acc, money -> acc + money }.toString()
+        bookedPrice.toString()
     }
 
     fun canBeCompleted(now: LocalDateTime = LocalDateTime.now()): Boolean {

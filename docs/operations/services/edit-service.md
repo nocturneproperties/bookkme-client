@@ -3,7 +3,7 @@
 # Edit service
 
 `EditService(service)` → `PUT /api/business/{businessId}/service/{id}`
-· **no view model calls it yet**
+· called from `EditServiceViewModel`
 
 ```mermaid
 flowchart TD

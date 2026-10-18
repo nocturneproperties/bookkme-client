@@ -14,8 +14,10 @@ touched.
 `employeeId` (an employee record id, matched against `appointment.employeeId`) narrows the request to one
 employee. The same filter is applied to the Room observation and to the stale-id lookup, so a filtered refresh
 only prunes that employee's rows and never deletes other employees' cached appointments for the day. Only an
-unfiltered refresh writes the per-day sync marker, because a filtered one does not cover the whole day. No
-screen passes an employee yet.
+unfiltered refresh writes the per-day sync marker, because a filtered one does not cover the whole day.
+`AppointmentListViewModel` always passes the caller's own employee id from `ObserveCurrentBusiness`, so the list
+shows only the caller's appointments. When that id is `null` it calls neither `flow` nor `refresh` and shows an
+empty list.
 
 ```mermaid
 flowchart TD

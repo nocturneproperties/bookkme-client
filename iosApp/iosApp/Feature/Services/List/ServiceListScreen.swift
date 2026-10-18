@@ -49,6 +49,9 @@ struct ServiceListScreen: View {
 			case let destination as ServiceListDestination.AddService:
 				navigationStack.push(ServicesDestination.AddService(businessId: destination.businessId))
 				break
+			case let destination as ServiceListDestination.EditService:
+				navigationStack.push(ServicesDestination.EditService(serviceId: destination.id))
+				break
 			case is ServiceListDestination.Back:
 				navigationStack.popLast()
 			default:

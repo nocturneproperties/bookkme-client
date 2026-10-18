@@ -11,6 +11,8 @@ import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.RefreshState
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
+import me.bookk.feature.appointments.presentation.screen.details.UIAppointmentStatus
 
 interface AppointmentListState {
     val appBar: AppBarState
@@ -29,6 +31,7 @@ class AppointmentItemState(
     val serviceName: String,
     val scheduledAt: String,
     val earnings: String,
+    val completedMark: UIAppointmentStatus?,
     val source: Appointment,
     val onItemClick: () -> Unit
 ) {
@@ -42,10 +45,11 @@ class AppointmentItemState(
         onItemClick: () -> Unit
     ) : this(
         clientName = appointment.client.fullName,
-        serviceName = appointment.services.joinToString { it.name },
+        serviceName = appointment.providedServices.joinToString { it.name },
         source = appointment,
         scheduledAt = formatter.format(appointment.date.time),
-        earnings = appointment.total,
+        earnings = appointment.finalPrice.toString(),
+        completedMark = UIAppointmentStatus(appointment.status).takeIf { appointment.status == AppointmentStatus.COMPLETED },
         onItemClick = onItemClick
     )
 }

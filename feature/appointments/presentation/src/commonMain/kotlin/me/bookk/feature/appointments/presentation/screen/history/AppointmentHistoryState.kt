@@ -39,10 +39,10 @@ class AppointmentHistoryItemState(
         onItemClick: () -> Unit
     ) : this(
         clientName = appointment.client.fullName,
-        serviceName = appointment.services.joinToString { it.name },
+        serviceName = appointment.providedServices.joinToString { it.name },
         source = appointment,
         scheduledAt = formatter.format(appointment.date),
-        earnings = appointment.total,
+        earnings = appointment.finalPrice.toString(),
         status = UIAppointmentStatus(appointment.status),
         onItemClick = onItemClick
     )

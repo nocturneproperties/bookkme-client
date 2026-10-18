@@ -2,6 +2,7 @@ package me.bookk.feature.appointments.domain.impl
 
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.matcher.matches
@@ -9,6 +10,7 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -24,6 +26,7 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.entity.UserProfile
+import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -50,29 +53,33 @@ class CreateAppointmentImplTest {
     private class Fixture {
         val appointmentDataSource = mock<AppointmentDataSource>()
         val userProfileCRUD = mock<UserProfileCRUD>()
-        val sut = CreateAppointmentImpl(appointmentDataSource, userProfileCRUD)
+        val observeUserBusinessesChanges = mock<ObserveUserBusinessesChanges>()
+        val sut = CreateAppointmentImpl(appointmentDataSource, userProfileCRUD, observeUserBusinessesChanges)
         val userId = Uuid.random()
         val profile = UserProfile(id = userId, firstName = "John", lastName = "Doe", email = "john@example.com")
+        val businessId = Uuid.random()
+        val employeeId = Uuid.random()
 
         init {
             everySuspend { userProfileCRUD.get() } returns profile
             everySuspend { appointmentDataSource.saveAppointmentInDB(any()) } returns Unit
+            every { observeUserBusinessesChanges.invoke() } returns flowOf(listOf(stubBusiness(id = businessId, employeeId = employeeId)))
         }
-    }
 
-    private fun stubDraft(businessId: Uuid = Uuid.random()) = AppointmentDraft(
-        businessId = businessId,
-        client = stubClientSnapshot(),
-        services = listOf(stubServiceSnapshot()),
-        date = LocalDateTime(2024, 1, 15, 10, 0),
-        note = "test note"
-    )
+        fun stubDraft() = AppointmentDraft(
+            businessId = businessId,
+            client = stubClientSnapshot(),
+            services = listOf(stubServiceSnapshot()),
+            date = LocalDateTime(2024, 1, 15, 10, 0),
+            note = "test note"
+        )
+    }
 
     @Test
     fun `returns created appointment from datasource`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val draft = stubDraft()
+        val draft = fixture.stubDraft()
         val created = stubAppointment()
         everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns created
 
@@ -84,10 +91,10 @@ class CreateAppointmentImplTest {
     }
 
     @Test
-    fun `uses employee derived from profile in appointment`() = runUnitTest {
+    fun `assigns the caller's employee record of the draft business to the appointment`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val draft = stubDraft()
+        val draft = fixture.stubDraft()
         everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
 
         whenn()
@@ -97,7 +104,7 @@ class CreateAppointmentImplTest {
         verifySuspend {
             fixture.appointmentDataSource.createAppointment(
                 matches({ "match" }) {
-                    it.employee.id == fixture.userId &&
+                    it.employee.id == fixture.employeeId &&
                         it.employee.userId == fixture.userId &&
                         it.employee.fullName == "${fixture.profile.firstName} ${fixture.profile.lastName}"
                 }
@@ -109,7 +116,7 @@ class CreateAppointmentImplTest {
     fun `uses userId from profile in appointment`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val draft = stubDraft()
+        val draft = fixture.stubDraft()
         everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
 
         whenn()
@@ -131,7 +138,7 @@ class CreateAppointmentImplTest {
         everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns created
 
         whenn()
-        fixture.sut(stubDraft())
+        fixture.sut(fixture.stubDraft())
 
         then()
         verifySuspend { fixture.appointmentDataSource.saveAppointmentInDB(created) }
@@ -147,7 +154,7 @@ class CreateAppointmentImplTest {
         whenn()
         then()
         assertFailsWith<CreateAppointment.Error.AppointmentOverlap> {
-            fixture.sut(stubDraft())
+            fixture.sut(fixture.stubDraft())
         }
     }
 
@@ -161,7 +168,7 @@ class CreateAppointmentImplTest {
         whenn()
         then()
         assertFailsWith<CreateAppointment.Error.TimeIsNotAllowed> {
-            fixture.sut(stubDraft())
+            fixture.sut(fixture.stubDraft())
         }
     }
 
@@ -175,7 +182,33 @@ class CreateAppointmentImplTest {
         whenn()
         then()
         assertFailsWith<CreateAppointment.Error.DateIsNotAllowed> {
-            fixture.sut(stubDraft())
+            fixture.sut(fixture.stubDraft())
+        }
+    }
+
+    @Test
+    fun `throws NotAnEmployee when the caller has no employee record in the draft business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.observeUserBusinessesChanges.invoke() } returns flowOf(listOf(stubBusiness(id = fixture.businessId, employeeId = null)))
+
+        whenn()
+        then()
+        assertFailsWith<CreateAppointment.Error.NotAnEmployee> {
+            fixture.sut(fixture.stubDraft())
+        }
+    }
+
+    @Test
+    fun `throws NotAnEmployee when the draft business is not among the caller's businesses`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.observeUserBusinessesChanges.invoke() } returns flowOf(listOf(stubBusiness()))
+
+        whenn()
+        then()
+        assertFailsWith<CreateAppointment.Error.NotAnEmployee> {
+            fixture.sut(fixture.stubDraft())
         }
     }
 }

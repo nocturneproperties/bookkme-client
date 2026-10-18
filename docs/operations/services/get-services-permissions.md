@@ -2,7 +2,7 @@
 
 # Get services permissions
 
-`GetServicesPermissions(businessId)` → local only · called from `ServiceListViewModel` and `ServiceGroupListViewModel`
+`GetServicesPermissions(businessId)` → local only · called from `ServiceListViewModel`, `ServiceGroupListViewModel` and `EditServiceViewModel`
 
 A wrapper in the services domain so `feature/services/presentation` does not depend on the business domain.
 It takes the first emission of `ObserveUserBusinessesChanges` (the cached `business` rows), finds the business and

@@ -12,5 +12,8 @@ sealed class ServicesDestination : NavigationDestination() {
     data class AddService(val businessId: Uuid) : ServicesDestination()
 
     @Serializable
+    data class EditService(val serviceId: Uuid) : ServicesDestination()
+
+    @Serializable
     data object ServiceGroupList : ServicesDestination()
 }

@@ -15,7 +15,10 @@ import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListDestination
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState
 import me.bookk.feature.services.presentation.service.add.AddServiceDestination
+import me.bookk.feature.services.presentation.service.ServiceGroupOption
 import me.bookk.feature.services.presentation.service.add.AddServiceState
+import me.bookk.feature.services.presentation.service.edit.EditServiceDestination
+import me.bookk.feature.services.presentation.service.edit.EditServiceState
 import me.bookk.feature.services.presentation.service.list.ServiceListDestination
 import me.bookk.feature.services.presentation.service.list.ServiceListState
 
@@ -23,6 +26,7 @@ internal class FakeServicesStateFactory : ServicesStateFactory {
     override fun createServiceListState(): ServiceListState = FakeServiceListState()
     override fun createServiceState(): AddServiceState = FakeAddServiceState()
     override fun createServiceGroupListState(): ServiceGroupListState = FakeServiceGroupListState()
+    override fun createEditServiceState(): EditServiceState = FakeEditServiceState()
 }
 
 internal class FakeServiceListState : ServiceListState {
@@ -37,7 +41,7 @@ internal class FakeServiceListState : ServiceListState {
 
 internal class FakeAddServiceState : FakeViewState(), AddServiceState {
     override val appBar = FakeAppBarState()
-    override val group = FakePickerFieldState<AddServiceState.GroupUI>()
+    override val group = FakePickerFieldState<ServiceGroupOption>()
     override val name = FakeTextFieldState()
     override val duration = FakeTextFieldState()
     override val price = FakeTextFieldState()
@@ -54,4 +58,17 @@ internal class FakeServiceGroupListState : ServiceGroupListState {
     override val refreshState = FakeRefreshState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<ServiceGroupListDestination>()
+}
+
+internal class FakeEditServiceState : EditServiceState {
+    override val appBar = FakeAppBarState()
+    override val group = FakePickerFieldState<ServiceGroupOption>()
+    override val name = FakeTextFieldState()
+    override val duration = FakeTextFieldState()
+    override val price = FakeTextFieldState()
+    override val available = FakeBooleanState()
+    override val submit = FakeButtonState()
+    override val deleteButton = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<EditServiceDestination>()
 }

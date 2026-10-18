@@ -50,7 +50,9 @@ private var mockBusiness = BusinessRemote(
     ),
     schedule = WorkingSchedule().toRemote(),
     permissions = mockOwnerPermissions(),
-    ownerId = Uuid.random()
+    ownerId = Uuid.random(),
+    employeeId = Uuid.random(),
+    clientId = null
 )
 
 private fun mockOwnerPermissions(): BusinessPermissionsRemote {
@@ -66,7 +68,7 @@ private fun mockOwnerPermissions(): BusinessPermissionsRemote {
 
 private class GetBusinessesHandler : MockRequestHandler {
     override val method: HttpMethod = HttpMethod.Get
-    override val path: String = href(ResourcesFormat(), BusinessRouting.Api.Business())
+    override val path: String = href(ResourcesFormat(), BusinessRouting.Api.Business.Mine())
 
     override suspend fun handle(
         scope: MockRequestHandleScope,
@@ -104,7 +106,9 @@ private class UpdateBusinessesHandler : MockRequestHandler {
             socials = business.socials,
             schedule = business.schedule,
             permissions = mockBusiness.permissions,
-            ownerId = mockBusiness.ownerId
+            ownerId = mockBusiness.ownerId,
+            employeeId = mockBusiness.employeeId,
+            clientId = mockBusiness.clientId
         )
         return scope.respondOk()
     }

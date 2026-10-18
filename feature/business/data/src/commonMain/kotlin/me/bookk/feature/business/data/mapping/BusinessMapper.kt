@@ -40,7 +40,9 @@ internal fun BusinessRemote.toDomain(): Business {
         socials = socials.map(BusinessRemote.Social::toDomain).associateBy { it.kind },
         schedule = schedule.toDomain(),
         permissions = permissions.toDomain(),
-        ownerId = ownerId
+        ownerId = ownerId,
+        employeeId = employeeId,
+        clientId = clientId
     )
 }
 
@@ -81,7 +83,9 @@ internal fun Business.toLocal(): BusinessEntity {
         appointmentsPermissionView = permissions.appointments.view,
         appointmentsPermissionUpdate = permissions.appointments.update,
         appointmentsPermissionDelete = permissions.appointments.delete,
-        ownerId = ownerId
+        ownerId = ownerId,
+        employeeId = employeeId,
+        clientId = clientId
     )
 }
 
@@ -172,7 +176,9 @@ internal fun BusinessLocal.toDomain(): Business {
                 delete = entity.appointmentsPermissionDelete
             )
         ),
-        ownerId = entity.ownerId
+        ownerId = entity.ownerId,
+        employeeId = entity.employeeId,
+        clientId = entity.clientId
     )
 }
 

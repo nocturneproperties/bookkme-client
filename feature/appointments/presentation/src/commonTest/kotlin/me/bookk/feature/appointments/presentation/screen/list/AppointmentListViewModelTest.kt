@@ -1,5 +1,6 @@
 package me.bookk.feature.appointments.presentation.screen.list
 
+import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -7,6 +8,7 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +17,7 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.plus
+import library.money.api.Money
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.today
@@ -28,17 +31,24 @@ import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertEmpty
 import me.bookk.designsystem.test.assertMappedSingle
+import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
-import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
+import me.bookk.feature.appointments.domain.api.ObserveCurrentBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
+import me.bookk.feature.appointments.domain.api.entity.CurrentBusiness
+import me.bookk.feature.appointments.domain.api.entity.PriceAdjustment
+import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.presentation.FakeAppointmentsStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
@@ -58,14 +68,16 @@ class AppointmentListViewModelTest {
 
     private class Fixture {
         val businessId = Uuid.random()
+        val employeeId = Uuid.random()
+        val currentBusiness = MutableStateFlow<CurrentBusiness?>(CurrentBusiness(id = businessId, employeeId = employeeId))
         val appointments = MutableStateFlow<List<Appointment>>(emptyList())
         val requests = MutableStateFlow<List<AppointmentRequest>>(emptyList())
-        val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
-            every { invoke() } returns MutableStateFlow<Uuid?>(businessId)
+        val observeCurrentBusiness = mock<ObserveCurrentBusiness> {
+            every { invoke() } returns currentBusiness
         }
         val getAppointmentsForBusiness = mock<GetAppointmentsForBusiness> {
-            every { flow(any()) } returns appointments
-            everySuspend { refresh(any(), any()) } returns emptyList()
+            every { flow(any(), any()) } returns appointments
+            everySuspend { refresh(any(), any(), any()) } returns emptyList()
         }
         val getOwnAppointmentRequests = mock<GetOwnAppointmentRequests> {
             every { flow(any()) } returns requests
@@ -74,7 +86,7 @@ class AppointmentListViewModelTest {
         val errorMapper = FakeErrorMapper()
 
         fun sut() = AppointmentListViewModel(
-            observeCurrentBusinessId = observeCurrentBusinessId,
+            observeCurrentBusiness = observeCurrentBusiness,
             getAppointmentsForBusiness = getAppointmentsForBusiness,
             getOwnAppointmentRequests = getOwnAppointmentRequests,
             dateLocalizer = FakeDateLocalizer(),
@@ -84,7 +96,7 @@ class AppointmentListViewModelTest {
     }
 
     @Test
-    fun `refreshes todays appointments of current business on start`() = runUnitTest {
+    fun `refreshes todays appointments of the current employee on start`() = runUnitTest {
         given()
         val fixture = Fixture()
 
@@ -92,7 +104,64 @@ class AppointmentListViewModelTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getAppointmentsForBusiness.refresh(fixture.businessId, LocalDate.today()) }
+        verifySuspend { fixture.getAppointmentsForBusiness.refresh(fixture.businessId, LocalDate.today(), fixture.employeeId) }
+    }
+
+    @Test
+    fun `observes cached appointments of the current employee`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verify { fixture.getAppointmentsForBusiness.flow(LocalDate.today(), fixture.employeeId) }
+    }
+
+    @Test
+    fun `does not load appointments when the caller is not an employee of the current business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = null)
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verify(VerifyMode.not) { fixture.getAppointmentsForBusiness.flow(any(), any()) }
+        verifySuspend(VerifyMode.not) { fixture.getAppointmentsForBusiness.refresh(any(), any(), any()) }
+    }
+
+    @Test
+    fun `shows an empty list when the caller is not an employee of the current business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = null)
+
+        whenn()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        assertTrue(sut.uiState.appointments.items.isEmpty())
+        assertFalse(sut.uiState.appointments.isInitialLoading)
+    }
+
+    @Test
+    fun `loads the new employee's appointments when the current business changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val otherBusinessId = Uuid.random()
+        val otherEmployeeId = Uuid.random()
+        fixture.sut()
+
+        whenn()
+        fixture.currentBusiness.value = CurrentBusiness(id = otherBusinessId, employeeId = otherEmployeeId)
+
+        then()
+        verifySuspend { fixture.getAppointmentsForBusiness.refresh(otherBusinessId, LocalDate.today(), otherEmployeeId) }
+        verify { fixture.getAppointmentsForBusiness.flow(LocalDate.today(), otherEmployeeId) }
     }
 
     @Test
@@ -151,6 +220,114 @@ class AppointmentListViewModelTest {
     }
 
     @Test
+    fun `shows booked services and their total for an appointment without adjustment`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = Appointment.stub().copy(
+            services = listOf(service("Haircut", 100.0), service("Beard", 50.0))
+        )
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.appointments.value = listOf(appointment)
+
+        then()
+        val item = sut.uiState.appointments.items.single()
+        assertEquals("Haircut, Beard", item.serviceName)
+        assertEquals(Money(150.0, Money.SupportedCurrency.USD).toString(), item.earnings)
+    }
+
+    @Test
+    fun `shows adjusted price for an appointment with a price adjustment`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = Appointment.stub().copy(
+            services = listOf(service("Haircut", 100.0)),
+            priceAdjustment = PriceAdjustment(
+                additionalServices = emptyList(),
+                price = Money(80.0, Money.SupportedCurrency.USD),
+                reason = "Discount"
+            )
+        )
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.appointments.value = listOf(appointment)
+
+        then()
+        val item = sut.uiState.appointments.items.single()
+        assertEquals("Haircut", item.serviceName)
+        assertEquals(Money(80.0, Money.SupportedCurrency.USD).toString(), item.earnings)
+    }
+
+    @Test
+    fun `shows adjusted services instead of booked ones`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = Appointment.stub().copy(
+            services = listOf(service("Haircut", 100.0)),
+            priceAdjustment = PriceAdjustment(
+                additionalServices = listOf(service("Haircut", 100.0), service("Coloring", 200.0)),
+                price = Money(300.0, Money.SupportedCurrency.USD),
+                reason = null
+            )
+        )
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.appointments.value = listOf(appointment)
+
+        then()
+        val item = sut.uiState.appointments.items.single()
+        assertEquals("Haircut, Coloring", item.serviceName)
+        assertEquals(Money(300.0, Money.SupportedCurrency.USD).toString(), item.earnings)
+    }
+
+    @Test
+    fun `marks completed appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = Appointment.stub().copy(status = AppointmentStatus.COMPLETED)
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.appointments.value = listOf(appointment)
+
+        then()
+        val mark = assertNotNull(sut.uiState.appointments.items.single().completedMark)
+        assertEquals(AppointmentsRes.strings.appointments_status_completed.desc(), mark.label)
+        assertEquals(ColorToken.Success, mark.color)
+    }
+
+    @Test
+    fun `does not mark appointments that are not completed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointments = listOf(
+            AppointmentStatus.SCHEDULED,
+            AppointmentStatus.CANCELLED,
+            AppointmentStatus.NO_SHOW
+        ).map { Appointment.stub().copy(status = it) }
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.appointments.value = appointments
+
+        then()
+        assertTrue(sut.uiState.appointments.items.all { it.completedMark == null })
+    }
+
+    private fun service(name: String, price: Double) = ServiceSnapshot.stub().copy(
+        name = name,
+        price = Money(price, Money.SupportedCurrency.USD)
+    )
+
+    @Test
     fun `loads appointments for newly picked date`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -161,7 +338,7 @@ class AppointmentListViewModelTest {
         sut.uiState.datePicker.onDatePicked?.invoke(tomorrow)
 
         then()
-        verifySuspend { fixture.getAppointmentsForBusiness.refresh(fixture.businessId, tomorrow) }
+        verifySuspend { fixture.getAppointmentsForBusiness.refresh(fixture.businessId, tomorrow, fixture.employeeId) }
         assertEquals(tomorrow, sut.uiState.datePicker.pickedDate)
         assertEquals(7, sut.uiState.dates.items.size)
         assertTrue(sut.uiState.dates.items.any { it.date == tomorrow })
@@ -177,7 +354,7 @@ class AppointmentListViewModelTest {
         sut.uiState.datePicker.onDatePicked?.invoke(LocalDate.today())
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.getAppointmentsForBusiness.refresh(any(), any()) }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.getAppointmentsForBusiness.refresh(any(), any(), any()) }
     }
 
     @Test
@@ -249,7 +426,7 @@ class AppointmentListViewModelTest {
     fun `shows mapped error when appointment observation fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        every { fixture.getAppointmentsForBusiness.flow(any()) } returns failOnceThenSuspend()
+        every { fixture.getAppointmentsForBusiness.flow(any(), any()) } returns failOnceThenSuspend()
 
         whenn()
         fixture.sut()

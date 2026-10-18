@@ -12,7 +12,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun rememberServicesNavigation(controller: NavController) = remember(controller) {
     ServicesNavigation(
         onBack = { controller.popBackStack() },
-        toServiceDetails = {},
+        toEditService = { controller.navigate(ServicesDestination.EditService(it)) },
         toCreateService = { controller.navigate(ServicesDestination.AddService(it)) },
         toCreateServiceGroup = {},
         toServiceGroupList = {

@@ -1,5 +1,6 @@
 package me.bookk.feature.appointments.domain.impl
 
+import kotlinx.coroutines.flow.first
 import me.bookk.core.domain.entity.onBusinessError
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.entity.Appointment
@@ -9,21 +10,27 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import kotlin.uuid.Uuid
 
 internal class CreateAppointmentImpl(
     private val appointmentDataSource: AppointmentDataSource,
-    private val userProfileCRUD: UserProfileCRUD
+    private val userProfileCRUD: UserProfileCRUD,
+    private val observeUserBusinessesChanges: ObserveUserBusinessesChanges
 ) : CreateAppointment {
 
     override suspend fun invoke(draft: AppointmentDraft): Appointment {
         val profile = userProfileCRUD.get()
+        val employeeId = observeUserBusinessesChanges().first()
+            .firstOrNull { it.id == draft.businessId }
+            ?.employeeId
+            ?: throw CreateAppointment.Error.NotAnEmployee()
         val appointment = Appointment(
             id = Uuid.random(),
             userId = profile.id,
             businessId = draft.businessId,
             employee = EmployeeSnapshot(
-                id = profile.id,
+                id = employeeId,
                 userId = profile.id,
                 fullName = profile.fullName
             ),

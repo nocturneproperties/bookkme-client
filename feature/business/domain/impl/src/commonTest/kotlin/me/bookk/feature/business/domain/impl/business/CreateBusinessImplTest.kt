@@ -1,6 +1,7 @@
 package me.bookk.feature.business.domain.impl.business
 
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -12,6 +13,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
+import library.device.api.DeviceFacade
 import library.money.api.Currency
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -48,9 +50,12 @@ class CreateBusinessImplTest {
 
     private class Fixture {
         val dataSource = mock<BusinessDataSource>()
+        val deviceFacade = mock<DeviceFacade> {
+            every { getCurrencyCode() } returns "PLN"
+        }
         val refreshBusinessInfo = mock<RefreshBusinessInfo>()
         val switchDashboardBusiness = mock<SwitchDashboardBusiness>()
-        val sut = CreateBusinessImpl(dataSource, refreshBusinessInfo, switchDashboardBusiness)
+        val sut = CreateBusinessImpl(dataSource, deviceFacade, refreshBusinessInfo, switchDashboardBusiness)
     }
 
     private fun stubBusiness() = Business(
@@ -72,7 +77,7 @@ class CreateBusinessImplTest {
         val fixture = Fixture()
         val name = "My Salon"
         val expected = stubBusiness()
-        everySuspend { fixture.dataSource.createBusiness(name, "UAH", any()) } returns expected
+        everySuspend { fixture.dataSource.createBusiness(name, any(), any()) } returns expected
         everySuspend { fixture.refreshBusinessInfo() } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
@@ -84,19 +89,51 @@ class CreateBusinessImplTest {
     }
 
     @Test
-    fun `calls createBusiness with UAH currency`() = runUnitTest {
+    fun `creates business in device currency when it is supported`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val name = "My Salon"
-        everySuspend { fixture.dataSource.createBusiness(name, "UAH", any()) } returns stubBusiness()
+        every { fixture.deviceFacade.getCurrencyCode() } returns "PLN"
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
         everySuspend { fixture.refreshBusinessInfo() } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
-        fixture.sut(name)
+        fixture.sut("My Salon")
 
         then()
-        verifySuspend { fixture.dataSource.createBusiness(name, "UAH", any()) }
+        verifySuspend { fixture.dataSource.createBusiness("My Salon", "PLN", any()) }
+    }
+
+    @Test
+    fun `creates business in fallback currency when device currency is not supported`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.deviceFacade.getCurrencyCode() } returns "JPY"
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
+
+        whenn()
+        fixture.sut("My Salon")
+
+        then()
+        verifySuspend { fixture.dataSource.createBusiness("My Salon", "USD", any()) }
+    }
+
+    @Test
+    fun `creates business in fallback currency when device has no currency`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.deviceFacade.getCurrencyCode() } returns null
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
+
+        whenn()
+        fixture.sut("My Salon")
+
+        then()
+        verifySuspend { fixture.dataSource.createBusiness("My Salon", "USD", any()) }
     }
 
     @Test
@@ -142,7 +179,7 @@ class CreateBusinessImplTest {
         fixture.sut("  My Salon  ")
 
         then()
-        verifySuspend { fixture.dataSource.createBusiness("My Salon", "UAH", any()) }
+        verifySuspend { fixture.dataSource.createBusiness("My Salon", any(), any()) }
     }
 
     @Test

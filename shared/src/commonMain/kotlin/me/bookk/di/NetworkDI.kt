@@ -60,6 +60,7 @@ private val refreshLogger by lazy { Logger.create("Network") }
 private fun Scope.buildClient(installAuth: Boolean): HttpClient {
     val config: HttpClientConfig<*>.() -> Unit = {
         expectSuccess = true
+        @Suppress("SimplifyBooleanWithConstants")
         if (BuildKonfig.DEBUG && BuildKonfig.PROXY_URL.isNotEmpty()) {
             engine {
                 proxy = debugProxy(Url(BuildKonfig.PROXY_URL))

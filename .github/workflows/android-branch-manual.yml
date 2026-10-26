@@ -17,7 +17,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04
     concurrency:
       group: android-pr-${{ github.event.pull_request.number }}
       cancel-in-progress: true

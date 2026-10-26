@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04
     concurrency:
       group: android-release-${{ github.ref }}
       cancel-in-progress: false

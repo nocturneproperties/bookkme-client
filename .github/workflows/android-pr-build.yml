@@ -1,35 +1,41 @@
 name: Android Pull Request Verification
 on:
   pull_request:
-    branches: [ development ]
-    types: [ edited, synchronize, ready_for_review ]
+    branches: [ develop ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+    paths-ignore:
+      - 'iosApp/**'
+      - 'docs/**'
+      - '**.md'
+
+concurrency:
+  group: android-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   build:
     if: ${{ !github.event.pull_request.draft }}
-    runs-on: self-hosted
-    timeout-minutes: 20
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Android
+        uses: ./.github/actions/android-setup
         with:
-          distribution: temurin
-          java-version: "21"
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          keystore-properties: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          debug-keystore: ${{ secrets.ANDROID_DEBUG_KEYSTORE_FILE }}
+          google-services: ${{ secrets.ANDROID_GOOGLE_SERVICES_FILE }}
 
-      - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v5
+      - name: Test & Build
+        run: ./gradlew testAndroidHostTest assembleDevDebug --continue
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
         with:
-          gradle-version: '9.2.0'
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-
-      - name: Import Secrets
-        run: |
-          echo -n "${{ secrets.ANDROID_KEYSTORE_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/keystore.properties
-          echo -n "${{ secrets.ANDROID_SERVICEACC_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/serviceaccount.json
-
-      - name: Build
-        run: |
-          ./gradlew assembleDevDebug
+          name: android-test-reports-${{ github.event.pull_request.number }}
+          path: '**/build/reports/tests/'
+          retention-days: 5

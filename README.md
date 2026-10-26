@@ -89,7 +89,7 @@ Bookk uses a layered, unidirectional-data-flow architecture:
 - **Data** — Ktor models, SQL, and platform APIs never leak past the `data` boundary. Remote/local models are always mapped to domain entities. Each DataSource method does exactly one thing (fetch **or** read DB **or** write DB); use cases orchestrate multi-step operations.
 - **DI** — Koin wires presentation (`viewModelOf` / `factoryOf`), domain, and data modules, aggregated per feature under `shared/di/feature/`.
 
-Build flavors (`dimension = "type"`): **`dev`**, **`stage`**, **`prod`** (defined in `build-src`).
+Build flavors (`dimension = "type"`): **`dev`**, **`prod`** (defined in `build-src`).
 
 ---
 

@@ -4,7 +4,6 @@ import org.gradle.internal.extensions.stdlib.capitalized
 
 enum class ProductFlavour(val title: String) {
     DEV("dev"),
-    STAGE("stage"),
     PROD("prod");
 
     companion object {

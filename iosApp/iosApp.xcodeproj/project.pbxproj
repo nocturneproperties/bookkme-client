@@ -22,6 +22,8 @@
 		4443731A2FFE5B61007E1F1F /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 444373192FFE5B61007E1F1F /* FirebaseMessaging */; };
 		4443731C2FFE5B97007E1F1F /* FirebaseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4443731B2FFE5B92007E1F1F /* FirebaseDelegate.swift */; };
 		4443731D2FFE5B97007E1F1F /* FirebaseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4443731B2FFE5B92007E1F1F /* FirebaseDelegate.swift */; };
+		44B5956D308FA0C200785E6D /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 44B5956C308FA0C200785E6D /* AppIcon.icon */; };
+		44B5956E308FA0C200785E6D /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 44B5956C308FA0C200785E6D /* AppIcon.icon */; };
 		7A3BCD582D1CBA530067DABB /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7A3BCD5C2D1CBA530067DABB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7AA12AE12D0CDD2000CBD3C8 /* LaunchScreen.storyboard */; };
 		7A3BCD5D2D1CBA530067DABB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
@@ -59,9 +61,10 @@
 		444373072FFE57DA007E1F1F /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4443731B2FFE5B92007E1F1F /* FirebaseDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseDelegate.swift; sourceTree = "<group>"; };
 		447C721A2FA0D88100E7A0B1 /* prod.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = prod.entitlements; sourceTree = "<group>"; };
-		7555FF7B242A565900829871 /* dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dev.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44B5956C308FA0C200785E6D /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		7555FF7B242A565900829871 /* BookkMe Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BookkMe Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7A3BCD632D1CBA530067DABB /* prod.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = prod.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A3BCD632D1CBA530067DABB /* BookkMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookkMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A46FD2E2D2B41CC0047B838 /* dev.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = dev.entitlements; sourceTree = "<group>"; };
 		7AA12AE12D0CDD2000CBD3C8 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -131,14 +134,15 @@
 				7555FF7D242A565900829871 /* iosApp */,
 				7555FF7C242A565900829871 /* Products */,
 				7555FFB0242A642200829871 /* Frameworks */,
+				44B5956C308FA0C200785E6D /* AppIcon.icon */,
 			);
 			sourceTree = "<group>";
 		};
 		7555FF7C242A565900829871 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7555FF7B242A565900829871 /* dev.app */,
-				7A3BCD632D1CBA530067DABB /* prod.app */,
+				7555FF7B242A565900829871 /* BookkMe Dev.app */,
+				7A3BCD632D1CBA530067DABB /* BookkMe.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -194,7 +198,7 @@
 			);
 			name = dev;
 			productName = iosApp;
-			productReference = 7555FF7B242A565900829871 /* dev.app */;
+			productReference = 7555FF7B242A565900829871 /* BookkMe Dev.app */;
 			productType = "com.apple.product-type.application";
 		};
 		7A3BCD552D1CBA530067DABB /* prod */ = {
@@ -220,7 +224,7 @@
 			);
 			name = prod;
 			productName = iosApp;
-			productReference = 7A3BCD632D1CBA530067DABB /* prod.app */;
+			productReference = 7A3BCD632D1CBA530067DABB /* BookkMe.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -270,6 +274,7 @@
 				444373082FFE57DA007E1F1F /* GoogleService-Info.plist in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				44B5956D308FA0C200785E6D /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +286,7 @@
 				444373092FFE57DA007E1F1F /* GoogleService-Info.plist in Resources */,
 				7A3BCD5D2D1CBA530067DABB /* Preview Assets.xcassets in Resources */,
 				7A3BCD5E2D1CBA530067DABB /* Assets.xcassets in Resources */,
+				44B5956E308FA0C200785E6D /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -532,6 +538,8 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BookkMe;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -543,7 +551,7 @@
 					shared,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.bookk.ios;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "BookkMe Dev";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development Profile";
 				SWIFT_VERSION = 5.0;
@@ -569,6 +577,8 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BookkMe;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -580,7 +590,7 @@
 					shared,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.bookk.ios;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "BookkMe Dev";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development Profile";
 				SWIFT_VERSION = 5.0;
@@ -606,6 +616,8 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BookkMe;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -617,7 +629,7 @@
 					shared,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.bookk.ios;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = BookkMe;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development Profile";
 				SWIFT_VERSION = 5.0;
@@ -643,6 +655,8 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BookkMe;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -654,7 +668,7 @@
 					shared,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = me.bookk.ios;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = BookkMe;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Development Profile";
 				SWIFT_VERSION = 5.0;

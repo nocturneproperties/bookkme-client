@@ -6,51 +6,39 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04
     concurrency:
       group: android-release-${{ github.ref }}
       cancel-in-progress: false
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Set dynamic variables
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          VERSION_CODE=$(date +%y%j%H%M)
-          IFS="-" read -r release_version <<< "$TAG_NAME"
-          echo "BUILD_VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
-          echo "BUILD_VERSION=$TAG_NAME >> $GITHUB_ENV
-      - uses: actions/checkout@v6
+          tag_name=${GITHUB_REF#refs/tags/}
+          version_code=$(date +%y%j%H%M)
+          echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${tag_name##*-v}" >> $GITHUB_ENV
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+
+      - name: Setup Android
+        uses: ./.github/actions/android-setup
         with:
-          distribution: temurin
-          java-version: "21"
-
-      - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          gradle-version: '9.2.0'
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-
-      - name: Detect Required Secrets
-        run: |
-          echo "KEYSTORE_SECRET_NAME=ANDROID_KEYSTORE_FILE" >> ${GITHUB_ENV}
-          echo "SERVICEACC_SECRET_NAME=ANDROID_SERVICEACC_FILE" >> ${GITHUB_ENV}
-
-      - name: Import Secrets
-        run: |
-          echo -n "${{ secrets.ANDROID_KEYSTORE_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/keystore.properties
-          echo -n "${{ secrets.ANDROID_SERVICEACC_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/serviceaccount.json
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          keystore-properties: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          debug-keystore: ${{ secrets.ANDROID_DEBUG_KEYSTORE_FILE }}
+          release-keystore: ${{ secrets.ANDROID_RELEASE_KEYSTORE_FILE }}
+          google-services: ${{ secrets.ANDROID_GOOGLE_SERVICES_FILE }}
 
       - name: Build
-        run: ./gradlew assembleDemoDevRelease
+        run: ./gradlew assembleProdRelease
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-prod-release
-          path: ${{ github.workspace }}/androidApp/build/outputs/apk/prod/release/*.apk
+          path: androidApp/build/outputs/apk/prod/release/*.apk
+          if-no-files-found: error
           overwrite: true
           retention-days: 5

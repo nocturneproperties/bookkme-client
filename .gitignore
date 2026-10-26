@@ -9,7 +9,9 @@ captures
 .cxx
 local.properties
 xcuserdata
-/gradle/wrapper/gradle-wrapper.jar
 androidApp/keystore.properties
 iosApp/iosApp/GoogleService-Info.plist
+androidApp/keystore/debug.jks
+androidApp/keystore/release.jks
 androidApp/keystore/*.jks
+androidApp/google-services.json

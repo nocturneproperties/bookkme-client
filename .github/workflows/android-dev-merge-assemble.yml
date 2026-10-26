@@ -2,15 +2,15 @@ name: Android Develop Auto-assemble
 on:
   push:
     branches:
-      - development
+      - develop
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04
     concurrency:
       group: android-develop
       cancel-in-progress: true
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Set dynamic variables
@@ -21,33 +21,26 @@ jobs:
           echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
           echo "CLEAN_REF=${clean_ref}" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Android
+        uses: ./.github/actions/android-setup
         with:
-          distribution: temurin
-          java-version: "21"
-
-      - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v5
-        with:
-          gradle-version: '9.2.0'
-          cache-read-only: false
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-
-      - name: Import Secrets
-        run: |
-          echo -n "${{ secrets.ANDROID_KEYSTORE_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/keystore.properties
-          echo -n "${{ secrets.ANDROID_SERVICEACC_FILE }}" | base64 --decode > $GITHUB_WORKSPACE/androidApp/serviceaccount.json
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          gradle-cache-read-only: "false"
+          keystore-properties: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          debug-keystore: ${{ secrets.ANDROID_DEBUG_KEYSTORE_FILE }}
+          release-keystore: ${{ secrets.ANDROID_RELEASE_KEYSTORE_FILE }}
+          google-services: ${{ secrets.ANDROID_GOOGLE_SERVICES_FILE }}
 
       - name: Build
-        run: ./gradlew assembleDemoDevRelease
+        run: ./gradlew assembleDevRelease
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-${{ env.CLEAN_REF }}-dev
-          path: ${{ github.workspace }}/androidApp/build/outputs/apk/dev/release/*.apk
+          path: androidApp/build/outputs/apk/dev/release/*.apk
+          if-no-files-found: error
           overwrite: true
           retention-days: 5

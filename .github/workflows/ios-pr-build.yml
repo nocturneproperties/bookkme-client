@@ -1,8 +1,16 @@
 name: iOS Pull Request Verification
 on:
   pull_request:
-    branches: [ development ]
-    types: [ edited, synchronize, ready_for_review ]
+    branches: [ develop ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+    paths-ignore:
+      - 'androidApp/**'
+      - 'docs/**'
+      - '**.md'
+
+concurrency:
+  group: ios-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   build:

@@ -15,6 +15,10 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   deploy:
     runs-on: macos-26
@@ -45,18 +49,31 @@ jobs:
           signing-certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           provisioning-profile: ${{ secrets.IOS_PROVISIONING_PROFILE_FILE }}
 
+      - name: Find Latest Artifact
+        id: latest
+        if: inputs.cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: ios-${{ env.CLEAN_REF }}-${{ env.ENV_NAME }}
+        run: |
+          run_id=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$ARTIFACT_NAME" \
+            --jq '[.artifacts[] | select(.expired | not)][0].workflow_run.id // empty')
+          echo "run-id=$run_id" >> $GITHUB_OUTPUT
+
       - name: Download Artifacts
         id: download
-        if: inputs.cache
+        if: steps.latest.outputs.run-id != ''
         continue-on-error: true
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ios-${{ env.CLEAN_REF }}-${{ env.ENV_NAME }}
           path: ${{ runner.temp }}/export
+          run-id: ${{ steps.latest.outputs.run-id }}
+          github-token: ${{ github.token }}
 
       - name: Archive
         id: archive
-        if: ${{ !inputs.cache || steps.download.outcome != 'success' }}
+        if: steps.download.outcome != 'success'
         run: |
           xcodebuild archive \
             -project iosApp/iosApp.xcodeproj \
@@ -72,15 +89,15 @@ jobs:
 
       - name: Upload artifact
         if: steps.archive.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-${{ env.CLEAN_REF }}-${{ env.ENV_NAME }}
           path: ${{ runner.temp }}/export/*.ipa
+          if-no-files-found: error
           overwrite: true
           retention-days: 5
 
       - name: Distribute
-        if: ${{ steps.download.outcome == 'success' || steps.archive.outcome == 'success' }}
         env:
           SERVICE_ACCOUNT: ${{ secrets.ANDROID_SERVICEACC_FILE }}
         run: |

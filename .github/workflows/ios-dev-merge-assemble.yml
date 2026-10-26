@@ -2,7 +2,7 @@ name: iOS Develop Auto-assemble
 on:
   push:
     branches:
-      - development
+      - develop
 
 jobs:
   build:
@@ -51,9 +51,10 @@ jobs:
             -exportPath ${{ runner.temp }}/export
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-${{ env.CLEAN_REF }}-dev
           path: ${{ runner.temp }}/export/*.ipa
+          if-no-files-found: error
           overwrite: true
           retention-days: 5

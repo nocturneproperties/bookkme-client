@@ -2,7 +2,7 @@ name: Android Pull Request Verification
 on:
   pull_request:
     branches: [ development ]
-    types: [ edited, synchronize, ready_for_review ]
+    types: [ synchronize, ready_for_review ]
 
 jobs:
   build:

@@ -1,0 +1,30 @@
+name: iOS Pull Request Verification
+on:
+  pull_request:
+    branches: [ development ]
+    types: [ edited, synchronize, ready_for_review ]
+
+jobs:
+  build:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: macos-26
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup iOS
+        uses: ./.github/actions/ios-setup
+        with:
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          google-service-info: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_FILE }}
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme dev \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ${{ runner.temp }}/DerivedData \
+            CODE_SIGNING_ALLOWED=NO

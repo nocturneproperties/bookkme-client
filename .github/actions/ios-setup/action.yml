@@ -1,0 +1,100 @@
+name: iOS Setup
+description: Prepares a macOS runner to build the iOS app (Java, Gradle, Kotlin/Native and SPM caches, Firebase config, build version, signing)
+
+inputs:
+  gradle-encryption-key:
+    description: Gradle configuration cache encryption key
+    required: true
+  gradle-cache-read-only:
+    description: Whether the Gradle cache is read-only
+    required: false
+    default: "true"
+  google-service-info:
+    description: Base64-encoded GoogleService-Info.plist
+    required: true
+  signing-certificate:
+    description: Base64-encoded .p12 signing certificate; signing is skipped when empty
+    required: false
+    default: ""
+  signing-certificate-password:
+    description: Password of the .p12 signing certificate
+    required: false
+    default: ""
+  provisioning-profile:
+    description: Base64-encoded .mobileprovision profile
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v6
+      with:
+        distribution: temurin
+        java-version: "21"
+
+    - name: Setup Gradle Cache
+      uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-encryption-key: ${{ inputs.gradle-encryption-key }}
+        cache-read-only: ${{ inputs.gradle-cache-read-only }}
+
+    - name: Cache Kotlin/Native
+      uses: actions/cache@v4
+      with:
+        path: ~/.konan
+        key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+        restore-keys: konan-${{ runner.os }}-
+
+    - name: Cache Swift Packages
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.temp }}/DerivedData/SourcePackages
+        key: spm-${{ runner.os }}-${{ hashFiles('iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+        restore-keys: spm-${{ runner.os }}-
+
+    - name: Import Firebase Config
+      shell: bash
+      env:
+        GOOGLE_SERVICE_INFO: ${{ inputs.google-service-info }}
+      run: echo -n "$GOOGLE_SERVICE_INFO" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist
+
+    - name: Apply Build Version
+      shell: bash
+      run: |
+        plist=iosApp/iosApp/Info.plist
+        if [ -n "$BUILD_VERSION_CODE" ]; then
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_VERSION_CODE" "$plist"
+        fi
+        if [ -n "$BUILD_VERSION" ]; then
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $BUILD_VERSION" "$plist"
+        fi
+
+    - name: Import Signing Identity
+      if: inputs.signing-certificate != ''
+      shell: bash
+      env:
+        CERTIFICATE: ${{ inputs.signing-certificate }}
+        CERTIFICATE_PASSWORD: ${{ inputs.signing-certificate-password }}
+        PROVISIONING_PROFILE: ${{ inputs.provisioning-profile }}
+      run: |
+        keychain_path="$RUNNER_TEMP/signing.keychain-db"
+        keychain_password=$(uuidgen)
+        certificate_path="$RUNNER_TEMP/certificate.p12"
+        profile_path="$RUNNER_TEMP/profile.mobileprovision"
+        profiles_dir="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+
+        echo -n "$CERTIFICATE" | base64 --decode > "$certificate_path"
+        echo -n "$PROVISIONING_PROFILE" | base64 --decode > "$profile_path"
+
+        security create-keychain -p "$keychain_password" "$keychain_path"
+        security set-keychain-settings -lut 21600 "$keychain_path"
+        security unlock-keychain -p "$keychain_password" "$keychain_path"
+        security import "$certificate_path" -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychain_path"
+        security set-key-partition-list -S apple-tool:,apple: -k "$keychain_password" "$keychain_path"
+        security list-keychains -d user -s "$keychain_path"
+
+        profile_uuid=$(security cms -D -i "$profile_path" | plutil -extract UUID raw -)
+        mkdir -p "$profiles_dir"
+        cp "$profile_path" "$profiles_dir/$profile_uuid.mobileprovision"

@@ -24,6 +24,18 @@ inputs:
     description: Base64-encoded .mobileprovision profile
     required: false
     default: ""
+  distribution-certificate:
+    description: Base64-encoded .p12 Apple Distribution certificate used to re-sign the archive on export
+    required: false
+    default: ""
+  distribution-certificate-password:
+    description: Password of the .p12 Apple Distribution certificate
+    required: false
+    default: ""
+  distribution-provisioning-profile:
+    description: Base64-encoded App Store .mobileprovision profile
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -78,23 +90,36 @@ runs:
         CERTIFICATE: ${{ inputs.signing-certificate }}
         CERTIFICATE_PASSWORD: ${{ inputs.signing-certificate-password }}
         PROVISIONING_PROFILE: ${{ inputs.provisioning-profile }}
+        DISTRIBUTION_CERTIFICATE: ${{ inputs.distribution-certificate }}
+        DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ inputs.distribution-certificate-password }}
+        DISTRIBUTION_PROVISIONING_PROFILE: ${{ inputs.distribution-provisioning-profile }}
       run: |
         keychain_path="$RUNNER_TEMP/signing.keychain-db"
         keychain_password=$(uuidgen)
-        certificate_path="$RUNNER_TEMP/certificate.p12"
-        profile_path="$RUNNER_TEMP/profile.mobileprovision"
         profiles_dir="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
-
-        echo -n "$CERTIFICATE" | base64 --decode > "$certificate_path"
-        echo -n "$PROVISIONING_PROFILE" | base64 --decode > "$profile_path"
 
         security create-keychain -p "$keychain_password" "$keychain_path"
         security set-keychain-settings -lut 21600 "$keychain_path"
         security unlock-keychain -p "$keychain_password" "$keychain_path"
-        security import "$certificate_path" -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychain_path"
+        mkdir -p "$profiles_dir"
+
+        import_identity() {
+          local name=$1 certificate=$2 certificate_password=$3 profile=$4
+          local certificate_path="$RUNNER_TEMP/$name.p12"
+          local profile_path="$RUNNER_TEMP/$name.mobileprovision"
+
+          echo -n "$certificate" | base64 --decode > "$certificate_path"
+          echo -n "$profile" | base64 --decode > "$profile_path"
+
+          security import "$certificate_path" -P "$certificate_password" -A -t cert -f pkcs12 -k "$keychain_path"
+          local profile_uuid=$(security cms -D -i "$profile_path" | plutil -extract UUID raw -)
+          cp "$profile_path" "$profiles_dir/$profile_uuid.mobileprovision"
+        }
+
+        import_identity development "$CERTIFICATE" "$CERTIFICATE_PASSWORD" "$PROVISIONING_PROFILE"
+        if [ -n "$DISTRIBUTION_CERTIFICATE" ]; then
+          import_identity distribution "$DISTRIBUTION_CERTIFICATE" "$DISTRIBUTION_CERTIFICATE_PASSWORD" "$DISTRIBUTION_PROVISIONING_PROFILE"
+        fi
+
         security set-key-partition-list -S apple-tool:,apple: -k "$keychain_password" "$keychain_path"
         security list-keychains -d user -s "$keychain_path"
-
-        profile_uuid=$(security cms -D -i "$profile_path" | plutil -extract UUID raw -)
-        mkdir -p "$profiles_dir"
-        cp "$profile_path" "$profiles_dir/$profile_uuid.mobileprovision"

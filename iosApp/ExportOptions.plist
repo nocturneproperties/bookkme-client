@@ -3,19 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>method</key>
-	<string>debugging</string>
+	<string>app-store-connect</string>
 	<key>signingStyle</key>
 	<string>manual</string>
 	<key>teamID</key>
 	<string>HP9WP2QQG8</string>
 	<key>signingCertificate</key>
-	<string>Apple Development</string>
+	<string>Apple Distribution</string>
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>me.bookk.ios</key>
-		<string>Development Profile</string>
+		<string>App Store Profile</string>
+		<key>me.bookk.ios.dev</key>
+		<string>App Store Profile Dev</string>
 	</dict>
-	<key>thinning</key>
-	<string>&lt;none&gt;</string>
+	<key>manageAppVersionAndBuildNumber</key>
+	<false/>
+	<key>uploadSymbols</key>
+	<true/>
 </dict>
 </plist>

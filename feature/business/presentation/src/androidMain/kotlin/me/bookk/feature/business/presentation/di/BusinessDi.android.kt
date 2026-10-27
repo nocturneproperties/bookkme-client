@@ -1,5 +1,6 @@
 package me.bookk.feature.business.presentation.di
 
+import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalyticsViewModel
 import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginsViewModel
 import me.bookk.feature.business.presentation.screen.settings.BusinessSettingsViewModel
@@ -11,4 +12,5 @@ internal actual fun platformBusinessDiModule(): Module = module {
     viewModelOf(::BusinessDashboardViewModel)
     viewModelOf(::BusinessPluginsViewModel)
     viewModelOf(::BusinessSettingsViewModel)
+    viewModelOf(::BusinessAnalyticsViewModel)
 }

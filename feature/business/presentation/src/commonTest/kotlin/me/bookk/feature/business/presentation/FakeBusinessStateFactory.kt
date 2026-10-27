@@ -13,6 +13,8 @@ import me.bookk.designsystem.test.FakeScheduleState
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.OptionalInfoLine
+import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalyticsDestinations
+import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalyticsState
 import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
@@ -42,6 +44,18 @@ internal class FakeBusinessStateFactory : BusinessStateFactory {
     override fun createBusinessPluginState(): BusinessPluginState {
         return FakeBusinessPluginState()
     }
+
+    override fun createBusinessAnalyticsState(): BusinessAnalyticsState {
+        return FakeBusinessAnalyticsState()
+    }
+}
+
+internal class FakeBusinessAnalyticsState : BusinessAnalyticsState {
+    override val appBar = FakeAppBarState()
+    override var title: StringDesc = "".desc()
+    override var message: StringDesc = "".desc()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<BusinessAnalyticsDestinations>()
 }
 
 internal class FakeBusinessDashboardState : BusinessDashboardState {

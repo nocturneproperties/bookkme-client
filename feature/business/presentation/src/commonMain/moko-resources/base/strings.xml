@@ -78,4 +78,6 @@
     <string name="business_plugins_demo">Click here if you want to see the demo, look how it works and decide whether it fits for you.</string>
     <string name="business_settings_active_day_without_work_hours_error">An active day must have at least one work hour</string>
     <string name="business_settings_invalid_day_off_range_error">Day off start date must be before the end date</string>
+    <string name="business_analytics_coming_soon_title">Analytics is coming soon</string>
+    <string name="business_analytics_coming_soon_message">We\'re building reports on your revenue, appointments and clients. They will appear here in a future update.</string>
 </resources>

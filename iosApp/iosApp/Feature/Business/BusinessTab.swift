@@ -47,6 +47,8 @@ struct BusinessTab: View {
 					switch type {
 					case is DashboardNavigationDestination.Settings:
 						BusinessSettingsScreen()
+					case is DashboardNavigationDestination.Analytics:
+						BusinessAnalyticsScreen()
 					case is DashboardNavigationDestination.Clients:
 						ClientsListScreen()
 					case is DashboardNavigationDestination.Employees:

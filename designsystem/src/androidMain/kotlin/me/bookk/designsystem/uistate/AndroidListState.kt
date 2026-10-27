@@ -1,0 +1,47 @@
+package me.bookk.designsystem.uistate
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import me.bookk.designsystem.uistate.simple.BannerErrorState
+import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.designsystem.uistate.simple.ErrorState
+
+class AndroidListState<T>(
+    items: List<T> = emptyList()
+) : ListState<T>, AndroidViewState() {
+
+    override val items = mutableStateListOf<T>().apply {
+        addAll(items)
+    }
+    override var loadMore: (() -> Unit)? by mutableStateOf(null)
+    override var emptyState: EmptyState? by mutableStateOf(null)
+    override var errorState: ErrorState? by mutableStateOf(null)
+    override var bannerError: BannerErrorState? by mutableStateOf(null)
+    override var isInitialLoading: Boolean by mutableStateOf(true)
+
+    override fun append(list: List<T>) {
+        items += list
+        isInitialLoading = false
+        demoteErrorToBannerIfHasItems()
+    }
+
+    override fun replace(list: List<T>) {
+        items.clear()
+        items.addAll(list)
+        isInitialLoading = false
+        demoteErrorToBannerIfHasItems()
+    }
+
+    private fun demoteErrorToBannerIfHasItems() {
+        val error = errorState ?: return
+        if (items.isEmpty()) return
+        bannerError = BannerErrorState.default(onRetryClick = error.onRetryClick)
+        errorState = null
+    }
+
+    override fun clear() {
+        items.clear()
+    }
+}

@@ -1,0 +1,102 @@
+package me.bookk.feature.authorization.data.local
+
+import androidx.credentials.CreatePublicKeyCredentialRequest
+import androidx.credentials.CreatePublicKeyCredentialResponse
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetPublicKeyCredentialOption
+import androidx.credentials.PublicKeyCredential
+import androidx.credentials.exceptions.CreateCredentialCancellationException
+import androidx.credentials.exceptions.CreateCredentialInterruptedException
+import androidx.credentials.exceptions.CreateCredentialProviderConfigurationException
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.NoCredentialException
+import androidx.credentials.exceptions.domerrors.NotAllowedError
+import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCredentialDomException
+import library.credentials.api.PasskeyCredentialUpdater
+import me.bookk.core.android.AndroidActivityAware
+import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
+import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager.CreationRequest
+import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
+import org.json.JSONObject
+
+class AndroidPassKeyManager(
+    private val relyingParty: String,
+    private val credentialUpdater: PasskeyCredentialUpdater
+) : AndroidActivityAware(), PassKeyManager {
+
+    override suspend fun create(challenge: CreationRequest): PasskeyVerificationPayload {
+        return runCatching {
+            val context = awaitActivity()
+            val credentialManager = CredentialManager.create(context)
+            val omittedPublicKeyObject =
+                JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
+            val createPublicKeyCredentialRequest = CreatePublicKeyCredentialRequest(
+                requestJson = omittedPublicKeyObject
+            )
+            val response = credentialManager.createCredential(
+                context = context,
+                request = createPublicKeyCredentialRequest,
+            )
+            when (response) {
+                is CreatePublicKeyCredentialResponse -> {
+                    PasskeyVerificationPayload(response.registrationResponseJson)
+                }
+
+                else -> throw PassKeyManager.Error.Unknown(null)
+            }
+        }.recoverCatching {
+            throw when (it) {
+                is CreateCredentialCancellationException -> PassKeyManager.Error.UserCancelled()
+                is CreatePublicKeyCredentialDomException -> when (it.domError) {
+                    is NotAllowedError -> PassKeyManager.Error.UserCancelled()
+                    else -> PassKeyManager.Error.Infrastructure()
+                }
+
+                is CreateCredentialInterruptedException,
+                is CreateCredentialProviderConfigurationException -> PassKeyManager.Error.Infrastructure()
+
+                else -> PassKeyManager.Error.Unknown(it)
+            }
+        }.getOrThrow()
+    }
+
+    override suspend fun authorize(challenge: PassKeyManager.AuthorizationRequest): PasskeyVerificationPayload {
+        return runCatching {
+            val context = awaitActivity()
+            val credentialManager = CredentialManager.create(context)
+            val publicKeyObject =
+                JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
+            val getPublicKeyCredentialOption = GetPublicKeyCredentialOption(
+                requestJson = publicKeyObject
+            )
+            val request = GetCredentialRequest(listOf(getPublicKeyCredentialOption))
+            val result = credentialManager.getCredential(
+                context = context,
+                request = request
+            )
+            when (val credential = result.credential) {
+                is PublicKeyCredential -> {
+                    val responseJson = credential.authenticationResponseJson
+                    PasskeyVerificationPayload(responseJson)
+                }
+
+                else -> throw PassKeyManager.Error.Unknown(null)
+            }
+        }.recoverCatching {
+            throw when (it) {
+                is NoCredentialException -> PassKeyManager.Error.CredentialsMissing()
+                is GetCredentialCancellationException -> PassKeyManager.Error.UserCancelled()
+                else -> PassKeyManager.Error.Unknown(it)
+            }
+        }.getOrThrow()
+    }
+
+    override suspend fun signalAccountDeleted(assertion: PasskeyVerificationPayload) {
+        val passkey = PasskeyAssertion.from(assertion)
+        credentialUpdater.reportUnknownCredential(relyingParty, passkey.credentialId)
+        passkey.userHandle?.let {
+            credentialUpdater.reportNoAcceptedCredentials(relyingParty, it)
+        }
+    }
+}

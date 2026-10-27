@@ -1,0 +1,201 @@
+package me.bookk.feature.services.presentation.service.list
+
+import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import me.bookk.android.feature.services.resources.ServicesRes
+import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.presentation.ViewModel
+import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.convenience.resetListOnChange
+import me.bookk.designsystem.deleteConfirmation
+import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.simple.Action
+import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.services.domain.api.GetServicesPermissions
+import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
+import me.bookk.feature.services.domain.api.entity.ServicesPermissions
+import me.bookk.feature.services.domain.api.service.DeleteService
+import me.bookk.feature.services.domain.api.service.GetServices
+import me.bookk.feature.services.domain.api.service.entity.Service
+import me.bookk.feature.services.presentation.ServicesStateFactory
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.AddService
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.Back
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.EditService
+import me.bookk.feature.services.presentation.service.list.ServiceListDestination.ServiceGroups
+import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI
+import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceUI
+import kotlin.uuid.Uuid
+
+class ServiceListViewModel(
+    private val getServices: GetServices,
+    private val deleteService: DeleteService,
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
+    private val getServicesPermissions: GetServicesPermissions,
+    stateFactory: ServicesStateFactory,
+    vmArgs: VmArgs
+) : ViewModel(vmArgs) {
+
+    val uiState: ServiceListState = stateFactory.createServiceListState().setup()
+
+    private var items = listOf<ServiceGroupUI>()
+    private var renderedServices: List<Service>? = null
+    private var permissions: ServicesPermissions? = null
+
+    init {
+        observeServices()
+        observeBusinessChanges()
+    }
+
+    private fun observeServices() {
+        getServices.flow()
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { renderServices(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
+    }
+
+    private fun renderServices(services: List<Service>) {
+        if (services.isEmpty() && uiState.services.isInitialLoading) return
+        renderedServices = services
+        val canDelete = permissions?.canDelete == true
+        val grouped = services
+            .groupBy { it.group }
+            .map { (group, groupServices) ->
+                ServiceGroupUI(
+                    id = group.id.toString(),
+                    name = group.name,
+                    items = groupServices.map { ServiceUI(it) },
+                    onItemClick = weakVMClosure { vm, item -> vm.onServiceClick(item) },
+                    onItemDeleteClick = if (canDelete) weakVMClosure { vm, item -> vm.onServiceDeleteClick(item) } else null
+                )
+            }
+        items = grouped
+        uiState.services.replace(items)
+    }
+
+    private fun observeBusinessChanges() {
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .flowOn(DispatcherProvider.io)
+            .resetListOnChange(uiState.services)
+            .safeOnEach {
+                loadServiceList(it)
+                loadPermissions(it)
+            }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
+    }
+
+    private fun loadPermissions(businessId: Uuid) {
+        launch(
+            key = PERMISSIONS_KEY,
+            launchIn = DispatcherProvider.io,
+            call = { getServicesPermissions(businessId) },
+            onComplete = { renderPermissions(it) },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun renderPermissions(permissions: ServicesPermissions) {
+        this.permissions = permissions
+        val actions = if (permissions.canEdit) {
+            listOf(
+                AppBarAction(
+                    contentDescription = DesignSystem.strings.action_add.desc(),
+                    onClick = weakVMClosure { it.onAddServiceClick() }
+                )
+            )
+        } else {
+            emptyList()
+        }
+        uiState.appBar.actions.replace(actions)
+        renderedServices?.let { renderServices(it) }
+    }
+
+    private fun loadServiceList(businessId: Uuid) {
+        loadList(
+            listState = uiState.services,
+            notifications = uiState.notifications,
+            refreshState = uiState.refreshState,
+            call = { getServices.refresh(businessId) }
+        )
+    }
+
+    private fun onServiceClick(serviceUI: ServiceUI) {
+        if (permissions?.canEdit != true) return
+        uiState.navigation.push(EditService(serviceUI.domain.id))
+    }
+
+    private fun onServiceDeleteClick(serviceUI: ServiceUI) {
+        uiState.notifications.add(
+            PresentationNotification.Message.deleteConfirmation(
+                onConfirmed = { deleteServiceItem(serviceUI) }
+            )
+        )
+    }
+
+    private fun deleteServiceItem(serviceUI: ServiceUI) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { deleteService(serviceUI.domain) },
+            onStart = { uiState.refreshState.isRefreshing = true },
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.refreshState.isRefreshing = false }
+        )
+    }
+
+    private fun onAddServiceClick() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { observeCurrentBusinessId().filterNotNull().first() },
+            onComplete = { uiState.navigation.push(AddService(it)) },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun onSearchQueryChanged(query: String) {
+        uiState.searchField.text = query
+        if (query.isBlank()) {
+            uiState.services.replace(items)
+            return
+        }
+        val filtered = items
+            .map {
+                it.copy(items = it.items.filter {
+                    it.title.contains(query, ignoreCase = true)
+                })
+            }
+            .filter { it.items.isNotEmpty() }
+        uiState.services.replace(filtered)
+    }
+
+    private fun ServiceListState.setup() = apply {
+        appBar.title = ServicesRes.strings.services_title.desc()
+        appBar.size = TopBarSize.LARGE
+        appBar.onBackClick = weakVMClosure {
+            it.uiState.navigation.push(Back)
+        }
+
+        searchField.placeholder = DesignSystem.strings.action_search.desc()
+        searchField.onTextChanged = weakVMClosure { vm, query -> vm.onSearchQueryChanged(query) }
+        groupsSection = Action(
+            title = ServicesRes.strings.services_create_groups.desc(),
+            onClick = weakVMClosure { it.uiState.navigation.push(ServiceGroups) }
+        )
+        services.emptyState = EmptyState(
+            image = DesignSystem.images.empty,
+            label = ServicesRes.strings.services_empty.desc()
+        )
+    }
+
+    private companion object {
+        const val PERMISSIONS_KEY = "service_list_permissions"
+    }
+}

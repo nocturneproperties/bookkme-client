@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_business_title">Create business</string>
+    <string name="create_business_name_hint">Enter business name</string>
+    <string name="create_business_name_supporting">Enter name you’d like to be seen by your clients</string>
+    <string name="create_business_error_empty_name">Enter a business name</string>
+    <string name="create_business_features">Features</string>
+    <string name="create_business_feature_appointments_title">Appointments</string>
+    <string name="create_business_feature_appointments_description">Your clients can book time for consultations or personal services. By scheduling in advance, they can avoid calling you.</string>
+
+    <string name="business_dashboard_business">Business</string>
+    <string name="business_dashboard_employees">Employees</string>
+    <string name="business_dashboard_clients">Clients</string>
+    <string name="business_dashboard_analytics">Analytics</string>
+    <string name="business_dashboard_settings">Settings</string>
+    <string name="business_dashboard_appointments">Appointments</string>
+    <string name="business_dashboard_services">Services</string>
+    <string name="business_dashboard_plugins">Plugins</string>
+    <string name="business_dashboard_history">History</string>
+    <string name="business_dashboard_requests">Requests</string>
+    <string name="business_dashboard_shop">Shop</string>
+    <string name="business_dashboard_assortment">Assortment</string>
+    <string name="business_dashboard_warehouse">Warehouse</string>
+    <string name="business_dashboard_orders">Orders</string>
+
+    <string name="business_dashboard_switch_action">Switch business</string>
+    <string name="business_dashboard_switch_create">Create business</string>
+    <string name="business_dashboard_switch_join">Join business</string>
+    <string name="business_dashboard_switch_join_dialog_title">Join business</string>
+    <string name="business_dashboard_switch_join_dialog_message">Enter the invitation code shared with you by the business owner</string>
+    <string name="business_dashboard_switch_join_dialog_placeholder">Invitation code</string>
+    <string name="business_dashboard_switch_join_success">You have joined the business</string>
+    <string name="business_dashboard_switch_join_error_empty_code">Enter an invitation code</string>
+    <string name="business_dashboard_switch_join_error_already_processed">This invitation was already used or is no longer valid</string>
+    <string name="business_dashboard_switch_join_error_employee_exists">You are already an employee of this business</string>
+
+    <string name="business_settings_title">Business settings</string>
+    <string name="business_settings_add_photo">Add photo</string>
+    <string name="business_settings_name_title">Business name</string>
+    <string name="business_settings_name_hint">Business name</string>
+    <string name="business_settings_description_title">Description</string>
+    <string name="business_settings_description_hint">Add a short description customers will see</string>
+    <string name="business_settings_location_title">Location</string>
+    <string name="business_settings_location_hint">22.2808283,114.1556772</string>
+    <string name="business_settings_location_supporting">This location helps to find your location on maps app</string>
+    <string name="business_settings_address_title">Address</string>
+    <string name="business_settings_address_hint">No address set</string>
+    <string name="business_settings_currency_title">Currency</string>
+    <string name="business_settings_currency_label">Account currency</string>
+    <string name="business_settings_socials_title">Socials</string>
+    <string name="business_settings_phone_hint">Contact phone number</string>
+    <string name="business_settings_instagram_hint">Instagram tag</string>
+    <string name="business_settings_viber_hint">Viber number</string>
+    <string name="business_settings_telegram_hint">Telegram tag</string>
+    <string name="business_settings_location_test">Preview</string>
+    <string name="business_settings_updated">Settings updated</string>
+
+    <string name="business_clients_title">Clients</string>
+    <string name="business_clients_empty">You have no clients at the moment</string>
+
+    <string name="business_plugin_enabled">Enabled</string>
+    <string name="business_plugin_disabled">Not enabled</string>
+    <string name="business_plugins_title">Plugins</string>
+    <string name="business_plugins_appointments_title">Appointments</string>
+    <string name="business_plugins_appointments_subtitle">Manage appointments with ease</string>
+    <string name="business_plugins_you_can">You can</string>
+    <string name="business_plugins_clients_can">Clients can</string>
+    <string name="business_plugins_appointments_you_item1">Create appointments.</string>
+    <string name="business_plugins_appointments_you_item2">Reschedule appointments.</string>
+    <string name="business_plugins_appointments_you_item3">View, Approve, Decline appointment requests from clients.</string>
+    <string name="business_plugins_appointments_you_item4">View history.</string>
+    <string name="business_plugins_appointments_you_item5">Edit working days and time.</string>
+    <string name="business_plugins_appointments_you_item6">Set day-offs.</string>
+    <string name="business_plugins_appointments_clients_item1">Send you appointment requests</string>
+    <string name="business_plugins_appointments_clients_item1_sub">If you enable auto-approve, they will be automatically approved</string>
+    <string name="business_plugins_appointments_clients_item2">Receive email and application notifications.</string>
+    <string name="business_plugins_appointments_clients_item2_sub">Note that client can opt out from any notifications</string>
+    <string name="business_plugins_demo">Click here if you want to see the demo, look how it works and decide whether it fits for you.</string>
+    <string name="business_settings_active_day_without_work_hours_error">An active day must have at least one work hour</string>
+    <string name="business_settings_invalid_day_off_range_error">Day off start date must be before the end date</string>
+    <string name="business_analytics_coming_soon_title">Analytics is coming soon</string>
+    <string name="business_analytics_coming_soon_message">We\'re building reports on your revenue, appointments and clients. They will appear here in a future update.</string>
+</resources>

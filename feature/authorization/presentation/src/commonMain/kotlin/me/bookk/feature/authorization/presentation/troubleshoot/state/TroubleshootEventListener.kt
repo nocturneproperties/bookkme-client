@@ -1,0 +1,3 @@
+package me.bookk.feature.authorization.presentation.troubleshoot.state
+
+interface TroubleshootEventListener

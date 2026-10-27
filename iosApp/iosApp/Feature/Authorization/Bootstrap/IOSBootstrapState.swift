@@ -1,0 +1,27 @@
+//
+//  IOSBootstrapState.swift
+//  iosApp
+//
+//  Created by Antiufieiev Michael on 29.01.2025.
+//  Copyright © 2025 BookkMe. All rights reserved.
+//
+
+import shared
+
+@MainActor
+@Observable
+class IOSBootstrapState: @MainActor BootstrapState {
+	
+	var startDestination: BootstrapNavigationDestination? = nil
+	var colorScheme: BootstrapStateUIColorScheme = BootstrapStateUIColorScheme.system
+	
+    var navigation: any NavigationState = IOSNavigationState()
+	let notifications: any PresentationNotificationState = IOSNotificationState()
+
+}
+
+extension BootstrapState {
+	func impl() -> IOSBootstrapState {
+		return self as! IOSBootstrapState
+	}
+}

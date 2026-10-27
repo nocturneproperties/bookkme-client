@@ -1,0 +1,118 @@
+package me.bookk.feature.appointments.domain.impl
+
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import library.money.api.Currency
+import library.money.api.Money
+import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
+import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
+import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
+import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
+import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
+import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
+import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
+import me.bookk.feature.services.domain.api.service.entity.Service
+import kotlin.time.Duration
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
+
+internal fun stubEmployeeSnapshot() = EmployeeSnapshot(
+    id = Uuid.random(),
+    userId = Uuid.random(),
+    fullName = "John Doe"
+)
+
+internal fun stubServiceSnapshot(groupId: Uuid = Uuid.random()) = ServiceSnapshot(
+    id = Uuid.random(),
+    name = "Haircut",
+    groupId = groupId,
+    price = Money(1000L, Money.SupportedCurrency.USD),
+    duration = Duration.parse("30m")
+)
+
+internal fun stubClientSnapshot() = ClientSnapshot(
+    id = Uuid.random(),
+    fullName = "Jane Doe",
+    phone = "123456789",
+    email = "jane@example.com"
+)
+
+internal fun stubAppointment(
+    id: Uuid = Uuid.random(),
+    userId: Uuid = Uuid.random(),
+    businessId: Uuid = Uuid.random(),
+    note: String = ""
+) = Appointment(
+    id = id,
+    userId = userId,
+    businessId = businessId,
+    employee = stubEmployeeSnapshot(),
+    client = stubClientSnapshot(),
+    services = listOf(stubServiceSnapshot()),
+    status = AppointmentStatus.SCHEDULED,
+    date = LocalDateTime(2024, 6, 15, 10, 0),
+    note = note,
+    cancellationReason = ""
+)
+
+internal fun stubAppointmentRequest(
+    id: Uuid = Uuid.random(),
+    businessId: Uuid = Uuid.random()
+) = AppointmentRequest(
+    id = id,
+    userId = Uuid.random(),
+    businessId = businessId,
+    employee = stubEmployeeSnapshot(),
+    client = stubClientSnapshot(),
+    services = listOf(stubServiceSnapshot()),
+    status = AppointmentRequestStatus.PENDING,
+    date = Instant.fromEpochMilliseconds(0),
+    note = "",
+    declineReason = ""
+)
+
+internal fun stubClient(businessId: Uuid = Uuid.random()) = Client.Detached(
+    id = Uuid.random(),
+    name = "John",
+    lastName = "Doe",
+    phone = "123",
+    email = "john@example.com",
+    businessId = businessId
+)
+
+internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
+    id = Uuid.random(),
+    businessId = businessId,
+    group = ServiceGroup(id = Uuid.random(), businessId = businessId, name = "Group", createdAt = Instant.fromEpochMilliseconds(0)),
+    name = "Haircut",
+    duration = Duration.parse("30m"),
+    price = Money(1000L, Money.SupportedCurrency.USD),
+    isAvailable = true,
+    createdAt = Instant.fromEpochMilliseconds(0)
+)
+
+internal fun stubBusiness(id: Uuid = Uuid.random(), employeeId: Uuid? = Uuid.random()) = Business(
+    id = id,
+    name = "Test Business",
+    description = "",
+    address = "",
+    location = null,
+    currency = Currency("USD"),
+    timeZone = TimeZone.UTC,
+    socials = emptyMap(),
+    schedule = WorkingSchedule(),
+    permissions = BusinessPermissions(
+        business = ResourcePermission(),
+        employees = ResourcePermission(),
+        clients = ResourcePermission(),
+        services = ResourcePermission(),
+        appointments = ResourcePermission()
+    ),
+    employeeId = employeeId
+)

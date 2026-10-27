@@ -1,16 +1,42 @@
-plugins {
-    alias(libs.plugins.bookk.kmm.library)
-}
+import build_src.tools.getCurrentVariant
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 
-android {
-    namespace = "me.bookk.core.data"
+plugins {
+    id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
+    alias(libs.plugins.buldconfig)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
+    android {
+        namespace = "me.bookk.core.data"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.ktor.client.core)
-            implementation(projects.core.domain)
+            api(libs.ktor.client.core)
+            api(libs.ktor.client.mock)
+            api(libs.ktor.client.protobuf)
+            api(projects.core.domain)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+            implementation(libs.ktor.client.negotiation)
+        }
+    }
+}
+
+buildkonfig {
+    packageName = "me.bookk.core.data"
+    defaultConfigs {
+        buildConfigField(
+            BOOLEAN,
+            "DEBUG",
+            getCurrentVariant().contains("debug", ignoreCase = true).toString(),
+            const = true
+        )
     }
 }

@@ -1,0 +1,9 @@
+package ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.domain.impl.di
+
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
+
+fun ${FEATURE_NAME}DomainModule() = module {
+
+}

@@ -1,0 +1,18 @@
+package me.bookk.feature.business.presentation.screen.dashboard
+
+import me.bookk.core.presentation.navigation.NavigationDestination
+import kotlin.uuid.Uuid
+
+sealed class DashboardNavigationDestination : NavigationDestination() {
+    data object Employees : DashboardNavigationDestination()
+    data object Clients : DashboardNavigationDestination()
+    data object Analytics : DashboardNavigationDestination()
+    data object Settings : DashboardNavigationDestination()
+    data class Plugins(val id: Uuid) : DashboardNavigationDestination()
+    data object Services : DashboardNavigationDestination()
+    data class History(val businessId: Uuid) : DashboardNavigationDestination()
+    data class AppointmentSettings(val businessId: Uuid) : DashboardNavigationDestination()
+    data object Assortment : DashboardNavigationDestination()
+    data object Warehouse : DashboardNavigationDestination()
+    data object Orders : DashboardNavigationDestination()
+}

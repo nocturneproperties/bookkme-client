@@ -1,0 +1,30 @@
+package me.bookk.feature.appointments.domain.datasource
+
+import kotlinx.coroutines.flow.Flow
+import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
+
+interface AppointmentRequestDataSource {
+    suspend fun createAppointmentRequest(draft: AppointmentRequestDraft)
+
+    suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment
+
+    suspend fun getOwnAppointmentRequests(businessId: Uuid): List<AppointmentRequest>
+
+    fun observeAppointmentRequestsDBChanges(businessId: Uuid): Flow<List<AppointmentRequest>>
+
+    suspend fun getAppointmentRequestIdsInDb(businessId: Uuid): List<Uuid>
+
+    suspend fun deleteAppointmentRequestsInDb(ids: List<Uuid>)
+
+    suspend fun saveAppointmentRequestsInDB(requests: List<AppointmentRequest>)
+
+    suspend fun declineAppointmentRequest(requestId: Uuid, businessId: Uuid, reason: String)
+
+    suspend fun getLastSyncedAt(businessId: Uuid): Instant?
+
+    suspend fun saveLastSyncedAt(businessId: Uuid)
+}

@@ -1,0 +1,46 @@
+name: Android Develop Auto-assemble
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: android-develop
+      cancel-in-progress: true
+    timeout-minutes: 30
+
+    steps:
+      - name: Set dynamic variables
+        run: |
+          version_code=$(date +%y%j%H%M)
+          clean_ref=${GITHUB_REF#refs/heads/}
+          clean_ref=${clean_ref//\//_}
+          echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
+          echo "CLEAN_REF=${clean_ref}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v7
+
+      - name: Setup Android
+        uses: ./.github/actions/android-setup
+        with:
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          gradle-cache-read-only: "false"
+          keystore-properties: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          debug-keystore: ${{ secrets.ANDROID_DEBUG_KEYSTORE_FILE }}
+          release-keystore: ${{ secrets.ANDROID_RELEASE_KEYSTORE_FILE }}
+          google-services: ${{ secrets.ANDROID_GOOGLE_SERVICES_FILE }}
+
+      - name: Build
+        run: ./gradlew assembleDevRelease
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-${{ env.CLEAN_REF }}-dev
+          path: androidApp/build/outputs/apk/dev/release/*.apk
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 5

@@ -1,0 +1,174 @@
+package me.bookk.feature.services.presentation.service.add
+
+import dev.icerock.moko.resources.desc.desc
+import library.money.api.Currency
+import library.money.api.Money
+import library.money.api.Money.SupportedCurrency
+import me.bookk.android.feature.services.resources.ServicesRes
+import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.presentation.ViewModel
+import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.designsystem.uistate.InputType
+import me.bookk.designsystem.uistate.PickerFieldState
+import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.feature.services.domain.api.GetBusinessCurrency
+import me.bookk.feature.services.domain.api.group.GetServiceGroups
+import me.bookk.feature.services.domain.api.service.CreateService
+import me.bookk.feature.services.domain.api.service.entity.Service
+import me.bookk.feature.services.presentation.ServicesStateFactory
+import me.bookk.feature.services.presentation.service.ServiceGroupOption
+import me.bookk.feature.services.presentation.service.toDurationInput
+import me.bookk.feature.services.presentation.service.toPriceInput
+import me.bookk.feature.services.presentation.service.add.AddServiceDestination.Back
+import kotlin.properties.Delegates
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+import org.koin.core.annotation.InjectedParam
+import kotlin.uuid.Uuid
+
+class AddServiceViewModel(
+    @InjectedParam private val businessId: Uuid,
+    private val createService: CreateService,
+    private val getServiceGroups: GetServiceGroups,
+    private val getBusinessCurrency: GetBusinessCurrency,
+    stateFactory: ServicesStateFactory,
+    vmArgs: VmArgs
+) : ViewModel(vmArgs) {
+
+    val uiState: AddServiceState = stateFactory.createServiceState()
+    private var currency: SupportedCurrency by Delegates.notNull()
+
+    init {
+        loadCurrency()
+        loadGroups()
+    }
+
+    private fun loadCurrency() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { getBusinessCurrency(businessId) },
+            onComplete = {
+                currency = it
+                uiState.setup(it)
+            },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun loadGroups() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { getServiceGroups.refresh(businessId) },
+            onComplete = {
+                uiState.group.replaceOptions(it.map(::ServiceGroupOption))
+            },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun onNameChanged(text: String) {
+        uiState.name.text = text
+        uiState.name.isValid = text.isNotBlank()
+        invalidateButton()
+    }
+
+    private fun onDurationChanged(text: String) {
+        uiState.duration.text = text.toDurationInput()
+        uiState.duration.isValid = uiState.duration.text.isNotEmpty()
+        invalidateButton()
+    }
+
+    private fun onGroupSelected(group: ServiceGroupOption) {
+        uiState.group.textField.updateText(group.displayName)
+        uiState.group.selectedItem = group
+        uiState.group.textField.isValid = true
+        invalidateButton()
+    }
+
+    private fun onPriceChanged(price: String) {
+        uiState.price.text = price.toPriceInput()
+        uiState.price.isValid = uiState.price.text.toFloatOrNull() != null
+        invalidateButton()
+    }
+
+    private fun onEnabledChanged(enabled: Boolean) {
+        uiState.enabled.isChecked = enabled
+    }
+
+    private fun onCreateClick() {
+        val group = uiState.group.selectedItem ?: return
+        val service = Service(
+            id = Uuid.random(),
+            businessId = businessId,
+            group = group.domain,
+            name = uiState.name.text,
+            duration = uiState.duration.text.toInt().minutes,
+            price = Money(uiState.price.text.toDouble(), currency),
+            isAvailable = uiState.enabled.isChecked,
+            createdAt = Clock.System.now()
+        )
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.create.startLoading() },
+            call = { createService(service) },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                uiState.navigation.push(Back)
+            },
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.create.stopLoading() }
+        )
+    }
+
+    private fun invalidateButton() {
+        uiState.create.isEnabled = uiState.name.isValid &&
+                uiState.group.selectedItem != null &&
+                uiState.price.isValid &&
+                uiState.duration.isValid
+    }
+
+    private fun AddServiceState.setup(currency: SupportedCurrency) = apply {
+        appBar.size = TopBarSize.LARGE
+        appBar.title = ServicesRes.strings.services_create_title.desc()
+        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
+
+        name.label = ServicesRes.strings.services_create_name.desc()
+        name.onTextChanged = weakVMClosure { vm, name -> vm.onNameChanged(name) }
+        name.isValid = false
+        name.inputType = InputType.TEXT
+        name.placeholder = ServicesRes.strings.services_create_name_placeholder.desc()
+
+        group.textField.label = ServicesRes.strings.services_create_group.desc()
+        group.onItemPicked = weakVMClosure { vm, item -> item?.let { vm.onGroupSelected(it) } }
+        group.textField.isValid = false
+        group.textField.placeholder = ServicesRes.strings.services_create_group_placeholder.desc()
+        group.pickerType = PickerFieldState.PickerType.SCREEN
+        group.pickerTitle = ServicesRes.strings.services_group_pick.desc()
+
+        duration.label = ServicesRes.strings.services_create_duration.desc()
+        duration.placeholder = ServicesRes.strings.services_create_duration_placeholder.desc()
+        duration.suffix = DesignSystem.strings.common_min.desc()
+        duration.onTextChanged = weakVMClosure { vm, duration -> vm.onDurationChanged(duration) }
+        duration.isValid = false
+        duration.inputType = InputType.DIGIT
+
+        price.label = ServicesRes.strings.services_create_price.desc()
+        price.placeholder = ServicesRes.strings.services_create_price_placeholder.desc()
+        price.onTextChanged = weakVMClosure { vm, price -> vm.onPriceChanged(price) }
+        price.suffix = Currency(currency.code).symbol().desc()
+        price.isValid = false
+        price.inputType = InputType.DECIMAL
+
+        enabled.text = ServicesRes.strings.services_create_visible.desc()
+        enabled.onCheckedChange = weakVMClosure { vm, enabled -> vm.onEnabledChanged(enabled) }
+
+        create.text = DesignSystem.strings.action_create.desc()
+        create.onClick = weakVMClosure { it.onCreateClick() }
+        create.isEnabled = false
+    }
+}

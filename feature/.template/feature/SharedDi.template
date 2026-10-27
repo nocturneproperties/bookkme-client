@@ -1,0 +1,14 @@
+package ${ROOT_PACKAGE}.di.feature
+
+import ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.data.di.${FEATURE_NAME}DataModule
+import ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.domain.impl.di.${FEATURE_NAME}DomainModule
+import ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.presentation.di.${FEATURE_NAME}PresentationModule
+import org.koin.dsl.module
+
+internal fun ${FEATURE_NAME}DiModule() = module {
+    includes(
+        ${FEATURE_NAME}PresentationModule(),
+        ${FEATURE_NAME}DataModule(),
+        ${FEATURE_NAME}DomainModule()
+    )
+}

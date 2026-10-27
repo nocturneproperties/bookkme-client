@@ -1,0 +1,44 @@
+package me.bookk.feature.settings.domain.impl.di
+
+import me.bookk.feature.settings.domain.api.CreateNewPasskey
+import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.DeletePasskey
+import me.bookk.feature.settings.domain.api.EditProfile
+import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
+import me.bookk.feature.settings.domain.api.GetColorScheme
+import me.bookk.feature.settings.domain.api.GetNotificationSettings
+import me.bookk.feature.settings.domain.api.GetSettings
+import me.bookk.feature.settings.domain.api.SendContactForm
+import me.bookk.feature.settings.domain.api.UpdateColorScheme
+import me.bookk.feature.settings.domain.api.UpdateNotificationSettings
+import me.bookk.feature.settings.domain.api.UpdateNotificationToken
+import me.bookk.feature.settings.domain.impl.CreateNewPasskeyImpl
+import me.bookk.feature.settings.domain.impl.DeleteAccountImpl
+import me.bookk.feature.settings.domain.impl.DeletePasskeyImpl
+import me.bookk.feature.settings.domain.impl.EditProfileImpl
+import me.bookk.feature.settings.domain.impl.GetAvailablePasskeysImpl
+import me.bookk.feature.settings.domain.impl.GetColorSchemeImpl
+import me.bookk.feature.settings.domain.impl.GetNotificationSettingsImpl
+import me.bookk.feature.settings.domain.impl.GetSettingsImpl
+import me.bookk.feature.settings.domain.impl.SendContactFormImpl
+import me.bookk.feature.settings.domain.impl.UpdateColorSchemeImpl
+import me.bookk.feature.settings.domain.impl.UpdateNotificationSettingsImpl
+import me.bookk.feature.settings.domain.impl.UpdateNotificationTokenImpl
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
+
+fun settingsDomainModule() = module {
+    factoryOf(::GetColorSchemeImpl) bind GetColorScheme::class
+    factoryOf(::UpdateColorSchemeImpl) bind UpdateColorScheme::class
+    factoryOf(::GetSettingsImpl) bind GetSettings::class
+    factoryOf(::EditProfileImpl) bind EditProfile::class
+    factoryOf(::SendContactFormImpl) bind SendContactForm::class
+    factoryOf(::DeleteAccountImpl) bind DeleteAccount::class
+    factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
+    factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class
+    factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class
+    factoryOf(::GetNotificationSettingsImpl) bind GetNotificationSettings::class
+    factoryOf(::UpdateNotificationSettingsImpl) bind UpdateNotificationSettings::class
+    factoryOf(::UpdateNotificationTokenImpl) bind UpdateNotificationToken::class
+}

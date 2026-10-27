@@ -8,12 +8,6 @@ import dev.icerock.moko.resources.PluralsResource
 import dev.icerock.moko.resources.desc.Plural
 import dev.icerock.moko.resources.desc.StringDesc
 
-@Composable
-fun StringDesc.string(): String {
-    resources()
-    return this.toString(LocalContext.current)
-}
-
 fun PluralsResource.plural(quantity: Int): StringDesc {
     return StringDesc.Plural(this, quantity)
 }

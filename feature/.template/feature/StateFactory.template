@@ -1,0 +1,5 @@
+package ${ROOT_PACKAGE}.feature.${FEATURE_NAME}.presentation
+
+interface ${FEATURE_NAME_CAPITAL}StateFactory {
+
+}

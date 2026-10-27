@@ -1,0 +1,87 @@
+package me.bookk.shared;
+
+import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.CancellationException
+import me.bookk.core.Logger
+import me.bookk.core.domain.entity.Error
+import me.bookk.core.presentation.error.ButtonDescriptor
+import me.bookk.core.presentation.error.ErrorDescription
+import me.bookk.core.presentation.error.ErrorMapper
+import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.designsystem.resources.DesignSystem
+
+class ErrorMapperImpl : ErrorMapper {
+    private val logger = Logger.create("ErrorMapper")
+    override fun mapToNotification(e: Throwable): PresentationNotification {
+        if (BuildKonfig.DEBUG) {
+            logger.e(e)
+        }
+        return when (e) {
+            is Error -> when (e) {
+                is Error.UnknownApiError,
+                is Error.BadRequest,
+                is Error.InternalServerError -> PresentationNotification.Message(
+                    message = DesignSystem.strings.error_server.desc(),
+                    buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+                )
+                is Error.NoConnectionError -> PresentationNotification.Message(
+                    message = DesignSystem.strings.error_no_internet.desc(),
+                    buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+                )
+                is Error.WrappedError -> PresentationNotification.Message(
+                    message = e.message.orEmpty().desc(),
+                    buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+                )
+                is Error.BusinessError -> PresentationNotification.Message(
+                    message = e.message.orEmpty().desc(),
+                    buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+                )
+                is Error.BusinessAccessSuspended -> PresentationNotification.BusinessAccessSuspended
+                is Error.Unknown -> PresentationNotification.Message(
+                    message = DesignSystem.strings.error_unexpected.desc(),
+                    buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+                )
+                is Error.InvalidApplicationState -> PresentationNotification.Message(
+                    message = DesignSystem.strings.error_unexpected.desc(),
+                    buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+                )
+                is Error.Cancelled,
+                is Error.Ignore -> PresentationNotification.Ignore
+                is Error.Unauthorized -> PresentationNotification.Unauthorized
+            }
+
+            is CancellationException -> PresentationNotification.Ignore
+
+            else -> PresentationNotification.Message(
+                message = DesignSystem.strings.error_unexpected.desc(),
+                buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+            )
+        }
+    }
+
+    override fun mapToDescription(e: Throwable): ErrorDescription = when (e) {
+        is Error.NoConnectionError -> ErrorDescription(
+            title = DesignSystem.strings.error_connection_title.desc(),
+            message = DesignSystem.strings.error_connection_subtitle.desc()
+        )
+        is Error.UnknownApiError,
+        is Error.BadRequest,
+        is Error.InternalServerError -> ErrorDescription(
+            title = DesignSystem.strings.error_server_title.desc(),
+            message = DesignSystem.strings.error_server.desc()
+        )
+        is Error.BusinessAccessSuspended -> ErrorDescription(
+            title = DesignSystem.strings.error_access_suspended_title.desc(),
+            message = DesignSystem.strings.error_access_suspended.desc()
+        )
+        is Error.BusinessError,
+        is Error.WrappedError -> ErrorDescription(
+            title = DesignSystem.strings.error_generic_title.desc(),
+            message = e.message.orEmpty().desc()
+        )
+        else -> ErrorDescription(
+            title = DesignSystem.strings.error_generic_title.desc(),
+            message = DesignSystem.strings.error_unexpected.desc()
+        )
+    }
+}

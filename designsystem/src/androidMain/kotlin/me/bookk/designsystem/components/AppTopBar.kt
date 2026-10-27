@@ -1,114 +1,239 @@
 package me.bookk.designsystem.components
 
-import androidx.compose.foundation.background
+import android.graphics.Color.BLACK
+import android.graphics.Color.WHITE
+import android.view.animation.AccelerateInterpolator
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.localized
+import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.error.ActionType
+import me.bookk.designsystem.html
+import me.bookk.designsystem.painter
 import me.bookk.designsystem.theme.AppTheme
+import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.designsystem.theme.text.AppTypography
+import me.bookk.designsystem.uistate.AndroidAppBarState
+import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.TopBarSize
 
-val DefaultTopBarHeight = 44.dp
+
+private const val DISABLED_ACTION_ALPHA = 0.38f
 
 @Composable
 fun AppTopBar(
+    state: AppBarState,
     modifier: Modifier = Modifier,
-    startContent: @Composable (() -> Unit)? = null,
-    centerContent: @Composable (() -> Unit)? = null,
-    endContent: @Composable (() -> Unit)? = null,
-    containerColor: Color = LocalColors.current.Background,
-    bottomLineColor: Color = LocalColors.current.Divider,
-) {
-    Column {
-        Row(
-            modifier = modifier
-                .background(containerColor)
-                .statusBarsPadding()
-                .height(DefaultTopBarHeight)
-                .padding(horizontal = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                startContent?.invoke()
-            }
+    colors: TopAppBarColors = topBarDefaultColors(),
+    actions: @Composable RowScope.() -> Unit = {
+        state.actions.items.forEach {
+            if (it.icon != null) {
+                IconButton(onClick = it.onClick, enabled = it.isEnabled) {
+                    Icon(
+                        painter = it.icon.painter(),
+                        contentDescription = it.contentDescription.localized(),
+                        tint = colors.actionIconContentColor.copy(alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA)
+                    )
+                }
+            } else {
+                TextButton(onClick = it.onClick, enabled = it.isEnabled) {
+                    Text(
+                        it.contentDescription.localized(),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = when (it.type) {
+                                ActionType.CANCEL,
+                                ActionType.CONFIRM,
+                                ActionType.POSITIVE -> LocalColors.current.actionText
 
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                centerContent?.invoke()
-            }
-
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                endContent?.invoke()
+                                ActionType.NEGATIVE -> LocalColors.current.error
+                            }.copy(alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA)
+                        )
+                    )
+                }
             }
         }
+    },
+    behavior: TopAppBarScrollBehavior? = null,
+    onNavigationIconClick: (() -> Unit)? = state.onBackClick,
+    navigationIcon: @Composable () -> Unit = {
+        onNavigationIconClick?.let {
+            ClickableIcon(
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                onClick = it,
+                tint = colors.navigationIconContentColor
+            )
+        }
+    }
+) {
+    when (state.size) {
+        TopBarSize.SMALL -> {
+            CenterAlignedTopAppBar(
+                modifier = modifier,
+                colors = colors,
+                actions = actions,
+                title = {
+                    AppBarTitle(
+                        state.title.localized(),
+                        state.size,
+                        colors.titleContentColor,
+                        behavior
+                    )
+                },
+                navigationIcon = navigationIcon
+            )
+        }
 
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            color = bottomLineColor,
-            thickness = 0.5.dp
-        )
+        TopBarSize.LARGE -> {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                MediumTopAppBar(
+                    modifier = modifier,
+                    colors = colors,
+                    actions = actions,
+                    title = {
+                        AppBarTitle(
+                            state.title.localized(),
+                            state.size,
+                            colors.titleContentColor,
+                            behavior
+                        )
+                    },
+                    navigationIcon = navigationIcon,
+                    scrollBehavior = behavior
+                )
+                state.subtitle?.let {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = it.html(),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun AppBarTitle(text: String) {
+private fun AppBarTitle(
+    text: String,
+    size: TopBarSize,
+    color: Color,
+    behavior: TopAppBarScrollBehavior?
+) {
+    val style = when (size) {
+        TopBarSize.SMALL -> MaterialTheme.typography.titleMedium
+        TopBarSize.LARGE -> MaterialTheme.typography.headlineLarge
+    }
+    val weight = when (size) {
+        TopBarSize.SMALL -> FontWeight.Medium
+        TopBarSize.LARGE -> FontWeight.Bold
+    }
+    val interpolator = remember { AccelerateInterpolator(1.6f) }
+    val fraction =
+        if (behavior != null) interpolator.getInterpolation(1f - behavior.state.collapsedFraction) else 1f
     Text(
+        modifier = Modifier.alpha(fraction),
         text = text,
-        style = AppTypography.title3SemiBold,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
+        style = style,
+        fontWeight = weight,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+        color = color
     )
 }
 
 @Composable
-fun AppBarNavButton(onClick: () -> Unit) {
-    ClickableIcon(
-        icon = Icons.AutoMirrored.Filled.ArrowBack,
-        onClick = onClick
-    )
+fun topBarDefaultColors(
+    containerColor: Color = LocalColors.current.background,
+    scrolledContainerColor: Color = Color.Transparent,
+    navigationIconContentColor: Color = Color.Unspecified,
+    titleContentColor: Color = Color.Unspecified,
+    actionIconContentColor: Color = LocalColors.current.actionText,
+    subtitleContentColor: Color = Color.Unspecified,
+) = TopAppBarDefaults.topAppBarColors(
+    containerColor,
+    scrolledContainerColor,
+    navigationIconContentColor,
+    titleContentColor,
+    actionIconContentColor,
+    subtitleContentColor
+)
+
+@Preview(showBackground = true, backgroundColor = BLACK.toLong())
+@Composable
+private fun PreviewDark() {
+    AppTheme(themeMode = ThemeMode.DARK) {
+        Column {
+            AppTopBar(
+                state = AndroidAppBarState(
+                    title = "Title".desc(),
+                    size = TopBarSize.SMALL,
+                ),
+                onNavigationIconClick = {}
+            )
+            AppTopBar(
+                state = AndroidAppBarState(
+                    title = "Title".desc(),
+                    subtitle = "Subtitle example".desc(),
+                    size = TopBarSize.LARGE,
+                ),
+                onNavigationIconClick = {}
+            )
+            AppTopBar(
+                state = AndroidAppBarState(
+                    title = "Title".desc(),
+                    subtitle = "Subtitle example".desc(),
+                    size = TopBarSize.LARGE,
+                ),
+                onNavigationIconClick = {}
+            )
+        }
+    }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = WHITE.toLong())
 @Composable
-private fun Preview() {
-    AppTheme {
-        AppTopBar(
-            startContent = {
-                AppBarNavButton {}
-            },
-            centerContent = {
-                AppBarTitle(text = "Title")
-            },
-            endContent = {
-                ClickableIcon(
-                    icon = Icons.AutoMirrored.Filled.ArrowBack
-                ) {}
-            }
-        )
+private fun PreviewLight() {
+    AppTheme(themeMode = ThemeMode.LIGHT) {
+        Column {
+            AppTopBar(
+                state = AndroidAppBarState(
+                    title = "Title".desc(),
+                    subtitle = null,
+                    size = TopBarSize.SMALL,
+                ),
+                onNavigationIconClick = {}
+            )
+            AppTopBar(
+                state = AndroidAppBarState(
+                    title = "Title".desc(),
+                    subtitle = "Subtitle example".desc(),
+                    size = TopBarSize.LARGE,
+                ),
+                onNavigationIconClick = {}
+            )
+        }
     }
 }

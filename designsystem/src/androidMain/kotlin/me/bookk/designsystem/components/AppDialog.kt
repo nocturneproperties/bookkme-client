@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -20,71 +19,61 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.core.presentation.error.ActionType
+import me.bookk.core.presentation.error.ButtonDescriptor
+import me.bookk.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.designsystem.theme.text.AppTypography
-import me.bookk.designsystem.uistate.ButtonState
-import me.bookk.designsystem.uistate.ButtonStateImpl
+import me.bookk.designsystem.uistate.AndroidButtonState
 
 @Composable
 fun AppDialog(
     title: String? = null,
     subtitle: String? = null,
     content: (@Composable () -> Unit)? = null,
-    rightButton: ButtonState? = null,
-    leftButton: ButtonState? = null,
-    rightButtonColor: Color = LocalColors.current.ActionText,
-    leftButtonColor: Color = LocalColors.current.ActionText,
-    onRightButtonClicked: (() -> Unit)? = null,
-    onLeftButtonClicked: (() -> Unit)? = null,
+    buttonDescriptors: List<ButtonDescriptor>,
     onDismiss: () -> Unit,
 ) {
-    AppDialogContainer(onDismiss) {
+    AppDialogScreenContainer(onDismiss) {
         Column(
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                title?.let {
-                    Text(
-                        text = it,
-                        style = AppTypography.title3SemiBold,
-                        color = LocalColors.current.PrimaryText,
-                    )
-                }
-                subtitle?.let {
-                    Text(
-                        text = it,
-                        style = AppTypography.body1Regular,
-                        color = LocalColors.current.PrimaryText,
-                    )
-                }
-                content?.invoke()
+            title?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = LocalColors.current.primaryText,
+                )
             }
+            subtitle?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = LocalColors.current.secondaryText,
+                )
+            }
+            content?.invoke()
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                leftButton?.let {
-                    PrimaryButton(
-                        onClick = { onLeftButtonClicked?.invoke() },
-                        state = it,
+                buttonDescriptors.forEach {
+                    StateTextButton(
+                        onClick = {
+                            it.onClick.invoke()
+                            onDismiss()
+                        },
+                        state = AndroidButtonState(text = it.text),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,
-                            contentColor = leftButtonColor,
-                        )
-                    )
-                }
-                rightButton?.let {
-                    PrimaryButton(
-                        onClick = { onRightButtonClicked?.invoke() },
-                        state = it,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                            contentColor = rightButtonColor,
+                            contentColor = when (it.actionType) {
+                                ActionType.POSITIVE -> LocalColors.current.actionText
+                                ActionType.NEGATIVE -> LocalColors.current.error
+                                ActionType.CANCEL -> LocalColors.current.actionText
+                                ActionType.CONFIRM -> LocalColors.current.actionText
+                            },
                         )
                     )
                 }
@@ -93,23 +82,6 @@ fun AppDialog(
     }
 }
 
-@Composable
-fun AppDialogContainer(
-    onDismiss: () -> Unit,
-    content: @Composable () -> Unit,
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(
-                containerColor = LocalColors.current.Elevated
-            ),
-            modifier = Modifier.widthIn(max = 312.dp)
-        ) {
-            content()
-        }
-    }
-}
 
 @Composable
 fun AppDialogScreenContainer(
@@ -121,9 +93,9 @@ fun AppDialogScreenContainer(
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Card(
-            shape = MaterialTheme.shapes.medium,
+            shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
-                containerColor = LocalColors.current.Elevated
+                containerColor = LocalColors.current.elevated
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -141,7 +113,20 @@ private fun Preview() {
         AppDialog(
             title = "Title",
             subtitle = "Subtitle",
-            rightButton = ButtonStateImpl("Action".desc()),
+            buttonDescriptors = listOf(
+                ButtonDescriptor(
+                    text = DesignSystem.strings.action_cancel.desc(),
+                    actionType = ActionType.NEGATIVE
+                ),
+                ButtonDescriptor(
+                    text = DesignSystem.strings.action_confirm.desc(),
+                    actionType = ActionType.POSITIVE
+                ),
+                ButtonDescriptor(
+                    text = DesignSystem.strings.action_cancel.desc(),
+                    actionType = ActionType.CANCEL
+                )
+            ),
             onDismiss = {}
         )
     }

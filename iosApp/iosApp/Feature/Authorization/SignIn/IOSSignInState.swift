@@ -1,0 +1,45 @@
+//
+//  IOSSignInState.swift
+//  iosApp
+//
+//  Created by Antiufieiev Michael on 18.01.2025.
+//  Copyright © 2025 BookkMe. All rights reserved.
+//
+
+import shared
+
+@MainActor
+@Observable
+class IOSSignInState: @MainActor SignInState, NativeStateRepresentation {
+	typealias SwiftType = IOSSignInState
+	
+	typealias KotlinType = SignInState
+	
+   
+    var appBar: any AppBarState
+    
+    var learnMoreButton: any ButtonState
+    
+    var signInButton: any ButtonState
+    
+    var signUpButton: any ButtonState
+    
+    var passkeyInfoCardData: PasskeyInfoCardData
+    
+    var troubleshootButton: any ButtonState
+    
+	var notification: any PresentationNotificationState
+    
+    var navigation: any NavigationState
+    
+    init(initData: SignInStateInitData) {
+        appBar = IOSAppBarState(title: initData.title)
+        learnMoreButton = IOSButtonState(text: initData.learnMoreText)
+        passkeyInfoCardData = initData.passkeyInfoCardData
+        troubleshootButton = IOSButtonState(text: initData.troubleshootButtonText)
+        signInButton = IOSButtonState(text: initData.signInButtonText)
+        signUpButton = IOSButtonState(text: initData.signUpButtonText)
+		notification = IOSNotificationState()
+        navigation = IOSNavigationState()
+    }
+}

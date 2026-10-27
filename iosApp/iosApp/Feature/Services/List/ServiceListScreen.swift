@@ -1,0 +1,99 @@
+//
+//  ServiceListScreen.swift
+//  iosApp
+//
+//  Created by BookkMe on 11.05.2026.
+//  Copyright © 2026 BookkMe. All rights reserved.
+//
+
+import SwiftUI
+import shared
+
+struct ServiceListScreen: View {
+	
+	@EnvironmentObject var navigationStack: NavigationStackHolder
+	@StateViewModel var viewModel: ServiceListViewModel
+
+	init() {
+		_viewModel = StateViewModel(wrappedValue: IosServicesPresentationDiKt.serviceListVM())
+	}
+	
+	var body: some View {
+		let uiState = IOSServiceListState.cast(viewModel.uiState)
+		let listState = IOSListState<ServiceListStateServiceGroupUI>.cast(uiState.services)
+		ListGroup(listState: listState, listStyle: .automatic) { section in
+			ServiceGroupSection(section: section)
+				.transition(.opacity)
+				.animation(.easeInOut, value: uiState.services.items.count)
+				.id(section.id)
+		} header: {
+			Section {
+				SectionView(action: uiState.groupsSection)
+			}
+			.listRowSeparator(.hidden)
+		}
+		.refreshable { await uiState.refreshState.impl().awaitRefresh() }
+		.searchable(
+			text: uiState.searchField.binding(),
+			placement: .navigationBarDrawer(displayMode: .always),
+			prompt: uiState.searchField.placeholder.localized()
+		)
+		.withNavigationBar(uiState.appBar)
+		.sendLifecycleEventsTo(viewModel)
+		.handleNotifications(uiState.notifications)
+		.handleNavigation(uiState.navigation) { destination in
+			switch destination {
+			case is ServiceListDestination.ServiceGroups:
+				navigationStack.push(ServicesDestination.ServiceGroupList.shared)
+				break
+			case let destination as ServiceListDestination.AddService:
+				navigationStack.push(ServicesDestination.AddService(businessId: destination.businessId))
+				break
+			case let destination as ServiceListDestination.EditService:
+				navigationStack.push(ServicesDestination.EditService(serviceId: destination.id))
+				break
+			case is ServiceListDestination.Back:
+				navigationStack.popLast()
+			default:
+				break
+			}
+		}
+	}
+}
+
+struct ServiceGroupSection: View {
+	
+	var section: ServiceListStateServiceGroupUI
+	
+	var body: some View {
+		Section(section.name) {
+			ForEach(section.items, id: \.id) { service in
+				Button {
+					section.onItemClick(service)
+				} label: {
+					Text(service.title)
+						.font(.body)
+						.frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .center))
+						.contentShape(Rectangle())
+				}
+				.buttonStyle(.plain)
+				.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+					if let onItemDeleteClick = section.onItemDeleteClick {
+						Button(DesignSystem.strings().action_delete.desc().localized()) {
+							onItemDeleteClick(service)
+						}
+						.tint(.red)
+					}
+				}
+				.contextMenu {
+					if let onItemDeleteClick = section.onItemDeleteClick {
+						Button(DesignSystem.strings().action_delete.desc().localized(), role: .destructive) {
+							onItemDeleteClick(service)
+						}
+					}
+				}
+				.id(service.id)
+			}
+		}.id(section.id)
+	}
+}

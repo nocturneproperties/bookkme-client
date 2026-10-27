@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_notifications_channel_id">default_notification_channel</string>
+    <string name="settings_notifications_channel_title">General Notifications</string>
+    <string name="settings_notifications_channel_description">General app notifications</string>
+</resources>

@@ -1,0 +1,41 @@
+package me.bookk.feature.authorization.presentation.sign_up
+
+import androidx.compose.runtime.Immutable
+import me.bookk.designsystem.uistate.AndroidAppBarState
+import me.bookk.designsystem.uistate.AndroidButtonState
+import me.bookk.designsystem.uistate.AndroidNavigationState
+import me.bookk.designsystem.uistate.AndroidNotificationState
+import me.bookk.designsystem.uistate.AndroidTextFieldState
+import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.designsystem.uistate.NavigationState
+import me.bookk.designsystem.uistate.PresentationNotificationState
+import me.bookk.designsystem.uistate.TextFieldState
+import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
+import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
+
+@Immutable
+internal class AndroidSignUpState private constructor(
+    override val appBar: AppBarState,
+    override val name: TextFieldState,
+    override val lastName: TextFieldState,
+    override val email: TextFieldState,
+    override val confirmButton: ButtonState,
+    override val notification: PresentationNotificationState,
+    override val learnMoreButton: ButtonState,
+    override val passkeyInfoCardData: PasskeyInfoCardData,
+    override val navigation: NavigationState<SignUpNavigationDestination>
+) : SignUpState {
+
+    constructor(initData: SignUpState.InitData) : this(
+        appBar = AndroidAppBarState(title = initData.title),
+        name = AndroidTextFieldState(placeholder = initData.nameHint),
+        lastName = AndroidTextFieldState(placeholder = initData.lastNameHint),
+        email = AndroidTextFieldState(placeholder = initData.emailHint),
+        confirmButton = AndroidButtonState(text = initData.confirmButtonText, isEnabled = false),
+        learnMoreButton = AndroidButtonState(text = initData.learnMoreButtonText),
+        passkeyInfoCardData = initData.passkeyInfoCardData,
+        notification = AndroidNotificationState(),
+        navigation = AndroidNavigationState()
+    )
+}

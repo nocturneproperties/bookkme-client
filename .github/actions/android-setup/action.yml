@@ -1,0 +1,55 @@
+name: Android Setup
+description: Prepares an Ubuntu runner to build the Android app (Java, Gradle cache, signing keystores, Firebase config)
+
+inputs:
+  gradle-encryption-key:
+    description: Gradle configuration cache encryption key
+    required: true
+  gradle-cache-read-only:
+    description: Whether the Gradle cache is read-only
+    required: false
+    default: "true"
+  keystore-properties:
+    description: Base64-encoded keystore.properties
+    required: true
+  debug-keystore:
+    description: Base64-encoded debug.jks
+    required: true
+  release-keystore:
+    description: Base64-encoded release.jks; skipped when empty
+    required: false
+    default: ""
+  google-services:
+    description: Base64-encoded google-services.json
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v6
+      with:
+        distribution: temurin
+        java-version: "21"
+
+    - name: Setup Gradle Cache
+      uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-encryption-key: ${{ inputs.gradle-encryption-key }}
+        cache-read-only: ${{ inputs.gradle-cache-read-only }}
+
+    - name: Import Secrets
+      shell: bash
+      env:
+        KEYSTORE_PROPERTIES: ${{ inputs.keystore-properties }}
+        DEBUG_KEYSTORE: ${{ inputs.debug-keystore }}
+        RELEASE_KEYSTORE: ${{ inputs.release-keystore }}
+        GOOGLE_SERVICES: ${{ inputs.google-services }}
+      run: |
+        mkdir -p androidApp/keystore
+        echo -n "$KEYSTORE_PROPERTIES" | base64 --decode > androidApp/keystore.properties
+        echo -n "$DEBUG_KEYSTORE" | base64 --decode > androidApp/keystore/debug.jks
+        echo -n "$GOOGLE_SERVICES" | base64 --decode > androidApp/google-services.json
+        if [ -n "$RELEASE_KEYSTORE" ]; then
+          echo -n "$RELEASE_KEYSTORE" | base64 --decode > androidApp/keystore/release.jks
+        fi

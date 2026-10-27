@@ -1,0 +1,62 @@
+name: iOS Release
+on:
+  push:
+    tags:
+      - '*-v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    runs-on: macos-26
+    concurrency:
+      group: ios-release-${{ github.ref }}
+      cancel-in-progress: false
+    timeout-minutes: 60
+
+    steps:
+      - name: Set dynamic variables
+        run: |
+          tag_name=${GITHUB_REF#refs/tags/}
+          version_code=$(date +%y%j%H%M)
+          echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${tag_name##*-v}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v7
+
+      - name: Setup iOS
+        uses: ./.github/actions/ios-setup
+        with:
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          environment: Prod
+          google-service-info: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_FILE }}
+          signing-certificate: ${{ secrets.IOS_CERTIFICATE_FILE }}
+          signing-certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          provisioning-profile: ${{ secrets.IOS_PROVISIONING_PROFILE_FILE }}
+          distribution-certificate: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_FILE }}
+          distribution-certificate-password: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          distribution-provisioning-profile: ${{ secrets.IOS_APPSTORE_PROVISIONING_PROFILE_FILE }}
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme prod \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ${{ runner.temp }}/DerivedData \
+            -archivePath ${{ runner.temp }}/BookkMe.xcarchive
+
+      - name: Export
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath ${{ runner.temp }}/BookkMe.xcarchive \
+            -exportOptionsPlist iosApp/ExportOptions.plist \
+            -exportPath ${{ runner.temp }}/export
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-prod-release
+          path: ${{ runner.temp }}/export/*.ipa
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 5

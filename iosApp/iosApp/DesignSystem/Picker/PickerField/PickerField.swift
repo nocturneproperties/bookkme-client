@@ -1,0 +1,313 @@
+//
+//  PickerField.swift
+//  iosApp
+//
+//  Created by BookkMe on 11.05.2026.
+//  Copyright © 2026 BookkMe. All rights reserved.
+//
+
+import SwiftUI
+import UIKit
+import shared
+
+enum PickerBottomSheetDetent: CustomPresentationDetent {
+    nonisolated(unsafe) static var requestedHeight: CGFloat = .zero
+
+    static func height(in context: Context) -> CGFloat? {
+        min(requestedHeight, context.maxDetentValue)
+    }
+}
+
+extension PickerScreenArgs: @retroactive Identifiable {
+	static func from(
+		id: String,
+		title: any StringDesc,
+		options: [PickerPresentation],
+		choice: PickerScreenArgs.Choice
+	) -> PickerScreenArgs {
+		PickerScreenArgs(
+			id: id,
+			title: title.localized(),
+			options: options.map { presentation in
+				PickerScreenArgs.PickerData(
+					data: KeyValueData(
+						key: presentation.pickerItemId,
+						value: presentation.displayName.localized()
+					),
+					iconUrl: presentation.displayIconUrl
+				)
+			},
+			choice: choice
+		)
+	}
+}
+
+struct PickerField: View {
+    @Bindable private var state: IOSPickerState
+    private let onItemPicked: (PickerPresentation) -> Void
+
+    @State private var isSheetPresented = false
+	@State private var pickerArgs: PickerScreenArgs? = nil
+
+    init(_ state: PickerFieldState, onItemPicked: ((PickerPresentation) -> Void)? = nil) {
+        let impl = state.impl()
+        self._state = Bindable(wrappedValue: impl)
+        self.onItemPicked = onItemPicked ?? { option in
+            impl.onItemPicked(option)
+        }
+    }
+
+    var body: some View {
+		if state.isVisible {
+			HStack {
+				StateTextField(state.textField)
+				switch state.pickerType {
+				case .bottomSheet:
+					Image(systemName: "chevron.down")
+						.font(.subheadline)
+						.bold()
+						.foregroundStyle(.tertiary)
+						.padding(.trailing)
+				default:
+					Image(systemName: "chevron.right")
+						.font(.subheadline)
+						.bold()
+						.foregroundStyle(.tertiary)
+						.padding(.trailing)
+				}
+			}
+			.simultaneousGesture(TapGesture().onEnded {
+				guard state.textField.enabled else { return }
+				dismissKeyboard()
+				switch state.pickerType {
+				case .bottomSheet:
+					guard !state.options.isEmpty else { return }
+					isSheetPresented = true
+				case .screen:
+					pickerArgs = PickerScreenArgs.from(
+						id: state.id,
+						title: state.pickerTitle,
+						options: state.options,
+						choice: .single
+					)
+				default:
+					break
+				}
+			})
+			.sheet(isPresented: $isSheetPresented) {
+				PickerBottomSheet(
+					title: state.pickerTitle.localized(),
+					options: state.options,
+					selectedId: state.selectedItem?.pickerItemId,
+					onPick: { option in
+						onItemPicked(option)
+						isSheetPresented = false
+					}
+				)
+			}.fullScreenCover(item: $pickerArgs) { args in
+				NavigationStack {
+					PickOptionScreen(args: args) { items in
+						if let item = items.first,
+						   let choice = state.options.first(where: { $0.pickerItemId == item.key }) {
+							onItemPicked(choice)
+							pickerArgs = nil
+						}
+					}
+				}
+			}
+		}
+    }
+
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
+    }
+}
+
+struct PickerBottomSheet: View {
+    let title: String
+    let options: [PickerPresentation]
+    let onPick: (PickerPresentation) -> Void
+
+    @State private var selectedOptionId: String?
+    @Environment(\.dismiss) private var dismiss
+
+    private enum Layout {
+        static let rowHeight: CGFloat = 48
+        static let buttonHeight: CGFloat = 48
+        static let headerHeight: CGFloat = 24
+
+        static let topPadding: CGFloat = 16
+        static let horizontalPadding: CGFloat = 16
+        static let rowTrailingPadding: CGFloat = 16
+        static let headerBottomPadding: CGFloat = 8
+        static let buttonTopPadding: CGFloat = 24
+        static let bottomPadding: CGFloat = 0
+
+        static let baseHeight: CGFloat =
+            topPadding + headerHeight + headerBottomPadding + buttonTopPadding + buttonHeight + bottomPadding
+    }
+
+    init(
+        title: String,
+        options: [PickerPresentation],
+        selectedId: String?,
+        onPick: @escaping (PickerPresentation) -> Void
+    ) {
+        self.title = title
+        self.options = options
+        self.onPick = onPick
+        self._selectedOptionId = State(initialValue: selectedId)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ScrollView {
+				header
+                LazyVStack(spacing: 8) {
+                    ForEach(options, id: \.pickerItemId) { option in
+                        Button(action: {
+                            selectedOptionId = option.pickerItemId
+                        }) {
+                            HStack {
+                                Text(capitalizedItemTitle(option.displayName.localized()))
+									.font(.body)
+                                    .multilineTextAlignment(.leading)
+                                Spacer(minLength: 0)
+								if (selectedOptionId == option.pickerItemId) {
+									Image(systemName: "checkmark")
+										.foregroundStyle(AppColors.actionText)
+								}
+                            }
+                            .padding(.leading, Layout.horizontalPadding)
+                            .padding(.trailing, Layout.rowTrailingPadding)
+							.frame(maxWidth: .infinity, minHeight: Layout.rowHeight, maxHeight: .infinity, alignment: .leading)
+							.background(AppColors.elevated,
+										in: RoundedRectangle(cornerRadius: 12))
+							.padding(.horizontal)
+                        }
+						.buttonStyle(.plain)
+                    }
+                }
+            }
+            .scrollIndicators(.hidden)
+            .scrollBounceBehavior(.basedOnSize)
+            .clipped()
+            StateButton(
+                IOSButtonState(
+                    text: DesignSystem.strings.shared.action_continue.desc(),
+                    isEnabled: selectedOptionId != nil
+                ),
+            ) {
+                confirmSelection()
+            }
+            .padding(.top, Layout.buttonTopPadding)
+            .padding(.horizontal, Layout.horizontalPadding)
+            .padding(.bottom, Layout.bottomPadding)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+		.presentationBackground(AppColors.background)
+		.presentationDetents([.medium])
+    }
+
+    private var header: some View {
+        HStack(spacing: 12) {
+            Text(title)
+				.font(.largeTitle)
+				.fontWeight(.bold)
+                .foregroundStyle(AppColors.primary)
+                .lineLimit(1)
+
+            Spacer(minLength: 0)
+        }
+        .frame(minHeight: Layout.headerHeight)
+        .padding(.top, Layout.topPadding)
+        .padding(.horizontal, Layout.horizontalPadding)
+        .padding(.bottom, Layout.headerBottomPadding)
+    }
+
+    private func capitalizedItemTitle(_ title: String) -> String {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let firstCharacter = trimmedTitle.first else { return trimmedTitle }
+        return String(firstCharacter).uppercased() + trimmedTitle.dropFirst()
+    }
+
+    private func confirmSelection() {
+        guard
+            let selectedOptionId,
+            let option = options.first(where: { $0.pickerItemId == selectedOptionId })
+        else {
+            return
+        }
+        onPick(option)
+        dismiss()
+    }
+}
+
+#Preview("Picker Field - Bottom Sheet") {
+    @Previewable
+    @State
+    var value: IOSPickerState = IOSPickerState(
+		pickerTitle: RawStringDesc(string: "Select country"),
+        options: [
+            MinimalPickerPresentation(pickerItemId: "1", displayName: RawStringDesc(string: "Afghanistan")),
+            MinimalPickerPresentation(pickerItemId: "2", displayName: RawStringDesc(string: "Albania")),
+            MinimalPickerPresentation(pickerItemId: "3", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "4", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "5", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "6", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "7", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "8", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "9", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "10", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "11", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "12", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "13", displayName: RawStringDesc(string: "Algeria")),
+            MinimalPickerPresentation(pickerItemId: "14", displayName: RawStringDesc(string: "Algeria")),
+        ],
+		pickerType: .bottomSheet,
+        textField: IOSTextFieldState(placeholder: RawStringDesc(string: "Select country"))
+    )
+
+	VStack(spacing: 16) {
+        PickerField(value) { option in
+            value.selectedItem = option
+            value.textField.updateText(desc: option.displayName)
+        }
+    }
+    .padding(16)
+}
+
+#Preview("Picker Field - Screen") {
+    @Previewable
+    @State
+    var value: IOSPickerState = IOSPickerState(
+		pickerTitle: RawStringDesc(string: "Select country"),
+        options: [
+            MinimalPickerPresentation(pickerItemId: "1", displayName: RawStringDesc(string: "Afghanistan")),
+            MinimalPickerPresentation(pickerItemId: "2", displayName: RawStringDesc(string: "Albania")),
+            MinimalPickerPresentation(pickerItemId: "5", displayName: RawStringDesc(string: "Albania")),
+            MinimalPickerPresentation(pickerItemId: "4", displayName: RawStringDesc(string: "Albania")),
+            MinimalPickerPresentation(pickerItemId: "6", displayName: RawStringDesc(string: "Albania")),
+            MinimalPickerPresentation(pickerItemId: "7", displayName: RawStringDesc(string: "Albania")),
+            MinimalPickerPresentation(pickerItemId: "8", displayName: RawStringDesc(string: "Albania")),
+            MinimalPickerPresentation(pickerItemId: "9", displayName: RawStringDesc(string: "Albania")),
+            MinimalPickerPresentation(pickerItemId: "3", displayName: RawStringDesc(string: "Algeria"))
+        ],
+		pickerType: .screen,
+        textField: IOSTextFieldState(placeholder: RawStringDesc(string: "Select country"))
+    )
+
+	VStack(spacing: 16) {
+        PickerField(value) { option in
+            value.selectedItem = option
+            value.textField.updateText(desc: option.displayName)
+        }
+    }
+    .padding(16)
+    .background(AppColors.elevated)
+}

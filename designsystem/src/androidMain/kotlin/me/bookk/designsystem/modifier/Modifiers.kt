@@ -32,9 +32,11 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.nativePaint
 import androidx.compose.ui.graphics.scale
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
@@ -62,7 +64,7 @@ fun Modifier.drawShadow(
 
         drawIntoCanvas { canvas ->
             val paint = Paint()
-            val frameworkPaint = paint.asFrameworkPaint()
+            val frameworkPaint = paint.nativePaint
             frameworkPaint.color = transparentColor
             frameworkPaint.setShadowLayer(
                 blurRadius.toPx(),
@@ -109,6 +111,45 @@ fun Modifier.coloredOverlay(
                 drawRect(brush, blendMode = BlendMode.SrcAtop)
             }
         }
+}
+
+@Composable
+fun Modifier.coloredOverlay(
+    brushProvider: (IntSize) -> Brush
+): Modifier {
+    var brush by remember { mutableStateOf<Brush>(SolidColor(Color.Transparent)) }
+    return onGloballyPositioned { brush = brushProvider(it.size) }
+        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+        .drawWithCache {
+            onDrawWithContent {
+                drawContent()
+                drawRect(brush, blendMode = BlendMode.SrcAtop)
+            }
+        }
+}
+
+@Composable
+fun Modifier.topShadow(offset: Dp, colorFrom: Color, colorTo: Color = Color.Transparent): Modifier {
+    val pxOffset = with(LocalDensity.current) { offset.toPx() }
+    return coloredOverlay {
+        Brush.verticalGradient(
+            startY = 0f,
+            endY = pxOffset,
+            colorStops = arrayOf(0f to colorFrom, 1f to colorTo)
+        )
+    }
+}
+
+@Composable
+fun Modifier.bottomShadow(offset: Dp, colorTo: Color, colorFrom: Color = Color.Transparent): Modifier {
+    val pxOffset = with(LocalDensity.current) { offset.toPx() }
+    return coloredOverlay {
+        Brush.verticalGradient(
+            startY = (it.height - pxOffset).coerceAtLeast(0f),
+            endY = it.height.toFloat(),
+            colorStops = arrayOf(0f to colorFrom, 1f to colorTo)
+        )
+    }
 }
 
 fun Modifier.shimmerBackground(
@@ -163,7 +204,7 @@ private fun Preview() {
 
             Box(
                 modifier = Modifier
-                    .clip(MaterialTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.large)
                     .shimmerBackground(),
             ) {
                 Text(
@@ -180,7 +221,7 @@ private fun Preview() {
                 Text(
                     modifier = Modifier
                         .padding(24.dp)
-                        .coloredOverlay(SolidColor(LocalColors.current.ActionText)),
+                        .coloredOverlay(SolidColor(LocalColors.current.actionText)),
                     text = "Text with \"coloredOverlay\" modifier"
                 )
             }

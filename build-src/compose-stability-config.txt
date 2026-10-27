@@ -1,2 +1,10 @@
 kotlin.collections.*
 kotlinx.datetime.*
+me.bookk.designsystem.uistate.*
+me.bookk.feature.appointments.presentation.**
+me.bookk.feature.authorization.presentation.**
+me.bookk.feature.business.presentation.**
+me.bookk.feature.clients.presentation.**
+me.bookk.feature.dashboard.presentation.**
+me.bookk.feature.services.presentation.**
+me.bookk.feature.settings.presentation.**

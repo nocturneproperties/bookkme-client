@@ -1,39 +1,29 @@
 plugins {
-    alias(libs.plugins.bookk.kmm.library.compose)
-    alias(libs.plugins.bookk.localise)
-    alias(libs.plugins.kmm.resources)
-}
-
-android {
-    namespace = "me.bookk.designsystem"
+    id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
 kotlin {
+    android {
+        namespace = "me.bookk.designsystem"
+        optimization {
+            consumerKeepRules.file("consumer-rules.pro")
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.presentation)
-            implementation(projects.domain.environment.api)
+            implementation(projects.environment.api)
+            implementation(projects.library.money)
+        }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
         }
     }
-}
-
-localise.config {
-    tag = "designsystem"
-    format = "android"
-    fileName = "strings"
-    resDir = "${projectDir}/src/commonMain/moko-resources"
-    languages = arrayOf("en")
-}
-
-localise.config {
-    tag = "plurals"
-    format = "android"
-    fileName = "plurals"
-    resDir = "${projectDir}/src/commonMain/moko-resources"
-    languages = arrayOf("en")
 }
 
 multiplatformResources {
     resourcesPackage.set("me.bookk.designsystem.resources")
     resourcesClassName.set("DesignSystem")
+    iosMinimalDeploymentTarget.set("26.0")
 }

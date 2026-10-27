@@ -26,10 +26,14 @@ jobs:
         uses: ./.github/actions/ios-setup
         with:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          environment: Prod
           google-service-info: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_FILE }}
           signing-certificate: ${{ secrets.IOS_CERTIFICATE_FILE }}
           signing-certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           provisioning-profile: ${{ secrets.IOS_PROVISIONING_PROFILE_FILE }}
+          distribution-certificate: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_FILE }}
+          distribution-certificate-password: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          distribution-provisioning-profile: ${{ secrets.IOS_APPSTORE_PROVISIONING_PROFILE_FILE }}
 
       - name: Archive
         run: |

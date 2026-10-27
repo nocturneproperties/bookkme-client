@@ -10,7 +10,7 @@ captures
 local.properties
 xcuserdata
 androidApp/keystore.properties
-iosApp/iosApp/GoogleService-Info.plist
+iosApp/iosApp/Firebase/*/GoogleService-Info.plist
 androidApp/keystore/debug.jks
 androidApp/keystore/release.jks
 androidApp/keystore/*.jks

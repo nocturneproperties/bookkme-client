@@ -1,4 +1,4 @@
-name: iOS Manual Distribute
+name: iOS Manual TestFlight Upload
 
 on:
   workflow_dispatch:
@@ -43,11 +43,15 @@ jobs:
         uses: ./.github/actions/ios-setup
         with:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          environment: ${{ inputs.environment }}
           gradle-cache-read-only: "false"
-          google-service-info: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_FILE }}
+          google-service-info: ${{ inputs.environment == 'Dev' && secrets.IOS_DEV_GOOGLE_SERVICE_INFO_FILE || secrets.IOS_GOOGLE_SERVICE_INFO_FILE }}
           signing-certificate: ${{ secrets.IOS_CERTIFICATE_FILE }}
           signing-certificate-password: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-          provisioning-profile: ${{ secrets.IOS_PROVISIONING_PROFILE_FILE }}
+          provisioning-profile: ${{ inputs.environment == 'Dev' && secrets.IOS_DEV_PROVISIONING_PROFILE_FILE || secrets.IOS_PROVISIONING_PROFILE_FILE }}
+          distribution-certificate: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_FILE }}
+          distribution-certificate-password: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          distribution-provisioning-profile: ${{ inputs.environment == 'Dev' && secrets.IOS_DEV_APPSTORE_PROVISIONING_PROFILE_FILE || secrets.IOS_APPSTORE_PROVISIONING_PROFILE_FILE }}
 
       - name: Find Latest Artifact
         id: latest
@@ -97,12 +101,15 @@ jobs:
           overwrite: true
           retention-days: 5
 
-      - name: Distribute
+      - name: Upload to TestFlight
         env:
-          SERVICE_ACCOUNT: ${{ secrets.ANDROID_SERVICEACC_FILE }}
+          API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_FILE }}
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
         run: |
-          credentials_path="${{ runner.temp }}/serviceaccount.json"
-          echo -n "$SERVICE_ACCOUNT" | base64 --decode > "$credentials_path"
-          app_id=$(/usr/libexec/PlistBuddy -c "Print :GOOGLE_APP_ID" iosApp/iosApp/GoogleService-Info.plist)
-          GOOGLE_APPLICATION_CREDENTIALS="$credentials_path" npx --yes firebase-tools@15.33.0 \
-            appdistribution:distribute ${{ runner.temp }}/export/*.ipa --app "$app_id"
+          keys_dir="$HOME/.appstoreconnect/private_keys"
+          mkdir -p "$keys_dir"
+          echo -n "$API_KEY" | base64 --decode > "$keys_dir/AuthKey_$API_KEY_ID.p8"
+          xcrun altool --upload-package ${{ runner.temp }}/export/*.ipa \
+            --api-key "$API_KEY_ID" \
+            --api-issuer "$API_ISSUER_ID"

@@ -26,4 +26,8 @@ class IOSBusinessStateFactory: @MainActor BusinessStateFactory {
 	func createBusinessPluginState() -> any BusinessPluginState {
 		return IOSBusinessPluginState()
 	}
+	
+	func createBusinessAnalyticsState() -> any BusinessAnalyticsState {
+		return IOSBusinessAnalyticsState()
+	}
 }

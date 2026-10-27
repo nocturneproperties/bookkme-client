@@ -45,7 +45,6 @@ fun BusinessTab(
                 toShopOrders = {},
                 toShopAssortment = {},
                 toShopWarehouse = {},
-                toAppointmentRequests = {},
                 goBack = { businessController.popBackStack() }
             )
         )

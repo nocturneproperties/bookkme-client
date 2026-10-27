@@ -43,6 +43,7 @@ jobs:
         uses: ./.github/actions/ios-setup
         with:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          environment: ${{ inputs.environment }}
           gradle-cache-read-only: "false"
           google-service-info: ${{ inputs.environment == 'Dev' && secrets.IOS_DEV_GOOGLE_SERVICE_INFO_FILE || secrets.IOS_GOOGLE_SERVICE_INFO_FILE }}
           signing-certificate: ${{ secrets.IOS_CERTIFICATE_FILE }}

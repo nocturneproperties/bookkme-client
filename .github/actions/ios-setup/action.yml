@@ -9,8 +9,11 @@ inputs:
     description: Whether the Gradle cache is read-only
     required: false
     default: "true"
+  environment:
+    description: App variant being built (Dev or Prod); selects the Firebase config folder
+    required: true
   google-service-info:
-    description: Base64-encoded GoogleService-Info.plist
+    description: Base64-encoded GoogleService-Info.plist of the selected environment
     required: true
   signing-certificate:
     description: Base64-encoded .p12 signing certificate; signing is skipped when empty
@@ -70,7 +73,14 @@ runs:
       shell: bash
       env:
         GOOGLE_SERVICE_INFO: ${{ inputs.google-service-info }}
-      run: echo -n "$GOOGLE_SERVICE_INFO" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist
+        ENVIRONMENT: ${{ inputs.environment }}
+      run: |
+        if [ -z "$GOOGLE_SERVICE_INFO" ]; then
+          echo "::error::GoogleService-Info.plist secret for $ENVIRONMENT is empty or missing"
+          exit 1
+        fi
+        mkdir -p "iosApp/iosApp/Firebase/$ENVIRONMENT"
+        echo -n "$GOOGLE_SERVICE_INFO" | base64 --decode > "iosApp/iosApp/Firebase/$ENVIRONMENT/GoogleService-Info.plist"
 
     - name: Apply Build Version
       shell: bash

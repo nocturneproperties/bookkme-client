@@ -16,8 +16,7 @@ jobs:
       - name: Set dynamic variables
         run: |
           version_code=$(date +%y%j%H%M)
-          clean_ref=${GITHUB_REF#refs/heads/}
-          clean_ref=${clean_ref//\//_}
+          clean_ref=${GITHUB_REF_NAME//\//_}
           echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
           echo "CLEAN_REF=${clean_ref}" >> $GITHUB_ENV
 

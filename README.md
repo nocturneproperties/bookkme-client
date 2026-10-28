@@ -1,6 +1,6 @@
-# Bookk
+# BookkMe
 
-**Bookk** is a Kotlin Multiplatform (KMP) mobile app for **Android and iOS** that helps businesses manage bookings — appointments, clients, services, and business settings from a single shared codebase.
+**BookkMe** is a Kotlin Multiplatform (KMP) mobile app for **Android and iOS** that helps businesses manage bookings — appointments, clients, services, and business settings from a single shared codebase.
 
 The business logic, view models, and data layer are written once in Kotlin and shared across both platforms. Only the UI is native: **Jetpack Compose** on Android and **SwiftUI** on iOS.
 
@@ -42,7 +42,7 @@ The business logic, view models, and data layer are written once in Kotlin and s
 ## Repository Layout
 
 ```
-Bookk/
+BookkMe/
 ├── androidApp/            Android entry point & app configuration
 ├── iosApp/                iOS app (SwiftUI, Xcode file-system-synchronized groups)
 ├── shared/                Global DI wiring + cross-feature StateFactoryCreator
@@ -82,7 +82,7 @@ Features: **authorization**, **business**, **appointments**, **clients**, **serv
 
 ## Architecture
 
-Bookk uses a layered, unidirectional-data-flow architecture:
+BookkMe uses a layered, unidirectional-data-flow architecture:
 
 - **Presentation** — ViewModels expose a `State` interface built by a per-feature `StateFactory`. State is created parameterless and configured in a `setup()` extension; all callbacks use `weakSelfClosure` to avoid iOS retain cycles. UI reads state only.
 - **Domain** — Use cases are verb-named interfaces (`api`) with `internal` implementations (`impl`). Domain errors are exception classes nested in a `sealed interface Error`.
@@ -189,20 +189,9 @@ Please read [`AGENTS.md`](AGENTS.md) before contributing — it is the authorita
 
 ## License
 
-Licensed under the [Apache License 2.0](LICENSE).
+BookkMe is **source-available** under the **Functional Source License, Version 1.1, ALv2 Future License** (`FSL-1.1-ALv2`) — see [`LICENSE`](LICENSE) — plus an [additional permission for self-hosting](LICENSE-SELF-HOSTING.md).
 
-```
-Copyright 2026 Mykhailo Antiufieiev
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+- **Allowed:** reading, modifying and running the code for any purpose other than a competing product — internal use, non-commercial education and research, contributing, and self-hosting BookkMe to take bookings for your own business, with your own clients booking through it.
+- **Not allowed:** offering BookkMe, or a product built from it, to other businesses — as a hosted service, as software you sell, or as part of a booking platform.
+- **Becomes Apache 2.0 after two years:** each version is also licensed under the Apache License, Version 2.0 from the second anniversary of its release.
+- **Earlier versions stay Apache 2.0:** versions published before the switch to FSL — every commit whose `LICENSE` file is the Apache License — were released under the Apache License, Version 2.0 and remain available under it.

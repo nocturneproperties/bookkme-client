@@ -1,5 +1,6 @@
 import build_src.constants.ApplicationConfig
 import build_src.tools.libs
+import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 import java.util.Properties
 
 plugins {
@@ -41,9 +42,15 @@ android {
     buildTypes {
         getByName("debug") {
             signingConfig = signingConfigs.getByName("debug")
+            firebaseAppDistribution {
+                groups = "qa"
+            }
         }
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
+            firebaseAppDistribution {
+                groups = "qa"
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ jobs:
           version_code=$(date +%y%j%H%M)
           echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
           echo "BUILD_VERSION=${tag_name##*-v}" >> $GITHUB_ENV
+          echo "CLEAN_REF=${tag_name//\//_}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v7
 
@@ -37,8 +38,16 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: android-prod-release
+          name: android-${{ env.CLEAN_REF }}-prod
           path: androidApp/build/outputs/apk/prod/release/*.apk
           if-no-files-found: error
           overwrite: true
           retention-days: 5
+
+      - name: Distribute
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.ANDROID_SERVICEACC_FILE }}
+        run: |
+          credentials_path="$RUNNER_TEMP/serviceaccount.json"
+          echo -n "$SERVICE_ACCOUNT" | base64 --decode > "$credentials_path"
+          GOOGLE_APPLICATION_CREDENTIALS="$credentials_path" ./gradlew appDistributionUploadProdRelease

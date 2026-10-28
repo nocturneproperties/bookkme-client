@@ -1,10 +1,12 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
 kotlin {
     android {
-        namespace = "library.device.impl"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.device.impl"
     }
     sourceSets {
         androidMain.dependencies {

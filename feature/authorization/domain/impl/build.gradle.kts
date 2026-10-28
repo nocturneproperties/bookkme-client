@@ -1,10 +1,12 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
 kotlin {
     android {
-        namespace = "me.bookk.feature.authorization.domain.impl"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.authorization.domain.impl"
     }
     sourceSets {
         commonMain.dependencies {

@@ -1,10 +1,12 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
 kotlin {
     android {
-        namespace = "me.bookk.feature.business.data.source"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.business.data.source"
     }
     sourceSets {
         commonMain.dependencies {

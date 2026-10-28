@@ -31,7 +31,7 @@ import me.bookk.designsystem.components.CollapsingAppBarScaffold
 import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.TextField
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState.ServiceGroupUI
 

@@ -7,7 +7,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import library.notifications.api.LocalNotification
 import library.notifications.api.LocalNotificationManager
-import library.notifications.resources.NotifcationRes
+import me.bookk.android.library.notifications.resources.NotifcationRes
 import me.bookk.core.Logger
 
 

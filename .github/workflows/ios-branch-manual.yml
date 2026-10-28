@@ -32,10 +32,10 @@ jobs:
           version_code=$(date +%y%j%H%M)
           clean_ref=${GITHUB_REF#refs/heads/}
           clean_ref=${clean_ref//\//_}
-          env_name=${{ inputs.environment }}
+          env_name=$(echo "${{ inputs.environment }}" | tr '[:upper:]' '[:lower:]')
           echo "CLEAN_REF=${clean_ref}" >> $GITHUB_ENV
           echo "BUILD_VERSION_CODE=$version_code" >> $GITHUB_ENV
-          echo "ENV_NAME=${env_name,,}" >> $GITHUB_ENV
+          echo "ENV_NAME=${env_name}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v7
 

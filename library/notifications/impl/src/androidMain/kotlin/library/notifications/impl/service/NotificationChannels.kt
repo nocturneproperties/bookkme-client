@@ -4,7 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import androidx.core.content.getSystemService
-import library.notifications.resources.NotifcationRes
+import me.bookk.android.library.notifications.resources.NotifcationRes
 
 internal object NotificationChannels {
     fun createDefaultChannel(context: Context) {

@@ -2,7 +2,7 @@ package me.bookk.designsystem.uistate.simple
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 
 class BannerErrorState(
     val text: StringDesc,

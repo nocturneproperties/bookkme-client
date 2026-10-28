@@ -1,10 +1,12 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
 }
 
 kotlin {
     android {
-        namespace = "me.bookk.designsystem"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.designsystem"
         optimization {
             consumerKeepRules.file("consumer-rules.pro")
         }
@@ -23,7 +25,7 @@ kotlin {
 }
 
 multiplatformResources {
-    resourcesPackage.set("me.bookk.designsystem.resources")
+    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.designsystem.resources")
     resourcesClassName.set("DesignSystem")
     iosMinimalDeploymentTarget.set("26.0")
 }

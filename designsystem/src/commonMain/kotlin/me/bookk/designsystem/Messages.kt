@@ -5,7 +5,7 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 
 fun PresentationNotification.Message.Companion.simple(
     message: StringDesc,

@@ -1,10 +1,12 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
 kotlin {
     android {
-        namespace = "library.biometry.impl"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.biometry.impl"
     }
     sourceSets {
         androidMain.dependencies {

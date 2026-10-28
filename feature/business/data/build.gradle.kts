@@ -1,3 +1,5 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
     alias(libs.plugins.kotlin.serialization)
@@ -5,7 +7,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "me.bookk.feature.business.data"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.business.data"
     }
     sourceSets {
         commonMain.dependencies {

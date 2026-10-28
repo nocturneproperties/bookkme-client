@@ -11,7 +11,7 @@ import me.bookk.core.presentation.date.atNextWeekDay
 import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.memory.weakSelfClosure
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 
 class ScheduleBinder(
     private val state: ScheduleState,

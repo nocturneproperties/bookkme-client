@@ -1,3 +1,4 @@
+import build_src.constants.ApplicationConfig
 import build_src.tools.getCurrentVariant
 import build_src.tools.libs
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
@@ -10,7 +11,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "me.bookk.feature.authorization.data"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.authorization.data"
         optimization {
             consumerKeepRules.file("consumer-rules.pro")
         }

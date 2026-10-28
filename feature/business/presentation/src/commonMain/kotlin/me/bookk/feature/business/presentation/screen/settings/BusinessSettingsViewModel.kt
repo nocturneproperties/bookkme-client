@@ -15,7 +15,7 @@ import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.resources.toOneLine
 import me.bookk.designsystem.simple

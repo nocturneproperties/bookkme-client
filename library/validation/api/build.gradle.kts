@@ -1,10 +1,12 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
 kotlin {
     android {
-        namespace = "library.validation.api"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.validation.api"
     }
     sourceSets {
         commonMain.dependencies {

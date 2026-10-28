@@ -36,7 +36,7 @@ import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.components.TextField
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI

@@ -1,3 +1,4 @@
+import build_src.constants.ApplicationConfig
 import build_src.tools.libs
 
 plugins {
@@ -7,7 +8,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "library.money"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.money"
     }
     sourceSets {
         androidMain.dependencies {

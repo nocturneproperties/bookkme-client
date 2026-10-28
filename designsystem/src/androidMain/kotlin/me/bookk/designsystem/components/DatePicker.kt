@@ -15,7 +15,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import me.bookk.core.presentation.date.SelectableDateRange
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.ButtonState

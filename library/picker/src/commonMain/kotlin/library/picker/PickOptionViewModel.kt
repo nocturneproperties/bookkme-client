@@ -9,7 +9,7 @@ import library.picker.state.PickOptionState
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState

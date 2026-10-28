@@ -18,7 +18,7 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading

@@ -13,7 +13,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "me.bookk.shared"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.shared"
     }
 }
 

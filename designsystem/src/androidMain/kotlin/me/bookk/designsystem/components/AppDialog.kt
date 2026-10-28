@@ -21,7 +21,7 @@ import androidx.compose.ui.window.DialogProperties
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.AndroidButtonState

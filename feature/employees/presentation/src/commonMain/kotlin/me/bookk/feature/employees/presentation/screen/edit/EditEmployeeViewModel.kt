@@ -16,7 +16,7 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.schedule.DayOffPeriod
 import me.bookk.designsystem.uistate.schedule.ScheduleBinder

@@ -1,10 +1,12 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
 }
 
 kotlin {
     android {
-        namespace = "me.bookk.core.test"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.core.test"
     }
     sourceSets {
         commonMain.dependencies {

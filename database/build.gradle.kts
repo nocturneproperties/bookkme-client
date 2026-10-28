@@ -1,10 +1,12 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.database.get().pluginId)
 }
 
 kotlin {
     android {
-        namespace = "me.bookk.database"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.database"
     }
     sourceSets {
         commonMain.dependencies {

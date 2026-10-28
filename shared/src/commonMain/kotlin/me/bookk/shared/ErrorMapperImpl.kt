@@ -8,7 +8,7 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.ErrorDescription
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 
 class ErrorMapperImpl : ErrorMapper {
     private val logger = Logger.create("ErrorMapper")

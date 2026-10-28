@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.compose.colorResource
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 
 
 object AppColors {

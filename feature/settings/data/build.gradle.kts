@@ -1,3 +1,5 @@
+import build_src.constants.ApplicationConfig
+
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
     alias(libs.plugins.kotlin.serialization)
@@ -5,7 +7,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "me.bookk.feature.settings.data"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.settings.data"
     }
     sourceSets {
         commonMain.dependencies {

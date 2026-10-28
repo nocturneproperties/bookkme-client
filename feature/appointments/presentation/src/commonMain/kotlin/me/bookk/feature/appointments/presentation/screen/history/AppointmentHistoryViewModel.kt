@@ -14,7 +14,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.appointments.domain.api.GetAppointmentHistory

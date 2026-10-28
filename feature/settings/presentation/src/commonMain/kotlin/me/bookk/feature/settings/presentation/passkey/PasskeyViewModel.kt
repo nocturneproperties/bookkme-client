@@ -12,7 +12,7 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.designsystem.resources.DesignSystem
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.DeletePasskey
 import me.bookk.feature.settings.domain.api.GetAvailablePasskeys

@@ -1,3 +1,4 @@
+import build_src.constants.ApplicationConfig
 import build_src.tools.libs
 
 plugins {
@@ -7,7 +8,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "library.notifications.impl"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.notifications.impl"
     }
     sourceSets {
         androidMain.dependencies {
@@ -25,6 +26,6 @@ kotlin {
 }
 
 multiplatformResources {
-    resourcesPackage.set("library.notifications.resources")
+    resourcesPackage.set("${ApplicationConfig.ROOT_PACKAGE}.library.notifications.resources")
     resourcesClassName.set("NotifcationRes")
 }

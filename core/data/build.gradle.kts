@@ -1,3 +1,4 @@
+import build_src.constants.ApplicationConfig
 import build_src.tools.getCurrentVariant
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 
@@ -9,7 +10,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "me.bookk.core.data"
+        namespace = "${ApplicationConfig.ROOT_PACKAGE}.core.data"
         optimization {
             consumerKeepRules.file("consumer-rules.pro")
         }

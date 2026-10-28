@@ -11,7 +11,9 @@ fun ApplicationExtension.applyFlavourConvention(projectDir: File) {
         ProductFlavour.entries.forEach {
             create(it.title) {
                 dimension = "type"
-                applicationIdSuffix = ".${it.title}"
+                if (it != ProductFlavour.PROD) {
+                    applicationIdSuffix = ".${it.title}"
+                }
             }
         }
     }

@@ -19,9 +19,48 @@ struct DashboardOnboardingScreen: View {
 
 	var body: some View {
 		OnboardingLayout(
+			refresh: state.refresh,
 			headline: DashboardRes.strings().dashboard_onboarding_headline.desc().localized(),
 			subtitle: DashboardRes.strings().dashboard_onboarding_subtitle.desc().localized()
 		) {
+			CreateOrJoinBusinessActions(state: state)
+		}
+	}
+}
+
+struct DashboardBusinessSelectionScreen: View {
+
+	var state: IOSOnboardingState
+
+	init(state: OnboardingState) {
+		self.state = state.impl()
+	}
+
+	var body: some View {
+		OnboardingLayout(
+			refresh: state.refresh,
+			headline: DashboardRes.strings().dashboard_onboarding_select_headline.desc().localized(),
+			subtitle: DashboardRes.strings().dashboard_onboarding_select_subtitle.desc().localized()
+		) {
+			ForEach(state.businesses, id: \.id) { business in
+				OnboardingActionRow(
+					systemImage: "building.2",
+					title: business.name,
+					onClick: { state.onBusinessClick?(business) }
+				)
+			}
+			CreateOrJoinBusinessActions(state: state)
+				.padding(.top, 12)
+		}
+	}
+}
+
+private struct CreateOrJoinBusinessActions: View {
+
+	var state: IOSOnboardingState
+
+	var body: some View {
+		VStack(spacing: 12) {
 			OnboardingActionRow(
 				systemImage: "storefront",
 				title: DashboardRes.strings().dashboard_onboarding_create_title.desc().localized(),
@@ -34,21 +73,6 @@ struct DashboardOnboardingScreen: View {
 				subtitle: DashboardRes.strings().dashboard_onboarding_join_subtitle.desc().localized(),
 				onClick: { state.onJoinBusinessClick?() }
 			)
-			if !state.businesses.isEmpty {
-				Text(DashboardRes.strings().dashboard_onboarding_select_title.desc().localized())
-					.font(.subheadline)
-					.foregroundColor(AppColors.secondary)
-					.multilineTextAlignment(.center)
-					.frame(maxWidth: .infinity)
-					.padding(.top, 12)
-				ForEach(state.businesses, id: \.id) { business in
-					OnboardingActionRow(
-						systemImage: "building.2",
-						title: business.name,
-						onClick: { state.onBusinessClick?(business) }
-					)
-				}
-			}
 		}
 	}
 }
@@ -63,6 +87,7 @@ struct DashboardSetupRequiredScreen: View {
 
 	var body: some View {
 		OnboardingLayout(
+			refresh: state.refresh,
 			headline: DashboardRes.strings().dashboard_onboarding_setup_headline.desc().localized(),
 			subtitle: DashboardRes.strings().dashboard_onboarding_setup_subtitle.desc().localized()
 		) {
@@ -112,6 +137,7 @@ struct DashboardAwaitingSetupScreen: View {
 
 	var body: some View {
 		OnboardingLayout(
+			refresh: state.refresh,
 			headline: DashboardRes.strings().dashboard_onboarding_awaiting_headline.desc().localized(),
 			subtitle: state.awaitingSetupMessage.localized()
 		) {
@@ -122,6 +148,7 @@ struct DashboardAwaitingSetupScreen: View {
 
 private struct OnboardingLayout<Actions: View>: View {
 
+	let refresh: any RefreshState
 	let headline: String
 	let subtitle: String
 	@ViewBuilder let actions: () -> Actions
@@ -139,6 +166,7 @@ private struct OnboardingLayout<Actions: View>: View {
 				.padding(.horizontal, 16)
 				.padding(.vertical, verticalPadding)
 			}
+			.refreshable { await refresh.impl().awaitRefresh() }
 		}
 	}
 

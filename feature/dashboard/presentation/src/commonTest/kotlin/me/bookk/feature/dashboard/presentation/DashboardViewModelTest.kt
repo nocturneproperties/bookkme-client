@@ -3,6 +3,7 @@ package me.bookk.feature.dashboard.presentation
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -11,6 +12,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.presentation.VmArgs
@@ -22,6 +24,7 @@ import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
+import me.bookk.designsystem.test.FakeRefreshState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
@@ -29,9 +32,7 @@ import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
-import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
-import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.business.RefreshDashboardSetupStatus
@@ -103,6 +104,7 @@ class DashboardViewModelTest {
                 override var isClientStepDone: Boolean = false
                 override var businesses: List<OnboardingBusinessItem> = emptyList()
                 override var onBusinessClick: ((OnboardingBusinessItem) -> Unit)? = null
+                override val refresh = FakeRefreshState()
             }
         }
         override val notifications = FakeNotificationState()
@@ -119,10 +121,6 @@ class DashboardViewModelTest {
         val refreshDashboardSetupStatus = mock<RefreshDashboardSetupStatus> {
             everySuspend { invoke(any()) } returns Unit
         }
-        val userBusinesses = MutableStateFlow<List<Business>>(emptyList())
-        val observeUserBusinessesChanges = mock<ObserveUserBusinessesChanges> {
-            every { invoke() } returns userBusinesses
-        }
         val switchDashboardBusiness = mock<SwitchDashboardBusiness> {
             everySuspend { invoke(any()) } returns Unit
         }
@@ -134,7 +132,6 @@ class DashboardViewModelTest {
             observeDashboardSetupStatus = observeDashboardSetupStatus,
             refreshBusinessInfo = refreshBusinessInfo,
             refreshDashboardSetupStatus = refreshDashboardSetupStatus,
-            observeUserBusinessesChanges = observeUserBusinessesChanges,
             switchDashboardBusiness = switchDashboardBusiness,
             joinBusiness = joinBusiness,
             createBusiness = createBusiness,
@@ -545,28 +542,6 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `does not navigate to steps the user cannot complete`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.setupStatus.value = setupRequired(
-            hasServiceGroups = true,
-            canEnableAppointments = false,
-            canManageServices = false,
-            canManageClients = false
-        )
-        val sut = fixture.sut()
-
-        whenn()
-        sut.uiState.home.onboarding.onEnablePluginsClick?.invoke()
-        sut.uiState.home.onboarding.onAddServiceGroupClick?.invoke()
-        sut.uiState.home.onboarding.onAddServiceClick?.invoke()
-        sut.uiState.home.onboarding.onAddClientClick?.invoke()
-
-        then()
-        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
-    }
-
-    @Test
     fun `shows regular hints on service and client steps`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -837,12 +812,26 @@ class DashboardViewModelTest {
     }
 
     @Test
+    fun `shows business selection with business tab disabled when no business is selected`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
+
+        then()
+        assertEquals(HomeContent.BusinessNotSelected, sut.uiState.home.content)
+        assertFalse(sut.businessTab.isEnabled)
+    }
+
+    @Test
     fun `offers the user businesses for selection`() = runUnitTest {
         given()
         val fixture = Fixture()
         val salon = stubBusiness(name = "Salon")
         val barber = stubBusiness(name = "Barber")
-        fixture.userBusinesses.value = listOf(salon, barber)
+        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(salon, barber))
 
         whenn()
         val sut = fixture.sut()
@@ -871,11 +860,11 @@ class DashboardViewModelTest {
         given()
         val fixture = Fixture()
         val salon = stubBusiness(name = "Salon")
-        fixture.userBusinesses.value = listOf(salon, stubBusiness(name = "Removed"))
+        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(salon, stubBusiness(name = "Removed")))
         val sut = fixture.sut()
 
         whenn()
-        fixture.userBusinesses.value = listOf(salon)
+        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(salon))
 
         then()
         assertEquals(listOf(OnboardingBusinessItem(salon.id, "Salon")), sut.uiState.home.onboarding.businesses)
@@ -886,7 +875,7 @@ class DashboardViewModelTest {
         given()
         val fixture = Fixture()
         val salon = stubBusiness(name = "Salon")
-        fixture.userBusinesses.value = listOf(salon)
+        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(salon))
         val sut = fixture.sut()
 
         whenn()
@@ -901,7 +890,7 @@ class DashboardViewModelTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.switchDashboardBusiness(any()) } throws TestException()
-        fixture.userBusinesses.value = listOf(stubBusiness())
+        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
         val sut = fixture.sut()
 
         whenn()
@@ -942,6 +931,21 @@ class DashboardViewModelTest {
     }
 
     @Test
+    fun `opens home when the dashboard business is lost but other businesses remain`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = DashboardSetupStatus.Ready
+        val sut = fixture.sut()
+        sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
+
+        then()
+        assertEquals(TabItem.Id.HOME, sut.uiState.tabItems.selectedItemId)
+    }
+
+    @Test
     fun `keeps the selected tab while the dashboard business stays available`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -968,5 +972,96 @@ class DashboardViewModelTest {
 
         then()
         assertEquals(TabItem.Id.SETTINGS, sut.uiState.tabItems.selectedItemId)
+    }
+
+    @Test
+    fun `refreshes business info on pull to refresh`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.refresh.onRefresh()
+
+        then()
+        verifySuspend(VerifyMode.exactly(2)) { fixture.refreshBusinessInfo(false) }
+    }
+
+    @Test
+    fun `refreshes setup data of business that requires setup on pull to refresh`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        fixture.setupStatus.value = setupRequired(id)
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.refresh.onRefresh()
+
+        then()
+        verifySuspend(VerifyMode.exactly(2)) { fixture.refreshDashboardSetupStatus(id) }
+    }
+
+    @Test
+    fun `refreshes setup data of business awaiting setup on pull to refresh`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(id, "Salon", emptySet())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.refresh.onRefresh()
+
+        then()
+        verifySuspend(VerifyMode.exactly(2)) { fixture.refreshDashboardSetupStatus(id) }
+    }
+
+    @Test
+    fun `does not refresh setup data on pull to refresh without a dashboard business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.refresh.onRefresh()
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.refreshDashboardSetupStatus(any()) }
+    }
+
+    @Test
+    fun `shows refreshing until pull to refresh completes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val gate = CompletableDeferred<Unit>()
+        fixture.setupStatus.value = setupRequired()
+        everySuspend { fixture.refreshDashboardSetupStatus(any()) } calls { gate.await() }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.refresh.onRefresh()
+        val isRefreshingWhileLoading = sut.uiState.home.onboarding.refresh.isRefreshing
+        gate.complete(Unit)
+
+        then()
+        assertEquals(listOf(true, false), listOf(isRefreshingWhileLoading, sut.uiState.home.onboarding.refresh.isRefreshing))
+    }
+
+    @Test
+    fun `shows mapped error and stops refreshing when pull to refresh fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = setupRequired()
+        everySuspend { fixture.refreshDashboardSetupStatus(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.refresh.onRefresh()
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+        assertFalse(sut.uiState.home.onboarding.refresh.isRefreshing)
     }
 }

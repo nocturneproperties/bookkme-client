@@ -160,7 +160,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | [Join business](business/join-business.md) | `RedeemEmployeeInvitation` (cross-feature wrapper) |
 | [Refresh business info](business/refresh-business-info.md) | `IsAppointmentsPluginEnabled.refresh` per business |
 | [Get available dashboard features](business/get-available-dashboard-features.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
-| [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow`, `GetServiceGroups.flow`, `GetServices.flow`, `GetClientsList.flow` (cross-feature) |
+| [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `ObserveDashboardBusinessChanges`, `ObserveUserBusinessesChanges`, `IsAppointmentsPluginEnabled.flow`, `GetServiceGroups.flow`, `GetServices.flow`, `GetClientsList.flow` (cross-feature) |
 | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) | `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` (cross-feature) |
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |
 | [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |

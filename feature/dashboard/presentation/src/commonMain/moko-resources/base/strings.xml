@@ -9,7 +9,8 @@
     <string name="dashboard_onboarding_create_subtitle">Set up your own: name, hours, location</string>
     <string name="dashboard_onboarding_join_title">Join a business</string>
     <string name="dashboard_onboarding_join_subtitle">Use the invitation code from the owner</string>
-    <string name="dashboard_onboarding_select_title">Or select one of your active businesses</string>
+    <string name="dashboard_onboarding_select_headline">Choose a business</string>
+    <string name="dashboard_onboarding_select_subtitle">Pick the business you want to manage, or create or join another one.</string>
     <string name="dashboard_onboarding_setup_headline">Finish setting up</string>
     <string name="dashboard_onboarding_setup_subtitle">Complete these steps to start taking bookings. You only need one of each for now, and you can add more later in the Business tab.</string>
     <string name="dashboard_onboarding_plugins_title">Enable plugins</string>

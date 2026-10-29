@@ -63,6 +63,7 @@ class IOSOnboardingState: @MainActor OnboardingState {
 	var isClientStepDone: Bool = false
 	var businesses: [OnboardingBusinessItem] = []
 	var onBusinessClick: ((OnboardingBusinessItem) -> Void)?
+	var refresh: any RefreshState = IOSRefreshState()
 }
 
 @MainActor

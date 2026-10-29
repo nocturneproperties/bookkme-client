@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -37,60 +38,70 @@ import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.designsystem.components.AppCard
+import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.uistate.RefreshState
 import me.bookk.feature.dashboard.presentation.state.AndroidOnboardingState
 import me.bookk.feature.dashboard.presentation.state.OnboardingState
 
 @Composable
 internal fun DashboardOnboardingScreen(state: OnboardingState) {
     OnboardingLayout(
+        refresh = state.refresh,
         headline = DashboardRes.strings.dashboard_onboarding_headline.desc().localized(),
         subtitle = DashboardRes.strings.dashboard_onboarding_subtitle.desc().localized()
     ) {
-        AppCard(modifier = Modifier.fillMaxWidth()) {
-            OnboardingActionRow(
-                icon = Icons.Filled.Storefront,
-                title = DashboardRes.strings.dashboard_onboarding_create_title.desc().localized(),
-                subtitle = DashboardRes.strings.dashboard_onboarding_create_subtitle.desc().localized(),
-                onClick = { state.onCreateBusinessClick?.invoke() }
-            )
-        }
-        AppCard(modifier = Modifier.fillMaxWidth()) {
-            OnboardingActionRow(
-                icon = Icons.Filled.GroupAdd,
-                title = DashboardRes.strings.dashboard_onboarding_join_title.desc().localized(),
-                subtitle = DashboardRes.strings.dashboard_onboarding_join_subtitle.desc().localized(),
-                onClick = { state.onJoinBusinessClick?.invoke() }
-            )
-        }
-        if (state.businesses.isNotEmpty()) {
-            Text(
-                text = DashboardRes.strings.dashboard_onboarding_select_title.desc().localized(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                style = MaterialTheme.typography.bodyMedium,
-                color = LocalColors.current.secondaryText,
-                textAlign = TextAlign.Center
-            )
-            state.businesses.forEach { business ->
-                AppCard(modifier = Modifier.fillMaxWidth()) {
-                    OnboardingActionRow(
-                        icon = Icons.Filled.Business,
-                        title = business.name,
-                        onClick = { state.onBusinessClick?.invoke(business) }
-                    )
-                }
+        CreateOrJoinBusinessActions(state)
+    }
+}
+
+@Composable
+internal fun DashboardBusinessSelectionScreen(state: OnboardingState) {
+    OnboardingLayout(
+        refresh = state.refresh,
+        headline = DashboardRes.strings.dashboard_onboarding_select_headline.desc().localized(),
+        subtitle = DashboardRes.strings.dashboard_onboarding_select_subtitle.desc().localized()
+    ) {
+        state.businesses.forEach { business ->
+            AppCard(modifier = Modifier.fillMaxWidth()) {
+                OnboardingActionRow(
+                    icon = Icons.Filled.Business,
+                    title = business.name,
+                    onClick = { state.onBusinessClick?.invoke(business) }
+                )
             }
         }
+        Spacer(modifier = Modifier.height(12.dp))
+        CreateOrJoinBusinessActions(state)
+    }
+}
+
+@Composable
+private fun CreateOrJoinBusinessActions(state: OnboardingState) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
+        OnboardingActionRow(
+            icon = Icons.Filled.Storefront,
+            title = DashboardRes.strings.dashboard_onboarding_create_title.desc().localized(),
+            subtitle = DashboardRes.strings.dashboard_onboarding_create_subtitle.desc().localized(),
+            onClick = { state.onCreateBusinessClick?.invoke() }
+        )
+    }
+    AppCard(modifier = Modifier.fillMaxWidth()) {
+        OnboardingActionRow(
+            icon = Icons.Filled.GroupAdd,
+            title = DashboardRes.strings.dashboard_onboarding_join_title.desc().localized(),
+            subtitle = DashboardRes.strings.dashboard_onboarding_join_subtitle.desc().localized(),
+            onClick = { state.onJoinBusinessClick?.invoke() }
+        )
     }
 }
 
 @Composable
 internal fun DashboardSetupRequiredScreen(state: OnboardingState) {
     OnboardingLayout(
+        refresh = state.refresh,
         headline = DashboardRes.strings.dashboard_onboarding_setup_headline.desc().localized(),
         subtitle = DashboardRes.strings.dashboard_onboarding_setup_subtitle.desc().localized()
     ) {
@@ -157,6 +168,7 @@ private fun OnboardingStepCard(
 @Composable
 internal fun DashboardAwaitingSetupScreen(state: OnboardingState) {
     OnboardingLayout(
+        refresh = state.refresh,
         headline = DashboardRes.strings.dashboard_onboarding_awaiting_headline.desc().localized(),
         subtitle = state.awaitingSetupMessage.localized()
     ) {}
@@ -164,19 +176,22 @@ internal fun DashboardAwaitingSetupScreen(state: OnboardingState) {
 
 @Composable
 private fun OnboardingLayout(
+    refresh: RefreshState,
     headline: String,
     subtitle: String,
     actions: @Composable ColumnScope.() -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 24.dp)
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-        OnboardingContent(headline = headline, subtitle = subtitle, actions = actions)
-        Spacer(modifier = Modifier.weight(2f))
+    PullToRefresh(state = refresh, modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 24.dp)
+        ) {
+            Spacer(modifier = Modifier.weight(1f))
+            OnboardingContent(headline = headline, subtitle = subtitle, actions = actions)
+            Spacer(modifier = Modifier.weight(2f))
+        }
     }
 }
 
@@ -277,6 +292,14 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         DashboardOnboardingScreen(state = AndroidOnboardingState())
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewBusinessSelection() {
+    AppTheme(themeMode = ThemeMode.DARK) {
+        DashboardBusinessSelectionScreen(state = AndroidOnboardingState())
     }
 }
 

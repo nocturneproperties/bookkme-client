@@ -19,6 +19,8 @@ struct DashboardHomeTab: View {
 			switch content {
 			case is HomeContent.NoBusiness:
 				DashboardOnboardingScreen(state: homeState.onboarding)
+			case is HomeContent.BusinessNotSelected:
+				DashboardBusinessSelectionScreen(state: homeState.onboarding)
 			case is HomeContent.SetupRequired:
 				DashboardSetupRequiredHost(state: homeState.onboarding, navigationStack: onboardingNavigationStack)
 			case is HomeContent.AwaitingSetup:

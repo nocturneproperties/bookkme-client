@@ -7,8 +7,10 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
+import me.bookk.designsystem.uistate.AndroidRefreshState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
+import me.bookk.designsystem.uistate.RefreshState
 import me.bookk.feature.dashboard.presentation.DashboardHomeNavigationDestination
 
 class AndroidDashboardState(
@@ -71,4 +73,5 @@ class AndroidOnboardingState : OnboardingState {
     override var isClientStepDone: Boolean by mutableStateOf(false)
     override var businesses: List<OnboardingBusinessItem> by mutableStateOf(emptyList())
     override var onBusinessClick: ((OnboardingBusinessItem) -> Unit)? by mutableStateOf(null)
+    override val refresh: RefreshState = AndroidRefreshState()
 }

@@ -3,7 +3,10 @@ package me.bookk.feature.dashboard.presentation
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapNotNull
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -15,7 +18,6 @@ import me.bookk.designsystem.simple
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
-import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.business.RefreshDashboardSetupStatus
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
@@ -32,7 +34,6 @@ class DashboardViewModel(
     private val observeDashboardSetupStatus: ObserveDashboardSetupStatus,
     private val refreshBusinessInfo: RefreshBusinessInfo,
     private val refreshDashboardSetupStatus: RefreshDashboardSetupStatus,
-    private val observeUserBusinessesChanges: ObserveUserBusinessesChanges,
     private val switchDashboardBusiness: SwitchDashboardBusiness,
     private val joinBusiness: JoinBusiness,
     private val createBusiness: CreateBusiness,
@@ -42,14 +43,23 @@ class DashboardViewModel(
 
     val uiState: DashboardState = stateFactory.createDashboardState(createInitData()).setup()
 
-    private var setupRequired: DashboardSetupStatus.SetupRequired? = null
-    private var refreshedSetupBusinessId: Uuid? = null
     private var lastSetupStatus: DashboardSetupStatus? = null
 
     init {
         requestSilentInformationRefresh()
         observeSetupStatus()
-        observeUserBusinesses()
+        refreshSetupDataOfEachDashboardBusiness()
+    }
+
+    private fun DashboardState.setup() = apply {
+        home.onboarding.onCreateBusinessClick = weakVMClosure { it.showBusinessNameDialog() }
+        home.onboarding.onJoinBusinessClick = weakVMClosure { it.onJoinBusinessClick() }
+        home.onboarding.onEnablePluginsClick = weakVMClosure { it.onEnablePluginsClick() }
+        home.onboarding.onAddServiceGroupClick = weakVMClosure { it.onAddServiceGroupClick() }
+        home.onboarding.onAddServiceClick = weakVMClosure { it.onAddServiceClick() }
+        home.onboarding.onAddClientClick = weakVMClosure { it.onAddClientClick() }
+        home.onboarding.onBusinessClick = weakVMClosure { vm, item -> vm.onBusinessSelected(item) }
+        home.onboarding.refresh.onRefresh = weakVMClosure { it.refreshOnboarding() }
     }
 
     private fun requestSilentInformationRefresh() {
@@ -61,22 +71,44 @@ class DashboardViewModel(
         )
     }
 
-    private fun DashboardState.setup() = apply {
-        home.onboarding.onCreateBusinessClick = weakVMClosure { it.showBusinessNameDialog() }
-        home.onboarding.onJoinBusinessClick = weakVMClosure { it.onJoinBusinessClick() }
-        home.onboarding.onEnablePluginsClick = weakVMClosure { it.onEnablePluginsClick() }
-        home.onboarding.onAddServiceGroupClick = weakVMClosure { it.onAddServiceGroupClick() }
-        home.onboarding.onAddServiceClick = weakVMClosure { it.onAddServiceClick() }
-        home.onboarding.onAddClientClick = weakVMClosure { it.onAddClientClick() }
-        home.onboarding.onBusinessClick = weakVMClosure { vm, item -> vm.onBusinessSelected(item) }
+    private fun refreshSetupDataOfEachDashboardBusiness() {
+        observeDashboardSetupStatus()
+            .mapNotNull { it.dashboardBusinessId() }
+            .distinctUntilChanged()
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { refreshSetupDataSilently(it) }
+            .observe()
     }
 
-    private fun observeUserBusinesses() {
-        observeUserBusinessesChanges()
+    private fun refreshSetupDataSilently(businessId: Uuid) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { refreshDashboardSetupStatus(businessId) },
+            onComplete = {},
+            onError = {}
+        )
+    }
+
+    private fun refreshOnboarding() {
+        val dashboardBusinessId = lastSetupStatus?.dashboardBusinessId()
+        launch(
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.home.onboarding.refresh.isRefreshing = true },
+            call = {
+                refreshBusinessInfo()
+                dashboardBusinessId?.let { refreshDashboardSetupStatus(it) }
+            },
+            onComplete = {},
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { uiState.home.onboarding.refresh.isRefreshing = false }
+        )
+    }
+
+    private fun observeSetupStatus() {
+        observeDashboardSetupStatus()
             .flowOn(DispatcherProvider.io)
-            .safeOnEach { businesses ->
-                uiState.home.onboarding.businesses = businesses.map { OnboardingBusinessItem(it.id, it.name) }
-            }
+            .safeOnEach { renderSetupStatus(it) }
+            .onError { uiState.notifications.add(it.notification()) }
             .observe()
     }
 
@@ -89,27 +121,31 @@ class DashboardViewModel(
     }
 
     private fun onEnablePluginsClick() {
-        setupRequired?.takeIf { it.canEnableAppointments }?.let {
+        currentSetupRequired()?.let {
             uiState.navigation.push(DashboardHomeNavigationDestination.EnablePlugins(it.businessId))
         }
     }
 
     private fun onAddServiceGroupClick() {
-        setupRequired?.takeIf { it.canManageServices }?.let {
+        if (currentSetupRequired() != null) {
             uiState.navigation.push(DashboardHomeNavigationDestination.AddServiceGroup)
         }
     }
 
     private fun onAddServiceClick() {
-        setupRequired?.takeIf { it.canAddService() }?.let {
+        currentSetupRequired()?.takeIf { it.hasServiceGroups }?.let {
             uiState.navigation.push(DashboardHomeNavigationDestination.AddService(it.businessId))
         }
     }
 
     private fun onAddClientClick() {
-        setupRequired?.takeIf { it.canManageClients }?.let {
+        currentSetupRequired()?.let {
             uiState.navigation.push(DashboardHomeNavigationDestination.AddClient(it.businessId))
         }
+    }
+
+    private fun currentSetupRequired(): DashboardSetupStatus.SetupRequired? {
+        return lastSetupStatus as? DashboardSetupStatus.SetupRequired
     }
 
     private fun DashboardSetupStatus.SetupRequired.canAddService(): Boolean {
@@ -191,28 +227,37 @@ class DashboardViewModel(
         )
     }
 
-    private fun observeSetupStatus() {
-        observeDashboardSetupStatus()
-            .flowOn(DispatcherProvider.io)
-            .safeOnEach { renderSetupStatus(it) }
-            .onError { uiState.notifications.add(it.notification()) }
-            .observe()
+    private fun renderSetupStatus(status: DashboardSetupStatus) {
+        renderTabs(status)
+        renderOnboarding(status)
+        uiState.home.content = status.homeContent()
+        lastSetupStatus = status
     }
 
-    private fun renderSetupStatus(status: DashboardSetupStatus) {
+    private fun renderTabs(status: DashboardSetupStatus) {
         if (isDashboardBusinessLost(status)) {
             uiState.tabItems.selectedItemId = TabItem.Id.HOME
         }
-        lastSetupStatus = status
-        setupRequired = status as? DashboardSetupStatus.SetupRequired
-        setupRequired?.let { renderSetupSteps(it) }
-        uiState.tabItems.items.first { it.id == TabItem.Id.BUSINESS }.isEnabled = status != DashboardSetupStatus.NoBusiness
-        if (status is DashboardSetupStatus.AwaitingSetup) {
-            uiState.home.onboarding.awaitingSetupMessage = status.message()
-            refreshSetupDataOnce(status.businessId)
+        uiState.tabItems.items.first { it.id == TabItem.Id.BUSINESS }.isEnabled = status.hasDashboardBusiness()
+    }
+
+    private fun renderOnboarding(status: DashboardSetupStatus) {
+        when (status) {
+            is DashboardSetupStatus.BusinessNotSelected -> renderSelectableBusinesses(status)
+            is DashboardSetupStatus.SetupRequired -> renderSetupSteps(status)
+            is DashboardSetupStatus.AwaitingSetup -> uiState.home.onboarding.awaitingSetupMessage = status.message()
+            DashboardSetupStatus.NoBusiness, DashboardSetupStatus.Ready -> Unit
         }
-        uiState.home.content = when (status) {
+    }
+
+    private fun renderSelectableBusinesses(status: DashboardSetupStatus.BusinessNotSelected) {
+        uiState.home.onboarding.businesses = status.businesses.map { OnboardingBusinessItem(it.id, it.name) }
+    }
+
+    private fun DashboardSetupStatus.homeContent(): HomeContent {
+        return when (this) {
             DashboardSetupStatus.NoBusiness -> HomeContent.NoBusiness
+            is DashboardSetupStatus.BusinessNotSelected -> HomeContent.BusinessNotSelected
             is DashboardSetupStatus.SetupRequired -> HomeContent.SetupRequired
             is DashboardSetupStatus.AwaitingSetup -> HomeContent.AwaitingSetup
             DashboardSetupStatus.Ready -> HomeContent.ActivePlugin
@@ -237,7 +282,6 @@ class DashboardViewModel(
             }
             isClientStepDone = setup.hasClients
         }
-        refreshSetupDataOnce(setup.businessId)
     }
 
     private fun DashboardSetupStatus.SetupRequired.servicesStepSubtitle(regular: StringDesc): StringDesc {
@@ -246,17 +290,6 @@ class DashboardViewModel(
         } else {
             regular
         }
-    }
-
-    private fun refreshSetupDataOnce(businessId: Uuid) {
-        if (refreshedSetupBusinessId == businessId) return
-        refreshedSetupBusinessId = businessId
-        launch(
-            launchIn = DispatcherProvider.io,
-            call = { refreshDashboardSetupStatus(businessId) },
-            onComplete = {},
-            onError = {}
-        )
     }
 
     private fun DashboardSetupStatus.AwaitingSetup.message(): StringDesc {
@@ -271,9 +304,20 @@ class DashboardViewModel(
         return resource.format(businessName)
     }
 
+    private fun DashboardSetupStatus.hasDashboardBusiness(): Boolean {
+        return this !is DashboardSetupStatus.NoBusiness && this !is DashboardSetupStatus.BusinessNotSelected
+    }
+
+    private fun DashboardSetupStatus.dashboardBusinessId(): Uuid? {
+        return when (this) {
+            is DashboardSetupStatus.SetupRequired -> businessId
+            is DashboardSetupStatus.AwaitingSetup -> businessId
+            else -> null
+        }
+    }
+
     private fun isDashboardBusinessLost(status: DashboardSetupStatus): Boolean {
-        val previous = lastSetupStatus
-        return status == DashboardSetupStatus.NoBusiness && previous != null && previous != DashboardSetupStatus.NoBusiness
+        return lastSetupStatus?.hasDashboardBusiness() == true && !status.hasDashboardBusiness()
     }
 
     companion object {

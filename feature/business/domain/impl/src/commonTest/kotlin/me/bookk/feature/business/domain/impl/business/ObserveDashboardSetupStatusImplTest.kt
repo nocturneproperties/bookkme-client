@@ -17,6 +17,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
+import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.entity.DashboardSetupStatus
@@ -55,12 +56,14 @@ class ObserveDashboardSetupStatusImplTest {
 
     private class Fixture {
         val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
+        val observeUserBusinessesChanges = mock<ObserveUserBusinessesChanges>()
         val isAppointmentsPluginEnabled = mock<IsAppointmentsPluginEnabled>()
         val getServiceGroups = mock<GetServiceGroups>()
         val getServices = mock<GetServices>()
         val getClientsList = mock<GetClientsList>()
         val sut = ObserveDashboardSetupStatusImpl(
             observeDashboardBusinessChanges,
+            observeUserBusinessesChanges,
             isAppointmentsPluginEnabled,
             getServiceGroups,
             getServices,
@@ -133,16 +136,32 @@ class ObserveDashboardSetupStatusImplTest {
     }
 
     @Test
-    fun `emits no business when there is no dashboard business`() = runUnitTest {
+    fun `emits no business when user has no businesses`() = runUnitTest {
         given()
         val fixture = Fixture()
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(null)
+        every { fixture.observeUserBusinessesChanges() } returns flowOf(emptyList())
 
         whenn()
         val result = fixture.sut().first()
 
         then()
         assertEquals(DashboardSetupStatus.NoBusiness, result)
+    }
+
+    @Test
+    fun `emits business not selected with user businesses when there is no dashboard business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businesses = listOf(stubBusiness(), stubBusiness())
+        every { fixture.observeDashboardBusinessChanges() } returns flowOf(null)
+        every { fixture.observeUserBusinessesChanges() } returns flowOf(businesses)
+
+        whenn()
+        val result = fixture.sut().first()
+
+        then()
+        assertEquals(DashboardSetupStatus.BusinessNotSelected(businesses), result)
     }
 
     @Test
@@ -491,6 +510,7 @@ class ObserveDashboardSetupStatusImplTest {
         val business = businessWith()
         fixture.stub(business, isAppointmentsEnabled = false)
         every { fixture.observeDashboardBusinessChanges() } returns businesses
+        every { fixture.observeUserBusinessesChanges() } returns flowOf(emptyList())
         val results = mutableListOf<DashboardSetupStatus>()
         val job = launch(Dispatchers.Unconfined) { fixture.sut().collect { results.add(it) } }
 

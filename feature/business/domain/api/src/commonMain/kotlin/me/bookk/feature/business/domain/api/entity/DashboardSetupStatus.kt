@@ -4,6 +4,7 @@ import kotlin.uuid.Uuid
 
 sealed interface DashboardSetupStatus {
     data object NoBusiness : DashboardSetupStatus
+    data class BusinessNotSelected(val businesses: List<Business>) : DashboardSetupStatus
     data class SetupRequired(
         val businessId: Uuid,
         val isAppointmentsEnabled: Boolean,

@@ -5,8 +5,11 @@
 `ObserveDashboardSetupStatus()` → `Flow<DashboardSetupStatus>`, **local only**
 · called from `DashboardViewModel`
 
-Decides what the Home tab shows. It re-emits whenever the dashboard id, the business row, the plugin
-preference, or the business's service groups, services or clients in Room change. This includes right after
+Decides what the Home tab shows. When no dashboard business is selected, it emits `NoBusiness` if the user has
+no businesses (Home offers create / join) or `BusinessNotSelected` with every business in Room (Home lets the
+user pick one, or create / join another). It re-emits whenever the dashboard id, the business row, the list of
+businesses (only while none is selected), the plugin preference, or the business's service groups, services or
+clients in Room change. This includes right after
 [Create business](create-business.md) or [Join business](join-business.md), because both switch the dashboard
 business.
 
@@ -44,7 +47,9 @@ Both `SetupRequired` and `AwaitingSetup` carry `missingViewPermissions` (`CLIENT
 ```mermaid
 flowchart TD
     Start([invoke]) --> Biz[ObserveDashboardBusinessChanges]
-    Biz -- null --> NB([emit NoBusiness])
+    Biz -- null --> All[ObserveUserBusinessesChanges]
+    All -- empty --> NB([emit NoBusiness])
+    All -- not empty --> NS([emit BusinessNotSelected businesses])
     Biz -- business --> Comb["combine<br/>IsAppointmentsPluginEnabled.flow business.id (plugin_prefs)<br/>GetServiceGroups.flow (service_group)<br/>GetServices.flow (service)<br/>GetClientsList.flow (client)"]
     Comb --> Done{"plugin == true and groups, services<br/>and clients all non-empty"}
     Done -- yes --> R([emit Ready])

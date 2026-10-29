@@ -58,7 +58,7 @@ class RedeemEmployeeInvitationImplTest {
         val code = "ABCD1234"
         val employee = stubEmployee()
         everySuspend { fixture.dataSource.redeemInvitation(code) } returns employee
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
@@ -69,19 +69,20 @@ class RedeemEmployeeInvitationImplTest {
     }
 
     @Test
-    fun `refreshes business info after a successful redeem`() = runUnitTest {
+    fun `refreshes businesses selecting the joined business after a successful redeem`() = runUnitTest {
         given()
         val fixture = Fixture()
         val code = "ABCD1234"
-        everySuspend { fixture.dataSource.redeemInvitation(code) } returns stubEmployee()
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        val businessId = Uuid.random()
+        everySuspend { fixture.dataSource.redeemInvitation(code) } returns stubEmployee(businessId = businessId)
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
         fixture.sut(code)
 
         then()
-        verifySuspend { fixture.refreshBusinessInfo() }
+        verifySuspend { fixture.refreshBusinessInfo.refreshAndSelect(businessId) }
     }
 
     @Test
@@ -91,7 +92,7 @@ class RedeemEmployeeInvitationImplTest {
         val code = "ABCD1234"
         val businessId = Uuid.random()
         everySuspend { fixture.dataSource.redeemInvitation(code) } returns stubEmployee(businessId = businessId)
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
@@ -114,7 +115,7 @@ class RedeemEmployeeInvitationImplTest {
         assertFailsWith<RedeemEmployeeInvitation.Error.EmployeeExists> {
             fixture.sut(code)
         }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.refreshBusinessInfo() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.refreshBusinessInfo.refreshAndSelect(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.switchDashboardBusiness(any()) }
     }
 

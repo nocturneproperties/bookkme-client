@@ -11,7 +11,7 @@ entity ↔ domain mapping itself (`feature/<name>/data/src/commonMain/.../mappin
 grouped by the feature whose datasource **writes** the table.
 
 - [Authorization](authorization.md): `user_profile`
-- [Business](business.md): `business` and its schedule tables
+- [Business](business.md): `business`, its schedule tables and `dashboard_business` (the selected business)
 - [Clients](clients.md): `client`
 - [Services](services.md): `service`, `service_group`
 - [Employees](employees.md): `employee` and its schedule and service snapshot tables, `employee_invitation`
@@ -22,7 +22,7 @@ grouped by the feature whose datasource **writes** the table.
 
 ## Conventions
 
-- **Version and migrations.** The schema is at `version = 19`. Every step from 1 to 19 is a Room
+- **Version and migrations.** The schema is at `version = 20`. Every step from 1 to 20 is a Room
   `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The builder also sets `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
   If a migration is missing, the cache is wiped instead of the app crashing, which is safe only because every
@@ -68,7 +68,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `employee_invitation` | `EmployeeInvitationDataSourceImpl` | ✅ |
 | `appointment` (+ service snapshot, adjustment services) | `CommonAppointmentDataSource` | ✅ `appointmentDao.clear()`, children cascade |
 | `appointment_request` (+ snapshot) | `CommonAppointmentRequestDataSource` | ✅ |
-| `business` (+ 3 schedule tables) | `CommonBusinessDataSource` | ✅ `businessDao.clear()` after `business_prefs.clear()`, which also cascades to any client/employee/service rows still left |
+| `business` (+ 3 schedule tables, `dashboard_business`) | `CommonBusinessDataSource` | ✅ `clearDashboardBusiness()` then `businessDao.clear()`, which also cascades to any client/employee/service rows still left |
 | `appointment_settings` (+ 3 child tables) | `CommonAppointmentSettingsDataSource` | ✅ `appointmentSettingsDao.clear()` |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
 

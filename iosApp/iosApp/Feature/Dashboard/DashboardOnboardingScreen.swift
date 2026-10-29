@@ -49,8 +49,11 @@ struct DashboardBusinessSelectionScreen: View {
 					onClick: { state.onBusinessClick?(business) }
 				)
 			}
+			Text(DashboardRes.strings().dashboard_onboarding_select_or.desc().localized())
+				.font(.caption)
+				.foregroundColor(AppColors.secondary)
+				.frame(maxWidth: .infinity)
 			CreateOrJoinBusinessActions(state: state)
-				.padding(.top, 12)
 		}
 	}
 }
@@ -212,15 +215,13 @@ private struct OnboardingActionRow: View {
 					.foregroundColor(AppColors.actionText)
 					.frame(width: 32)
 
-				VStack(alignment: .leading, spacing: 2) {
-					Text(title)
-						.font(.body)
-						.fontWeight(.medium)
-						.foregroundColor(AppColors.primary)
-					if let subtitle {
-						Text(subtitle)
-							.font(.caption)
-							.foregroundColor(AppColors.secondary)
+				if let subtitle {
+					texts(subtitle: subtitle)
+				} else {
+					ZStack(alignment: .leading) {
+						texts(subtitle: " ")
+							.hidden()
+						titleText
 					}
 				}
 
@@ -244,6 +245,22 @@ private struct OnboardingActionRow: View {
 		.opacity(isEnabled || isDone ? 1 : 0.5)
 		.background(AppColors.elevated)
 		.clipShape(RoundedRectangle(cornerRadius: 16))
+	}
+
+	private var titleText: some View {
+		Text(title)
+			.font(.body)
+			.fontWeight(.medium)
+			.foregroundColor(AppColors.primary)
+	}
+
+	private func texts(subtitle: String) -> some View {
+		VStack(alignment: .leading, spacing: 2) {
+			titleText
+			Text(subtitle)
+				.font(.caption)
+				.foregroundColor(AppColors.secondary)
+		}
 	}
 }
 

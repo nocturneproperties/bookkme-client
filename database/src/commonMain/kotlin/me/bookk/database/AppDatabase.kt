@@ -36,6 +36,7 @@ import me.bookk.database.entity.BusinessDayScheduleEntity
 import me.bookk.database.entity.BusinessEntity
 import me.bookk.database.entity.BusinessWorkHourEntity
 import me.bookk.database.entity.ClientEntity
+import me.bookk.database.entity.DashboardBusinessEntity
 import me.bookk.database.entity.EmployeeDayOffEntity
 import me.bookk.database.entity.EmployeeDayScheduleEntity
 import me.bookk.database.entity.EmployeeEntity
@@ -56,6 +57,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         BusinessDayScheduleEntity::class,
         BusinessWorkHourEntity::class,
         BusinessDayOffEntity::class,
+        DashboardBusinessEntity::class,
         ClientEntity::class,
         ServiceEntity::class,
         ServiceGroupEntity::class,
@@ -77,7 +79,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         EmployeeDayOffEntity::class,
         EmployeeServiceSnapshotEntity::class
     ],
-    version = 19,
+    version = 20,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -96,7 +98,8 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         AutoMigration(from = 15, to = 16),
         AutoMigration(from = 16, to = 17),
         AutoMigration(from = 17, to = 18),
-        AutoMigration(from = 18, to = 19)
+        AutoMigration(from = 18, to = 19),
+        AutoMigration(from = 19, to = 20)
     ]
 )
 @TypeConverters(

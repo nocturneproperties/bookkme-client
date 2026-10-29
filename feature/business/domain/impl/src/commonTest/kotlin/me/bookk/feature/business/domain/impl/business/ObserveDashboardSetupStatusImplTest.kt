@@ -16,13 +16,13 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
-import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.entity.DashboardSetupStatus
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
+import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.datasource.BusinessDataSource
 import me.bookk.feature.business.domain.impl.stubBusiness
 import me.bookk.feature.business.domain.impl.stubBusinessPermissions
 import me.bookk.feature.business.domain.impl.stubClient
@@ -55,15 +55,13 @@ class ObserveDashboardSetupStatusImplTest {
     }
 
     private class Fixture {
-        val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
-        val observeUserBusinessesChanges = mock<ObserveUserBusinessesChanges>()
+        val businessDataSource = mock<BusinessDataSource>()
         val isAppointmentsPluginEnabled = mock<IsAppointmentsPluginEnabled>()
         val getServiceGroups = mock<GetServiceGroups>()
         val getServices = mock<GetServices>()
         val getClientsList = mock<GetClientsList>()
         val sut = ObserveDashboardSetupStatusImpl(
-            observeDashboardBusinessChanges,
-            observeUserBusinessesChanges,
+            businessDataSource,
             isAppointmentsPluginEnabled,
             getServiceGroups,
             getServices,
@@ -98,7 +96,7 @@ class ObserveDashboardSetupStatusImplTest {
         services: List<Service> = emptyList(),
         clients: List<Client> = emptyList()
     ) {
-        every { observeDashboardBusinessChanges() } returns flowOf(business)
+        every { businessDataSource.observeUserBusinessInfoInDb() } returns flowOf(UserBusinessInfo(business.id, listOf(business)))
         every { isAppointmentsPluginEnabled.flow(business.id) } returns flowOf(isAppointmentsEnabled)
         every { getServiceGroups.flow() } returns flowOf(groups)
         every { getServices.flow() } returns flowOf(services)
@@ -139,8 +137,7 @@ class ObserveDashboardSetupStatusImplTest {
     fun `emits no business when user has no businesses`() = runUnitTest {
         given()
         val fixture = Fixture()
-        every { fixture.observeDashboardBusinessChanges() } returns flowOf(null)
-        every { fixture.observeUserBusinessesChanges() } returns flowOf(emptyList())
+        every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns flowOf(UserBusinessInfo(null, emptyList()))
 
         whenn()
         val result = fixture.sut().first()
@@ -154,8 +151,7 @@ class ObserveDashboardSetupStatusImplTest {
         given()
         val fixture = Fixture()
         val businesses = listOf(stubBusiness(), stubBusiness())
-        every { fixture.observeDashboardBusinessChanges() } returns flowOf(null)
-        every { fixture.observeUserBusinessesChanges() } returns flowOf(businesses)
+        every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns flowOf(UserBusinessInfo(null, businesses))
 
         whenn()
         val result = fixture.sut().first()
@@ -506,20 +502,39 @@ class ObserveDashboardSetupStatusImplTest {
     fun `recomputes when user joins a business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businesses = MutableSharedFlow<Business?>(replay = 1).apply { tryEmit(null) }
+        val businesses = MutableSharedFlow<UserBusinessInfo>(replay = 1).apply { tryEmit(UserBusinessInfo(null, emptyList())) }
         val business = businessWith()
         fixture.stub(business, isAppointmentsEnabled = false)
-        every { fixture.observeDashboardBusinessChanges() } returns businesses
-        every { fixture.observeUserBusinessesChanges() } returns flowOf(emptyList())
+        every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns businesses
         val results = mutableListOf<DashboardSetupStatus>()
         val job = launch(Dispatchers.Unconfined) { fixture.sut().collect { results.add(it) } }
 
         whenn()
-        businesses.emit(business)
+        businesses.emit(UserBusinessInfo(business.id, listOf(business)))
 
         then()
         job.cancel()
         assertEquals(listOf(DashboardSetupStatus.NoBusiness, awaitingSetup(business)), results)
+    }
+
+    @Test
+    fun `goes straight from business selection to the created business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val existing = stubBusiness()
+        val created = ownedBusiness()
+        val businesses = MutableSharedFlow<UserBusinessInfo>(replay = 1).apply { tryEmit(UserBusinessInfo(null, listOf(existing))) }
+        fixture.stub(created, isAppointmentsEnabled = false)
+        every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns businesses
+        val results = mutableListOf<DashboardSetupStatus>()
+        val job = launch(Dispatchers.Unconfined) { fixture.sut().collect { results.add(it) } }
+
+        whenn()
+        businesses.emit(UserBusinessInfo(created.id, listOf(existing, created)))
+
+        then()
+        job.cancel()
+        assertEquals(listOf(DashboardSetupStatus.BusinessNotSelected(listOf(existing)), setupRequired(created)), results)
     }
 
     @Test

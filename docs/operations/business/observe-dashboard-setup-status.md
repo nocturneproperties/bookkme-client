@@ -7,9 +7,15 @@
 
 Decides what the Home tab shows. When no dashboard business is selected, it emits `NoBusiness` if the user has
 no businesses (Home offers create / join) or `BusinessNotSelected` with every business in Room (Home lets the
-user pick one, or create / join another). It re-emits whenever the dashboard id, the business row, the list of
-businesses (only while none is selected), the plugin preference, or the business's service groups, services or
-clients in Room change. This includes right after
+user pick one, or create / join another).
+
+The selection and the business list come from **one** Room query
+(`BusinessDataSource.observeUserBusinessInfoInDb`, `businessDao.observeAllBusinessesWithDashboardFlag`: every
+`business` row with an `isDashboard` flag from `dashboard_business`). A single query yields a consistent snapshot
+per transaction. With two separate flows (the selected id and the business list), the list could re-emit before
+the id after [Refresh business info](refresh-business-info.md) wrote both at once, which showed
+`BusinessNotSelected` for a frame after creating or joining a business. It re-emits whenever that snapshot, the
+plugin preference, or the business's service groups, services or clients in Room change. This includes right after
 [Create business](create-business.md) or [Join business](join-business.md), because both switch the dashboard
 business.
 
@@ -46,11 +52,11 @@ Both `SetupRequired` and `AwaitingSetup` carry `missingViewPermissions` (`CLIENT
 
 ```mermaid
 flowchart TD
-    Start([invoke]) --> Biz[ObserveDashboardBusinessChanges]
-    Biz -- null --> All[ObserveUserBusinessesChanges]
-    All -- empty --> NB([emit NoBusiness])
-    All -- not empty --> NS([emit BusinessNotSelected businesses])
-    Biz -- business --> Comb["combine<br/>IsAppointmentsPluginEnabled.flow business.id (plugin_prefs)<br/>GetServiceGroups.flow (service_group)<br/>GetServices.flow (service)<br/>GetClientsList.flow (client)"]
+    Start([invoke]) --> Snap[("BusinessDataSource.observeUserBusinessInfoInDb<br/>one query: business rows + isDashboard flag<br/>(business, dashboard_business)")]
+    Snap --> Sel{a row flagged isDashboard?}
+    Sel -- "no, no rows" --> NB([emit NoBusiness])
+    Sel -- "no, some rows" --> NS([emit BusinessNotSelected businesses])
+    Sel -- yes --> Comb["combine<br/>IsAppointmentsPluginEnabled.flow business.id (plugin_prefs)<br/>GetServiceGroups.flow (service_group)<br/>GetServices.flow (service)<br/>GetClientsList.flow (client)"]
     Comb --> Done{"plugin == true and groups, services<br/>and clients all non-empty"}
     Done -- yes --> R([emit Ready])
     Done -- no --> Can{"any unfinished step the user can complete?<br/>plugin: business.update<br/>group / service: services view + update<br/>client: clients view + update"}

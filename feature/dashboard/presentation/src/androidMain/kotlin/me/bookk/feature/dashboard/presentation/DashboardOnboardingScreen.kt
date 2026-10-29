@@ -2,13 +2,13 @@ package me.bookk.feature.dashboard.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,7 +74,13 @@ internal fun DashboardBusinessSelectionScreen(state: OnboardingState) {
                 )
             }
         }
-        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = DashboardRes.strings.dashboard_onboarding_select_or.desc().localized(),
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.bodySmall,
+            color = LocalColors.current.secondaryText,
+            textAlign = TextAlign.Center
+        )
         CreateOrJoinBusinessActions(state)
     }
 }
@@ -247,18 +254,18 @@ private fun OnboardingActionRow(
             tint = LocalColors.current.actionText,
             modifier = Modifier.size(24.dp)
         )
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = LocalColors.current.primaryText
-            )
-            subtitle?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = LocalColors.current.secondaryText
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+            if (subtitle == null) {
+                OnboardingActionTexts(
+                    title = title,
+                    subtitle = " ",
+                    modifier = Modifier
+                        .alpha(0f)
+                        .clearAndSetSemantics {}
                 )
+                OnboardingActionTitle(title)
+            } else {
+                OnboardingActionTexts(title = title, subtitle = subtitle)
             }
         }
         if (isDone) {
@@ -277,6 +284,27 @@ private fun OnboardingActionRow(
             )
         }
     }
+}
+
+@Composable
+private fun OnboardingActionTexts(title: String, subtitle: String, modifier: Modifier = Modifier) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        OnboardingActionTitle(title)
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodySmall,
+            color = LocalColors.current.secondaryText
+        )
+    }
+}
+
+@Composable
+private fun OnboardingActionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        color = LocalColors.current.primaryText
+    )
 }
 
 @Preview

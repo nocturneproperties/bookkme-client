@@ -16,7 +16,7 @@ internal class RedeemEmployeeInvitationImpl(
 ) : RedeemEmployeeInvitation {
     override suspend fun invoke(code: String): Employee = runCatching {
         val employee = dataSource.redeemInvitation(code)
-        refreshBusinessInfo()
+        refreshBusinessInfo.refreshAndSelect(employee.businessId)
         switchDashboardBusiness(employee.businessId)
         employee
     }.onBusinessError { error ->

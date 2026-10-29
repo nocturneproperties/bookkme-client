@@ -4,21 +4,20 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
+import kotlinx.coroutines.flow.flowOf
 import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
-import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.entity.DashboardSetupStatus
+import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.datasource.BusinessDataSource
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.GetServices
 
 internal class ObserveDashboardSetupStatusImpl(
-    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
-    private val observeUserBusinessesChanges: ObserveUserBusinessesChanges,
+    private val businessDataSource: BusinessDataSource,
     private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
     private val getServiceGroups: GetServiceGroups,
     private val getServices: GetServices,
@@ -27,17 +26,19 @@ internal class ObserveDashboardSetupStatusImpl(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(): Flow<DashboardSetupStatus> {
-        return observeDashboardBusinessChanges()
-            .flatMapLatest { business -> business?.setupStatus() ?: unselectedBusinessStatus() }
+        return businessDataSource.observeUserBusinessInfoInDb()
+            .flatMapLatest { info -> info.dashboardBusiness()?.setupStatus() ?: flowOf(info.unselectedStatus()) }
     }
 
-    private fun unselectedBusinessStatus(): Flow<DashboardSetupStatus> {
-        return observeUserBusinessesChanges().map { businesses ->
-            if (businesses.isEmpty()) {
-                DashboardSetupStatus.NoBusiness
-            } else {
-                DashboardSetupStatus.BusinessNotSelected(businesses)
-            }
+    private fun UserBusinessInfo.dashboardBusiness(): Business? {
+        return businesses.firstOrNull { it.id == dashboardId }
+    }
+
+    private fun UserBusinessInfo.unselectedStatus(): DashboardSetupStatus {
+        return if (businesses.isEmpty()) {
+            DashboardSetupStatus.NoBusiness
+        } else {
+            DashboardSetupStatus.BusinessNotSelected(businesses)
         }
     }
 

@@ -16,7 +16,9 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
-import me.bookk.designsystem.uistate.ValidationState
+import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.showError
+import me.bookk.designsystem.uistate.validate
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.CreateAccount.Error
 import me.bookk.feature.authorization.presentation.AuthConstants
@@ -37,10 +39,11 @@ class SignUpViewModel(
     val uiState: SignUpState = stateFactory.createSignUpState(createInitData()).apply {
         appBar.size = TopBarSize.LARGE
         appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(SignUpNavigationDestination.Back) }
-        name.isValid = false
-        lastName.isValid = false
-        email.isValid = false
+        name.clearError()
+        lastName.clearError()
+        email.clearError()
         email.inputType = InputType.EMAIL
+        confirmButton.isEnabled = true
     }
 
     override fun onLearnMoreClick() {
@@ -48,42 +51,42 @@ class SignUpViewModel(
     }
 
     override fun onFirstNameTextChanged(text: String) {
-        val validationResult = validateName.invoke(text)
         uiState.name.text = text
-        uiState.name.isValid = validationResult.isValid
-        uiState.name.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
-        uiState.name.supportingTextRes = when (validationResult) {
-            ValidateName.Result.Invalid.Length -> AuthRes.strings.sign_up_first_name_error.desc()
-            ValidateName.Result.Valid -> null
-        }
+        uiState.name.clearError()
         validateButton()
     }
 
     override fun onLastNameTextChanged(text: String) {
-        val validationResult = validateName.invoke(text)
         uiState.lastName.text = text
-        uiState.lastName.isValid = validationResult.isValid
-        uiState.lastName.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
-        uiState.lastName.supportingTextRes = when (validationResult) {
-            ValidateName.Result.Invalid.Length -> AuthRes.strings.sign_up_last_name_error.desc()
-            ValidateName.Result.Valid -> null
-        }
+        uiState.lastName.clearError()
         validateButton()
     }
 
     override fun onEmailTextChanged(text: String) {
-        val validationResult = validateEmail.invoke(text)
         uiState.email.text = text
-        uiState.email.isValid = validationResult.isValid
-        uiState.email.validationState = if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
-        uiState.email.supportingTextRes = when (validationResult) {
-            ValidateEmail.Result.Invalid.Format -> AuthRes.strings.sign_up_email_error.desc()
-            ValidateEmail.Result.Valid -> null
-        }
+        uiState.email.clearError()
         validateButton()
     }
 
+    private fun validateForm(): Boolean {
+        return listOf(
+            uiState.name.validate(
+                AuthRes.strings.sign_up_first_name_error.desc().takeIf { !validateName(uiState.name.text).isValid }
+            ),
+            uiState.lastName.validate(
+                AuthRes.strings.sign_up_last_name_error.desc().takeIf { !validateName(uiState.lastName.text).isValid }
+            ),
+            uiState.email.validate(
+                AuthRes.strings.sign_up_email_error.desc().takeIf { !validateEmail(uiState.email.text).isValid }
+            )
+        ).all { it }
+    }
+
     override fun onConfirmButtonClick() {
+        if (!validateForm()) {
+            validateButton()
+            return
+        }
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.confirmButton.isLoading = true },
@@ -98,16 +101,10 @@ class SignUpViewModel(
             },
             onError = {
                 when (it) {
-                    is Error.EmailAlreadyExist -> {
-                        uiState.email.validationState = ValidationState.ERROR
-                        uiState.email.isValid = false
-                        uiState.email.supportingTextRes = AuthRes.strings.sign_up_email_exist.desc()
-                    }
-                    is Error.InvalidEmailFormat -> {
-                        uiState.email.validationState = ValidationState.ERROR
-                        uiState.email.isValid = false
-                        uiState.email.supportingTextRes = AuthRes.strings.sign_up_email_error.desc()
-                    }
+                    is Error.EmailAlreadyExist ->
+                        uiState.email.showError(AuthRes.strings.sign_up_email_exist.desc())
+                    is Error.InvalidEmailFormat ->
+                        uiState.email.showError(AuthRes.strings.sign_up_email_error.desc())
                     is Error.PasskeyVerificationFailed -> {
                         uiState.notification.add(
                             Message(
@@ -131,7 +128,10 @@ class SignUpViewModel(
                     else -> uiState.notification.add(errorMapper.mapToNotification(it))
                 }
             },
-            onTerminate = { uiState.confirmButton.isLoading = false },
+            onTerminate = {
+                uiState.confirmButton.isLoading = false
+                validateButton()
+            },
         )
     }
 

@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.presentation.sign_up
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -9,9 +10,12 @@ import dev.mokkery.matcher.capture.Capture
 import dev.mokkery.matcher.capture.capture
 import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import library.device.api.DeviceFacade
 import library.validation.api.ValidateEmail
 import library.validation.api.ValidateName
+import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -31,6 +35,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SignUpViewModelTest {
@@ -84,43 +89,79 @@ class SignUpViewModelTest {
     }
 
     @Test
-    fun `enables confirm when every field is valid`() = runUnitTest {
+    fun `enables confirm before the form is filled`() = runUnitTest {
         given()
-        val sut = Fixture().sut()
+        val fixture = Fixture()
 
         whenn()
-        sut.fillValidForm()
+        val sut = fixture.sut()
 
         then()
         assertTrue(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
-    fun `shows error for short first name`() = runUnitTest {
+    fun `does not show errors while typing`() = runUnitTest {
         given()
         val sut = Fixture().sut()
-        sut.fillValidForm()
 
         whenn()
         sut.onFirstNameTextChanged("A")
+        sut.onEmailTextChanged("anna")
 
         then()
-        assertEquals(ValidationState.ERROR, sut.uiState.name.validationState)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.name.validationState)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.email.validationState)
+        assertTrue(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `shows errors for every invalid field on confirm`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+        sut.onFirstNameTextChanged("A")
+        sut.onLastNameTextChanged("S")
+        sut.onEmailTextChanged("anna")
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertEquals(AuthRes.strings.sign_up_first_name_error.desc(), sut.uiState.name.supportingTextRes)
+        assertEquals(AuthRes.strings.sign_up_last_name_error.desc(), sut.uiState.lastName.supportingTextRes)
+        assertEquals(AuthRes.strings.sign_up_email_error.desc(), sut.uiState.email.supportingTextRes)
+        assertEquals(ValidationState.ERROR, sut.uiState.email.validationState)
         assertFalse(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
-    fun `shows error for invalid email`() = runUnitTest {
+    fun `does not create account when the form is invalid`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.createAccount(any()) }
+    }
+
+    @Test
+    fun `clears field error once the field is edited`() = runUnitTest {
         given()
         val sut = Fixture().sut()
         sut.fillValidForm()
+        sut.onFirstNameTextChanged("A")
+        sut.onConfirmButtonClick()
 
         whenn()
-        sut.onEmailTextChanged("anna")
+        sut.onFirstNameTextChanged("An")
 
         then()
-        assertEquals(ValidationState.ERROR, sut.uiState.email.validationState)
-        assertFalse(sut.uiState.confirmButton.isEnabled)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.name.validationState)
+        assertNull(sut.uiState.name.supportingTextRes)
+        assertTrue(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test

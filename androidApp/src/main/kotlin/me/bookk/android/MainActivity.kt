@@ -4,28 +4,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -39,14 +29,12 @@ import me.bookk.core.presentation.BusinessAccessSuspendedHandler
 import me.bookk.core.presentation.LocalBusinessAccessSuspendedHandler
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.UnauthorizedHandler
-import me.bookk.designsystem.action.isKeyboardMovingDownOrInvisible
-import me.bookk.designsystem.action.keyboardMovingDirection
 import me.bookk.designsystem.components.DefaultSnackbarProvider
+import me.bookk.designsystem.components.GlobalMessageHost
 import me.bookk.designsystem.components.LocalSnackbarProvider
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
-import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.appointments.presentation.AppointmentsTab
 import me.bookk.feature.appointments.presentation.navigation.AppointmentsDestination
 import me.bookk.feature.appointments.presentation.navigation.appointmentsGraph
@@ -198,25 +186,6 @@ private fun NavigationRoot(
             }
             ObserveNotifications(state.notifications)
         }
-        Box(
-            modifier = Modifier
-                .imePadding()
-                .systemBarsPadding(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            val direction by keyboardMovingDirection()
-            val animatedPadding by animateDpAsState(if (isKeyboardMovingDownOrInvisible(direction)) 80.dp else 0.dp)
-
-            SnackbarHost(
-                modifier = Modifier.padding(bottom = animatedPadding),
-                hostState = snackBarState
-            ) {
-                Snackbar(
-                    snackbarData = it,
-                    containerColor = LocalColors.current.secondaryText,
-                    contentColor = LocalColors.current.background
-                )
-            }
-        }
+        GlobalMessageHost(hostState = snackBarState)
     }
 }

@@ -134,8 +134,41 @@ class AppointmentSettingsViewModelTest {
             loaded.copy(automaticApproval = true, inBetweenBreakInMinutes = 20, appointmentNote = "Bring ID"),
             fixture.updates.get()
         )
-        sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
         assertFalse(sut.uiState.save.isLoading)
+    }
+
+    @Test
+    fun `plays success haptic when appointment settings are saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls { (s: AppointmentSettings) -> s }
+        val loaded = AppointmentSettings.stub(fixture.businessId)
+        val sut = fixture.sut()
+        fixture.cached.value = loaded
+        sut.uiState.automaticApproval.onCheckedChange?.invoke(true)
+        (sut.uiState.minimalBreak as FakeTextFieldState).type("20")
+        (sut.uiState.note as FakeTextFieldState).type("Bring ID")
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when appointment settings save fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointmentSettings(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

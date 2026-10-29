@@ -137,6 +137,36 @@ class PasskeyViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when passkey is added`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val added = passkey("New")
+        everySuspend { fixture.createNewPasskey() } returns listOf(added)
+        val sut = fixture.sut()
+        everySuspend { fixture.getAvailablePasskeys() } returns listOf(added)
+
+        whenn()
+        sut.onAddPasskeyClick()
+
+        then()
+        sut.uiState.notification.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `does not play success haptic when adding passkey fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createNewPasskey() } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onAddPasskeyClick()
+
+        then()
+        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `shows mapped error when adding passkey fails`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -168,6 +198,38 @@ class PasskeyViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when passkey is deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val key = passkey()
+        everySuspend { fixture.deletePasskey(any()) } returns Unit
+        val sut = fixture.sut()
+        sut.onDeletePasskeyClick(PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc()))
+
+        whenn()
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when passkey deletion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val key = passkey()
+        everySuspend { fixture.deletePasskey(any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.onDeletePasskeyClick(PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc()))
+
+        whenn()
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `deletes every passkey of a batch after confirmation`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -181,6 +243,38 @@ class PasskeyViewModelTest {
 
         then()
         verifySuspend(VerifyMode.exactly(2)) { fixture.deletePasskey(any()) }
+    }
+
+    @Test
+    fun `plays success haptic when passkey batch is deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val ids = listOf(Uuid.random(), Uuid.random())
+        everySuspend { fixture.deletePasskey(any()) } returns Unit
+        val sut = fixture.sut()
+        sut.onDeletePasskeyList(ids.map { PasskeyState.PasskeyItem(it, "key", true, true, "".desc()) })
+
+        whenn()
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when passkey batch deletion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val ids = listOf(Uuid.random(), Uuid.random())
+        everySuspend { fixture.deletePasskey(any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.onDeletePasskeyList(ids.map { PasskeyState.PasskeyItem(it, "key", true, true, "".desc()) })
+
+        whenn()
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

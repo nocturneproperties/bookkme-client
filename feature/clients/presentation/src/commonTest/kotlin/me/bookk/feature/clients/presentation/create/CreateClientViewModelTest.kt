@@ -9,6 +9,7 @@ import dev.mokkery.matcher.capture.capture
 import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -18,6 +19,7 @@ import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
+import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.clients.domain.api.CreateClient
 import me.bookk.feature.clients.domain.api.entity.Client
@@ -164,6 +166,36 @@ class CreateClientViewModelTest {
         assertEquals(fixture.businessId, client.businessId)
         assertEquals(listOf<CreateClientDestination>(CreateClientDestination.Details(client.id)), sut.uiState.navigation.navigationDestination)
         assertFalse(sut.uiState.submit.isLoading)
+    }
+
+    @Test
+    fun `plays success haptic when client is created`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createClient(any()) } calls { (client: Client) -> client }
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.uiState.submit.onClick?.invoke()
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `does not play success haptic when client creation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createClient(any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.uiState.submit.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

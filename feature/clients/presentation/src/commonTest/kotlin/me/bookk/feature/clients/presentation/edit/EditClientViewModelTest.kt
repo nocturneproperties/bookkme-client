@@ -152,6 +152,36 @@ class EditClientViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when client is saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editClient(capture(fixture.edited)) } calls { (client: Client) -> client }
+        val sut = fixture.sutWith(stubDetachedClient(name = "Anna"))
+        (sut.uiState.name as FakeTextFieldState).type("Maria")
+        (sut.uiState.description as FakeTextFieldState).type("Prefers mornings")
+
+        whenn()
+        sut.uiState.submit.onClick?.invoke()
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when client save fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editClient(any()) } throws TestException()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        whenn()
+        sut.uiState.submit.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `saves only description of integrated client`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -263,6 +293,37 @@ class EditClientViewModelTest {
         then()
         verifySuspend { fixture.deleteClient(client) }
         assertEquals(listOf<EditClientDestination>(EditClientDestination.Deleted), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `plays success haptic when client is deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val client = stubDetachedClient()
+        everySuspend { fixture.deleteClient(any()) } returns Unit
+        val sut = fixture.sutWith(client)
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        whenn()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when client deletion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteClient(any()) } throws TestException()
+        val sut = fixture.sutWith(stubDetachedClient())
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        whenn()
+        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

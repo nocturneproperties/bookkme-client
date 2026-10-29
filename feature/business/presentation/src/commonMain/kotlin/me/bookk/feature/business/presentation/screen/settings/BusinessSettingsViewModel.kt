@@ -147,6 +147,7 @@ class BusinessSettingsViewModel(
             onStart = { uiState.save.startLoading() },
             call = { updateBusiness(update) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 referenceBusiness = it
                 renderSchedule(it.schedule)
                 uiState.notifications.add(GlobalMessage(BusinessRes.strings.business_settings_updated.desc()))

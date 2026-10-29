@@ -114,7 +114,7 @@ class AppointmentRequestViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { item.approveButton.startLoading() },
             call = { approveAppointmentRequest(requestId) },
-            onComplete = { uiState.requests.replace(uiState.requests.items - item) },
+            onComplete = { removeHandledRequest(item) },
             onError = {
                 val resource = when (it as? Error) {
                     is Error.AppointmentExists -> {
@@ -150,10 +150,15 @@ class AppointmentRequestViewModel(
                 val businessId = observeCurrentBusinessId().filterNotNull().first()
                 declineAppointmentRequest(requestId, businessId, reason)
             },
-            onComplete = { uiState.requests.replace(uiState.requests.items - item) },
+            onComplete = { removeHandledRequest(item) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { item.declineButton.stopLoading() },
         )
+    }
+
+    private fun removeHandledRequest(item: AppointmentRequestItemState) {
+        uiState.notifications.add(PresentationNotification.SuccessHaptic)
+        uiState.requests.replace(uiState.requests.items - item)
     }
 
     private fun onDeclineRequested(requestId: Uuid) {

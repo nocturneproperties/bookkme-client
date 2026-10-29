@@ -79,6 +79,7 @@ class InviteEmployeeViewModel(
             onStart = { uiState.generateCodeButton.startLoading() },
             call = { createEmployeeInvitation(businessId) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 it.code?.let { code -> copyCodeToClipboard(code) }
                 loadInvitations()
             },
@@ -128,7 +129,10 @@ class InviteEmployeeViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { revokeEmployeeInvitation(businessId, id) },
-            onComplete = { loadInvitations() },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                loadInvitations()
+            },
             onError = {
                 when (it) {
                     is RevokeEmployeeInvitation.Error.AlreadyProcessed ->

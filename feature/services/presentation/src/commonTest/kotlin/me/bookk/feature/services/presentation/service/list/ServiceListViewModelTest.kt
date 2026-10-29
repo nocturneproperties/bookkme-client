@@ -207,6 +207,43 @@ class ServiceListViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when service is deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val service = stubService()
+        everySuspend { fixture.deleteService(any()) } returns Unit
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.services.value = listOf(service)
+        val section = sut.uiState.services.items.single()
+        assertNotNull(section.onItemDeleteClick).invoke(section.items.single())
+
+        whenn()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when service deletion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteService(any()) } throws TestException()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.services.value = listOf(stubService())
+        val section = sut.uiState.services.items.single()
+        assertNotNull(section.onItemDeleteClick).invoke(section.items.single())
+
+        whenn()
+        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `shows mapped error when delete fails`() = runUnitTest {
         given()
         val fixture = Fixture()

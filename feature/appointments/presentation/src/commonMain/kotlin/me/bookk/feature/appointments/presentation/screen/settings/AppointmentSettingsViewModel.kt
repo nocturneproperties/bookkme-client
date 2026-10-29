@@ -69,6 +69,7 @@ class AppointmentSettingsViewModel(
             onStart = { uiState.save.startLoading() },
             call = { updateAppointmentSettings(appointmentSettings) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 loadedSettings = it
                 renderSettings(it)
                 uiState.notifications.add(

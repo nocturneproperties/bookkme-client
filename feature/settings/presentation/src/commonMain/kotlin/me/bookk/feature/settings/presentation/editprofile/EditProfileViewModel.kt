@@ -9,6 +9,7 @@ import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.settings.domain.api.EditProfile
@@ -111,6 +112,7 @@ class EditProfileViewModel(
                 )
             },
             onComplete = {
+                uiState.notification.add(PresentationNotification.SuccessHaptic)
                 fieldInitialState[Field.NAME] = uiState.name.text
                 fieldInitialState[Field.LAST] = uiState.lastName.text
                 fieldInitialState[Field.EMAIL] = uiState.email.text

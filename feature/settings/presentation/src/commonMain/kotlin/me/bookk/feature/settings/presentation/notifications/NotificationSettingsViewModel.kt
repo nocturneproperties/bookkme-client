@@ -8,6 +8,7 @@ import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.feature.settings.domain.api.GetNotificationSettings
 import me.bookk.feature.settings.domain.api.UpdateNotificationSettings
@@ -91,6 +92,7 @@ class NotificationSettingsViewModel(
             launchIn = DispatcherProvider.io,
             call = { updateNotificationSettings(settings) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 loadedSettings = it
                 renderSettings(it)
             },

@@ -182,6 +182,7 @@ class ServiceGroupListViewModel(
             launchIn = DispatcherProvider.io,
             call = { deleteServiceGroup(group) },
             onStart = { uiState.refreshState.isRefreshing = true },
+            onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.refreshState.isRefreshing = false }
         )

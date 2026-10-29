@@ -46,7 +46,10 @@ class SettingsDashboardViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { updateColorScheme.invoke(scheme.toDomain()) },
-            onComplete = { uiState.appearance.colorScheme = scheme },
+            onComplete = {
+                uiState.notification.add(PresentationNotification.SuccessHaptic)
+                uiState.appearance.colorScheme = scheme
+            },
             onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
     }

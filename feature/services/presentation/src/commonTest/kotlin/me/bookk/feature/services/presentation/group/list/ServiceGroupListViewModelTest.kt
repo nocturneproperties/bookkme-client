@@ -314,6 +314,41 @@ class ServiceGroupListViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when group is deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val group = stubGroup("Hair")
+        everySuspend { fixture.deleteServiceGroup(any()) } returns Unit
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.groups.value = listOf(group)
+        assertNotNull(sut.uiState.groups.items.single().onDeleteClick).invoke()
+
+        whenn()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when group deletion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteServiceGroup(any()) } throws TestException()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.groups.value = listOf(stubGroup())
+        assertNotNull(sut.uiState.groups.items.single().onDeleteClick).invoke()
+
+        whenn()
+        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `shows mapped error when delete fails`() = runUnitTest {
         given()
         val fixture = Fixture()

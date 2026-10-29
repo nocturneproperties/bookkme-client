@@ -44,6 +44,21 @@ private struct DashboardSetupRequiredHost: View {
 				.navigationDestination(for: DashboardHomeNavigationDestination.EnablePlugins.self) { dest in
 					BusinessPluginsScreen(businessId: dest.businessId)
 				}
+				.navigationDestination(for: DashboardHomeNavigationDestination.AddServiceGroup.self) { _ in
+					ServiceGroupListScreen()
+				}
+				.navigationDestination(for: DashboardHomeNavigationDestination.AddService.self) { dest in
+					AddServiceScreen(businessId: dest.businessId)
+				}
+				.navigationDestination(for: DashboardHomeNavigationDestination.AddClient.self) { dest in
+					CreateClientScreen(businessId: dest.businessId)
+				}
+				.navigationDestination(for: ClientsDestinations.ClientDetails.self) { dest in
+					ClientDetailsScreen(id: dest.id)
+				}
+				.navigationDestination(for: ClientsDestinations.EditClient.self) { dest in
+					EditClientScreen(id: dest.id)
+				}
 		}
 		.environmentObject(navigationStack)
 	}

@@ -25,6 +25,7 @@ import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.services.domain.api.GetBusinessCurrency
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.CreateService
@@ -84,6 +85,18 @@ class AddServiceViewModelTest {
         (uiState.name as FakeTextFieldState).type("Haircut")
         (uiState.duration as FakeTextFieldState).type(duration)
         (uiState.price as FakeTextFieldState).type(price)
+    }
+
+    @Test
+    fun `shows small app bar`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(TopBarSize.SMALL, sut.uiState.appBar.size)
     }
 
     @Test

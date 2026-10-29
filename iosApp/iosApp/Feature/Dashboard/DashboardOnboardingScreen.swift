@@ -67,9 +67,35 @@ struct DashboardSetupRequiredScreen: View {
 			subtitle: DashboardRes.strings().dashboard_onboarding_setup_subtitle.desc().localized()
 		) {
 			OnboardingActionRow(
+				systemImage: "square.stack.3d.up",
+				title: DashboardRes.strings().dashboard_onboarding_group_title.desc().localized(),
+				subtitle: state.serviceGroupStepSubtitle.localized(),
+				isDone: state.isServiceGroupStepDone,
+				isEnabled: state.isServiceGroupStepEnabled,
+				onClick: { state.onAddServiceGroupClick?() }
+			)
+			OnboardingActionRow(
+				systemImage: "scissors",
+				title: DashboardRes.strings().dashboard_onboarding_service_title.desc().localized(),
+				subtitle: state.serviceStepSubtitle.localized(),
+				isDone: state.isServiceStepDone,
+				isEnabled: state.isServiceStepEnabled,
+				onClick: { state.onAddServiceClick?() }
+			)
+			OnboardingActionRow(
+				systemImage: "person.crop.circle.badge.plus",
+				title: DashboardRes.strings().dashboard_onboarding_client_title.desc().localized(),
+				subtitle: state.clientStepSubtitle.localized(),
+				isDone: state.isClientStepDone,
+				isEnabled: state.isClientStepEnabled,
+				onClick: { state.onAddClientClick?() }
+			)
+			OnboardingActionRow(
 				systemImage: "puzzlepiece.extension",
 				title: DashboardRes.strings().dashboard_onboarding_plugins_title.desc().localized(),
 				subtitle: DashboardRes.strings().dashboard_onboarding_plugins_subtitle.desc().localized(),
+				isDone: state.isAppointmentsStepDone,
+				isEnabled: state.isAppointmentsStepEnabled,
 				onClick: { state.onEnablePluginsClick?() }
 			)
 		}
@@ -146,6 +172,8 @@ private struct OnboardingActionRow: View {
 	let systemImage: String
 	let title: String
 	var subtitle: String? = nil
+	var isDone: Bool = false
+	var isEnabled: Bool = true
 	let onClick: () -> Void
 
 	var body: some View {
@@ -170,14 +198,22 @@ private struct OnboardingActionRow: View {
 
 				Spacer()
 
-				Image(systemName: "chevron.right")
-					.font(.caption)
-					.foregroundColor(AppColors.secondary)
+				if isDone {
+					Image(systemName: "checkmark.circle.fill")
+						.font(.title3)
+						.foregroundColor(AppColors.success)
+				} else {
+					Image(systemName: "chevron.right")
+						.font(.caption)
+						.foregroundColor(AppColors.secondary)
+				}
 			}
 			.padding(16)
 			.contentShape(Rectangle())
 		}
 		.buttonStyle(.plain)
+		.disabled(isDone || !isEnabled)
+		.opacity(isEnabled || isDone ? 1 : 0.5)
 		.background(AppColors.elevated)
 		.clipShape(RoundedRectangle(cornerRadius: 16))
 	}

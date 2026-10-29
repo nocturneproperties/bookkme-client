@@ -18,6 +18,7 @@ import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
+import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.clients.domain.api.CreateClient
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
@@ -67,6 +68,18 @@ class CreateClientViewModelTest {
         (uiState.lastName as FakeTextFieldState).type("Smith")
         (uiState.phone as FakeTextFieldState).type("+380 50")
         (uiState.email as FakeTextFieldState).type(email)
+    }
+
+    @Test
+    fun `shows small app bar`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(TopBarSize.SMALL, sut.uiState.appBar.size)
     }
 
     @Test

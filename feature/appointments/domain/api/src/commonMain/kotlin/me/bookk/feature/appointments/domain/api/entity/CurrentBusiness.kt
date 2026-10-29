@@ -4,5 +4,6 @@ import kotlin.uuid.Uuid
 
 data class CurrentBusiness(
     val id: Uuid,
-    val employeeId: Uuid?
+    val employeeId: Uuid?,
+    val canViewAppointments: Boolean
 )

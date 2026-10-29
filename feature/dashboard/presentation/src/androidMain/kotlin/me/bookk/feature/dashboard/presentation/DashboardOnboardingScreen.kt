@@ -15,8 +15,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.DesignServices
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.GroupAdd
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -89,14 +94,63 @@ internal fun DashboardSetupRequiredScreen(state: OnboardingState) {
         headline = DashboardRes.strings.dashboard_onboarding_setup_headline.desc().localized(),
         subtitle = DashboardRes.strings.dashboard_onboarding_setup_subtitle.desc().localized()
     ) {
-        AppCard(modifier = Modifier.fillMaxWidth()) {
-            OnboardingActionRow(
-                icon = Icons.Filled.Extension,
-                title = DashboardRes.strings.dashboard_onboarding_plugins_title.desc().localized(),
-                subtitle = DashboardRes.strings.dashboard_onboarding_plugins_subtitle.desc().localized(),
-                onClick = { state.onEnablePluginsClick?.invoke() }
-            )
-        }
+        OnboardingStepCard(
+            icon = Icons.Filled.Category,
+            title = DashboardRes.strings.dashboard_onboarding_group_title.desc().localized(),
+            subtitle = state.serviceGroupStepSubtitle.localized(),
+            isDone = state.isServiceGroupStepDone,
+            isEnabled = state.isServiceGroupStepEnabled,
+            onClick = { state.onAddServiceGroupClick?.invoke() }
+        )
+        OnboardingStepCard(
+            icon = Icons.Filled.DesignServices,
+            title = DashboardRes.strings.dashboard_onboarding_service_title.desc().localized(),
+            subtitle = state.serviceStepSubtitle.localized(),
+            isDone = state.isServiceStepDone,
+            isEnabled = state.isServiceStepEnabled,
+            onClick = { state.onAddServiceClick?.invoke() }
+        )
+        OnboardingStepCard(
+            icon = Icons.Filled.PersonAdd,
+            title = DashboardRes.strings.dashboard_onboarding_client_title.desc().localized(),
+            subtitle = state.clientStepSubtitle.localized(),
+            isDone = state.isClientStepDone,
+            isEnabled = state.isClientStepEnabled,
+            onClick = { state.onAddClientClick?.invoke() }
+        )
+        OnboardingStepCard(
+            icon = Icons.Filled.Extension,
+            title = DashboardRes.strings.dashboard_onboarding_plugins_title.desc().localized(),
+            subtitle = DashboardRes.strings.dashboard_onboarding_plugins_subtitle.desc().localized(),
+            isDone = state.isAppointmentsStepDone,
+            isEnabled = state.isAppointmentsStepEnabled,
+            onClick = { state.onEnablePluginsClick?.invoke() }
+        )
+    }
+}
+
+@Composable
+private fun OnboardingStepCard(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    isDone: Boolean,
+    isEnabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    AppCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(if (isEnabled || isDone) 1f else 0.5f)
+    ) {
+        OnboardingActionRow(
+            icon = icon,
+            title = title,
+            subtitle = subtitle,
+            isDone = isDone,
+            isClickable = isEnabled && !isDone,
+            onClick = onClick
+        )
     }
 }
 
@@ -160,12 +214,14 @@ private fun OnboardingActionRow(
     icon: ImageVector,
     title: String,
     subtitle: String? = null,
+    isDone: Boolean = false,
+    isClickable: Boolean = true,
     onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable(enabled = isClickable, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -190,12 +246,21 @@ private fun OnboardingActionRow(
                 )
             }
         }
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-            contentDescription = null,
-            tint = LocalColors.current.secondaryText,
-            modifier = Modifier.size(16.dp)
-        )
+        if (isDone) {
+            Icon(
+                imageVector = Icons.Filled.CheckCircle,
+                contentDescription = null,
+                tint = LocalColors.current.success,
+                modifier = Modifier.size(20.dp)
+            )
+        } else {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = null,
+                tint = LocalColors.current.secondaryText,
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 }
 

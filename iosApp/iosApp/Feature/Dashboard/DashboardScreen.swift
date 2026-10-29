@@ -36,6 +36,12 @@ struct DashboardTabs: View {
 		switch destination {
 		case let destination as DashboardHomeNavigationDestination.EnablePlugins:
 			onboardingNavigationStack.push(destination)
+		case let destination as DashboardHomeNavigationDestination.AddServiceGroup:
+			onboardingNavigationStack.push(destination)
+		case let destination as DashboardHomeNavigationDestination.AddService:
+			onboardingNavigationStack.push(destination)
+		case let destination as DashboardHomeNavigationDestination.AddClient:
+			onboardingNavigationStack.push(destination)
 		default:
 			break
 		}

@@ -65,6 +65,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `CanEditBusiness` | local only (`business` table) | [Can edit business](business/can-edit-business.md) |
 | `GetAvailableDashboardFeatures` | local only | [Get available dashboard features](business/get-available-dashboard-features.md) |
 | `ObserveDashboardSetupStatus` | local only | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) |
+| `RefreshDashboardSetupStatus` | via `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) |
 | `ObserveDashboardBusinessChanges`, `ObserveDashboardBusinessIdChanges`, `ObserveCurrentBusinessId` (×4), `ObserveCurrentBusiness` | local only | [Observe dashboard business](business/observe-dashboard-business-changes.md) |
 | `ObserveUserBusinessesChanges` | local only | [Observe user businesses](business/observe-user-businesses-changes.md) |
 
@@ -159,7 +160,8 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | [Join business](business/join-business.md) | `RedeemEmployeeInvitation` (cross-feature wrapper) |
 | [Refresh business info](business/refresh-business-info.md) | `IsAppointmentsPluginEnabled.refresh` per business |
 | [Get available dashboard features](business/get-available-dashboard-features.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
-| [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
+| [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow`, `GetServiceGroups.flow`, `GetServices.flow`, `GetClientsList.flow` (cross-feature) |
+| [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) | `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` (cross-feature) |
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |
 | [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |

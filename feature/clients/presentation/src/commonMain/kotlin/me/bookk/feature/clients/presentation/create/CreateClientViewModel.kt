@@ -83,7 +83,7 @@ class CreateClientViewModel(
     }
 
     private fun CreateClientState.setup(): CreateClientState {
-        appBar.size = TopBarSize.LARGE
+        appBar.size = TopBarSize.SMALL
         appBar.title = ClientsRes.strings.clients_create_title.desc()
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(CreateClientDestination.Back)

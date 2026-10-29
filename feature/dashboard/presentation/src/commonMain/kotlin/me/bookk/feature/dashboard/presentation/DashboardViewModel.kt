@@ -1,5 +1,6 @@
 package me.bookk.feature.dashboard.presentation
 
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
@@ -16,7 +17,9 @@ import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
 import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
+import me.bookk.feature.business.domain.api.business.RefreshDashboardSetupStatus
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
+import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.entity.DashboardSetupStatus
 import me.bookk.feature.dashboard.presentation.state.DashboardState
 import me.bookk.feature.dashboard.presentation.state.HomeContent
@@ -28,6 +31,7 @@ import kotlin.uuid.Uuid
 class DashboardViewModel(
     private val observeDashboardSetupStatus: ObserveDashboardSetupStatus,
     private val refreshBusinessInfo: RefreshBusinessInfo,
+    private val refreshDashboardSetupStatus: RefreshDashboardSetupStatus,
     private val observeUserBusinessesChanges: ObserveUserBusinessesChanges,
     private val switchDashboardBusiness: SwitchDashboardBusiness,
     private val joinBusiness: JoinBusiness,
@@ -38,7 +42,8 @@ class DashboardViewModel(
 
     val uiState: DashboardState = stateFactory.createDashboardState(createInitData()).setup()
 
-    private var setupRequiredBusinessId: Uuid? = null
+    private var setupRequired: DashboardSetupStatus.SetupRequired? = null
+    private var refreshedSetupBusinessId: Uuid? = null
     private var lastSetupStatus: DashboardSetupStatus? = null
 
     init {
@@ -60,6 +65,9 @@ class DashboardViewModel(
         home.onboarding.onCreateBusinessClick = weakVMClosure { it.showBusinessNameDialog() }
         home.onboarding.onJoinBusinessClick = weakVMClosure { it.onJoinBusinessClick() }
         home.onboarding.onEnablePluginsClick = weakVMClosure { it.onEnablePluginsClick() }
+        home.onboarding.onAddServiceGroupClick = weakVMClosure { it.onAddServiceGroupClick() }
+        home.onboarding.onAddServiceClick = weakVMClosure { it.onAddServiceClick() }
+        home.onboarding.onAddClientClick = weakVMClosure { it.onAddClientClick() }
         home.onboarding.onBusinessClick = weakVMClosure { vm, item -> vm.onBusinessSelected(item) }
     }
 
@@ -81,9 +89,31 @@ class DashboardViewModel(
     }
 
     private fun onEnablePluginsClick() {
-        setupRequiredBusinessId?.let {
-            uiState.navigation.push(DashboardHomeNavigationDestination.EnablePlugins(it))
+        setupRequired?.takeIf { it.canEnableAppointments }?.let {
+            uiState.navigation.push(DashboardHomeNavigationDestination.EnablePlugins(it.businessId))
         }
+    }
+
+    private fun onAddServiceGroupClick() {
+        setupRequired?.takeIf { it.canManageServices }?.let {
+            uiState.navigation.push(DashboardHomeNavigationDestination.AddServiceGroup)
+        }
+    }
+
+    private fun onAddServiceClick() {
+        setupRequired?.takeIf { it.canAddService() }?.let {
+            uiState.navigation.push(DashboardHomeNavigationDestination.AddService(it.businessId))
+        }
+    }
+
+    private fun onAddClientClick() {
+        setupRequired?.takeIf { it.canManageClients }?.let {
+            uiState.navigation.push(DashboardHomeNavigationDestination.AddClient(it.businessId))
+        }
+    }
+
+    private fun DashboardSetupStatus.SetupRequired.canAddService(): Boolean {
+        return canManageServices && hasServiceGroups
     }
 
     private fun showBusinessNameDialog() {
@@ -174,11 +204,12 @@ class DashboardViewModel(
             uiState.tabItems.selectedItemId = TabItem.Id.HOME
         }
         lastSetupStatus = status
-        setupRequiredBusinessId = (status as? DashboardSetupStatus.SetupRequired)?.businessId
+        setupRequired = status as? DashboardSetupStatus.SetupRequired
+        setupRequired?.let { renderSetupSteps(it) }
         uiState.tabItems.items.first { it.id == TabItem.Id.BUSINESS }.isEnabled = status != DashboardSetupStatus.NoBusiness
         if (status is DashboardSetupStatus.AwaitingSetup) {
-            uiState.home.onboarding.awaitingSetupMessage =
-                DashboardRes.strings.dashboard_onboarding_awaiting_message.format(status.businessName)
+            uiState.home.onboarding.awaitingSetupMessage = status.message()
+            refreshSetupDataOnce(status.businessId)
         }
         uiState.home.content = when (status) {
             DashboardSetupStatus.NoBusiness -> HomeContent.NoBusiness
@@ -186,6 +217,58 @@ class DashboardViewModel(
             is DashboardSetupStatus.AwaitingSetup -> HomeContent.AwaitingSetup
             DashboardSetupStatus.Ready -> HomeContent.ActivePlugin
         }
+    }
+
+    private fun renderSetupSteps(setup: DashboardSetupStatus.SetupRequired) {
+        uiState.home.onboarding.apply {
+            isAppointmentsStepDone = setup.isAppointmentsEnabled
+            isServiceGroupStepDone = setup.hasServiceGroups
+            isServiceStepDone = setup.hasServices
+            isServiceStepEnabled = setup.canAddService()
+            isAppointmentsStepEnabled = setup.canEnableAppointments
+            isServiceGroupStepEnabled = setup.canManageServices
+            isClientStepEnabled = setup.canManageClients
+            serviceGroupStepSubtitle = setup.servicesStepSubtitle(DashboardRes.strings.dashboard_onboarding_group_subtitle.desc())
+            serviceStepSubtitle = setup.servicesStepSubtitle(DashboardRes.strings.dashboard_onboarding_service_subtitle.desc())
+            clientStepSubtitle = if (BusinessResource.CLIENTS in setup.missingViewPermissions) {
+                DashboardRes.strings.dashboard_onboarding_step_no_clients_access.desc()
+            } else {
+                DashboardRes.strings.dashboard_onboarding_client_subtitle.desc()
+            }
+            isClientStepDone = setup.hasClients
+        }
+        refreshSetupDataOnce(setup.businessId)
+    }
+
+    private fun DashboardSetupStatus.SetupRequired.servicesStepSubtitle(regular: StringDesc): StringDesc {
+        return if (BusinessResource.SERVICES in missingViewPermissions) {
+            DashboardRes.strings.dashboard_onboarding_step_no_services_access.desc()
+        } else {
+            regular
+        }
+    }
+
+    private fun refreshSetupDataOnce(businessId: Uuid) {
+        if (refreshedSetupBusinessId == businessId) return
+        refreshedSetupBusinessId = businessId
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { refreshDashboardSetupStatus(businessId) },
+            onComplete = {},
+            onError = {}
+        )
+    }
+
+    private fun DashboardSetupStatus.AwaitingSetup.message(): StringDesc {
+        val canViewClients = BusinessResource.CLIENTS !in missingViewPermissions
+        val canViewServices = BusinessResource.SERVICES !in missingViewPermissions
+        val resource = when {
+            canViewClients && canViewServices -> DashboardRes.strings.dashboard_onboarding_awaiting_message
+            canViewServices -> DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_access
+            canViewClients -> DashboardRes.strings.dashboard_onboarding_awaiting_no_services_access
+            else -> DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_services_access
+        }
+        return resource.format(businessName)
     }
 
     private fun isDashboardBusinessLost(status: DashboardSetupStatus): Boolean {

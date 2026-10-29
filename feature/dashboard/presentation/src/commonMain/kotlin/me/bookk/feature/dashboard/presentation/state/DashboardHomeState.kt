@@ -20,6 +20,20 @@ interface OnboardingState {
     var onCreateBusinessClick: (() -> Unit)?
     var onJoinBusinessClick: (() -> Unit)?
     var onEnablePluginsClick: (() -> Unit)?
+    var onAddServiceGroupClick: (() -> Unit)?
+    var onAddServiceClick: (() -> Unit)?
+    var onAddClientClick: (() -> Unit)?
+    var isAppointmentsStepDone: Boolean
+    var isServiceGroupStepDone: Boolean
+    var isServiceStepDone: Boolean
+    var isServiceStepEnabled: Boolean
+    var isAppointmentsStepEnabled: Boolean
+    var isServiceGroupStepEnabled: Boolean
+    var isClientStepEnabled: Boolean
+    var serviceGroupStepSubtitle: StringDesc
+    var serviceStepSubtitle: StringDesc
+    var clientStepSubtitle: StringDesc
+    var isClientStepDone: Boolean
     var businesses: List<OnboardingBusinessItem>
     var onBusinessClick: ((OnboardingBusinessItem) -> Unit)?
 }

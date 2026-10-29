@@ -97,7 +97,11 @@ internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
     createdAt = Instant.fromEpochMilliseconds(0)
 )
 
-internal fun stubBusiness(id: Uuid = Uuid.random(), employeeId: Uuid? = Uuid.random()) = Business(
+internal fun stubBusiness(
+    id: Uuid = Uuid.random(),
+    employeeId: Uuid? = Uuid.random(),
+    appointmentsPermission: ResourcePermission = ResourcePermission()
+) = Business(
     id = id,
     name = "Test Business",
     description = "",
@@ -112,7 +116,7 @@ internal fun stubBusiness(id: Uuid = Uuid.random(), employeeId: Uuid? = Uuid.ran
         employees = ResourcePermission(),
         clients = ResourcePermission(),
         services = ResourcePermission(),
-        appointments = ResourcePermission()
+        appointments = appointmentsPermission
     ),
     employeeId = employeeId
 )

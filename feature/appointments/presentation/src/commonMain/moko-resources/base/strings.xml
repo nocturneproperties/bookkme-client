@@ -3,6 +3,7 @@
     <string name="appointments_title">Appointments</string>
     <string name="appointments_requests">Requests</string>
     <string name="appointments_list_empty">No appointments for this day</string>
+    <string name="appointments_no_permission">You don't have permission to view appointments</string>
     <string name="appointments_pick_date">Pick date</string>
     <string name="appointments_history_title">History</string>
     <string name="appointments_history_empty">No appointment history yet</string>

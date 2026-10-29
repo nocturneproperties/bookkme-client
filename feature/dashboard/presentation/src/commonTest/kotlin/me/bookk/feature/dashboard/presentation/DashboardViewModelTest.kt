@@ -32,7 +32,9 @@ import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
 import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
+import me.bookk.feature.business.domain.api.business.RefreshDashboardSetupStatus
 import me.bookk.feature.business.domain.api.entity.DashboardSetupStatus
 import me.bookk.feature.dashboard.presentation.state.DashboardHomeState
 import me.bookk.feature.dashboard.presentation.state.DashboardState
@@ -85,6 +87,20 @@ class DashboardViewModelTest {
                 override var onCreateBusinessClick: (() -> Unit)? = null
                 override var onJoinBusinessClick: (() -> Unit)? = null
                 override var onEnablePluginsClick: (() -> Unit)? = null
+                override var onAddServiceGroupClick: (() -> Unit)? = null
+                override var onAddServiceClick: (() -> Unit)? = null
+                override var onAddClientClick: (() -> Unit)? = null
+                override var isAppointmentsStepDone: Boolean = false
+                override var isServiceGroupStepDone: Boolean = false
+                override var isServiceStepDone: Boolean = false
+                override var isServiceStepEnabled: Boolean = false
+                override var isAppointmentsStepEnabled: Boolean = false
+                override var isServiceGroupStepEnabled: Boolean = false
+                override var isClientStepEnabled: Boolean = false
+                override var serviceGroupStepSubtitle: StringDesc = "".desc()
+                override var serviceStepSubtitle: StringDesc = "".desc()
+                override var clientStepSubtitle: StringDesc = "".desc()
+                override var isClientStepDone: Boolean = false
                 override var businesses: List<OnboardingBusinessItem> = emptyList()
                 override var onBusinessClick: ((OnboardingBusinessItem) -> Unit)? = null
             }
@@ -98,6 +114,9 @@ class DashboardViewModelTest {
             every { invoke() } returns setupStatus
         }
         val refreshBusinessInfo = mock<RefreshBusinessInfo> {
+            everySuspend { invoke(any()) } returns Unit
+        }
+        val refreshDashboardSetupStatus = mock<RefreshDashboardSetupStatus> {
             everySuspend { invoke(any()) } returns Unit
         }
         val userBusinesses = MutableStateFlow<List<Business>>(emptyList())
@@ -114,6 +133,7 @@ class DashboardViewModelTest {
         fun sut() = DashboardViewModel(
             observeDashboardSetupStatus = observeDashboardSetupStatus,
             refreshBusinessInfo = refreshBusinessInfo,
+            refreshDashboardSetupStatus = refreshDashboardSetupStatus,
             observeUserBusinessesChanges = observeUserBusinessesChanges,
             switchDashboardBusiness = switchDashboardBusiness,
             joinBusiness = joinBusiness,
@@ -124,6 +144,30 @@ class DashboardViewModelTest {
                 }
             },
             vmArgs = VmArgs(errorMapper)
+        )
+    }
+
+    private fun setupRequired(
+        businessId: Uuid = Uuid.random(),
+        isAppointmentsEnabled: Boolean = false,
+        hasServiceGroups: Boolean = false,
+        hasServices: Boolean = false,
+        hasClients: Boolean = false,
+        canEnableAppointments: Boolean = true,
+        canManageServices: Boolean = true,
+        canManageClients: Boolean = true,
+        missingViewPermissions: Set<BusinessResource> = emptySet()
+    ): DashboardSetupStatus.SetupRequired {
+        return DashboardSetupStatus.SetupRequired(
+            businessId = businessId,
+            isAppointmentsEnabled = isAppointmentsEnabled,
+            hasServiceGroups = hasServiceGroups,
+            hasServices = hasServices,
+            hasClients = hasClients,
+            canEnableAppointments = canEnableAppointments,
+            canManageServices = canManageServices,
+            canManageClients = canManageClients,
+            missingViewPermissions = missingViewPermissions
         )
     }
 
@@ -193,7 +237,7 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.setupStatus.value = DashboardSetupStatus.SetupRequired(Uuid.random())
+        fixture.setupStatus.value = setupRequired()
 
         then()
         assertEquals(HomeContent.SetupRequired, sut.uiState.home.content)
@@ -207,12 +251,58 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup("Salon")
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
 
         then()
         assertEquals(HomeContent.AwaitingSetup, sut.uiState.home.content)
         assertEquals(DashboardRes.strings.dashboard_onboarding_awaiting_message.format("Salon"), sut.uiState.home.onboarding.awaitingSetupMessage)
         assertTrue(sut.businessTab.isEnabled)
+    }
+
+    @Test
+    fun `asks for clients access when user cannot view clients`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", setOf(BusinessResource.CLIENTS))
+
+        then()
+        assertEquals(DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_access.format("Salon"), sut.uiState.home.onboarding.awaitingSetupMessage)
+    }
+
+    @Test
+    fun `asks for services access when user cannot view services`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", setOf(BusinessResource.SERVICES))
+
+        then()
+        assertEquals(DashboardRes.strings.dashboard_onboarding_awaiting_no_services_access.format("Salon"), sut.uiState.home.onboarding.awaitingSetupMessage)
+    }
+
+    @Test
+    fun `asks for clients and services access when user cannot view either`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(
+            Uuid.random(),
+            "Salon",
+            setOf(BusinessResource.CLIENTS, BusinessResource.SERVICES)
+        )
+
+        then()
+        assertEquals(
+            DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_services_access.format("Salon"),
+            sut.uiState.home.onboarding.awaitingSetupMessage
+        )
     }
 
     @Test
@@ -317,7 +407,7 @@ class DashboardViewModelTest {
         given()
         val fixture = Fixture()
         val id = Uuid.random()
-        fixture.setupStatus.value = DashboardSetupStatus.SetupRequired(id)
+        fixture.setupStatus.value = setupRequired(id)
         val sut = fixture.sut()
 
         whenn()
@@ -343,15 +433,346 @@ class DashboardViewModelTest {
     fun `does not navigate to plugins after business stops requiring setup`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.setupStatus.value = DashboardSetupStatus.SetupRequired(Uuid.random())
+        fixture.setupStatus.value = setupRequired()
         val sut = fixture.sut()
-        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup("Salon")
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
 
         whenn()
         sut.uiState.home.onboarding.onEnablePluginsClick?.invoke()
 
         then()
         assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `shows setup step progress of business that requires setup`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(isAppointmentsEnabled = true, hasServiceGroups = true, hasServices = false, hasClients = true)
+
+        then()
+        val onboarding = sut.uiState.home.onboarding
+        assertEquals(
+            listOf(true, true, false, true),
+            listOf(onboarding.isAppointmentsStepDone, onboarding.isServiceGroupStepDone, onboarding.isServiceStepDone, onboarding.isClientStepDone)
+        )
+    }
+
+    @Test
+    fun `locks service step until a service group exists`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(hasServiceGroups = false)
+
+        then()
+        assertFalse(sut.uiState.home.onboarding.isServiceStepEnabled)
+    }
+
+    @Test
+    fun `unlocks service step once a service group exists`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(hasServiceGroups = true)
+
+        then()
+        assertTrue(sut.uiState.home.onboarding.isServiceStepEnabled)
+    }
+
+    @Test
+    fun `enables every step the user can complete`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(hasServiceGroups = true)
+
+        then()
+        val onboarding = sut.uiState.home.onboarding
+        assertEquals(
+            listOf(true, true, true, true),
+            listOf(onboarding.isServiceGroupStepEnabled, onboarding.isServiceStepEnabled, onboarding.isClientStepEnabled, onboarding.isAppointmentsStepEnabled)
+        )
+    }
+
+    @Test
+    fun `disables plugin step without permission to enable appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(canEnableAppointments = false)
+
+        then()
+        assertFalse(sut.uiState.home.onboarding.isAppointmentsStepEnabled)
+    }
+
+    @Test
+    fun `disables service group and service steps without permission to manage services`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(hasServiceGroups = true, canManageServices = false)
+
+        then()
+        val onboarding = sut.uiState.home.onboarding
+        assertEquals(listOf(false, false), listOf(onboarding.isServiceGroupStepEnabled, onboarding.isServiceStepEnabled))
+    }
+
+    @Test
+    fun `disables client step without permission to manage clients`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(canManageClients = false)
+
+        then()
+        assertFalse(sut.uiState.home.onboarding.isClientStepEnabled)
+    }
+
+    @Test
+    fun `does not navigate to steps the user cannot complete`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = setupRequired(
+            hasServiceGroups = true,
+            canEnableAppointments = false,
+            canManageServices = false,
+            canManageClients = false
+        )
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.onEnablePluginsClick?.invoke()
+        sut.uiState.home.onboarding.onAddServiceGroupClick?.invoke()
+        sut.uiState.home.onboarding.onAddServiceClick?.invoke()
+        sut.uiState.home.onboarding.onAddClientClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `shows regular hints on service and client steps`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired()
+
+        then()
+        val onboarding = sut.uiState.home.onboarding
+        assertEquals(
+            listOf(
+                DashboardRes.strings.dashboard_onboarding_group_subtitle.desc(),
+                DashboardRes.strings.dashboard_onboarding_service_subtitle.desc(),
+                DashboardRes.strings.dashboard_onboarding_client_subtitle.desc()
+            ),
+            listOf(onboarding.serviceGroupStepSubtitle, onboarding.serviceStepSubtitle, onboarding.clientStepSubtitle)
+        )
+    }
+
+    @Test
+    fun `explains missing services access on service group and service steps`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(canManageServices = false, missingViewPermissions = setOf(BusinessResource.SERVICES))
+
+        then()
+        val onboarding = sut.uiState.home.onboarding
+        val noAccess = DashboardRes.strings.dashboard_onboarding_step_no_services_access.desc()
+        assertEquals(listOf(noAccess, noAccess), listOf(onboarding.serviceGroupStepSubtitle, onboarding.serviceStepSubtitle))
+    }
+
+    @Test
+    fun `explains missing clients access on client step`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(canManageClients = false, missingViewPermissions = setOf(BusinessResource.CLIENTS))
+
+        then()
+        assertEquals(DashboardRes.strings.dashboard_onboarding_step_no_clients_access.desc(), sut.uiState.home.onboarding.clientStepSubtitle)
+    }
+
+    @Test
+    fun `navigates to service groups on add service group click`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = setupRequired()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.onAddServiceGroupClick?.invoke()
+
+        then()
+        assertEquals(listOf<DashboardHomeNavigationDestination>(DashboardHomeNavigationDestination.AddServiceGroup), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `navigates to add service of business once a service group exists`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        fixture.setupStatus.value = setupRequired(id, hasServiceGroups = true)
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.onAddServiceClick?.invoke()
+
+        then()
+        assertEquals(listOf<DashboardHomeNavigationDestination>(DashboardHomeNavigationDestination.AddService(id)), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `does not navigate to add service before a service group exists`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = setupRequired(hasServiceGroups = false)
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.onAddServiceClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `navigates to add client of business that requires setup`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        fixture.setupStatus.value = setupRequired(id)
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.onAddClientClick?.invoke()
+
+        then()
+        assertEquals(listOf<DashboardHomeNavigationDestination>(DashboardHomeNavigationDestination.AddClient(id)), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `does not navigate to setup steps without a business that requires setup`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupStatus.value = DashboardSetupStatus.Ready
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.home.onboarding.onAddServiceGroupClick?.invoke()
+        sut.uiState.home.onboarding.onAddServiceClick?.invoke()
+        sut.uiState.home.onboarding.onAddClientClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `refreshes setup data of business that requires setup`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(id)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.refreshDashboardSetupStatus(id) }
+    }
+
+    @Test
+    fun `refreshes setup data only once while the same business progresses`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        fixture.setupStatus.value = setupRequired(id)
+        fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(id, isAppointmentsEnabled = true)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.refreshDashboardSetupStatus(any()) }
+    }
+
+    @Test
+    fun `refreshes setup data again when another business requires setup`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val first = Uuid.random()
+        val second = Uuid.random()
+        fixture.setupStatus.value = setupRequired(first)
+        fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired(second)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.refreshDashboardSetupStatus(second) }
+    }
+
+    @Test
+    fun `refreshes setup data of business awaiting setup`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(id, "Salon", emptySet())
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.refreshDashboardSetupStatus(id) }
+    }
+
+    @Test
+    fun `does not refresh setup data when business is ready`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = DashboardSetupStatus.Ready
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.refreshDashboardSetupStatus(any()) }
+    }
+
+    @Test
+    fun `ignores setup data refresh failure`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.refreshDashboardSetupStatus(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.setupStatus.value = setupRequired()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
     }
 
     @Test
@@ -509,7 +930,7 @@ class DashboardViewModelTest {
     fun `opens home when the dashboard business is lost while on the settings tab`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup("Salon")
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
         val sut = fixture.sut()
         sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
 
@@ -524,7 +945,7 @@ class DashboardViewModelTest {
     fun `keeps the selected tab while the dashboard business stays available`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.setupStatus.value = DashboardSetupStatus.SetupRequired(Uuid.random())
+        fixture.setupStatus.value = setupRequired()
         val sut = fixture.sut()
         sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
 

@@ -56,7 +56,7 @@ struct ListGroup<T, S: ListStyle, Header: View, Footer: View, Content: View>: Vi
 				.listRowBackground(Color.clear)
 				.listRowSeparator(.hidden)
 				.listSectionSeparator(.hidden)
-				.listSectionMargins(.horizontal, 0)
+				.zeroHorizontalListSectionMargins()
 				.transition(.move(edge: .top).combined(with: .opacity))
 			}
 

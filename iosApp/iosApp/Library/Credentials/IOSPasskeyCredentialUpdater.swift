@@ -2,17 +2,17 @@ import AuthenticationServices
 import shared
 
 class IOSPasskeyCredentialUpdater: PasskeyCredentialUpdater {
-    private let updater = ASCredentialUpdater()
-
     func reportUnknownCredential(relyingParty: String, credentialId: String) async throws {
-        try await updater.reportUnknownPublicKeyCredential(
+        guard #available(iOS 26.0, *) else { return }
+        try await ASCredentialUpdater().reportUnknownPublicKeyCredential(
             relyingPartyIdentifier: relyingParty,
             credentialID: try Data(base64URLEncoded: credentialId)
         )
     }
 
     func reportNoAcceptedCredentials(relyingParty: String, userHandle: String) async throws {
-        try await updater.reportAllAcceptedPublicKeyCredentials(
+        guard #available(iOS 26.0, *) else { return }
+        try await ASCredentialUpdater().reportAllAcceptedPublicKeyCredentials(
             relyingPartyIdentifier: relyingParty,
             userHandle: try Data(base64URLEncoded: userHandle),
             acceptedCredentialIDs: []

@@ -37,7 +37,8 @@ struct NotificationHandler: ViewModifier {
 					case is PresentationNotificationIgnore:
 						notificationState.removeFirst()
 						break
-					case is PresentationNotificationGlobalMessage:
+					case let message as PresentationNotificationGlobalMessage:
+						GlobalMessagePresenter.shared.show(message)
 						notificationState.removeFirst()
 						break
 					case is PresentationNotificationSuccessHaptic:

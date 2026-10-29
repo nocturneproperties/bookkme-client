@@ -10,7 +10,8 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.ValidationState
+import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.validate
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.presentation.SettingsStateFactory
@@ -56,47 +57,47 @@ class EditProfileViewModel(
 
     fun onFirstNameTextChanged(text: String) {
         if (fieldInitialState.isEmpty()) return
-        val validationResult = validateName.invoke(text)
         uiState.name.text = text
-        uiState.name.isValid = validationResult.isValid
-        uiState.name.validationState =
-            if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
-        uiState.name.supportingTextRes = when (validationResult) {
-            ValidateName.Result.Invalid.Length -> SettingsRes.strings.settings_edit_profile_first_name_error.desc()
-            ValidateName.Result.Valid -> null
-        }
+        uiState.name.clearError()
         validateButton()
     }
 
     fun onLastNameTextChanged(text: String) {
         if (fieldInitialState.isEmpty()) return
-        val validationResult = validateName.invoke(text)
         uiState.lastName.text = text
-        uiState.lastName.isValid = validationResult.isValid
-        uiState.lastName.validationState =
-            if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
-        uiState.lastName.supportingTextRes = when (validationResult) {
-            ValidateName.Result.Invalid.Length -> SettingsRes.strings.settings_edit_profile_last_name_error.desc()
-            ValidateName.Result.Valid -> null
-        }
+        uiState.lastName.clearError()
         validateButton()
     }
 
     fun onEmailTextChanged(text: String) {
         if (fieldInitialState.isEmpty()) return
-        val validationResult = validateEmail.invoke(text)
         uiState.email.text = text
-        uiState.email.isValid = validationResult.isValid
-        uiState.email.validationState =
-            if (!validationResult.isValid) ValidationState.ERROR else ValidationState.DEFAULT
-        uiState.email.supportingTextRes = when (validationResult) {
-            ValidateEmail.Result.Invalid.Format -> SettingsRes.strings.settings_edit_profile_email_error.desc()
-            ValidateEmail.Result.Valid -> null
-        }
+        uiState.email.clearError()
         validateButton()
     }
 
+    private fun validateForm(): Boolean {
+        return listOf(
+            uiState.name.validate(
+                SettingsRes.strings.settings_edit_profile_first_name_error.desc()
+                    .takeIf { !validateName(uiState.name.text).isValid }
+            ),
+            uiState.lastName.validate(
+                SettingsRes.strings.settings_edit_profile_last_name_error.desc()
+                    .takeIf { !validateName(uiState.lastName.text).isValid }
+            ),
+            uiState.email.validate(
+                SettingsRes.strings.settings_edit_profile_email_error.desc()
+                    .takeIf { !validateEmail(uiState.email.text).isValid }
+            )
+        ).all { it }
+    }
+
     fun onConfirmButtonClick() {
+        if (!validateForm()) {
+            validateButton()
+            return
+        }
         launch(
             launchIn = DispatcherProvider.io,
             onStart = {

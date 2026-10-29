@@ -43,3 +43,8 @@ fun TextFieldState.showError(error: StringDesc) {
     isValid = false
     validationState = ValidationState.ERROR
 }
+
+fun TextFieldState.validate(error: StringDesc?): Boolean {
+    if (error == null) clearError() else showError(error)
+    return error == null
+}

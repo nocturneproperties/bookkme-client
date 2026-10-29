@@ -57,12 +57,12 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                     itemContent(item) {
                         state.onItemsRemoveRequested(listOf(item))
                     }
-                    val isFollowedByContent = index < state.selectedItems.lastIndex || state.isEditable
-                    if (showDividers && isFollowedByContent) {
+                    if (showDividers && index < state.selectedItems.lastIndex) {
                         HorizontalDivider(color = LocalColors.current.divider)
                     }
                 }
                 if (state.isEditable) {
+                    HorizontalDivider(color = LocalColors.current.divider)
                     TextButton(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -72,7 +72,7 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                         Text(
                             state.addItemText.localized(),
                             modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Start,
+                            textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.titleMedium.active()
                         )
                     }

@@ -4,7 +4,6 @@ import androidx.compose.runtime.compositionLocalOf
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 
 internal class BusinessSettingsEventListener(
-    val onBackClick: () -> Unit,
     val onAddPhotoClick: () -> Unit,
     val onNameChanged: (String) -> Unit,
     val onDescriptionChanged: (String) -> Unit,
@@ -30,7 +29,6 @@ internal val LocalBusinessSettingsEventListener = compositionLocalOf {
         onCurrencySelected = {},
         onInstagramChanged = {},
         onSaveClick = {},
-        onTestLocationClick = {},
-        onBackClick = {}
+        onTestLocationClick = {}
     )
 }

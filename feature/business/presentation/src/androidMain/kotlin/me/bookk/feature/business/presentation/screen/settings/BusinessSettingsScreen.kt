@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -17,7 +16,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +33,7 @@ import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.business.resources.BusinessRes
+import me.bookk.designsystem.components.AlignStartTextButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.FlatTextField
@@ -42,6 +41,7 @@ import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.PickerField
 import me.bookk.designsystem.components.ScheduleSection
 import me.bookk.designsystem.components.StateTextButton
+import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -61,8 +61,7 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                             onClick = LocalBusinessSettingsEventListener.current.onSaveClick
                         )
                     }
-                },
-                onNavigationIconClick = LocalBusinessSettingsEventListener.current.onBackClick
+                }
             )
         },
         content = {
@@ -81,7 +80,8 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                 ) {
                     BusinessProfileCard(state)
                     ScheduleSection(state.schedule)
-                    BusinessLocationCard(state)
+                    BusinessLocationSection(state)
+                    BusinessAddressSection(state)
                     Column {
                         Header(BusinessRes.strings.business_settings_currency_title.desc().localized())
                         PickerField(
@@ -165,52 +165,34 @@ private fun PhotoBadge(onClick: () -> Unit, contentDescription: StringDesc, isEn
 }
 
 @Composable
-private fun BusinessLocationCard(state: BusinessSettingsState) {
+private fun BusinessLocationSection(state: BusinessSettingsState) {
     val listener = LocalBusinessSettingsEventListener.current
     Column {
         Header(BusinessRes.strings.business_settings_location_title.desc().localized())
-        AppCard(modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp)
-                        .clip(MaterialTheme.shapes.large)
-                        .background(LocalColors.current.background)
-                        .clickable(onClick = listener.onTestLocationClick)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Map,
-                        contentDescription = null,
-                        tint = LocalColors.current.secondaryText,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .align(Alignment.Center)
-                    )
-                    Text(
-                        text = state.testLocation.text.localized(),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = LocalColors.current.primaryText,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(8.dp)
-                            .clip(MaterialTheme.shapes.medium)
-                            .background(LocalColors.current.elevated)
-                            .clickable(onClick = listener.onTestLocationClick)
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
-                    )
-                }
-                FlatTextField(
-                    state = state.address,
-                    onValueChange = listener.onAddressChanged,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp),
-                    textStyle = MaterialTheme.typography.bodyLarge,
-                    singleLine = true
-                )
-            }
-        }
+        TextField(
+            state = state.location,
+            onValueChange = {},
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
+        AlignStartTextButton(
+            state = state.testLocation,
+            onClick = listener.onTestLocationClick
+        )
+    }
+}
+
+@Composable
+private fun BusinessAddressSection(state: BusinessSettingsState) {
+    val listener = LocalBusinessSettingsEventListener.current
+    Column {
+        Header(BusinessRes.strings.business_settings_address_title.desc().localized())
+        TextField(
+            state = state.address,
+            onValueChange = listener.onAddressChanged,
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
     }
 }
 

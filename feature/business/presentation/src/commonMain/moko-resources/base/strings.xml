@@ -54,6 +54,9 @@
     <string name="business_settings_telegram_hint">Telegram tag</string>
     <string name="business_settings_location_test">Preview</string>
     <string name="business_settings_updated">Settings updated</string>
+    <string name="business_settings_unsaved_changes_title">Discard changes?</string>
+    <string name="business_settings_unsaved_changes_message">You have unsaved changes. If you go back now, they will be lost.</string>
+    <string name="business_settings_unsaved_changes_discard">Discard</string>
 
     <string name="business_clients_title">Clients</string>
     <string name="business_clients_empty">You have no clients at the moment</string>

@@ -12,6 +12,7 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
+import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -19,6 +20,8 @@ import kotlinx.datetime.LocalTime
 import library.device.api.DeviceFacade
 import library.money.api.Currency
 import library.money.api.Money
+import me.bookk.android.feature.business.resources.BusinessRes
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -32,6 +35,7 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
+import me.bookk.designsystem.test.tap
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
@@ -50,6 +54,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class BusinessSettingsViewModelTest {
@@ -575,5 +580,96 @@ class BusinessSettingsViewModelTest {
 
         then()
         assertNotNull(sut.uiState.navigation.navigationDestination.singleOrNull { it == BusinessSettingsDestination.Back })
+    }
+
+    @Test
+    fun `asks to confirm going back with unsaved changes`() = runUnitTest {
+        given()
+        val sut = Fixture().sutWith(stubBusiness(name = "Old"))
+        sut.onNameChanged("New")
+
+        whenn()
+        sut.uiState.appBar.onBackClick?.invoke()
+
+        then()
+        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(BusinessRes.strings.business_settings_unsaved_changes_title.desc(), confirmation.title)
+        assertEquals(BusinessRes.strings.business_settings_unsaved_changes_message.desc(), confirmation.message)
+        assertNull(sut.uiState.navigation.navigationDestination.firstOrNull())
+    }
+
+    @Test
+    fun `asks to confirm going back with unsaved invalid changes`() = runUnitTest {
+        given()
+        val sut = Fixture().sutWith(stubBusiness(name = "Old"))
+        sut.onNameChanged("   ")
+
+        whenn()
+        sut.uiState.appBar.onBackClick?.invoke()
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertNull(sut.uiState.navigation.navigationDestination.firstOrNull())
+    }
+
+    @Test
+    fun `goes back after discarding unsaved changes`() = runUnitTest {
+        given()
+        val sut = Fixture().sutWith(stubBusiness(name = "Old"))
+        sut.onNameChanged("New")
+        sut.uiState.appBar.onBackClick?.invoke()
+        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `stays on screen when going back with unsaved changes is canceled`() = runUnitTest {
+        given()
+        val sut = Fixture().sutWith(stubBusiness(name = "Old"))
+        sut.onNameChanged("New")
+        sut.uiState.appBar.onBackClick?.invoke()
+        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+
+        whenn()
+        confirmation.tap(ActionType.CANCEL)
+
+        then()
+        assertNull(sut.uiState.navigation.navigationDestination.firstOrNull())
+        assertEquals("New", sut.uiState.name.text)
+    }
+
+    @Test
+    fun `goes back without confirmation after changes are saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUpdateEcho()
+        val sut = fixture.sutWith(stubBusiness(name = "Old"))
+        sut.onNameChanged("New")
+        sut.onSaveClick()
+
+        whenn()
+        sut.uiState.appBar.onBackClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.Message })
+        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+    }
+
+    @Test
+    fun `goes back without confirmation while the business is loading`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.appBar.onBackClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.Message })
+        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
     }
 }

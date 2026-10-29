@@ -11,7 +11,7 @@ import shared
 
 struct EditProfileScreen: View {
 	
-	@StateObject var navigationStack = NavigationStackHolder()
+	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel = IOSSettingsDiKt.editProfileVM()
 	
 	var body: some View {
@@ -36,6 +36,14 @@ struct EditProfileScreen: View {
 		.scrollDismissesKeyboard(.immediately)
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(state.notification)
+		.handleNavigation(state.navigation) { dest in
+			switch dest {
+			case is EditProfileNavigationDestination.Back:
+				navigationStack.popLast()
+			default:
+				break
+			}
+		}
 		.navigationTitle(state.appBar.title.localized())
 		.navigationBarTitleDisplayMode(.large)
 		.toolbar {

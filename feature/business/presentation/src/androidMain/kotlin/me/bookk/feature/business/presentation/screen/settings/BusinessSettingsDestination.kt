@@ -1,6 +1,6 @@
 package me.bookk.feature.business.presentation.screen.settings
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -16,7 +16,6 @@ import org.koin.androidx.compose.koinViewModel
 internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
     composable<BusinessDestination.Settings> {
         val viewModel: BusinessSettingsViewModel = koinViewModel()
-        val backPressOwner = LocalOnBackPressedDispatcherOwner.current
         val listener = BusinessSettingsEventListener(
             onAddPhotoClick = viewModel::onAddPhotoClicked,
             onNameChanged = viewModel::onNameChanged,
@@ -28,8 +27,7 @@ internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
             onCurrencySelected = viewModel::onCurrencySelected,
             onInstagramChanged = viewModel::onInstagramChanged,
             onTestLocationClick = viewModel::onTestLocationClick,
-            onPhoneChanged = viewModel::onPhoneChanged,
-            onBackClick = { backPressOwner?.onBackPressedDispatcher?.onBackPressed() }
+            onPhoneChanged = viewModel::onPhoneChanged
         )
 
         CompositionLocalProvider(
@@ -42,6 +40,7 @@ internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
                     BusinessSettingsDestination.Back -> navigation.goBack()
                 }
             }
+            BackHandler { viewModel.uiState.appBar.onBackClick?.invoke() }
             SendLifecycleEventsTo(viewModel)
             BusinessSettingsScreen(viewModel.uiState)
         }

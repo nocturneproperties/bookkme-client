@@ -110,6 +110,34 @@ class BusinessPluginsViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when plugin is enabled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.enableAppointmentsPlugin(any()) } returns Unit
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.appointmentPlugin.enable.onClick?.invoke()
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when enabling plugin fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.enableAppointmentsPlugin(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.appointmentPlugin.enable.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `treats already enabled error as enabled without notification`() = runUnitTest {
         given()
         val fixture = Fixture()

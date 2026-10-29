@@ -9,6 +9,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verifySuspend
+import kotlin.test.assertTrue
 import library.device.api.DeviceFacade
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -110,6 +111,34 @@ class SettingsDashboardViewModelTest {
         then()
         verifySuspend { fixture.updateColorScheme.invoke(ColorScheme.LIGHT) }
         assertEquals(UIColorScheme.LIGHT, sut.uiState.appearance.colorScheme)
+    }
+
+    @Test
+    fun `plays success haptic when color scheme is saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateColorScheme.invoke(any()) } returns Unit
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onSchemeSelected(UIColorScheme.LIGHT)
+
+        then()
+        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when color scheme save fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateColorScheme.invoke(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onSchemeSelected(UIColorScheme.LIGHT)
+
+        then()
+        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

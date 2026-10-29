@@ -146,6 +146,7 @@ class ServiceListViewModel(
             launchIn = DispatcherProvider.io,
             call = { deleteService(serviceUI.domain) },
             onStart = { uiState.refreshState.isRefreshing = true },
+            onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.refreshState.isRefreshing = false }
         )

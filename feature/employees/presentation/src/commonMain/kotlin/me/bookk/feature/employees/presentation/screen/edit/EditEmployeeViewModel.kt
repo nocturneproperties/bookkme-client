@@ -234,6 +234,7 @@ class EditEmployeeViewModel(
             onStart = { uiState.save.startLoading() },
             call = { updateEmployee(employee) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 renderEmployee(it)
                 uiState.notifications.add(GlobalMessage(EmployeesRes.strings.employees_edit_updated.desc()))
             },
@@ -281,6 +282,7 @@ class EditEmployeeViewModel(
             onStart = { uiState.suspension.startLoading() },
             call = { setEmployeeSuspension(employee.businessId, employee.id, suspend) },
             onComplete = { updated ->
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 referenceEmployee = referenceEmployee?.copy(suspendedAt = updated.suspendedAt)
                 renderSuspension(updated)
                 uiState.notifications.add(GlobalMessage(updated.suspensionChangedMessage().desc()))

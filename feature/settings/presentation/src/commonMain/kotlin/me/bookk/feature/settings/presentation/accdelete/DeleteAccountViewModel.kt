@@ -5,6 +5,7 @@ import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.settings.domain.api.DeleteAccount
@@ -33,6 +34,7 @@ class DeleteAccountViewModel(
             onStart = { uiState.deleteButton.isLoading = true },
             call = { deleteAccount() },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 uiState.notifications.add(GlobalMessage(SettingsRes.strings.settings_delete_account_success_message.desc()))
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },

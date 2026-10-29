@@ -184,6 +184,36 @@ class SignUpViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when account is created`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createAccount(any()) } returns Unit
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        sut.uiState.notification.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `does not play success haptic when account creation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createAccount(any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `marks email invalid when it already exists`() = runUnitTest {
         given()
         val fixture = Fixture()

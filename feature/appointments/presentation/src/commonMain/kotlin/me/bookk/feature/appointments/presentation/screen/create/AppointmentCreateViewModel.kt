@@ -149,7 +149,10 @@ class AppointmentCreateViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.create.startLoading() },
             call = { createAppointment(draft) },
-            onComplete = { uiState.navigation.push(AppointmentCreateDestination.Back) },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                uiState.navigation.push(AppointmentCreateDestination.Back)
+            },
             onError = {
                 when (it) {
                     is CreateAppointment.Error.AppointmentOverlap -> {

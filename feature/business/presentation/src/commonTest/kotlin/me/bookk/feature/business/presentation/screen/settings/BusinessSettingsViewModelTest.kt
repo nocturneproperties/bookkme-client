@@ -218,8 +218,36 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
         assertFalse(sut.uiState.save.isLoading)
+    }
+
+    @Test
+    fun `plays success haptic when business settings are saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUpdateEcho()
+        val sut = fixture.sutWith(stubBusiness())
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when business settings save fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateBusiness(any()) } throws TestException()
+        val sut = fixture.sutWith(stubBusiness())
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

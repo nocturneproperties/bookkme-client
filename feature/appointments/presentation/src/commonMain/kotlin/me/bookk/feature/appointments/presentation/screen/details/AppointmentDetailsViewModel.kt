@@ -84,7 +84,7 @@ class AppointmentDetailsViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { cancelAppointment(appointmentId, appointment.businessId, reason) },
-            onComplete = ::renderAppointment,
+            onComplete = ::renderMutatedAppointment,
             onError = {
                 when (it) {
                     is Error.AppointmentAlreadyCancelled -> {
@@ -207,7 +207,7 @@ class AppointmentDetailsViewModel(
             call = { completeAppointment(appointmentId, priceAdjustment) },
             onComplete = {
                 uiState.completion.isSheetVisible = false
-                renderAppointment(it)
+                renderMutatedAppointment(it)
             },
             onTerminate = { uiState.completion.confirmButton.stopLoading(enable = isCompletionInputValid()) },
             onError = ::onCompletionError
@@ -269,7 +269,7 @@ class AppointmentDetailsViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.noShowButton.startLoading() },
             call = { markAppointmentNoShow(appointmentId) },
-            onComplete = ::renderAppointment,
+            onComplete = ::renderMutatedAppointment,
             onTerminate = { uiState.noShowButton.stopLoading() },
             onError = {
                 when (it) {
@@ -311,7 +311,7 @@ class AppointmentDetailsViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.rescheduleButton.startLoading() },
             call = { updateAppointment(newAppointment) },
-            onComplete = ::renderAppointment,
+            onComplete = ::renderMutatedAppointment,
             onTerminate = { uiState.rescheduleButton.stopLoading() },
             onError = {
                 when (it) {
@@ -367,6 +367,11 @@ class AppointmentDetailsViewModel(
         if (email.isNotEmpty()) {
             device.mail(email)
         }
+    }
+
+    private fun renderMutatedAppointment(appointment: Appointment) {
+        uiState.notifications.add(PresentationNotification.SuccessHaptic)
+        renderAppointment(appointment)
     }
 
     private fun renderAppointment(appointment: Appointment) {

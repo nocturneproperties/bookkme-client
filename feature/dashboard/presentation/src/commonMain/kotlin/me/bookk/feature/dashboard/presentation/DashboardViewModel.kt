@@ -169,7 +169,7 @@ class DashboardViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { createBusiness(name) },
-            onComplete = {},
+            onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
                     is CreateBusiness.Error.EmptyName -> uiState.notifications.add(
@@ -200,6 +200,7 @@ class DashboardViewModel(
             launchIn = DispatcherProvider.io,
             call = { joinBusiness(code) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 uiState.notifications.add(
                     PresentationNotification.GlobalMessage(
                         text = DashboardRes.strings.dashboard_join_success.desc(),

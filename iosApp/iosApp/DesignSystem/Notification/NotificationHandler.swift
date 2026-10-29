@@ -38,7 +38,6 @@ struct NotificationHandler: ViewModifier {
 						notificationState.removeFirst()
 						break
 					case is PresentationNotificationGlobalMessage:
-						confirmCount += 1
 						notificationState.removeFirst()
 						break
 					case is PresentationNotificationSuccessHaptic:

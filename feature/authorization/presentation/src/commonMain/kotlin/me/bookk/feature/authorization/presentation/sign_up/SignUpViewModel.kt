@@ -11,6 +11,7 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ButtonDescriptor
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.Message
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.android.designsystem.resources.DesignSystem
@@ -99,6 +100,7 @@ class SignUpViewModel(
                     )
                 )
             },
+            onComplete = { uiState.notification.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
                     is Error.EmailAlreadyExist ->

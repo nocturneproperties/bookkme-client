@@ -356,6 +356,34 @@ class DashboardViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when business is created`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createBusiness(any()) } returns stubBusiness()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitBusinessName("Salon")
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when business creation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createBusiness(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitBusinessName("Salon")
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `shows local error when business name is empty`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -765,6 +793,34 @@ class DashboardViewModelTest {
         val message = sut.uiState.notifications.presentationNotification
             .filterIsInstance<PresentationNotification.GlobalMessage>().single()
         assertEquals(PresentationNotification.GlobalMessage.State.SUCCESS, message.state)
+    }
+
+    @Test
+    fun `plays success haptic when business is joined`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.joinBusiness(any()) } returns Unit
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitJoinCode("ABC123")
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when join fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.joinBusiness(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitJoinCode("ABC123")
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

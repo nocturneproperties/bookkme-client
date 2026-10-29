@@ -163,7 +163,10 @@ class EditServiceViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.deleteButton.startLoading() },
             call = { deleteService(service) },
-            onComplete = { uiState.navigation.push(Back) },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                uiState.navigation.push(Back)
+            },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.deleteButton.stopLoading() }
         )

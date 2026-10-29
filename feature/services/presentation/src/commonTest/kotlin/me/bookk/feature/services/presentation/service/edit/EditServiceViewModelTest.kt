@@ -301,6 +301,36 @@ class EditServiceViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when service is deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteService(any()) } returns Unit
+        val sut = fixture.sut()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        whenn()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when service deletion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteService(any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        whenn()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `shows mapped error when the service cannot be loaded`() = runUnitTest {
         given()
         val fixture = Fixture()

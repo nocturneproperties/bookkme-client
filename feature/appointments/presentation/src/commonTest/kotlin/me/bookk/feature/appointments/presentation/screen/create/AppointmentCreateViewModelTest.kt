@@ -282,6 +282,36 @@ class AppointmentCreateViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when appointment is created`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createAppointment(any()) } returns Appointment.stub()
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.uiState.create.onClick?.invoke()
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `does not play success haptic when appointment creation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createAppointment(any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.uiState.create.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `does not create without picked client`() = runUnitTest {
         given()
         val fixture = Fixture()

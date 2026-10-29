@@ -10,6 +10,7 @@ import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -187,6 +188,36 @@ class EditProfileViewModelTest {
         verifySuspend { fixture.editProfile("Maria", "Smith", "anna@example.com") }
         assertEquals(listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.Back), sut.uiState.navigation.navigationDestination)
         assertFalse(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `plays success haptic when profile is saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editProfile(any(), any(), any()) } returns Unit
+        val sut = fixture.presentedSut()
+        sut.onFirstNameTextChanged("Maria")
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when profile save fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editProfile(any(), any(), any()) } throws TestException()
+        val sut = fixture.presentedSut()
+        sut.onFirstNameTextChanged("Maria")
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

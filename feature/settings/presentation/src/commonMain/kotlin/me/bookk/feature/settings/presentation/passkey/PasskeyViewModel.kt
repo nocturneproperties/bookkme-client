@@ -47,7 +47,10 @@ class PasskeyViewModel(
                 createNewPasskey()
                 getAvailablePasskeys()
             },
-            onComplete = ::updatePasskeyList,
+            onComplete = {
+                uiState.notification.add(PresentationNotification.SuccessHaptic)
+                updatePasskeyList(it)
+            },
             onTerminate = {
                 uiState.addPasskeyButton.isLoading = false
                 uiState.addPasskeyButton.isEnabled = true
@@ -119,7 +122,7 @@ class PasskeyViewModel(
                 deletePasskey(id)
                 getAvailablePasskeys()
             },
-            onComplete = ::updatePasskeyList,
+            onComplete = ::onPasskeysDeleted,
             onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
     }
@@ -133,9 +136,14 @@ class PasskeyViewModel(
                 }
                 getAvailablePasskeys()
             },
-            onComplete = ::updatePasskeyList,
+            onComplete = ::onPasskeysDeleted,
             onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
+    }
+
+    private fun onPasskeysDeleted(passkeys: List<Passkey>) {
+        uiState.notification.add(PresentationNotification.SuccessHaptic)
+        updatePasskeyList(passkeys)
     }
 
     private fun updatePasskeyList(passkeys: List<Passkey>) {

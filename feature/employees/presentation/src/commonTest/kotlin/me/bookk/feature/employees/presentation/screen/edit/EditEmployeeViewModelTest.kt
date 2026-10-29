@@ -579,9 +579,39 @@ class EditEmployeeViewModelTest {
         sut.uiState.save.onClick?.invoke()
 
         then()
-        sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
         assertFalse(sut.uiState.save.isEnabled)
         assertFalse(sut.uiState.save.isLoading)
+    }
+
+    @Test
+    fun `plays success haptic when employee is saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUpdateEcho()
+        val sut = fixture.sut()
+        sut.permissionRow(0).canView.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when employee save fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateEmployee(any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.permissionRow(0).canView.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test
@@ -777,6 +807,34 @@ class EditEmployeeViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when employee suspension changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSuspensionResult(Instant.fromEpochMilliseconds(1))
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when suspension fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.setEmployeeSuspension(any(), any(), any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.confirmSuspensionDialog(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `reinstates the suspended employee once confirmed`() = runUnitTest {
         given()
         val fixture = Fixture(stubEmployee(suspendedAt = Instant.fromEpochMilliseconds(1)))
@@ -802,7 +860,7 @@ class EditEmployeeViewModelTest {
 
         then()
         assertEquals(EmployeesRes.strings.employees_edit_reinstate.desc(), sut.uiState.suspension.text)
-        val message = sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        val message = sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
         assertEquals(EmployeesRes.strings.employees_edit_suspended.desc(), message.text)
         assertFalse(sut.uiState.suspension.isLoading)
     }
@@ -819,7 +877,7 @@ class EditEmployeeViewModelTest {
 
         then()
         assertEquals(EmployeesRes.strings.employees_edit_suspend.desc(), sut.uiState.suspension.text)
-        val message = sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        val message = sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
         assertEquals(EmployeesRes.strings.employees_edit_reinstated.desc(), message.text)
     }
 

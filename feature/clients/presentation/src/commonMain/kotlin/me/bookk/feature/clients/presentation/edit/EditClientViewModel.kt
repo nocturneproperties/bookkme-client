@@ -124,7 +124,10 @@ class EditClientViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.submit.startLoading() },
             call = { editClient(edited) },
-            onComplete = { uiState.navigation.push(Back) },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                uiState.navigation.push(Back)
+            },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
             onTerminate = { uiState.submit.stopLoading() }
         )
@@ -144,7 +147,10 @@ class EditClientViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.deleteButton.startLoading() },
             call = { deleteClient(client) },
-            onComplete = { uiState.navigation.push(Deleted) },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                uiState.navigation.push(Deleted)
+            },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
             onTerminate = { uiState.deleteButton.stopLoading() }
         )

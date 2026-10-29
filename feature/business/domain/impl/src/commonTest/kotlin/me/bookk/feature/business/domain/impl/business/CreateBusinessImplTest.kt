@@ -78,7 +78,7 @@ class CreateBusinessImplTest {
         val name = "My Salon"
         val expected = stubBusiness()
         everySuspend { fixture.dataSource.createBusiness(name, any(), any()) } returns expected
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
@@ -94,7 +94,7 @@ class CreateBusinessImplTest {
         val fixture = Fixture()
         every { fixture.deviceFacade.getCurrencyCode() } returns "PLN"
         everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
@@ -110,7 +110,7 @@ class CreateBusinessImplTest {
         val fixture = Fixture()
         every { fixture.deviceFacade.getCurrencyCode() } returns "JPY"
         everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
@@ -126,7 +126,7 @@ class CreateBusinessImplTest {
         val fixture = Fixture()
         every { fixture.deviceFacade.getCurrencyCode() } returns null
         everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
@@ -137,18 +137,19 @@ class CreateBusinessImplTest {
     }
 
     @Test
-    fun `calls refreshBusinessInfo after creation`() = runUnitTest {
+    fun `refreshes businesses selecting the newly created business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        val expected = stubBusiness()
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns expected
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
         fixture.sut("My Salon")
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.refreshBusinessInfo() }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.refreshBusinessInfo.refreshAndSelect(expected.id) }
     }
 
     @Test
@@ -157,7 +158,7 @@ class CreateBusinessImplTest {
         val fixture = Fixture()
         val expected = stubBusiness()
         everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns expected
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()
@@ -172,7 +173,7 @@ class CreateBusinessImplTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
-        everySuspend { fixture.refreshBusinessInfo() } returns Unit
+        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
         whenn()

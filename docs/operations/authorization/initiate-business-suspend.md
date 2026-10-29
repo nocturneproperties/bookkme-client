@@ -10,7 +10,7 @@ when any screen posts `PresentationNotification.BusinessAccessSuspended`. That h
 
 A cross-feature wrapper that lets the authorization presentation layer react to a suspension without
 depending on the business feature's domain API. It first clears the local dashboard selection
-(`SwitchDashboardBusiness(null)` writes `dashboard_id := null` and skips the server call), then reloads every
+(`SwitchDashboardBusiness(null)` clears `dashboard_business` and skips the server call), then reloads every
 business with `applyDashboardIdFromRemote = false`, so the cleared selection stays cleared and businesses the
 user no longer has are deleted. With no dashboard business the dashboard switches to its Home tab (it does so
 whenever its setup status goes from having a business to `NoBusiness`) and shows the Get started screen, which
@@ -25,7 +25,7 @@ yields one message and one refresh. A failure is only logged.
 
 ```mermaid
 flowchart TD
-    Start([invoke]) --> Clear[SwitchDashboardBusiness null<br/>business_prefs: dashboard_id := null<br/>no server call]
+    Start([invoke]) --> Clear[SwitchDashboardBusiness null<br/>dashboard_business cleared<br/>no server call]
     Clear --> Refresh[RefreshBusinessInfo applyDashboardIdFromRemote = false<br/>GET /api/business/mine]
     Refresh -- success --> Save[(delete missing businesses<br/>saveBusinessListInDB<br/>per-business plugin refresh)]
     Save --> R([return])

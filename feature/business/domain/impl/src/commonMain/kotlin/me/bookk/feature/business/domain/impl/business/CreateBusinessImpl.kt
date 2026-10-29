@@ -23,7 +23,7 @@ internal class CreateBusinessImpl(
             currencyCode = deviceCurrencyOrFallback().code,
             timeZone = TimeZone.currentSystemDefault()
         )
-        refreshBusinessInfo()
+        refreshBusinessInfo.refreshAndSelect(business.id)
         switchDashboardBusiness(business.id)
         return business
     }

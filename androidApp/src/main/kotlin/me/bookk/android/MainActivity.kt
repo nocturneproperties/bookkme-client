@@ -189,7 +189,10 @@ private fun NavigationRoot(
                         )
                     },
                     settingsTab = { SettingsTab() },
-                    onEnablePlugins = { controller.navigate(BusinessDestination.Plugins(it)) }
+                    onEnablePlugins = { controller.navigate(BusinessDestination.Plugins(it)) },
+                    onAddServiceGroup = { controller.navigate(ServicesDestination.ServiceGroupList) },
+                    onAddService = { controller.navigate(ServicesDestination.AddService(it)) },
+                    onAddClient = { controller.navigate(ClientsDestinations.CreateClient(it)) }
                 )
                 pluginsScreen(navigation = BusinessNavigation())
             }

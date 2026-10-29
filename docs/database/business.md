@@ -3,8 +3,9 @@
 # Business
 
 Every business the user owns or works at, including the requesting user's permission grants for each one.
-Written by `CommonBusinessDataSource`. The currently selected ("dashboard") business id is **not** stored
-here. It lives in the `business_prefs` DataStore bucket (`dashboard_id`, see [preferences](preferences.md)).
+Written by `CommonBusinessDataSource`. The currently selected ("dashboard") business is the single row of
+`dashboard_business`. It has a `CASCADE` foreign key to `business`, so it can only point at a cached business
+and disappears when that business is deleted.
 
 `business` is the root of most foreign keys in the database. Deleting a business row cascades to its
 schedule tables and to `client`, `employee`, `employee_invitation`, `service` and `service_group`
@@ -15,6 +16,7 @@ erDiagram
     BUSINESS ||--o{ BUSINESS_DAY_SCHEDULE : "has (CASCADE)"
     BUSINESS ||--o{ BUSINESS_WORKING_TIME : "has (CASCADE)"
     BUSINESS ||--o{ BUSINESS_DAY_OFF : "has (CASCADE)"
+    BUSINESS ||--o| DASHBOARD_BUSINESS : "selected as (CASCADE)"
 
     BUSINESS {
         uuid id PK "logical FK -> backend business.id"
@@ -68,6 +70,11 @@ erDiagram
         string start PK "LocalDate ISO"
         string end PK "LocalDate ISO"
     }
+
+    DASHBOARD_BUSINESS {
+        int slot PK "always 0; at most one row"
+        uuid businessId FK "indexed"
+    }
 ```
 
 - Written by: [Refresh business info](../operations/business/refresh-business-info.md) (`upsertAllWithChildren`
@@ -84,8 +91,19 @@ erDiagram
 - Deleted by: [Refresh business info](../operations/business/refresh-business-info.md) removes local businesses
   missing from `GET /api/business/mine` (`businessDao.deleteByIds`), cascading to their clients, employees,
   invitations, service groups and services.
+- `dashboard_business` is written by [Switch dashboard business](../operations/business/switch-dashboard-business.md)
+  (`setDashboardBusiness`: upsert, or delete for `null`) and by [Refresh business
+  info](../operations/business/refresh-business-info.md) with `applyDashboardIdFromRemote = true` or
+  `refreshAndSelect` (`upsertAllWithChildrenAndDashboard`, which writes the list and the selection in one
+  transaction). It is read by [Observe dashboard business changes](../operations/business/observe-dashboard-business-changes.md)
+  (`observeDashboardBusinessId`, `distinctUntilChanged`) and, joined to every `business` row as an `isDashboard`
+  flag in one query (`observeAllBusinessesWithDashboardFlag`), by [Observe dashboard setup
+  status](../operations/business/observe-dashboard-setup-status.md). Cleared on logout (`clearDashboardBusiness()`, and by
+  cascade from `businessDao.clear()`).
 - Migration notes: 15 → 16 added the nullable `business.ownerId` column (auto-migration). Rows cached before
   the migration keep `NULL` until the next [Refresh business info](../operations/business/refresh-business-info.md).
   18 → 19 added the nullable `business.employeeId` and `business.clientId` columns (auto-migration), with the same
   `NULL`-until-refresh behaviour: until then the appointment list is empty and creating an appointment fails with
-  `NotAnEmployee`.
+  `NotAnEmployee`. 19 → 20 added the `dashboard_business` table (auto-migration) and moved the selection there
+  from the `business_prefs` DataStore bucket. The old value is not migrated: after the update the selection is
+  empty until the user picks a business (or signs in again, which applies the server's selection).

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -16,21 +17,18 @@ import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.CheckBox
-import me.bookk.designsystem.components.CollapsingAppBarScaffold
 import me.bookk.designsystem.components.PickerField
 import me.bookk.designsystem.components.TextField
 
 @Composable
 internal fun AddServiceScreen(state: AddServiceState) {
-    CollapsingAppBarScaffold(
+    Scaffold(
         modifier = Modifier
+            .fillMaxSize()
             .systemBarsPadding()
             .imePadding(),
         topBar = {
-            AppTopBar(
-                state = state.appBar,
-                behavior = it
-            )
+            AppTopBar(state = state.appBar)
         },
         content = { pv ->
             Column(

@@ -399,6 +399,86 @@ class EditEmployeeViewModelTest {
         assertFalse(sut.uiState.save.isEnabled)
     }
 
+    private fun ResourcePermissionState.grants(): List<Boolean> {
+        return listOf(canView.isChecked, canUpdate.isChecked, canDelete.isChecked)
+    }
+
+    private fun employeeWithEmployeesPermission(permission: ResourcePermission): Fixture {
+        return Fixture(stubEmployee(permissions = stubPermissions(employees = permission)))
+    }
+
+    @Test
+    fun `turns off edit and delete when view is turned off`() = runUnitTest {
+        given()
+        val sut = employeeWithEmployeesPermission(ResourcePermission(view = true, update = true, delete = true)).sut()
+
+        whenn()
+        sut.permissionRow(1).canView.onCheckedChange?.invoke(false)
+
+        then()
+        assertEquals(listOf(false, false, false), sut.permissionRow(1).grants())
+    }
+
+    @Test
+    fun `keeps edit and delete off when view is turned on`() = runUnitTest {
+        given()
+        val sut = employeeWithEmployeesPermission(ResourcePermission()).sut()
+
+        whenn()
+        sut.permissionRow(1).canView.onCheckedChange?.invoke(true)
+
+        then()
+        assertEquals(listOf(true, false, false), sut.permissionRow(1).grants())
+    }
+
+    @Test
+    fun `turns on view when edit is turned on`() = runUnitTest {
+        given()
+        val sut = employeeWithEmployeesPermission(ResourcePermission()).sut()
+
+        whenn()
+        sut.permissionRow(1).canUpdate.onCheckedChange?.invoke(true)
+
+        then()
+        assertEquals(listOf(true, true, false), sut.permissionRow(1).grants())
+    }
+
+    @Test
+    fun `turns off delete when edit is turned off`() = runUnitTest {
+        given()
+        val sut = employeeWithEmployeesPermission(ResourcePermission(view = true, update = true, delete = true)).sut()
+
+        whenn()
+        sut.permissionRow(1).canUpdate.onCheckedChange?.invoke(false)
+
+        then()
+        assertEquals(listOf(true, false, false), sut.permissionRow(1).grants())
+    }
+
+    @Test
+    fun `turns on view and edit when delete is turned on`() = runUnitTest {
+        given()
+        val sut = employeeWithEmployeesPermission(ResourcePermission()).sut()
+
+        whenn()
+        sut.permissionRow(1).canDelete.onCheckedChange?.invoke(true)
+
+        then()
+        assertEquals(listOf(true, true, true), sut.permissionRow(1).grants())
+    }
+
+    @Test
+    fun `keeps view and edit on when delete is turned off`() = runUnitTest {
+        given()
+        val sut = employeeWithEmployeesPermission(ResourcePermission(view = true, update = true, delete = true)).sut()
+
+        whenn()
+        sut.permissionRow(1).canDelete.onCheckedChange?.invoke(false)
+
+        then()
+        assertEquals(listOf(true, true, false), sut.permissionRow(1).grants())
+    }
+
     @Test
     fun `enables save when a permission is toggled`() = runUnitTest {
         given()
@@ -415,10 +495,10 @@ class EditEmployeeViewModelTest {
     fun `disables save when a toggled permission is toggled back`() = runUnitTest {
         given()
         val sut = Fixture().sut()
-        sut.permissionRow(1).canUpdate.onCheckedChange?.invoke(true)
+        sut.permissionRow(1).canView.onCheckedChange?.invoke(true)
 
         whenn()
-        sut.permissionRow(1).canUpdate.onCheckedChange?.invoke(false)
+        sut.permissionRow(1).canView.onCheckedChange?.invoke(false)
 
         then()
         assertFalse(sut.uiState.save.isEnabled)

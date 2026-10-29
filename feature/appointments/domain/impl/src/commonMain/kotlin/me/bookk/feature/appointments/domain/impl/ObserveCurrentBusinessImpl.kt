@@ -11,6 +11,6 @@ internal class ObserveCurrentBusinessImpl(
 ) : ObserveCurrentBusiness {
     override fun invoke(): Flow<CurrentBusiness?> {
         return observeDashboardBusinessChanges()
-            .map { business -> business?.let { CurrentBusiness(id = it.id, employeeId = it.employeeId) } }
+            .map { business -> business?.let { CurrentBusiness(id = it.id, employeeId = it.employeeId, canViewAppointments = it.permissions.appointments.view) } }
     }
 }

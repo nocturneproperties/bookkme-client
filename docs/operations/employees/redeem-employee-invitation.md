@@ -5,15 +5,17 @@
 `RedeemEmployeeInvitation(code)` → `POST /api/business/employee_invitation/redeem`
 · called from [Join business](../business/join-business.md)
 
-After joining, the use case re-syncs the business list (the new business and the user's grants in it only
-exist on the server so far) and then switches the dashboard to that business. The business-error mapping
+After joining, the use case re-syncs the business list selecting the joined business in the same transaction
+(`RefreshBusinessInfo.refreshAndSelect`; the new business and the user's grants in it only exist on the server
+so far), then calls Switch dashboard business, which only tells the server since the local selection is already
+set. The business-error mapping
 wraps the *whole* block. If the refresh or the switch fails after a successful redeem, the raw error
 propagates, even though the user has already joined.
 
 ```mermaid
 flowchart TD
     Start([invoke code]) --> Net[EmployeeInvitationDataSource.redeemInvitation<br/>POST /api/business/employee_invitation/redeem]
-    Net -- 2xx employee --> Refresh[RefreshBusinessInfo]
+    Net -- 2xx employee --> Refresh[RefreshBusinessInfo.refreshAndSelect employee.businessId<br/>list + dashboard_business in one transaction]
     Refresh --> Switch[SwitchDashboardBusiness employee.businessId]
     Switch --> R([return Employee])
     Net -- business error --> Code{errorCode}

@@ -16,7 +16,7 @@ flowchart TD
     Start([invoke]) --> Loop[for each LogOutAction]
     Loop --> A1[CommonAuthorizationDataSource<br/>authorization_prefs.clear + DELETE /api/auth/session]
     Loop --> A2[CommonUserProfileDataSource<br/>user_profile.clear]
-    Loop --> A3[CommonBusinessDataSource<br/>business_prefs + business]
+    Loop --> A3[CommonBusinessDataSource<br/>dashboard_business + business]
     Loop --> A4[CommonPluginDataSource<br/>plugin_prefs.clear]
     Loop --> A5[CommonClientsDataSource<br/>clients_prefs + client]
     Loop --> A6[ServiceDataSourceImpl / ServiceGroupDataSourceImpl<br/>prefs + service / service_group]

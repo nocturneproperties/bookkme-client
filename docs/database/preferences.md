@@ -10,7 +10,6 @@ Small scalar state lives in Jetpack DataStore rather than Room. `PreferenceProvi
 |---|---|---|---|---|
 | `authorization_prefs` | `CommonAuthorizationDataSource` | `access_token`, `refresh_token` (String), `authorized` (Boolean), `last_initial_data_fetch_at` (epoch ms) | Bearer tokens for Ktor's `BearerAuthProvider`. `authorized` drives `IsUserLoggedIn.asFlow()`, which the root navigation observes. `last_initial_data_fetch_at` throttles [initial app data fetch](../operations/authorization/initial-app-data-fetch.md) to once per 30 min. | ✅ `clear()`, then `DELETE /api/auth/session` |
 | `device_prefs` | `CommonDeviceDataSource` | `device_uuid` (String) | Stable per-install device id sent on sign-in/sign-up and used for push token registration | ❌ intentionally kept, since it identifies the install and not the user |
-| `business_prefs` | `CommonBusinessDataSource` | `dashboard_id` (String uuid) | The currently selected business, which scopes every list screen | ✅ |
 | `plugin_prefs` | `CommonPluginDataSource` | `appointment_plugin_available_<businessId>` (Boolean) | Whether the appointments plugin is enabled. It is nullable, so "unknown" and "disabled" are different values. | ✅ |
 | `clients_prefs` | `CommonClientsDataSource` | `last_synced_at_<businessId>` (epoch ms) | List sync marker | ✅ |
 | `services_prefs` | `ServiceDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker | ✅ |

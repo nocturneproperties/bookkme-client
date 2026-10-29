@@ -47,8 +47,23 @@ class IOSOnboardingState: @MainActor OnboardingState {
 	var onCreateBusinessClick: (() -> Void)?
 	var onJoinBusinessClick: (() -> Void)?
 	var onEnablePluginsClick: (() -> Void)?
+	var onAddServiceGroupClick: (() -> Void)?
+	var onAddServiceClick: (() -> Void)?
+	var onAddClientClick: (() -> Void)?
+	var isAppointmentsStepDone: Bool = false
+	var isServiceGroupStepDone: Bool = false
+	var isServiceStepDone: Bool = false
+	var isServiceStepEnabled: Bool = false
+	var isAppointmentsStepEnabled: Bool = false
+	var isServiceGroupStepEnabled: Bool = false
+	var isClientStepEnabled: Bool = false
+	var serviceGroupStepSubtitle: any StringDesc = RawStringDesc(string: "")
+	var serviceStepSubtitle: any StringDesc = RawStringDesc(string: "")
+	var clientStepSubtitle: any StringDesc = RawStringDesc(string: "")
+	var isClientStepDone: Bool = false
 	var businesses: [OnboardingBusinessItem] = []
 	var onBusinessClick: ((OnboardingBusinessItem) -> Void)?
+	var refresh: any RefreshState = IOSRefreshState()
 }
 
 @MainActor

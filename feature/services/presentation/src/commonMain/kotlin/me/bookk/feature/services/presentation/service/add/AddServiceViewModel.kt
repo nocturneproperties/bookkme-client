@@ -133,7 +133,7 @@ class AddServiceViewModel(
     }
 
     private fun AddServiceState.setup(currency: SupportedCurrency) = apply {
-        appBar.size = TopBarSize.LARGE
+        appBar.size = TopBarSize.SMALL
         appBar.title = ServicesRes.strings.services_create_title.desc()
         appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
 

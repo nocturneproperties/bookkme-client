@@ -18,6 +18,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.plus
 import library.money.api.Money
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.today
@@ -69,7 +70,7 @@ class AppointmentListViewModelTest {
     private class Fixture {
         val businessId = Uuid.random()
         val employeeId = Uuid.random()
-        val currentBusiness = MutableStateFlow<CurrentBusiness?>(CurrentBusiness(id = businessId, employeeId = employeeId))
+        val currentBusiness = MutableStateFlow<CurrentBusiness?>(CurrentBusiness(id = businessId, employeeId = employeeId, canViewAppointments = true))
         val appointments = MutableStateFlow<List<Appointment>>(emptyList())
         val requests = MutableStateFlow<List<AppointmentRequest>>(emptyList())
         val observeCurrentBusiness = mock<ObserveCurrentBusiness> {
@@ -123,7 +124,7 @@ class AppointmentListViewModelTest {
     fun `does not load appointments when the caller is not an employee of the current business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = null)
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = null, canViewAppointments = true)
 
         whenn()
         fixture.sut()
@@ -137,7 +138,7 @@ class AppointmentListViewModelTest {
     fun `shows an empty list when the caller is not an employee of the current business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = null)
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = null, canViewAppointments = true)
 
         whenn()
         val sut = fixture.sut()
@@ -149,6 +150,132 @@ class AppointmentListViewModelTest {
     }
 
     @Test
+    fun `shows the regular empty state when the caller can view appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        assertEquals(AppointmentsRes.strings.appointments_list_empty.desc(), sut.uiState.appointments.emptyState?.label)
+    }
+
+    @Test
+    fun `shows the regular empty state before the current business is known`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.currentBusiness.value = null
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(AppointmentsRes.strings.appointments_list_empty.desc(), sut.uiState.appointments.emptyState?.label)
+    }
+
+    private fun AppointmentListViewModel.actionDescriptions(): List<Any> {
+        return uiState.appBar.actions.items.map { it.contentDescription }
+    }
+
+    @Test
+    fun `offers new appointment action when the caller can view appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        assertEquals(
+            listOf<Any>(AppointmentsRes.strings.appointments_pick_date.desc(), DesignSystem.strings.action_new.desc()),
+            sut.actionDescriptions()
+        )
+    }
+
+    @Test
+    fun `hides new appointment action without permission to view appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
+
+        whenn()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        assertEquals(listOf<Any>(AppointmentsRes.strings.appointments_pick_date.desc()), sut.actionDescriptions())
+    }
+
+    @Test
+    fun `offers new appointment action again after switching to a business where appointments are visible`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.currentBusiness.value = CurrentBusiness(id = Uuid.random(), employeeId = fixture.employeeId, canViewAppointments = true)
+        advanceUntilIdle()
+
+        then()
+        assertEquals(
+            listOf<Any>(AppointmentsRes.strings.appointments_pick_date.desc(), DesignSystem.strings.action_new.desc()),
+            sut.actionDescriptions()
+        )
+    }
+
+    @Test
+    fun `shows no permission message when the caller cannot view appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
+
+        whenn()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        assertEquals(AppointmentsRes.strings.appointments_no_permission.desc(), sut.uiState.appointments.emptyState?.label)
+        assertTrue(sut.uiState.appointments.items.isEmpty())
+        assertFalse(sut.uiState.appointments.isInitialLoading)
+    }
+
+    @Test
+    fun `does not load appointments without permission to view them`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
+
+        whenn()
+        fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        verify(VerifyMode.not) { fixture.getAppointmentsForBusiness.flow(any(), any()) }
+        verifySuspend(VerifyMode.not) { fixture.getAppointmentsForBusiness.refresh(any(), any(), any()) }
+    }
+
+    @Test
+    fun `restores the regular empty state after switching to a business where appointments are visible`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.currentBusiness.value = CurrentBusiness(id = Uuid.random(), employeeId = fixture.employeeId, canViewAppointments = true)
+        advanceUntilIdle()
+
+        then()
+        assertEquals(AppointmentsRes.strings.appointments_list_empty.desc(), sut.uiState.appointments.emptyState?.label)
+    }
+
+    @Test
     fun `loads the new employee's appointments when the current business changes`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -157,7 +284,7 @@ class AppointmentListViewModelTest {
         fixture.sut()
 
         whenn()
-        fixture.currentBusiness.value = CurrentBusiness(id = otherBusinessId, employeeId = otherEmployeeId)
+        fixture.currentBusiness.value = CurrentBusiness(id = otherBusinessId, employeeId = otherEmployeeId, canViewAppointments = true)
 
         then()
         verifySuspend { fixture.getAppointmentsForBusiness.refresh(otherBusinessId, LocalDate.today(), otherEmployeeId) }

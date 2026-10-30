@@ -38,7 +38,7 @@ struct AppointmentListScreen: View {
 				.listRowBackground(AppColors.background)
 				.listRowInsets(EdgeInsets())
 			}
-			.listSectionMargins(.horizontal, 0)
+			.zeroHorizontalListSectionMargins()
 			.listSectionSeparator(.hidden)
 		}
 		.toolbar {

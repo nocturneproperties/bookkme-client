@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appointments_title">Записи</string>
+    <string name="appointments_requests">Запросы</string>
+    <string name="appointments_list_empty">На этот день записей нет</string>
+    <string name="appointments_no_permission">У вас нет разрешения на просмотр записей</string>
+    <string name="appointments_pick_date">Выберите дату</string>
+    <string name="appointments_history_title">История</string>
+    <string name="appointments_history_empty">История записей пока пуста</string>
+    <string name="appointments_request_title">Запрос</string>
+
+    <string name="appointments_create_title">Создать запись</string>
+    <string name="appointments_create_client">Клиент</string>
+    <string name="appointments_create_client_placeholder">Выберите клиента</string>
+    <string name="appointments_create_services">Услуги</string>
+    <string name="appointments_create_services_add">Добавить услугу</string>
+    <string name="appointments_create_services_empty">Услуги не выбраны.</string>
+    <string name="appointments_create_date">Дата</string>
+    <string name="appointments_create_date_placeholder">Выберите дату</string>
+    <string name="appointments_create_time">Время</string>
+    <string name="appointments_create_time_placeholder">Выберите время</string>
+    <string name="appointments_create_note">Заметка для себя (необязательно)</string>
+    <string name="appointments_create_subtotal">Промежуточный итог · услуг: %1$d</string>
+    <string name="appointments_create_overlap_error">Пересечение записей. Похоже, пока вы создавали запись, кто-то уже занял эту дату и время. Выберите другую дату или время и попробуйте снова!</string>
+    <string name="appointments_create_not_employee_error">Создавать записи могут только сотрудники этого бизнеса. Если ваш доступ приостановлен, попросите владельца бизнеса восстановить его.</string>
+    <string name="appointments_create_date_error">Записи на этот день запрещены настройками</string>
+    <string name="appointments_create_time_error">Записи на это время запрещены настройками</string>
+
+    <string name="appointments_details_status">Статус</string>
+    <string name="appointments_details_note">Заметка</string>
+    <string name="appointments_details_phone">Контактный номер</string>
+    <string name="appointments_details_cancellation_reason">Причина отмены</string>
+    <string name="appointments_details_email">Эл. почта</string>
+    <string name="appointments_details_reschedule">Перенести</string>
+    <string name="appointments_status_scheduled">Запланирована</string>
+    <string name="appointments_status_completed">Завершена</string>
+    <string name="appointments_status_cancelled">Отменена</string>
+    <string name="appointments_status_no_show">Неявка</string>
+    <string name="appointments_details_complete">Завершить</string>
+    <string name="appointments_details_no_show">Неявка</string>
+    <string name="appointments_details_no_show_confirm">Отметить эту запись как неявку?</string>
+    <string name="appointments_details_no_show_action">Отметить неявку</string>
+    <string name="appointments_details_not_started_error">Эта запись ещё не началась.</string>
+    <string name="appointments_details_not_scheduled_error">Эта запись больше не запланирована, и её нельзя изменить.</string>
+    <string name="appointments_details_employee_suspended_error">Назначенный сотрудник приостановлен, и к нему нельзя записаться.</string>
+    <string name="appointments_details_marked_manually">Отмечено вручную</string>
+    <string name="appointments_details_final_price">Итоговая цена</string>
+    <string name="appointments_details_total">Итого</string>
+    <string name="appointments_details_initial_services">Исходные услуги</string>
+    <string name="appointments_details_adjusted_services">Изменённые услуги</string>
+    <string name="appointments_details_price_adjustment_reason">Причина</string>
+    <string name="appointments_complete_title">Завершить запись</string>
+    <string name="appointments_complete_services_hint">Выбранные здесь услуги заменят услуги, забронированные в этой записи. Оставьте список пустым, чтобы сохранить забронированные услуги.</string>
+    <string name="appointments_complete_note">Заметка (необязательно)</string>
+    <string name="appointments_complete_price_error">Введите корректную цену: 0 или больше.</string>
+    <string name="appointments_complete_currency_error">Валюта цены не совпадает с валютой записи.</string>
+    <string name="appointments_complete_note_too_long_error">Заметка слишком длинная.</string>
+    <string name="appointments_complete_service_not_found_error">Одной или нескольких выбранных услуг больше не существует.</string>
+
+    <string name="appointments_details_cancel">Вы уверены, что хотите отменить эту запись?\nКлиент, зарегистрированный в системе, получит уведомление.</string>
+    <string name="appointments_details_cancel_reason">причина (необязательно)</string>
+
+    <string name="appointments_settings_title">Настройки записей</string>
+    <string name="appointments_settings_working_days">Рабочие дни</string>
+    <string name="appointments_settings_from">С</string>
+    <string name="appointments_settings_to">До</string>
+    <string name="appointments_settings_automatic_approval">Автоматически одобрять запросы</string>
+    <string name="appointments_settings_automatic_completion">Автоматически завершать записи</string>
+    <string name="appointments_settings_automatic_completion_footer">Запланированные записи отмечаются как завершённые после их окончания.</string>
+    <string name="appointments_settings_break_footer">Минимальный перерыв между записями</string>
+    <string name="appointments_settings_note_header">Заметка для клиентов</string>
+    <string name="appointments_settings_note_placeholder">Показывается перед каждым бронированием (необязательно)</string>
+    <string name="appointments_settings_requests">Правила бронирования</string>
+    <string name="appointments_settings_minimal_break">Перерыв</string>
+    <string name="appointments_settings_updated">Настройки обновлены</string>
+
+    <string name="appointments_requests_count">Запросы (%s)</string>
+    <string name="appointments_request_empty">Нет ожидающих запросов</string>
+    <string name="appointments_request_decline">Вы уверены, что хотите отклонить эту запись?</string>
+    <string name="appointments_request_overlap_error">Пересечение записей. Похоже, на этот день уже есть другая запись.</string>
+    <string name="appointments_request_in_past">Время записи уже прошло. Этот запрос скоро будет отменён автоматически, или вы можете отклонить его вручную</string>
+    <string name="appointments_request_date_error">Записи на этот день запрещены настройками — возможно, этот день отмечен как выходной.</string>
+    <string name="appointments_request_time_error">Записи на это время запрещены настройками</string>
+</resources>

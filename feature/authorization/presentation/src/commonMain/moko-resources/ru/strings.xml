@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_up_create_acc">Создать аккаунт</string>
+    <string name="sign_up_personal_section_title">Личные данные</string>
+    <string name="sign_up_first_name">Имя</string>
+    <string name="sign_up_first_name_error">Имя должно содержать не менее 2 символов</string>
+    <string name="sign_up_last_name">Фамилия</string>
+    <string name="sign_up_last_name_error">Фамилия должна содержать не менее 2 символов</string>
+    <string name="sign_up_email">Эл. почта</string>
+    <string name="sign_up_email_error">Неверный формат эл. почты</string>
+    <string name="sign_up_create_account_button">Создать</string>
+    <string name="sign_up_email_exist">Аккаунт с такой эл. почтой уже существует</string>
+    <string name="sign_up_passkey_failed">Не удалось проверить ключ доступа</string>
+    <string name="sign_up_failed">Ошибка при создании аккаунта, попробуйте позже</string>
+    <string name="sign_up_why_no_password_title">Почему нет поля для пароля?</string>
+    <string name="sign_up_why_no_password_description">Мы решили заменить пароли ключами доступа (Passkeys): они используют биометрическую аутентификацию или шифрование на устройстве, поэтому лучше защищены от фишинга и взлома. Кроме того, они упрощают вход — больше не нужно запоминать множество сложных паролей.</string>
+
+    <string name="sign_in_title">Вход</string>
+    <string name="sign_in_passkey_button">Войти с ключом доступа</string>
+    <string name="sign_in_error_no_passkeys_on_device">На этом устройстве не найдено ключей доступа</string>
+    <string name="sign_in_error_passkey_verification">Не удалось проверить ключ доступа</string>
+    <string name="sign_in_error_no_account">С этим ключом доступа не связан ни один аккаунт</string>
+    <string name="sign_in_sign_up_button">Создать новый аккаунт</string>
+    <string name="sign_in_troubleshoot_button">Не получается войти?</string>
+    <string name="sign_in_passkey_why_title">Почему ключи доступа для входа?</string>
+    <string name="sign_in_passkey_why_description">Ключ доступа — более быстрый и удобный способ входа, чем пароль. Ключи доступа сложнее взломать, поэтому они защищают вас от фишинга и утечек данных. Ваш ключ доступа надёжно хранится на устройстве и в вашем менеджере паролей.</string>
+    <string name="sign_in_passkey_learn_more_button">Подробнее о ключах доступа</string>
+
+    <string name="troubleshoot_title">Не получается войти?</string>
+    <string name="troubleshoot_passkey_troubleshoot">Решение проблем с утерянными или отсутствующими ключами доступа</string>
+    <string name="troubleshoot_passkey_lost">Устройство потеряно или украдено</string>
+    <string name="troubleshoot_passkey_lost_description">Если вы потеряли устройство с ключом доступа, сначала проверьте, синхронизирован ли ключ с вашим облачным аккаунтом (например, Google, Apple или другой платформы). Войдите в аккаунт с другого доверенного устройства, отзовите доступ для утерянного устройства и при необходимости создайте новый ключ доступа.</string>
+    <string name="troubleshoot_passkey_missing">Ключи доступа отсутствуют или недоступны</string>
+    <string name="troubleshoot_passkey_missing_description">Если в вашем аккаунте есть ключи доступа, но при входе ключ не предлагается, убедитесь, что на устройстве с ключом включена блокировка экрана. Если блокировка экрана отключена, вы не сможете использовать ключ доступа на этом устройстве, пока снова её не включите. \nВы можете восстановить ключ доступа через своего поставщика учётных данных, например Google или Apple.</string>
+    <string name="troubleshoot_contact_support_button">Связаться с поддержкой</string>
+
+</resources>

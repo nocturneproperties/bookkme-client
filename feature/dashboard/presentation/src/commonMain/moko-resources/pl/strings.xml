@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dashboard_item_home">Pulpit</string>
+    <string name="dashboard_item_business">Firma</string>
+    <string name="dashboard_item_settings">Ustawienia</string>
+    <string name="dashboard_onboarding_headline">Zacznij</string>
+    <string name="dashboard_onboarding_subtitle">Utwórz własną firmę lub dołącz do tej, w której pracujesz.</string>
+    <string name="dashboard_onboarding_create_title">Utwórz firmę</string>
+    <string name="dashboard_onboarding_create_subtitle">Skonfiguruj własną: nazwa, godziny, lokalizacja</string>
+    <string name="dashboard_onboarding_join_title">Dołącz do firmy</string>
+    <string name="dashboard_onboarding_join_subtitle">Użyj kodu zaproszenia od właściciela</string>
+    <string name="dashboard_onboarding_select_headline">Wybierz firmę</string>
+    <string name="dashboard_onboarding_select_or">lub</string>
+    <string name="dashboard_onboarding_select_subtitle">Wybierz firmę, którą chcesz zarządzać, albo utwórz nową lub dołącz do innej.</string>
+    <string name="dashboard_onboarding_setup_headline">Dokończ konfigurację</string>
+    <string name="dashboard_onboarding_setup_subtitle">Wykonaj te kroki, aby zacząć przyjmować rezerwacje. Na razie wystarczy po jednym elemencie każdego rodzaju — kolejne możesz dodać później w karcie Firma.</string>
+    <string name="dashboard_onboarding_plugins_title">Włącz wtyczki</string>
+    <string name="dashboard_onboarding_plugins_subtitle">Włącz wizyty, aby zacząć przyjmować rezerwacje</string>
+    <string name="dashboard_onboarding_group_title">Utwórz grupę usług</string>
+    <string name="dashboard_onboarding_group_subtitle">Na przykład Strzyżenie lub Paznokcie</string>
+    <string name="dashboard_onboarding_service_title">Dodaj usługę</string>
+    <string name="dashboard_onboarding_service_subtitle">Wybierz grupę, ustaw czas trwania i cenę</string>
+    <string name="dashboard_onboarding_client_title">Dodaj klienta</string>
+    <string name="dashboard_onboarding_client_subtitle">Imię i dane kontaktowe</string>
+    <string name="dashboard_onboarding_step_no_services_access">Potrzebujesz uprawnień do przeglądania usług</string>
+    <string name="dashboard_onboarding_step_no_clients_access">Potrzebujesz uprawnień do przeglądania klientów</string>
+    <string name="dashboard_onboarding_awaiting_headline">Prawie gotowe</string>
+    <string name="dashboard_onboarding_awaiting_message">Dołączono do: %s.\nPulpit firmy pojawi się tutaj, gdy właściciel dokończy konfigurację.</string>
+    <string name="dashboard_onboarding_awaiting_no_clients_access">Dołączono do: %s.\nAby pulpit firmy mógł się tutaj pojawić, potrzebujesz uprawnień do przeglądania klientów. Poproś właściciela o ich nadanie.</string>
+    <string name="dashboard_onboarding_awaiting_no_services_access">Dołączono do: %s.\nAby pulpit firmy mógł się tutaj pojawić, potrzebujesz uprawnień do przeglądania usług. Poproś właściciela o ich nadanie.</string>
+    <string name="dashboard_onboarding_awaiting_no_clients_services_access">Dołączono do: %s.\nAby pulpit firmy mógł się tutaj pojawić, potrzebujesz uprawnień do przeglądania klientów i usług. Poproś właściciela o ich nadanie.</string>
+    <string name="dashboard_create_dialog_title">Utwórz firmę</string>
+    <string name="dashboard_create_dialog_message">Wpisz nazwę, którą będą widzieć Twoi klienci</string>
+    <string name="dashboard_create_dialog_placeholder">Nazwa firmy</string>
+    <string name="dashboard_create_error_empty_name">Wpisz nazwę firmy</string>
+    <string name="dashboard_join_dialog_title">Dołącz do firmy</string>
+    <string name="dashboard_join_dialog_message">Wpisz kod zaproszenia udostępniony przez właściciela firmy</string>
+    <string name="dashboard_join_dialog_placeholder">Kod zaproszenia</string>
+    <string name="dashboard_join_dialog_confirm">Dołącz</string>
+    <string name="dashboard_join_success">Dołączono do firmy</string>
+    <string name="dashboard_join_error_empty_code">Wpisz kod zaproszenia</string>
+    <string name="dashboard_join_error_already_processed">To zaproszenie zostało już użyte lub jest nieważne</string>
+    <string name="dashboard_join_error_employee_exists">Jesteś już pracownikiem tej firmy</string>
+</resources>

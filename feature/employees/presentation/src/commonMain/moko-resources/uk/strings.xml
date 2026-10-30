@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="employees_title">Працівники</string>
+    <string name="employees_empty">У вас поки немає працівників</string>
+
+    <string name="employees_invite_title">Запросити працівника</string>
+    <string name="employees_invite_description">Створіть код і надішліть його майбутньому працівнику. Щоб ввести код, потрібно натиснути й утримувати вкладку «Бізнес» унизу екрана.\n\nЯкщо ви загубили код, відкличте його та створіть новий.</string>
+    <string name="employees_invite_generate_button">Створити новий код</string>
+    <string name="employees_invite_code_copied">Код скопійовано в буфер обміну</string>
+    <string name="employees_invite_invitations_header">Запрошення</string>
+    <string name="employees_invite_invitations_empty">У вас поки немає запрошень</string>
+    <string name="employees_invite_created_on">Створено %s</string>
+    <string name="employees_invite_status_pending">Очікує</string>
+    <string name="employees_invite_status_redeemed">Використано</string>
+    <string name="employees_invite_status_expired">Термін дії минув</string>
+    <string name="employees_invite_status_revoked">Відкликано</string>
+    <string name="employees_invite_revoke_action">Відкликати</string>
+    <string name="employees_invite_revoke_dialog_title">Відкликати запрошення?</string>
+    <string name="employees_invite_revoke_dialog_message">Це запрошення більше не буде дійсним</string>
+    <string name="employees_invite_revoke_error_already_processed">Це запрошення вже оброблено, і його не можна відкликати</string>
+    <string name="employees_invite_generate_error_pending_limit">Досягнуто ліміту запрошень, що очікують. Відкличте невикористане запрошення, щоб створити новий код</string>
+    <string name="employees_invite_generate_error_daily_limit">Досягнуто денного ліміту запрошень. Спробуйте пізніше</string>
+    <string name="employees_edit_phone">Телефон</string>
+    <string name="employees_edit_email">Ел. пошта</string>
+    <string name="employees_edit_services">Послуги</string>
+    <string name="employees_edit_services_add">Додати послугу</string>
+    <string name="employees_edit_services_empty">Послуги не призначено.</string>
+    <string name="employees_edit_permissions">Права доступу</string>
+    <string name="employees_edit_permissions_owner_hint">Змінювати права доступу може лише власник бізнесу. Власник завжди має повний доступ до всіх ресурсів.</string>
+    <string name="employees_edit_permission_business">Бізнес</string>
+    <string name="employees_edit_permission_employees">Працівники</string>
+    <string name="employees_edit_permission_clients">Клієнти</string>
+    <string name="employees_edit_permission_services">Послуги</string>
+    <string name="employees_edit_permission_appointments">Записи</string>
+    <string name="employees_edit_permission_view">Перегляд</string>
+    <string name="employees_edit_permission_update">Редагування</string>
+    <string name="employees_edit_permission_delete">Видалення</string>
+    <string name="employees_edit_updated">Працівника оновлено</string>
+    <string name="employees_edit_error_validation">Неправильне імʼя, телефон або ел. пошта працівника</string>
+    <string name="employees_edit_error_active_day_without_work_hours">Робочий день має містити щонайменше одну робочу годину</string>
+    <string name="employees_edit_error_invalid_day_off_range">Дата початку вихідних має бути раніше за дату завершення</string>
+    <string name="employees_edit_suspend">Призупинити працівника</string>
+    <string name="employees_edit_reinstate">Відновити працівника</string>
+    <string name="employees_edit_suspend_dialog_title">Призупинити працівника?</string>
+    <string name="employees_edit_suspend_dialog_message">%s втратить доступ до бізнесу, і до нього не можна буде записатися до відновлення. Права доступу збережуться.</string>
+    <string name="employees_edit_reinstate_dialog_title">Відновити працівника?</string>
+    <string name="employees_edit_reinstate_dialog_message">%s знову отримає доступ до бізнесу з попередніми правами, і до нього знову можна буде записатися.</string>
+    <string name="employees_edit_suspended">Працівника призупинено</string>
+    <string name="employees_edit_reinstated">Працівника відновлено</string>
+    <string name="employees_edit_error_owner_suspension">Власника бізнесу не можна призупинити</string>
+    <string name="employees_edit_error_insufficient_grant">Не можна надати доступ, якого немає у вас самих</string>
+</resources>

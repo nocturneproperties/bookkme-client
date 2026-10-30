@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="clients_title">Клієнти</string>
+    <string name="clients_empty">У вас поки немає клієнтів</string>
+
+    <string name="clients_create_title">Додати клієнта</string>
+    <string name="clients_create_name">Імʼя</string>
+    <string name="clients_create_name_placeholder">Іван</string>
+    <string name="clients_create_last_name">Прізвище</string>
+    <string name="clients_create_last_name_placeholder">Петренко</string>
+    <string name="clients_create_phone">Телефон</string>
+    <string name="clients_create_phone_placeholder">2025550123</string>
+    <string name="clients_create_email">Ел. пошта</string>
+    <string name="clients_create_email_placeholder">необовʼязково</string>
+    <string name="clients_details_description">Опис</string>
+    <string name="clients_delete_title">Видалити клієнта</string>
+    <string name="clients_delete_desc">Ви впевнені, що хочете видалити цього клієнта?</string>
+    <string name="clients_delete_button">Видалити клієнта</string>
+
+    <string name="clients_edit_title">Редагувати клієнта</string>
+    <string name="clients_edit_attached_info">Цей клієнт привʼязаний до облікового запису, тому його імʼям, телефоном і ел. поштою керує власник облікового запису, і їх не можна змінити. Можна змінити лише опис.</string>
+    <string name="clients_edit_description_placeholder">Додаткова інформація про клієнта, яка може знадобитися</string>
+</resources>

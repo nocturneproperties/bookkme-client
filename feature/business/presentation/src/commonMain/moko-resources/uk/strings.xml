@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_business_title">Створити бізнес</string>
+    <string name="create_business_name_hint">Введіть назву бізнесу</string>
+    <string name="create_business_name_supporting">Введіть назву, яку бачитимуть ваші клієнти</string>
+    <string name="create_business_error_empty_name">Введіть назву бізнесу</string>
+    <string name="create_business_features">Функції</string>
+    <string name="create_business_feature_appointments_title">Записи</string>
+    <string name="create_business_feature_appointments_description">Клієнти зможуть записуватися до вас на консультації чи послуги. Завдяки попередньому запису їм не доведеться вам телефонувати.</string>
+
+    <string name="business_dashboard_business">Бізнес</string>
+    <string name="business_dashboard_employees">Працівники</string>
+    <string name="business_dashboard_clients">Клієнти</string>
+    <string name="business_dashboard_analytics">Аналітика</string>
+    <string name="business_dashboard_settings">Налаштування</string>
+    <string name="business_dashboard_appointments">Записи</string>
+    <string name="business_dashboard_services">Послуги</string>
+    <string name="business_dashboard_plugins">Плагіни</string>
+    <string name="business_dashboard_history">Історія</string>
+    <string name="business_dashboard_requests">Запити</string>
+    <string name="business_dashboard_shop">Магазин</string>
+    <string name="business_dashboard_assortment">Асортимент</string>
+    <string name="business_dashboard_warehouse">Склад</string>
+    <string name="business_dashboard_orders">Замовлення</string>
+
+    <string name="business_dashboard_switch_action">Змінити бізнес</string>
+    <string name="business_dashboard_switch_create">Створити бізнес</string>
+    <string name="business_dashboard_switch_join">Приєднатися до бізнесу</string>
+    <string name="business_dashboard_switch_join_dialog_title">Приєднатися до бізнесу</string>
+    <string name="business_dashboard_switch_join_dialog_message">Введіть код запрошення, який вам надіслав власник бізнесу</string>
+    <string name="business_dashboard_switch_join_dialog_placeholder">Код запрошення</string>
+    <string name="business_dashboard_switch_join_success">Ви приєдналися до бізнесу</string>
+    <string name="business_dashboard_switch_join_error_empty_code">Введіть код запрошення</string>
+    <string name="business_dashboard_switch_join_error_already_processed">Це запрошення вже використано або воно більше не дійсне</string>
+    <string name="business_dashboard_switch_join_error_employee_exists">Ви вже є працівником цього бізнесу</string>
+
+    <string name="business_settings_title">Налаштування бізнесу</string>
+    <string name="business_settings_add_photo">Додати фото</string>
+    <string name="business_settings_name_title">Назва бізнесу</string>
+    <string name="business_settings_name_hint">Назва бізнесу</string>
+    <string name="business_settings_description_title">Опис</string>
+    <string name="business_settings_description_hint">Додайте короткий опис, який побачать клієнти</string>
+    <string name="business_settings_location_title">Розташування</string>
+    <string name="business_settings_location_hint">22.2808283,114.1556772</string>
+    <string name="business_settings_location_supporting">За цими координатами вас зможуть знайти в застосунку карт</string>
+    <string name="business_settings_address_title">Адреса</string>
+    <string name="business_settings_address_hint">Адресу не вказано</string>
+    <string name="business_settings_currency_title">Валюта</string>
+    <string name="business_settings_currency_label">Валюта облікового запису</string>
+    <string name="business_settings_socials_title">Соцмережі</string>
+    <string name="business_settings_phone_hint">Контактний номер телефону</string>
+    <string name="business_settings_instagram_hint">Акаунт в Instagram</string>
+    <string name="business_settings_viber_hint">Номер у Viber</string>
+    <string name="business_settings_telegram_hint">Акаунт у Telegram</string>
+    <string name="business_settings_location_test">Попередній перегляд</string>
+    <string name="business_settings_updated">Налаштування оновлено</string>
+    <string name="business_settings_unsaved_changes_title">Скасувати зміни?</string>
+    <string name="business_settings_unsaved_changes_message">У вас є незбережені зміни. Якщо ви повернетеся назад, їх буде втрачено.</string>
+    <string name="business_settings_unsaved_changes_discard">Скасувати</string>
+
+    <string name="business_clients_title">Клієнти</string>
+    <string name="business_clients_empty">У вас поки немає клієнтів</string>
+
+    <string name="business_plugin_enabled">Увімкнено</string>
+    <string name="business_plugin_disabled">Не увімкнено</string>
+    <string name="business_plugins_title">Плагіни</string>
+    <string name="business_plugins_appointments_title">Записи</string>
+    <string name="business_plugins_appointments_subtitle">Зручне керування записами</string>
+    <string name="business_plugins_you_can">Ви можете</string>
+    <string name="business_plugins_clients_can">Клієнти можуть</string>
+    <string name="business_plugins_appointments_you_item1">Створювати записи.</string>
+    <string name="business_plugins_appointments_you_item2">Переносити записи.</string>
+    <string name="business_plugins_appointments_you_item3">Переглядати, схвалювати та відхиляти запити на запис від клієнтів.</string>
+    <string name="business_plugins_appointments_you_item4">Переглядати історію.</string>
+    <string name="business_plugins_appointments_you_item5">Налаштовувати робочі дні та час.</string>
+    <string name="business_plugins_appointments_you_item6">Призначати вихідні.</string>
+    <string name="business_plugins_appointments_clients_item1">Надсилати вам запити на запис</string>
+    <string name="business_plugins_appointments_clients_item1_sub">Якщо увімкнути автосхвалення, запити схвалюватимуться автоматично</string>
+    <string name="business_plugins_appointments_clients_item2">Отримувати сповіщення ел. поштою та в застосунку.</string>
+    <string name="business_plugins_appointments_clients_item2_sub">Зверніть увагу, що клієнт може відмовитися від будь-яких сповіщень</string>
+    <string name="business_plugins_demo">Натисніть тут, щоб переглянути демо, дізнатися, як це працює, і вирішити, чи підходить це вам.</string>
+    <string name="business_settings_active_day_without_work_hours_error">Робочий день має містити щонайменше одну робочу годину</string>
+    <string name="business_settings_invalid_day_off_range_error">Дата початку вихідних має бути раніше за дату завершення</string>
+    <string name="business_analytics_coming_soon_title">Аналітика незабаром зʼявиться</string>
+    <string name="business_analytics_coming_soon_message">Ми готуємо звіти щодо вашого доходу, записів і клієнтів. Вони зʼявляться тут в одному з наступних оновлень.</string>
+</resources>

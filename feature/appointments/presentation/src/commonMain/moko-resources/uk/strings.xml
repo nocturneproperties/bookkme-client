@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appointments_title">Записи</string>
+    <string name="appointments_requests">Запити</string>
+    <string name="appointments_list_empty">На цей день записів немає</string>
+    <string name="appointments_no_permission">У вас немає дозволу на перегляд записів</string>
+    <string name="appointments_pick_date">Виберіть дату</string>
+    <string name="appointments_history_title">Історія</string>
+    <string name="appointments_history_empty">Історія записів поки порожня</string>
+    <string name="appointments_request_title">Запит</string>
+
+    <string name="appointments_create_title">Створити запис</string>
+    <string name="appointments_create_client">Клієнт</string>
+    <string name="appointments_create_client_placeholder">Виберіть клієнта</string>
+    <string name="appointments_create_services">Послуги</string>
+    <string name="appointments_create_services_add">Додати послугу</string>
+    <string name="appointments_create_services_empty">Послуги не вибрано.</string>
+    <string name="appointments_create_date">Дата</string>
+    <string name="appointments_create_date_placeholder">Виберіть дату</string>
+    <string name="appointments_create_time">Час</string>
+    <string name="appointments_create_time_placeholder">Виберіть час</string>
+    <string name="appointments_create_note">Нотатка для себе (необовʼязково)</string>
+    <string name="appointments_create_subtotal">Проміжний підсумок · послуг: %1$d</string>
+    <string name="appointments_create_overlap_error">Накладання записів. Схоже, поки ви створювали запис, хтось уже зайняв цю дату й час. Виберіть іншу дату або час і спробуйте ще раз!</string>
+    <string name="appointments_create_not_employee_error">Створювати записи можуть лише працівники цього бізнесу. Якщо ваш доступ призупинено, попросіть власника бізнесу відновити його.</string>
+    <string name="appointments_create_date_error">Записи на цей день заборонені налаштуваннями</string>
+    <string name="appointments_create_time_error">Записи на цей час заборонені налаштуваннями</string>
+
+    <string name="appointments_details_status">Статус</string>
+    <string name="appointments_details_note">Нотатка</string>
+    <string name="appointments_details_phone">Контактний номер</string>
+    <string name="appointments_details_cancellation_reason">Причина скасування</string>
+    <string name="appointments_details_email">Ел. пошта</string>
+    <string name="appointments_details_reschedule">Перенести</string>
+    <string name="appointments_status_scheduled">Заплановано</string>
+    <string name="appointments_status_completed">Завершено</string>
+    <string name="appointments_status_cancelled">Скасовано</string>
+    <string name="appointments_status_no_show">Неявка</string>
+    <string name="appointments_details_complete">Завершити</string>
+    <string name="appointments_details_no_show">Неявка</string>
+    <string name="appointments_details_no_show_confirm">Позначити цей запис як неявку?</string>
+    <string name="appointments_details_no_show_action">Позначити неявку</string>
+    <string name="appointments_details_not_started_error">Цей запис ще не розпочався.</string>
+    <string name="appointments_details_not_scheduled_error">Цей запис більше не запланований, і його не можна змінити.</string>
+    <string name="appointments_details_employee_suspended_error">Призначеного працівника призупинено, і до нього не можна записатися.</string>
+    <string name="appointments_details_marked_manually">Позначено вручну</string>
+    <string name="appointments_details_final_price">Остаточна ціна</string>
+    <string name="appointments_details_total">Разом</string>
+    <string name="appointments_details_initial_services">Початкові послуги</string>
+    <string name="appointments_details_adjusted_services">Змінені послуги</string>
+    <string name="appointments_details_price_adjustment_reason">Причина</string>
+    <string name="appointments_complete_title">Завершити запис</string>
+    <string name="appointments_complete_services_hint">Вибрані тут послуги замінять послуги, заброньовані в цьому записі. Залиште список порожнім, щоб зберегти заброньовані послуги.</string>
+    <string name="appointments_complete_note">Нотатка (необовʼязково)</string>
+    <string name="appointments_complete_price_error">Введіть коректну ціну: 0 або більше.</string>
+    <string name="appointments_complete_currency_error">Валюта ціни не збігається з валютою запису.</string>
+    <string name="appointments_complete_note_too_long_error">Нотатка задовга.</string>
+    <string name="appointments_complete_service_not_found_error">Однієї або кількох вибраних послуг більше не існує.</string>
+
+    <string name="appointments_details_cancel">Ви впевнені, що хочете скасувати цей запис?\nКлієнт, зареєстрований у системі, отримає сповіщення.</string>
+    <string name="appointments_details_cancel_reason">причина (необовʼязково)</string>
+
+    <string name="appointments_settings_title">Налаштування записів</string>
+    <string name="appointments_settings_working_days">Робочі дні</string>
+    <string name="appointments_settings_from">З</string>
+    <string name="appointments_settings_to">До</string>
+    <string name="appointments_settings_automatic_approval">Автоматично схвалювати запити</string>
+    <string name="appointments_settings_automatic_completion">Автоматично завершувати записи</string>
+    <string name="appointments_settings_automatic_completion_footer">Заплановані записи позначаються як завершені після їх закінчення.</string>
+    <string name="appointments_settings_break_footer">Мінімальна перерва між записами</string>
+    <string name="appointments_settings_note_header">Нотатка для клієнтів</string>
+    <string name="appointments_settings_note_placeholder">Показується перед кожним бронюванням (необовʼязково)</string>
+    <string name="appointments_settings_requests">Правила бронювання</string>
+    <string name="appointments_settings_minimal_break">Перерва</string>
+    <string name="appointments_settings_updated">Налаштування оновлено</string>
+
+    <string name="appointments_requests_count">Запити (%s)</string>
+    <string name="appointments_request_empty">Немає запитів, що очікують</string>
+    <string name="appointments_request_decline">Ви впевнені, що хочете відхилити цей запис?</string>
+    <string name="appointments_request_overlap_error">Накладання записів. Схоже, на цей день уже є інший запис.</string>
+    <string name="appointments_request_in_past">Час запису вже минув. Цей запит незабаром буде скасовано автоматично, або ви можете відхилити його вручну</string>
+    <string name="appointments_request_date_error">Записи на цей день заборонені налаштуваннями — можливо, цей день позначено як вихідний.</string>
+    <string name="appointments_request_time_error">Записи на цей час заборонені налаштуваннями</string>
+</resources>

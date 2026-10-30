@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appointments_title">Wizyty</string>
+    <string name="appointments_requests">Prośby</string>
+    <string name="appointments_list_empty">Brak wizyt w tym dniu</string>
+    <string name="appointments_no_permission">Nie masz uprawnień do przeglądania wizyt</string>
+    <string name="appointments_pick_date">Wybierz datę</string>
+    <string name="appointments_history_title">Historia</string>
+    <string name="appointments_history_empty">Brak historii wizyt</string>
+    <string name="appointments_request_title">Prośba</string>
+
+    <string name="appointments_create_title">Utwórz wizytę</string>
+    <string name="appointments_create_client">Klient</string>
+    <string name="appointments_create_client_placeholder">Wybierz klienta</string>
+    <string name="appointments_create_services">Usługi</string>
+    <string name="appointments_create_services_add">Dodaj usługę</string>
+    <string name="appointments_create_services_empty">Nie wybrano usług.</string>
+    <string name="appointments_create_date">Data</string>
+    <string name="appointments_create_date_placeholder">Wybierz datę</string>
+    <string name="appointments_create_time">Godzina</string>
+    <string name="appointments_create_time_placeholder">Wybierz godzinę</string>
+    <string name="appointments_create_note">Notatka dla siebie (opcjonalnie)</string>
+    <string name="appointments_create_subtotal">Suma częściowa · usługi: %1$d</string>
+    <string name="appointments_create_overlap_error">Wizyty się nakładają. Wygląda na to, że ktoś utworzył wizytę na tę datę i godzinę, w trakcie tworzenia Twojej. Wybierz inną datę lub godzinę i spróbuj ponownie!</string>
+    <string name="appointments_create_not_employee_error">Tylko pracownicy tej firmy mogą tworzyć wizyty. Jeśli Twój dostęp został zawieszony, poproś właściciela firmy o jego przywrócenie.</string>
+    <string name="appointments_create_date_error">Wizyty w tym dniu są zablokowane w ustawieniach</string>
+    <string name="appointments_create_time_error">Wizyty o tej godzinie są zablokowane w ustawieniach</string>
+
+    <string name="appointments_details_status">Status</string>
+    <string name="appointments_details_note">Notatka</string>
+    <string name="appointments_details_phone">Numer kontaktowy</string>
+    <string name="appointments_details_cancellation_reason">Powód anulowania</string>
+    <string name="appointments_details_email">E-mail</string>
+    <string name="appointments_details_reschedule">Przełóż</string>
+    <string name="appointments_status_scheduled">Zaplanowana</string>
+    <string name="appointments_status_completed">Zakończona</string>
+    <string name="appointments_status_cancelled">Anulowana</string>
+    <string name="appointments_status_no_show">Nieobecność</string>
+    <string name="appointments_details_complete">Zakończ</string>
+    <string name="appointments_details_no_show">Nieobecność</string>
+    <string name="appointments_details_no_show_confirm">Oznaczyć tę wizytę jako nieobecność?</string>
+    <string name="appointments_details_no_show_action">Oznacz nieobecność</string>
+    <string name="appointments_details_not_started_error">Ta wizyta jeszcze się nie rozpoczęła.</string>
+    <string name="appointments_details_not_scheduled_error">Ta wizyta nie jest już zaplanowana i nie można jej zmienić.</string>
+    <string name="appointments_details_employee_suspended_error">Przypisany pracownik jest zawieszony i nie można się do niego zapisać.</string>
+    <string name="appointments_details_marked_manually">Oznaczono ręcznie</string>
+    <string name="appointments_details_final_price">Cena końcowa</string>
+    <string name="appointments_details_total">Razem</string>
+    <string name="appointments_details_initial_services">Pierwotne usługi</string>
+    <string name="appointments_details_adjusted_services">Zmienione usługi</string>
+    <string name="appointments_details_price_adjustment_reason">Powód</string>
+    <string name="appointments_complete_title">Zakończ wizytę</string>
+    <string name="appointments_complete_services_hint">Wybrane tutaj usługi zastąpią usługi zarezerwowane na tę wizytę. Pozostaw listę pustą, aby zachować zarezerwowane usługi.</string>
+    <string name="appointments_complete_note">Notatka (opcjonalnie)</string>
+    <string name="appointments_complete_price_error">Wpisz prawidłową cenę, 0 lub więcej.</string>
+    <string name="appointments_complete_currency_error">Waluta ceny nie zgadza się z walutą wizyty.</string>
+    <string name="appointments_complete_note_too_long_error">Notatka jest za długa.</string>
+    <string name="appointments_complete_service_not_found_error">Co najmniej jedna z wybranych usług już nie istnieje.</string>
+
+    <string name="appointments_details_cancel">Czy na pewno chcesz anulować tę wizytę?\nKlient zarejestrowany w systemie otrzyma powiadomienie.</string>
+    <string name="appointments_details_cancel_reason">powód (opcjonalnie)</string>
+
+    <string name="appointments_settings_title">Ustawienia wizyt</string>
+    <string name="appointments_settings_working_days">Dni robocze</string>
+    <string name="appointments_settings_from">Od</string>
+    <string name="appointments_settings_to">Do</string>
+    <string name="appointments_settings_automatic_approval">Automatycznie zatwierdzaj prośby</string>
+    <string name="appointments_settings_automatic_completion">Automatycznie kończ wizyty</string>
+    <string name="appointments_settings_automatic_completion_footer">Zaplanowane wizyty są oznaczane jako zakończone po ich upływie.</string>
+    <string name="appointments_settings_break_footer">Minimalna przerwa między wizytami</string>
+    <string name="appointments_settings_note_header">Notatka dla klientów</string>
+    <string name="appointments_settings_note_placeholder">Wyświetlana przed każdą rezerwacją (opcjonalnie)</string>
+    <string name="appointments_settings_requests">Zasady rezerwacji</string>
+    <string name="appointments_settings_minimal_break">Przerwa</string>
+    <string name="appointments_settings_updated">Ustawienia zaktualizowane</string>
+
+    <string name="appointments_requests_count">Prośby (%s)</string>
+    <string name="appointments_request_empty">Brak oczekujących próśb</string>
+    <string name="appointments_request_decline">Czy na pewno chcesz odrzucić tę wizytę?</string>
+    <string name="appointments_request_overlap_error">Wizyty się nakładają. Wygląda na to, że w tym dniu istnieje już inna wizyta.</string>
+    <string name="appointments_request_in_past">Termin wizyty już minął. Ta prośba wkrótce zostanie automatycznie anulowana, możesz też odrzucić ją ręcznie</string>
+    <string name="appointments_request_date_error">Wizyty w tym dniu są zablokowane w ustawieniach — ten dzień może być oznaczony jako wolny.</string>
+    <string name="appointments_request_time_error">Wizyty o tej godzinie są zablokowane w ustawieniach</string>
+</resources>

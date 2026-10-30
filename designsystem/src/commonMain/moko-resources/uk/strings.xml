@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_no_internet">Схоже, ви не в мережі. Перевірте підключення до інтернету та спробуйте ще раз.</string>
+    <string name="error_server">На сервері сталася помилка. Ми вже працюємо над цим! Оновіть сторінку або поверніться трохи згодом.</string>
+    <string name="error_unexpected">Неочікувана помилка. За потреби зверніться до підтримки.</string>
+    <string name="error_empty">Не може бути порожнім</string>
+    <string name="error_connection_title">Проблема з підключенням</string>
+    <string name="error_connection_subtitle">Перевірте підключення до інтернету та спробуйте ще раз.</string>
+    <string name="error_server_title">Помилка сервера</string>
+    <string name="error_generic_title">Щось пішло не так</string>
+    <string name="error_access_suspended_title">Доступ призупинено</string>
+    <string name="error_access_suspended">Ваш доступ до цього бізнесу призупинено. Зверніться до власника бізнесу, щоб відновити його.</string>
+    <string name="error_refresh_failed">Не вдалося оновити</string>
+
+    <string name="list_empty">Список порожній</string>
+
+    <string name="action_cancel">Скасувати</string>
+    <string name="action_confirm">Підтвердити</string>
+    <string name="action_create">Створити</string>
+    <string name="action_delete">Видалити</string>
+    <string name="action_edit">Змінити</string>
+    <string name="action_continue">Продовжити</string>
+    <string name="action_ok">ОК</string>
+    <string name="action_save">Зберегти</string>
+    <string name="action_send">Надіслати</string>
+    <string name="action_done">Готово</string>
+    <string name="action_add">Додати</string>
+    <string name="action_search">Пошук</string>
+    <string name="action_select">Вибрати</string>
+    <string name="action_enable">Увімкнути</string>
+    <string name="action_disable">Вимкнути</string>
+    <string name="action_new">Новий</string>
+    <string name="action_ignore">Ігнорувати</string>
+    <string name="action_decline">Відхилити</string>
+    <string name="action_approve">Схвалити</string>
+    <string name="action_dismiss">Закрити</string>
+    <string name="action_retry">Повторити</string>
+
+    <string name="message_delete">Ви впевнені, що хочете видалити цей елемент?</string>
+
+    <string name="common_from">З</string>
+    <string name="common_to">До</string>
+    <string name="common_min">хв.</string>
+
+    <string name="schedule_title">Розклад</string>
+    <string name="schedule_add_working_time">Додати робочий час</string>
+    <string name="schedule_day_offs">Вихідні</string>
+    <string name="schedule_add_day_off">Додати вихідний</string>
+    <string name="schedule_no_day_offs">Вихідних не заплановано.</string>
+    <string name="schedule_pick_day_off_title">Виберіть дату початку та завершення відпустки або вихідних.</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_up_create_acc">Utwórz konto</string>
+    <string name="sign_up_personal_section_title">Dane osobowe</string>
+    <string name="sign_up_first_name">Imię</string>
+    <string name="sign_up_first_name_error">Imię musi mieć co najmniej 2 znaki</string>
+    <string name="sign_up_last_name">Nazwisko</string>
+    <string name="sign_up_last_name_error">Nazwisko musi mieć co najmniej 2 znaki</string>
+    <string name="sign_up_email">E-mail</string>
+    <string name="sign_up_email_error">Nieprawidłowy format adresu e-mail</string>
+    <string name="sign_up_create_account_button">Utwórz</string>
+    <string name="sign_up_email_exist">Konto z tym adresem e-mail już istnieje</string>
+    <string name="sign_up_passkey_failed">Weryfikacja klucza dostępu nie powiodła się</string>
+    <string name="sign_up_failed">Błąd podczas tworzenia konta, spróbuj ponownie później</string>
+    <string name="sign_up_why_no_password_title">Dlaczego nie ma pola na hasło?</string>
+    <string name="sign_up_why_no_password_description">Zdecydowaliśmy się zastąpić hasła kluczami dostępu (Passkeys), ponieważ korzystają one z uwierzytelniania biometrycznego lub szyfrowania na urządzeniu, dzięki czemu są bardziej odporne na phishing i włamania. Dodatkowo upraszczają logowanie — nie musisz już pamiętać wielu skomplikowanych haseł.</string>
+
+    <string name="sign_in_title">Logowanie</string>
+    <string name="sign_in_passkey_button">Zaloguj się kluczem dostępu</string>
+    <string name="sign_in_error_no_passkeys_on_device">Nie znaleziono kluczy dostępu na tym urządzeniu</string>
+    <string name="sign_in_error_passkey_verification">Weryfikacja klucza dostępu nie powiodła się</string>
+    <string name="sign_in_error_no_account">Z tym kluczem dostępu nie jest powiązane żadne konto</string>
+    <string name="sign_in_sign_up_button">Utwórz nowe konto</string>
+    <string name="sign_in_troubleshoot_button">Problem z logowaniem?</string>
+    <string name="sign_in_passkey_why_title">Dlaczego klucze dostępu do logowania?</string>
+    <string name="sign_in_passkey_why_description">Klucz dostępu to szybszy i lepszy sposób logowania niż hasło. Klucze dostępu trudniej złamać, dzięki czemu chronią Cię przed phishingiem i wyciekami danych. Twój klucz dostępu jest bezpiecznie przechowywany na urządzeniu i w menedżerze haseł.</string>
+    <string name="sign_in_passkey_learn_more_button">Dowiedz się więcej o kluczach dostępu</string>
+
+    <string name="troubleshoot_title">Problem z logowaniem?</string>
+    <string name="troubleshoot_passkey_troubleshoot">Rozwiązywanie problemów z utraconymi lub brakującymi kluczami dostępu</string>
+    <string name="troubleshoot_passkey_lost">Zgubione lub skradzione urządzenie</string>
+    <string name="troubleshoot_passkey_lost_description">Jeśli zgubisz urządzenie z kluczem dostępu, najpierw sprawdź, czy klucz jest zsynchronizowany z Twoim kontem w chmurze (np. Google, Apple lub innej platformy). Zaloguj się na innym zaufanym urządzeniu, cofnij dostęp dla zgubionego urządzenia i w razie potrzeby utwórz nowy klucz dostępu.</string>
+    <string name="troubleshoot_passkey_missing">Brakujące lub niedostępne klucze dostępu</string>
+    <string name="troubleshoot_passkey_missing_description">Jeśli masz klucze dostępu na koncie, ale podczas logowania nie jest proponowany żaden klucz, upewnij się, że na urządzeniu z kluczem włączona jest blokada ekranu. Jeśli blokada ekranu jest wyłączona, nie będzie można użyć klucza dostępu na tym urządzeniu, dopóki ponownie jej nie włączysz. \nKlucz dostępu możesz odzyskać u swojego dostawcy danych logowania, np. Google lub Apple.</string>
+    <string name="troubleshoot_contact_support_button">Skontaktuj się z pomocą techniczną</string>
+
+</resources>

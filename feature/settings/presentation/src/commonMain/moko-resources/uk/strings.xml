@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_appearance_title">Оформлення</string>
+    <string name="settings_theme_mode_light">Світла</string>
+    <string name="settings_theme_mode_dark">Темна</string>
+    <string name="settings_theme_mode_system">Системна</string>
+
+    <string name="settings_profile_title">Профіль</string>
+    <string name="settings_profile_name">Імʼя</string>
+    <string name="settings_profile_last_name">Прізвище</string>
+    <string name="settings_profile_email">Ел. пошта</string>
+    <string name="settings_profile_edit">Змінити</string>
+
+    <string name="settings_account_title">Обліковий запис</string>
+    <string name="settings_account_passkey_label">Ключ доступу</string>
+    <string name="settings_account_logout_label">Вийти</string>
+    <string name="settings_account_logout_message">Ви впевнені, що хочете вийти?</string>
+    <string name="settings_account_delete_acc_label">Видалити обліковий запис</string>
+    <string name="settings_account_notifications_lable">Сповіщення</string>
+
+    <string name="settings_support_title">Підтримка</string>
+    <string name="settings_support_contact_label">Звʼязатися з нами</string>
+    <string name="settings_support_feature_label">Запропонувати функцію</string>
+    <string name="settings_support_terms_label">Умови використання</string>
+    <string name="settings_support_privacy_label">Політика конфіденційності</string>
+    <string name="settings_support_report_label">Повідомити про помилку</string>
+
+    <string name="settings_edit_profile_title">Редагувати профіль</string>
+    <string name="settings_edit_profile_first_name">Імʼя</string>
+    <string name="settings_edit_profile_first_name_error">Імʼя має містити щонайменше 2 символи</string>
+    <string name="settings_edit_profile_last_name">Прізвище</string>
+    <string name="settings_edit_profile_last_name_error">Прізвище має містити щонайменше 2 символи</string>
+    <string name="settings_edit_profile_email">Ел. пошта</string>
+    <string name="settings_edit_profile_email_error">Неправильний формат ел. пошти</string>
+
+    <string name="settings_contact_us_title">Звʼязатися з нами</string>
+    <string name="settings_contact_us_contact_hint">Введіть повідомлення, і ми звʼяжемося з вами через ел. пошту, вказану в профілі</string>
+    <string name="settings_contact_us_include_logs">Додати журнали використання</string>
+    <string name="settings_contact_us_include_logs_hint">Якщо у вас виникла проблема, додайте журнали використання застосунку, щоб наші розробники змогли швидше її виправити</string>
+
+    <string name="settings_delete_account_title">Видалити обліковий запис</string>
+    <string name="settings_delete_account_confirmation">Я розумію, що видалення облікового запису є незворотним і я не зможу його відновити</string>
+    <string name="settings_delete_account_confirmation_switch">Погоджуюся</string>
+    <string name="settings_delete_account_confirmation_button">Видалити</string>
+    <string name="settings_delete_account_success_message">Обліковий запис успішно видалено</string>
+
+    <string name="settings_passkey_title">Ключ доступу</string>
+    <string name="settings_passkey_add_button">Додати</string>
+    <string name="settings_passkey_added_on_format">Додано %s</string>
+    <string name="settings_passkey_delete_dialog_title">Видалити ключ доступу</string>
+    <string name="settings_passkey_delete_dialog_message">Видалити ключ доступу «%s»? Ви більше не зможете входити з цим ключем.</string>
+
+    <string name="settings_notifications_title">Сповіщення</string>
+    <string name="settings_notifications_appointment_label">Сповіщення про записи</string>
+    <string name="settings_notifications_channels_header">Канали</string>
+    <string name="settings_notifications_types_header">Типи</string>
+    <string name="settings_notifications_types_footer">Нові типи сповіщень зʼявлятимуться тут, щойно стануть доступними.</string>
+    <string name="settings_notifications_email_label">Ел. пошта</string>
+    <string name="settings_notifications_push_label">Push-сповіщення</string>
+    <string name="settings_notifications_telegram_label">Telegram</string>
+</resources>

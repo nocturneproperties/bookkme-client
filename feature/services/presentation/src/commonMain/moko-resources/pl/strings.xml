@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="services_title">Usługi</string>
+    <string name="services_empty">Nie ma jeszcze żadnych usług</string>
+    <string name="service_group_empty">Nie ma jeszcze żadnych grup usług</string>
+
+    <string name="services_create_title">Dodaj usługę</string>
+    <string name="services_create_group">Grupa</string>
+    <string name="services_create_groups">Grupy usług</string>
+    <string name="services_create_group_placeholder">Grupa usług</string>
+    <string name="services_create_name">Nazwa</string>
+    <string name="services_create_name_placeholder">Nazwa usługi</string>
+    <string name="services_create_duration">Czas trwania</string>
+    <string name="services_create_duration_placeholder">Czas trwania w minutach</string>
+    <string name="services_create_price">Cena</string>
+    <string name="services_create_price_placeholder">Kwota płatności</string>
+    <string name="services_create_visible">Widoczna dla klientów</string>
+    <string name="services_create_group_error">Wybierz grupę usług</string>
+    <string name="services_create_price_error">Wpisz prawidłową cenę</string>
+
+    <string name="services_edit_title">Edytuj usługę</string>
+    <string name="services_delete_button">Usuń usługę</string>
+
+    <string name="services_group_pick">Wybierz grupę</string>
+
+    <string name="services_group_add_title">Utwórz grupę usług</string>
+    <string name="services_group_add_message">Wpisz nazwę nowej grupy usług</string>
+    <string name="services_group_add_name_exists">Grupa o tej nazwie już istnieje</string>
+    <string name="services_group_add_name_invalid">Nieprawidłowa nazwa</string>
+
+</resources>

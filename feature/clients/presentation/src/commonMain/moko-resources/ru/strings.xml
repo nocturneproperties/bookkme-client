@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="clients_title">Клиенты</string>
+    <string name="clients_empty">У вас пока нет клиентов</string>
+
+    <string name="clients_create_title">Добавить клиента</string>
+    <string name="clients_create_name">Имя</string>
+    <string name="clients_create_name_placeholder">Иван</string>
+    <string name="clients_create_last_name">Фамилия</string>
+    <string name="clients_create_last_name_placeholder">Иванов</string>
+    <string name="clients_create_phone">Телефон</string>
+    <string name="clients_create_phone_placeholder">2025550123</string>
+    <string name="clients_create_email">Эл. почта</string>
+    <string name="clients_create_email_placeholder">необязательно</string>
+    <string name="clients_details_description">Описание</string>
+    <string name="clients_delete_title">Удалить клиента</string>
+    <string name="clients_delete_desc">Вы уверены, что хотите удалить этого клиента?</string>
+    <string name="clients_delete_button">Удалить клиента</string>
+
+    <string name="clients_edit_title">Редактировать клиента</string>
+    <string name="clients_edit_attached_info">Этот клиент привязан к аккаунту, поэтому его именем, телефоном и эл. почтой управляет владелец аккаунта — их нельзя изменить. Можно изменить только описание.</string>
+    <string name="clients_edit_description_placeholder">Дополнительная информация о клиенте, которая может пригодиться</string>
+</resources>

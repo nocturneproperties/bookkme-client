@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="services_title">Услуги</string>
+    <string name="services_empty">Пока нет ни одной услуги</string>
+    <string name="service_group_empty">Пока нет ни одной группы услуг</string>
+
+    <string name="services_create_title">Добавить услугу</string>
+    <string name="services_create_group">Группа</string>
+    <string name="services_create_groups">Группы услуг</string>
+    <string name="services_create_group_placeholder">Группа услуг</string>
+    <string name="services_create_name">Название</string>
+    <string name="services_create_name_placeholder">Название услуги</string>
+    <string name="services_create_duration">Длительность</string>
+    <string name="services_create_duration_placeholder">Длительность в минутах</string>
+    <string name="services_create_price">Цена</string>
+    <string name="services_create_price_placeholder">Сумма оплаты</string>
+    <string name="services_create_visible">Видна клиентам</string>
+    <string name="services_create_group_error">Выберите группу услуг</string>
+    <string name="services_create_price_error">Введите корректную цену</string>
+
+    <string name="services_edit_title">Редактировать услугу</string>
+    <string name="services_delete_button">Удалить услугу</string>
+
+    <string name="services_group_pick">Выберите группу</string>
+
+    <string name="services_group_add_title">Создать группу услуг</string>
+    <string name="services_group_add_message">Введите название новой группы услуг</string>
+    <string name="services_group_add_name_exists">Группа с таким названием уже существует</string>
+    <string name="services_group_add_name_invalid">Некорректное название</string>
+
+</resources>

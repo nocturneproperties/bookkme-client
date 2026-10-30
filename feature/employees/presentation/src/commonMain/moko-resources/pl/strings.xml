@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="employees_title">Pracownicy</string>
+    <string name="employees_empty">Nie masz jeszcze żadnych pracowników</string>
+
+    <string name="employees_invite_title">Zaproś pracownika</string>
+    <string name="employees_invite_description">Wygeneruj kod i udostępnij go przyszłemu pracownikowi. Kod można wpisać po przytrzymaniu karty Firma na dole ekranu.\n\nJeśli zgubisz kod, unieważnij go i utwórz nowy.</string>
+    <string name="employees_invite_generate_button">Wygeneruj nowy kod</string>
+    <string name="employees_invite_code_copied">Kod skopiowany do schowka</string>
+    <string name="employees_invite_invitations_header">Zaproszenia</string>
+    <string name="employees_invite_invitations_empty">Nie masz jeszcze żadnych zaproszeń</string>
+    <string name="employees_invite_created_on">Utworzono %s</string>
+    <string name="employees_invite_status_pending">Oczekujące</string>
+    <string name="employees_invite_status_redeemed">Wykorzystane</string>
+    <string name="employees_invite_status_expired">Wygasłe</string>
+    <string name="employees_invite_status_revoked">Unieważnione</string>
+    <string name="employees_invite_revoke_action">Unieważnij</string>
+    <string name="employees_invite_revoke_dialog_title">Unieważnić zaproszenie?</string>
+    <string name="employees_invite_revoke_dialog_message">To zaproszenie przestanie być ważne</string>
+    <string name="employees_invite_revoke_error_already_processed">To zaproszenie zostało już przetworzone i nie można go unieważnić</string>
+    <string name="employees_invite_generate_error_pending_limit">Osiągnięto limit oczekujących zaproszeń. Unieważnij niewykorzystane zaproszenie, aby wygenerować nowy kod</string>
+    <string name="employees_invite_generate_error_daily_limit">Osiągnięto dzienny limit zaproszeń. Spróbuj ponownie później</string>
+    <string name="employees_edit_phone">Telefon</string>
+    <string name="employees_edit_email">E-mail</string>
+    <string name="employees_edit_services">Usługi</string>
+    <string name="employees_edit_services_add">Dodaj usługę</string>
+    <string name="employees_edit_services_empty">Brak przypisanych usług.</string>
+    <string name="employees_edit_permissions">Uprawnienia</string>
+    <string name="employees_edit_permissions_owner_hint">Tylko właściciel firmy może zmieniać uprawnienia. Właściciel zawsze ma pełny dostęp do wszystkich zasobów.</string>
+    <string name="employees_edit_permission_business">Firma</string>
+    <string name="employees_edit_permission_employees">Pracownicy</string>
+    <string name="employees_edit_permission_clients">Klienci</string>
+    <string name="employees_edit_permission_services">Usługi</string>
+    <string name="employees_edit_permission_appointments">Wizyty</string>
+    <string name="employees_edit_permission_view">Podgląd</string>
+    <string name="employees_edit_permission_update">Edycja</string>
+    <string name="employees_edit_permission_delete">Usuwanie</string>
+    <string name="employees_edit_updated">Pracownik zaktualizowany</string>
+    <string name="employees_edit_error_validation">Nieprawidłowe imię, telefon lub e-mail pracownika</string>
+    <string name="employees_edit_error_active_day_without_work_hours">Aktywny dzień musi mieć co najmniej jedną godzinę pracy</string>
+    <string name="employees_edit_error_invalid_day_off_range">Data rozpoczęcia dnia wolnego musi być wcześniejsza niż data zakończenia</string>
+    <string name="employees_edit_suspend">Zawieś pracownika</string>
+    <string name="employees_edit_reinstate">Przywróć pracownika</string>
+    <string name="employees_edit_suspend_dialog_title">Zawiesić pracownika?</string>
+    <string name="employees_edit_suspend_dialog_message">%s straci dostęp do firmy i nie będzie można się do tej osoby zapisać do czasu przywrócenia. Uprawnienia zostaną zachowane.</string>
+    <string name="employees_edit_reinstate_dialog_title">Przywrócić pracownika?</string>
+    <string name="employees_edit_reinstate_dialog_message">%s odzyska dostęp do firmy z dotychczasowymi uprawnieniami i znów będzie można się do tej osoby zapisać.</string>
+    <string name="employees_edit_suspended">Pracownik zawieszony</string>
+    <string name="employees_edit_reinstated">Pracownik przywrócony</string>
+    <string name="employees_edit_error_owner_suspension">Nie można zawiesić właściciela firmy</string>
+    <string name="employees_edit_error_insufficient_grant">Nie możesz nadać dostępu, którego nie masz</string>
+</resources>

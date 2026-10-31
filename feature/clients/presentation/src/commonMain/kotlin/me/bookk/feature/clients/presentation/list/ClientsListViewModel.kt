@@ -91,6 +91,11 @@ class ClientsListViewModel(
         val actions = if (canEdit) {
             listOf(
                 AppBarAction(
+                    icon = DesignSystem.images.contacts,
+                    contentDescription = DesignSystem.strings.action_import.desc(),
+                    onClick = {}
+                ),
+                AppBarAction(
                     icon = DesignSystem.images.plus,
                     contentDescription = DesignSystem.strings.action_add.desc(),
                     onClick = weakVMClosure { it.onAddClientClick() }

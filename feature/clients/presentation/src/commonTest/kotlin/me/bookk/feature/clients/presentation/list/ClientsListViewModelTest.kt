@@ -3,6 +3,8 @@ package me.bookk.feature.clients.presentation.list
 import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import kotlinx.coroutines.CompletableDeferred
+import dev.icerock.moko.resources.desc.desc
+import me.bookk.android.designsystem.resources.DesignSystem
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -178,7 +180,7 @@ class ClientsListViewModelTest {
     }
 
     @Test
-    fun `shows the add action for a user who can edit clients`() = runUnitTest {
+    fun `shows the import action left of the add action for a user who can edit clients`() = runUnitTest {
         given()
         val fixture = Fixture(canEdit = true)
 
@@ -186,11 +188,14 @@ class ClientsListViewModelTest {
         val sut = fixture.sut()
 
         then()
-        assertEquals(1, sut.uiState.appBar.actions.items.size)
+        assertEquals(
+            listOf(DesignSystem.strings.action_import.desc(), DesignSystem.strings.action_add.desc()),
+            sut.uiState.appBar.actions.items.map { it.contentDescription }
+        )
     }
 
     @Test
-    fun `hides the add action for a user who cannot edit clients`() = runUnitTest {
+    fun `hides the import and add actions for a user who cannot edit clients`() = runUnitTest {
         given()
         val fixture = Fixture(canEdit = false)
 
@@ -238,7 +243,7 @@ class ClientsListViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        sut.uiState.appBar.actions.items.single().onClick()
+        sut.uiState.appBar.actions.items.single { it.contentDescription == DesignSystem.strings.action_add.desc() }.onClick()
 
         then()
         assertEquals(listOf<ClientsListDestination>(ClientsListDestination.AddClient(fixture.businessId)), sut.uiState.navigation.navigationDestination)

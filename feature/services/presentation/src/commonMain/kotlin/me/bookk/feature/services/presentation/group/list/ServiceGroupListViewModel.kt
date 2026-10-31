@@ -14,7 +14,7 @@ import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.GetServicesPermissions
 import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
@@ -97,7 +97,7 @@ class ServiceGroupListViewModel(
         this.permissions = permissions
         val actions = if (permissions.canEdit) {
             listOf(
-                AppBarAction(
+                uiState.appBar.action(
                     contentDescription = DesignSystem.strings.action_add.desc(),
                     onClick = weakVMClosure { it.onAddGroupClicked() }
                 )

@@ -76,4 +76,23 @@ class EditProfileImplTest {
         then()
         verifySuspend { fixture.profileCRUD.update(matches({ "match" }) { it.id == id }) }
     }
+
+    @Test
+    fun `saves trimmed profile fields`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val existing = UserProfile(id = Uuid.random(), firstName = "Old", lastName = "Name", email = "old@example.com")
+        everySuspend { fixture.profileCRUD.get() } returns existing
+        everySuspend { fixture.profileCRUD.update(any()) } returns Unit
+
+        whenn()
+        fixture.sut("  New ", "Lastname\n", " new@example.com ")
+
+        then()
+        verifySuspend {
+            fixture.profileCRUD.update(
+                matches({ "trimmed" }) { it.firstName == "New" && it.lastName == "Lastname" && it.email == "new@example.com" }
+            )
+        }
+    }
 }

@@ -507,7 +507,8 @@ Color modifiers: `.primary()` = `primaryText`, `.secondary()` = `secondaryText`,
 
 | Interface | Key fields |
 |---|---|
-| `AppBarState` | `title`, `subtitle`, `onBackClick`, `size: TopBarSize`, `actions: ListState<AppBarAction>` |
+| `AppBarState` | `title`, `subtitle`, `onBackClick`, `size: TopBarSize`, `actions: ListState<AppBarActionState>`, `createAction()` — build actions with `appBar.action(contentDescription, icon, type, onClick)` and keep a reference to toggle them |
+| `AppBarActionState` | `icon`, `contentDescription`, `type: ActionType`, `isEnabled`, `isLoading`, `isVisible`, `onClick`; `startLoading()` / `stopLoading()` like `ButtonState` |
 | `ButtonState` | `icon`, `text`, `isEnabled`, `isLoading`, `onClick` |
 | `TextFieldState` | `label`, `placeholder`, `text`, `suffix`, `startIcon`, `endIcon`, `supportingTextRes`, `validationState`, `inputType`, `isValid`, `enabled`, `readOnly`, `maxLength`, `onTextChanged` |
 | `PickerFieldState<T>` | `textField`, `options`, `selectedItem`, `onItemPicked`, `pickerTitle`, `pickerType` |

@@ -25,7 +25,10 @@
     <string name="action_send">Wyślij</string>
     <string name="action_done">Gotowe</string>
     <string name="action_add">Dodaj</string>
+    <string name="action_import">Importuj</string>
     <string name="action_search">Szukaj</string>
+    <string name="action_select_all">Zaznacz wszystkie</string>
+    <string name="action_unselect_all">Odznacz wszystkie</string>
     <string name="action_select">Wybierz</string>
     <string name="action_enable">Włącz</string>
     <string name="action_disable">Wyłącz</string>

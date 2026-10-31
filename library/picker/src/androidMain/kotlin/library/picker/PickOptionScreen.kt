@@ -11,11 +11,15 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.localized
 import library.picker.state.PickOptionItem
 import library.picker.state.PickOptionState
 import me.bookk.designsystem.components.ActionButton
@@ -26,6 +30,7 @@ import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.modifier.bottomShadow
 import me.bookk.designsystem.modifier.topShadow
 import me.bookk.designsystem.theme.color.LocalColors
+import me.bookk.designsystem.uistate.ButtonState
 
 @Composable
 fun PickOptionScreen(
@@ -67,6 +72,11 @@ fun PickOptionScreen(
                 }
             }
         },
+        floatingActionButton = {
+            if (state.selectAllButton.isVisible) {
+                SelectAllButton(state.selectAllButton)
+            }
+        },
         bottomBar = {
             if (state.selectButton.isVisible) {
                 ActionButton(
@@ -78,6 +88,17 @@ fun PickOptionScreen(
                 )
             }
         })
+}
+
+@Composable
+private fun SelectAllButton(state: ButtonState) {
+    ExtendedFloatingActionButton(
+        onClick = { state.onClick?.invoke() },
+        containerColor = LocalColors.current.elevated,
+        contentColor = LocalColors.current.actionText
+    ) {
+        Text(state.text.localized(), style = MaterialTheme.typography.titleSmall)
+    }
 }
 
 @Composable

@@ -5,7 +5,9 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import library.device.api.DeviceFacade
@@ -65,6 +67,15 @@ class AndroidDeviceFacade(
         val intent = Intent(Intent.ACTION_SENDTO, "mailto:$email".toUri())
             .addFlags(FLAG_ACTIVITY_NEW_TASK)
         runCatching { appContext.startActivity(Intent.createChooser(intent, "Chooser Title")) }
+            .onFailure { logger.e(it) }
+    }
+
+    override fun openAppSettings() {
+        val intent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", appContext.packageName, null)
+        ).addFlags(FLAG_ACTIVITY_NEW_TASK)
+        runCatching { appContext.startActivity(intent) }
             .onFailure { logger.e(it) }
     }
 

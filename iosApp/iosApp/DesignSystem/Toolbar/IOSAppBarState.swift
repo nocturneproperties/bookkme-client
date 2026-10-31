@@ -26,9 +26,13 @@ final class IOSAppBarState: @MainActor IOSViewState, @MainActor AppBarState {
 	) {
 		self.subtitle = subtitle
 		self.title = title
-		self.actions = IOSListState<AppBarAction>()
+		self.actions = IOSListState<IOSAppBarActionState>()
 		self.size_ = size
 		super.init(isVisible: isVisible)
+	}
+	
+	func createAction() -> any AppBarActionState {
+		return IOSAppBarActionState()
 	}
 }
 

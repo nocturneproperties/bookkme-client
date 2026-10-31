@@ -12,7 +12,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.feature.clients.domain.api.GetClient
@@ -75,7 +75,7 @@ class ClientDetailsViewModel(
     private fun renderEditAction(canEdit: Boolean) {
         val actions = if (canEdit) {
             listOf(
-                AppBarAction(
+                uiState.appBar.action(
                     contentDescription = DesignSystem.strings.action_edit.desc(),
                     onClick = weakVMClosure { it.onEditClick() }
                 )

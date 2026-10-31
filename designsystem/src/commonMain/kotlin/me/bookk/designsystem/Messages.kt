@@ -34,6 +34,7 @@ fun PresentationNotification.Message.Companion.deleteConfirmation(
         buttons = listOf(
             ButtonDescriptor(
                 DesignSystem.strings.action_cancel.desc(),
+                actionType = ActionType.CANCEL,
                 onClick = onCanceled
             ),
             ButtonDescriptor(

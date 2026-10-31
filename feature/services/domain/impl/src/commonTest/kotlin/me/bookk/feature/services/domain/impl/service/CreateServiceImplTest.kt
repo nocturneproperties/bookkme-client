@@ -70,4 +70,20 @@ class CreateServiceImplTest {
         then()
         verifySuspend { fixture.dataSource.saveServiceInDB(input) }
     }
+
+    @Test
+    fun `sends trimmed name to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val input = stubService().copy(name = "  Haircut \n")
+        val trimmed = input.copy(name = "Haircut")
+        everySuspend { fixture.dataSource.createService(trimmed) } returns trimmed
+        everySuspend { fixture.dataSource.saveServiceInDB(trimmed) } returns Unit
+
+        whenn()
+        fixture.sut(input)
+
+        then()
+        verifySuspend { fixture.dataSource.createService(trimmed) }
+    }
 }

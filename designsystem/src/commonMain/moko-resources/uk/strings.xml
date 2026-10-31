@@ -25,7 +25,10 @@
     <string name="action_send">Надіслати</string>
     <string name="action_done">Готово</string>
     <string name="action_add">Додати</string>
+    <string name="action_import">Імпорт</string>
     <string name="action_search">Пошук</string>
+    <string name="action_select_all">Вибрати всі</string>
+    <string name="action_unselect_all">Зняти всі</string>
     <string name="action_select">Вибрати</string>
     <string name="action_enable">Увімкнути</string>
     <string name="action_disable">Вимкнути</string>

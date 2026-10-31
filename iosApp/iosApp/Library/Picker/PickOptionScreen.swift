@@ -32,6 +32,9 @@ struct PickOptionScreen: View {
 			placement: .navigationBarDrawer(displayMode: .always),
 			prompt: uiState.queryField.placeholder.localized()
 		)
+		.overlay(alignment: .bottomTrailing) {
+			SelectAllButton(state: uiState.selectAllButton.impl())
+		}
 		.toolbar {
 			if uiState.selectButton.isVisible {
 				TextButton(uiState.selectButton)
@@ -50,6 +53,30 @@ struct PickOptionScreen: View {
 			default :
 				break
 			}
+		}
+	}
+}
+
+struct SelectAllButton: View {
+	
+	@Bindable var state: IOSButtonState
+	
+	var body: some View {
+		if state.isVisible {
+			Button {
+				withAnimation {
+					state.onClick?()
+				}
+			} label: {
+				Text(state.text.localized())
+					.font(.subheadline.weight(.semibold))
+					.padding(.horizontal, 20)
+					.padding(.vertical, 14)
+			}
+			.foregroundStyle(AppColors.actionText)
+			.background(AppColors.elevated, in: Capsule())
+			.shadow(color: .black.opacity(0.15), radius: 6, y: 2)
+			.padding(16)
 		}
 	}
 }

@@ -5,7 +5,7 @@ import library.validation.api.ValidateName.Result
 
 internal class ValidateNameImpl : ValidateName {
     override fun invoke(name: String): Result {
-        return when (name.length) {
+        return when (name.trim().length) {
             in MIN_LENGTH..Int.MAX_VALUE -> Result.Valid
             else -> Result.Invalid.Length
         }

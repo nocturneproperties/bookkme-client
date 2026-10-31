@@ -63,14 +63,11 @@ struct OptionsMultiPickerField<ItemView: View>: View {
 					)
 				}
 				.fullScreenCover(item: $pickerArgs) { args in
-					NavigationStack {
-						PickOptionScreen(args: args) { items in
-							let pickedKeys = Set(items.map(\.key))
-							withAnimation {
-								state.onItemsPicked(state.options.filter { pickedKeys.contains($0.pickerItemId) })
-							}
-							pickerArgs = nil
+					OptionsMultiPickerScreen(args: args, options: state.options) { items in
+						withAnimation {
+							state.onItemsPicked(items)
 						}
+						pickerArgs = nil
 					}
 				}
 			}

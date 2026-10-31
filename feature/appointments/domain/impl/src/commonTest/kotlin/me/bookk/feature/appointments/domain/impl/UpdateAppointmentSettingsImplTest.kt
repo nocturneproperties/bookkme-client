@@ -73,4 +73,19 @@ class UpdateAppointmentSettingsImplTest {
         verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentSettingsInDB(updated) }
     }
 
+    @Test
+    fun `sends trimmed appointment note to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val settings = AppointmentSettings.stub().copy(appointmentNote = "  Please arrive early \n")
+        val trimmed = settings.copy(appointmentNote = "Please arrive early")
+        everySuspend { fixture.dataSource.updateAppointmentSettings(trimmed) } returns trimmed
+        everySuspend { fixture.dataSource.saveAppointmentSettingsInDB(trimmed) } returns Unit
+
+        whenn()
+        fixture.sut(settings)
+
+        then()
+        verifySuspend { fixture.dataSource.updateAppointmentSettings(trimmed) }
+    }
 }

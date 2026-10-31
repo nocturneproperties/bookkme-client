@@ -9,13 +9,16 @@ import androidx.compose.foundation.OverscrollEffect
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberOverscrollEffect
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -82,7 +85,7 @@ fun <T> List(
 
             state.isInitialLoading -> {
                 item {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    InitialLoadingView(fillsList = header == null && footer == null)
                 }
             }
 
@@ -93,5 +96,19 @@ fun <T> List(
             }
         }
         footer?.let { item(content = it) }
+    }
+}
+
+@Composable
+private fun LazyItemScope.InitialLoadingView(fillsList: Boolean) {
+    val modifier = if (fillsList) {
+        Modifier.fillParentMaxSize()
+    } else {
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp)
+    }
+    Box(modifier, contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
     }
 }

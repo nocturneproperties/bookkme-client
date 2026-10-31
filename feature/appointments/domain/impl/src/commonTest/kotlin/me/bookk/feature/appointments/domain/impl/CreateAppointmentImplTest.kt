@@ -211,4 +211,20 @@ class CreateAppointmentImplTest {
             fixture.sut(fixture.stubDraft())
         }
     }
+
+    @Test
+    fun `sends trimmed note to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val draft = fixture.stubDraft().copy(note = "  test note \n")
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } returns stubAppointment()
+
+        whenn()
+        fixture.sut(draft)
+
+        then()
+        verifySuspend {
+            fixture.appointmentDataSource.createAppointment(matches({ "note is trimmed" }) { it.note == "test note" })
+        }
+    }
 }

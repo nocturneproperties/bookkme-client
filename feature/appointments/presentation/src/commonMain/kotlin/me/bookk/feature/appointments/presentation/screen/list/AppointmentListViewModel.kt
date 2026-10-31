@@ -28,7 +28,7 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
@@ -225,12 +225,12 @@ class AppointmentListViewModel(
     }
 
     private fun AppointmentListState.renderActions(canCreateAppointments: Boolean) {
-        val pickDate = AppBarAction(
+        val pickDate = appBar.action(
             contentDescription = AppointmentsRes.strings.appointments_pick_date.desc(),
             icon = DesignSystem.images.date_range,
             onClick = weakVMClosure { it.onPickDateClick() }
         )
-        val newAppointment = AppBarAction(
+        val newAppointment = appBar.action(
             contentDescription = DesignSystem.strings.action_new.desc(),
             icon = DesignSystem.images.plus,
             onClick = weakVMClosure { it.onNewAppointmentClick() }

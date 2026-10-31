@@ -13,7 +13,7 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetEmployees
@@ -89,7 +89,7 @@ class EmployeeListViewModel(
     private fun renderAddAction(canEdit: Boolean) {
         val actions = if (canEdit) {
             listOf(
-                AppBarAction(
+                uiState.appBar.action(
                     icon = DesignSystem.images.plus,
                     contentDescription = DesignSystem.strings.action_add.desc(),
                     onClick = weakVMClosure { it.onAddEmployeeClick() }

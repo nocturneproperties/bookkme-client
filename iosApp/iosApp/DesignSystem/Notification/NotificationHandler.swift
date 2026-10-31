@@ -87,9 +87,7 @@ struct NotificationAlert: ViewModifier {
 	@ViewBuilder
 	func alertContent(message: PresentationNotificationMessage) -> some View {
 		ForEach(message.buttons, id: \.id) { button in
-			let role = button.actionType == ActionType.negative ? ButtonRole.destructive : ButtonRole.cancel
-			
-			Button(role: role) {
+			Button(role: button.actionType.buttonRole) {
 				self.isPresented = false
 				button.onClick()
 				self.notificationState.removeFirst()

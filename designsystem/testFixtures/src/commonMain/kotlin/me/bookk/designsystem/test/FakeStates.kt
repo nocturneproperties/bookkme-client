@@ -1,5 +1,7 @@
 package me.bookk.designsystem.test
 
+import me.bookk.core.presentation.error.ActionType
+import me.bookk.designsystem.uistate.AppBarActionState
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
@@ -9,7 +11,6 @@ import kotlinx.datetime.LocalTime
 import library.money.api.Money
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.navigation.NavigationDestination
-import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.BusinessMenuItem
@@ -71,7 +72,20 @@ class FakeAppBarState : FakeViewState(), AppBarState {
     override var subtitle: StringDesc? = null
     override var onBackClick: (() -> Unit)? = null
     override var size: TopBarSize = TopBarSize.SMALL
-    override val actions: FakeListState<AppBarAction> = FakeListState()
+    override val actions: FakeListState<AppBarActionState> = FakeListState()
+
+    override fun createAction(): AppBarActionState {
+        return FakeAppBarActionState()
+    }
+}
+
+class FakeAppBarActionState : FakeViewState(), AppBarActionState {
+    override var icon: ImageResource? = null
+    override var contentDescription: StringDesc = "".desc()
+    override var type: ActionType = ActionType.POSITIVE
+    override var isEnabled: Boolean = true
+    override var isLoading: Boolean = false
+    override var onClick: () -> Unit = {}
 }
 
 class FakeButtonState : FakeViewState(), ButtonState {

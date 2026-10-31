@@ -4,12 +4,15 @@ import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
 import android.view.animation.AccelerateInterpolator
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +24,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
@@ -49,11 +53,14 @@ fun AppTopBar(
     modifier: Modifier = Modifier,
     colors: TopAppBarColors = topBarDefaultColors(),
     actions: @Composable RowScope.() -> Unit = {
-        state.actions.items.forEach {
-            if (it.icon != null) {
+        state.actions.items.filter { it.isVisible }.forEach {
+            val icon = it.icon
+            if (it.isLoading) {
+                AppBarActionLoader()
+            } else if (icon != null) {
                 IconButton(onClick = it.onClick, enabled = it.isEnabled) {
                     Icon(
-                        painter = it.icon.painter(),
+                        painter = icon.painter(),
                         contentDescription = it.contentDescription.localized(),
                         tint = colors.actionIconContentColor.copy(alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA)
                     )
@@ -132,6 +139,17 @@ fun AppTopBar(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AppBarActionLoader() {
+    Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(20.dp),
+            strokeWidth = 2.dp,
+            color = LocalColors.current.actionText
+        )
     }
 }
 

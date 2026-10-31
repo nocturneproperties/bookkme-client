@@ -31,6 +31,7 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeTextCollator
+import me.bookk.designsystem.uistate.AppBarActionState
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
@@ -38,6 +39,8 @@ import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.GetDeviceContacts
+import me.bookk.feature.clients.domain.api.ImportClients
+import me.bookk.feature.clients.domain.api.entity.ClientImportResult
 import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
@@ -97,6 +100,9 @@ class ClientsListViewModelTest {
             every { openAppSettings() } returns Unit
         }
         var textCollator = FakeTextCollator()
+        val importClients = mock<ImportClients> {
+            everySuspend { invoke(any(), any()) } returns ClientImportResult(created = emptyList(), rejected = emptyList())
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = ClientsListViewModel(
@@ -105,6 +111,7 @@ class ClientsListViewModelTest {
             getClientsPermissions = getClientsPermissions,
             getDeviceContacts = getDeviceContacts,
             textCollator = textCollator,
+            importClients = importClients,
             permissionManager = permissionManagerOf(contactsPermission),
             device = device,
             stateFactory = FakeClientsStateFactory(),
@@ -511,6 +518,157 @@ class ClientsListViewModelTest {
     }
 
     @Test
+    fun `imports picked contacts into current business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val anna = ClientImportEntry(name = "Anna", lastName = "Smith", phone = "+48111111111", email = null)
+        val john = ClientImportEntry(name = "John", lastName = "Doe", phone = "+48222222222", email = null)
+        fixture.deviceContacts = listOf(anna, john)
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts(john)
+
+        then()
+        verifySuspend { fixture.importClients(fixture.businessId, listOf(john)) }
+    }
+
+    @Test
+    fun `disables import action while picked contacts are imported`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val importFinished = CompletableDeferred<ClientImportResult>()
+        everySuspend { fixture.importClients(any(), any()) } calls { importFinished.await() }
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertFalse(sut.importAction().isEnabled)
+    }
+
+    @Test
+    fun `shows loader on import action while picked contacts are imported`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val importFinished = CompletableDeferred<ClientImportResult>()
+        everySuspend { fixture.importClients(any(), any()) } calls { importFinished.await() }
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertTrue(sut.importAction().isLoading)
+    }
+
+    @Test
+    fun `hides loader on import action after picked contacts are imported`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertFalse(sut.importAction().isLoading)
+    }
+
+    @Test
+    fun `hides loader on import action when importing picked contacts fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.importClients(any(), any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertFalse(sut.importAction().isLoading)
+    }
+
+    @Test
+    fun `enables import action after picked contacts are imported`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertTrue(sut.importAction().isEnabled)
+    }
+
+    @Test
+    fun `enables import action when importing picked contacts fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.importClients(any(), any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertTrue(sut.importAction().isEnabled)
+    }
+
+    @Test
+    fun `plays success haptic when picked contacts are imported`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `does not play success haptic when importing picked contacts fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.importClients(any(), any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `shows error when importing picked contacts fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.importClients(any(), any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    @Test
     fun `navigates to add client for current business`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -581,6 +739,16 @@ class ClientsListViewModelTest {
     }
 
     private fun ClientsListViewModel.tapImport() {
-        uiState.appBar.actions.items.single { it.contentDescription == DesignSystem.strings.action_import.desc() }.onClick()
+        importAction().onClick()
+    }
+
+    private fun ClientsListViewModel.importAction(): AppBarActionState {
+        return uiState.appBar.actions.items.single { it.contentDescription == DesignSystem.strings.action_import.desc() }
+    }
+
+    private fun ClientsListViewModel.pickContacts(vararg contacts: ClientImportEntry) {
+        val options = uiState.contactsPicker.options
+        val picked = if (contacts.isEmpty()) options else options.filter { it.domain in contacts }
+        uiState.contactsPicker.onItemsPicked(picked)
     }
 }

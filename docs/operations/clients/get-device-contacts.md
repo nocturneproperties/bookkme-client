@@ -11,7 +11,7 @@ tapped and calls this use case only when the permission is granted. Otherwise it
 with an "Open settings" button. The contacts it returns are shown in the multi-select "Select contacts" picker
 (`library/picker` `PickOptionScreen`), sorted by full name with the device locale's collation (`TextCollator`); a
 contact without a name is shown by its phone, else its email. When no contact is left, the "No contacts to import"
-message is shown instead of the picker. The picked contacts are not imported yet (ISSUE-112).
+message is shown instead of the picker. The picked contacts are passed to [Import clients](import-clients.md) for the current business.
 
 `DeviceContactsDataSource.getContacts()` returns a `DeviceContact` with every phone and email of each contact, and has
 one implementation per platform:

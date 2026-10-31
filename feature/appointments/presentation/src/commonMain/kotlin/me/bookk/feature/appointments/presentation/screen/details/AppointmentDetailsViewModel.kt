@@ -18,7 +18,8 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.AppBarActionState
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -477,10 +478,10 @@ class AppointmentDetailsViewModel(
         confirmButton.onClick = weakVMClosure { it.onConfirmCompletion() }
     }
 
-    private fun appBarActions(appointment: Appointment): List<AppBarAction> {
+    private fun appBarActions(appointment: Appointment): List<AppBarActionState> {
         if (appointment.status != AppointmentStatus.SCHEDULED) return emptyList()
         return listOf(
-            AppBarAction(
+            uiState.appBar.action(
                 contentDescription = DesignSystem.strings.action_cancel.desc(),
                 type = ActionType.NEGATIVE,
                 onClick = weakVMClosure { it.onCancelClick() }

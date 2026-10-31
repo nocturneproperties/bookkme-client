@@ -3,9 +3,12 @@
 # Import clients
 
 `ImportClients(businessId, entries)` → `POST /api/business/{businessId}/clients/import`
-· not called from a screen yet (contacts import, ISSUE-112)
+· called from `ClientsListViewModel` with the contacts picked in the "Select contacts" picker (see
+[Get device contacts](get-device-contacts.md))
 
-Creates detached clients in bulk, e.g. from the phone book. Each entry's name, last name, phone,
+Creates detached clients in bulk, e.g. from the phone book. While it runs, `ClientsListViewModel` disables the
+import toolbar action; it re-enables it when the call ends, plays the success haptic on success and shows the error
+otherwise. The created clients appear in the list through the clients `flow()`, since each request saves them to the DB. Each entry's name, last name, phone,
 email and description are trimmed first (`ClientImportEntry.trimmed()`). The backend accepts at most
 500 entries per request (`BUSINESS_CLIENT_IMPORT_TOO_LARGE` 200039), so the entries are sent in
 requests of up to 500, one after another. Valid entries are created; the backend returns every other

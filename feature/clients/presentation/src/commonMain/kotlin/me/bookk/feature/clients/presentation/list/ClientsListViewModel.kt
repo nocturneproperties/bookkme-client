@@ -8,6 +8,7 @@ import library.device.api.DeviceFacade
 import library.permissions.api.PermissionManager
 import library.permissions.api.PermissionType
 import me.bookk.android.feature.clients.resources.ClientsRes
+import me.bookk.core.Logger
 import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -23,6 +24,7 @@ import me.bookk.designsystem.uistate.AppBarAction
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
+import me.bookk.feature.clients.domain.api.GetDeviceContacts
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.ClientsStateFactory
@@ -33,6 +35,7 @@ class ClientsListViewModel(
     private val getClientsList: GetClientsList,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     private val getClientsPermissions: GetClientsPermissions,
+    private val getDeviceContacts: GetDeviceContacts,
     private val permissionManager: PermissionManager,
     private val device: DeviceFacade,
     stateFactory: ClientsStateFactory,
@@ -132,7 +135,16 @@ class ClientsListViewModel(
         launch(
             launchIn = DispatcherProvider.main,
             call = { permissionManager.requestPermission(PermissionType.CONTACTS) },
-            onComplete = { isGranted -> if (!isGranted) showContactsAccessDialog() },
+            onComplete = { isGranted -> if (isGranted) readDeviceContacts() else showContactsAccessDialog() },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun readDeviceContacts() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { getDeviceContacts() },
+            onComplete = { },
             onError = { uiState.notifications.add(it.notification()) }
         )
     }

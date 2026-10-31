@@ -6,6 +6,7 @@ import me.bookk.feature.clients.domain.api.EditClient
 import me.bookk.feature.clients.domain.api.GetClient
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
+import me.bookk.feature.clients.domain.api.GetDeviceContacts
 import me.bookk.feature.clients.domain.api.ImportClients
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.impl.CreateClientImpl
@@ -14,6 +15,7 @@ import me.bookk.feature.clients.domain.impl.EditClientImpl
 import me.bookk.feature.clients.domain.impl.GetClientImpl
 import me.bookk.feature.clients.domain.impl.GetClientsListImpl
 import me.bookk.feature.clients.domain.impl.GetClientsPermissionsImpl
+import me.bookk.feature.clients.domain.impl.GetDeviceContactsImpl
 import me.bookk.feature.clients.domain.impl.ImportClientsImpl
 import me.bookk.feature.clients.domain.impl.ObserveCurrentBusinessIdImpl
 import org.koin.core.module.dsl.factoryOf
@@ -24,6 +26,7 @@ fun clientsDomainModule() = module {
     factoryOf(::GetClientsListImpl) bind GetClientsList::class
     factoryOf(::CreateClientImpl) bind CreateClient::class
     factoryOf(::ImportClientsImpl) bind ImportClients::class
+    factoryOf(::GetDeviceContactsImpl) bind GetDeviceContacts::class
     factoryOf(::EditClientImpl) bind EditClient::class
     factoryOf(::DeleteClientImpl) bind DeleteClient::class
     factoryOf(::GetClientImpl) bind GetClient::class

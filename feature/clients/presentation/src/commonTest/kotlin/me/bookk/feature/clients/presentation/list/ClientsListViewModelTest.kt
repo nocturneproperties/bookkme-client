@@ -36,6 +36,8 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.clients.domain.api.GetClientsList
+import me.bookk.feature.clients.domain.api.GetDeviceContacts
+import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
 import library.permissions.api.PermissionType
@@ -84,6 +86,11 @@ class ClientsListViewModelTest {
             }
         }
         val contactsPermission = FakePermissionChecker(PermissionType.CONTACTS)
+        val getDeviceContacts = mock<GetDeviceContacts> {
+            everySuspend { invoke() } returns listOf(
+                ClientImportEntry(name = "John", lastName = "Doe", phone = "+48123456789", email = null)
+            )
+        }
         val device = mock<DeviceFacade> {
             every { openAppSettings() } returns Unit
         }
@@ -93,6 +100,7 @@ class ClientsListViewModelTest {
             getClientsList = getClientsList,
             observeCurrentBusinessId = observeCurrentBusinessId,
             getClientsPermissions = getClientsPermissions,
+            getDeviceContacts = getDeviceContacts,
             permissionManager = permissionManagerOf(contactsPermission),
             device = device,
             stateFactory = FakeClientsStateFactory(),
@@ -327,6 +335,49 @@ class ClientsListViewModelTest {
 
         then()
         sut.uiState.notifications.assertEmpty()
+    }
+
+    @Test
+    fun `reads device contacts when contacts permission is granted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.contactsPermission.granted = true
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.getDeviceContacts() }
+    }
+
+    @Test
+    fun `does not read device contacts when contacts permission is denied`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.contactsPermission.granted = false
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.getDeviceContacts() }
+    }
+
+    @Test
+    fun `shows error when reading device contacts fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getDeviceContacts() } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+        sut.uiState.notifications.assertSingle<PresentationNotification>()
     }
 
     @Test

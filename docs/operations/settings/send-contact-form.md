@@ -5,12 +5,12 @@
 `SendContactForm(text, includeLogs)` → `POST /api/user/contactus`
 · called from `ContactUsViewModel`
 
-`includeLogs` is **ignored** for now: `logs` is always sent as `null` because usage-log collection has not been
+The text is trimmed before it is sent. `includeLogs` is **ignored** for now: `logs` is always sent as `null` because usage-log collection has not been
 built yet.
 
 ```mermaid
 flowchart TD
-    Start([invoke text, includeLogs]) --> Net[SettingsDataSource.sendContactForm text, null<br/>POST /api/user/contactus]
+    Start([invoke text, includeLogs]) --> Net[SettingsDataSource.sendContactForm text.trim, null<br/>POST /api/user/contactus]
     Net -- 2xx --> R([Unit])
     Net -- error --> EX([rethrow])
 ```

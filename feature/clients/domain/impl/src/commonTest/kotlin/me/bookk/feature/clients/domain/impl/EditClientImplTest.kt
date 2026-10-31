@@ -83,4 +83,26 @@ class EditClientImplTest {
         then()
         verifySuspend { fixture.dataSource.saveClientsInDb(listOf(updated)) }
     }
+
+    @Test
+    fun `sends trimmed client fields to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val trimmed = stubClient()
+        val input = trimmed.copy(
+            name = "  John ",
+            lastName = " Doe\n",
+            phone = " +380000000000  ",
+            email = "john@example.com ",
+            description = "  VIP client "
+        )
+        everySuspend { fixture.dataSource.updateClient(trimmed) } returns trimmed
+        everySuspend { fixture.dataSource.saveClientsInDb(listOf(trimmed)) } returns Unit
+
+        whenn()
+        fixture.sut(input)
+
+        then()
+        verifySuspend { fixture.dataSource.updateClient(trimmed) }
+    }
 }

@@ -30,7 +30,7 @@ fun Project.getCurrentVariant(): String {
             }
             Regex(patternStr).find(tskReqStr)?.value.orEmpty()
         }
-        .ifBlank { properties["buildkonfig.flavor"]?.toString().orEmpty() }
+        .ifBlank { providers.gradleProperty("buildkonfig.flavor").orNull.orEmpty() }
         .replaceFirstChar { it.lowercase(Locale.getDefault()) }
 }
 

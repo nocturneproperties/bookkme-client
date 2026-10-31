@@ -9,9 +9,9 @@ internal class EditProfileImpl(
     override suspend fun invoke(firstName: String, lastName: String, email: String) {
         profileCRUD.update(
             profileCRUD.get().copy(
-                firstName = firstName,
-                lastName = lastName,
-                email = email
+                firstName = firstName.trim(),
+                lastName = lastName.trim(),
+                email = email.trim()
             )
         )
     }

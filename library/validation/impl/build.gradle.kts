@@ -18,5 +18,8 @@ kotlin {
             implementation(projects.core.domain)
             implementation(projects.library.validation.api)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
     }
 }

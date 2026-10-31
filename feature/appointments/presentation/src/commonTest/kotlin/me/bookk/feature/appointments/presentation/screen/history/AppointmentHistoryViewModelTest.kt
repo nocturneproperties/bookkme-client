@@ -140,6 +140,20 @@ class AppointmentHistoryViewModelTest {
     }
 
     @Test
+    fun `refresh reloads with trimmed query`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.uiState.searchField.text = "  anna "
+
+        whenn()
+        sut.uiState.refresh.onRefresh()
+
+        then()
+        verifySuspend { fixture.getAppointmentHistory.reload(fixture.businessId, "anna") }
+    }
+
+    @Test
     fun `shows adjusted services and price for an adjusted appointment`() = runUnitTest {
         given()
         val fixture = Fixture()

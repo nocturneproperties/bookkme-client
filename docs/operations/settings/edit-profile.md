@@ -5,10 +5,12 @@
 `EditProfile(firstName, lastName, email)` → `PATCH /api/user/me`
 · called from `EditProfileViewModel` and `SettingsDashboardViewModel`
 
+First name, last name and email are trimmed before they are saved.
+
 ```mermaid
 flowchart TD
     Start([invoke firstName, lastName, email]) --> Get[UserProfileCRUD.get<br/>DB first, else GET /api/user/me]
-    Get --> Copy[profile.copy firstName, lastName, email]
+    Get --> Copy[profile.copy firstName, lastName, email, each trimmed]
     Copy --> Upd[UserProfileCRUD.update<br/>PATCH, GET, upsert user_profile]
     Upd --> R([Unit])
 ```

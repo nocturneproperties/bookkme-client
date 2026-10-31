@@ -82,4 +82,58 @@ class CreateClientImplTest {
         then()
         verifySuspend { fixture.dataSource.saveClientsInDb(listOf(created)) }
     }
+
+    @Test
+    fun `sends trimmed client fields to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val trimmed = stubClient()
+        val input = trimmed.copy(
+            name = "  John ",
+            lastName = " Doe\n",
+            phone = " +380000000000  ",
+            email = "john@example.com ",
+            description = "  Prefers mornings "
+        )
+        val expected = trimmed.copy(description = "Prefers mornings")
+        everySuspend { fixture.dataSource.createClient(expected) } returns expected
+        everySuspend { fixture.dataSource.saveClientsInDb(listOf(expected)) } returns Unit
+
+        whenn()
+        fixture.sut(input)
+
+        then()
+        verifySuspend { fixture.dataSource.createClient(expected) }
+    }
+
+    @Test
+    fun `sends trimmed integrated client fields to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val trimmed = Client.Integrated(
+            id = Uuid.random(),
+            name = "John",
+            lastName = "Doe",
+            phone = "+380000000000",
+            email = "john@example.com",
+            businessId = Uuid.random(),
+            userId = Uuid.random(),
+            description = "VIP client"
+        )
+        val input = trimmed.copy(
+            name = " John ",
+            lastName = "Doe ",
+            phone = " +380000000000",
+            email = " john@example.com\n",
+            description = " VIP client "
+        )
+        everySuspend { fixture.dataSource.createClient(trimmed) } returns trimmed
+        everySuspend { fixture.dataSource.saveClientsInDb(listOf(trimmed)) } returns Unit
+
+        whenn()
+        fixture.sut(input)
+
+        then()
+        verifySuspend { fixture.dataSource.createClient(trimmed) }
+    }
 }

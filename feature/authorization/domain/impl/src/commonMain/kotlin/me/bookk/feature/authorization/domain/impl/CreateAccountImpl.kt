@@ -29,9 +29,10 @@ internal class CreateAccountImpl(
     private val logger = Logger.create("CreateAccountImpl")
 
     override suspend fun invoke(userData: UserData) {
-        val challenge = obtainRegistrationChallenge(userData)
+        val trimmedUserData = userData.trimmed()
+        val challenge = obtainRegistrationChallenge(trimmedUserData)
         val verificationPayload = createPasskeyFrom(challenge)
-        val data = createRegistrationData(userData, verificationPayload, challenge.requestId)
+        val data = createRegistrationData(trimmedUserData, verificationPayload, challenge.requestId)
         val tokenInfo = finishRegistration(data)
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
         authorizationDataSource.invalidateClientTokens()
@@ -50,6 +51,14 @@ internal class CreateAccountImpl(
                     else -> it
                 }
             }
+    }
+
+    private fun UserData.trimmed(): UserData {
+        return UserData(
+            firstName = firstName.trim(),
+            lastName = lastName.trim(),
+            email = email.trim()
+        )
     }
 
     private suspend fun obtainRegistrationChallenge(userData: UserData): ServerSignUpChallenge {

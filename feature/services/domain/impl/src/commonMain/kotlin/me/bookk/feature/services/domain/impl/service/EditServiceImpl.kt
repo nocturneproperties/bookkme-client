@@ -8,7 +8,7 @@ internal class EditServiceImpl(
     private val dataSource: ServiceDataSource
 ) : EditService {
     override suspend fun invoke(service: Service): Service {
-        return dataSource.editService(service).also {
+        return dataSource.editService(service.copy(name = service.name.trim())).also {
             dataSource.saveServiceInDB(it)
         }
     }

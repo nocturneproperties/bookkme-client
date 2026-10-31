@@ -8,7 +8,7 @@ internal class CreateServiceImpl(
     private val dataSource: ServiceDataSource
 ) : CreateService {
     override suspend fun invoke(service: Service): Service {
-        return dataSource.createService(service).also {
+        return dataSource.createService(service.copy(name = service.name.trim())).also {
             dataSource.saveServiceInDB(it)
         }
     }

@@ -23,11 +23,14 @@ class IOSPickOptionState: @MainActor PickOptionState, NativeStateRepresentation 
 	
 	var selectButton: any ButtonState
 	
+	var selectAllButton: any ButtonState
+	
 	init() {
 		appBar = IOSAppBarState()
 		filteredOptions = IOSListState<IOSPickOptionItem>()
 		navigation = IOSNavigationState()
 		queryField = IOSTextFieldState()
 		selectButton = IOSButtonState()
+		selectAllButton = IOSButtonState()
 	}
 }

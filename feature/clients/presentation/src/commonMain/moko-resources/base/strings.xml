@@ -23,4 +23,7 @@
     <string name="clients_import_permission_title">Access to contacts</string>
     <string name="clients_import_permission_message">To import clients from your contacts, allow BookkMe to access them in Settings.</string>
     <string name="clients_import_permission_open_settings">Open settings</string>
+    <string name="clients_import_contacts_title">Select contacts</string>
+    <string name="clients_import_no_contacts_title">No contacts to import</string>
+    <string name="clients_import_no_contacts_message">Only contacts with a phone number or email can be imported.</string>
 </resources>

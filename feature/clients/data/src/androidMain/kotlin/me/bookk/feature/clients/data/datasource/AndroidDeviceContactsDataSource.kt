@@ -6,18 +6,18 @@ import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.ContactsContract.CommonDataKinds.StructuredName
 import android.provider.ContactsContract.Data
-import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
+import me.bookk.feature.clients.domain.datasource.DeviceContact
 import me.bookk.feature.clients.domain.datasource.DeviceContactsDataSource
 
 internal class AndroidDeviceContactsDataSource(
     private val context: Context
 ) : DeviceContactsDataSource {
 
-    override suspend fun getContacts(): List<ClientImportEntry> {
+    override suspend fun getContacts(): List<DeviceContact> {
         return queryContactRows()
             .groupBy { it.contactId }
             .values
-            .map { it.toEntry() }
+            .map { it.toDeviceContact() }
     }
 
     private fun queryContactRows(): List<ContactRow> {
@@ -55,14 +55,14 @@ internal class AndroidDeviceContactsDataSource(
         return getString(getColumnIndexOrThrow(column))?.takeIf { it.isNotBlank() }
     }
 
-    private fun List<ContactRow>.toEntry(): ClientImportEntry {
+    private fun List<ContactRow>.toDeviceContact(): DeviceContact {
         val details = mapNotNull { it.detail }
         val names = details.filterIsInstance<ContactDetail.Name>()
-        return ClientImportEntry(
+        return DeviceContact(
             name = names.firstNotNullOfOrNull { it.given } ?: firstNotNullOfOrNull { it.displayName }.orEmpty(),
             lastName = names.firstNotNullOfOrNull { it.family }.orEmpty(),
-            phone = details.filterIsInstance<ContactDetail.PhoneNumber>().firstNotNullOfOrNull { it.number },
-            email = details.filterIsInstance<ContactDetail.EmailAddress>().firstNotNullOfOrNull { it.address }
+            phones = details.filterIsInstance<ContactDetail.PhoneNumber>().mapNotNull { it.number },
+            emails = details.filterIsInstance<ContactDetail.EmailAddress>().mapNotNull { it.address }
         )
     }
 

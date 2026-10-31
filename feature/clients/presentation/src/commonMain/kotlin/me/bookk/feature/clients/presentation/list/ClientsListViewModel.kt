@@ -17,16 +17,20 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.core.presentation.text.TextCollator
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.PickerFieldState
+import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import me.bookk.feature.clients.domain.api.GetDeviceContacts
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.list.ClientsListDestination.AddClient
 import kotlin.uuid.Uuid
@@ -36,6 +40,7 @@ class ClientsListViewModel(
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     private val getClientsPermissions: GetClientsPermissions,
     private val getDeviceContacts: GetDeviceContacts,
+    private val textCollator: TextCollator,
     private val permissionManager: PermissionManager,
     private val device: DeviceFacade,
     stateFactory: ClientsStateFactory,
@@ -135,7 +140,12 @@ class ClientsListViewModel(
         launch(
             launchIn = DispatcherProvider.main,
             call = { permissionManager.requestPermission(PermissionType.CONTACTS) },
-            onComplete = { isGranted -> if (isGranted) readDeviceContacts() else showContactsAccessDialog() },
+            onComplete = { isGranted ->
+                if (isGranted)
+                    readDeviceContacts()
+                else
+                    showContactsAccessDialog()
+            },
             onError = { uiState.notifications.add(it.notification()) }
         )
     }
@@ -143,10 +153,49 @@ class ClientsListViewModel(
     private fun readDeviceContacts() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { getDeviceContacts() },
-            onComplete = { },
+            call = { getDeviceContacts().toContactOptions() },
+            onComplete = { showContactsPicker(it) },
             onError = { uiState.notifications.add(it.notification()) }
         )
+    }
+
+    private fun List<ClientImportEntry>.toContactOptions(): List<SimplePickerPresentation<ClientImportEntry>> {
+        return map { contact -> contact.pickerName() to contact }
+            .sortedWith(compareBy(textCollator.comparator()) { (name, _) -> name })
+            .mapIndexed { index, (name, contact) ->
+                SimplePickerPresentation(
+                    pickerItemId = index.toString(),
+                    displayName = name.desc(),
+                    domain = contact
+                )
+            }
+    }
+
+    private fun showContactsPicker(options: List<SimplePickerPresentation<ClientImportEntry>>) {
+        if (options.isEmpty()) {
+            showNoContactsMessage()
+            return
+        }
+        uiState.contactsPicker.replaceOptions(options)
+        uiState.isContactsPickerVisible = true
+    }
+
+    private fun showNoContactsMessage() {
+        uiState.notifications.add(
+            PresentationNotification.Message(
+                title = ClientsRes.strings.clients_import_no_contacts_title.desc(),
+                message = ClientsRes.strings.clients_import_no_contacts_message.desc(),
+                buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+            )
+        )
+    }
+
+    private fun ClientImportEntry.pickerName(): String {
+        return "$name $lastName".trim().ifBlank { phone ?: email.orEmpty() }
+    }
+
+    private fun onContactsPicked() {
+        uiState.isContactsPickerVisible = false
     }
 
     private fun showContactsAccessDialog() {
@@ -196,9 +245,13 @@ class ClientsListViewModel(
 
     private fun ClientsListState.setup(): ClientsListState {
         appBar.title = ClientsRes.strings.clients_title.desc()
-        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
+        appBar.onBackClick =
+            weakVMClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
+        contactsPicker.pickerTitle = ClientsRes.strings.clients_import_contacts_title.desc()
+        contactsPicker.pickerType = PickerFieldState.PickerType.SCREEN
+        contactsPicker.onItemsPicked = weakVMClosure { vm, _ -> vm.onContactsPicked() }
         clientsList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = ClientsRes.strings.clients_empty.desc()

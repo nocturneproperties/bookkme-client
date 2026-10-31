@@ -23,4 +23,7 @@
     <string name="clients_import_permission_title">Доступ до контактів</string>
     <string name="clients_import_permission_message">Щоб імпортувати клієнтів із контактів, дозвольте BookkMe доступ до них у налаштуваннях.</string>
     <string name="clients_import_permission_open_settings">Відкрити налаштування</string>
+    <string name="clients_import_contacts_title">Виберіть контакти</string>
+    <string name="clients_import_no_contacts_title">Немає контактів для імпорту</string>
+    <string name="clients_import_no_contacts_message">Імпортувати можна лише контакти з номером телефону або ел. поштою.</string>
 </resources>

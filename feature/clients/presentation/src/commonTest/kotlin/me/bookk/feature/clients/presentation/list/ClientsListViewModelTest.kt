@@ -30,6 +30,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
+import me.bookk.designsystem.test.FakeTextCollator
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
@@ -86,14 +87,16 @@ class ClientsListViewModelTest {
             }
         }
         val contactsPermission = FakePermissionChecker(PermissionType.CONTACTS)
+        var deviceContacts = listOf(
+            ClientImportEntry(name = "John", lastName = "Doe", phone = "+48123456789", email = null)
+        )
         val getDeviceContacts = mock<GetDeviceContacts> {
-            everySuspend { invoke() } returns listOf(
-                ClientImportEntry(name = "John", lastName = "Doe", phone = "+48123456789", email = null)
-            )
+            everySuspend { invoke() } calls { deviceContacts }
         }
         val device = mock<DeviceFacade> {
             every { openAppSettings() } returns Unit
         }
+        var textCollator = FakeTextCollator()
         val errorMapper = FakeErrorMapper()
 
         fun sut() = ClientsListViewModel(
@@ -101,6 +104,7 @@ class ClientsListViewModelTest {
             observeCurrentBusinessId = observeCurrentBusinessId,
             getClientsPermissions = getClientsPermissions,
             getDeviceContacts = getDeviceContacts,
+            textCollator = textCollator,
             permissionManager = permissionManagerOf(contactsPermission),
             device = device,
             stateFactory = FakeClientsStateFactory(),
@@ -378,6 +382,132 @@ class ClientsListViewModelTest {
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
         sut.uiState.notifications.assertSingle<PresentationNotification>()
+    }
+
+    @Test
+    fun `opens contacts picker when device contacts are read`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        assertTrue(sut.uiState.isContactsPickerVisible)
+        assertEquals(ClientsRes.strings.clients_import_contacts_title.desc(), sut.uiState.contactsPicker.pickerTitle)
+    }
+
+    @Test
+    fun `lists device contacts in contacts picker sorted by full name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val anna = ClientImportEntry(name = "anna", lastName = "Smith", phone = "+48111111111", email = null)
+        val john = ClientImportEntry(name = "John", lastName = "Doe", phone = null, email = "john@example.com")
+        fixture.deviceContacts = listOf(john, anna)
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        val options = sut.uiState.contactsPicker.options
+        assertEquals(listOf("anna Smith".desc(), "John Doe".desc()), options.map { it.displayName })
+        assertEquals(listOf(anna, john), options.map { it.domain })
+    }
+
+    @Test
+    fun `lists device contacts in contacts picker in collation order`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.textCollator = FakeTextCollator(reverseOrder())
+        fixture.deviceContacts = listOf(
+            ClientImportEntry(name = "Anna", lastName = "Smith", phone = "+48111111111", email = null),
+            ClientImportEntry(name = "Zofia", lastName = "Nowak", phone = "+48222222222", email = null)
+        )
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        assertEquals(listOf("Zofia Nowak".desc(), "Anna Smith".desc()), sut.uiState.contactsPicker.options.map { it.displayName })
+    }
+
+    @Test
+    fun `shows no contacts message instead of contacts picker when there are no contacts to import`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.deviceContacts = emptyList()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        assertFalse(sut.uiState.isContactsPickerVisible)
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(ClientsRes.strings.clients_import_no_contacts_title.desc(), message.title)
+    }
+
+    @Test
+    fun `names a contact by phone in contacts picker when it has no name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.deviceContacts = listOf(
+            ClientImportEntry(name = " ", lastName = "", phone = "+48123456789", email = "john@example.com")
+        )
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        assertEquals(listOf("+48123456789".desc()), sut.uiState.contactsPicker.options.map { it.displayName })
+    }
+
+    @Test
+    fun `names a contact by email in contacts picker when it has no name and phone`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.deviceContacts = listOf(
+            ClientImportEntry(name = "", lastName = "", phone = null, email = "john@example.com")
+        )
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        assertEquals(listOf("john@example.com".desc()), sut.uiState.contactsPicker.options.map { it.displayName })
+    }
+
+    @Test
+    fun `does not open contacts picker when reading device contacts fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getDeviceContacts() } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        assertFalse(sut.uiState.isContactsPickerVisible)
+    }
+
+    @Test
+    fun `closes contacts picker when contacts are picked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.uiState.contactsPicker.onItemsPicked(sut.uiState.contactsPicker.options)
+
+        then()
+        assertFalse(sut.uiState.isContactsPickerVisible)
     }
 
     @Test

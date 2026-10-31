@@ -3,6 +3,7 @@ package library.picker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelStore
@@ -33,6 +34,9 @@ fun PickOptionFullScreenDialog(
             object : ViewModelStoreOwner {
                 override val viewModelStore = ViewModelStore()
             }
+        }
+        DisposableEffect(customStoreOwner) {
+            onDispose { customStoreOwner.viewModelStore.clear() }
         }
         val viewModel: PickOptionViewModel = koinViewModel(viewModelStoreOwner = customStoreOwner) {
             parametersOf(args)

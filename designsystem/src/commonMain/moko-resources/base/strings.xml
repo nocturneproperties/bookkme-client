@@ -27,6 +27,8 @@
     <string name="action_add">Add</string>
     <string name="action_import">Import</string>
     <string name="action_search">Search</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_unselect_all">Unselect all</string>
     <string name="action_select">Select</string>
     <string name="action_enable">Enable</string>
     <string name="action_disable">Disable</string>

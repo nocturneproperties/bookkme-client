@@ -12,6 +12,7 @@ interface PickOptionState {
     val queryField: TextFieldState
     val filteredOptions: ListState<PickOptionItem>
     val selectButton: ButtonState
+    val selectAllButton: ButtonState
 
     val navigation: NavigationState<PickerNavigationDestination>
 }

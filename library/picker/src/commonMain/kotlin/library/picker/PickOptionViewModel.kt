@@ -25,7 +25,7 @@ class PickOptionViewModel(
     val uiState: PickOptionState = factory.createPickOptionState().setup()
 
     private fun PickOptionState.setup() = apply {
-        appBar.size = TopBarSize.LARGE
+        appBar.size = TopBarSize.SMALL
         appBar.title = pickArgs.title.desc()
         appBar.onBackClick = weakVMClosure { vm ->
             vm.uiState.navigation.push(PickerNavigationDestination.Back)
@@ -56,6 +56,31 @@ class PickOptionViewModel(
         selectButton.text = DesignSystem.strings.action_select.desc()
         selectButton.onClick = weakVMClosure { it.onItemsPicked() }
         selectButton.isEnabled = false
+
+        selectAllButton.onClick = weakVMClosure { it.onSelectAllClick() }
+        renderSelectAllButton()
+    }
+
+    private fun PickOptionState.renderSelectAllButton() {
+        val visibleOptions = filteredOptions.items
+        selectAllButton.isVisible = pickArgs.choice == Choice.MULTIPLE && visibleOptions.isNotEmpty()
+        selectAllButton.text = if (visibleOptions.areAllChecked()) {
+            DesignSystem.strings.action_unselect_all.desc()
+        } else {
+            DesignSystem.strings.action_select_all.desc()
+        }
+    }
+
+    private fun List<PickOptionItem>.areAllChecked(): Boolean {
+        return isNotEmpty() && all { it.checkBox.isChecked }
+    }
+
+    private fun onSelectAllClick() {
+        val visibleOptions = uiState.filteredOptions.items
+        val isChecked = !visibleOptions.areAllChecked()
+        visibleOptions.forEach { it.checkBox.isChecked = isChecked }
+        uiState.selectButton.isEnabled = options.any { it.checkBox.isChecked }
+        uiState.renderSelectAllButton()
     }
 
     private fun onItemsPicked() {
@@ -72,6 +97,7 @@ class PickOptionViewModel(
         uiState.filteredOptions.replace(filtered)
         uiState.selectButton.isEnabled = filtered.isNotEmpty() &&
                 filtered.any { it.checkBox.isChecked }
+        uiState.renderSelectAllButton()
     }
 
     private fun onItemSelected(item: BooleanState) {
@@ -80,6 +106,7 @@ class PickOptionViewModel(
         }
         item.isChecked = !item.isChecked
         uiState.selectButton.isEnabled = options.any { it.checkBox.isChecked }
+        uiState.renderSelectAllButton()
         if (pickArgs.choice == Choice.SINGLE) {
             onItemsPicked()
         }

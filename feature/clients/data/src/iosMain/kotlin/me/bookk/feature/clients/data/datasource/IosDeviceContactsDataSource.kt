@@ -7,7 +7,7 @@ import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
-import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
+import me.bookk.feature.clients.domain.datasource.DeviceContact
 import me.bookk.feature.clients.domain.datasource.DeviceContactsDataSource
 import platform.Contacts.CNContact
 import platform.Contacts.CNContactEmailAddressesKey
@@ -23,8 +23,8 @@ import platform.Foundation.NSError
 
 internal class IosDeviceContactsDataSource : DeviceContactsDataSource {
 
-    override suspend fun getContacts(): List<ClientImportEntry> {
-        return fetchContacts().map { it.toEntry() }
+    override suspend fun getContacts(): List<DeviceContact> {
+        return fetchContacts().map { it.toDeviceContact() }
     }
 
     @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
@@ -41,12 +41,12 @@ internal class IosDeviceContactsDataSource : DeviceContactsDataSource {
         return contacts
     }
 
-    private fun CNContact.toEntry(): ClientImportEntry {
-        return ClientImportEntry(
+    private fun CNContact.toDeviceContact(): DeviceContact {
+        return DeviceContact(
             name = givenName.ifBlank { organizationName },
             lastName = familyName,
-            phone = phoneNumbers.labeledValues<CNPhoneNumber>().map { it.stringValue }.firstOrNull(String::isNotBlank),
-            email = emailAddresses.labeledValues<String>().firstOrNull(String::isNotBlank)
+            phones = phoneNumbers.labeledValues<CNPhoneNumber>().map { it.stringValue },
+            emails = emailAddresses.labeledValues<String>()
         )
     }
 

@@ -159,9 +159,11 @@ class ClientsListViewModel(
     private fun readDeviceContacts() {
         launch(
             launchIn = DispatcherProvider.io,
+            onStart = { importAction.startLoading() },
             call = { getDeviceContacts().toContactOptions() },
             onComplete = { showContactsPicker(it) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = { importAction.stopLoading() }
         )
     }
 

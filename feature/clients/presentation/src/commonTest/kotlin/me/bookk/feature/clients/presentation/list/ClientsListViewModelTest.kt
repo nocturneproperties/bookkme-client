@@ -12,10 +12,19 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import library.device.api.DeviceFacade
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ActionType
+import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.designsystem.test.assertEmpty
+import me.bookk.designsystem.test.assertSingle
+import me.bookk.designsystem.test.tap
+import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -29,7 +38,10 @@ import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
+import library.permissions.api.PermissionType
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
+import me.bookk.feature.clients.presentation.FakePermissionChecker
+import me.bookk.feature.clients.presentation.permissionManagerOf
 import me.bookk.feature.clients.presentation.stubDetachedClient
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -71,12 +83,18 @@ class ClientsListViewModelTest {
                 ClientsPermissions(canEdit = id in editableBusinessIds, canDelete = false)
             }
         }
+        val contactsPermission = FakePermissionChecker(PermissionType.CONTACTS)
+        val device = mock<DeviceFacade> {
+            every { openAppSettings() } returns Unit
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = ClientsListViewModel(
             getClientsList = getClientsList,
             observeCurrentBusinessId = observeCurrentBusinessId,
             getClientsPermissions = getClientsPermissions,
+            permissionManager = permissionManagerOf(contactsPermission),
+            device = device,
             stateFactory = FakeClientsStateFactory(),
             vmArgs = VmArgs(errorMapper)
         )
@@ -237,6 +255,81 @@ class ClientsListViewModelTest {
     }
 
     @Test
+    fun `requests contacts permission when import is tapped`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        assertEquals(1, fixture.contactsPermission.requestCount)
+    }
+
+    @Test
+    fun `shows contacts access dialog when contacts permission is denied`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.contactsPermission.granted = false
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(ClientsRes.strings.clients_import_permission_title.desc(), dialog.title)
+        verify(VerifyMode.not) { fixture.device.openAppSettings() }
+    }
+
+    @Test
+    fun `opens app settings when open settings is tapped in contacts access dialog`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.contactsPermission.granted = false
+        val sut = fixture.sut()
+        sut.tapImport()
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+
+        whenn()
+        dialog.tap(ActionType.POSITIVE)
+
+        then()
+        verify { fixture.device.openAppSettings() }
+    }
+
+    @Test
+    fun `does not open app settings when contacts access dialog is cancelled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.contactsPermission.granted = false
+        val sut = fixture.sut()
+        sut.tapImport()
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+
+        whenn()
+        dialog.tap(ActionType.CANCEL)
+
+        then()
+        verify(VerifyMode.not) { fixture.device.openAppSettings() }
+    }
+
+    @Test
+    fun `does not show contacts access dialog when contacts permission is granted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.contactsPermission.granted = true
+        val sut = fixture.sut()
+
+        whenn()
+        sut.tapImport()
+
+        then()
+        sut.uiState.notifications.assertEmpty()
+    }
+
+    @Test
     fun `navigates to add client for current business`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -304,5 +397,9 @@ class ClientsListViewModelTest {
 
         then()
         assertEquals(listOf<ClientsListDestination>(ClientsListDestination.Back), sut.uiState.navigation.navigationDestination)
+    }
+
+    private fun ClientsListViewModel.tapImport() {
+        uiState.appBar.actions.items.single { it.contentDescription == DesignSystem.strings.action_import.desc() }.onClick()
     }
 }

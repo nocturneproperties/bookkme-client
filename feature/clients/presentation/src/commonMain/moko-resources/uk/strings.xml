@@ -20,4 +20,7 @@
     <string name="clients_edit_title">Редагувати клієнта</string>
     <string name="clients_edit_attached_info">Цей клієнт привʼязаний до облікового запису, тому його імʼям, телефоном і ел. поштою керує власник облікового запису, і їх не можна змінити. Можна змінити лише опис.</string>
     <string name="clients_edit_description_placeholder">Додаткова інформація про клієнта, яка може знадобитися</string>
+    <string name="clients_import_permission_title">Доступ до контактів</string>
+    <string name="clients_import_permission_message">Щоб імпортувати клієнтів із контактів, дозвольте BookkMe доступ до них у налаштуваннях.</string>
+    <string name="clients_import_permission_open_settings">Відкрити налаштування</string>
 </resources>

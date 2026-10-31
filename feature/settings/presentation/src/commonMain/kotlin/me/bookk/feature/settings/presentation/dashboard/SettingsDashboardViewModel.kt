@@ -70,7 +70,7 @@ class SettingsDashboardViewModel(
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.POSITIVE
+                        actionType = ActionType.CANCEL
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),

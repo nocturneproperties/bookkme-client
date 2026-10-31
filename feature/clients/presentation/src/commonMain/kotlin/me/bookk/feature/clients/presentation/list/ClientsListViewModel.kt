@@ -4,11 +4,17 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
+import library.device.api.DeviceFacade
+import library.permissions.api.PermissionManager
+import library.permissions.api.PermissionType
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ActionType
+import me.bookk.core.presentation.error.ButtonDescriptor
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
@@ -27,6 +33,8 @@ class ClientsListViewModel(
     private val getClientsList: GetClientsList,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     private val getClientsPermissions: GetClientsPermissions,
+    private val permissionManager: PermissionManager,
+    private val device: DeviceFacade,
     stateFactory: ClientsStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
@@ -93,7 +101,7 @@ class ClientsListViewModel(
                 AppBarAction(
                     icon = DesignSystem.images.contacts,
                     contentDescription = DesignSystem.strings.action_import.desc(),
-                    onClick = {}
+                    onClick = weakVMClosure { it.onImportClientsClick() }
                 ),
                 AppBarAction(
                     icon = DesignSystem.images.plus,
@@ -118,6 +126,35 @@ class ClientsListViewModel(
 
     private fun onClientClick(client: Client) {
         uiState.navigation.push(ClientsListDestination.ClientDetails(client.id))
+    }
+
+    private fun onImportClientsClick() {
+        launch(
+            launchIn = DispatcherProvider.main,
+            call = { permissionManager.requestPermission(PermissionType.CONTACTS) },
+            onComplete = { isGranted -> if (!isGranted) showContactsAccessDialog() },
+            onError = { uiState.notifications.add(it.notification()) }
+        )
+    }
+
+    private fun showContactsAccessDialog() {
+        uiState.notifications.add(
+            PresentationNotification.Message(
+                title = ClientsRes.strings.clients_import_permission_title.desc(),
+                message = ClientsRes.strings.clients_import_permission_message.desc(),
+                buttons = listOf(
+                    ButtonDescriptor(
+                        text = DesignSystem.strings.action_cancel.desc(),
+                        actionType = ActionType.CANCEL
+                    ),
+                    ButtonDescriptor(
+                        text = ClientsRes.strings.clients_import_permission_open_settings.desc(),
+                        actionType = ActionType.POSITIVE,
+                        onClick = weakVMClosure { it.device.openAppSettings() }
+                    )
+                )
+            )
+        )
     }
 
     private fun onAddClientClick() {

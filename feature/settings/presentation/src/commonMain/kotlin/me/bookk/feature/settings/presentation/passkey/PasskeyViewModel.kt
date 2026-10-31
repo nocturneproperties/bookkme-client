@@ -71,6 +71,7 @@ class PasskeyViewModel(
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
+                        actionType = ActionType.CANCEL
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
@@ -93,6 +94,7 @@ class PasskeyViewModel(
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
+                        actionType = ActionType.CANCEL
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),

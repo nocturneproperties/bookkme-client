@@ -8,6 +8,7 @@ import platform.Foundation.currencyCode
 import platform.Foundation.currentLocale
 import platform.Foundation.localeIdentifier
 import platform.UIKit.UIApplication
+import platform.UIKit.UIApplicationOpenSettingsURLString
 import platform.UIKit.UIDevice
 import platform.UIKit.UIPasteboard
 
@@ -50,6 +51,10 @@ class IosDeviceFacade : DeviceFacade {
 
     override fun mail(email: String) {
         openUrlPreview("mailto://$email")
+    }
+
+    override fun openAppSettings() {
+        openUrlPreview(UIApplicationOpenSettingsURLString)
     }
 
     override fun copyToClipboard(text: String) {

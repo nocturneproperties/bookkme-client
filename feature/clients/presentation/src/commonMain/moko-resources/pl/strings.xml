@@ -20,4 +20,7 @@
     <string name="clients_edit_title">Edytuj klienta</string>
     <string name="clients_edit_attached_info">Ten klient jest powiązany z kontem, więc jego imieniem, telefonem i adresem e-mail zarządza właściciel konta i nie można ich edytować. Można zmienić tylko opis.</string>
     <string name="clients_edit_description_placeholder">Dodatkowe informacje o kliencie, które mogą się przydać</string>
+    <string name="clients_import_permission_title">Dostęp do kontaktów</string>
+    <string name="clients_import_permission_message">Aby zaimportować klientów z kontaktów, zezwól BookkMe na dostęp do nich w ustawieniach.</string>
+    <string name="clients_import_permission_open_settings">Otwórz ustawienia</string>
 </resources>

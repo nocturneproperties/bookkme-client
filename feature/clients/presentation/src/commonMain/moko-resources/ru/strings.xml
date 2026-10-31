@@ -20,4 +20,7 @@
     <string name="clients_edit_title">Редактировать клиента</string>
     <string name="clients_edit_attached_info">Этот клиент привязан к аккаунту, поэтому его именем, телефоном и эл. почтой управляет владелец аккаунта — их нельзя изменить. Можно изменить только описание.</string>
     <string name="clients_edit_description_placeholder">Дополнительная информация о клиенте, которая может пригодиться</string>
+    <string name="clients_import_permission_title">Доступ к контактам</string>
+    <string name="clients_import_permission_message">Чтобы импортировать клиентов из контактов, разрешите BookkMe доступ к ним в настройках.</string>
+    <string name="clients_import_permission_open_settings">Открыть настройки</string>
 </resources>

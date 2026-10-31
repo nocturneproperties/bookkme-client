@@ -114,7 +114,7 @@ class InviteEmployeeViewModel(
                 title = EmployeesRes.strings.employees_invite_revoke_dialog_title.desc(),
                 message = EmployeesRes.strings.employees_invite_revoke_dialog_message.desc(),
                 buttons = listOf(
-                    ButtonDescriptor(text = DesignSystem.strings.action_cancel.desc()),
+                    ButtonDescriptor(text = DesignSystem.strings.action_cancel.desc(), actionType = ActionType.CANCEL),
                     ButtonDescriptor(
                         text = EmployeesRes.strings.employees_invite_revoke_action.desc(),
                         actionType = ActionType.NEGATIVE,

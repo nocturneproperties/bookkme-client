@@ -14,7 +14,7 @@ import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.deleteConfirmation
 import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -107,7 +107,7 @@ class ServiceListViewModel(
         this.permissions = permissions
         val actions = if (permissions.canEdit) {
             listOf(
-                AppBarAction(
+                uiState.appBar.action(
                     contentDescription = DesignSystem.strings.action_add.desc(),
                     onClick = weakVMClosure { it.onAddServiceClick() }
                 )
@@ -146,6 +146,7 @@ class ServiceListViewModel(
             launchIn = DispatcherProvider.io,
             call = { deleteService(serviceUI.domain) },
             onStart = { uiState.refreshState.isRefreshing = true },
+            onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { uiState.refreshState.isRefreshing = false }
         )

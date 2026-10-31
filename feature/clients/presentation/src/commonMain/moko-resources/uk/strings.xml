@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="clients_title">Клієнти</string>
+    <string name="clients_empty">У вас поки немає клієнтів</string>
+
+    <string name="clients_create_title">Додати клієнта</string>
+    <string name="clients_create_name">Імʼя</string>
+    <string name="clients_create_name_placeholder">Іван</string>
+    <string name="clients_create_last_name">Прізвище</string>
+    <string name="clients_create_last_name_placeholder">Петренко</string>
+    <string name="clients_create_phone">Телефон</string>
+    <string name="clients_create_phone_placeholder">2025550123</string>
+    <string name="clients_create_email">Ел. пошта</string>
+    <string name="clients_create_email_placeholder">необовʼязково</string>
+    <string name="clients_details_description">Опис</string>
+    <string name="clients_delete_title">Видалити клієнта</string>
+    <string name="clients_delete_desc">Ви впевнені, що хочете видалити цього клієнта?</string>
+    <string name="clients_delete_button">Видалити клієнта</string>
+
+    <string name="clients_edit_title">Редагувати клієнта</string>
+    <string name="clients_edit_attached_info">Цей клієнт привʼязаний до облікового запису, тому його імʼям, телефоном і ел. поштою керує власник облікового запису, і їх не можна змінити. Можна змінити лише опис.</string>
+    <string name="clients_edit_description_placeholder">Додаткова інформація про клієнта, яка може знадобитися</string>
+    <string name="clients_import_permission_title">Доступ до контактів</string>
+    <string name="clients_import_permission_message">Щоб імпортувати клієнтів із контактів, дозвольте BookkMe доступ до них у налаштуваннях.</string>
+    <string name="clients_import_permission_open_settings">Відкрити налаштування</string>
+    <string name="clients_import_contacts_title">Виберіть контакти</string>
+    <string name="clients_import_no_contacts_title">Немає контактів для імпорту</string>
+    <string name="clients_import_no_contacts_message">Імпортувати можна лише контакти з номером телефону або ел. поштою.</string>
+    <string name="clients_import_result_title">Контакти імпортовано</string>
+    <string name="clients_import_result_created">Імпортовано: %d</string>
+    <string name="clients_import_result_rejected">Пропущено: %d</string>
+    <string name="clients_import_result_reason_invalid">• Некоректне імʼя: %d</string>
+    <string name="clients_import_result_reason_missing_contact">• Немає номера телефону чи ел. пошти: %d</string>
+    <string name="clients_import_result_reason_exists">• Уже є серед клієнтів: %d</string>
+    <string name="clients_import_result_reason_unknown">• Інші причини: %d</string>
+</resources>

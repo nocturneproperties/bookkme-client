@@ -18,7 +18,8 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.AppBarActionState
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -84,7 +85,7 @@ class AppointmentDetailsViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { cancelAppointment(appointmentId, appointment.businessId, reason) },
-            onComplete = ::renderAppointment,
+            onComplete = ::renderMutatedAppointment,
             onError = {
                 when (it) {
                     is Error.AppointmentAlreadyCancelled -> {
@@ -207,7 +208,7 @@ class AppointmentDetailsViewModel(
             call = { completeAppointment(appointmentId, priceAdjustment) },
             onComplete = {
                 uiState.completion.isSheetVisible = false
-                renderAppointment(it)
+                renderMutatedAppointment(it)
             },
             onTerminate = { uiState.completion.confirmButton.stopLoading(enable = isCompletionInputValid()) },
             onError = ::onCompletionError
@@ -269,7 +270,7 @@ class AppointmentDetailsViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.noShowButton.startLoading() },
             call = { markAppointmentNoShow(appointmentId) },
-            onComplete = ::renderAppointment,
+            onComplete = ::renderMutatedAppointment,
             onTerminate = { uiState.noShowButton.stopLoading() },
             onError = {
                 when (it) {
@@ -311,7 +312,7 @@ class AppointmentDetailsViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.rescheduleButton.startLoading() },
             call = { updateAppointment(newAppointment) },
-            onComplete = ::renderAppointment,
+            onComplete = ::renderMutatedAppointment,
             onTerminate = { uiState.rescheduleButton.stopLoading() },
             onError = {
                 when (it) {
@@ -367,6 +368,11 @@ class AppointmentDetailsViewModel(
         if (email.isNotEmpty()) {
             device.mail(email)
         }
+    }
+
+    private fun renderMutatedAppointment(appointment: Appointment) {
+        uiState.notifications.add(PresentationNotification.SuccessHaptic)
+        renderAppointment(appointment)
     }
 
     private fun renderAppointment(appointment: Appointment) {
@@ -472,10 +478,10 @@ class AppointmentDetailsViewModel(
         confirmButton.onClick = weakVMClosure { it.onConfirmCompletion() }
     }
 
-    private fun appBarActions(appointment: Appointment): List<AppBarAction> {
+    private fun appBarActions(appointment: Appointment): List<AppBarActionState> {
         if (appointment.status != AppointmentStatus.SCHEDULED) return emptyList()
         return listOf(
-            AppBarAction(
+            uiState.appBar.action(
                 contentDescription = DesignSystem.strings.action_cancel.desc(),
                 type = ActionType.NEGATIVE,
                 onClick = weakVMClosure { it.onCancelClick() }

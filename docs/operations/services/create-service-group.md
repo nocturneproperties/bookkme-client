@@ -5,9 +5,12 @@
 `CreateServiceGroup(group)` → `POST /api/business/{businessId}/service_group`
 · called from `ServiceGroupListViewModel`
 
+The group name is trimmed before it is sent.
+
 ```mermaid
 flowchart TD
-    Start([invoke group]) --> Net[ServiceGroupDataSource.createServiceGroup<br/>POST /api/business/businessId/service_group]
+    Start([invoke group]) --> Trim[group.name = name.trim]
+    Trim --> Net[ServiceGroupDataSource.createServiceGroup<br/>POST /api/business/businessId/service_group]
     Net -- 2xx created --> Save[(saveGroupInDB created)]
     Save --> R([return created ServiceGroup])
     Net -- business error --> Code{errorCode}

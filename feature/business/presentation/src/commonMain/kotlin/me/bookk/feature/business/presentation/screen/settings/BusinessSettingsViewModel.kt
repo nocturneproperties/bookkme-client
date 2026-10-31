@@ -12,6 +12,8 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
+import me.bookk.core.presentation.error.ActionType
+import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
@@ -41,7 +43,6 @@ import me.bookk.feature.business.presentation.screen.settings.state.BusinessSett
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 import me.bookk.feature.business.presentation.screen.settings.state.toCurrencyUI
-import kotlin.properties.Delegates
 
 class BusinessSettingsViewModel(
     private val deviceFacade: DeviceFacade,
@@ -59,7 +60,7 @@ class BusinessSettingsViewModel(
         dateLocalizer = dateLocalizer,
         onChanged = weakVMClosure { it.invalidateSaveState() }
     )
-    private var referenceBusiness: Business by Delegates.notNull()
+    private var referenceBusiness: Business? = null
     private var businessLocation: Business.Location? = null
 
     init {
@@ -68,9 +69,7 @@ class BusinessSettingsViewModel(
 
     private fun BusinessSettingsState.setup() = apply {
         save.isVisible = false
-        appBar.onBackClick = weakVMClosure {
-            it.uiState.navigation.push(BusinessSettingsDestination.Back)
-        }
+        appBar.onBackClick = weakVMClosure { it.onBackClick() }
     }
 
     private fun observeCurrentBusiness() {
@@ -126,9 +125,36 @@ class BusinessSettingsViewModel(
         scheduleBinder.isEditable = isEditable
     }
 
+    private fun onBackClick() {
+        if (hasUnsavedChanges()) {
+            uiState.notifications.add(unsavedChangesConfirmation())
+        } else {
+            uiState.navigation.push(BusinessSettingsDestination.Back)
+        }
+    }
+
+    private fun unsavedChangesConfirmation(): PresentationNotification.Message {
+        return PresentationNotification.Message(
+            title = BusinessRes.strings.business_settings_unsaved_changes_title.desc(),
+            message = BusinessRes.strings.business_settings_unsaved_changes_message.desc(),
+            buttons = listOf(
+                ButtonDescriptor(
+                    text = DesignSystem.strings.action_cancel.desc(),
+                    actionType = ActionType.CANCEL
+                ),
+                ButtonDescriptor(
+                    text = BusinessRes.strings.business_settings_unsaved_changes_discard.desc(),
+                    actionType = ActionType.NEGATIVE,
+                    onClick = weakVMClosure { it.uiState.navigation.push(BusinessSettingsDestination.Back) }
+                )
+            )
+        )
+    }
+
     fun onSaveClick() {
+        val reference = referenceBusiness ?: return
         val update = Business.Update(
-            id = referenceBusiness.id,
+            id = reference.id,
             name = uiState.name.text.trim(),
             description = uiState.description.text.trim(),
             address = uiState.address.text.trim(),
@@ -147,6 +173,7 @@ class BusinessSettingsViewModel(
             onStart = { uiState.save.startLoading() },
             call = { updateBusiness(update) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 referenceBusiness = it
                 renderSchedule(it.schedule)
                 uiState.notifications.add(GlobalMessage(BusinessRes.strings.business_settings_updated.desc()))
@@ -291,22 +318,25 @@ class BusinessSettingsViewModel(
                 uiState.instagram.isValid &&
                 uiState.telegram.isValid &&
                 uiState.viber.isValid
-        val isChanged = uiState.name.text != referenceBusiness.name ||
-                uiState.description.text != referenceBusiness.description ||
-                uiState.address.text != referenceBusiness.address ||
-                uiState.currency.selectedItem?.domainValue?.code != referenceBusiness.currency.code() ||
-                uiState.location.text != referenceBusiness.location?.toString().orEmpty() ||
-                uiState.instagram.text != referenceBusiness.socials[SocialKind.INSTAGRAM]?.value.orEmpty() ||
-                uiState.telegram.text != referenceBusiness.socials[SocialKind.TELEGRAM]?.value.orEmpty() ||
-                uiState.viber.text != referenceBusiness.socials[SocialKind.VIBER]?.value.orEmpty() ||
-                uiState.phone.text != referenceBusiness.socials[SocialKind.PHONE]?.value.orEmpty() ||
-                isScheduleChanged()
-        uiState.save.isEnabled = isAllFieldsValid && isChanged
+        uiState.save.isEnabled = isAllFieldsValid && hasUnsavedChanges()
     }
 
-    private fun isScheduleChanged(): Boolean {
+    private fun hasUnsavedChanges(): Boolean {
+        val reference = referenceBusiness ?: return false
+        return uiState.name.text != reference.name ||
+                uiState.description.text != reference.description ||
+                uiState.address.text != reference.address ||
+                uiState.currency.selectedItem?.domainValue?.code != reference.currency.code() ||
+                uiState.location.text != reference.location?.toString().orEmpty() ||
+                uiState.instagram.text != reference.socials[SocialKind.INSTAGRAM]?.value.orEmpty() ||
+                uiState.telegram.text != reference.socials[SocialKind.TELEGRAM]?.value.orEmpty() ||
+                uiState.viber.text != reference.socials[SocialKind.VIBER]?.value.orEmpty() ||
+                uiState.phone.text != reference.socials[SocialKind.PHONE]?.value.orEmpty() ||
+                isScheduleChanged(reference.schedule)
+    }
+
+    private fun isScheduleChanged(reference: WorkingSchedule): Boolean {
         val current = snapshotSchedule()
-        val reference = referenceBusiness.schedule
         return current.days != reference.days || current.dayOffs != reference.dayOffs
     }
 

@@ -37,8 +37,8 @@ struct NotificationHandler: ViewModifier {
 					case is PresentationNotificationIgnore:
 						notificationState.removeFirst()
 						break
-					case is PresentationNotificationGlobalMessage:
-						confirmCount += 1
+					case let message as PresentationNotificationGlobalMessage:
+						GlobalMessagePresenter.shared.show(message)
 						notificationState.removeFirst()
 						break
 					case is PresentationNotificationSuccessHaptic:
@@ -87,9 +87,7 @@ struct NotificationAlert: ViewModifier {
 	@ViewBuilder
 	func alertContent(message: PresentationNotificationMessage) -> some View {
 		ForEach(message.buttons, id: \.id) { button in
-			let role = button.actionType == ActionType.negative ? ButtonRole.destructive : ButtonRole.cancel
-			
-			Button(role: role) {
+			Button(role: button.actionType.buttonRole) {
 				self.isPresented = false
 				button.onClick()
 				self.notificationState.removeFirst()

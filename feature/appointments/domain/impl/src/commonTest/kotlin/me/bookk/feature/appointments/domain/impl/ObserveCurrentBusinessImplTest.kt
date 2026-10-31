@@ -16,6 +16,7 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.entity.CurrentBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -55,7 +56,7 @@ class ObserveCurrentBusinessImplTest {
         val result = fixture.sut().first()
 
         then()
-        assertEquals(CurrentBusiness(id = businessId, employeeId = employeeId), result)
+        assertEquals(CurrentBusiness(id = businessId, employeeId = employeeId, canViewAppointments = false), result)
     }
 
     @Test
@@ -69,7 +70,21 @@ class ObserveCurrentBusinessImplTest {
         val result = fixture.sut().first()
 
         then()
-        assertEquals(CurrentBusiness(id = businessId, employeeId = null), result)
+        assertEquals(CurrentBusiness(id = businessId, employeeId = null, canViewAppointments = false), result)
+    }
+
+    @Test
+    fun `emits that the caller can view appointments when granted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness(appointmentsPermission = ResourcePermission(view = true))
+        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(business)
+
+        whenn()
+        val result = fixture.sut().first()
+
+        then()
+        assertEquals(true, result?.canViewAppointments)
     }
 
     @Test

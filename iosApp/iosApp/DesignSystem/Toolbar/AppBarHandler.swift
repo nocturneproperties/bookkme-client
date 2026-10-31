@@ -26,9 +26,14 @@ struct AppBarHandler: ViewModifier {
 	}
 	
 	var actions: some View {
-		ForEach(appBarState.actions.items(AppBarAction.self), id: \.self) { action in
-			Button(role: buttonRole(from: action.type), action: action.onClick) {
-				if let icon = action.icon {
+		ForEach(appBarState.actions.items(IOSAppBarActionState.self).filter(\.isVisible), id: \.id) { action in
+			Button(role: action.type.buttonRole, action: action.onClick) {
+				if action.isLoading {
+					ProgressView()
+						.tint(AppColors.actionText)
+						.frame(width: 44, height: 44)
+						.frame(maxHeight: .infinity)
+				} else if let icon = action.icon {
 					Label(title: {}, icon: {
 						Image(resource: icon)
 							.renderingMode(.template)
@@ -44,7 +49,7 @@ struct AppBarHandler: ViewModifier {
 				}
 			}
 			.disabled(!action.isEnabled)
-			.opacity(action.isEnabled ? 1 : 0.38)
+			.opacity(action.isEnabled || action.isLoading ? 1 : 0.38)
 			.accessibilityLabel(action.contentDescription.localized())
 		}
 	}
@@ -70,19 +75,6 @@ struct AppBarHandler: ViewModifier {
 					}
 				}
 			}
-	}
-	
-	func buttonRole(from type: ActionType) -> ButtonRole? {
-		switch(type) {
-		case .confirm:
-			return .confirm
-		case .negative:
-			return .destructive
-		case .cancel:
-			return .cancel
-		default:
-			return nil
-		}
 	}
 }
 

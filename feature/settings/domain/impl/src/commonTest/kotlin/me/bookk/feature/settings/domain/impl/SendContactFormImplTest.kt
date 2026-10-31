@@ -65,4 +65,17 @@ class SendContactFormImplTest {
         then()
         verifySuspend { fixture.dataSource.sendContactForm(text, null) }
     }
+
+    @Test
+    fun `sends trimmed text`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.sendContactForm("Hello support", null) } returns Unit
+
+        whenn()
+        fixture.sut("  Hello support \n", includeLogs = false)
+
+        then()
+        verifySuspend { fixture.dataSource.sendContactForm("Hello support", null) }
+    }
 }

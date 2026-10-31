@@ -8,7 +8,7 @@ internal class CreateClientImpl(
     private val clientsDataSource: ClientsDataSource
 ) : CreateClient {
     override suspend fun invoke(client: Client): Client {
-        return clientsDataSource.createClient(client).also {
+        return clientsDataSource.createClient(client.trimmed()).also {
             clientsDataSource.saveClientsInDb(listOf(it))
         }
     }

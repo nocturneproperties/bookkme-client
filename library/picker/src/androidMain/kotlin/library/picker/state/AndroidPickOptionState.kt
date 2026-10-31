@@ -16,5 +16,6 @@ class AndroidPickOptionState : PickOptionState {
     override val queryField: TextFieldState = AndroidTextFieldState()
     override val filteredOptions = AndroidListState<PickOptionItem>()
     override val selectButton: ButtonState = AndroidButtonState()
+    override val selectAllButton: ButtonState = AndroidButtonState()
     override val navigation = AndroidNavigationState<PickerNavigationDestination>()
 }

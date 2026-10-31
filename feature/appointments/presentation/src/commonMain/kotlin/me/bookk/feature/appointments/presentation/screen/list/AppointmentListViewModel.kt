@@ -28,7 +28,7 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
@@ -53,6 +53,15 @@ class AppointmentListViewModel(
 ) : ViewModel(vmArgs) {
 
     private val shortWeekdayFormat = dateLocalizer.forStyle(DateStyle.NARROW_WEEKDAY)
+
+    private val appointmentsEmptyState = EmptyState(
+        image = DesignSystem.images.empty,
+        label = AppointmentsRes.strings.appointments_list_empty.desc(),
+    )
+    private val noPermissionState = EmptyState(
+        image = DesignSystem.images.empty,
+        label = AppointmentsRes.strings.appointments_no_permission.desc(),
+    )
 
     val uiState: AppointmentListState = stateFactory.createAppointmentListState().setup()
 
@@ -88,6 +97,7 @@ class AppointmentListViewModel(
     }
 
     private fun employeeAppointments(business: CurrentBusiness, date: LocalDate): Flow<List<Appointment>> {
+        if (!business.canViewAppointments) return flowOf(emptyList())
         val employeeId = business.employeeId ?: return flowOf(emptyList())
         return getAppointmentsForBusiness.flow(date, employeeId)
     }
@@ -129,6 +139,12 @@ class AppointmentListViewModel(
     }
 
     private fun loadAppointments(business: CurrentBusiness, date: LocalDate) {
+        uiState.renderActions(canCreateAppointments = business.canViewAppointments)
+        if (!business.canViewAppointments) {
+            showNoPermission()
+            return
+        }
+        uiState.appointments.emptyState = appointmentsEmptyState
         loadList(
             listState = uiState.appointments,
             notifications = uiState.notifications,
@@ -136,6 +152,13 @@ class AppointmentListViewModel(
             onRefresh = weakVMClosure { it.refreshRequests(it.businessId) },
             call = { refreshEmployeeAppointments(business, date) }
         )
+    }
+
+    private fun showNoPermission() {
+        uiState.appointments.emptyState = noPermissionState
+        uiState.appointments.clear()
+        uiState.appointments.isInitialLoading = false
+        uiState.refresh.onRefresh = weakVMClosure { it.refreshRequests(it.businessId) }
     }
 
     private suspend fun refreshEmployeeAppointments(business: CurrentBusiness, date: LocalDate): List<Appointment> {
@@ -201,23 +224,24 @@ class AppointmentListViewModel(
         uiState.appointments.replace(items)
     }
 
+    private fun AppointmentListState.renderActions(canCreateAppointments: Boolean) {
+        val pickDate = appBar.action(
+            contentDescription = AppointmentsRes.strings.appointments_pick_date.desc(),
+            icon = DesignSystem.images.date_range,
+            onClick = weakVMClosure { it.onPickDateClick() }
+        )
+        val newAppointment = appBar.action(
+            contentDescription = DesignSystem.strings.action_new.desc(),
+            icon = DesignSystem.images.plus,
+            onClick = weakVMClosure { it.onNewAppointmentClick() }
+        )
+        appBar.actions.replace(listOfNotNull(pickDate, newAppointment.takeIf { canCreateAppointments }))
+    }
+
     private fun AppointmentListState.setup() = apply {
         appBar.size = TopBarSize.SMALL
         appBar.title = AppointmentsRes.strings.appointments_title.desc()
-        appBar.actions.replace(
-            listOf(
-                AppBarAction(
-                    contentDescription = AppointmentsRes.strings.appointments_pick_date.desc(),
-                    icon = DesignSystem.images.date_range,
-                    onClick = weakVMClosure { it.onPickDateClick() }
-                ),
-                AppBarAction(
-                    contentDescription = DesignSystem.strings.action_new.desc(),
-                    icon = DesignSystem.images.plus,
-                    onClick = weakVMClosure { it.onNewAppointmentClick() }
-                )
-            )
-        )
+        renderActions(canCreateAppointments = true)
 
         requestsButton.text = AppointmentsRes.strings.appointments_requests_count.format(0)
         requestsButton.onClick = weakVMClosure { it.showRequestsScreen() }
@@ -225,9 +249,6 @@ class AppointmentListViewModel(
         datePicker.pickedDate = LocalDate.today()
         dates.replace(createDateInfoFrom(LocalDate.today()))
         datePicker.onDatePicked = weakVMClosure { vm, date -> vm.onNewDateSelected(date) }
-        appointments.emptyState = EmptyState(
-            image = DesignSystem.images.empty,
-            label = AppointmentsRes.strings.appointments_list_empty.desc(),
-        )
+        appointments.emptyState = appointmentsEmptyState
     }
 }

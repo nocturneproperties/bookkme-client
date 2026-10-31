@@ -54,20 +54,37 @@ class RefreshBusinessInfoImplTest {
     }
 
     @Test
-    fun `saves dashboard business id when applyDashboardIdFromRemote is true`() = runUnitTest {
+    fun `saves businesses together with the remote dashboard business when applyDashboardIdFromRemote is true`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val dashboardId = Uuid.random()
-        val info = UserBusinessInfo(dashboardId = dashboardId, businesses = emptyList())
+        val business = stubBusiness()
+        val info = UserBusinessInfo(dashboardId = business.id, businesses = listOf(business))
         everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
-        everySuspend { fixture.dataSource.saveDashboardBusinessId(dashboardId) } returns Unit
-        everySuspend { fixture.dataSource.saveBusinessListInDB(emptyList()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any()) } returns Unit
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
 
         whenn()
         fixture.sut(applyDashboardIdFromRemote = true)
 
         then()
-        verifySuspend { fixture.dataSource.saveDashboardBusinessId(dashboardId) }
+        verifySuspend { fixture.dataSource.saveBusinessListWithDashboardInDB(listOf(business), business.id) }
+    }
+
+    @Test
+    fun `clears the dashboard business when the remote one is not among the user businesses`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        val info = UserBusinessInfo(dashboardId = Uuid.random(), businesses = listOf(business))
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
+        everySuspend { fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any()) } returns Unit
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
+
+        whenn()
+        fixture.sut(applyDashboardIdFromRemote = true)
+
+        then()
+        verifySuspend { fixture.dataSource.saveBusinessListWithDashboardInDB(listOf(business), null) }
     }
 
     @Test
@@ -82,7 +99,7 @@ class RefreshBusinessInfoImplTest {
         fixture.sut()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveDashboardBusinessId(any()) }
+        verifySuspend(VerifyMode.not) { fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any()) }
     }
 
     @Test
@@ -231,5 +248,73 @@ class RefreshBusinessInfoImplTest {
 
         then()
         verifySuspend(VerifyMode.not) { fixture.dataSource.deleteBusinessesInDb(any()) }
+    }
+
+    @Test
+    fun `saves businesses together with the selected business on refresh and select`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns UserBusinessInfo(dashboardId = null, businesses = listOf(business))
+        everySuspend { fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any()) } returns Unit
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
+
+        whenn()
+        fixture.sut.refreshAndSelect(business.id)
+
+        then()
+        verifySuspend { fixture.dataSource.saveBusinessListWithDashboardInDB(listOf(business), business.id) }
+    }
+
+    @Test
+    fun `keeps the local dashboard business when the selected one is missing from the response`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns UserBusinessInfo(dashboardId = null, businesses = listOf(business))
+        everySuspend { fixture.dataSource.saveBusinessListInDB(any()) } returns Unit
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
+
+        whenn()
+        fixture.sut.refreshAndSelect(Uuid.random())
+
+        then()
+        verifySuspend { fixture.dataSource.saveBusinessListInDB(listOf(business)) }
+        verifySuspend(VerifyMode.not) { fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any()) }
+    }
+
+    @Test
+    fun `deletes local businesses missing from the remote response on refresh and select`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        val removed = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns UserBusinessInfo(dashboardId = null, businesses = listOf(business))
+        everySuspend { fixture.dataSource.getBusinessIdsInDb() } returns listOf(removed)
+        everySuspend { fixture.dataSource.deleteBusinessesInDb(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any()) } returns Unit
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
+
+        whenn()
+        fixture.sut.refreshAndSelect(business.id)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteBusinessesInDb(listOf(removed)) }
+    }
+
+    @Test
+    fun `refreshes appointments plugin state for every business on refresh and select`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns UserBusinessInfo(dashboardId = null, businesses = listOf(business))
+        everySuspend { fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any()) } returns Unit
+        everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
+
+        whenn()
+        fixture.sut.refreshAndSelect(business.id)
+
+        then()
+        verifySuspend { fixture.isAppointmentsPluginEnabled.refresh(business.id) }
     }
 }

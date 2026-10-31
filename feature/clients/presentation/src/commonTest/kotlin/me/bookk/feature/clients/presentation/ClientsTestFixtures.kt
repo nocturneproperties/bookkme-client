@@ -1,5 +1,8 @@
 package me.bookk.feature.clients.presentation
 
+import library.permissions.api.PermissionChecker
+import library.permissions.api.PermissionManager
+import library.permissions.api.PermissionType
 import library.validation.api.ValidateEmail
 import library.validation.api.ValidateName
 import me.bookk.feature.clients.domain.api.entity.Client
@@ -49,4 +52,27 @@ internal class FakeValidateEmail : ValidateEmail {
     override fun invoke(email: String): ValidateEmail.Result {
         return if ("@" in email) ValidateEmail.Result.Valid else ValidateEmail.Result.Invalid.Format
     }
+}
+
+internal class FakePermissionChecker(
+    override val type: PermissionType,
+    var granted: Boolean = true
+) : PermissionChecker {
+    var requestCount = 0
+
+    override suspend fun requestPermission(): Boolean {
+        requestCount++
+        return granted
+    }
+
+    override suspend fun hasPermission(): Boolean {
+        return granted
+    }
+}
+
+internal fun permissionManagerOf(vararg checkers: FakePermissionChecker): PermissionManager {
+    return PermissionManager(
+        checkers = checkers.associateBy { it.type },
+        fallbackChecker = FakePermissionChecker(PermissionType.NONE, granted = false)
+    )
 }

@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import library.money.api.Currency
+import library.money.api.Money
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
@@ -12,6 +13,11 @@ import me.bookk.feature.business.domain.api.entity.DayOffRange
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
+import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
+import me.bookk.feature.services.domain.api.service.entity.Service
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 internal fun stubWorkingSchedule(
@@ -53,4 +59,31 @@ internal fun stubBusinessPermissions() = BusinessPermissions(
     clients = ResourcePermission(),
     services = ResourcePermission(),
     appointments = ResourcePermission()
+)
+
+internal fun stubClient(businessId: Uuid = Uuid.random()) = Client.Detached(
+    id = Uuid.random(),
+    name = "John",
+    lastName = "Doe",
+    phone = null,
+    email = null,
+    businessId = businessId
+)
+
+internal fun stubServiceGroup(businessId: Uuid = Uuid.random()) = ServiceGroup(
+    id = Uuid.random(),
+    businessId = businessId,
+    name = "Group",
+    createdAt = Instant.fromEpochMilliseconds(0)
+)
+
+internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
+    id = Uuid.random(),
+    businessId = businessId,
+    group = stubServiceGroup(businessId),
+    name = "Haircut",
+    duration = 30.minutes,
+    price = Money(1000L, Money.SupportedCurrency.USD),
+    isAvailable = true,
+    createdAt = Instant.fromEpochMilliseconds(0)
 )

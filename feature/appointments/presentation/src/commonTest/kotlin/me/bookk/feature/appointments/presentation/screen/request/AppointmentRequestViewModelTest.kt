@@ -137,6 +137,35 @@ class AppointmentRequestViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when request is approved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub()
+        everySuspend { fixture.approveAppointmentRequest(any()) } returns Appointment.stub()
+        val sut = presentedSutWith(fixture, request)
+
+        whenn()
+        sut.uiState.requests.items.single().approveButton.onClick?.invoke()
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when approval fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.approveAppointmentRequest(any()) } throws TestException()
+        val sut = presentedSutWith(fixture, AppointmentRequest.stub())
+
+        whenn()
+        sut.uiState.requests.items.single().approveButton.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `shows message when approved slot overlaps`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -224,6 +253,40 @@ class AppointmentRequestViewModelTest {
         then()
         verifySuspend { fixture.declineAppointmentRequest(request.id, fixture.businessId, "Fully booked") }
         assertTrue(sut.uiState.requests.items.isEmpty())
+    }
+
+    @Test
+    fun `plays success haptic when request is declined`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub()
+        everySuspend { fixture.declineAppointmentRequest(any(), any(), any()) } returns Unit
+        val sut = presentedSutWith(fixture, request)
+        sut.uiState.requests.items.single().declineButton.onClick?.invoke()
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.InputMessage>()
+
+        whenn()
+        dialog.onConfirm("Fully booked")
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when decline fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.declineAppointmentRequest(any(), any(), any()) } throws TestException()
+        val sut = presentedSutWith(fixture, AppointmentRequest.stub())
+        sut.uiState.requests.items.single().declineButton.onClick?.invoke()
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.InputMessage>()
+        sut.uiState.notifications.removeFirst()
+
+        whenn()
+        dialog.onConfirm("reason")
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

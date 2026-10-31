@@ -14,6 +14,9 @@ object ClientsRouting {
                 val parent: Clients,
                 val id: Uuid,
             )
+
+            @Resource("/import")
+            class Import(val parent: Clients)
         }
     }
 }

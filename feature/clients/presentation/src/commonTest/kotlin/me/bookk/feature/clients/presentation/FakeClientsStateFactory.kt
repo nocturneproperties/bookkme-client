@@ -7,9 +7,12 @@ import me.bookk.designsystem.test.FakeButtonState
 import me.bookk.designsystem.test.FakeListState
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
+import me.bookk.designsystem.test.FakeOptionsMultiPickerState
 import me.bookk.designsystem.test.FakeRefreshState
 import me.bookk.designsystem.test.FakeTextFieldState
+import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.simple.InfoLine
+import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.presentation.create.CreateClientDestination
 import me.bookk.feature.clients.presentation.create.CreateClientState
 import me.bookk.feature.clients.presentation.details.ClientDetailsDestination
@@ -32,6 +35,8 @@ internal class FakeClientsListState : ClientsListState {
     override val searchField = FakeTextFieldState()
     override val clientsList = FakeListState<ClientSection>()
     override val refreshState = FakeRefreshState()
+    override val contactsPicker = FakeOptionsMultiPickerState<SimplePickerPresentation<ClientImportEntry>>()
+    override var isContactsPickerVisible: Boolean = false
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<ClientsListDestination>()
 }

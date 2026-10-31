@@ -38,7 +38,7 @@ internal class CreateAppointmentImpl(
             services = draft.services,
             status = AppointmentStatus.SCHEDULED,
             date = draft.date,
-            note = draft.note,
+            note = draft.note.trim(),
             cancellationReason = ""
         )
         return runCatching {

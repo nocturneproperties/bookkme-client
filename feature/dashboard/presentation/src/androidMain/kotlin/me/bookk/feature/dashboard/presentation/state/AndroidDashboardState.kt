@@ -7,8 +7,10 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
+import me.bookk.designsystem.uistate.AndroidRefreshState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
+import me.bookk.designsystem.uistate.RefreshState
 import me.bookk.feature.dashboard.presentation.DashboardHomeNavigationDestination
 
 class AndroidDashboardState(
@@ -55,6 +57,21 @@ class AndroidOnboardingState : OnboardingState {
     override var onCreateBusinessClick: (() -> Unit)? by mutableStateOf(null)
     override var onJoinBusinessClick: (() -> Unit)? by mutableStateOf(null)
     override var onEnablePluginsClick: (() -> Unit)? by mutableStateOf(null)
+    override var onAddServiceGroupClick: (() -> Unit)? by mutableStateOf(null)
+    override var onAddServiceClick: (() -> Unit)? by mutableStateOf(null)
+    override var onAddClientClick: (() -> Unit)? by mutableStateOf(null)
+    override var isAppointmentsStepDone: Boolean by mutableStateOf(false)
+    override var isServiceGroupStepDone: Boolean by mutableStateOf(false)
+    override var isServiceStepDone: Boolean by mutableStateOf(false)
+    override var isServiceStepEnabled: Boolean by mutableStateOf(false)
+    override var isAppointmentsStepEnabled: Boolean by mutableStateOf(false)
+    override var isServiceGroupStepEnabled: Boolean by mutableStateOf(false)
+    override var isClientStepEnabled: Boolean by mutableStateOf(false)
+    override var serviceGroupStepSubtitle: StringDesc by mutableStateOf("".desc())
+    override var serviceStepSubtitle: StringDesc by mutableStateOf("".desc())
+    override var clientStepSubtitle: StringDesc by mutableStateOf("".desc())
+    override var isClientStepDone: Boolean by mutableStateOf(false)
     override var businesses: List<OnboardingBusinessItem> by mutableStateOf(emptyList())
     override var onBusinessClick: ((OnboardingBusinessItem) -> Unit)? by mutableStateOf(null)
+    override val refresh: RefreshState = AndroidRefreshState()
 }

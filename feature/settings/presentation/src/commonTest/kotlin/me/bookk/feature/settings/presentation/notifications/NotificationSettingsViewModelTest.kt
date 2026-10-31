@@ -14,6 +14,7 @@ import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -134,6 +135,37 @@ class NotificationSettingsViewModelTest {
         then()
         assertFalse(fixture.saved.get().channels.single { it.channel == NotificationChannel.EMAIL }.enabled)
         assertFalse(sut.uiState.emailEnabled.isChecked)
+    }
+
+    @Test
+    fun `plays success haptic when notification settings are saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveEcho()
+        val sut = fixture.sut()
+        fixture.cached.value = NotificationSettings.stub()
+
+        whenn()
+        sut.uiState.emailEnabled.onCheckedChange?.invoke(false)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when notification settings save fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateNotificationSettings(any()) } throws TestException()
+        val sut = fixture.sut()
+        fixture.cached.value = NotificationSettings.stub()
+        sut.uiState.emailEnabled.isChecked = false
+
+        whenn()
+        sut.uiState.emailEnabled.onCheckedChange?.invoke(false)
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

@@ -7,12 +7,9 @@ import io.ktor.client.plugins.resources.post
 import io.ktor.client.plugins.resources.put
 import io.ktor.client.request.setBody
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
-import library.cache.api.PreferenceProvider
-import library.cache.api.Preferences
-import library.cache.api.getFlow
-import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.BusinessDao
@@ -34,11 +31,8 @@ import kotlin.uuid.Uuid
 
 internal class CommonBusinessDataSource(
     private val httpClient: HttpClient,
-    private val businessDao: BusinessDao,
-    preferenceProvider: PreferenceProvider
+    private val businessDao: BusinessDao
 ) : DataSource(), BusinessDataSource, LogOutAction {
-
-    private val preferences = preferenceProvider.get("business_prefs")
 
     override suspend fun createBusiness(name: String, currencyCode: String, timeZone: TimeZone): Business =
         mapExceptions {
@@ -83,6 +77,18 @@ internal class CommonBusinessDataSource(
         }
     }
 
+    override suspend fun saveBusinessListWithDashboardInDB(businesses: List<Business>, dashboardBusinessId: Uuid?) {
+        mapExceptions {
+            businessDao.upsertAllWithChildrenAndDashboard(
+                businesses = businesses.map { it.toLocal() },
+                daySchedules = businesses.flatMap { it.toDayScheduleEntities() },
+                workHours = businesses.flatMap { it.toWorkHourEntities() },
+                dayOffs = businesses.flatMap { it.toDayOffEntities() },
+                dashboardBusinessId = dashboardBusinessId
+            )
+        }
+    }
+
     override suspend fun getBusinessIdsInDb(): List<Uuid> = mapExceptions {
         businessDao.getIds()
     }
@@ -105,6 +111,17 @@ internal class CommonBusinessDataSource(
             .mapErrors()
     }
 
+    override fun observeUserBusinessInfoInDb(): Flow<UserBusinessInfo> {
+        return businessDao.observeAllBusinessesWithDashboardFlag()
+            .map { rows ->
+                UserBusinessInfo(
+                    dashboardId = rows.firstOrNull { it.isDashboard }?.business?.entity?.id,
+                    businesses = rows.map { it.business.toDomain() }
+                )
+            }
+            .mapErrors()
+    }
+
     override suspend fun setDashboardBusinessOnRemote(businessId: Uuid) {
         mapExceptions {
             httpClient.put(BusinessRouting.Api.Business.Id.Dashboard(parent = BusinessRouting.Api.Business.Id(id = businessId)))
@@ -122,20 +139,19 @@ internal class CommonBusinessDataSource(
     }
 
     override suspend fun saveDashboardBusinessId(id: Uuid?) {
-        preferences.set(Key.dashboardId, id?.toString())
+        mapExceptions {
+            businessDao.setDashboardBusiness(id)
+        }
     }
 
     override fun getDashboardBusinessIdFlow(): Flow<Uuid?> {
-        return preferences.getFlow(Key.dashboardId)
-            .map { it?.let { Uuid.parse(it) } }
+        return businessDao.observeDashboardBusinessId()
+            .distinctUntilChanged()
+            .mapErrors()
     }
 
     override suspend fun doOnLogOut() {
-        preferences.clear()
+        businessDao.clearDashboardBusiness()
         businessDao.clear()
-    }
-
-    private object Key {
-        val dashboardId = Preferences.Key<String>("dashboard_id")
     }
 }

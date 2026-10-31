@@ -11,7 +11,9 @@ import me.bookk.database.entity.BusinessDayOffEntity
 import me.bookk.database.entity.BusinessDayScheduleEntity
 import me.bookk.database.entity.BusinessEntity
 import me.bookk.database.entity.BusinessWorkHourEntity
+import me.bookk.database.entity.DashboardBusinessEntity
 import me.bookk.database.relation.BusinessLocal
+import me.bookk.database.relation.DashboardFlaggedBusinessLocal
 import kotlin.uuid.Uuid
 
 @Dao
@@ -28,6 +30,13 @@ abstract class BusinessDao {
     @Query("select * from business")
     abstract fun observeAllBusinesses(): Flow<List<BusinessLocal>>
 
+    @Transaction
+    @Query(
+        "select business.*, exists(select 1 from dashboard_business where dashboard_business.businessId = business.id) as isDashboard " +
+            "from business"
+    )
+    abstract fun observeAllBusinessesWithDashboardFlag(): Flow<List<DashboardFlaggedBusinessLocal>>
+
     @Insert
     abstract suspend fun insertBusiness(entity: BusinessEntity)
 
@@ -39,6 +48,15 @@ abstract class BusinessDao {
 
     @Query("delete from business")
     abstract suspend fun clear()
+
+    @Query("select businessId from dashboard_business")
+    abstract fun observeDashboardBusinessId(): Flow<Uuid?>
+
+    @Upsert
+    abstract suspend fun upsertDashboardBusiness(entity: DashboardBusinessEntity)
+
+    @Query("delete from dashboard_business")
+    abstract suspend fun clearDashboardBusiness()
 
     @Query("select id from business")
     abstract suspend fun getIds(): List<Uuid>
@@ -96,5 +114,26 @@ abstract class BusinessDao {
         insertDaySchedules(daySchedules)
         insertWorkHours(workHours)
         insertDayOffs(dayOffs)
+    }
+
+    @Transaction
+    open suspend fun setDashboardBusiness(businessId: Uuid?) {
+        if (businessId == null) {
+            clearDashboardBusiness()
+        } else {
+            upsertDashboardBusiness(DashboardBusinessEntity(businessId))
+        }
+    }
+
+    @Transaction
+    open suspend fun upsertAllWithChildrenAndDashboard(
+        businesses: List<BusinessEntity>,
+        daySchedules: List<BusinessDayScheduleEntity>,
+        workHours: List<BusinessWorkHourEntity>,
+        dayOffs: List<BusinessDayOffEntity>,
+        dashboardBusinessId: Uuid?
+    ) {
+        upsertAllWithChildren(businesses, daySchedules, workHours, dayOffs)
+        setDashboardBusiness(dashboardBusinessId)
     }
 }

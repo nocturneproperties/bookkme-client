@@ -9,7 +9,9 @@ internal class UpdateAppointmentSettingsImpl(
 ) : UpdateAppointmentSettings {
 
     override suspend fun invoke(settings: AppointmentSettings): AppointmentSettings {
-        val result = appointmentSettingsDataSource.updateAppointmentSettings(settings)
+        val result = appointmentSettingsDataSource.updateAppointmentSettings(
+            settings.copy(appointmentNote = settings.appointmentNote.trim())
+        )
         appointmentSettingsDataSource.saveAppointmentSettingsInDB(result)
         return result
     }

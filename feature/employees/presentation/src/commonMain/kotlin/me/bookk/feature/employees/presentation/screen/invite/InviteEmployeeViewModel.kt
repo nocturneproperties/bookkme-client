@@ -79,6 +79,7 @@ class InviteEmployeeViewModel(
             onStart = { uiState.generateCodeButton.startLoading() },
             call = { createEmployeeInvitation(businessId) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 it.code?.let { code -> copyCodeToClipboard(code) }
                 loadInvitations()
             },
@@ -113,7 +114,7 @@ class InviteEmployeeViewModel(
                 title = EmployeesRes.strings.employees_invite_revoke_dialog_title.desc(),
                 message = EmployeesRes.strings.employees_invite_revoke_dialog_message.desc(),
                 buttons = listOf(
-                    ButtonDescriptor(text = DesignSystem.strings.action_cancel.desc()),
+                    ButtonDescriptor(text = DesignSystem.strings.action_cancel.desc(), actionType = ActionType.CANCEL),
                     ButtonDescriptor(
                         text = EmployeesRes.strings.employees_invite_revoke_action.desc(),
                         actionType = ActionType.NEGATIVE,
@@ -128,7 +129,10 @@ class InviteEmployeeViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { revokeEmployeeInvitation(businessId, id) },
-            onComplete = { loadInvitations() },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                loadInvitations()
+            },
             onError = {
                 when (it) {
                     is RevokeEmployeeInvitation.Error.AlreadyProcessed ->

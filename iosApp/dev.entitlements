@@ -7,7 +7,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:bookkme.app</string>
-		<string>webcredentials:bookkme.app</string>
+		<string>webcredentials:bookkme.app?mode=developer</string>
 		<string>applinks:www.bookkme.app</string>
 	</array>
 </dict>

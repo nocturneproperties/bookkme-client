@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_no_internet">Похоже, вы не в сети. Проверьте подключение к интернету и попробуйте снова.</string>
+    <string name="error_server">На сервере произошла ошибка. Мы уже работаем над этим! Обновите страницу или вернитесь чуть позже.</string>
+    <string name="error_unexpected">Непредвиденная ошибка. При необходимости обратитесь в поддержку.</string>
+    <string name="error_empty">Не может быть пустым</string>
+    <string name="error_connection_title">Проблема с подключением</string>
+    <string name="error_connection_subtitle">Проверьте подключение к интернету и попробуйте снова.</string>
+    <string name="error_server_title">Ошибка сервера</string>
+    <string name="error_generic_title">Что-то пошло не так</string>
+    <string name="error_access_suspended_title">Доступ приостановлен</string>
+    <string name="error_access_suspended">Ваш доступ к этому бизнесу приостановлен. Обратитесь к владельцу бизнеса, чтобы восстановить его.</string>
+    <string name="error_refresh_failed">Не удалось обновить</string>
+
+    <string name="list_empty">Список пуст</string>
+
+    <string name="action_cancel">Отмена</string>
+    <string name="action_confirm">Подтвердить</string>
+    <string name="action_create">Создать</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_edit">Изменить</string>
+    <string name="action_continue">Продолжить</string>
+    <string name="action_ok">ОК</string>
+    <string name="action_save">Сохранить</string>
+    <string name="action_send">Отправить</string>
+    <string name="action_done">Готово</string>
+    <string name="action_add">Добавить</string>
+    <string name="action_import">Импорт</string>
+    <string name="action_search">Поиск</string>
+    <string name="action_select_all">Выбрать все</string>
+    <string name="action_unselect_all">Снять все</string>
+    <string name="action_select">Выбрать</string>
+    <string name="action_enable">Включить</string>
+    <string name="action_disable">Отключить</string>
+    <string name="action_new">Новый</string>
+    <string name="action_ignore">Игнорировать</string>
+    <string name="action_decline">Отклонить</string>
+    <string name="action_approve">Одобрить</string>
+    <string name="action_dismiss">Закрыть</string>
+    <string name="action_retry">Повторить</string>
+
+    <string name="message_delete">Вы уверены, что хотите удалить этот элемент?</string>
+
+    <string name="common_from">С</string>
+    <string name="common_to">До</string>
+    <string name="common_min">мин.</string>
+
+    <string name="schedule_title">Расписание</string>
+    <string name="schedule_add_working_time">Добавить рабочее время</string>
+    <string name="schedule_day_offs">Выходные</string>
+    <string name="schedule_add_day_off">Добавить выходной</string>
+    <string name="schedule_no_day_offs">Выходные не запланированы.</string>
+    <string name="schedule_pick_day_off_title">Выберите дату начала и окончания отпуска или выходных.</string>
+</resources>

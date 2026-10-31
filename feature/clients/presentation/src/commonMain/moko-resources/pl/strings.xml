@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="clients_title">Klienci</string>
+    <string name="clients_empty">Nie masz jeszcze żadnych klientów</string>
+
+    <string name="clients_create_title">Dodaj klienta</string>
+    <string name="clients_create_name">Imię</string>
+    <string name="clients_create_name_placeholder">Jan</string>
+    <string name="clients_create_last_name">Nazwisko</string>
+    <string name="clients_create_last_name_placeholder">Kowalski</string>
+    <string name="clients_create_phone">Telefon</string>
+    <string name="clients_create_phone_placeholder">2025550123</string>
+    <string name="clients_create_email">E-mail</string>
+    <string name="clients_create_email_placeholder">opcjonalnie</string>
+    <string name="clients_details_description">Opis</string>
+    <string name="clients_delete_title">Usuń klienta</string>
+    <string name="clients_delete_desc">Czy na pewno chcesz usunąć tego klienta?</string>
+    <string name="clients_delete_button">Usuń klienta</string>
+
+    <string name="clients_edit_title">Edytuj klienta</string>
+    <string name="clients_edit_attached_info">Ten klient jest powiązany z kontem, więc jego imieniem, telefonem i adresem e-mail zarządza właściciel konta i nie można ich edytować. Można zmienić tylko opis.</string>
+    <string name="clients_edit_description_placeholder">Dodatkowe informacje o kliencie, które mogą się przydać</string>
+    <string name="clients_import_permission_title">Dostęp do kontaktów</string>
+    <string name="clients_import_permission_message">Aby zaimportować klientów z kontaktów, zezwól BookkMe na dostęp do nich w ustawieniach.</string>
+    <string name="clients_import_permission_open_settings">Otwórz ustawienia</string>
+    <string name="clients_import_contacts_title">Wybierz kontakty</string>
+    <string name="clients_import_no_contacts_title">Brak kontaktów do zaimportowania</string>
+    <string name="clients_import_no_contacts_message">Można zaimportować tylko kontakty z numerem telefonu lub adresem e-mail.</string>
+    <string name="clients_import_result_title">Kontakty zaimportowane</string>
+    <string name="clients_import_result_created">Zaimportowano: %d</string>
+    <string name="clients_import_result_rejected">Pominięto: %d</string>
+    <string name="clients_import_result_reason_invalid">• Nieprawidłowe imię: %d</string>
+    <string name="clients_import_result_reason_missing_contact">• Brak numeru telefonu lub adresu e-mail: %d</string>
+    <string name="clients_import_result_reason_exists">• Już jest wśród klientów: %d</string>
+    <string name="clients_import_result_reason_unknown">• Inne powody: %d</string>
+</resources>

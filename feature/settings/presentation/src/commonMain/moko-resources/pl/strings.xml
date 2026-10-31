@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_appearance_title">Wygląd</string>
+    <string name="settings_theme_mode_light">Jasny</string>
+    <string name="settings_theme_mode_dark">Ciemny</string>
+    <string name="settings_theme_mode_system">Systemowy</string>
+
+    <string name="settings_profile_title">Profil</string>
+    <string name="settings_profile_name">Imię</string>
+    <string name="settings_profile_last_name">Nazwisko</string>
+    <string name="settings_profile_email">E-mail</string>
+    <string name="settings_profile_edit">Edytuj</string>
+
+    <string name="settings_account_title">Konto</string>
+    <string name="settings_account_passkey_label">Klucz dostępu</string>
+    <string name="settings_account_logout_label">Wyloguj się</string>
+    <string name="settings_account_logout_message">Czy na pewno chcesz się wylogować?</string>
+    <string name="settings_account_delete_acc_label">Usuń konto</string>
+    <string name="settings_account_notifications_lable">Powiadomienia</string>
+
+    <string name="settings_support_title">Pomoc</string>
+    <string name="settings_support_contact_label">Skontaktuj się z nami</string>
+    <string name="settings_support_feature_label">Zaproponuj funkcję</string>
+    <string name="settings_support_terms_label">Warunki korzystania</string>
+    <string name="settings_support_privacy_label">Polityka prywatności</string>
+    <string name="settings_support_report_label">Zgłoś błąd</string>
+
+    <string name="settings_edit_profile_title">Edytuj profil</string>
+    <string name="settings_edit_profile_first_name">Imię</string>
+    <string name="settings_edit_profile_first_name_error">Imię musi mieć co najmniej 2 znaki</string>
+    <string name="settings_edit_profile_last_name">Nazwisko</string>
+    <string name="settings_edit_profile_last_name_error">Nazwisko musi mieć co najmniej 2 znaki</string>
+    <string name="settings_edit_profile_email">E-mail</string>
+    <string name="settings_edit_profile_email_error">Nieprawidłowy format adresu e-mail</string>
+
+    <string name="settings_contact_us_title">Kontakt</string>
+    <string name="settings_contact_us_contact_hint">Wpisz tutaj swoją wiadomość, a skontaktujemy się z Tobą przez adres e-mail z Twojego profilu</string>
+    <string name="settings_contact_us_include_logs">Dołącz logi aplikacji</string>
+    <string name="settings_contact_us_include_logs_hint">Jeśli napotkasz problem, dołącz logi korzystania z aplikacji, aby nasi programiści mogli szybciej go naprawić</string>
+
+    <string name="settings_delete_account_title">Usuń konto</string>
+    <string name="settings_delete_account_confirmation">Rozumiem, że usunięcie konta jest nieodwracalne i nie będzie można go przywrócić</string>
+    <string name="settings_delete_account_confirmation_switch">Zgadzam się</string>
+    <string name="settings_delete_account_confirmation_button">Usuń</string>
+    <string name="settings_delete_account_success_message">Konto zostało usunięte</string>
+
+    <string name="settings_passkey_title">Klucz dostępu</string>
+    <string name="settings_passkey_add_button">Dodaj</string>
+    <string name="settings_passkey_added_on_format">Dodano %s</string>
+    <string name="settings_passkey_delete_dialog_title">Usuń klucz dostępu</string>
+    <string name="settings_passkey_delete_dialog_message">Usunąć klucz dostępu „%s”? Nie będzie już można logować się za jego pomocą.</string>
+
+    <string name="settings_notifications_title">Powiadomienia</string>
+    <string name="settings_notifications_appointment_label">Powiadomienia o wizytach</string>
+    <string name="settings_notifications_channels_header">Kanały</string>
+    <string name="settings_notifications_types_header">Typy</string>
+    <string name="settings_notifications_types_footer">Kolejne typy powiadomień pojawią się tutaj, gdy będą dostępne.</string>
+    <string name="settings_notifications_email_label">E-mail</string>
+    <string name="settings_notifications_push_label">Powiadomienia push</string>
+    <string name="settings_notifications_telegram_label">Telegram</string>
+</resources>

@@ -263,6 +263,35 @@ class AppointmentDetailsViewModelTest {
     }
 
     @Test
+    fun `plays success haptic when appointment is cancelled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment()
+        everySuspend { fixture.cancelAppointment(any(), any(), any()) } returns appointment.copy(status = AppointmentStatus.CANCELLED)
+        val sut = fixture.sutWith(appointment)
+
+        whenn()
+        sut.confirmCancellation("Client asked")
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when cancellation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.cancelAppointment(any(), any(), any()) } throws TestException()
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.confirmCancellation("reason")
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
     fun `renders cancelled when appointment was already cancelled`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -334,6 +363,36 @@ class AppointmentDetailsViewModelTest {
         verifySuspend { fixture.updateAppointment(appointment.copy(date = newDate)) }
         assertEquals(newDate, sut.uiState.dateTimePicker.pickedDate)
         assertFalse(sut.uiState.rescheduleButton.isLoading)
+    }
+
+    @Test
+    fun `plays success haptic when appointment is rescheduled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val newDate = LocalDateTime(2030, 2, 1, 12, 0)
+        val appointment = fixture.appointment()
+        everySuspend { fixture.updateAppointment(any()) } calls { (updated: Appointment) -> updated }
+        val sut = fixture.sutWith(appointment)
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(newDate)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when rescheduling fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointment(any()) } throws UpdateAppointment.Error.AppointmentOverlap()
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test
@@ -484,6 +543,38 @@ class AppointmentDetailsViewModelTest {
         assertFalse(sut.uiState.completion.isSheetVisible)
         assertTrue(sut.uiState.appBar.actions.items.isEmpty())
         assertFalse(sut.uiState.rescheduleButton.isVisible)
+    }
+
+    @Test
+    fun `plays success haptic when appointment is completed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.startedAppointment()
+        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(
+            status = AppointmentStatus.COMPLETED,
+            completedBy = AppointmentCompletedBy.USER
+        )
+        val sut = fixture.sutWith(appointment)
+
+        whenn()
+        sut.confirmCompletion()
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when completion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.completeAppointment(any(), any()) } throws TestException()
+        val sut = fixture.sutWith(fixture.startedAppointment())
+
+        whenn()
+        sut.confirmCompletion()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test
@@ -968,6 +1059,41 @@ class AppointmentDetailsViewModelTest {
         assertEquals(AppointmentsRes.strings.appointments_status_no_show.desc(), sut.uiState.status.label)
         assertFalse(sut.uiState.noShowButton.isVisible)
         assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `plays success haptic when appointment is marked as no-show`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.startedAppointment()
+        everySuspend { fixture.markAppointmentNoShow(any()) } returns appointment.copy(status = AppointmentStatus.NO_SHOW)
+        val sut = fixture.sutWith(appointment)
+        sut.uiState.noShowButton.onClick?.invoke()
+        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notifications.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when marking no-show fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.markAppointmentNoShow(any()) } throws MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled()
+        val sut = fixture.sutWith(fixture.startedAppointment())
+        sut.uiState.noShowButton.onClick?.invoke()
+        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notifications.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

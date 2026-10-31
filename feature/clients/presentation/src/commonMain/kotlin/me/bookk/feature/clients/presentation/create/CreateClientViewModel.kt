@@ -9,6 +9,7 @@ import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
@@ -69,7 +70,10 @@ class CreateClientViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.submit.startLoading() },
             call = { createClient(client) },
-            onComplete = { uiState.navigation.push(CreateClientDestination.Details(it.id)) },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                uiState.navigation.push(CreateClientDestination.Details(it.id))
+            },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
             onTerminate = { uiState.submit.stopLoading() }
         )
@@ -83,7 +87,7 @@ class CreateClientViewModel(
     }
 
     private fun CreateClientState.setup(): CreateClientState {
-        appBar.size = TopBarSize.LARGE
+        appBar.size = TopBarSize.SMALL
         appBar.title = ClientsRes.strings.clients_create_title.desc()
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(CreateClientDestination.Back)

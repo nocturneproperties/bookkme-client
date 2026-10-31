@@ -5,7 +5,7 @@
 `CreateAccount(userData)` → `POST /api/auth/passkey/sign_up/challenge`, then `POST /api/auth/sign_up`
 · called from `SignUpViewModel`
 
-A three-step WebAuthn registration: the server issues a challenge, the platform `PassKeyManager` creates the
+First name, last name and email are trimmed before anything is sent. A three-step WebAuthn registration: the server issues a challenge, the platform `PassKeyManager` creates the
 credential, and the server verifies it and returns tokens. After the tokens are saved, the Ktor bearer cache
 is invalidated so the next request loads the new tokens. Then `rawFetch()` runs. `authorized = true` is
 written **last**. That flag is what `BootstrapViewModel` observes to navigate into the app, so the main screen
@@ -13,7 +13,8 @@ opens with the profile and business list already cached.
 
 ```mermaid
 flowchart TD
-    Start([invoke userData]) --> Ch[RegistrationDataSource.getSignUpPasskeyChallenge<br/>POST /api/auth/passkey/sign_up/challenge]
+    Start([invoke userData]) --> Trim[userData = firstName, lastName, email trimmed]
+    Trim --> Ch[RegistrationDataSource.getSignUpPasskeyChallenge<br/>POST /api/auth/passkey/sign_up/challenge]
     Ch -- business error --> ChC{errorCode}
     ChC -- 1 EMAIL_EXIST --> E1([throw Error.EmailAlreadyExist])
     ChC -- 2 INVALID_EMAIL_FORMAT --> E2([throw Error.InvalidEmailFormat])

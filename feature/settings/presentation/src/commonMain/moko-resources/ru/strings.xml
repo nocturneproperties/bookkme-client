@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_appearance_title">Оформление</string>
+    <string name="settings_theme_mode_light">Светлая</string>
+    <string name="settings_theme_mode_dark">Тёмная</string>
+    <string name="settings_theme_mode_system">Системная</string>
+
+    <string name="settings_profile_title">Профиль</string>
+    <string name="settings_profile_name">Имя</string>
+    <string name="settings_profile_last_name">Фамилия</string>
+    <string name="settings_profile_email">Эл. почта</string>
+    <string name="settings_profile_edit">Изменить</string>
+
+    <string name="settings_account_title">Аккаунт</string>
+    <string name="settings_account_passkey_label">Ключ доступа</string>
+    <string name="settings_account_logout_label">Выйти</string>
+    <string name="settings_account_logout_message">Вы уверены, что хотите выйти?</string>
+    <string name="settings_account_delete_acc_label">Удалить аккаунт</string>
+    <string name="settings_account_notifications_lable">Уведомления</string>
+
+    <string name="settings_support_title">Поддержка</string>
+    <string name="settings_support_contact_label">Связаться с нами</string>
+    <string name="settings_support_feature_label">Предложить функцию</string>
+    <string name="settings_support_terms_label">Условия использования</string>
+    <string name="settings_support_privacy_label">Политика конфиденциальности</string>
+    <string name="settings_support_report_label">Сообщить об ошибке</string>
+
+    <string name="settings_edit_profile_title">Редактировать профиль</string>
+    <string name="settings_edit_profile_first_name">Имя</string>
+    <string name="settings_edit_profile_first_name_error">Имя должно содержать не менее 2 символов</string>
+    <string name="settings_edit_profile_last_name">Фамилия</string>
+    <string name="settings_edit_profile_last_name_error">Фамилия должна содержать не менее 2 символов</string>
+    <string name="settings_edit_profile_email">Эл. почта</string>
+    <string name="settings_edit_profile_email_error">Неверный формат эл. почты</string>
+
+    <string name="settings_contact_us_title">Связаться с нами</string>
+    <string name="settings_contact_us_contact_hint">Введите сообщение, и мы свяжемся с вами по эл. почте, указанной в профиле</string>
+    <string name="settings_contact_us_include_logs">Приложить журналы использования</string>
+    <string name="settings_contact_us_include_logs_hint">Если у вас возникла проблема, приложите журналы использования приложения, чтобы наши разработчики смогли быстрее её исправить</string>
+
+    <string name="settings_delete_account_title">Удалить аккаунт</string>
+    <string name="settings_delete_account_confirmation">Я понимаю, что удаление аккаунта необратимо и я не смогу его восстановить</string>
+    <string name="settings_delete_account_confirmation_switch">Принимаю</string>
+    <string name="settings_delete_account_confirmation_button">Удалить</string>
+    <string name="settings_delete_account_success_message">Аккаунт успешно удалён</string>
+
+    <string name="settings_passkey_title">Ключ доступа</string>
+    <string name="settings_passkey_add_button">Добавить</string>
+    <string name="settings_passkey_added_on_format">Добавлен %s</string>
+    <string name="settings_passkey_delete_dialog_title">Удалить ключ доступа</string>
+    <string name="settings_passkey_delete_dialog_message">Удалить ключ доступа «%s»? Вы больше не сможете входить с этим ключом.</string>
+
+    <string name="settings_notifications_title">Уведомления</string>
+    <string name="settings_notifications_appointment_label">Уведомления о записях</string>
+    <string name="settings_notifications_channels_header">Каналы</string>
+    <string name="settings_notifications_types_header">Типы</string>
+    <string name="settings_notifications_types_footer">Новые типы уведомлений появятся здесь, как только станут доступны.</string>
+    <string name="settings_notifications_email_label">Эл. почта</string>
+    <string name="settings_notifications_push_label">Push-уведомления</string>
+    <string name="settings_notifications_telegram_label">Telegram</string>
+</resources>

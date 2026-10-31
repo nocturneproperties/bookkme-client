@@ -70,11 +70,15 @@ class AppointmentHistoryViewModel(
 
     private fun onSearchQueryChanged(query: String) {
         uiState.searchField.text = query
-        searchQuery.value = query.trim().ifBlank { null }
+        searchQuery.value = query.toSearchQuery()
     }
 
     private fun onRefresh() {
-        loadHistory(uiState.searchField.text.ifBlank { null }, isRefresh = true)
+        loadHistory(uiState.searchField.text.toSearchQuery(), isRefresh = true)
+    }
+
+    private fun String.toSearchQuery(): String? {
+        return trim().ifBlank { null }
     }
 
     private fun onLoadMore() {

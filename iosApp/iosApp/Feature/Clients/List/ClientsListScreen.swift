@@ -34,6 +34,22 @@ struct ClientsListScreen: View {
 			prompt: uiState.searchField.placeholder.localized()
 		)
 		.withNavigationBar(uiState.appBar)
+		.fullScreenCover(isPresented: Binding(
+			get: { uiState.isContactsPickerVisible },
+			set: { uiState.isContactsPickerVisible = $0 }
+		)) {
+			let contactsPicker = uiState.contactsPicker.impl()
+			OptionsMultiPickerScreen(
+				args: .from(
+					id: contactsPicker.id,
+					title: contactsPicker.pickerTitle,
+					options: contactsPicker.options,
+					choice: .multiple
+				),
+				options: contactsPicker.options,
+				onItemsPicked: contactsPicker.onItemsPicked
+			)
+		}
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(uiState.notifications)
 		.handleNavigation(uiState.navigation) { destination in

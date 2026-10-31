@@ -4,6 +4,7 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
+import dev.mokkery.matcher.matches
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
@@ -179,6 +180,42 @@ class CreateAccountImplTest {
         then()
         assertFailsWith<CreateAccount.Error.AccountCreationFailed> {
             fixture.sut(stubUserData())
+        }
+    }
+
+    @Test
+    fun `requests sign up challenge with trimmed user data`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+
+        whenn()
+        fixture.sut(CreateAccount.UserData("  John ", "Doe\n", " john@example.com "))
+
+        then()
+        verifySuspend {
+            fixture.registrationDataSource.getSignUpPasskeyChallenge(
+                matches({ "trimmed" }) { it.firstName == "John" && it.lastName == "Doe" && it.email == "john@example.com" }
+            )
+        }
+    }
+
+    @Test
+    fun `finishes registration with trimmed user data`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+
+        whenn()
+        fixture.sut(CreateAccount.UserData("  John ", "Doe\n", " john@example.com "))
+
+        then()
+        verifySuspend {
+            fixture.registrationDataSource.finishRegistration(
+                matches({ "trimmed" }) {
+                    it.userInfo.name == "John" && it.userInfo.lastName == "Doe" && it.userInfo.email == "john@example.com"
+                }
+            )
         }
     }
 }

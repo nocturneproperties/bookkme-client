@@ -7,6 +7,7 @@ import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.TopBarSize
@@ -73,7 +74,10 @@ class BusinessPluginsViewModel(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.appointmentPlugin.enable.startLoading() },
             call = { enableAppointmentsPlugin(businessId) },
-            onComplete = { uiState.appointmentPlugin.isEnabled = true },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                uiState.appointmentPlugin.isEnabled = true
+            },
             onError = {
                 when (it) {
                     is EnableAppointmentsPlugin.Error.AlreadyEnabled -> {

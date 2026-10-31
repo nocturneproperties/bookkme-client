@@ -8,6 +8,6 @@ internal class SendContactFormImpl(
 ) : SendContactForm {
     override suspend fun invoke(text: String, includeLogs: Boolean) {
         //TODO add usage logs when feature will be implemented
-        settingsDataSource.sendContactForm(text, null)
+        settingsDataSource.sendContactForm(text.trim(), null)
     }
 }

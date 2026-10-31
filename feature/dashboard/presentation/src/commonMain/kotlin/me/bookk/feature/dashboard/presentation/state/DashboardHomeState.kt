@@ -1,6 +1,7 @@
 package me.bookk.feature.dashboard.presentation.state
 
 import dev.icerock.moko.resources.desc.StringDesc
+import me.bookk.designsystem.uistate.RefreshState
 import kotlin.uuid.Uuid
 
 interface DashboardHomeState {
@@ -10,6 +11,7 @@ interface DashboardHomeState {
 
 sealed class HomeContent {
     data object NoBusiness : HomeContent()
+    data object BusinessNotSelected : HomeContent()
     data object SetupRequired : HomeContent()
     data object AwaitingSetup : HomeContent()
     data object ActivePlugin : HomeContent()
@@ -20,8 +22,23 @@ interface OnboardingState {
     var onCreateBusinessClick: (() -> Unit)?
     var onJoinBusinessClick: (() -> Unit)?
     var onEnablePluginsClick: (() -> Unit)?
+    var onAddServiceGroupClick: (() -> Unit)?
+    var onAddServiceClick: (() -> Unit)?
+    var onAddClientClick: (() -> Unit)?
+    var isAppointmentsStepDone: Boolean
+    var isServiceGroupStepDone: Boolean
+    var isServiceStepDone: Boolean
+    var isServiceStepEnabled: Boolean
+    var isAppointmentsStepEnabled: Boolean
+    var isServiceGroupStepEnabled: Boolean
+    var isClientStepEnabled: Boolean
+    var serviceGroupStepSubtitle: StringDesc
+    var serviceStepSubtitle: StringDesc
+    var clientStepSubtitle: StringDesc
+    var isClientStepDone: Boolean
     var businesses: List<OnboardingBusinessItem>
     var onBusinessClick: ((OnboardingBusinessItem) -> Unit)?
+    val refresh: RefreshState
 }
 
 data class OnboardingBusinessItem(

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="clients_title">Клиенты</string>
+    <string name="clients_empty">У вас пока нет клиентов</string>
+
+    <string name="clients_create_title">Добавить клиента</string>
+    <string name="clients_create_name">Имя</string>
+    <string name="clients_create_name_placeholder">Иван</string>
+    <string name="clients_create_last_name">Фамилия</string>
+    <string name="clients_create_last_name_placeholder">Иванов</string>
+    <string name="clients_create_phone">Телефон</string>
+    <string name="clients_create_phone_placeholder">2025550123</string>
+    <string name="clients_create_email">Эл. почта</string>
+    <string name="clients_create_email_placeholder">необязательно</string>
+    <string name="clients_details_description">Описание</string>
+    <string name="clients_delete_title">Удалить клиента</string>
+    <string name="clients_delete_desc">Вы уверены, что хотите удалить этого клиента?</string>
+    <string name="clients_delete_button">Удалить клиента</string>
+
+    <string name="clients_edit_title">Редактировать клиента</string>
+    <string name="clients_edit_attached_info">Этот клиент привязан к аккаунту, поэтому его именем, телефоном и эл. почтой управляет владелец аккаунта — их нельзя изменить. Можно изменить только описание.</string>
+    <string name="clients_edit_description_placeholder">Дополнительная информация о клиенте, которая может пригодиться</string>
+    <string name="clients_import_permission_title">Доступ к контактам</string>
+    <string name="clients_import_permission_message">Чтобы импортировать клиентов из контактов, разрешите BookkMe доступ к ним в настройках.</string>
+    <string name="clients_import_permission_open_settings">Открыть настройки</string>
+    <string name="clients_import_contacts_title">Выберите контакты</string>
+    <string name="clients_import_no_contacts_title">Нет контактов для импорта</string>
+    <string name="clients_import_no_contacts_message">Импортировать можно только контакты с номером телефона или эл. почтой.</string>
+    <string name="clients_import_result_title">Контакты импортированы</string>
+    <string name="clients_import_result_created">Импортировано: %d</string>
+    <string name="clients_import_result_rejected">Пропущено: %d</string>
+    <string name="clients_import_result_reason_invalid">• Некорректное имя: %d</string>
+    <string name="clients_import_result_reason_missing_contact">• Нет номера телефона или эл. почты: %d</string>
+    <string name="clients_import_result_reason_exists">• Уже есть среди клиентов: %d</string>
+    <string name="clients_import_result_reason_unknown">• Другие причины: %d</string>
+</resources>

@@ -11,7 +11,7 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.AppBarAction
+import me.bookk.designsystem.uistate.action
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.presentation.SettingsStateFactory
@@ -30,7 +30,7 @@ class SettingsDashboardViewModel(
     private fun SettingsState.setup(): SettingsState = apply {
         appBar.actions.replace(
             listOf(
-                AppBarAction(
+                appBar.action(
                     contentDescription = SettingsRes.strings.settings_profile_edit.desc(),
                     onClick = weakVMClosure { it.onEditClick() }
                 )
@@ -46,7 +46,10 @@ class SettingsDashboardViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { updateColorScheme.invoke(scheme.toDomain()) },
-            onComplete = { uiState.appearance.colorScheme = scheme },
+            onComplete = {
+                uiState.notification.add(PresentationNotification.SuccessHaptic)
+                uiState.appearance.colorScheme = scheme
+            },
             onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
         )
     }
@@ -67,7 +70,7 @@ class SettingsDashboardViewModel(
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.POSITIVE
+                        actionType = ActionType.CANCEL
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),

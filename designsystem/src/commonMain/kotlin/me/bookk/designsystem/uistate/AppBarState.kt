@@ -14,13 +14,40 @@ interface AppBarState : ViewState {
     var subtitle: StringDesc?
     var onBackClick: (() -> Unit)?
     var size: TopBarSize
-    val actions: ListState<AppBarAction>
+    val actions: ListState<AppBarActionState>
+
+    fun createAction(): AppBarActionState
 }
 
-class AppBarAction(
-    val icon: ImageResource? = null,
-    val contentDescription: StringDesc,
-    val type: ActionType = ActionType.POSITIVE,
-    val isEnabled: Boolean = true,
-    val onClick: () -> Unit
-)
+interface AppBarActionState : ViewState {
+    var icon: ImageResource?
+    var contentDescription: StringDesc
+    var type: ActionType
+    var isEnabled: Boolean
+    var isLoading: Boolean
+    var onClick: () -> Unit
+}
+
+fun AppBarActionState.startLoading() {
+    isLoading = true
+    isEnabled = false
+}
+
+fun AppBarActionState.stopLoading(enable: Boolean = true) {
+    isLoading = false
+    isEnabled = enable
+}
+
+fun AppBarState.action(
+    contentDescription: StringDesc,
+    icon: ImageResource? = null,
+    type: ActionType = ActionType.POSITIVE,
+    onClick: () -> Unit
+): AppBarActionState {
+    return createAction().apply {
+        this.contentDescription = contentDescription
+        this.icon = icon
+        this.type = type
+        this.onClick = onClick
+    }
+}

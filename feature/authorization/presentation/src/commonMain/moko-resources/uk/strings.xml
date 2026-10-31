@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_up_create_acc">Створити обліковий запис</string>
+    <string name="sign_up_personal_section_title">Особисті дані</string>
+    <string name="sign_up_first_name">Імʼя</string>
+    <string name="sign_up_first_name_error">Імʼя має містити щонайменше 2 символи</string>
+    <string name="sign_up_last_name">Прізвище</string>
+    <string name="sign_up_last_name_error">Прізвище має містити щонайменше 2 символи</string>
+    <string name="sign_up_email">Ел. пошта</string>
+    <string name="sign_up_email_error">Неправильний формат ел. пошти</string>
+    <string name="sign_up_create_account_button">Створити</string>
+    <string name="sign_up_email_exist">Обліковий запис із такою ел. поштою вже існує</string>
+    <string name="sign_up_passkey_failed">Не вдалося перевірити ключ доступу</string>
+    <string name="sign_up_failed">Помилка під час створення облікового запису, спробуйте пізніше</string>
+    <string name="sign_up_why_no_password_title">Чому немає поля для пароля?</string>
+    <string name="sign_up_why_no_password_description">Ми вирішили замінити паролі ключами доступу (Passkeys): вони використовують біометричну автентифікацію або шифрування на пристрої, тому краще захищені від фішингу та злому. Крім того, вони спрощують вхід — більше не потрібно запамʼятовувати багато складних паролів.</string>
+
+    <string name="sign_in_title">Вхід</string>
+    <string name="sign_in_passkey_button">Увійти з ключем доступу</string>
+    <string name="sign_in_error_no_passkeys_on_device">На цьому пристрої не знайдено ключів доступу</string>
+    <string name="sign_in_error_passkey_verification">Не вдалося перевірити ключ доступу</string>
+    <string name="sign_in_error_no_account">З цим ключем доступу не повʼязано жодного облікового запису</string>
+    <string name="sign_in_sign_up_button">Створити новий обліковий запис</string>
+    <string name="sign_in_troubleshoot_button">Не вдається увійти?</string>
+    <string name="sign_in_passkey_why_title">Чому ключі доступу для входу?</string>
+    <string name="sign_in_passkey_why_description">Ключ доступу — швидший і зручніший спосіб входу, ніж пароль. Ключі доступу складніше зламати, тому вони захищають вас від фішингу та витоків даних. Ваш ключ доступу надійно зберігається на пристрої та у вашому менеджері паролів.</string>
+    <string name="sign_in_passkey_learn_more_button">Докладніше про ключі доступу</string>
+
+    <string name="troubleshoot_title">Не вдається увійти?</string>
+    <string name="troubleshoot_passkey_troubleshoot">Вирішення проблем із втраченими або відсутніми ключами доступу</string>
+    <string name="troubleshoot_passkey_lost">Пристрій втрачено або викрадено</string>
+    <string name="troubleshoot_passkey_lost_description">Якщо ви втратили пристрій із ключем доступу, спершу перевірте, чи синхронізовано ключ із вашим хмарним обліковим записом (наприклад, Google, Apple або іншої платформи). Увійдіть в обліковий запис з іншого довіреного пристрою, відкличте доступ для втраченого пристрою та за потреби створіть новий ключ доступу.</string>
+    <string name="troubleshoot_passkey_missing">Ключі доступу відсутні або недоступні</string>
+    <string name="troubleshoot_passkey_missing_description">Якщо у вашому обліковому записі є ключі доступу, але під час входу ключ не пропонується, переконайтеся, що на пристрої з ключем увімкнено блокування екрана. Якщо блокування екрана вимкнено, ви не зможете використовувати ключ доступу на цьому пристрої, доки знову його не ввімкнете. \nВи можете відновити ключ доступу через свого постачальника облікових даних, наприклад Google або Apple.</string>
+    <string name="troubleshoot_contact_support_button">Звʼязатися з підтримкою</string>
+
+</resources>

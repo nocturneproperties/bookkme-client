@@ -5,6 +5,7 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
+import kotlin.test.assertEquals
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -87,8 +88,36 @@ class DeleteAccountViewModelTest {
 
         then()
         verifySuspend { fixture.deleteAccount() }
-        sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
         assertFalse(sut.uiState.deleteButton.isLoading)
+    }
+
+    @Test
+    fun `plays success haptic when account is deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteAccount() } returns Unit
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onDeleteClick()
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when account deletion fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteAccount() } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onDeleteClick()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

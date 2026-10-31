@@ -15,6 +15,8 @@ kotlin {
             implementation(projects.designsystem)
             implementation(projects.feature.clients.domain.api)
             implementation(projects.library.device.api)
+            implementation(projects.library.permissions.api)
+            implementation(projects.library.picker)
             implementation(projects.library.validation.api)
         }
         commonTest.dependencies {

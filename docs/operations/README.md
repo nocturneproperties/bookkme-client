@@ -65,6 +65,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `CanEditBusiness` | local only (`business` table) | [Can edit business](business/can-edit-business.md) |
 | `GetAvailableDashboardFeatures` | local only | [Get available dashboard features](business/get-available-dashboard-features.md) |
 | `ObserveDashboardSetupStatus` | local only | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) |
+| `RefreshDashboardSetupStatus` | via `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) |
 | `ObserveDashboardBusinessChanges`, `ObserveDashboardBusinessIdChanges`, `ObserveCurrentBusinessId` (×4), `ObserveCurrentBusiness` | local only | [Observe dashboard business](business/observe-dashboard-business-changes.md) |
 | `ObserveUserBusinessesChanges` | local only | [Observe user businesses](business/observe-user-businesses-changes.md) |
 
@@ -75,6 +76,8 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `GetClientsList` | `GET /api/business/{businessId}/clients` | [Get clients list](clients/get-clients-list.md) (reference list steps) |
 | `GetClient` | local only (`flow` observes the row) | [Get client](clients/get-client.md) |
 | `CreateClient` | `POST /api/business/{businessId}/clients` | [Create client](clients/create-client.md) |
+| `ImportClients` | `POST /api/business/{businessId}/clients/import` (one request per 500 entries) | [Import clients](clients/import-clients.md) |
+| `GetDeviceContacts` | local only (device address book) | [Get device contacts](clients/get-device-contacts.md) |
 | `EditClient` | `PATCH /api/business/{businessId}/clients/{id}` | [Edit client](clients/edit-client.md) |
 | `DeleteClient` | `DELETE /api/business/{businessId}/clients/{id}` | [Delete client](clients/delete-client.md) |
 | `GetClientsPermissions` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Get clients permissions](clients/get-clients-permissions.md) |
@@ -154,12 +157,13 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | [Create account](authorization/create-account.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
 | [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |
 | [Initial app data fetch](authorization/initial-app-data-fetch.md) | `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
-| [Create business](business/create-business.md) | `RefreshBusinessInfo`, `SwitchDashboardBusiness` |
-| [Redeem employee invitation](employees/redeem-employee-invitation.md) | `RefreshBusinessInfo`, `SwitchDashboardBusiness` |
+| [Create business](business/create-business.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
+| [Redeem employee invitation](employees/redeem-employee-invitation.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Join business](business/join-business.md) | `RedeemEmployeeInvitation` (cross-feature wrapper) |
 | [Refresh business info](business/refresh-business-info.md) | `IsAppointmentsPluginEnabled.refresh` per business |
 | [Get available dashboard features](business/get-available-dashboard-features.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
-| [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
+| [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `BusinessDataSource.observeUserBusinessInfoInDb` (business + selection snapshot), `IsAppointmentsPluginEnabled.flow`, `GetServiceGroups.flow`, `GetServices.flow`, `GetClientsList.flow` (cross-feature) |
+| [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) | `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` (cross-feature) |
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |
 | [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |

@@ -15,7 +15,10 @@ fun NavGraphBuilder.dashboardGraph(
     homeTab: @Composable () -> Unit,
     businessTab: @Composable () -> Unit,
     settingsTab: @Composable () -> Unit,
-    onEnablePlugins: (Uuid) -> Unit
+    onEnablePlugins: (Uuid) -> Unit,
+    onAddServiceGroup: () -> Unit,
+    onAddService: (Uuid) -> Unit,
+    onAddClient: (Uuid) -> Unit
 ) {
     composable<DashboardDestination> {
         val viewModel: DashboardViewModel = koinViewModel()
@@ -29,6 +32,9 @@ fun NavGraphBuilder.dashboardGraph(
         ObserveNavigation(viewModel.uiState.navigation) {
             when (it) {
                 is DashboardHomeNavigationDestination.EnablePlugins -> onEnablePlugins(it.businessId)
+                DashboardHomeNavigationDestination.AddServiceGroup -> onAddServiceGroup()
+                is DashboardHomeNavigationDestination.AddService -> onAddService(it.businessId)
+                is DashboardHomeNavigationDestination.AddClient -> onAddClient(it.businessId)
             }
         }
     }

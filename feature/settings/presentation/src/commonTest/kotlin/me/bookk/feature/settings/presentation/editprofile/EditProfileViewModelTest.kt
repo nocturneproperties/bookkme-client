@@ -1,12 +1,16 @@
 package me.bookk.feature.settings.presentation.editprofile
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -29,6 +33,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class EditProfileViewModelTest {
@@ -106,29 +111,66 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `shows error for short name and disables save`() = runUnitTest {
+    fun `does not show errors while typing`() = runUnitTest {
         given()
         val sut = Fixture().presentedSut()
 
         whenn()
         sut.onLastNameTextChanged("S")
+        sut.onEmailTextChanged("broken")
 
         then()
-        assertEquals(ValidationState.ERROR, sut.uiState.lastName.validationState)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.lastName.validationState)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.email.validationState)
+        assertTrue(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `shows errors for every invalid field on save`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+        sut.onFirstNameTextChanged("A")
+        sut.onLastNameTextChanged("S")
+        sut.onEmailTextChanged("broken")
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertEquals(SettingsRes.strings.settings_edit_profile_first_name_error.desc(), sut.uiState.name.supportingTextRes)
+        assertEquals(SettingsRes.strings.settings_edit_profile_last_name_error.desc(), sut.uiState.lastName.supportingTextRes)
+        assertEquals(SettingsRes.strings.settings_edit_profile_email_error.desc(), sut.uiState.email.supportingTextRes)
         assertFalse(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
-    fun `shows error for invalid email`() = runUnitTest {
+    fun `does not save an invalid profile`() = runUnitTest {
         given()
-        val sut = Fixture().presentedSut()
-
-        whenn()
+        val fixture = Fixture()
+        val sut = fixture.presentedSut()
         sut.onEmailTextChanged("broken")
 
+        whenn()
+        sut.onConfirmButtonClick()
+
         then()
-        assertFalse(sut.uiState.email.isValid)
-        assertFalse(sut.uiState.confirmButton.isEnabled)
+        verifySuspend(VerifyMode.not) { fixture.editProfile(any(), any(), any()) }
+    }
+
+    @Test
+    fun `clears field error once the field is edited`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+        sut.onEmailTextChanged("broken")
+        sut.onConfirmButtonClick()
+
+        whenn()
+        sut.onEmailTextChanged("maria@example.com")
+
+        then()
+        assertNull(sut.uiState.email.supportingTextRes)
+        assertTrue(sut.uiState.email.isValid)
+        assertTrue(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
@@ -146,6 +188,36 @@ class EditProfileViewModelTest {
         verifySuspend { fixture.editProfile("Maria", "Smith", "anna@example.com") }
         assertEquals(listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.Back), sut.uiState.navigation.navigationDestination)
         assertFalse(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `plays success haptic when profile is saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editProfile(any(), any(), any()) } returns Unit
+        val sut = fixture.presentedSut()
+        sut.onFirstNameTextChanged("Maria")
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when profile save fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editProfile(any(), any(), any()) } throws TestException()
+        val sut = fixture.presentedSut()
+        sut.onFirstNameTextChanged("Maria")
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

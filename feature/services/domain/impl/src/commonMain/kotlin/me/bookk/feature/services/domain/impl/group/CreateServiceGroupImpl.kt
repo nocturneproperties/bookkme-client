@@ -11,7 +11,7 @@ internal class CreateServiceGroupImpl(
     private val dataSource: ServiceGroupDataSource
 ) : CreateServiceGroup {
     override suspend fun invoke(group: ServiceGroup): ServiceGroup = runCatching {
-        dataSource.createServiceGroup(group).also {
+        dataSource.createServiceGroup(group.copy(name = group.name.trim())).also {
             dataSource.saveGroupInDB(it)
         }
     }.onBusinessError { error ->

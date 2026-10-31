@@ -27,6 +27,10 @@ class IOSClientsListState: @MainActor ClientsListState, NativeStateRepresentatio
 	
 	var searchField: any TextFieldState
 	
+	var contactsPicker: any OptionsMultiPickerState
+	
+	var isContactsPickerVisible: Bool
+	
 	init() {
 		self.appBar = IOSAppBarState()
 		self.clientsList = IOSListState<ClientSection>()
@@ -34,6 +38,8 @@ class IOSClientsListState: @MainActor ClientsListState, NativeStateRepresentatio
 		self.notifications = IOSNotificationState()
 		self.refreshState = IOSRefreshState()
 		self.searchField = IOSTextFieldState()
+		self.contactsPicker = IOSOptionsMultiPickerState()
+		self.isContactsPickerVisible = false
 	}
 	
 }

@@ -14,6 +14,7 @@ erDiagram
     BUSINESS ||--o{ EMPLOYEE_INVITATION : "businessId FK"
     BUSINESS ||--o{ SERVICE_GROUP : "businessId FK"
     BUSINESS ||--o{ SERVICE : "businessId FK"
+    BUSINESS ||--o| DASHBOARD_BUSINESS : "businessId FK"
     SERVICE_GROUP ||--o{ SERVICE : "groupId FK"
 
     BUSINESS |o..o{ APPOINTMENT : "businessId (logical)"

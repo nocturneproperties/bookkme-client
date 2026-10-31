@@ -111,4 +111,20 @@ class CreateServiceGroupImplTest {
             fixture.sut(input)
         }
     }
+
+    @Test
+    fun `sends trimmed name to backend`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val input = stubGroup().copy(name = "  Coloring \n")
+        val trimmed = input.copy(name = "Coloring")
+        everySuspend { fixture.dataSource.createServiceGroup(trimmed) } returns trimmed
+        everySuspend { fixture.dataSource.saveGroupInDB(trimmed) } returns Unit
+
+        whenn()
+        fixture.sut(input)
+
+        then()
+        verifySuspend { fixture.dataSource.createServiceGroup(trimmed) }
+    }
 }

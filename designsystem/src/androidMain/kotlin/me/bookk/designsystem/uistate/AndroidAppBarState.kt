@@ -19,5 +19,9 @@ class AndroidAppBarState(
     override var subtitle: StringDesc? by mutableStateOf(subtitle)
     override var onBackClick: (() -> Unit)? by mutableStateOf(onBackClick)
     override var size: TopBarSize by mutableStateOf(size)
-    override val actions = AndroidListState<AppBarAction>()
+    override val actions = AndroidListState<AppBarActionState>()
+
+    override fun createAction(): AppBarActionState {
+        return AndroidAppBarActionState()
+    }
 }

@@ -30,15 +30,8 @@ fun Project.getCurrentVariant(): String {
             }
             Regex(patternStr).find(tskReqStr)?.value.orEmpty()
         }
-        .ifBlank { properties["buildkonfig.flavor"]?.toString().orEmpty() }
+        .ifBlank { providers.gradleProperty("buildkonfig.flavor").orNull.orEmpty() }
         .replaceFirstChar { it.lowercase(Locale.getDefault()) }
-}
-
-fun Project.findStringProperty(key: String, fileName: String): String {
-    val propertiesFile = project.rootProject.file(fileName)
-    val properties = Properties()
-    properties.load(propertiesFile.inputStream())
-    return properties.getProperty(key) ?: throw GradleException("$key not found in $fileName")
 }
 
 val Project.localProperties: Properties

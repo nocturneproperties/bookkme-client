@@ -5,9 +5,12 @@
 `CreateService(service)` → `POST /api/business/{businessId}/service`
 · called from `AddServiceViewModel`
 
+The service name is trimmed before it is sent.
+
 ```mermaid
 flowchart TD
-    Start([invoke service]) --> Net[ServiceDataSource.createService<br/>POST /api/business/businessId/service]
+    Start([invoke service]) --> Trim[service.name = name.trim]
+    Trim --> Net[ServiceDataSource.createService<br/>POST /api/business/businessId/service]
     Net -- 2xx created --> Save[(saveServiceInDB created, upsert)]
     Save --> R([return created Service])
     Net -- error --> EX([rethrow, no domain mapping])

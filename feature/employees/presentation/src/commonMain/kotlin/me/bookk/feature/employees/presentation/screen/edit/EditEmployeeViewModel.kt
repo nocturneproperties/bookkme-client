@@ -92,9 +92,9 @@ class EditEmployeeViewModel(
                 canView.text = EmployeesRes.strings.employees_edit_permission_view.desc()
                 canUpdate.text = EmployeesRes.strings.employees_edit_permission_update.desc()
                 canDelete.text = EmployeesRes.strings.employees_edit_permission_delete.desc()
-                canView.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.canView.isChecked = isChecked } }
-                canUpdate.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.canUpdate.isChecked = isChecked } }
-                canDelete.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.canDelete.isChecked = isChecked } }
+                canView.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.setView(isChecked) } }
+                canUpdate.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.setUpdate(isChecked) } }
+                canDelete.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.setDelete(isChecked) } }
             }
         }
     }
@@ -212,6 +212,21 @@ class EditEmployeeViewModel(
         invalidateSaveState()
     }
 
+    private fun ResourcePermissionState.setView(isChecked: Boolean) {
+        canView.isChecked = isChecked
+        if (!isChecked) setUpdate(false)
+    }
+
+    private fun ResourcePermissionState.setUpdate(isChecked: Boolean) {
+        canUpdate.isChecked = isChecked
+        if (isChecked) canView.isChecked = true else setDelete(false)
+    }
+
+    private fun ResourcePermissionState.setDelete(isChecked: Boolean) {
+        canDelete.isChecked = isChecked
+        if (isChecked) setUpdate(true)
+    }
+
     private fun onSaveClick() {
         val employee = snapshotEmployee() ?: return
         launch(
@@ -219,6 +234,7 @@ class EditEmployeeViewModel(
             onStart = { uiState.save.startLoading() },
             call = { updateEmployee(employee) },
             onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 renderEmployee(it)
                 uiState.notifications.add(GlobalMessage(EmployeesRes.strings.employees_edit_updated.desc()))
             },
@@ -266,6 +282,7 @@ class EditEmployeeViewModel(
             onStart = { uiState.suspension.startLoading() },
             call = { setEmployeeSuspension(employee.businessId, employee.id, suspend) },
             onComplete = { updated ->
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 referenceEmployee = referenceEmployee?.copy(suspendedAt = updated.suspendedAt)
                 renderSuspension(updated)
                 uiState.notifications.add(GlobalMessage(updated.suspensionChangedMessage().desc()))

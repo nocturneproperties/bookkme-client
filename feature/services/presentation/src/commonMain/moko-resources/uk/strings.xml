@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="services_title">Послуги</string>
+    <string name="services_empty">Поки немає жодної послуги</string>
+    <string name="service_group_empty">Поки немає жодної групи послуг</string>
+
+    <string name="services_create_title">Додати послугу</string>
+    <string name="services_create_group">Група</string>
+    <string name="services_create_groups">Групи послуг</string>
+    <string name="services_create_group_placeholder">Група послуг</string>
+    <string name="services_create_name">Назва</string>
+    <string name="services_create_name_placeholder">Назва послуги</string>
+    <string name="services_create_duration">Тривалість</string>
+    <string name="services_create_duration_placeholder">Тривалість у хвилинах</string>
+    <string name="services_create_price">Ціна</string>
+    <string name="services_create_price_placeholder">Сума оплати</string>
+    <string name="services_create_visible">Видима клієнтам</string>
+    <string name="services_create_group_error">Виберіть групу послуг</string>
+    <string name="services_create_price_error">Введіть коректну ціну</string>
+
+    <string name="services_edit_title">Редагувати послугу</string>
+    <string name="services_delete_button">Видалити послугу</string>
+
+    <string name="services_group_pick">Виберіть групу</string>
+
+    <string name="services_group_add_title">Створити групу послуг</string>
+    <string name="services_group_add_message">Введіть назву нової групи послуг</string>
+    <string name="services_group_add_name_exists">Група з такою назвою вже існує</string>
+    <string name="services_group_add_name_invalid">Некоректна назва</string>
+
+</resources>

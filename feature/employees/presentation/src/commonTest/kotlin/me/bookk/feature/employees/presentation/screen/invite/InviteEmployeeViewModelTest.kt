@@ -41,6 +41,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.uuid.Uuid
@@ -163,9 +164,37 @@ class InviteEmployeeViewModelTest {
         then()
         verify { fixture.device.copyToClipboard("ABCD1234") }
         verifySuspend(VerifyMode.exactly(2)) { fixture.getEmployeeInvitations.refresh(fixture.businessId) }
-        val message = sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        val message = sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
         assertEquals(PresentationNotification.GlobalMessage.State.SUCCESS, message.state)
         assertFalse(sut.uiState.generateCodeButton.isLoading)
+    }
+
+    @Test
+    fun `plays success haptic when invitation is created`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createEmployeeInvitation(any()) } returns stubInvitation(code = null)
+        val sut = loadedSut(fixture)
+
+        whenn()
+        sut.uiState.generateCodeButton.onClick?.invoke()
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `does not play success haptic when invitation creation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createEmployeeInvitation(any()) } throws TestException()
+        val sut = loadedSut(fixture)
+
+        whenn()
+        sut.uiState.generateCodeButton.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test
@@ -240,6 +269,41 @@ class InviteEmployeeViewModelTest {
         then()
         verifySuspend { fixture.revokeEmployeeInvitation(fixture.businessId, invitation.id) }
         verifySuspend(VerifyMode.exactly(2)) { fixture.getEmployeeInvitations.refresh(fixture.businessId) }
+    }
+
+    @Test
+    fun `plays success haptic when invitation is revoked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val invitation = stubInvitation(status = EmployeeInvitationStatus.PENDING)
+        everySuspend { fixture.revokeEmployeeInvitation(any(), any()) } returns Unit
+        val sut = loadedSut(fixture)
+        fixture.invitations.value = listOf(invitation)
+        sut.uiState.invitationsList.items.single().onClick?.invoke()
+
+        whenn()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+
+        then()
+        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `does not play success haptic when revoking fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.revokeEmployeeInvitation(any(), any()) } throws RevokeEmployeeInvitation.Error.AlreadyProcessed(TestException())
+        val sut = loadedSut(fixture)
+        fixture.invitations.value = listOf(stubInvitation())
+        sut.uiState.invitationsList.items.single().onClick?.invoke()
+        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notifications.removeFirst()
+
+        whenn()
+        dialog.tap(ActionType.NEGATIVE)
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test

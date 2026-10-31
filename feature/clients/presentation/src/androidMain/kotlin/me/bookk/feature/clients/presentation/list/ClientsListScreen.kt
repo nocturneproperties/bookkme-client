@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import library.picker.standardOptionsScreenPicker
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.List
@@ -25,6 +26,8 @@ import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
+import me.bookk.designsystem.uistate.SimplePickerPresentation
+import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 
 @Composable
 fun ClientsListScreen(state: ClientsListState) {
@@ -56,6 +59,18 @@ fun ClientsListScreen(state: ClientsListState) {
                 }
             }
         }
+    )
+    if (state.isContactsPickerVisible) {
+        ContactsPicker(state)
+    }
+}
+
+@Composable
+private fun ContactsPicker(state: ClientsListState) {
+    standardOptionsScreenPicker<SimplePickerPresentation<ClientImportEntry>>()(
+        state.contactsPicker,
+        { state.isContactsPickerVisible = false },
+        state.contactsPicker.onItemsPicked
     )
 }
 

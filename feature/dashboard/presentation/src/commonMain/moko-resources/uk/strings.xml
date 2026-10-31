@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dashboard_item_home">Головна</string>
+    <string name="dashboard_item_business">Бізнес</string>
+    <string name="dashboard_item_settings">Налаштування</string>
+    <string name="dashboard_onboarding_headline">Початок роботи</string>
+    <string name="dashboard_onboarding_subtitle">Створіть власний бізнес або приєднайтеся до того, у якому працюєте.</string>
+    <string name="dashboard_onboarding_create_title">Створити бізнес</string>
+    <string name="dashboard_onboarding_create_subtitle">Налаштуйте власний: назва, години роботи, адреса</string>
+    <string name="dashboard_onboarding_join_title">Приєднатися до бізнесу</string>
+    <string name="dashboard_onboarding_join_subtitle">Використайте код запрошення від власника</string>
+    <string name="dashboard_onboarding_select_headline">Виберіть бізнес</string>
+    <string name="dashboard_onboarding_select_or">або</string>
+    <string name="dashboard_onboarding_select_subtitle">Виберіть бізнес, яким хочете керувати, або створіть новий чи приєднайтеся до іншого.</string>
+    <string name="dashboard_onboarding_setup_headline">Завершіть налаштування</string>
+    <string name="dashboard_onboarding_setup_subtitle">Виконайте ці кроки, щоб почати приймати записи. Поки що достатньо одного елемента кожного типу — інші можна додати пізніше на вкладці «Бізнес».</string>
+    <string name="dashboard_onboarding_plugins_title">Увімкніть плагіни</string>
+    <string name="dashboard_onboarding_plugins_subtitle">Увімкніть записи, щоб почати приймати бронювання</string>
+    <string name="dashboard_onboarding_group_title">Створіть групу послуг</string>
+    <string name="dashboard_onboarding_group_subtitle">Наприклад, «Стрижки» або «Нігті»</string>
+    <string name="dashboard_onboarding_service_title">Додайте послугу</string>
+    <string name="dashboard_onboarding_service_subtitle">Виберіть групу, вкажіть тривалість і ціну</string>
+    <string name="dashboard_onboarding_client_title">Додайте клієнта</string>
+    <string name="dashboard_onboarding_client_subtitle">Імʼя та контактні дані</string>
+    <string name="dashboard_onboarding_step_no_services_access">Потрібен дозвіл на перегляд послуг</string>
+    <string name="dashboard_onboarding_step_no_clients_access">Потрібен дозвіл на перегляд клієнтів</string>
+    <string name="dashboard_onboarding_awaiting_headline">Майже готово</string>
+    <string name="dashboard_onboarding_awaiting_message">Ви приєдналися до %s.\nГоловна панель бізнесу зʼявиться тут, щойно власник завершить налаштування.</string>
+    <string name="dashboard_onboarding_awaiting_no_clients_access">Ви приєдналися до %s.\nЩоб тут зʼявилася головна панель бізнесу, потрібен дозвіл на перегляд клієнтів. Попросіть власника його надати.</string>
+    <string name="dashboard_onboarding_awaiting_no_services_access">Ви приєдналися до %s.\nЩоб тут зʼявилася головна панель бізнесу, потрібен дозвіл на перегляд послуг. Попросіть власника його надати.</string>
+    <string name="dashboard_onboarding_awaiting_no_clients_services_access">Ви приєдналися до %s.\nЩоб тут зʼявилася головна панель бізнесу, потрібен дозвіл на перегляд клієнтів і послуг. Попросіть власника його надати.</string>
+    <string name="dashboard_create_dialog_title">Створити бізнес</string>
+    <string name="dashboard_create_dialog_message">Введіть назву, яку бачитимуть ваші клієнти</string>
+    <string name="dashboard_create_dialog_placeholder">Назва бізнесу</string>
+    <string name="dashboard_create_error_empty_name">Введіть назву бізнесу</string>
+    <string name="dashboard_join_dialog_title">Приєднатися до бізнесу</string>
+    <string name="dashboard_join_dialog_message">Введіть код запрошення, який вам надіслав власник бізнесу</string>
+    <string name="dashboard_join_dialog_placeholder">Код запрошення</string>
+    <string name="dashboard_join_dialog_confirm">Приєднатися</string>
+    <string name="dashboard_join_success">Ви приєдналися до бізнесу</string>
+    <string name="dashboard_join_error_empty_code">Введіть код запрошення</string>
+    <string name="dashboard_join_error_already_processed">Це запрошення вже використано або воно більше не дійсне</string>
+    <string name="dashboard_join_error_employee_exists">Ви вже є працівником цього бізнесу</string>
+</resources>

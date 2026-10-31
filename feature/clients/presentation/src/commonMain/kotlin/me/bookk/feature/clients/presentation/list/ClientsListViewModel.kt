@@ -1,6 +1,10 @@
 package me.bookk.feature.clients.presentation.list
 
+import dev.icerock.moko.resources.StringResource
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.desc.joinToStringDesc
+import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -35,6 +39,8 @@ import me.bookk.feature.clients.domain.api.ImportClients
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
+import me.bookk.feature.clients.domain.api.entity.ClientImportResult
+import me.bookk.feature.clients.domain.api.entity.RejectedClientImport
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.list.ClientsListDestination.AddClient
 import kotlin.uuid.Uuid
@@ -205,11 +211,46 @@ class ClientsListViewModel(
             launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { importAction.startLoading() },
-            call = { importClients(observeCurrentBusinessId().filterNotNull().first(), contacts) },
-            onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
+            call = {
+                val businessId = observeCurrentBusinessId().filterNotNull().first()
+                importClients(businessId, contacts)
+            },
+            onComplete = {
+                uiState.notifications.add(PresentationNotification.SuccessHaptic)
+                showImportSummary(it)
+            },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { importAction.stopLoading() }
         )
+    }
+
+    private fun showImportSummary(result: ClientImportResult) {
+        uiState.notifications.add(
+            PresentationNotification.Message(
+                title = ClientsRes.strings.clients_import_result_title.desc(),
+                message = result.summaryLines().joinToStringDesc(separator = "\n"),
+                buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
+            )
+        )
+    }
+
+    private fun ClientImportResult.summaryLines(): List<StringDesc> {
+        val createdLine = ClientsRes.strings.clients_import_result_created.format(created.size)
+        if (rejected.isEmpty()) return listOf(createdLine)
+        val countsByReason = rejected.groupingBy { it.reason }.eachCount()
+        val reasonLines = RejectedClientImport.Reason.entries.mapNotNull { reason ->
+            countsByReason[reason]?.let { reason.summaryLine().format(it) }
+        }
+        return listOf(createdLine, ClientsRes.strings.clients_import_result_rejected.format(rejected.size)) + reasonLines
+    }
+
+    private fun RejectedClientImport.Reason.summaryLine(): StringResource {
+        return when (this) {
+            RejectedClientImport.Reason.INVALID_FIELDS -> ClientsRes.strings.clients_import_result_reason_invalid
+            RejectedClientImport.Reason.MISSING_CONTACT_INFO -> ClientsRes.strings.clients_import_result_reason_missing_contact
+            RejectedClientImport.Reason.ALREADY_EXISTS -> ClientsRes.strings.clients_import_result_reason_exists
+            RejectedClientImport.Reason.UNKNOWN -> ClientsRes.strings.clients_import_result_reason_unknown
+        }
     }
 
     private fun showContactsAccessDialog() {

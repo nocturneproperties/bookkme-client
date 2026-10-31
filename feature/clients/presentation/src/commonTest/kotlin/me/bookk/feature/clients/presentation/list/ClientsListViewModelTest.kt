@@ -41,6 +41,9 @@ import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.GetDeviceContacts
 import me.bookk.feature.clients.domain.api.ImportClients
 import me.bookk.feature.clients.domain.api.entity.ClientImportResult
+import dev.icerock.moko.resources.format
+import dev.icerock.moko.resources.desc.joinToStringDesc
+import me.bookk.feature.clients.domain.api.entity.RejectedClientImport
 import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
@@ -635,7 +638,7 @@ class ClientsListViewModelTest {
         sut.pickContacts()
 
         then()
-        sut.uiState.notifications.assertSingle<PresentationNotification.SuccessHaptic>()
+        assertTrue(sut.uiState.notifications.presentationNotification.any { it is PresentationNotification.SuccessHaptic })
     }
 
     @Test
@@ -651,6 +654,78 @@ class ClientsListViewModelTest {
 
         then()
         assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+    }
+
+    @Test
+    fun `shows imported count in import summary when every picked contact is imported`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.importClients(any(), any()) } returns ClientImportResult(
+            created = listOf(stubDetachedClient(name = "Anna"), stubDetachedClient(name = "John")),
+            rejected = emptyList()
+        )
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        val summary = sut.importSummary()
+        assertEquals(ClientsRes.strings.clients_import_result_title.desc(), summary.title)
+        assertEquals(
+            listOf(ClientsRes.strings.clients_import_result_created.format(2)).joinToStringDesc("\n"),
+            summary.message
+        )
+    }
+
+    @Test
+    fun `shows skipped count and reasons in import summary when some picked contacts are rejected`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.importClients(any(), any()) } returns ClientImportResult(
+            created = listOf(stubDetachedClient(name = "Anna")),
+            rejected = listOf(
+                RejectedClientImport(index = 1, reason = RejectedClientImport.Reason.ALREADY_EXISTS),
+                RejectedClientImport(index = 2, reason = RejectedClientImport.Reason.INVALID_FIELDS),
+                RejectedClientImport(index = 3, reason = RejectedClientImport.Reason.ALREADY_EXISTS),
+                RejectedClientImport(index = 4, reason = RejectedClientImport.Reason.UNKNOWN),
+                RejectedClientImport(index = 5, reason = RejectedClientImport.Reason.MISSING_CONTACT_INFO)
+            )
+        )
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertEquals(
+            listOf(
+                ClientsRes.strings.clients_import_result_created.format(1),
+                ClientsRes.strings.clients_import_result_rejected.format(5),
+                ClientsRes.strings.clients_import_result_reason_invalid.format(1),
+                ClientsRes.strings.clients_import_result_reason_missing_contact.format(1),
+                ClientsRes.strings.clients_import_result_reason_exists.format(2),
+                ClientsRes.strings.clients_import_result_reason_unknown.format(1)
+            ).joinToStringDesc("\n"),
+            sut.importSummary().message
+        )
+    }
+
+    @Test
+    fun `does not show import summary when importing picked contacts fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.importClients(any(), any()) } throws TestException()
+        val sut = fixture.sut()
+        sut.tapImport()
+
+        whenn()
+        sut.pickContacts()
+
+        then()
+        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.Message })
     }
 
     @Test
@@ -744,6 +819,10 @@ class ClientsListViewModelTest {
 
     private fun ClientsListViewModel.importAction(): AppBarActionState {
         return uiState.appBar.actions.items.single { it.contentDescription == DesignSystem.strings.action_import.desc() }
+    }
+
+    private fun ClientsListViewModel.importSummary(): PresentationNotification.Message {
+        return uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single()
     }
 
     private fun ClientsListViewModel.pickContacts(vararg contacts: ClientImportEntry) {

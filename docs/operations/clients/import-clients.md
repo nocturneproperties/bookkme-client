@@ -7,8 +7,10 @@
 [Get device contacts](get-device-contacts.md))
 
 Creates detached clients in bulk, e.g. from the phone book. While it runs, `ClientsListViewModel` disables the
-import toolbar action; it re-enables it when the call ends, plays the success haptic on success and shows the error
-otherwise. The created clients appear in the list through the clients `flow()`, since each request saves them to the DB. Each entry's name, last name, phone,
+import toolbar action and shows a loader on it; it restores it when the call ends. On success it plays the success
+haptic and shows the "Contacts imported" summary: the number of created clients and, when some entries were
+rejected, their number and a count per `RejectedClientImport.Reason` (invalid name, no phone or email, already a
+client, other). On failure it shows the error. The created clients appear in the list through the clients `flow()`, since each request saves them to the DB. Each entry's name, last name, phone,
 email and description are trimmed first (`ClientImportEntry.trimmed()`). The backend accepts at most
 500 entries per request (`BUSINESS_CLIENT_IMPORT_TOO_LARGE` 200039), so the entries are sent in
 requests of up to 500, one after another. Valid entries are created; the backend returns every other

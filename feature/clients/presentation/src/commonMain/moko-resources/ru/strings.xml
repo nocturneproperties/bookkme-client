@@ -26,4 +26,11 @@
     <string name="clients_import_contacts_title">Выберите контакты</string>
     <string name="clients_import_no_contacts_title">Нет контактов для импорта</string>
     <string name="clients_import_no_contacts_message">Импортировать можно только контакты с номером телефона или эл. почтой.</string>
+    <string name="clients_import_result_title">Контакты импортированы</string>
+    <string name="clients_import_result_created">Импортировано: %d</string>
+    <string name="clients_import_result_rejected">Пропущено: %d</string>
+    <string name="clients_import_result_reason_invalid">• Некорректное имя: %d</string>
+    <string name="clients_import_result_reason_missing_contact">• Нет номера телефона или эл. почты: %d</string>
+    <string name="clients_import_result_reason_exists">• Уже есть среди клиентов: %d</string>
+    <string name="clients_import_result_reason_unknown">• Другие причины: %d</string>
 </resources>

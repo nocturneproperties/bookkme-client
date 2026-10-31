@@ -76,6 +76,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `GetClientsList` | `GET /api/business/{businessId}/clients` | [Get clients list](clients/get-clients-list.md) (reference list steps) |
 | `GetClient` | local only (`flow` observes the row) | [Get client](clients/get-client.md) |
 | `CreateClient` | `POST /api/business/{businessId}/clients` | [Create client](clients/create-client.md) |
+| `ImportClients` | `POST /api/business/{businessId}/clients/import` (one request per 500 entries) | [Import clients](clients/import-clients.md) |
 | `EditClient` | `PATCH /api/business/{businessId}/clients/{id}` | [Edit client](clients/edit-client.md) |
 | `DeleteClient` | `DELETE /api/business/{businessId}/clients/{id}` | [Delete client](clients/delete-client.md) |
 | `GetClientsPermissions` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Get clients permissions](clients/get-clients-permissions.md) |

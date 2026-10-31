@@ -21,8 +21,13 @@ import me.bookk.feature.clients.data.mapping.toDomain
 import me.bookk.feature.clients.data.mapping.toRemote
 import me.bookk.feature.clients.data.mapping.toUpdateRemote
 import me.bookk.feature.clients.data.remote.api.ClientsRouting.Api
+import me.bookk.feature.clients.data.remote.model.ClientImportEntryRemote
+import me.bookk.feature.clients.data.remote.model.ClientImportRequest
+import me.bookk.feature.clients.data.remote.model.ClientImportResultRemote
 import me.bookk.feature.clients.data.remote.model.ClientRemote
 import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
+import me.bookk.feature.clients.domain.api.entity.ClientImportResult
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -69,6 +74,16 @@ internal class CommonClientsDataSource(
             }
                 .body<ClientRemote>()
                 .toDomain(client.businessId)
+        }
+    }
+
+    override suspend fun importClients(businessId: Uuid, entries: List<ClientImportEntry>): ClientImportResult {
+        return mapExceptions {
+            httpClient.post(Api.Clients.Import(Api.Clients(businessId = businessId))) {
+                setBody(ClientImportRequest(clients = entries.map(ClientImportEntryRemote::from)))
+            }
+                .body<ClientImportResultRemote>()
+                .toDomain(businessId)
         }
     }
 

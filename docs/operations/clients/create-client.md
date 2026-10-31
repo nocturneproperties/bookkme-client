@@ -5,7 +5,7 @@
 `CreateClient(client)` → `POST /api/business/{businessId}/clients`
 · called from `CreateClientViewModel`
 
-Name, last name, phone, email and description are trimmed first (`Client.trimmed()`). The server does all validation (contact info, name, phone format, duplicate phone). The client maps no
+Name, last name, phone, email and description are trimmed first (`Client.trimmed()`). The server does all validation (contact info, name, phone format, phone or email already used by another client of the business). The client maps no
 business error codes, so every failure is rethrown as the generic error.
 
 ```mermaid

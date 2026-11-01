@@ -72,8 +72,8 @@ class EmployeeRemoteContractTest {
                 "lastName" to 4,
                 "phone" to 5,
                 "email" to 6,
-                "services" to 7,
-                "schedule" to 8
+                "services" to 8,
+                "schedule" to 9
             ),
             fields
         )

@@ -19,7 +19,8 @@ internal fun stubEmployee(
     lastName: String = "Doe",
     services: List<Service> = emptyList(),
     permissions: BusinessPermissions = stubPermissions(),
-    suspendedAt: Instant? = null
+    suspendedAt: Instant? = null,
+    schedule: WorkingSchedule = WorkingSchedule()
 ) = Employee(
     id = Uuid.random(),
     businessId = Uuid.random(),
@@ -29,7 +30,7 @@ internal fun stubEmployee(
     email = "jane@example.com",
     userId = Uuid.random(),
     services = services,
-    schedule = WorkingSchedule(),
+    schedule = schedule,
     createdAt = Instant.fromEpochMilliseconds(0),
     permissions = permissions,
     suspendedAt = suspendedAt

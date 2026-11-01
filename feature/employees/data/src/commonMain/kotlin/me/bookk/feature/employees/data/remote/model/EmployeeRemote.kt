@@ -47,8 +47,8 @@ internal class EmployeeUpdateRequest(
     @ProtoNumber(4) val lastName: String,
     @ProtoNumber(5) val phone: String?,
     @ProtoNumber(6) val email: String?,
-    @ProtoNumber(7) val services: List<ServiceRemote>,
-    @ProtoNumber(8) val schedule: ScheduleRemote
+    @ProtoNumber(8) val services: List<ServiceRemote>,
+    @ProtoNumber(9) val schedule: ScheduleRemote
 ) {
     companion object {
         fun fromDomain(employee: Employee): EmployeeUpdateRequest {

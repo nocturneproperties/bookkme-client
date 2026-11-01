@@ -122,23 +122,8 @@ struct BusinessPluginCard: View {
 				features: state.clientCan.items(OptionalInfoLine.self)
 			)
 			
-			if !state.isEnabled {
-				if let demo = state.demo {
-					Button(action: demo.onClick) {
-						Text(demo.title.localized())
-							.font(.caption)
-							.foregroundColor(AppColors.actionText)
-							.frame(maxWidth: .infinity)
-							.padding(.horizontal, 16)
-							.padding(.vertical, 8)
-					}
-					.background(AppColors.primary.opacity(0.05))
-					.clipShape(RoundedRectangle(cornerRadius: 8))
-				}
-				
-				if state.canEnable {
-					StateButton(state.enable)
-				}
+			if !state.isEnabled && state.canEnable {
+				StateButton(state.enable)
 			}
 		}
 	}

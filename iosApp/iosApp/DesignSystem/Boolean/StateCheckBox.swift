@@ -26,7 +26,11 @@ struct StateCheckBox: View {
 			state.text.localized(),
 			isOn: Binding(
 				get: { state.isChecked },
-				set: { state.onCheckedChange?(KotlinBoolean(bool: $0)) }
+				set: { v in
+					withAnimation {
+						state.onCheckedChange?(KotlinBoolean(bool: v))
+					}
+				}
 			)
 		)
 		.disabled(!state.isEnabled)

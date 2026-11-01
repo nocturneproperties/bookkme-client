@@ -11,7 +11,7 @@
     <string name="services_create_name">Nazwa</string>
     <string name="services_create_name_placeholder">Nazwa usługi</string>
     <string name="services_create_duration">Czas trwania</string>
-    <string name="services_create_duration_placeholder">Czas trwania w minutach</string>
+    <string name="services_create_duration_placeholder">w minutach</string>
     <string name="services_create_price">Cena</string>
     <string name="services_create_price_placeholder">Kwota płatności</string>
     <string name="services_create_visible">Widoczna dla klientów</string>

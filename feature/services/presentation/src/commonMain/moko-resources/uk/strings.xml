@@ -11,7 +11,7 @@
     <string name="services_create_name">Назва</string>
     <string name="services_create_name_placeholder">Назва послуги</string>
     <string name="services_create_duration">Тривалість</string>
-    <string name="services_create_duration_placeholder">Тривалість у хвилинах</string>
+    <string name="services_create_duration_placeholder">у хвилинах</string>
     <string name="services_create_price">Ціна</string>
     <string name="services_create_price_placeholder">Сума оплати</string>
     <string name="services_create_visible">Видима клієнтам</string>

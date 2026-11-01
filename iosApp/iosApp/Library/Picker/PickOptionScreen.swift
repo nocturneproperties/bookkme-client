@@ -96,7 +96,9 @@ struct PickOptionItemView: View {
 		}
 		.contentShape(Rectangle())
 		.onTapGesture {
-			item.checkBox.onCheckedChange?(KotlinBoolean(bool: !item.checkBox.isChecked))
+			withAnimation {
+				item.checkBox.onCheckedChange?(KotlinBoolean(bool: !item.checkBox.isChecked))
+			}
 		}
 	}
 }

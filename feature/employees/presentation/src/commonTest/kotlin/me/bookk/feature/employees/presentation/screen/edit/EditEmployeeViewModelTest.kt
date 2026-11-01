@@ -15,6 +15,8 @@ import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalTime
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.presentation.VmArgs
@@ -31,7 +33,11 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.tap
+import me.bookk.designsystem.uistate.schedule.DaySettingsState
+import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
+import me.bookk.feature.business.domain.api.entity.WorkHour
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
@@ -543,6 +549,63 @@ class EditEmployeeViewModelTest {
 
         then()
         assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `adds a nine to five interval when a day without hours is enabled`() = runUnitTest {
+        given()
+        val employee = stubEmployee(schedule = scheduleWithMonday(DayOfWeekSchedule.disabled(DayOfWeek.MONDAY)))
+        val sut = Fixture(employee = employee).sut()
+        val monday = sut.uiState.schedule.monday
+
+        whenn()
+        monday.isActive.onCheckedChange?.invoke(true)
+
+        then()
+        assertEquals(listOf(LocalTime(9, 0) to LocalTime(17, 0)), monday.pickedIntervals())
+    }
+
+    @Test
+    fun `keeps existing hours when a day with hours is enabled`() = runUnitTest {
+        given()
+        val hours = WorkHour(LocalTime(10, 0), LocalTime(14, 0))
+        val employee = stubEmployee(
+            schedule = scheduleWithMonday(DayOfWeekSchedule(DayOfWeek.MONDAY, listOf(hours), isActive = false))
+        )
+        val sut = Fixture(employee = employee).sut()
+        val monday = sut.uiState.schedule.monday
+
+        whenn()
+        monday.isActive.onCheckedChange?.invoke(true)
+
+        then()
+        assertEquals(listOf(hours.from to hours.to), monday.pickedIntervals())
+    }
+
+    @Test
+    fun `saves nine to five for a day enabled without hours`() = runUnitTest {
+        given()
+        val fixture = Fixture(employee = stubEmployee(schedule = scheduleWithMonday(DayOfWeekSchedule.disabled(DayOfWeek.MONDAY))))
+        fixture.stubUpdateEcho()
+        val sut = fixture.sut()
+        sut.uiState.schedule.monday.isActive.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        val saved = fixture.updates.get().schedule.monday
+        assertTrue(saved.isActive)
+        assertEquals(listOf(WorkHour(LocalTime(9, 0), LocalTime(17, 0))), saved.workingTime)
+    }
+
+    private fun scheduleWithMonday(monday: DayOfWeekSchedule): WorkingSchedule {
+        val schedule = WorkingSchedule()
+        return schedule.copy(days = schedule.days + (DayOfWeek.MONDAY to monday))
+    }
+
+    private fun DaySettingsState.pickedIntervals(): List<Pair<LocalTime?, LocalTime?>> {
+        return intervals.map { it.timeFromPicker.timePicker.pickedTime to it.timeToPicker.timePicker.pickedTime }
     }
 
     @Test

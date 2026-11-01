@@ -93,7 +93,11 @@ class ScheduleBinder(
         day.id = dayOfWeek.hashCode().toString()
         day.isActive.isChecked = daySchedule.isActive
         day.isActive.onCheckedChange = weakSelfClosure { binder, isChecked: Boolean ->
-            binder.state.dayOf(dayOfWeek).isActive.isChecked = isChecked
+            val current = binder.state.dayOf(dayOfWeek)
+            current.isActive.isChecked = isChecked
+            if (isChecked && current.intervals.isEmpty()) {
+                current.replaceIntervals(listOf(binder.renderInterval(current.createTimeSettingState(), DEFAULT_WORKING_HOURS)))
+            }
             binder.onChanged()
         }
         val weekday = LocalDate.atNextWeekDay(dayOfWeek)
@@ -196,5 +200,9 @@ class ScheduleBinder(
             DayOfWeek.SATURDAY -> saturday
             DayOfWeek.SUNDAY -> sunday
         }
+    }
+
+    private companion object {
+        val DEFAULT_WORKING_HOURS = WorkingHours(LocalTime(9, 0), LocalTime(17, 0))
     }
 }

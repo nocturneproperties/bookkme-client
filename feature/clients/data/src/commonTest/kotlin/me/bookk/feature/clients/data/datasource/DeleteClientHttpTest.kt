@@ -77,7 +77,7 @@ class DeleteClientHttpTest {
                     dataSerializer.decodeFromByteArray(
                         DeleteClientRequest.serializer(),
                         (it.body as OutgoingContent.ByteArrayContent).bytes(),
-                    ).stepUpToken
+                    ).confirmationToken
                 respond("", HttpStatusCode.NoContent)
             },
         ) {

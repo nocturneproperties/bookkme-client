@@ -22,14 +22,14 @@ import me.bookk.feature.authorization.data.BuildKonfig
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting.Api.Auth
+import me.bookk.feature.authorization.data.remote.model.ActionConfirmationRequestRemote
+import me.bookk.feature.authorization.data.remote.model.ActionConfirmationTokenRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.SensitiveActionRemote
-import me.bookk.feature.authorization.data.remote.model.StepUpRequestRemote
-import me.bookk.feature.authorization.data.remote.model.StepUpTokenRemote
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
+import me.bookk.feature.authorization.domain.datasource.authorization.ActionConfirmationRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
-import me.bookk.feature.authorization.domain.datasource.authorization.SensitiveActionConfirmation
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
 import me.bookk.feature.authorization.domain.entity.TokenInfo
@@ -46,11 +46,11 @@ class CommonAuthorizationDataSource(
 
     private val preferences = preferenceProvider.get("authorization_prefs")
 
-    override suspend fun confirmSensitiveAction(confirmation: SensitiveActionConfirmation): String =
+    override suspend fun confirmAction(confirmation: ActionConfirmationRequest): String =
         mapExceptions {
-            httpClient.post(Auth.StepUp()) {
+            httpClient.post(Auth.ConfirmAction()) {
                 setBody(
-                    StepUpRequestRemote(
+                    ActionConfirmationRequestRemote(
                         requestId = confirmation.requestId,
                         publicKeyCredentialJson = confirmation.publicKeyCredentialJson,
                         action = SensitiveActionRemote.fromDomain(confirmation.action),
@@ -58,7 +58,7 @@ class CommonAuthorizationDataSource(
                         targetId = confirmation.targetId,
                     ),
                 )
-            }.body<StepUpTokenRemote>().token
+            }.body<ActionConfirmationTokenRemote>().token
         }
 
     override suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?) {

@@ -42,7 +42,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `ConfirmSensitiveAction` | `GET challenge + POST /api/auth/passkey/step_up` | [Confirm sensitive action](authorization/confirm-sensitive-action.md) |
+| `ConfirmSensitiveAction` | `GET challenge + POST /api/auth/passkey/confirm_action` | [Confirm sensitive action](authorization/confirm-sensitive-action.md) |
 | `CreateAccount` | `POST /api/auth/passkey/sign_up/challenge`, `POST /api/auth/sign_up` with accepted legal-document versions | [Create account](authorization/create-account.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
@@ -159,7 +159,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `UpdateNotificationToken` | `PUT /api/notifications/{deviceUuid}/token` | [Update notification token](settings/update-notification-token.md) |
 | `GetAvailablePasskeys`, `DeletePasskey` | `GET /api/auth/passkey`, `DELETE /api/auth/passkey/{id}` | [Delete passkey / Get available passkeys](settings/delete-passkey.md) |
 | `CreateNewPasskey` | `GET /api/auth/passkey/add/challenge`, `POST /api/auth/passkey/add/finish`; typed backend errors | [Create new passkey](settings/create-new-passkey.md) |
-| `DeleteAccount` | `DELETE /api/auth/account`; typed backend errors | [Delete account](settings/delete-account.md) |
+| `DeleteAccount` | Action confirmation + `DELETE /api/auth/account`; typed backend errors | [Delete account](settings/delete-account.md) |
 | `SendContactForm` | `POST /api/user/contactus` | [Send contact form](settings/send-contact-form.md) |
 
 ## Use cases composed of other use cases
@@ -188,6 +188,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | [Is business owner](employees/is-business-owner.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
 | [Create new passkey](settings/create-new-passkey.md) | `GetAvailablePasskeys` |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
+| [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut` |
 | [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |
 | [Start personal data export](settings/start-personal-data-export.md) | `UserProfileCRUD`, `ConfirmSensitiveAction` |
 | [Start business data export](business/start-business-data-export.md) | `ConfirmSensitiveAction` |

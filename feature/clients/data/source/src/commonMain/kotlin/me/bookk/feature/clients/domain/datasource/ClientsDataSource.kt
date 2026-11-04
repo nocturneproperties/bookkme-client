@@ -18,7 +18,7 @@ interface ClientsDataSource {
         entries: List<ClientImportEntry>,
     ): ClientImportResult
     suspend fun updateClient(client: Client): Client
-    suspend fun deleteClient(businessId: Uuid, id: Uuid, stepUpToken: String)
+    suspend fun deleteClient(businessId: Uuid, id: Uuid, confirmationToken: String)
     suspend fun saveClientsInDb(clients: List<Client>)
     suspend fun deleteClientInDb(id: Uuid)
     suspend fun getClientIdsInDb(businessId: Uuid): List<Uuid>

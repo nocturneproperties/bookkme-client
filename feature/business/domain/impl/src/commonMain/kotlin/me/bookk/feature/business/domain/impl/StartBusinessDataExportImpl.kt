@@ -14,28 +14,34 @@ internal class StartBusinessDataExportImpl(
     private val confirmation: ConfirmSensitiveAction,
 ) : StartBusinessDataExport {
     override suspend fun invoke(businessId: Uuid): DataExport {
-        val targetId = businessId
-        val token = runCatching {
-            confirmation(SensitiveAction.EXPORT_BUSINESS_DATA, businessId, targetId)
-        }
-            .getOrElse {
-                throw when (it) {
-                    is ConfirmSensitiveAction.Error ->
-                        StartBusinessDataExport.Error.ConfirmationFailed()
-
-                    else -> it
-                }
-            }
-        return runCatching { dataSource.start(businessId, token) }
-            .onBusinessError {
-                when (it.errorCode) {
-                    BusinessErrorCodes.BUSINESS_STEP_UP_INVALID ->
-                        throw StartBusinessDataExport.Error.ConfirmationRequired()
-
-                    BusinessErrorCodes.DATA_EXPORT_TOO_FREQUENT ->
-                        throw StartBusinessDataExport.Error.TooFrequent()
-                }
-            }
-            .getOrThrow()
+        val token = getConfirmationToken(businessId)
+        return requestDataExport(businessId, token)
     }
+
+    private suspend fun requestDataExport(
+        businessId: Uuid,
+        token: String,
+    ): DataExport = runCatching {
+        dataSource.start(businessId, token)
+    }.onBusinessError {
+        when (it.errorCode) {
+            BusinessErrorCodes.BUSINESS_ACTION_CONFIRMATION_INVALID ->
+                throw StartBusinessDataExport.Error.ConfirmationRequired()
+
+            BusinessErrorCodes.DATA_EXPORT_TOO_FREQUENT ->
+                throw StartBusinessDataExport.Error.TooFrequent()
+        }
+    }.getOrThrow()
+
+    private suspend fun getConfirmationToken(businessId: Uuid): String = runCatching {
+        confirmation(SensitiveAction.EXPORT_BUSINESS_DATA, businessId, businessId).token
+    }
+        .getOrElse {
+            throw when (it) {
+                is ConfirmSensitiveAction.Error ->
+                    StartBusinessDataExport.Error.ConfirmationFailed()
+
+                else -> it
+            }
+        }
 }

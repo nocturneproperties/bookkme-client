@@ -10,6 +10,7 @@ internal enum class SensitiveActionRemote {
     DELETE_CLIENT,
     EXPORT_PERSONAL_DATA,
     EXPORT_BUSINESS_DATA,
+    DELETE_ACCOUNT,
     ;
 
     companion object {
@@ -18,13 +19,14 @@ internal enum class SensitiveActionRemote {
                 SensitiveAction.DELETE_CLIENT -> DELETE_CLIENT
                 SensitiveAction.EXPORT_PERSONAL_DATA -> EXPORT_PERSONAL_DATA
                 SensitiveAction.EXPORT_BUSINESS_DATA -> EXPORT_BUSINESS_DATA
+                SensitiveAction.DELETE_ACCOUNT -> DELETE_ACCOUNT
             }
         }
     }
 }
 
 @Serializable
-internal class StepUpRequestRemote(
+internal class ActionConfirmationRequestRemote(
     @ProtoNumber(1) val requestId: String,
     @ProtoNumber(2) val publicKeyCredentialJson: String,
     @ProtoNumber(3) val action: SensitiveActionRemote,
@@ -33,4 +35,4 @@ internal class StepUpRequestRemote(
 )
 
 @Serializable
-internal class StepUpTokenRemote(@ProtoNumber(1) val token: String)
+internal class ActionConfirmationTokenRemote(@ProtoNumber(1) val token: String)

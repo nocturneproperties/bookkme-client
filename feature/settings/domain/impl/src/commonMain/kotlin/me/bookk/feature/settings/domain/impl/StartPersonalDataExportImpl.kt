@@ -6,6 +6,7 @@ import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.settings.domain.api.StartPersonalDataExport
+import me.bookk.feature.settings.domain.api.StartPersonalDataExport.Error
 import me.bookk.feature.settings.domain.datasource.DataExportDataSource
 import me.bookk.feature.settings.domain.datasource.SettingsErrorCodes
 import kotlin.uuid.Uuid
@@ -17,31 +18,33 @@ internal class StartPersonalDataExportImpl(
 ) : StartPersonalDataExport {
     override suspend fun invoke(): DataExport {
         val targetId = profile.get().id
-        val token = runCatching {
-            confirmation(
-                SensitiveAction.EXPORT_PERSONAL_DATA,
-                Uuid.parse("00000000-0000-0000-0000-000000000000"),
-                targetId,
-            )
-        }
-            .getOrElse {
-                throw when (it) {
-                    is ConfirmSensitiveAction.Error ->
-                        StartPersonalDataExport.Error.ConfirmationFailed()
-
-                    else -> it
-                }
-            }
-        return runCatching { dataSource.start(token) }
-            .onBusinessError {
-                when (it.errorCode) {
-                    SettingsErrorCodes.USER_STEP_UP_INVALID ->
-                        throw StartPersonalDataExport.Error.ConfirmationRequired()
-
-                    SettingsErrorCodes.DATA_EXPORT_TOO_FREQUENT ->
-                        throw StartPersonalDataExport.Error.TooFrequent()
-                }
-            }
-            .getOrThrow()
+        val token = getConfirmationToken(targetId)
+        return requestPersonalDataExport(token)
     }
+
+    private suspend fun requestPersonalDataExport(token: String): DataExport = runCatching {
+        dataSource.start(token)
+    }.onBusinessError {
+        when (it.errorCode) {
+            SettingsErrorCodes.USER_ACTION_CONFIRMATION_INVALID -> throw Error.ConfirmationRequired()
+
+            SettingsErrorCodes.DATA_EXPORT_TOO_FREQUENT -> throw Error.TooFrequent()
+        }
+    }.getOrThrow()
+
+    private suspend fun getConfirmationToken(targetId: Uuid): String = runCatching {
+        confirmation(
+            action = SensitiveAction.EXPORT_PERSONAL_DATA,
+            businessId = Uuid.NIL,
+            targetId = targetId,
+        ).token
+    }
+        .getOrElse {
+            throw when (it) {
+                is ConfirmSensitiveAction.Error ->
+                    Error.ConfirmationFailed()
+
+                else -> it
+            }
+        }
 }

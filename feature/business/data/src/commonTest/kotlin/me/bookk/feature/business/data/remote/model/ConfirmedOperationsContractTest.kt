@@ -44,7 +44,7 @@ class ConfirmedOperationsContractTest {
         }
 
         then()
-        assertEquals(listOf("stepUpToken" to 1), fields)
+        assertEquals(listOf("confirmationToken" to 1), fields)
     }
 
     @Test

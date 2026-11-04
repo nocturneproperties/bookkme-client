@@ -37,4 +37,4 @@ internal class DataExportRemote(
 }
 
 @Serializable
-internal class DataExportRequestRemote(@ProtoNumber(1) val stepUpToken: String? = null)
+internal class DataExportRequestRemote(@ProtoNumber(1) val confirmationToken: String? = null)

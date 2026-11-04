@@ -69,7 +69,7 @@ class CommonDataExportDataSourceTest {
                     dataSerializer.decodeFromByteArray(
                         DataExportRequestRemote.serializer(),
                         (it.body as OutgoingContent.ByteArrayContent).bytes(),
-                    ).stepUpToken
+                    ).confirmationToken
                 respond(
                     bytes,
                     HttpStatusCode.OK,

@@ -9,8 +9,8 @@ flowchart TD
     Start([invoke client]) --> Confirm[ConfirmSensitiveAction<br/>DELETE_CLIENT, client.businessId, client.id]
     Confirm -- shared Error.Ignore --> Cancel([propagate cancellation])
     Confirm -- confirmation error --> Failed([throw Error.ConfirmationFailed])
-    Confirm -- token --> Net[ClientsDataSource.deleteClient businessId, id, token<br/>DELETE /api/business/businessId/clients/id<br/>body DeleteClientRequest stepUpToken]
-    Net -- 200040 BUSINESS_STEP_UP_INVALID --> Required([throw Error.ConfirmationRequired])
+    Confirm -- token --> Net[ClientsDataSource.deleteClient businessId, id, token<br/>DELETE /api/business/businessId/clients/id<br/>body DeleteClientRequest confirmationToken]
+    Net -- 200040 BUSINESS_ACTION_CONFIRMATION_INVALID --> Required([throw Error.ConfirmationRequired])
     Net -- other failure --> Error([propagate; keep local cache])
     Net -- 204 --> Del[(ClientsDataSource.deleteClientInDb<br/>ClientsDao.deleteWithAppointmentCaches transaction)]
     Del --> App[(DELETE appointment WHERE clientId<br/>service and adjustment children CASCADE)]

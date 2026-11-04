@@ -7,10 +7,10 @@
 ```mermaid
 flowchart TD
     Start([invoke businessId]) --> Confirm[ConfirmSensitiveAction<br/>EXPORT_BUSINESS_DATA, businessId, businessId]
-    Confirm -- token --> Net["DataExportDataSource.start<br/>POST /api/business/{id}/export<br/>body stepUpToken"]
+    Confirm -- token --> Net["DataExportDataSource.start<br/>POST /api/business/{id}/export<br/>body confirmationToken"]
     Confirm -- confirmation error --> Failed([throw Error.ConfirmationFailed])
     Confirm -- shared Error.Ignore --> Cancel([propagate cancellation])
-    Net -- 200040 --> Expired([throw Error.ConfirmationRequired])
+    Net -- 200040 BUSINESS_ACTION_CONFIRMATION_INVALID --> Expired([throw Error.ConfirmationRequired])
     Net -- 900002 DATA_EXPORT_TOO_FREQUENT --> Limit([throw Error.TooFrequent])
     Net -- success --> R([return DataExport])
     Net -- other failure --> Other([propagate])

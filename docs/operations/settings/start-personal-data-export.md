@@ -8,10 +8,10 @@
 flowchart TD
     Start([invoke]) --> Profile[UserProfileCRUD.get<br/>caller id]
     Profile --> Confirm[ConfirmSensitiveAction<br/>EXPORT_PERSONAL_DATA, nil business id, caller id]
-    Confirm -- token --> Net[DataExportDataSource.start<br/>POST /api/user/export<br/>body stepUpToken]
+    Confirm -- token --> Net[DataExportDataSource.start<br/>POST /api/user/export<br/>body confirmationToken]
     Confirm -- confirmation error --> Failed([throw Error.ConfirmationFailed])
     Confirm -- shared Error.Ignore --> Cancel([propagate cancellation])
-    Net -- 100005 --> Expired([throw Error.ConfirmationRequired])
+    Net -- 100005 USER_ACTION_CONFIRMATION_INVALID --> Expired([throw Error.ConfirmationRequired])
     Net -- 900002 DATA_EXPORT_TOO_FREQUENT --> Limit([throw Error.TooFrequent])
     Net -- success --> R([return DataExport])
     Net -- other failure --> Other([propagate])

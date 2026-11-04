@@ -8,7 +8,7 @@ exercise of authenticated writes. No production code changed during this audit.
 ## Follow-up integration status
 
 The findings below describe the pre-integration state. The following fixes have since been implemented
-in data/domain layers with regression tests; UI is unchanged:
+in data/domain layers with regression tests:
 
 - Integrated-client patches omit protected personal fields.
 - Polish device language is represented and mapped.
@@ -30,9 +30,40 @@ The three product decisions have now been integrated:
   action-bound confirmation; downloads return raw JSON strings without creating local files.
 
 All nine previously missing external operations now have domain/data entry points. The findings below
-are retained as the original audit evidence; they no longer describe missing implementations. UI remains
-unchanged, so newly added exports and legal/request entry points still need a future UI task to expose them.
+are retained as the original audit evidence; they no longer describe missing implementations. Existing ViewModels now show specific mutation/validation errors. Newly added exports and legal/request
+entry points still need UI work to expose them.
 
+
+## ActionConfirmation follow-up
+
+The current schema was fetched again for Step 1 of the [mobile integration plan](mobile-integration-plan.md).
+The obsolete `POST /api/auth/passkey/step_up` operation is replaced by
+`POST /api/auth/passkey/confirm_action`, with `ActionConfirmationRequest` and `ActionConfirmationToken`.
+The implementation now uses that route and model names. Existing confirmation request wire tags and
+existing action enum ordinals are preserved; `DELETE_ACCOUNT` is appended.
+
+Client deletion and personal/business export requests now name their field `confirmationToken`, retaining
+wire tag 1. The corresponding error constants are renamed to `BUSINESS_ACTION_CONFIRMATION_INVALID`
+(200040) and `USER_ACTION_CONFIRMATION_INVALID` (100005).
+
+Account deletion now composes the shared confirmation operation with `DELETE_ACCOUNT`, a nil business
+UUID and the caller's user UUID as target. The old assertion-shaped `VerifyDeleteAccRequest` has been
+removed from the backend. Its replacement is a separate `DeleteAccountRequest` message containing only
+`confirmationToken` at tag 1, represented by `DeleteAccountRequestRemote` on mobile. Errors 12
+(`ACTION_CONFIRMATION_INVALID`) and 4 (`VERIFICATION_FAILED`) map to the existing account-verification
+failure. Challenge and ownership failures are handled during shared confirmation. User cancellation and
+unrelated failures propagate without performing deletion or logout/cache cleanup.
+
+The confirmation result retains the verified assertion in memory so account deletion can still signal
+credential removal after the remote DELETE succeeds, without a second prompt. Signaling remains
+best-effort; logout and token/status cleanup follow successful deletion. No confirmation token or assertion
+is persisted, and no database schema, preference key or logout-hook binding changes are required.
+
+`NotificationSettings.Update` was renamed to `NotificationSettingsUpdate` in the schema, with unchanged
+properties; the existing mobile notification update payload remains compatible.
+
+The original findings below retain their historical route/model names. Validation uses mocked HTTP
+requests and domain tests; no live destructive operation has been performed.
 
 ## Existing calls with incompatible contracts
 

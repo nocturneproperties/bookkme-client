@@ -3,7 +3,7 @@ package me.bookk.feature.authorization.data.mapping
 import me.bookk.database.entity.UserProfileEntity
 import me.bookk.feature.authorization.data.remote.model.AcceptedLegalDocumentsRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
-import me.bookk.feature.authorization.data.remote.model.DeleteAccountRemote
+import me.bookk.feature.authorization.data.remote.model.DeleteAccountRequestRemote
 import me.bookk.feature.authorization.data.remote.model.PassKeySignUpStartInfo
 import me.bookk.feature.authorization.data.remote.model.RegistrationChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
@@ -123,9 +123,8 @@ internal fun UserProfileRemote.toDomain(): UserProfile {
     )
 }
 
-internal fun DeleteAccountRequest.toRemote(): DeleteAccountRemote {
-    return DeleteAccountRemote(
-        requestId = requestId,
-        publicKeyCredentialJson = publicKeyCredentialJson,
+internal fun DeleteAccountRequest.toRemote(): DeleteAccountRequestRemote {
+    return DeleteAccountRequestRemote(
+        confirmationToken = confirmationToken,
     )
 }

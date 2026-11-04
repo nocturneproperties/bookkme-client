@@ -20,6 +20,7 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.authorization.domain.entity.UserProfile
 import me.bookk.feature.settings.domain.api.StartPersonalDataExport
@@ -52,7 +53,8 @@ class StartPersonalDataExportImplTest {
         val profile = mock<UserProfileCRUD>()
         val sut = StartPersonalDataExportImpl(dataSource, confirmation, profile)
         init {
-            everySuspend { confirmation(any(), any(), any()) } returns "confirmed"
+            everySuspend { confirmation(any(), any(), any()) } returns
+                ActionConfirmation("confirmed", "assertion")
             everySuspend { profile.get() } returns
                 UserProfile(id, "John", "Doe", "john@example.com")
         }
@@ -73,7 +75,7 @@ class StartPersonalDataExportImplTest {
         verifySuspend {
             fixture.confirmation(
                 SensitiveAction.EXPORT_PERSONAL_DATA,
-                Uuid.parse("00000000-0000-0000-0000-000000000000"),
+                Uuid.NIL,
                 fixture.id,
             )
         }

@@ -19,10 +19,12 @@ import kotlin.uuid.Uuid
 internal class CommonDataExportDataSource(private val httpClient: HttpClient) :
     DataSource(),
     DataExportDataSource {
-    override suspend fun start(stepUpToken: String): DataExport = mapExceptions {
+    override suspend fun start(confirmationToken: String): DataExport = mapExceptions {
         httpClient.post(UserRouting.Api.User.Export()) {
-            setBody(DataExportRequestRemote(stepUpToken))
-        }.body<DataExportRemote>().toDomain()
+            setBody(DataExportRequestRemote(confirmationToken))
+        }
+            .body<DataExportRemote>()
+            .toDomain()
     }
 
     override suspend fun get(): DataExport = mapExceptions {

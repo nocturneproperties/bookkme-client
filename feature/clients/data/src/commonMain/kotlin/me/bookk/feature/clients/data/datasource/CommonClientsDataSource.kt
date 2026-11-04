@@ -105,10 +105,10 @@ internal class CommonClientsDataSource(
         }
     }
 
-    override suspend fun deleteClient(businessId: Uuid, id: Uuid, stepUpToken: String) {
+    override suspend fun deleteClient(businessId: Uuid, id: Uuid, confirmationToken: String) {
         mapExceptions {
             httpClient.delete(Api.Clients.Id(Api.Clients(businessId = businessId), id = id)) {
-                setBody(DeleteClientRequest(stepUpToken))
+                setBody(DeleteClientRequest(confirmationToken))
             }
         }
     }

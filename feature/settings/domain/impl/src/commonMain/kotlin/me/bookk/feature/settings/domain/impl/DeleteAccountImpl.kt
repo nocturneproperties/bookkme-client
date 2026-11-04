@@ -1,75 +1,75 @@
 package me.bookk.feature.settings.domain.impl
 
-import me.bookk.core.domain.entity.Error
-import me.bookk.core.domain.entity.businessOrThrow
+import me.bookk.core.domain.entity.onBusinessError
+import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.LogOut
+import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
-import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
+import me.bookk.feature.authorization.domain.entity.ActionConfirmation
+import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.settings.domain.api.DeleteAccount
+import kotlin.uuid.Uuid
 
 internal class DeleteAccountImpl(
     private val authorizationDataSource: AuthorizationDataSource,
     private val passKeyManager: PassKeyManager,
     private val logOut: LogOut,
+    private val confirmation: ConfirmSensitiveAction,
+    private val profile: UserProfileCRUD,
 ) : DeleteAccount {
     override suspend fun invoke() {
-        val challenge = authorizationDataSource.getAuthorizationChallenge()
-        val payload = authorizeWithPasskey(challenge)
-        deleteAccountOnRemote(challenge, payload)
-        runCatching { passKeyManager.signalAccountDeleted(payload) }
-        logOut()
-        authorizationDataSource.saveAuthorizationTokens(null)
-        authorizationDataSource.setAuthorizationStatus(false)
+        val confirmedAction = confirmAccountDeletion()
+        deleteAccountOnRemote(confirmedAction.token)
+        signalAccountDeleted(confirmedAction.publicKeyCredentialJson)
+        clearSession()
     }
 
-    private suspend fun authorizeWithPasskey(
-        challenge: ServerAuthenticationChallenge,
-    ): PasskeyVerificationPayload {
+    private suspend fun confirmAccountDeletion(): ActionConfirmation {
+        val userId = profile.get().id
         return runCatching {
-            passKeyManager.authorize(
-                PassKeyManager.AuthorizationRequest(challenge.challengeJson, challenge.challenge),
-            )
-        }
-            .recoverCatching {
-                throw when (it) {
-                    is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-
-                    is PassKeyManager.Error.CredentialsMissing ->
-                        DeleteAccount.Error.AccountVerificationFailed()
-
-                    else -> DeleteAccount.Error.AccountVerificationFailed()
-                }
-            }
-            .getOrThrow()
-    }
-
-    private suspend fun deleteAccountOnRemote(
-        challenge: ServerAuthenticationChallenge,
-        payload: PasskeyVerificationPayload,
-    ) {
-        runCatching {
-            authorizationDataSource.deleteAccount(
-                DeleteAccountRequest(
-                    requestId = challenge.requestId,
-                    publicKeyCredentialJson = payload.jsonPayload,
-                ),
+            confirmation(
+                SensitiveAction.DELETE_ACCOUNT,
+                Uuid.NIL,
+                userId,
             )
         }
             .getOrElse {
-                throw when (it.businessOrThrow().errorCode) {
-                    AuthErrorCodes.VERIFICATION_FAILED,
-                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED,
-                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND,
-                    AuthErrorCodes.PASSKEY_NOT_OWNED,
-                    ->
+                throw when (it) {
+                    is ConfirmSensitiveAction.Error ->
                         DeleteAccount.Error.AccountVerificationFailed()
 
                     else -> it
                 }
             }
+    }
+
+    private suspend fun deleteAccountOnRemote(confirmationToken: String) {
+        runCatching {
+            authorizationDataSource.deleteAccount(DeleteAccountRequest(confirmationToken))
+        }
+            .onBusinessError {
+                when (it.errorCode) {
+                    AuthErrorCodes.ACTION_CONFIRMATION_INVALID,
+                    AuthErrorCodes.VERIFICATION_FAILED,
+                    -> throw DeleteAccount.Error.AccountVerificationFailed()
+                }
+            }
+            .getOrThrow()
+    }
+
+    private suspend fun signalAccountDeleted(assertionJson: String) {
+        runCatching {
+            passKeyManager.signalAccountDeleted(PasskeyVerificationPayload(assertionJson))
+        }
+    }
+
+    private suspend fun clearSession() {
+        logOut()
+        authorizationDataSource.saveAuthorizationTokens(null)
+        authorizationDataSource.setAuthorizationStatus(false)
     }
 }

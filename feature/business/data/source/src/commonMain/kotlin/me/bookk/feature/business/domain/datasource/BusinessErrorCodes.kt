@@ -1,7 +1,7 @@
 package me.bookk.feature.business.domain.datasource
 
 object BusinessErrorCodes {
-    const val BUSINESS_STEP_UP_INVALID = 200040
+    const val BUSINESS_ACTION_CONFIRMATION_INVALID = 200040
     const val DATA_EXPORT_TOO_FREQUENT = 900002
     private const val BASE = 200000
 

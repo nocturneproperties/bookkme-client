@@ -19,6 +19,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.business.domain.api.StartBusinessDataExport
 import me.bookk.feature.business.domain.datasource.DataExportDataSource
@@ -49,7 +50,8 @@ class StartBusinessDataExportImplTest {
         val confirmation = mock<ConfirmSensitiveAction>()
         val sut = StartBusinessDataExportImpl(dataSource, confirmation)
         init {
-            everySuspend { confirmation(any(), any(), any()) } returns "confirmed"
+            everySuspend { confirmation(any(), any(), any()) } returns
+                ActionConfirmation("confirmed", "assertion")
         }
     }
 

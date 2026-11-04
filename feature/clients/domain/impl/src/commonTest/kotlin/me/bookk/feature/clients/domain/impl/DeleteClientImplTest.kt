@@ -17,6 +17,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.entity.Client
@@ -47,7 +48,8 @@ class DeleteClientImplTest {
         val confirmation = mock<ConfirmSensitiveAction>()
         val sut = DeleteClientImpl(dataSource, confirmation)
         init {
-            everySuspend { confirmation.invoke(any(), any(), any()) } returns "confirmed-token"
+            everySuspend { confirmation.invoke(any(), any(), any()) } returns
+                ActionConfirmation("confirmed-token", "assertion")
         }
     }
 

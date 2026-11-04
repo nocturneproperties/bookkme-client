@@ -14,7 +14,7 @@ internal class DeleteClientImpl(
 ) : DeleteClient {
     override suspend fun invoke(client: Client) {
         val token = runCatching {
-            confirmation(SensitiveAction.DELETE_CLIENT, client.businessId, client.id)
+            confirmation(SensitiveAction.DELETE_CLIENT, client.businessId, client.id).token
         }
             .getOrElse {
                 throw when (it) {
@@ -24,9 +24,7 @@ internal class DeleteClientImpl(
             }
         runCatching { clientsDataSource.deleteClient(client.businessId, client.id, token) }
             .onBusinessError {
-                if (it.errorCode ==
-                    ClientErrorCodes.STEP_UP_INVALID
-                ) {
+                if (it.errorCode == ClientErrorCodes.ACTION_CONFIRMATION_INVALID) {
                     throw DeleteClient.Error.ConfirmationRequired()
                 }
             }.getOrThrow()

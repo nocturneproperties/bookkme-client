@@ -4,4 +4,4 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
 
 @Serializable
-internal class DeleteClientRequest(@ProtoNumber(1) val stepUpToken: String)
+internal class DeleteClientRequest(@ProtoNumber(1) val confirmationToken: String)

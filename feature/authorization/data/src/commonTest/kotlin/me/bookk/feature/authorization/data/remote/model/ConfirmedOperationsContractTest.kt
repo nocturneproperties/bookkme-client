@@ -10,9 +10,24 @@ import kotlin.test.assertEquals
 
 class ConfirmedOperationsContractTest {
     @Test
-    fun `StepUpRequestRemote pins its backend wire fields`() = runUnitTest {
+    fun `account deletion sends only the confirmation token`() = runUnitTest {
         given()
-        val descriptor = StepUpRequestRemote.serializer().descriptor
+        val descriptor = DeleteAccountRequestRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("confirmationToken" to 1), fields)
+    }
+
+    @Test
+    fun `ActionConfirmationRequestRemote pins its backend wire fields`() = runUnitTest {
+        given()
+        val descriptor = ActionConfirmationRequestRemote.serializer().descriptor
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
@@ -34,9 +49,9 @@ class ConfirmedOperationsContractTest {
     }
 
     @Test
-    fun `StepUpTokenRemote pins its backend wire fields`() = runUnitTest {
+    fun `ActionConfirmationTokenRemote pins its backend wire fields`() = runUnitTest {
         given()
-        val descriptor = StepUpTokenRemote.serializer().descriptor
+        val descriptor = ActionConfirmationTokenRemote.serializer().descriptor
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
@@ -57,6 +72,14 @@ class ConfirmedOperationsContractTest {
         val names = (0 until descriptor.elementsCount).map { descriptor.getElementName(it) }
 
         then()
-        assertEquals(listOf("DELETE_CLIENT", "EXPORT_PERSONAL_DATA", "EXPORT_BUSINESS_DATA"), names)
+        assertEquals(
+            listOf(
+                "DELETE_CLIENT",
+                "EXPORT_PERSONAL_DATA",
+                "EXPORT_BUSINESS_DATA",
+                "DELETE_ACCOUNT",
+            ),
+            names,
+        )
     }
 }

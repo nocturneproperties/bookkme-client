@@ -13,6 +13,7 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.designsystem.simple
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.DeletePasskey
 import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
@@ -125,7 +126,7 @@ class PasskeyViewModel(
                 getAvailablePasskeys()
             },
             onComplete = ::onPasskeysDeleted,
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
+            onError = ::onDeletePasskeyError,
         )
     }
 
@@ -139,8 +140,21 @@ class PasskeyViewModel(
                 getAvailablePasskeys()
             },
             onComplete = ::onPasskeysDeleted,
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
+            onError = ::onDeletePasskeyError,
         )
+    }
+
+    private fun onDeletePasskeyError(error: Throwable) {
+        when (error) {
+            is DeletePasskey.Error.LastPasskey ->
+                uiState.notification.add(
+                    PresentationNotification.Message.simple(
+                        SettingsRes.strings.settings_passkey_last_error.desc(),
+                    ),
+                )
+
+            else -> uiState.notification.add(error.notification())
+        }
     }
 
     private fun onPasskeysDeleted(passkeys: List<Passkey>) {

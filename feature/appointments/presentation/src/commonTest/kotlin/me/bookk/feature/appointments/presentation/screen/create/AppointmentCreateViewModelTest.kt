@@ -478,4 +478,54 @@ class AppointmentCreateViewModelTest {
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
     }
+
+    @Test
+    fun `explains appointment creation failures`() = runUnitTest {
+        listOf(
+            CreateAppointment.Error.PriceChanged() to
+                AppointmentsRes.strings.appointments_create_price_changed_error,
+            CreateAppointment.Error.DurationChanged() to
+                AppointmentsRes.strings.appointments_create_duration_changed_error,
+            CreateAppointment.Error.ServicesChanged() to
+                AppointmentsRes.strings.appointments_create_services_changed_error,
+            CreateAppointment.Error.ServiceNotFound() to
+                AppointmentsRes.strings.appointments_complete_service_not_found_error,
+            CreateAppointment.Error.EmptyServices() to
+                AppointmentsRes.strings.appointments_create_empty_services_error,
+            CreateAppointment.Error.DateInPast() to
+                AppointmentsRes.strings.appointments_date_in_past_error,
+            CreateAppointment.Error.OfferAlreadyUsed() to
+                AppointmentsRes.strings.appointments_create_offer_used_error,
+            CreateAppointment.Error.EmployeeNotFound() to
+                AppointmentsRes.strings.appointments_employee_not_found_error,
+            CreateAppointment.Error.ClientNotFound() to
+                AppointmentsRes.strings.appointments_client_not_found_error,
+            CreateAppointment.Error.EmployeeSuspended() to
+                AppointmentsRes.strings.appointments_details_employee_suspended_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createAppointment(any()) } throws error
+            val sut = fixture.sut()
+            sut.fillValidForm()
+
+            whenn()
+            sut.uiState.create.onClick?.invoke()
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
 }

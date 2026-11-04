@@ -83,4 +83,7 @@
     <string name="business_settings_invalid_day_off_range_error">Data rozpoczęcia dnia wolnego musi być wcześniejsza niż data zakończenia</string>
     <string name="business_analytics_coming_soon_title">Analityka już wkrótce</string>
     <string name="business_analytics_coming_soon_message">Przygotowujemy raporty dotyczące Twoich przychodów, wizyt i klientów. Pojawią się tutaj w jednej z przyszłych aktualizacji.</string>
+    <string name="create_business_already_exists_error">Ta firma już istnieje. Odśwież listę firm i spróbuj ponownie.</string>
+    <string name="create_business_invalid_name_error">Wpisz prawidłową nazwę firmy.</string>
+    <string name="business_settings_currency_locked_error">Nie można już zmienić waluty tej firmy.</string>
 </resources>

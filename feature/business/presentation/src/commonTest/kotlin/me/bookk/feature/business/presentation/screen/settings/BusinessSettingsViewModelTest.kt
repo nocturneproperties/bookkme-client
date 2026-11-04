@@ -732,4 +732,54 @@ class BusinessSettingsViewModelTest {
             sut.uiState.navigation.navigationDestination,
         )
     }
+
+    @Test
+    fun `explains why currency cannot be changed`() = runUnitTest {
+        listOf(
+            UpdateBusiness.Error.CurrencyLocked() to
+                BusinessRes.strings.business_settings_currency_locked_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateBusiness(any()) } throws error
+            val sut = fixture.sutWith(stubBusiness())
+
+            whenn()
+            sut.onSaveClick()
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps internal business settings errors general`() = runUnitTest {
+        listOf(
+            UpdateBusiness.Error.InvalidCurrency(),
+            UpdateBusiness.Error.InvalidRetentionPeriod(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateBusiness(any()) } throws error
+            val sut = fixture.sutWith(stubBusiness())
+
+            whenn()
+            sut.onSaveClick()
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
+    }
+
 }

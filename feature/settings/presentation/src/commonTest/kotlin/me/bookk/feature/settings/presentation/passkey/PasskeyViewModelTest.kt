@@ -9,6 +9,7 @@ import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.datetime.LocalDateTime
+import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -336,4 +337,47 @@ class PasskeyViewModelTest {
         fixture.errorMapper.assertMappedSingle(TestException::class)
         assertFalse(sut.uiState.refresh.isRefreshing)
     }
+
+    @Test
+    fun `explains last passkey protection for single deletion`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deletePasskey(any()) } throws DeletePasskey.Error.LastPasskey()
+        val sut = fixture.sut()
+        val key = passkey()
+        val item = PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc())
+        sut.onDeletePasskeyClick(item)
+        val confirmation = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notification.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        val message = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        assertEquals(SettingsRes.strings.settings_passkey_last_error.desc(), message.message)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
+    fun `explains last passkey protection for batch deletion`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deletePasskey(any()) } throws DeletePasskey.Error.LastPasskey()
+        val sut = fixture.sut()
+        val key = passkey()
+        val item = PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc())
+        sut.onDeletePasskeyList(listOf(item))
+        val confirmation = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notification.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        val message = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        assertEquals(SettingsRes.strings.settings_passkey_last_error.desc(), message.message)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
 }

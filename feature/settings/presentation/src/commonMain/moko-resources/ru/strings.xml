@@ -58,4 +58,6 @@
     <string name="settings_notifications_email_label">Эл. почта</string>
     <string name="settings_notifications_push_label">Push-уведомления</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
+    <string name="settings_edit_profile_email_taken_error">Этот адрес электронной почты уже используется.</string>
+    <string name="settings_passkey_last_error">Нельзя удалить последний ключ доступа. Сначала добавьте другой ключ, чтобы сохранить доступ к аккаунту.</string>
 </resources>

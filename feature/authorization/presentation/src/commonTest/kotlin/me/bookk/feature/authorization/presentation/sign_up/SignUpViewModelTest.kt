@@ -328,4 +328,56 @@ class SignUpViewModelTest {
             sut.uiState.navigation.navigationDestination,
         )
     }
+
+    @Test
+    fun `explains expired signup verification`() = runUnitTest {
+        listOf(
+            CreateAccount.Error.ChallengeWindowExpired() to
+                AuthRes.strings.sign_up_challenge_expired_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createAccount(any()) } throws error
+            val sut = fixture.sut()
+            sut.fillValidForm()
+
+            whenn()
+            sut.onConfirmButtonClick()
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notification.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notification.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps legal document integration errors general`() = runUnitTest {
+        listOf(
+            CreateAccount.Error.LegalDocumentVersionUnknown(),
+            CreateAccount.Error.LegalDocumentsNotAccepted(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createAccount(any()) } throws error
+            val sut = fixture.sut()
+            sut.fillValidForm()
+
+            whenn()
+            sut.onConfirmButtonClick()
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
+    }
+
 }

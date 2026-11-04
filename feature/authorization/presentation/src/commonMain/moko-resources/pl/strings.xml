@@ -34,4 +34,5 @@
     <string name="troubleshoot_passkey_missing_description">Jeśli masz klucze dostępu na koncie, ale podczas logowania nie jest proponowany żaden klucz, upewnij się, że na urządzeniu z kluczem włączona jest blokada ekranu. Jeśli blokada ekranu jest wyłączona, nie będzie można użyć klucza dostępu na tym urządzeniu, dopóki ponownie jej nie włączysz. \nKlucz dostępu możesz odzyskać u swojego dostawcy danych logowania, np. Google lub Apple.</string>
     <string name="troubleshoot_contact_support_button">Skontaktuj się z pomocą techniczną</string>
 
+    <string name="sign_up_challenge_expired_error">Czas weryfikacji upłynął. Spróbuj ponownie utworzyć konto.</string>
 </resources>

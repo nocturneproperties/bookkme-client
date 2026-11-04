@@ -258,4 +258,36 @@ class EditProfileViewModelTest {
         assertTrue(sut.uiState.confirmButton.isEnabled)
         assertFalse(sut.uiState.confirmButton.isLoading)
     }
+
+    @Test
+    fun `marks email as taken and clears error when edited`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editProfile(any(), any(), any()) } throws
+            EditProfile.Error.ContactAlreadyTaken()
+        val sut = fixture.presentedSut()
+        sut.onEmailTextChanged("taken@example.com")
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_email_taken_error.desc(),
+            sut.uiState.email.supportingTextRes,
+        )
+        assertFalse(sut.uiState.confirmButton.isEnabled)
+        assertFalse(sut.uiState.confirmButton.isLoading)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
+
+        whenn()
+        sut.onEmailTextChanged("available@example.com")
+
+        then()
+        assertNull(sut.uiState.email.supportingTextRes)
+        assertTrue(sut.uiState.confirmButton.isEnabled)
+    }
+
 }

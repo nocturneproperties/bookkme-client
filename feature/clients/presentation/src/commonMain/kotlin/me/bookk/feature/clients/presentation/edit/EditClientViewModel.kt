@@ -13,6 +13,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.deleteConfirmation
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.startLoading
@@ -152,7 +153,18 @@ class EditClientViewModel(
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 uiState.navigation.push(Deleted)
             },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
+            onError = {
+                when (it) {
+                    is DeleteClient.Error.ConfirmationFailed ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ClientsRes.strings.clients_delete_confirmation_failed_error.desc(),
+                            ),
+                        )
+
+                    else -> uiState.notifications.add(it.notification())
+                }
+            },
             onTerminate = { uiState.deleteButton.stopLoading() },
         )
     }

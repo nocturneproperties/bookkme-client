@@ -10,6 +10,7 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.deleteConfirmation
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -141,7 +142,39 @@ class EditServiceViewModel(
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 uiState.navigation.push(Back)
             },
-            onError = { uiState.notifications.add(it.notification()) },
+            onError = {
+                when (it) {
+                    is EditService.Error.NameAlreadyExists ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_name_exists_error.desc(),
+                            ),
+                        )
+
+                    is EditService.Error.InvalidName ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_invalid_name_error.desc(),
+                            ),
+                        )
+
+                    is EditService.Error.GroupNotFound ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_group_not_found_error.desc(),
+                            ),
+                        )
+
+                    is EditService.Error.InvalidPricePrecision ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_price_precision_error.desc(),
+                            ),
+                        )
+
+                    else -> uiState.notifications.add(it.notification())
+                }
+            },
             onTerminate = {
                 uiState.submit.stopLoading()
                 invalidateButton()

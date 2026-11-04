@@ -58,4 +58,6 @@
     <string name="settings_notifications_email_label">Email</string>
     <string name="settings_notifications_push_label">Push notifications</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
+    <string name="settings_edit_profile_email_taken_error">This email address is already in use.</string>
+    <string name="settings_passkey_last_error">You cannot delete your last passkey. Add another passkey first to keep access to your account.</string>
 </resources>

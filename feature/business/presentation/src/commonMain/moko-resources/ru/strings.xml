@@ -83,4 +83,7 @@
     <string name="business_settings_invalid_day_off_range_error">Дата начала выходных должна быть раньше даты окончания</string>
     <string name="business_analytics_coming_soon_title">Аналитика скоро появится</string>
     <string name="business_analytics_coming_soon_message">Мы готовим отчёты по вашей выручке, записям и клиентам. Они появятся здесь в одном из следующих обновлений.</string>
+    <string name="create_business_already_exists_error">Этот бизнес уже существует. Обновите список бизнесов и повторите попытку.</string>
+    <string name="create_business_invalid_name_error">Введите корректное название бизнеса.</string>
+    <string name="business_settings_currency_locked_error">Валюту этого бизнеса больше нельзя изменить.</string>
 </resources>

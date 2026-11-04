@@ -175,6 +175,20 @@ class DashboardViewModel(
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
+                    is CreateBusiness.Error.BusinessAlreadyExists ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                DashboardRes.strings.create_business_already_exists_error.desc(),
+                            ),
+                        )
+
+                    is CreateBusiness.Error.InvalidName ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                DashboardRes.strings.create_business_invalid_name_error.desc(),
+                            ),
+                        )
+
                     is CreateBusiness.Error.EmptyName ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(

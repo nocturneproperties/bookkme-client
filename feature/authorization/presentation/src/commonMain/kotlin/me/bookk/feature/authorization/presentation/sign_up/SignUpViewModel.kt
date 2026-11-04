@@ -15,6 +15,7 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.Message
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.clearError
@@ -113,6 +114,13 @@ class SignUpViewModel(
             onComplete = { uiState.notification.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
+                    is Error.ChallengeWindowExpired ->
+                        uiState.notification.add(
+                            PresentationNotification.Message.simple(
+                                AuthRes.strings.sign_up_challenge_expired_error.desc(),
+                            ),
+                        )
+
                     is Error.EmailAlreadyExist ->
                         uiState.email.showError(AuthRes.strings.sign_up_email_exist.desc())
 

@@ -188,6 +188,13 @@ class BusinessSettingsViewModel(
             },
             onError = {
                 when (it) {
+                    is UpdateBusiness.Error.CurrencyLocked ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                BusinessRes.strings.business_settings_currency_locked_error.desc(),
+                            ),
+                        )
+
                     is UpdateBusiness.Error.ActiveDayWithoutWorkHours ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(

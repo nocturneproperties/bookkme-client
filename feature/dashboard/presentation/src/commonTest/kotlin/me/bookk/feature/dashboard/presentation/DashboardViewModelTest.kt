@@ -1255,4 +1255,55 @@ class DashboardViewModelTest {
         fixture.errorMapper.assertMappedSingle(TestException::class)
         assertFalse(sut.uiState.home.onboarding.refresh.isRefreshing)
     }
+
+    @Test
+    fun `explains business creation failures`() = runUnitTest {
+        listOf(
+            CreateBusiness.Error.BusinessAlreadyExists() to
+                DashboardRes.strings.create_business_already_exists_error,
+            CreateBusiness.Error.InvalidName() to
+                DashboardRes.strings.create_business_invalid_name_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createBusiness(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.submitBusinessName("My business")
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps invalid business currency errors general`() = runUnitTest {
+        listOf(
+            CreateBusiness.Error.InvalidCurrency(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createBusiness(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.submitBusinessName("My business")
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
+    }
+
 }

@@ -389,4 +389,56 @@ class EditServiceViewModelTest {
             sut.uiState.navigation.navigationDestination,
         )
     }
+
+    @Test
+    fun `explains service validation failures`() = runUnitTest {
+        listOf(
+            EditService.Error.NameAlreadyExists() to ServicesRes.strings.services_name_exists_error,
+            EditService.Error.InvalidName() to ServicesRes.strings.services_invalid_name_error,
+            EditService.Error.GroupNotFound() to ServicesRes.strings.services_group_not_found_error,
+            EditService.Error.InvalidPricePrecision() to
+                ServicesRes.strings.services_price_precision_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.editService(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.uiState.submit.onClick?.invoke()
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps invalid business currency errors general`() = runUnitTest {
+        listOf(
+            EditService.Error.InvalidBusinessCurrency(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.editService(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.uiState.submit.onClick?.invoke()
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
+    }
+
 }

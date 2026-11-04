@@ -1,5 +1,6 @@
 package me.bookk.feature.services.presentation.service.add
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -12,6 +13,7 @@ import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import library.money.api.Money
+import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -290,4 +292,60 @@ class AddServiceViewModelTest {
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
     }
+
+    @Test
+    fun `explains service validation failures`() = runUnitTest {
+        listOf(
+            CreateService.Error.NameAlreadyExists() to
+                ServicesRes.strings.services_name_exists_error,
+            CreateService.Error.InvalidName() to ServicesRes.strings.services_invalid_name_error,
+            CreateService.Error.GroupNotFound() to
+                ServicesRes.strings.services_group_not_found_error,
+            CreateService.Error.InvalidPricePrecision() to
+                ServicesRes.strings.services_price_precision_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createService(any()) } throws error
+            val sut = fixture.sut()
+            sut.fillValidForm()
+
+            whenn()
+            sut.uiState.create.onClick?.invoke()
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps invalid business currency errors general`() = runUnitTest {
+        listOf(
+            CreateService.Error.InvalidBusinessCurrency(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createService(any()) } throws error
+            val sut = fixture.sut()
+            sut.fillValidForm()
+
+            whenn()
+            sut.uiState.create.onClick?.invoke()
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
+    }
+
 }

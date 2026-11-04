@@ -1,5 +1,6 @@
 package me.bookk.feature.clients.presentation.edit
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -11,6 +12,7 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -398,4 +400,61 @@ class EditClientViewModelTest {
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
     }
+
+    @Test
+    fun `explains failed client deletion verification`() = runUnitTest {
+        listOf(
+            DeleteClient.Error.ConfirmationFailed() to
+                ClientsRes.strings.clients_delete_confirmation_failed_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.deleteClient(any()) } throws error
+            val sut = fixture.sutWith(stubDetachedClient())
+            sut.uiState.deleteButton.onClick?.invoke()
+            val confirmation = sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>().single()
+            sut.uiState.notifications.removeFirst()
+
+            whenn()
+            confirmation.tap(ActionType.NEGATIVE)
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps missing deletion confirmation errors general`() = runUnitTest {
+        listOf(
+            DeleteClient.Error.ConfirmationRequired(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.deleteClient(any()) } throws error
+            val sut = fixture.sutWith(stubDetachedClient())
+            sut.uiState.deleteButton.onClick?.invoke()
+            val confirmation = sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>().single()
+            sut.uiState.notifications.removeFirst()
+
+            whenn()
+            confirmation.tap(ActionType.NEGATIVE)
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
+    }
+
 }

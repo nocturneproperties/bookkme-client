@@ -88,6 +88,11 @@ class AppointmentDetailsViewModel(
             onComplete = ::renderMutatedAppointment,
             onError = {
                 when (it) {
+                    is Error.EditWindowClosed ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
+                        )
+
                     is Error.AppointmentAlreadyCancelled -> {
                         renderAppointment(appointment.copy(status = AppointmentStatus.CANCELLED))
                     }
@@ -248,6 +253,11 @@ class AppointmentDetailsViewModel(
 
     private fun onCompletionRejected(error: Throwable) {
         when (error) {
+            is CompleteAppointment.Error.EditWindowClosed ->
+                showMessage(
+                    AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
+                )
+
             is CompleteAppointment.Error.AppointmentAlreadyCancelled ->
                 renderStatus(AppointmentStatus.CANCELLED)
 
@@ -299,6 +309,11 @@ class AppointmentDetailsViewModel(
             onTerminate = { uiState.noShowButton.stopLoading() },
             onError = {
                 when (it) {
+                    is MarkAppointmentNoShow.Error.EditWindowClosed ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
+                        )
+
                     is MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled ->
                         renderStatus(AppointmentStatus.CANCELLED)
 
@@ -345,6 +360,36 @@ class AppointmentDetailsViewModel(
             onTerminate = { uiState.rescheduleButton.stopLoading() },
             onError = {
                 when (it) {
+                    is UpdateAppointment.Error.EditWindowClosed ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
+                        )
+
+                    is UpdateAppointment.Error.DateInPast ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_date_in_past_error.desc(),
+                        )
+
+                    is UpdateAppointment.Error.InvalidServiceSelection ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_create_services_changed_error.desc(),
+                        )
+
+                    is UpdateAppointment.Error.ServiceNotFound ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_complete_service_not_found_error.desc(),
+                        )
+
+                    is UpdateAppointment.Error.EmployeeNotFound ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_employee_not_found_error.desc(),
+                        )
+
+                    is UpdateAppointment.Error.ConcurrentModification ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_concurrent_modification_error.desc(),
+                        )
+
                     is UpdateAppointment.Error.AppointmentOverlap -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(

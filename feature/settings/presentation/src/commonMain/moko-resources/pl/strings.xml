@@ -58,4 +58,6 @@
     <string name="settings_notifications_email_label">E-mail</string>
     <string name="settings_notifications_push_label">Powiadomienia push</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
+    <string name="settings_edit_profile_email_taken_error">Ten adres e-mail jest już używany.</string>
+    <string name="settings_passkey_last_error">Nie możesz usunąć ostatniego klucza dostępu. Najpierw dodaj inny klucz, aby zachować dostęp do konta.</string>
 </resources>

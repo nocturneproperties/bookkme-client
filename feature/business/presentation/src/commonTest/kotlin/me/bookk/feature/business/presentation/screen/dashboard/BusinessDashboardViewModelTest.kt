@@ -39,6 +39,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
@@ -442,4 +443,55 @@ class BusinessDashboardViewModelTest {
         fixture.errorMapper.assertMappedSingle(TestException::class)
         sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
     }
+
+    @Test
+    fun `explains business creation failures`() = runUnitTest {
+        listOf(
+            CreateBusiness.Error.BusinessAlreadyExists() to
+                BusinessRes.strings.create_business_already_exists_error,
+            CreateBusiness.Error.InvalidName() to
+                BusinessRes.strings.create_business_invalid_name_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createBusiness(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.submitBusinessName("My business")
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps invalid business currency errors general`() = runUnitTest {
+        listOf(
+            CreateBusiness.Error.InvalidCurrency(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createBusiness(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.submitBusinessName("My business")
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
+    }
+
 }

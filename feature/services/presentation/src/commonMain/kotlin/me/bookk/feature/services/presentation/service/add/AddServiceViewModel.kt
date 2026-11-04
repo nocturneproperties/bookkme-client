@@ -11,6 +11,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -120,7 +121,39 @@ class AddServiceViewModel(
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 uiState.navigation.push(Back)
             },
-            onError = { uiState.notifications.add(it.notification()) },
+            onError = {
+                when (it) {
+                    is CreateService.Error.NameAlreadyExists ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_name_exists_error.desc(),
+                            ),
+                        )
+
+                    is CreateService.Error.InvalidName ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_invalid_name_error.desc(),
+                            ),
+                        )
+
+                    is CreateService.Error.GroupNotFound ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_group_not_found_error.desc(),
+                            ),
+                        )
+
+                    is CreateService.Error.InvalidPricePrecision ->
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_price_precision_error.desc(),
+                            ),
+                        )
+
+                    else -> uiState.notifications.add(it.notification())
+                }
+            },
             onTerminate = { uiState.create.stopLoading() },
         )
     }

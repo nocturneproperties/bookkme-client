@@ -12,6 +12,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.validate
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetSettings
@@ -120,7 +121,14 @@ class EditProfileViewModel(
                 uiState.navigation.push(EditProfileNavigationDestination.Back)
             },
             onError = {
-                uiState.notification.add(errorMapper.mapToNotification(it))
+                when (it) {
+                    is EditProfile.Error.ContactAlreadyTaken ->
+                        uiState.email.showError(
+                            SettingsRes.strings.settings_edit_profile_email_taken_error.desc(),
+                        )
+
+                    else -> uiState.notification.add(it.notification())
+                }
             },
             onTerminate = {
                 uiState.confirmButton.isLoading = false

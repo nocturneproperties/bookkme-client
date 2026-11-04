@@ -41,4 +41,6 @@
     <string name="dashboard_join_error_empty_code">Введите код приглашения</string>
     <string name="dashboard_join_error_already_processed">Это приглашение уже использовано или больше не действительно</string>
     <string name="dashboard_join_error_employee_exists">Вы уже являетесь сотрудником этого бизнеса</string>
+    <string name="create_business_already_exists_error">Этот бизнес уже существует. Обновите список бизнесов и повторите попытку.</string>
+    <string name="create_business_invalid_name_error">Введите корректное название бизнеса.</string>
 </resources>

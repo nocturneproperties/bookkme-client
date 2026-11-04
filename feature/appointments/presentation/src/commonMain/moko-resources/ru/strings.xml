@@ -81,4 +81,14 @@
     <string name="appointments_request_in_past">Время записи уже прошло. Этот запрос скоро будет отменён автоматически, или вы можете отклонить его вручную</string>
     <string name="appointments_request_date_error">Записи на этот день запрещены настройками — возможно, этот день отмечен как выходной.</string>
     <string name="appointments_request_time_error">Записи на это время запрещены настройками</string>
+    <string name="appointments_create_price_changed_error">Цены на услуги изменились. Выберите услуги заново и проверьте итоговую сумму.</string>
+    <string name="appointments_create_duration_changed_error">Длительность услуг изменилась. Выберите услуги и время записи заново.</string>
+    <string name="appointments_create_services_changed_error">Выбранные услуги изменились. Выберите их заново.</string>
+    <string name="appointments_create_empty_services_error">Выберите хотя бы одну услугу.</string>
+    <string name="appointments_date_in_past_error">Время записи уже прошло. Выберите будущую дату и время.</string>
+    <string name="appointments_create_offer_used_error">Это предложение для записи уже использовано. Проверьте список записей перед повторной попыткой.</string>
+    <string name="appointments_employee_not_found_error">Этот сотрудник больше недоступен. Обновите записи и повторите попытку.</string>
+    <string name="appointments_client_not_found_error">Этот клиент больше недоступен. Выберите другого клиента.</string>
+    <string name="appointments_edit_window_closed_error">Срок изменения этой записи истёк.</string>
+    <string name="appointments_concurrent_modification_error">Эта запись изменилась во время редактирования. Откройте её заново и повторите попытку.</string>
 </resources>

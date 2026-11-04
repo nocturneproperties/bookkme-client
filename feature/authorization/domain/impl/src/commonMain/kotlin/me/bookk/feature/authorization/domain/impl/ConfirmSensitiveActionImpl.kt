@@ -2,6 +2,7 @@ package me.bookk.feature.authorization.domain.impl
 
 import me.bookk.core.domain.entity.onBusinessError
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction.Error
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.SensitiveActionConfirmation
@@ -27,7 +28,7 @@ internal class ConfirmSensitiveActionImpl(
             .getOrElse {
                 throw when (it) {
                     is PassKeyManager.Error.UserCancelled -> DomainError.Ignore(it)
-                    is PassKeyManager.Error -> ConfirmSensitiveAction.Error.VerificationFailed()
+                    is PassKeyManager.Error -> Error.VerificationFailed()
                     else -> it
                 }
             }
@@ -44,17 +45,13 @@ internal class ConfirmSensitiveActionImpl(
         }
             .onBusinessError {
                 throw when (it.errorCode) {
-                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED ->
-                        ConfirmSensitiveAction.Error.ChallengeExpired()
+                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> Error.ChallengeExpired()
 
-                    AuthErrorCodes.VERIFICATION_FAILED ->
-                        ConfirmSensitiveAction.Error.VerificationFailed()
+                    AuthErrorCodes.VERIFICATION_FAILED -> Error.VerificationFailed()
 
-                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND ->
-                        ConfirmSensitiveAction.Error.PasskeyNotFound()
+                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> Error.PasskeyNotFound()
 
-                    AuthErrorCodes.PASSKEY_NOT_OWNED ->
-                        ConfirmSensitiveAction.Error.PasskeyNotOwned()
+                    AuthErrorCodes.PASSKEY_NOT_OWNED -> Error.PasskeyNotOwned()
 
                     else -> it
                 }

@@ -34,4 +34,5 @@
     <string name="troubleshoot_passkey_missing_description">If you have passkeys on your account but aren\'t offered a passkey during sign-in, make sure tha the device with the passkey has the screen lock enabled. If your device\'s screen lock is disabled, you will not be able to use the passkey on that device until you enable the screen lock again. \nYou can recover your passkey with your credential provider, e.g. Google or Apple etc.</string>
     <string name="troubleshoot_contact_support_button">Contact support</string>
 
+    <string name="sign_up_challenge_expired_error">Verification timed out. Please try creating your account again.</string>
 </resources>

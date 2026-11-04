@@ -5,6 +5,7 @@ import library.validation.api.ValidateEmail
 import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
 import library.validation.api.ValidateName
 import library.validation.api.ValidateName.Result.Invalid.Length.isValid
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -12,7 +13,6 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.deleteConfirmation
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.startLoading
@@ -25,8 +25,8 @@ import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.edit.EditClientDestination.Back
 import me.bookk.feature.clients.presentation.edit.EditClientDestination.Deleted
-import kotlin.properties.Delegates.notNull
 import org.koin.core.annotation.InjectedParam
+import kotlin.properties.Delegates.notNull
 import kotlin.uuid.Uuid
 
 class EditClientViewModel(
@@ -38,7 +38,7 @@ class EditClientViewModel(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
     stateFactory: ClientsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: EditClientState = stateFactory.createEditClientState().setup()
@@ -70,11 +70,12 @@ class EditClientViewModel(
                 uiState.phone.text = it.phone.orEmpty()
                 uiState.phone.isValid = it.phone.orEmpty().length > 4
                 uiState.email.text = it.email.orEmpty()
-                uiState.email.isValid = it.email.orEmpty().isEmpty() || validateEmail(it.email.orEmpty()).isValid
+                uiState.email.isValid =
+                    it.email.orEmpty().isEmpty() || validateEmail(it.email.orEmpty()).isValid
                 uiState.description.text = it.description.orEmpty()
                 invalidateButton()
             },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) }
+            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
         )
     }
 
@@ -113,11 +114,11 @@ class EditClientViewModel(
                 lastName = uiState.lastName.text,
                 phone = uiState.phone.text,
                 email = uiState.email.text,
-                description = uiState.description.text
+                description = uiState.description.text,
             )
 
             is Client.Integrated -> current.copy(
-                description = uiState.description.text
+                description = uiState.description.text,
             )
         }
         launch(
@@ -129,7 +130,7 @@ class EditClientViewModel(
                 uiState.navigation.push(Back)
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = { uiState.submit.stopLoading() }
+            onTerminate = { uiState.submit.stopLoading() },
         )
     }
 
@@ -137,8 +138,8 @@ class EditClientViewModel(
         uiState.notifications.add(
             PresentationNotification.Message.deleteConfirmation(
                 message = ClientsRes.strings.clients_delete_desc.desc(),
-                onConfirmed = ::onDeleteConfirmed
-            )
+                onConfirmed = ::onDeleteConfirmed,
+            ),
         )
     }
 
@@ -152,15 +153,15 @@ class EditClientViewModel(
                 uiState.navigation.push(Deleted)
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = { uiState.deleteButton.stopLoading() }
+            onTerminate = { uiState.deleteButton.stopLoading() },
         )
     }
 
     private fun invalidateButton() {
         uiState.submit.isEnabled = uiState.name.isValid &&
-                uiState.lastName.isValid &&
-                uiState.phone.isValid &&
-                uiState.email.isValid
+            uiState.lastName.isValid &&
+            uiState.phone.isValid &&
+            uiState.email.isValid
     }
 
     private fun EditClientState.setup(): EditClientState {

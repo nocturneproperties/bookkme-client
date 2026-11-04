@@ -7,11 +7,11 @@ import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "notification_settings",
-    indices = [Index("userId", unique = true)]
+    indices = [Index("userId", unique = true)],
 )
 class NotificationSettingsEntity(
     @PrimaryKey
     val id: Uuid,
     val userId: Uuid,
-    val appointmentEnabled: Boolean
+    val appointmentEnabled: Boolean,
 )

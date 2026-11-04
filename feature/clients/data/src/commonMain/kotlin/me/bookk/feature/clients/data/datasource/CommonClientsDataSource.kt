@@ -37,8 +37,10 @@ import kotlin.uuid.Uuid
 internal class CommonClientsDataSource(
     private val httpClient: HttpClient,
     private val clientsDao: ClientsDao,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), ClientsDataSource, LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    ClientsDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("clients_prefs")
 
@@ -78,7 +80,10 @@ internal class CommonClientsDataSource(
         }
     }
 
-    override suspend fun importClients(businessId: Uuid, entries: List<ClientImportEntry>): ClientImportResult {
+    override suspend fun importClients(
+        businessId: Uuid,
+        entries: List<ClientImportEntry>,
+    ): ClientImportResult {
         return mapExceptions {
             httpClient.post(Api.Clients.Import(Api.Clients(businessId = businessId))) {
                 setBody(ClientImportRequest(clients = entries.map(ClientImportEntryRemote::from)))
@@ -90,7 +95,9 @@ internal class CommonClientsDataSource(
 
     override suspend fun updateClient(client: Client): Client {
         return mapExceptions {
-            httpClient.patch(Api.Clients.Id(Api.Clients(businessId = client.businessId), id = client.id)) {
+            httpClient.patch(
+                Api.Clients.Id(Api.Clients(businessId = client.businessId), id = client.id),
+            ) {
                 setBody(client.toUpdateRemote())
             }
                 .body<ClientRemote>()
@@ -125,7 +132,9 @@ internal class CommonClientsDataSource(
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
-        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastSyncedAt(businessId))?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastSyncedAt(businessId: Uuid) {

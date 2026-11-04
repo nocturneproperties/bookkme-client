@@ -9,7 +9,8 @@ import kotlin.uuid.Uuid
 internal enum class SensitiveActionRemote {
     DELETE_CLIENT,
     EXPORT_PERSONAL_DATA,
-    EXPORT_BUSINESS_DATA;
+    EXPORT_BUSINESS_DATA,
+    ;
 
     companion object {
         fun fromDomain(action: SensitiveAction): SensitiveActionRemote {
@@ -28,7 +29,7 @@ internal class StepUpRequestRemote(
     @ProtoNumber(2) val publicKeyCredentialJson: String,
     @ProtoNumber(3) val action: SensitiveActionRemote,
     @ProtoNumber(4) val businessId: Uuid,
-    @ProtoNumber(5) val targetId: Uuid
+    @ProtoNumber(5) val targetId: Uuid,
 )
 
 @Serializable

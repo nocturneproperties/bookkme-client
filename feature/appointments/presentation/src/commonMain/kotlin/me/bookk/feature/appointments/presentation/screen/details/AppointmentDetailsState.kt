@@ -35,13 +35,10 @@ interface AppointmentDetailsState {
     val navigation: NavigationState<AppointmentDetailsDestination>
 }
 
-class UIAppointmentStatus(
-    val label: StringDesc,
-    val color: ColorToken
-) {
+class UIAppointmentStatus(val label: StringDesc, val color: ColorToken) {
     internal constructor(status: AppointmentStatus) : this(
         label = status.label(),
-        color = status.color()
+        color = status.color(),
     )
 }
 

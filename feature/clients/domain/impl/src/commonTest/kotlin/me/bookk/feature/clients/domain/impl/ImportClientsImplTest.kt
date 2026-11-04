@@ -59,7 +59,7 @@ class ImportClientsImplTest {
         name = "John$index",
         lastName = "Doe",
         phone = "+38050000${index.toString().padStart(4, '0')}",
-        email = null
+        email = null,
     )
 
     private fun stubCreated(businessId: Uuid, entry: ClientImportEntry) = Client.Detached(
@@ -68,10 +68,13 @@ class ImportClientsImplTest {
         lastName = entry.lastName,
         phone = entry.phone,
         email = entry.email,
-        businessId = businessId
+        businessId = businessId,
     )
 
-    private fun clientExistsError() = Error.BusinessError(ClientErrorCodes.CLIENT_EXISTS, "Client with this phone or email already exists")
+    private fun clientExistsError() = Error.BusinessError(
+        ClientErrorCodes.CLIENT_EXISTS,
+        "Client with this phone or email already exists",
+    )
 
     @Test
     fun `returns created clients and rejected entries`() = runUnitTest {
@@ -79,7 +82,8 @@ class ImportClientsImplTest {
         val fixture = Fixture()
         val entries = listOf(stubEntry(0), stubEntry(1))
         val created = stubCreated(fixture.businessId, entries[0])
-        val rejected = RejectedClientImport(index = 1, reason = RejectedClientImport.Reason.ALREADY_EXISTS)
+        val rejected =
+            RejectedClientImport(index = 1, reason = RejectedClientImport.Reason.ALREADY_EXISTS)
         everySuspend { fixture.dataSource.importClients(fixture.businessId, entries) } returns
             ClientImportResult(created = listOf(created), rejected = listOf(rejected))
 
@@ -87,7 +91,10 @@ class ImportClientsImplTest {
         val result = fixture.sut(fixture.businessId, entries)
 
         then()
-        assertEquals(ClientImportResult(created = listOf(created), rejected = listOf(rejected)), result)
+        assertEquals(
+            ClientImportResult(created = listOf(created), rejected = listOf(rejected)),
+            result,
+        )
     }
 
     @Test
@@ -115,14 +122,14 @@ class ImportClientsImplTest {
             lastName = " Doe\n",
             phone = " +380501234567  ",
             email = "john@example.com ",
-            description = "  Prefers mornings "
+            description = "  Prefers mornings ",
         )
         val expected = ClientImportEntry(
             name = "John",
             lastName = "Doe",
             phone = "+380501234567",
             email = "john@example.com",
-            description = "Prefers mornings"
+            description = "Prefers mornings",
         )
         everySuspend { fixture.dataSource.importClients(any(), any()) } returns
             ClientImportResult(created = emptyList(), rejected = emptyList())
@@ -158,15 +165,23 @@ class ImportClientsImplTest {
         given()
         val fixture = Fixture()
         val entries = (0 until 502).map(::stubEntry)
-        everySuspend { fixture.dataSource.importClients(fixture.businessId, entries.subList(0, 500)) } returns
+        everySuspend {
+            fixture.dataSource.importClients(fixture.businessId, entries.subList(0, 500))
+        } returns
             ClientImportResult(
                 created = emptyList(),
-                rejected = listOf(RejectedClientImport(3, RejectedClientImport.Reason.INVALID_FIELDS))
+                rejected = listOf(
+                    RejectedClientImport(3, RejectedClientImport.Reason.INVALID_FIELDS),
+                ),
             )
-        everySuspend { fixture.dataSource.importClients(fixture.businessId, entries.subList(500, 502)) } returns
+        everySuspend {
+            fixture.dataSource.importClients(fixture.businessId, entries.subList(500, 502))
+        } returns
             ClientImportResult(
                 created = emptyList(),
-                rejected = listOf(RejectedClientImport(1, RejectedClientImport.Reason.MISSING_CONTACT_INFO))
+                rejected = listOf(
+                    RejectedClientImport(1, RejectedClientImport.Reason.MISSING_CONTACT_INFO),
+                ),
             )
 
         whenn()
@@ -176,9 +191,9 @@ class ImportClientsImplTest {
         assertEquals(
             listOf(
                 RejectedClientImport(3, RejectedClientImport.Reason.INVALID_FIELDS),
-                RejectedClientImport(501, RejectedClientImport.Reason.MISSING_CONTACT_INFO)
+                RejectedClientImport(501, RejectedClientImport.Reason.MISSING_CONTACT_INFO),
             ),
-            result.rejected
+            result.rejected,
         )
     }
 
@@ -189,12 +204,13 @@ class ImportClientsImplTest {
         val entries = listOf(stubEntry(0))
         val retried = ClientImportResult(
             created = emptyList(),
-            rejected = listOf(RejectedClientImport(0, RejectedClientImport.Reason.ALREADY_EXISTS))
+            rejected = listOf(RejectedClientImport(0, RejectedClientImport.Reason.ALREADY_EXISTS)),
         )
-        everySuspend { fixture.dataSource.importClients(fixture.businessId, entries) } sequentially {
-            throws(clientExistsError())
-            returns(retried)
-        }
+        everySuspend { fixture.dataSource.importClients(fixture.businessId, entries) } sequentially
+            {
+                throws(clientExistsError())
+                returns(retried)
+            }
 
         whenn()
         val result = fixture.sut(fixture.businessId, entries)
@@ -208,14 +224,18 @@ class ImportClientsImplTest {
         given()
         val fixture = Fixture()
         val entries = listOf(stubEntry(0))
-        everySuspend { fixture.dataSource.importClients(fixture.businessId, entries) } throws clientExistsError()
+        everySuspend { fixture.dataSource.importClients(fixture.businessId, entries) } throws
+            clientExistsError()
 
         whenn()
-        val error = assertFailsWith<Error.BusinessError> { fixture.sut(fixture.businessId, entries) }
+        val error =
+            assertFailsWith<Error.BusinessError> { fixture.sut(fixture.businessId, entries) }
 
         then()
         assertEquals(ClientErrorCodes.CLIENT_EXISTS, error.errorCode)
-        verifySuspend(VerifyMode.exactly(2)) { fixture.dataSource.importClients(fixture.businessId, entries) }
+        verifySuspend(VerifyMode.exactly(2)) {
+            fixture.dataSource.importClients(fixture.businessId, entries)
+        }
     }
 
     @Test
@@ -224,14 +244,18 @@ class ImportClientsImplTest {
         val fixture = Fixture()
         val entries = listOf(stubEntry(0))
         val failure = Error.NoConnectionError(Exception())
-        everySuspend { fixture.dataSource.importClients(fixture.businessId, entries) } throws failure
+        everySuspend { fixture.dataSource.importClients(fixture.businessId, entries) } throws
+            failure
 
         whenn()
-        val error = assertFailsWith<Error.NoConnectionError> { fixture.sut(fixture.businessId, entries) }
+        val error =
+            assertFailsWith<Error.NoConnectionError> { fixture.sut(fixture.businessId, entries) }
 
         then()
         assertSame(failure, error)
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.importClients(fixture.businessId, entries) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.importClients(fixture.businessId, entries)
+        }
     }
 
     @Test

@@ -36,10 +36,7 @@ import me.bookk.feature.authorization.presentation.sign_up.state.SignUpEventList
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 
 @Composable
-fun SignUpScreen(
-    state: SignUpState,
-    listener: SignUpEventListener
-) {
+fun SignUpScreen(state: SignUpState, listener: SignUpEventListener) {
     ObserveNotifications(state = state.notification)
     Scaffold(
         modifier = Modifier
@@ -48,7 +45,7 @@ fun SignUpScreen(
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                onNavigationIconClick = LocalNavigation.current.navigateBack
+                onNavigationIconClick = LocalNavigation.current.navigateBack,
             )
         },
         content = { paddings ->
@@ -58,31 +55,31 @@ fun SignUpScreen(
                     .padding(paddings)
                     .padding(all = 16.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 TextField(
                     state = state.name,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Text
+                        keyboardType = KeyboardType.Text,
                     ),
-                    onValueChange = { listener.onFirstNameTextChanged(it) }
+                    onValueChange = { listener.onFirstNameTextChanged(it) },
                 )
                 TextField(
                     state = state.lastName,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Text
+                        keyboardType = KeyboardType.Text,
                     ),
-                    onValueChange = { listener.onLastNameTextChanged(it) }
+                    onValueChange = { listener.onLastNameTextChanged(it) },
                 )
                 TextField(
                     state = state.email,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Email
+                        keyboardType = KeyboardType.Email,
                     ),
-                    onValueChange = { listener.onEmailTextChanged(it) }
+                    onValueChange = { listener.onEmailTextChanged(it) },
                 )
                 Spacer(Modifier.height(24.dp))
                 PasskeyInfoCard(state, listener::onLearnMoreClick)
@@ -92,15 +89,15 @@ fun SignUpScreen(
             Box(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) {
                 ActionButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.confirmButton,
-                    onClick = listener::onConfirmButtonClick
+                    onClick = listener::onConfirmButtonClick,
                 )
             }
-        }
+        },
     )
 }
 
@@ -108,7 +105,7 @@ fun SignUpScreen(
 private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
     AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
     ) {
         Column {
             Text(
@@ -116,21 +113,21 @@ private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
                     start = 24.dp,
                     top = 24.dp,
                     end = 24.dp,
-                    bottom = 16.dp
+                    bottom = 16.dp,
                 ),
                 style = MaterialTheme.typography.titleMedium,
-                text = state.passkeyInfoCardData.title.localized()
+                text = state.passkeyInfoCardData.title.localized(),
             )
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 style = MaterialTheme.typography.bodySmall,
                 text = state.passkeyInfoCardData.description.localized(),
-                color = LocalColors.current.secondaryText
+                color = LocalColors.current.secondaryText,
             )
             StateTextButton(
                 modifier = Modifier.padding(start = 8.dp),
                 state = state.learnMoreButton,
-                onClick = onButtonClick
+                onClick = onButtonClick,
             )
         }
     }
@@ -142,7 +139,7 @@ private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         SignUpScreen(
             state = AndroidSignUpState(SignUpViewModel.createInitData()),
-            listener = mockListener()
+            listener = mockListener(),
         )
     }
 }
@@ -153,7 +150,7 @@ private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         SignUpScreen(
             state = AndroidSignUpState(SignUpViewModel.createInitData()),
-            listener = mockListener()
+            listener = mockListener(),
         )
     }
 }

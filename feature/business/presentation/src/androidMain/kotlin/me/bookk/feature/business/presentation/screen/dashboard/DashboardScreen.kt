@@ -45,27 +45,25 @@ import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDas
 import kotlin.uuid.Uuid
 
 @Composable
-internal fun DashboardScreen(
-    state: BusinessDashboardState
-) {
+internal fun DashboardScreen(state: BusinessDashboardState) {
     Scaffold(
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                actions = { BusinessMenuAction(state.businessMenu) }
+                actions = { BusinessMenuAction(state.businessMenu) },
             )
         },
         content = {
             LazyColumn(
                 modifier = Modifier.padding(it),
                 contentPadding = PaddingValues(bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(state.sections) { item ->
                     DashboardSection(item)
                 }
             }
-        }
+        },
     )
 }
 
@@ -76,14 +74,15 @@ private fun BusinessMenuAction(businessMenu: BusinessMenuState) {
         IconButton(onClick = { isBusinessMenuVisible = true }) {
             Icon(
                 imageVector = Icons.Filled.Business,
-                contentDescription = BusinessRes.strings.business_dashboard_switch_action.desc().localized(),
-                tint = LocalColors.current.actionText
+                contentDescription =
+                BusinessRes.strings.business_dashboard_switch_action.desc().localized(),
+                tint = LocalColors.current.actionText,
             )
         }
         DropdownMenu(
             expanded = isBusinessMenuVisible,
             containerColor = LocalColors.current.elevated,
-            onDismissRequest = { isBusinessMenuVisible = false }
+            onDismissRequest = { isBusinessMenuVisible = false },
         ) {
             businessMenu.items.forEach { business ->
                 DropdownMenuItem(
@@ -96,25 +95,29 @@ private fun BusinessMenuAction(businessMenu: BusinessMenuState) {
                     onClick = {
                         isBusinessMenuVisible = false
                         businessMenu.onBusinessClick?.invoke(business.id)
-                    }
+                    },
                 )
             }
             HorizontalDivider()
             DropdownMenuItem(
-                text = { Text(BusinessRes.strings.business_dashboard_switch_create.desc().localized()) },
+                text = {
+                    Text(BusinessRes.strings.business_dashboard_switch_create.desc().localized())
+                },
                 leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
                 onClick = {
                     isBusinessMenuVisible = false
                     businessMenu.onCreateClick?.invoke()
-                }
+                },
             )
             DropdownMenuItem(
-                text = { Text(BusinessRes.strings.business_dashboard_switch_join.desc().localized()) },
+                text = {
+                    Text(BusinessRes.strings.business_dashboard_switch_join.desc().localized())
+                },
                 leadingIcon = { Icon(Icons.Filled.PersonAdd, contentDescription = null) },
                 onClick = {
                     isBusinessMenuVisible = false
                     businessMenu.onJoinClick?.invoke()
-                }
+                },
             )
         }
     }
@@ -123,29 +126,27 @@ private fun BusinessMenuAction(businessMenu: BusinessMenuState) {
 @Composable
 private fun DashboardSection(item: BusinessDashboardSection) {
     Column(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = item.title.localized(),
             style = MaterialTheme.typography.titleMedium,
-            color = LocalColors.current.header
+            color = LocalColors.current.header,
         )
 
         Column(
             modifier = Modifier.background(
                 LocalColors.current.elevated,
-                shape = MaterialTheme.shapes.large
-            )
+                shape = MaterialTheme.shapes.large,
+            ),
         ) {
             val clickListener = LocalDashboardEventListener.current.onItemClicked
             item.items.forEachIndexed { index, dashboardUIItem ->
                 SectionItem(
                     text = dashboardUIItem.text.localized(),
-                    onClick = { clickListener(dashboardUIItem) }
+                    onClick = { clickListener(dashboardUIItem) },
                 )
                 if (index != item.items.size - 1) {
                     HorizontalDivider(Modifier.padding(horizontal = 16.dp))
@@ -162,8 +163,22 @@ private fun PreviewDark() {
         DashboardScreen(
             state = AndroidDashboardState().apply {
                 appBar.title = "Business name".desc()
-                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random(), setOf(DashboardFeature.EMPLOYEES, DashboardFeature.CLIENTS, DashboardFeature.SERVICES, DashboardFeature.BUSINESS)), BusinessDashboardSection.Appointments(Uuid.random()), BusinessDashboardSection.Shop()))
-            }
+                updateSections(
+                    listOf(
+                        BusinessDashboardSection.Business(
+                            Uuid.random(),
+                            setOf(
+                                DashboardFeature.EMPLOYEES,
+                                DashboardFeature.CLIENTS,
+                                DashboardFeature.SERVICES,
+                                DashboardFeature.BUSINESS,
+                            ),
+                        ),
+                        BusinessDashboardSection.Appointments(Uuid.random()),
+                        BusinessDashboardSection.Shop(),
+                    ),
+                )
+            },
         )
     }
 }
@@ -175,8 +190,22 @@ private fun PreviewLight() {
         DashboardScreen(
             state = AndroidDashboardState().apply {
                 appBar.title = "Business name".desc()
-                updateSections(listOf(BusinessDashboardSection.Business(Uuid.random(), setOf(DashboardFeature.EMPLOYEES, DashboardFeature.CLIENTS, DashboardFeature.SERVICES, DashboardFeature.BUSINESS)), BusinessDashboardSection.Appointments(Uuid.random()), BusinessDashboardSection.Shop()))
-            }
+                updateSections(
+                    listOf(
+                        BusinessDashboardSection.Business(
+                            Uuid.random(),
+                            setOf(
+                                DashboardFeature.EMPLOYEES,
+                                DashboardFeature.CLIENTS,
+                                DashboardFeature.SERVICES,
+                                DashboardFeature.BUSINESS,
+                            ),
+                        ),
+                        BusinessDashboardSection.Appointments(Uuid.random()),
+                        BusinessDashboardSection.Shop(),
+                    ),
+                )
+            },
         )
     }
 }

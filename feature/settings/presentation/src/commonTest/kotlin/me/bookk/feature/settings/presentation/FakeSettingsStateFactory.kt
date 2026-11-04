@@ -27,19 +27,32 @@ import me.bookk.feature.settings.presentation.notifications.NotificationSettings
 import me.bookk.feature.settings.presentation.passkey.PasskeyState
 
 internal class FakeSettingsStateFactory : SettingsStateFactory {
-    override fun createSettingsState(initData: SettingsState.InitData): SettingsState = FakeSettingsState()
-    override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState = FakeEditProfileState()
-    override fun createContactUsState(initData: ContactUsState.InitData): ContactUsState = FakeContactUsState()
-    override fun createDeleteAccountState(initData: DeleteAccountState.InitData): DeleteAccountState = FakeDeleteAccountState()
-    override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState = FakePasskeyState()
-    override fun createNotificationSettingsState(): NotificationSettingsState = FakeNotificationSettingsState()
+    override fun createSettingsState(initData: SettingsState.InitData): SettingsState =
+        FakeSettingsState()
+
+    override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState =
+        FakeEditProfileState()
+
+    override fun createContactUsState(initData: ContactUsState.InitData): ContactUsState =
+        FakeContactUsState()
+
+    override fun createDeleteAccountState(
+        initData: DeleteAccountState.InitData,
+    ): DeleteAccountState = FakeDeleteAccountState()
+
+    override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState =
+        FakePasskeyState()
+
+    override fun createNotificationSettingsState(): NotificationSettingsState =
+        FakeNotificationSettingsState()
 }
 
 internal class FakeSettingsState : SettingsState {
     override val appBar = FakeAppBarState()
     override val appearance = object : AppearanceSection {
         override val title: StringDesc = "".desc()
-        override var colorScheme: AppearanceSection.UIColorScheme = AppearanceSection.UIColorScheme.SYSTEM
+        override var colorScheme: AppearanceSection.UIColorScheme =
+            AppearanceSection.UIColorScheme.SYSTEM
     }
     override val profile = object : ProfileSection {
         override var name: StringDesc = "".desc()

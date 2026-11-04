@@ -9,7 +9,8 @@ import kotlin.time.Instant
 @Serializable
 internal enum class LegalDocumentRemote {
     PRIVACY_POLICY,
-    TERMS_OF_SERVICE;
+    TERMS_OF_SERVICE,
+    ;
 
     fun toDomain(): LegalDocument {
         return when (this) {
@@ -24,7 +25,7 @@ internal class LegalDocumentVersionRemote(
     @ProtoNumber(1) val document: LegalDocumentRemote,
     @ProtoNumber(2) val version: String,
     @ProtoNumber(3) val url: String,
-    @ProtoNumber(4) val effectiveAt: Instant
+    @ProtoNumber(4) val effectiveAt: Instant,
 ) {
     fun toDomain(): LegalDocumentVersion {
         return LegalDocumentVersion(document.toDomain(), version, url, effectiveAt)

@@ -16,10 +16,13 @@ class RegistrationMapperTest {
     private fun registration(documents: AcceptedLegalDocuments): RegistrationData {
         return RegistrationData(
             requestId = "request",
-            deviceInfo = RegistrationData.DeviceInfo("00000000-0000-0000-0000-000000000001", "Device"),
+            deviceInfo = RegistrationData.DeviceInfo(
+                "00000000-0000-0000-0000-000000000001",
+                "Device",
+            ),
             userInfo = RegistrationData.UserInfo("John", "Doe", "john@example.com"),
             publicKeyCredentialJson = "{}",
-            acceptedDocuments = documents
+            acceptedDocuments = documents,
         )
     }
 
@@ -29,8 +32,14 @@ class RegistrationMapperTest {
         val data = registration(AcceptedLegalDocuments("privacy-v3", "terms-v2"))
 
         whenn()
-        val bytes = dataSerializer.encodeToByteArray(VerifyAccountCreationRequest.serializer(), data.toRemote())
-        val result = dataSerializer.decodeFromByteArray(VerifyAccountCreationRequest.serializer(), bytes)
+        val bytes = dataSerializer.encodeToByteArray(
+            VerifyAccountCreationRequest.serializer(),
+            data.toRemote(),
+        )
+        val result = dataSerializer.decodeFromByteArray(
+            VerifyAccountCreationRequest.serializer(),
+            bytes,
+        )
 
         then()
         assertEquals("privacy-v3", result.acceptedDocuments.privacyPolicy)
@@ -43,25 +52,37 @@ class RegistrationMapperTest {
         val data = registration(AcceptedLegalDocuments(privacyPolicy = "privacy-v3"))
 
         whenn()
-        val bytes = dataSerializer.encodeToByteArray(VerifyAccountCreationRequest.serializer(), data.toRemote())
-        val result = dataSerializer.decodeFromByteArray(VerifyAccountCreationRequest.serializer(), bytes)
+        val bytes = dataSerializer.encodeToByteArray(
+            VerifyAccountCreationRequest.serializer(),
+            data.toRemote(),
+        )
+        val result = dataSerializer.decodeFromByteArray(
+            VerifyAccountCreationRequest.serializer(),
+            bytes,
+        )
 
         then()
         assertEquals("privacy-v3", result.acceptedDocuments.privacyPolicy)
         assertNull(result.acceptedDocuments.termsOfService)
     }
+
     @Test
     fun `includes the required acceptance container when no version was accepted`() = runUnitTest {
         given()
         val data = registration(AcceptedLegalDocuments())
 
         whenn()
-        val bytes = dataSerializer.encodeToByteArray(VerifyAccountCreationRequest.serializer(), data.toRemote())
-        val result = dataSerializer.decodeFromByteArray(VerifyAccountCreationRequest.serializer(), bytes)
+        val bytes = dataSerializer.encodeToByteArray(
+            VerifyAccountCreationRequest.serializer(),
+            data.toRemote(),
+        )
+        val result = dataSerializer.decodeFromByteArray(
+            VerifyAccountCreationRequest.serializer(),
+            bytes,
+        )
 
         then()
         assertNull(result.acceptedDocuments.privacyPolicy)
         assertNull(result.acceptedDocuments.termsOfService)
     }
-
 }

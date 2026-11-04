@@ -11,7 +11,7 @@ class PasskeyRemote(
     @ProtoNumber(2) val name: String,
     @ProtoNumber(3) val createdAt: Instant,
     @ProtoNumber(4) val lastUsedAt: Instant,
-    @ProtoNumber(5) val isBackedUp: Boolean
+    @ProtoNumber(5) val isBackedUp: Boolean,
 )
 
 @Serializable
@@ -26,5 +26,5 @@ class RegistrationChallengeResponse(
 @Serializable
 class AddPasskeyRequest(
     @ProtoNumber(1) val requestId: String,
-    @ProtoNumber(2) val publicKeyCredentialJson: String
+    @ProtoNumber(2) val publicKeyCredentialJson: String,
 )

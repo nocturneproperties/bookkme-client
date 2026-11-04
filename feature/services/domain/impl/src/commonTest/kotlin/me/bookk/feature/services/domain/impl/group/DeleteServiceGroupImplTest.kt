@@ -43,8 +43,10 @@ class DeleteServiceGroupImplTest {
     }
 
     private fun stubGroup() = ServiceGroup(
-        id = Uuid.random(), businessId = Uuid.random(), name = "Coloring",
-        createdAt = Instant.fromEpochMilliseconds(0)
+        id = Uuid.random(),
+        businessId = Uuid.random(),
+        name = "Coloring",
+        createdAt = Instant.fromEpochMilliseconds(0),
     )
 
     @Test
@@ -52,7 +54,8 @@ class DeleteServiceGroupImplTest {
         given()
         val fixture = Fixture()
         val group = stubGroup()
-        everySuspend { fixture.dataSource.deleteServiceGroup(group.businessId, group.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteServiceGroup(group.businessId, group.id) } returns
+            Unit
         everySuspend { fixture.dataSource.deleteGroupFromDB(group) } returns Unit
 
         whenn()

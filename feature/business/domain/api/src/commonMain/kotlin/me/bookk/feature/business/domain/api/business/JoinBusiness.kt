@@ -4,8 +4,14 @@ interface JoinBusiness {
     suspend operator fun invoke(code: String)
 
     sealed interface Error {
-        class EmptyCode : Error, Throwable()
-        class AlreadyProcessed(cause: Throwable) : Error, Throwable(cause)
-        class EmployeeExists(cause: Throwable) : Error, Throwable(cause)
+        class EmptyCode :
+            Throwable(),
+            Error
+        class AlreadyProcessed(cause: Throwable) :
+            Throwable(cause),
+            Error
+        class EmployeeExists(cause: Throwable) :
+            Throwable(cause),
+            Error
     }
 }

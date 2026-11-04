@@ -16,10 +16,14 @@ class LegalDocumentVersionRemoteContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()
-        assertEquals(listOf("document" to 1, "version" to 2, "url" to 3, "effectiveAt" to 4), fields)
+        assertEquals(
+            listOf("document" to 1, "version" to 2, "url" to 3, "effectiveAt" to 4),
+            fields,
+        )
     }
 }

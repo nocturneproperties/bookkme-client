@@ -7,5 +7,5 @@ internal class AndroidFormatters(
     val dateTimeSameYear: DateTimeFormatter,
     val date: DateTimeFormatter,
     val dateSameYear: DateTimeFormatter,
-    val time: DateTimeFormatter
+    val time: DateTimeFormatter,
 )

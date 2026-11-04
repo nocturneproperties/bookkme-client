@@ -9,7 +9,7 @@ class NotificationSettingsLocal(
     @Embedded val entity: NotificationSettingsEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "settingsId"
+        entityColumn = "settingsId",
     )
-    val channels: List<NotificationSettingsChannelEntity>
+    val channels: List<NotificationSettingsChannelEntity>,
 )

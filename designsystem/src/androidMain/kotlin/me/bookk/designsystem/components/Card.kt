@@ -20,7 +20,7 @@ fun AppCard(
     border: BorderStroke? = null,
     background: Color = LocalColors.current.elevated,
     onClick: () -> Unit = {},
-    content: @Composable (ColumnScope.() -> Unit)
+    content: @Composable (ColumnScope.() -> Unit),
 ) {
     Card(
         modifier = modifier
@@ -30,8 +30,8 @@ fun AppCard(
         border = border,
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = background
-        )
+            containerColor = background,
+        ),
     ) {
         content()
     }

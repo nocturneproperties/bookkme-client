@@ -27,7 +27,7 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                onNavigationIconClick = LocalNavigation.current.navigateBack
+                onNavigationIconClick = LocalNavigation.current.navigateBack,
             )
         },
         content = {
@@ -35,19 +35,17 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
                 modifier = Modifier
                     .padding(it)
                     .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-
                 Text(
                     modifier = Modifier.padding(top = 24.dp),
                     text = state.confirmationMessage.localized(),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
                 )
                 StateSwitch(
                     state = state.confirmation,
-                    onCheckedChange = LocalDeleteAccountEventListener.current.onSwitchStateChanged
+                    onCheckedChange = LocalDeleteAccountEventListener.current.onSwitchStateChanged,
                 )
-
             }
         },
         bottomBar = {
@@ -57,19 +55,18 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
                 state = state.deleteButton,
-                onClick = LocalDeleteAccountEventListener.current.onDeleteClick
+                onClick = LocalDeleteAccountEventListener.current.onDeleteClick,
             )
-        }
+        },
     )
 }
-
 
 @Preview
 @Composable
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         DeleteAccountScreen(
-            state = AndroidDeleteAccountState(DeleteAccountViewModel.createInitData())
+            state = AndroidDeleteAccountState(DeleteAccountViewModel.createInitData()),
         )
     }
 }
@@ -79,7 +76,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         DeleteAccountScreen(
-            state = AndroidDeleteAccountState(DeleteAccountViewModel.createInitData())
+            state = AndroidDeleteAccountState(DeleteAccountViewModel.createInitData()),
         )
     }
 }

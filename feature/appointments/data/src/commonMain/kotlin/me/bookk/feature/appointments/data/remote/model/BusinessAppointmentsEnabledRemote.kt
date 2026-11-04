@@ -8,7 +8,7 @@ import kotlin.uuid.Uuid
 @Serializable
 internal class BusinessAppointmentsEnabledRemote(
     @ProtoNumber(1) val businessId: Uuid,
-    @ProtoNumber(2) val enabled: Boolean
+    @ProtoNumber(2) val enabled: Boolean,
 ) {
     fun toDomain(): BusinessAppointmentsEnabled {
         return BusinessAppointmentsEnabled(businessId, enabled)

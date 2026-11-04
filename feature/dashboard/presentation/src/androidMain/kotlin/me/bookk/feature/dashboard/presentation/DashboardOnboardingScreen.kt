@@ -52,7 +52,7 @@ internal fun DashboardOnboardingScreen(state: OnboardingState) {
     OnboardingLayout(
         refresh = state.refresh,
         headline = DashboardRes.strings.dashboard_onboarding_headline.desc().localized(),
-        subtitle = DashboardRes.strings.dashboard_onboarding_subtitle.desc().localized()
+        subtitle = DashboardRes.strings.dashboard_onboarding_subtitle.desc().localized(),
     ) {
         CreateOrJoinBusinessActions(state)
     }
@@ -63,14 +63,14 @@ internal fun DashboardBusinessSelectionScreen(state: OnboardingState) {
     OnboardingLayout(
         refresh = state.refresh,
         headline = DashboardRes.strings.dashboard_onboarding_select_headline.desc().localized(),
-        subtitle = DashboardRes.strings.dashboard_onboarding_select_subtitle.desc().localized()
+        subtitle = DashboardRes.strings.dashboard_onboarding_select_subtitle.desc().localized(),
     ) {
         state.businesses.forEach { business ->
             AppCard(modifier = Modifier.fillMaxWidth()) {
                 OnboardingActionRow(
                     icon = Icons.Filled.Business,
                     title = business.name,
-                    onClick = { state.onBusinessClick?.invoke(business) }
+                    onClick = { state.onBusinessClick?.invoke(business) },
                 )
             }
         }
@@ -79,7 +79,7 @@ internal fun DashboardBusinessSelectionScreen(state: OnboardingState) {
             modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.bodySmall,
             color = LocalColors.current.secondaryText,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
         CreateOrJoinBusinessActions(state)
     }
@@ -92,7 +92,7 @@ private fun CreateOrJoinBusinessActions(state: OnboardingState) {
             icon = Icons.Filled.Storefront,
             title = DashboardRes.strings.dashboard_onboarding_create_title.desc().localized(),
             subtitle = DashboardRes.strings.dashboard_onboarding_create_subtitle.desc().localized(),
-            onClick = { state.onCreateBusinessClick?.invoke() }
+            onClick = { state.onCreateBusinessClick?.invoke() },
         )
     }
     AppCard(modifier = Modifier.fillMaxWidth()) {
@@ -100,7 +100,7 @@ private fun CreateOrJoinBusinessActions(state: OnboardingState) {
             icon = Icons.Filled.GroupAdd,
             title = DashboardRes.strings.dashboard_onboarding_join_title.desc().localized(),
             subtitle = DashboardRes.strings.dashboard_onboarding_join_subtitle.desc().localized(),
-            onClick = { state.onJoinBusinessClick?.invoke() }
+            onClick = { state.onJoinBusinessClick?.invoke() },
         )
     }
 }
@@ -110,7 +110,7 @@ internal fun DashboardSetupRequiredScreen(state: OnboardingState) {
     OnboardingLayout(
         refresh = state.refresh,
         headline = DashboardRes.strings.dashboard_onboarding_setup_headline.desc().localized(),
-        subtitle = DashboardRes.strings.dashboard_onboarding_setup_subtitle.desc().localized()
+        subtitle = DashboardRes.strings.dashboard_onboarding_setup_subtitle.desc().localized(),
     ) {
         OnboardingStepCard(
             icon = Icons.Filled.Category,
@@ -118,7 +118,7 @@ internal fun DashboardSetupRequiredScreen(state: OnboardingState) {
             subtitle = state.serviceGroupStepSubtitle.localized(),
             isDone = state.isServiceGroupStepDone,
             isEnabled = state.isServiceGroupStepEnabled,
-            onClick = { state.onAddServiceGroupClick?.invoke() }
+            onClick = { state.onAddServiceGroupClick?.invoke() },
         )
         OnboardingStepCard(
             icon = Icons.Filled.DesignServices,
@@ -126,7 +126,7 @@ internal fun DashboardSetupRequiredScreen(state: OnboardingState) {
             subtitle = state.serviceStepSubtitle.localized(),
             isDone = state.isServiceStepDone,
             isEnabled = state.isServiceStepEnabled,
-            onClick = { state.onAddServiceClick?.invoke() }
+            onClick = { state.onAddServiceClick?.invoke() },
         )
         OnboardingStepCard(
             icon = Icons.Filled.PersonAdd,
@@ -134,15 +134,16 @@ internal fun DashboardSetupRequiredScreen(state: OnboardingState) {
             subtitle = state.clientStepSubtitle.localized(),
             isDone = state.isClientStepDone,
             isEnabled = state.isClientStepEnabled,
-            onClick = { state.onAddClientClick?.invoke() }
+            onClick = { state.onAddClientClick?.invoke() },
         )
         OnboardingStepCard(
             icon = Icons.Filled.Extension,
             title = DashboardRes.strings.dashboard_onboarding_plugins_title.desc().localized(),
-            subtitle = DashboardRes.strings.dashboard_onboarding_plugins_subtitle.desc().localized(),
+            subtitle =
+            DashboardRes.strings.dashboard_onboarding_plugins_subtitle.desc().localized(),
             isDone = state.isAppointmentsStepDone,
             isEnabled = state.isAppointmentsStepEnabled,
-            onClick = { state.onEnablePluginsClick?.invoke() }
+            onClick = { state.onEnablePluginsClick?.invoke() },
         )
     }
 }
@@ -154,12 +155,10 @@ private fun OnboardingStepCard(
     subtitle: String,
     isDone: Boolean,
     isEnabled: Boolean = true,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     AppCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .alpha(if (isEnabled || isDone) 1f else 0.5f)
+        modifier = Modifier.fillMaxWidth().alpha(if (isEnabled || isDone) 1f else 0.5f),
     ) {
         OnboardingActionRow(
             icon = icon,
@@ -167,7 +166,7 @@ private fun OnboardingStepCard(
             subtitle = subtitle,
             isDone = isDone,
             isClickable = isEnabled && !isDone,
-            onClick = onClick
+            onClick = onClick,
         )
     }
 }
@@ -177,7 +176,7 @@ internal fun DashboardAwaitingSetupScreen(state: OnboardingState) {
     OnboardingLayout(
         refresh = state.refresh,
         headline = DashboardRes.strings.dashboard_onboarding_awaiting_headline.desc().localized(),
-        subtitle = state.awaitingSetupMessage.localized()
+        subtitle = state.awaitingSetupMessage.localized(),
     ) {}
 }
 
@@ -186,14 +185,13 @@ private fun OnboardingLayout(
     refresh: RefreshState,
     headline: String,
     subtitle: String,
-    actions: @Composable ColumnScope.() -> Unit
+    actions: @Composable ColumnScope.() -> Unit,
 ) {
     PullToRefresh(state = refresh, modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 24.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp),
         ) {
             Spacer(modifier = Modifier.weight(1f))
             OnboardingContent(headline = headline, subtitle = subtitle, actions = actions)
@@ -206,25 +204,25 @@ private fun OnboardingLayout(
 private fun OnboardingContent(
     headline: String,
     subtitle: String,
-    actions: @Composable ColumnScope.() -> Unit
+    actions: @Composable ColumnScope.() -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
                 text = headline,
                 style = MaterialTheme.typography.titleMedium,
                 color = LocalColors.current.primaryText,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodyMedium,
                 color = LocalColors.current.secondaryText,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(12.dp), content = actions)
@@ -238,30 +236,27 @@ private fun OnboardingActionRow(
     subtitle: String? = null,
     isDone: Boolean = false,
     isClickable: Boolean = true,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
             .clickable(enabled = isClickable, onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
             tint = LocalColors.current.actionText,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
             if (subtitle == null) {
                 OnboardingActionTexts(
                     title = title,
                     subtitle = " ",
-                    modifier = Modifier
-                        .alpha(0f)
-                        .clearAndSetSemantics {}
+                    modifier = Modifier.alpha(0f).clearAndSetSemantics {},
                 )
                 OnboardingActionTitle(title)
             } else {
@@ -273,14 +268,14 @@ private fun OnboardingActionRow(
                 imageVector = Icons.Filled.CheckCircle,
                 contentDescription = null,
                 tint = LocalColors.current.success,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(20.dp),
             )
         } else {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = null,
                 tint = LocalColors.current.secondaryText,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(16.dp),
             )
         }
     }
@@ -293,7 +288,7 @@ private fun OnboardingActionTexts(title: String, subtitle: String, modifier: Mod
         Text(
             text = subtitle,
             style = MaterialTheme.typography.bodySmall,
-            color = LocalColors.current.secondaryText
+            color = LocalColors.current.secondaryText,
         )
     }
 }
@@ -303,7 +298,7 @@ private fun OnboardingActionTitle(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
-        color = LocalColors.current.primaryText
+        color = LocalColors.current.primaryText,
     )
 }
 

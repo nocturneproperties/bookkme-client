@@ -9,7 +9,6 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verifySuspend
-import kotlin.test.assertTrue
 import library.device.api.DeviceFacade
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -35,6 +34,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class SettingsDashboardViewModelTest {
 
@@ -52,7 +52,8 @@ class SettingsDashboardViewModelTest {
 
     private class Fixture {
         val getSettings = mock<GetSettings> {
-            everySuspend { invoke() } returns Settings(ColorScheme.DARK, SettingsProfile("Anna", "Smith", "anna@example.com"))
+            everySuspend { invoke() } returns
+                Settings(ColorScheme.DARK, SettingsProfile("Anna", "Smith", "anna@example.com"))
         }
         val updateColorScheme = mock<UpdateColorScheme>()
         val deviceFacade = mock<DeviceFacade> {
@@ -65,7 +66,7 @@ class SettingsDashboardViewModelTest {
             updateColorScheme = updateColorScheme,
             deviceFacade = deviceFacade,
             settingsStateFactory = FakeSettingsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -124,7 +125,12 @@ class SettingsDashboardViewModelTest {
         sut.onSchemeSelected(UIColorScheme.LIGHT)
 
         then()
-        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notification.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -138,7 +144,11 @@ class SettingsDashboardViewModelTest {
         sut.onSchemeSelected(UIColorScheme.LIGHT)
 
         then()
-        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notification.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -180,7 +190,10 @@ class SettingsDashboardViewModelTest {
         dialog.tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(listOf<PresentationNotification>(PresentationNotification.Unauthorized), sut.uiState.notification.presentationNotification)
+        assertEquals(
+            listOf<PresentationNotification>(PresentationNotification.Unauthorized),
+            sut.uiState.notification.presentationNotification,
+        )
     }
 
     @Test
@@ -194,7 +207,9 @@ class SettingsDashboardViewModelTest {
         sut.showPolicy()
 
         then()
-        verify(dev.mokkery.verify.VerifyMode.exactly(2)) { fixture.deviceFacade.openUrlPreview(any()) }
+        verify(dev.mokkery.verify.VerifyMode.exactly(2)) {
+            fixture.deviceFacade.openUrlPreview(any())
+        }
     }
 
     @Test
@@ -206,6 +221,9 @@ class SettingsDashboardViewModelTest {
         sut.uiState.appBar.actions.items.single().onClick()
 
         then()
-        assertEquals(listOf<SettingsDashboardDestination>(SettingsDashboardDestination.EditProfile), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<SettingsDashboardDestination>(SettingsDashboardDestination.EditProfile),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

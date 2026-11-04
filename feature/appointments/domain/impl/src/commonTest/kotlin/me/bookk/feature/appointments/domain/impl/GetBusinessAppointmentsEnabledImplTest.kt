@@ -45,7 +45,13 @@ class GetBusinessAppointmentsEnabledImplTest {
     fun `returns the backend records including optional or disabled values`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val records = listOf(BusinessAppointmentsEnabled(Uuid.parse("00000000-0000-0000-0000-000000000001"), false))
+        val records =
+            listOf(
+                BusinessAppointmentsEnabled(
+                    Uuid.parse("00000000-0000-0000-0000-000000000001"),
+                    false,
+                ),
+            )
         everySuspend { fixture.dataSource.getEnabled() } returns records
 
         whenn()

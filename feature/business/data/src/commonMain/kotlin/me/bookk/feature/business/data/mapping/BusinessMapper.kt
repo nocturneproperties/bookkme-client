@@ -32,7 +32,7 @@ internal fun BusinessRemote.toDomain(): Business {
         location = location?.let {
             Business.Location(
                 lat = it.lat,
-                lng = it.lng
+                lng = it.lng,
             )
         },
         currency = Currency(currencyCode),
@@ -43,14 +43,14 @@ internal fun BusinessRemote.toDomain(): Business {
         ownerId = ownerId,
         employeeId = employeeId,
         clientId = clientId,
-        clientDataRetentionMonths = clientDataRetentionMonths
+        clientDataRetentionMonths = clientDataRetentionMonths,
     )
 }
 
 internal fun BusinessRemote.Social.toDomain(): Business.Social {
     return Business.Social(
         kind = kind.domainKind,
-        value = value
+        value = value,
     )
 }
 
@@ -87,7 +87,7 @@ internal fun Business.toLocal(): BusinessEntity {
         ownerId = ownerId,
         employeeId = employeeId,
         clientId = clientId,
-        clientDataRetentionMonths = clientDataRetentionMonths
+        clientDataRetentionMonths = clientDataRetentionMonths,
     )
 }
 
@@ -95,7 +95,7 @@ internal fun Business.toDayScheduleEntities() = schedule.days.map { (dayOfWeek, 
     BusinessDayScheduleEntity(
         businessId = id,
         dayOfWeek = dayOfWeek.name,
-        isActive = daySchedule.isActive
+        isActive = daySchedule.isActive,
     )
 }
 
@@ -105,7 +105,7 @@ internal fun Business.toWorkHourEntities() = schedule.days.flatMap { (dayOfWeek,
             businessId = id,
             dayOfWeek = dayOfWeek.name,
             from = workHour.from.toString(),
-            to = workHour.to.toString()
+            to = workHour.to.toString(),
         )
     }
 }
@@ -114,7 +114,7 @@ internal fun Business.toDayOffEntities() = schedule.dayOffs.map { dayOff ->
     BusinessDayOffEntity(
         businessId = id,
         start = dayOff.start.toString(),
-        end = dayOff.end.toString()
+        end = dayOff.end.toString(),
     )
 }
 
@@ -134,7 +134,7 @@ internal fun BusinessLocal.toDomain(): Business {
             Business.Social(Business.SocialKind.INSTAGRAM, entity.insta),
             Business.Social(Business.SocialKind.VIBER, entity.viber),
             Business.Social(Business.SocialKind.WHATSAPP, entity.whatsApp),
-            Business.Social(Business.SocialKind.TELEGRAM, entity.telegram)
+            Business.Social(Business.SocialKind.TELEGRAM, entity.telegram),
         ).associateBy { it.kind },
         schedule = WorkingSchedule(
             days = daySchedules.associate { daySchedule ->
@@ -144,51 +144,51 @@ internal fun BusinessLocal.toDomain(): Business {
                     workingTime = workHours.filter { it.dayOfWeek == daySchedule.dayOfWeek }.map {
                         WorkHour(from = LocalTime.parse(it.from), to = LocalTime.parse(it.to))
                     },
-                    isActive = daySchedule.isActive
+                    isActive = daySchedule.isActive,
                 )
             },
             dayOffs = dayOffs.map {
                 DayOffRange(start = LocalDate.parse(it.start), end = LocalDate.parse(it.end))
-            }
+            },
         ),
         permissions = BusinessPermissions(
             business = ResourcePermission(
                 view = entity.businessPermissionView,
                 update = entity.businessPermissionUpdate,
-                delete = entity.businessPermissionDelete
+                delete = entity.businessPermissionDelete,
             ),
             employees = ResourcePermission(
                 view = entity.employeesPermissionView,
                 update = entity.employeesPermissionUpdate,
-                delete = entity.employeesPermissionDelete
+                delete = entity.employeesPermissionDelete,
             ),
             clients = ResourcePermission(
                 view = entity.clientsPermissionView,
                 update = entity.clientsPermissionUpdate,
-                delete = entity.clientsPermissionDelete
+                delete = entity.clientsPermissionDelete,
             ),
             services = ResourcePermission(
                 view = entity.servicesPermissionView,
                 update = entity.servicesPermissionUpdate,
-                delete = entity.servicesPermissionDelete
+                delete = entity.servicesPermissionDelete,
             ),
             appointments = ResourcePermission(
                 view = entity.appointmentsPermissionView,
                 update = entity.appointmentsPermissionUpdate,
-                delete = entity.appointmentsPermissionDelete
-            )
+                delete = entity.appointmentsPermissionDelete,
+            ),
         ),
         ownerId = entity.ownerId,
         employeeId = entity.employeeId,
         clientId = entity.clientId,
-        clientDataRetentionMonths = entity.clientDataRetentionMonths
+        clientDataRetentionMonths = entity.clientDataRetentionMonths,
     )
 }
 
 internal fun UserBusinessesRemote.toUserBusinesses(): UserBusinessInfo {
     return UserBusinessInfo(
         dashboardId = dashboardId,
-        businesses = businesses.map(BusinessRemote::toDomain)
+        businesses = businesses.map(BusinessRemote::toDomain),
     )
 }
 
@@ -201,20 +201,20 @@ internal fun Business.toRemote(): BusinessUpdateRemote {
         location = location?.let {
             BusinessRemote.Location(
                 lat = it.lat,
-                lng = it.lng
+                lng = it.lng,
             )
         },
         currencyCode = currency.code(),
         timeZone = timeZone,
         socials = socials.values.map { it.toRemote() },
         schedule = schedule.toRemote(),
-        clientDataRetentionMonths = clientDataRetentionMonths
+        clientDataRetentionMonths = clientDataRetentionMonths,
     )
 }
 
 internal fun Business.Social.toRemote(): BusinessRemote.Social {
     return BusinessRemote.Social(
         kind = BusinessRemote.SocialKind.entries.first { it.domainKind == kind },
-        value = value
+        value = value,
     )
 }

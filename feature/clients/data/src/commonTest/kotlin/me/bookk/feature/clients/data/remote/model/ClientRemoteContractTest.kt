@@ -34,8 +34,16 @@ class ClientRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("id" to 1, "name" to 2, "lastName" to 3, "phone" to 4, "email" to 5, "userId" to 6, "description" to 7),
-            fields
+            listOf(
+                "id" to 1,
+                "name" to 2,
+                "lastName" to 3,
+                "phone" to 4,
+                "email" to 5,
+                "userId" to 6,
+                "description" to 7,
+            ),
+            fields,
         )
     }
 
@@ -49,8 +57,15 @@ class ClientRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("id" to 1, "name" to 2, "lastName" to 3, "phone" to 4, "email" to 5, "description" to 6),
-            fields
+            listOf(
+                "id" to 1,
+                "name" to 2,
+                "lastName" to 3,
+                "phone" to 4,
+                "email" to 5,
+                "description" to 6,
+            ),
+            fields,
         )
     }
 }

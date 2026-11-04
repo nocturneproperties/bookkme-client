@@ -20,14 +20,14 @@ dependencyResolutionManagement {
 
 rootProject.name = "Bookk"
 
-//Shared
+// Shared
 include(":shared")
 include(":database")
 
-//App
+// App
 include(":androidApp")
 
-//Core
+// Core
 include(":designsystem")
 include(":core")
 include(":core:data")
@@ -38,7 +38,7 @@ include(":designsystem:testFixtures")
 include(":environment:api")
 include(":environment:impl")
 
-//Library
+// Library
 include(":library:cache:api")
 include(":library:cache:impl")
 include(":library:credentials:api")
@@ -58,52 +58,52 @@ include(":library:picker")
 include(":library:notifications:api")
 include(":library:notifications:impl")
 
-//Authorization
+// Authorization
 include(":feature:authorization:data")
 include(":feature:authorization:data:source")
 include(":feature:authorization:domain:api")
 include(":feature:authorization:domain:impl")
 include(":feature:authorization:presentation")
 
-//Settings
+// Settings
 include(":feature:settings:data")
 include(":feature:settings:domain:api")
 include(":feature:settings:domain:impl")
 include(":feature:settings:data:source")
 include(":feature:settings:presentation")
 
-//Dashboard
+// Dashboard
 include(":feature:dashboard:presentation")
 
-//Business
+// Business
 include(":feature:business:data")
 include(":feature:business:data:source")
 include(":feature:business:domain:api")
 include(":feature:business:domain:impl")
 include(":feature:business:presentation")
 
-//Clients
+// Clients
 include(":feature:clients:data")
 include(":feature:clients:data:source")
 include(":feature:clients:domain:api")
 include(":feature:clients:domain:impl")
 include(":feature:clients:presentation")
 
-//Services
+// Services
 include(":feature:services:data")
 include(":feature:services:data:source")
 include(":feature:services:domain:api")
 include(":feature:services:domain:impl")
 include(":feature:services:presentation")
 
-//Employees
+// Employees
 include(":feature:employees:data")
 include(":feature:employees:data:source")
 include(":feature:employees:domain:api")
 include(":feature:employees:domain:impl")
 include(":feature:employees:presentation")
 
-//Appointments
+// Appointments
 include(":feature:appointments:data")
 include(":feature:appointments:data:source")
 include(":feature:appointments:domain:api")

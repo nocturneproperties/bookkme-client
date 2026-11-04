@@ -27,20 +27,20 @@ buildkonfig {
             BOOLEAN,
             "DEBUG",
             getCurrentVariant().contains("debug", ignoreCase = true).toString(),
-            const = true
+            const = true,
         )
         buildConfigField(
             STRING,
             "VERSION_NAME",
             ApplicationConfig.VERSION_NAME,
-            const = true
+            const = true,
         )
         buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
         buildConfigField(
             STRING,
             "PROXY_URL",
             if (getCurrentVariant().contains("debug", ignoreCase = true)) proxyUrl else "",
-            const = true
+            const = true,
         )
     }
     defaultConfigs(ProductFlavour.DEV.title + "Debug") {
@@ -48,7 +48,7 @@ buildkonfig {
             STRING,
             "BASE_URL",
             "https://local.bookkme.app/api",
-            const = true
+            const = true,
         )
     }
     defaultConfigs(ProductFlavour.DEV.title + "Release") {
@@ -56,7 +56,7 @@ buildkonfig {
             STRING,
             "BASE_URL",
             "https://local.bookkme.app/api",
-            const = true
+            const = true,
         )
     }
     defaultConfigs(ProductFlavour.PROD.title + "Release") {
@@ -64,7 +64,7 @@ buildkonfig {
             STRING,
             "BASE_URL",
             "https://bookkme.app/api",
-            const = true
+            const = true,
         )
     }
 }
@@ -78,7 +78,7 @@ kotlin {
             implementation(libs.firebase.crashlytics)
         }
         commonMain.dependencies {
-            //Core
+            // Core
             implementation(projects.database)
             implementation(projects.core.data)
             implementation(projects.environment.api)
@@ -87,7 +87,7 @@ kotlin {
             api(projects.core.domain)
             api(projects.core.presentation)
             api(projects.designsystem)
-            //Library
+            // Library
             implementation(projects.library.device.api)
             implementation(projects.library.device.impl)
             implementation(projects.library.cache.api)
@@ -106,39 +106,39 @@ kotlin {
             api(projects.library.biometry.api)
             api(projects.library.picker)
             implementation(projects.library.biometry.impl)
-            //Auth
+            // Auth
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.domain.impl)
             implementation(projects.feature.authorization.data)
             api(projects.feature.authorization.presentation)
-            //Dashboard
+            // Dashboard
             api(projects.feature.dashboard.presentation)
-            //Settings
+            // Settings
             implementation(projects.feature.settings.domain.api)
             implementation(projects.feature.settings.domain.impl)
             implementation(projects.feature.settings.data)
             api(projects.feature.settings.presentation)
-            //Business
+            // Business
             implementation(projects.feature.business.domain.api)
             implementation(projects.feature.business.domain.impl)
             implementation(projects.feature.business.data)
             api(projects.feature.business.presentation)
-            //Clients
+            // Clients
             implementation(projects.feature.clients.domain.api)
             implementation(projects.feature.clients.domain.impl)
             implementation(projects.feature.clients.data)
             api(projects.feature.clients.presentation)
-            //Clients
+            // Clients
             implementation(projects.feature.services.domain.api)
             implementation(projects.feature.services.domain.impl)
             implementation(projects.feature.services.data)
             api(projects.feature.services.presentation)
-            //Employees
+            // Employees
             implementation(projects.feature.employees.domain.api)
             implementation(projects.feature.employees.domain.impl)
             implementation(projects.feature.employees.data)
             api(projects.feature.employees.presentation)
-            //Appointments
+            // Appointments
             implementation(projects.feature.appointments.domain.api)
             implementation(projects.feature.appointments.domain.impl)
             implementation(projects.feature.appointments.data)
@@ -165,7 +165,7 @@ kotlin {
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach {
         it.binaries.framework {
             baseName = project.name

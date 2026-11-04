@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOn
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.LaunchBehaviour
@@ -14,7 +15,6 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.appointments.domain.api.GetAppointmentHistory
@@ -29,7 +29,7 @@ class AppointmentHistoryViewModel(
     private val getAppointmentHistory: GetAppointmentHistory,
     private val dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: AppointmentHistoryState = stateFactory.createAppointmentHistoryState().setup()
@@ -55,16 +55,22 @@ class AppointmentHistoryViewModel(
             key = LOAD_KEY,
             launchIn = DispatcherProvider.io,
             onStart = {
-                if (isRefresh) uiState.refresh.isRefreshing = true
-                else uiState.appointments.isInitialLoading = true
+                if (isRefresh) {
+                    uiState.refresh.isRefreshing = true
+                } else {
+                    uiState.appointments.isInitialLoading = true
+                }
             },
             call = { getAppointmentHistory.reload(businessId, query) },
             onComplete = { uiState.appointments.replace(mapToItems(it)) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = {
-                if (isRefresh) uiState.refresh.isRefreshing = false
-                else uiState.appointments.isInitialLoading = false
-            }
+                if (isRefresh) {
+                    uiState.refresh.isRefreshing = false
+                } else {
+                    uiState.appointments.isInitialLoading = false
+                }
+            },
         )
     }
 
@@ -88,7 +94,7 @@ class AppointmentHistoryViewModel(
             launchIn = DispatcherProvider.io,
             call = { getAppointmentHistory.loadMore() },
             onComplete = { uiState.appointments.append(mapToItems(it)) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -102,7 +108,7 @@ class AppointmentHistoryViewModel(
             AppointmentHistoryItemState(
                 appointment = appointment,
                 formatter = dateFormat,
-                onItemClick = weakVMClosure { it.onAppointmentClick(appointment) }
+                onItemClick = weakVMClosure { it.onAppointmentClick(appointment) },
             )
         }
     }
@@ -110,7 +116,8 @@ class AppointmentHistoryViewModel(
     private fun AppointmentHistoryState.setup() = apply {
         appBar.size = TopBarSize.SMALL
         appBar.title = AppointmentsRes.strings.appointments_history_title.desc()
-        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(AppointmentHistoryDestinations.Back) }
+        appBar.onBackClick =
+            weakVMClosure { it.uiState.navigation.push(AppointmentHistoryDestinations.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
         refresh.onRefresh = weakVMClosure { it.onRefresh() }

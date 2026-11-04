@@ -20,9 +20,8 @@ import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.RefreshState
 
-internal class AndroidAppointmentListState(
-    selectedDate: LocalDate = LocalDate.today()
-) : AppointmentListState {
+internal class AndroidAppointmentListState(selectedDate: LocalDate = LocalDate.today()) :
+    AppointmentListState {
     override val appBar: AppBarState = AndroidAppBarState()
     override val requestsButton: ButtonState = AndroidButtonState()
     override val datePicker: DatePickerState = AndroidDatePickerState(pickedDate = selectedDate)

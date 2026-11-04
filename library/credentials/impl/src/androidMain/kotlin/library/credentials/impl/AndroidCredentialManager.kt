@@ -20,8 +20,9 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.io.encoding.Base64
 
-
-class AndroidCredentialManager : CredentialManager, AndroidActivityAware() {
+class AndroidCredentialManager :
+    AndroidActivityAware(),
+    CredentialManager {
 
     override fun encrypt(data: String): KResult<String> {
         return runCatching {
@@ -69,9 +70,13 @@ class AndroidCredentialManager : CredentialManager, AndroidActivityAware() {
             val base64Decoded = Base64.decode(data)
             val salt = base64Decoded.sliceArray(0 until SALT_BYTE_LENGTH)
             val pinWrappedKey =
-                base64Decoded.sliceArray(SALT_BYTE_LENGTH until (SALT_BYTE_LENGTH + DOUBLE_ENCR_KEY_BYTE_LENGTH))
+                base64Decoded.sliceArray(
+                    SALT_BYTE_LENGTH until (SALT_BYTE_LENGTH + DOUBLE_ENCR_KEY_BYTE_LENGTH),
+                )
             val encryptedData =
-                base64Decoded.sliceArray((SALT_BYTE_LENGTH + DOUBLE_ENCR_KEY_BYTE_LENGTH) until base64Decoded.size)
+                base64Decoded.sliceArray(
+                    (SALT_BYTE_LENGTH + DOUBLE_ENCR_KEY_BYTE_LENGTH) until base64Decoded.size,
+                )
             val (pinKey) = createPinEncryptionKey(secret.toCharArray(), salt)
             val pinUnwrappedKey = decrypt(pinWrappedKey, pinKey)
             val keyStore = KeyStore.getInstance(ANDROID_STORE_NAME).apply { load(null) }
@@ -123,7 +128,7 @@ class AndroidCredentialManager : CredentialManager, AndroidActivityAware() {
 
     private fun createPinEncryptionKey(
         pin: CharArray,
-        salt: ByteArray = ByteArray(16).random()
+        salt: ByteArray = ByteArray(16).random(),
     ): Pair<SecretKey, ByteArray> {
         val factory = SecretKeyFactory.getInstance(PIN_TRANSFORMATION_TYPE)
         val spec = PBEKeySpec(pin, salt, 65536, 256)
@@ -175,12 +180,12 @@ class AndroidCredentialManager : CredentialManager, AndroidActivityAware() {
     private fun generateKeystorePrivateKey(alias: String, biometric: Boolean): SecretKey {
         val keyGenerator = KeyGenerator.getInstance(
             KeyProperties.KEY_ALGORITHM_AES,
-            ANDROID_STORE_NAME
+            ANDROID_STORE_NAME,
         )
 
         val builder = KeyGenParameterSpec.Builder(
             alias,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
         )
             .setKeySize(256)
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
@@ -193,7 +198,7 @@ class AndroidCredentialManager : CredentialManager, AndroidActivityAware() {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         setUserAuthenticationParameters(
                             30,
-                            KeyProperties.AUTH_BIOMETRIC_STRONG
+                            KeyProperties.AUTH_BIOMETRIC_STRONG,
                         )
                     } else {
                         @Suppress("DEPRECATION")
@@ -221,5 +226,4 @@ class AndroidCredentialManager : CredentialManager, AndroidActivityAware() {
         private const val DOUBLE_ENCR_KEY_BYTE_LENGTH = 88
         private const val MONO_ENCR_KEY_BYTE_LENGTH = 60
     }
-
 }

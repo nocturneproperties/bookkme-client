@@ -4,13 +4,13 @@ import dev.icerock.moko.resources.desc.desc
 import library.money.api.Currency
 import library.money.api.Money
 import library.money.api.Money.SupportedCurrency
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -22,13 +22,13 @@ import me.bookk.feature.services.domain.api.service.CreateService
 import me.bookk.feature.services.domain.api.service.entity.Service
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.ServiceGroupOption
+import me.bookk.feature.services.presentation.service.add.AddServiceDestination.Back
 import me.bookk.feature.services.presentation.service.toDurationInput
 import me.bookk.feature.services.presentation.service.toPriceInput
-import me.bookk.feature.services.presentation.service.add.AddServiceDestination.Back
+import org.koin.core.annotation.InjectedParam
 import kotlin.properties.Delegates
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
-import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
 class AddServiceViewModel(
@@ -37,7 +37,7 @@ class AddServiceViewModel(
     private val getServiceGroups: GetServiceGroups,
     private val getBusinessCurrency: GetBusinessCurrency,
     stateFactory: ServicesStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: AddServiceState = stateFactory.createServiceState()
@@ -56,7 +56,7 @@ class AddServiceViewModel(
                 currency = it
                 uiState.setup(it)
             },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -67,7 +67,7 @@ class AddServiceViewModel(
             onComplete = {
                 uiState.group.replaceOptions(it.map(::ServiceGroupOption))
             },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -110,7 +110,7 @@ class AddServiceViewModel(
             duration = uiState.duration.text.toInt().minutes,
             price = Money(uiState.price.text.toDouble(), currency),
             isAvailable = uiState.enabled.isChecked,
-            createdAt = Clock.System.now()
+            createdAt = Clock.System.now(),
         )
         launch(
             launchIn = DispatcherProvider.io,
@@ -121,15 +121,15 @@ class AddServiceViewModel(
                 uiState.navigation.push(Back)
             },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.create.stopLoading() }
+            onTerminate = { uiState.create.stopLoading() },
         )
     }
 
     private fun invalidateButton() {
         uiState.create.isEnabled = uiState.name.isValid &&
-                uiState.group.selectedItem != null &&
-                uiState.price.isValid &&
-                uiState.duration.isValid
+            uiState.group.selectedItem != null &&
+            uiState.price.isValid &&
+            uiState.duration.isValid
     }
 
     private fun AddServiceState.setup(currency: SupportedCurrency) = apply {

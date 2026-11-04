@@ -6,10 +6,7 @@ interface TabItemsState {
     var selectedItemId: TabItem.Id
     val items: List<TabItem>
 
-    class InitData(
-        val selectedItemId: TabItem.Id,
-        val tabInitData: List<TabItem.InitData>
-    )
+    class InitData(val selectedItemId: TabItem.Id, val tabInitData: List<TabItem.InitData>)
 }
 
 interface TabItem {
@@ -22,11 +19,11 @@ interface TabItem {
         val id: Id,
         val text: StringDesc,
         val badgeText: StringDesc? = null,
-        val isEnabled: Boolean = true
+        val isEnabled: Boolean = true,
     )
     enum class Id {
         HOME,
         BUSINESS,
-        SETTINGS
+        SETTINGS,
     }
 }

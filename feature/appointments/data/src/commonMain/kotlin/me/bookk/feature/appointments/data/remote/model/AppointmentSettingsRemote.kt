@@ -36,7 +36,7 @@ data class AppointmentSettingsRemote(
     @ProtoNumber(6) val inBetweenBreakInMinutes: Int,
     @ProtoNumber(7) val appointmentNote: String,
     @ProtoNumber(8) val permissions: ResourcePermissionRemote,
-    @ProtoNumber(9) val automaticCompletion: Boolean = true
+    @ProtoNumber(9) val automaticCompletion: Boolean = true,
 ) {
     fun toDomain() = AppointmentSettings(
         id = id,
@@ -47,7 +47,7 @@ data class AppointmentSettingsRemote(
         inBetweenBreakInMinutes = inBetweenBreakInMinutes,
         appointmentNote = appointmentNote,
         permissions = permissions.toDomain(),
-        automaticCompletion = automaticCompletion
+        automaticCompletion = automaticCompletion,
     )
 }
 
@@ -55,7 +55,7 @@ data class AppointmentSettingsRemote(
 data class ResourcePermissionRemote(
     @ProtoNumber(1) val view: Boolean = false,
     @ProtoNumber(2) val update: Boolean = false,
-    @ProtoNumber(3) val delete: Boolean = false
+    @ProtoNumber(3) val delete: Boolean = false,
 ) {
     fun toDomain() = ResourcePermission(view = view, update = update, delete = delete)
 }
@@ -66,44 +66,41 @@ data class AppointmentSettingsUpdateRemote(
     @ProtoNumber(2) val automaticApproval: Boolean,
     @ProtoNumber(3) val inBetweenBreakInMinutes: Int,
     @ProtoNumber(4) val appointmentNote: String,
-    @ProtoNumber(5) val automaticCompletion: Boolean?
+    @ProtoNumber(5) val automaticCompletion: Boolean?,
 )
 
 @Serializable
 data class WorkingScheduleRemote(
     @ProtoNumber(1) val days: Map<DayOfWeek, DayOfWeekScheduleRemote>,
-    @ProtoNumber(2) val dayOffs: List<DayOffRangeRemote>
+    @ProtoNumber(2) val dayOffs: List<DayOffRangeRemote>,
 ) {
     fun toDomain() = WorkingSchedule(
         days = days.mapValues { it.value.toDomain(it.key) },
-        dayOffs = dayOffs.map { it.toDomain() }
+        dayOffs = dayOffs.map { it.toDomain() },
     )
 }
 
 @Serializable
 data class DayOfWeekScheduleRemote(
     @ProtoNumber(1) val workingTime: List<WorkHourRemote>,
-    @ProtoNumber(2) val isActive: Boolean
+    @ProtoNumber(2) val isActive: Boolean,
 ) {
     fun toDomain(dayOfWeek: DayOfWeek) = DayOfWeekSchedule(
         dayOfWeek = dayOfWeek,
         workingTime = workingTime.map { it.toDomain() },
-        isActive = isActive
+        isActive = isActive,
     )
 }
 
 @Serializable
-data class WorkHourRemote(
-    @ProtoNumber(1) val from: LocalTime,
-    @ProtoNumber(2) val to: LocalTime
-) {
+data class WorkHourRemote(@ProtoNumber(1) val from: LocalTime, @ProtoNumber(2) val to: LocalTime) {
     fun toDomain() = WorkHour(from = from, to = to)
 }
 
 @Serializable
 data class DayOffRangeRemote(
     @ProtoNumber(1) val start: LocalDate,
-    @ProtoNumber(2) val end: LocalDate
+    @ProtoNumber(2) val end: LocalDate,
 ) {
     fun toDomain() = DayOffRange(start = start, end = end)
 }

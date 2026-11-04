@@ -18,7 +18,7 @@ data class Employee(
     val schedule: WorkingSchedule,
     val createdAt: Instant,
     val permissions: BusinessPermissions,
-    val suspendedAt: Instant?
+    val suspendedAt: Instant?,
 ) {
     val isSuspended: Boolean
         get() = suspendedAt != null

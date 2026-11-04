@@ -15,7 +15,7 @@ internal fun stubDetachedClient(
     phone: String? = "+380501234567",
     email: String? = "anna@example.com",
     businessId: Uuid = Uuid.random(),
-    description: String? = null
+    description: String? = null,
 ) = Client.Detached(
     id = id,
     name = name,
@@ -23,14 +23,14 @@ internal fun stubDetachedClient(
     phone = phone,
     email = email,
     businessId = businessId,
-    description = description
+    description = description,
 )
 
 internal fun stubIntegratedClient(
     id: Uuid = Uuid.random(),
     name: String = "Olga",
     lastName: String = "Brown",
-    description: String? = null
+    description: String? = null,
 ) = Client.Integrated(
     id = id,
     name = name,
@@ -39,12 +39,18 @@ internal fun stubIntegratedClient(
     email = "olga@example.com",
     businessId = Uuid.random(),
     userId = Uuid.random(),
-    description = description
+    description = description,
 )
 
 internal class FakeValidateName : ValidateName {
     override fun invoke(name: String): ValidateName.Result {
-        return if (name.length >= 2) ValidateName.Result.Valid else ValidateName.Result.Invalid.Length
+        return if (name.length >=
+            2
+        ) {
+            ValidateName.Result.Valid
+        } else {
+            ValidateName.Result.Invalid.Length
+        }
     }
 }
 
@@ -56,7 +62,7 @@ internal class FakeValidateEmail : ValidateEmail {
 
 internal class FakePermissionChecker(
     override val type: PermissionType,
-    var granted: Boolean = true
+    var granted: Boolean = true,
 ) : PermissionChecker {
     var requestCount = 0
 
@@ -73,6 +79,6 @@ internal class FakePermissionChecker(
 internal fun permissionManagerOf(vararg checkers: FakePermissionChecker): PermissionManager {
     return PermissionManager(
         checkers = checkers.associateBy { it.type },
-        fallbackChecker = FakePermissionChecker(PermissionType.NONE, granted = false)
+        fallbackChecker = FakePermissionChecker(PermissionType.NONE, granted = false),
     )
 }

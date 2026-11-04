@@ -18,9 +18,7 @@ import me.bookk.feature.settings.domain.datasource.LegalDocumentsDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AcceptLegalDocumentsImplTest {
@@ -60,13 +58,18 @@ class AcceptLegalDocumentsImplTest {
         given()
         val fixture = Fixture()
         val documents = AcceptedLegalDocuments(termsOfService = "unknown")
-        everySuspend { fixture.dataSource.accept(documents) } throws me.bookk.core.domain.entity.Error.BusinessError(100003, "unknown version")
+        everySuspend { fixture.dataSource.accept(documents) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(100003, "unknown version")
 
         whenn()
         val result = runCatching { fixture.sut(documents) }
 
         then()
-        assertFailsWith<me.bookk.feature.settings.domain.api.AcceptLegalDocuments.Error.UnknownVersion> { result.getOrThrow() }
+        assertFailsWith<
+            me.bookk.feature.settings.domain.api.AcceptLegalDocuments.Error.UnknownVersion,
+            > {
+            result.getOrThrow()
+        }
     }
 
     @Test

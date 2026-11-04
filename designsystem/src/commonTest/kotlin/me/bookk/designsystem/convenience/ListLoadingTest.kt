@@ -56,7 +56,9 @@ class ListLoadingTest {
         var extraRefreshes = 0
 
         fun load(call: suspend () -> Collection<*>) =
-            sut.load(listState, notifications, refreshState, onRefresh = { extraRefreshes++ }, call = call)
+            sut.load(listState, notifications, refreshState, onRefresh = {
+                extraRefreshes++
+            }, call = call)
 
         fun pullToRefresh() = refreshState.onRefresh()
     }
@@ -74,29 +76,31 @@ class ListLoadingTest {
     }
 
     @Test
-    fun `keeps initial loading when the refresh returns items that are not rendered yet`() = runUnitTest {
-        given()
-        val fixture = Fixture()
+    fun `keeps initial loading when the refresh returns items that are not rendered yet`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
 
-        whenn()
-        fixture.load { listOf("a") }
+            whenn()
+            fixture.load { listOf("a") }
 
-        then()
-        assertTrue(fixture.listState.isInitialLoading)
-    }
+            then()
+            assertTrue(fixture.listState.isInitialLoading)
+        }
 
     @Test
-    fun `ends initial loading after a grace period when returned items are never rendered`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.load { listOf("a") }
+    fun `ends initial loading after a grace period when returned items are never rendered`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.load { listOf("a") }
 
-        whenn()
-        testScheduler.advanceTimeBy(RENDER_GRACE_PERIOD + 1.milliseconds)
+            whenn()
+            testScheduler.advanceTimeBy(RENDER_GRACE_PERIOD + 1.milliseconds)
 
-        then()
-        assertFalse(fixture.listState.isInitialLoading)
-    }
+            then()
+            assertFalse(fixture.listState.isInitialLoading)
+        }
 
     @Test
     fun `does not show the refresh indicator for a load the screen starts itself`() = runUnitTest {
@@ -116,7 +120,10 @@ class ListLoadingTest {
         given()
         val fixture = Fixture()
         var attempts = 0
-        fixture.load { attempts++; listOf("a") }
+        fixture.load {
+            attempts++
+            listOf("a")
+        }
 
         whenn()
         fixture.pullToRefresh()
@@ -182,22 +189,28 @@ class ListLoadingTest {
     }
 
     @Test
-    fun `keeps the refresh indicator while a newer pull to refresh is still running`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val first = CompletableDeferred<List<String>>()
-        val second = CompletableDeferred<List<String>>()
-        val calls = ArrayDeque(listOf<suspend () -> List<String>>({ listOf("a") }, { first.await() }, { second.await() }))
-        fixture.load { calls.removeFirst()() }
-        fixture.pullToRefresh()
-        fixture.pullToRefresh()
+    fun `keeps the refresh indicator while a newer pull to refresh is still running`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val first = CompletableDeferred<List<String>>()
+            val second = CompletableDeferred<List<String>>()
+            val calls =
+                ArrayDeque(
+                    listOf<suspend () -> List<String>>({
+                        listOf("a")
+                    }, { first.await() }, { second.await() }),
+                )
+            fixture.load { calls.removeFirst()() }
+            fixture.pullToRefresh()
+            fixture.pullToRefresh()
 
-        whenn()
-        first.complete(emptyList())
+            whenn()
+            first.complete(emptyList())
 
-        then()
-        assertTrue(fixture.refreshState.isRefreshing)
-    }
+            then()
+            assertTrue(fixture.refreshState.isRefreshing)
+        }
 
     @Test
     fun `retry from the full screen error does not show the refresh indicator`() = runUnitTest {
@@ -270,19 +283,20 @@ class ListLoadingTest {
     }
 
     @Test
-    fun `shows full screen error when a load fails after the list was reset to initial loading`() = runUnitTest {
-        given()
-        val fixture = Fixture(initialItems = listOf("a"))
-        fixture.listState.clear()
-        fixture.listState.isInitialLoading = true
+    fun `shows full screen error when a load fails after the list was reset to initial loading`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture(initialItems = listOf("a"))
+            fixture.listState.clear()
+            fixture.listState.isInitialLoading = true
 
-        whenn()
-        fixture.load { throw IllegalStateException() }
+            whenn()
+            fixture.load { throw IllegalStateException() }
 
-        then()
-        assertNotNull(fixture.listState.errorState)
-        assertNull(fixture.listState.bannerError)
-    }
+            then()
+            assertNotNull(fixture.listState.errorState)
+            assertNull(fixture.listState.bannerError)
+        }
 
     @Test
     fun `does not add a notification for a failure shown in the list`() = runUnitTest {
@@ -307,7 +321,7 @@ class ListLoadingTest {
         then()
         assertEquals(
             listOf<PresentationNotification>(PresentationNotification.Unauthorized),
-            fixture.notifications.presentationNotification
+            fixture.notifications.presentationNotification,
         )
     }
 
@@ -335,7 +349,7 @@ class ListLoadingTest {
         then()
         assertEquals(
             listOf<PresentationNotification>(PresentationNotification.BusinessAccessSuspended),
-            fixture.notifications.presentationNotification
+            fixture.notifications.presentationNotification,
         )
     }
 
@@ -348,7 +362,10 @@ class ListLoadingTest {
         fixture.load { throw AccessSuspendedTestError() }
 
         then()
-        assertEquals("message of AccessSuspendedTestError".desc(), fixture.listState.errorState?.subtitle)
+        assertEquals(
+            "message of AccessSuspendedTestError".desc(),
+            fixture.listState.errorState?.subtitle,
+        )
     }
 
     @Test
@@ -365,24 +382,25 @@ class ListLoadingTest {
     }
 
     @Test
-    fun `retry from the full screen error runs the call again and clears the error`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        var attempts = 0
-        fixture.load {
-            attempts++
-            if (attempts == 1) throw IllegalStateException()
-            emptyList<String>()
+    fun `retry from the full screen error runs the call again and clears the error`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            var attempts = 0
+            fixture.load {
+                attempts++
+                if (attempts == 1) throw IllegalStateException()
+                emptyList<String>()
+            }
+
+            whenn()
+            fixture.listState.errorState!!.onRetryClick()
+
+            then()
+            assertEquals(2, attempts)
+            assertNull(fixture.listState.errorState)
+            assertFalse(fixture.listState.isInitialLoading)
         }
-
-        whenn()
-        fixture.listState.errorState!!.onRetryClick()
-
-        then()
-        assertEquals(2, attempts)
-        assertNull(fixture.listState.errorState)
-        assertFalse(fixture.listState.isInitialLoading)
-    }
 
     @Test
     fun `banner shows progress while its retry is running`() = runUnitTest {
@@ -400,23 +418,24 @@ class ListLoadingTest {
     }
 
     @Test
-    fun `banner made from a full screen error shows progress while its retry is running`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val pending = CompletableDeferred<List<String>>()
-        var attempts = 0
-        fixture.load { if (attempts++ == 0) throw IllegalStateException() else pending.await() }
-        val fullScreenRetry = fixture.listState.errorState!!.onRetryClick
-        fixture.listState.replace(listOf("cached"))
-        fixture.listState.errorState = null
-        fixture.listState.bannerError = BannerErrorState.default(onRetryClick = fullScreenRetry)
+    fun `banner made from a full screen error shows progress while its retry is running`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val pending = CompletableDeferred<List<String>>()
+            var attempts = 0
+            fixture.load { if (attempts++ == 0) throw IllegalStateException() else pending.await() }
+            val fullScreenRetry = fixture.listState.errorState!!.onRetryClick
+            fixture.listState.replace(listOf("cached"))
+            fixture.listState.errorState = null
+            fixture.listState.bannerError = BannerErrorState.default(onRetryClick = fullScreenRetry)
 
-        whenn()
-        fixture.listState.bannerError!!.onRetryClick()
+            whenn()
+            fixture.listState.bannerError!!.onRetryClick()
 
-        then()
-        assertTrue(assertNotNull(fixture.listState.bannerError).isRetrying)
-    }
+            then()
+            assertTrue(assertNotNull(fixture.listState.bannerError).isRetrying)
+        }
 
     @Test
     fun `banner goes back to the retry button when its retry fails`() = runUnitTest {
@@ -436,7 +455,15 @@ class ListLoadingTest {
         given()
         val fixture = Fixture(initialItems = listOf("a"))
         var attempts = 0
-        fixture.load { if (attempts++ == 0) throw IllegalStateException() else throw CancellationException() }
+        fixture.load {
+            if (attempts++ ==
+                0
+            ) {
+                throw IllegalStateException()
+            } else {
+                throw CancellationException()
+            }
+        }
 
         whenn()
         fixture.listState.bannerError!!.onRetryClick()

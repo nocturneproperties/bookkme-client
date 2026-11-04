@@ -30,7 +30,6 @@ import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.uistate.BooleanState
 
-
 @Composable
 fun CheckBox(
     state: BooleanState,
@@ -51,16 +50,16 @@ fun CheckBox(
                     state.onCheckedChange?.invoke(!state.isChecked)
                 },
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Checkbox(
                 checked = state.isChecked,
                 colors = colors,
-                onCheckedChange = state.onCheckedChange
+                onCheckedChange = state.onCheckedChange,
             )
             Text(
                 text = state.text.html(),
-                style = MaterialTheme.typography.bodyLarge.primary()
+                style = MaterialTheme.typography.bodyLarge.primary(),
             )
         }
         AnimatedVisibility(state.supportingTextRes != null) {
@@ -75,10 +74,7 @@ fun CheckBox(
 }
 
 @Composable
-fun CheckBoxSelector(
-    state: BooleanState,
-    modifier: Modifier = Modifier,
-) {
+fun CheckBoxSelector(state: BooleanState, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -90,18 +86,18 @@ fun CheckBoxSelector(
                 }
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
                 text = state.text.html(),
                 modifier = modifier.weight(1f),
-                style = MaterialTheme.typography.bodyLarge.primary()
+                style = MaterialTheme.typography.bodyLarge.primary(),
             )
             AnimatedVisibility(state.isChecked) {
                 Icon(
                     Icons.Filled.Check,
                     contentDescription = null,
-                    tint = LocalColors.current.actionText
+                    tint = LocalColors.current.actionText,
                 )
             }
         }
@@ -126,16 +122,15 @@ fun CheckBox(
         disabledCheckedColor = LocalColors.current.inactive,
         disabledUncheckedColor = LocalColors.current.inactive,
     ),
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
 ) {
     Checkbox(
         modifier = modifier,
         checked = checked,
         colors = colors,
-        onCheckedChange = onCheckedChange
+        onCheckedChange = onCheckedChange,
     )
 }
-
 
 @Preview
 @Composable

@@ -42,11 +42,9 @@ import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
 
 @Composable
-internal fun AppointmentCreateScreen(
-    state: AppointmentCreateState
-) {
+internal fun AppointmentCreateScreen(state: AppointmentCreateState) {
     Scaffold(
-        topBar = { AppTopBar(state = state.appBar) }
+        topBar = { AppTopBar(state = state.appBar) },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -55,17 +53,17 @@ internal fun AppointmentCreateScreen(
                 .topShadow(24.dp, colorFrom = LocalColors.current.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             PickerField(
                 state.clientPicker,
                 modifier = Modifier.padding(top = 16.dp),
-                screenPicker = standardScreenPicker()
+                screenPicker = standardScreenPicker(),
             )
             OptionsMultiPicker(
                 state.servicePicker,
                 showDividers = true,
-                screenPicker = standardOptionsScreenPicker()
+                screenPicker = standardOptionsScreenPicker(),
             ) { item, onItemRemove ->
                 ServiceItem(item, onItemRemove)
             }
@@ -76,9 +74,10 @@ internal fun AppointmentCreateScreen(
             TimePickerField(state.timePicker)
             TextField(state.note, minLines = 3)
             ActionButton(
-                state.create, Modifier
+                state.create,
+                Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp),
             )
         }
     }

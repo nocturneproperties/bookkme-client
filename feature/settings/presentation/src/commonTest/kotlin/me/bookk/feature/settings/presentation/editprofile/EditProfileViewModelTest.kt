@@ -52,7 +52,8 @@ class EditProfileViewModelTest {
 
     private class Fixture {
         val getSettings = mock<GetSettings> {
-            everySuspend { invoke() } returns Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", "anna@example.com"))
+            everySuspend { invoke() } returns
+                Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", "anna@example.com"))
         }
         val editProfile = mock<EditProfile>()
         val errorMapper = FakeErrorMapper()
@@ -63,7 +64,7 @@ class EditProfileViewModelTest {
             validateName = FakeValidateName(),
             validateEmail = FakeValidateEmail(),
             settingsStateFactory = FakeSettingsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
 
         fun presentedSut(): EditProfileViewModel {
@@ -137,9 +138,18 @@ class EditProfileViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        assertEquals(SettingsRes.strings.settings_edit_profile_first_name_error.desc(), sut.uiState.name.supportingTextRes)
-        assertEquals(SettingsRes.strings.settings_edit_profile_last_name_error.desc(), sut.uiState.lastName.supportingTextRes)
-        assertEquals(SettingsRes.strings.settings_edit_profile_email_error.desc(), sut.uiState.email.supportingTextRes)
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_first_name_error.desc(),
+            sut.uiState.name.supportingTextRes,
+        )
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_last_name_error.desc(),
+            sut.uiState.lastName.supportingTextRes,
+        )
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_email_error.desc(),
+            sut.uiState.email.supportingTextRes,
+        )
         assertFalse(sut.uiState.confirmButton.isEnabled)
     }
 
@@ -186,7 +196,10 @@ class EditProfileViewModelTest {
 
         then()
         verifySuspend { fixture.editProfile("Maria", "Smith", "anna@example.com") }
-        assertEquals(listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
         assertFalse(sut.uiState.confirmButton.isEnabled)
     }
 
@@ -202,7 +215,12 @@ class EditProfileViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notification.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -217,7 +235,11 @@ class EditProfileViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notification.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test

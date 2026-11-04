@@ -7,8 +7,14 @@ interface StartPersonalDataExport {
     suspend operator fun invoke(): DataExport
 
     sealed interface Error {
-        class ConfirmationRequired : Exception(), Error
-        class ConfirmationFailed : Exception(), Error
-        class TooFrequent : Exception(), Error
+        class ConfirmationRequired :
+            Exception(),
+            Error
+        class ConfirmationFailed :
+            Exception(),
+            Error
+        class TooFrequent :
+            Exception(),
+            Error
     }
 }

@@ -75,13 +75,15 @@ class AddServiceViewModelTest {
             getServiceGroups = getServiceGroups,
             getBusinessCurrency = getBusinessCurrency,
             stateFactory = FakeServicesStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
     @Suppress("UNCHECKED_CAST")
     private fun AddServiceViewModel.fillValidForm(duration: String = "30", price: String = "12,5") {
-        (uiState.group as FakePickerFieldState<ServiceGroupOption>).pick(uiState.group.options.first())
+        (uiState.group as FakePickerFieldState<ServiceGroupOption>).pick(
+            uiState.group.options.first(),
+        )
         (uiState.name as FakeTextFieldState).type("Haircut")
         (uiState.duration as FakeTextFieldState).type(duration)
         (uiState.price as FakeTextFieldState).type(price)
@@ -176,7 +178,8 @@ class AddServiceViewModelTest {
     fun `creates service with duration in minutes shown by the field suffix`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createService(capture(fixture.created)) } calls { (service: Service) -> service }
+        everySuspend { fixture.createService(capture(fixture.created)) } calls
+            { (service: Service) -> service }
         val sut = fixture.sut()
         sut.fillValidForm(duration = "30")
 
@@ -191,7 +194,8 @@ class AddServiceViewModelTest {
     fun `creates service with picked group price and visibility then goes back`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createService(capture(fixture.created)) } calls { (service: Service) -> service }
+        everySuspend { fixture.createService(capture(fixture.created)) } calls
+            { (service: Service) -> service }
         val sut = fixture.sut()
         sut.fillValidForm(price = "12,5")
         sut.uiState.enabled.onCheckedChange?.invoke(true)
@@ -205,7 +209,10 @@ class AddServiceViewModelTest {
         assertEquals(fixture.group, service.group)
         assertEquals(Money(12.5, Money.SupportedCurrency.UAH), service.price)
         assertTrue(service.isAvailable)
-        assertEquals(listOf<AddServiceDestination>(AddServiceDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<AddServiceDestination>(AddServiceDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -235,7 +242,11 @@ class AddServiceViewModelTest {
         sut.uiState.create.onClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test

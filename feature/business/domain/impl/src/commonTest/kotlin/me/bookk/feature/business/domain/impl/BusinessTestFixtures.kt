@@ -21,25 +21,27 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 internal fun stubWorkingSchedule(
-    days: Map<DayOfWeek, DayOfWeekSchedule> = DayOfWeek.entries.associateWith { DayOfWeekSchedule.default(it) },
-    dayOffs: List<DayOffRange> = emptyList()
+    days: Map<DayOfWeek, DayOfWeekSchedule> = DayOfWeek.entries.associateWith {
+        DayOfWeekSchedule.default(it)
+    },
+    dayOffs: List<DayOffRange> = emptyList(),
 ) = WorkingSchedule(days = days, dayOffs = dayOffs)
 
 internal fun stubDaySchedule(
     dayOfWeek: DayOfWeek = DayOfWeek.MONDAY,
     workingTime: List<WorkHour> = listOf(WorkHour(LocalTime(9, 0), LocalTime(17, 0))),
-    isActive: Boolean = true
+    isActive: Boolean = true,
 ) = DayOfWeekSchedule(dayOfWeek = dayOfWeek, workingTime = workingTime, isActive = isActive)
 
 internal fun stubDayOff(
     start: LocalDate = LocalDate(2026, 8, 10),
-    end: LocalDate = LocalDate(2026, 8, 12)
+    end: LocalDate = LocalDate(2026, 8, 12),
 ) = DayOffRange(start = start, end = end)
 
 internal fun stubBusiness(
     id: Uuid = Uuid.random(),
     schedule: WorkingSchedule = stubWorkingSchedule(),
-    permissions: BusinessPermissions = stubBusinessPermissions()
+    permissions: BusinessPermissions = stubBusinessPermissions(),
 ) = Business(
     id = id,
     name = "Test Business",
@@ -50,7 +52,7 @@ internal fun stubBusiness(
     timeZone = TimeZone.UTC,
     socials = emptyMap(),
     schedule = schedule,
-    permissions = permissions
+    permissions = permissions,
 )
 
 internal fun stubBusinessPermissions() = BusinessPermissions(
@@ -58,7 +60,7 @@ internal fun stubBusinessPermissions() = BusinessPermissions(
     employees = ResourcePermission(),
     clients = ResourcePermission(),
     services = ResourcePermission(),
-    appointments = ResourcePermission()
+    appointments = ResourcePermission(),
 )
 
 internal fun stubClient(businessId: Uuid = Uuid.random()) = Client.Detached(
@@ -67,14 +69,14 @@ internal fun stubClient(businessId: Uuid = Uuid.random()) = Client.Detached(
     lastName = "Doe",
     phone = null,
     email = null,
-    businessId = businessId
+    businessId = businessId,
 )
 
 internal fun stubServiceGroup(businessId: Uuid = Uuid.random()) = ServiceGroup(
     id = Uuid.random(),
     businessId = businessId,
     name = "Group",
-    createdAt = Instant.fromEpochMilliseconds(0)
+    createdAt = Instant.fromEpochMilliseconds(0),
 )
 
 internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
@@ -85,5 +87,5 @@ internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
     duration = 30.minutes,
     price = Money(1000L, Money.SupportedCurrency.USD),
     isAvailable = true,
-    createdAt = Instant.fromEpochMilliseconds(0)
+    createdAt = Instant.fromEpochMilliseconds(0),
 )

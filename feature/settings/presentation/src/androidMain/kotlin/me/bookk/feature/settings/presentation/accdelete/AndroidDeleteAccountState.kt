@@ -12,13 +12,14 @@ import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 
-class AndroidDeleteAccountState(
-    initData: DeleteAccountState.InitData
-) : DeleteAccountState {
+class AndroidDeleteAccountState(initData: DeleteAccountState.InitData) : DeleteAccountState {
     override val appBar: AppBarState = AndroidAppBarState(initData.title)
     override val confirmationMessage: StringDesc = initData.confirmationMessage
-    override val confirmation: BooleanState = AndroidBooleanState(text = initData.switchMessage, isChecked = false)
-    override val deleteButton: ButtonState = AndroidButtonState(text = initData.buttonMessage, isEnabled = false)
+    override val confirmation: BooleanState =
+        AndroidBooleanState(text = initData.switchMessage, isChecked = false)
+    override val deleteButton: ButtonState =
+        AndroidButtonState(text = initData.buttonMessage, isEnabled = false)
     override val notifications: PresentationNotificationState = AndroidNotificationState()
-    override val navigation: NavigationState<DeleteAccountNavigationDestination> = AndroidNavigationState()
+    override val navigation: NavigationState<DeleteAccountNavigationDestination> =
+        AndroidNavigationState()
 }

@@ -32,10 +32,10 @@ import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardSetupStatus
-import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
-import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.business.RefreshDashboardSetupStatus
+import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
+import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.entity.DashboardSetupStatus
 import me.bookk.feature.dashboard.presentation.state.DashboardHomeState
 import me.bookk.feature.dashboard.presentation.state.DashboardState
@@ -70,15 +70,16 @@ class DashboardViewModelTest {
         override val id: TabItem.Id,
         override val text: StringDesc,
         override var badgeText: StringDesc?,
-        override var isEnabled: Boolean
+        override var isEnabled: Boolean,
     ) : TabItem
 
     private class FakeDashboardState(initData: TabItemsState.InitData) : DashboardState {
         override val tabItems = object : TabItemsState {
             override var selectedItemId: TabItem.Id = initData.selectedItemId
-            override val items: List<TabItem> = initData.tabInitData.map {
-                FakeTabItem(it.id, it.text, it.badgeText, it.isEnabled)
-            }
+            override val items: List<TabItem> =
+                initData.tabInitData.map {
+                    FakeTabItem(it.id, it.text, it.badgeText, it.isEnabled)
+                }
         }
         override val navigation = FakeNavigationState<DashboardHomeNavigationDestination>()
         override val home = object : DashboardHomeState {
@@ -136,11 +137,13 @@ class DashboardViewModelTest {
             joinBusiness = joinBusiness,
             createBusiness = createBusiness,
             stateFactory = object : DashboardStateFactory {
-                override fun createDashboardState(initData: TabItemsState.InitData): DashboardState {
+                override fun createDashboardState(
+                    initData: TabItemsState.InitData,
+                ): DashboardState {
                     return FakeDashboardState(initData)
                 }
             },
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -153,7 +156,7 @@ class DashboardViewModelTest {
         canEnableAppointments: Boolean = true,
         canManageServices: Boolean = true,
         canManageClients: Boolean = true,
-        missingViewPermissions: Set<BusinessResource> = emptySet()
+        missingViewPermissions: Set<BusinessResource> = emptySet(),
     ): DashboardSetupStatus.SetupRequired {
         return DashboardSetupStatus.SetupRequired(
             businessId = businessId,
@@ -164,7 +167,7 @@ class DashboardViewModelTest {
             canEnableAppointments = canEnableAppointments,
             canManageServices = canManageServices,
             canManageClients = canManageClients,
-            missingViewPermissions = missingViewPermissions
+            missingViewPermissions = missingViewPermissions,
         )
     }
 
@@ -172,7 +175,9 @@ class DashboardViewModelTest {
         get() = uiState.tabItems.items.single { it.id == TabItem.Id.BUSINESS }
 
     private fun DashboardViewModel.inputDialogs(): List<PresentationNotification.InputMessage> {
-        return uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.InputMessage>()
+        return uiState.notifications.presentationNotification.filterIsInstance<
+            PresentationNotification.InputMessage,
+            >()
     }
 
     private fun DashboardViewModel.submitJoinCode(code: String) {
@@ -186,7 +191,9 @@ class DashboardViewModelTest {
     }
 
     private fun DashboardViewModel.messages(): List<PresentationNotification.Message> {
-        return uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>()
+        return uiState.notifications.presentationNotification.filterIsInstance<
+            PresentationNotification.Message,
+            >()
     }
 
     @Test
@@ -248,11 +255,15 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
+        fixture.setupStatus.value =
+            DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
 
         then()
         assertEquals(HomeContent.AwaitingSetup, sut.uiState.home.content)
-        assertEquals(DashboardRes.strings.dashboard_onboarding_awaiting_message.format("Salon"), sut.uiState.home.onboarding.awaitingSetupMessage)
+        assertEquals(
+            DashboardRes.strings.dashboard_onboarding_awaiting_message.format("Salon"),
+            sut.uiState.home.onboarding.awaitingSetupMessage,
+        )
         assertTrue(sut.businessTab.isEnabled)
     }
 
@@ -263,10 +274,17 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", setOf(BusinessResource.CLIENTS))
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(
+            Uuid.random(),
+            "Salon",
+            setOf(BusinessResource.CLIENTS),
+        )
 
         then()
-        assertEquals(DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_access.format("Salon"), sut.uiState.home.onboarding.awaitingSetupMessage)
+        assertEquals(
+            DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_access.format("Salon"),
+            sut.uiState.home.onboarding.awaitingSetupMessage,
+        )
     }
 
     @Test
@@ -276,10 +294,17 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", setOf(BusinessResource.SERVICES))
+        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(
+            Uuid.random(),
+            "Salon",
+            setOf(BusinessResource.SERVICES),
+        )
 
         then()
-        assertEquals(DashboardRes.strings.dashboard_onboarding_awaiting_no_services_access.format("Salon"), sut.uiState.home.onboarding.awaitingSetupMessage)
+        assertEquals(
+            DashboardRes.strings.dashboard_onboarding_awaiting_no_services_access.format("Salon"),
+            sut.uiState.home.onboarding.awaitingSetupMessage,
+        )
     }
 
     @Test
@@ -292,13 +317,15 @@ class DashboardViewModelTest {
         fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(
             Uuid.random(),
             "Salon",
-            setOf(BusinessResource.CLIENTS, BusinessResource.SERVICES)
+            setOf(BusinessResource.CLIENTS, BusinessResource.SERVICES),
         )
 
         then()
         assertEquals(
-            DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_services_access.format("Salon"),
-            sut.uiState.home.onboarding.awaitingSetupMessage
+            DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_services_access.format(
+                "Salon",
+            ),
+            sut.uiState.home.onboarding.awaitingSetupMessage,
         )
     }
 
@@ -338,7 +365,10 @@ class DashboardViewModelTest {
         sut.uiState.home.onboarding.onCreateBusinessClick?.invoke()
 
         then()
-        assertEquals(DashboardRes.strings.dashboard_create_dialog_title.desc(), sut.inputDialogs().single().title)
+        assertEquals(
+            DashboardRes.strings.dashboard_create_dialog_title.desc(),
+            sut.inputDialogs().single().title,
+        )
     }
 
     @Test
@@ -366,7 +396,12 @@ class DashboardViewModelTest {
         sut.submitBusinessName("Salon")
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -380,7 +415,11 @@ class DashboardViewModelTest {
         sut.submitBusinessName("Salon")
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -394,7 +433,10 @@ class DashboardViewModelTest {
         sut.submitBusinessName("")
 
         then()
-        assertEquals(listOf(DashboardRes.strings.dashboard_create_error_empty_name.desc()), sut.messages().map { it.message })
+        assertEquals(
+            listOf(DashboardRes.strings.dashboard_create_error_empty_name.desc()),
+            sut.messages().map { it.message },
+        )
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
@@ -409,7 +451,10 @@ class DashboardViewModelTest {
         sut.submitJoinCode("")
 
         then()
-        assertEquals(listOf(DashboardRes.strings.dashboard_join_error_empty_code.desc()), sut.messages().map { it.message })
+        assertEquals(
+            listOf(DashboardRes.strings.dashboard_join_error_empty_code.desc()),
+            sut.messages().map { it.message },
+        )
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
@@ -439,7 +484,12 @@ class DashboardViewModelTest {
         sut.uiState.home.onboarding.onEnablePluginsClick?.invoke()
 
         then()
-        assertEquals(listOf<DashboardHomeNavigationDestination>(DashboardHomeNavigationDestination.EnablePlugins(id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<DashboardHomeNavigationDestination>(
+                DashboardHomeNavigationDestination.EnablePlugins(id),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -460,7 +510,8 @@ class DashboardViewModelTest {
         val fixture = Fixture()
         fixture.setupStatus.value = setupRequired()
         val sut = fixture.sut()
-        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
+        fixture.setupStatus.value =
+            DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
 
         whenn()
         sut.uiState.home.onboarding.onEnablePluginsClick?.invoke()
@@ -476,13 +527,23 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.setupStatus.value = setupRequired(isAppointmentsEnabled = true, hasServiceGroups = true, hasServices = false, hasClients = true)
+        fixture.setupStatus.value = setupRequired(
+            isAppointmentsEnabled = true,
+            hasServiceGroups = true,
+            hasServices = false,
+            hasClients = true,
+        )
 
         then()
         val onboarding = sut.uiState.home.onboarding
         assertEquals(
             listOf(true, true, false, true),
-            listOf(onboarding.isAppointmentsStepDone, onboarding.isServiceGroupStepDone, onboarding.isServiceStepDone, onboarding.isClientStepDone)
+            listOf(
+                onboarding.isAppointmentsStepDone,
+                onboarding.isServiceGroupStepDone,
+                onboarding.isServiceStepDone,
+                onboarding.isClientStepDone,
+            ),
         )
     }
 
@@ -525,7 +586,12 @@ class DashboardViewModelTest {
         val onboarding = sut.uiState.home.onboarding
         assertEquals(
             listOf(true, true, true, true),
-            listOf(onboarding.isServiceGroupStepEnabled, onboarding.isServiceStepEnabled, onboarding.isClientStepEnabled, onboarding.isAppointmentsStepEnabled)
+            listOf(
+                onboarding.isServiceGroupStepEnabled,
+                onboarding.isServiceStepEnabled,
+                onboarding.isClientStepEnabled,
+                onboarding.isAppointmentsStepEnabled,
+            ),
         )
     }
 
@@ -543,18 +609,23 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `disables service group and service steps without permission to manage services`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.sut()
+    fun `disables service group and service steps without permission to manage services`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val sut = fixture.sut()
 
-        whenn()
-        fixture.setupStatus.value = setupRequired(hasServiceGroups = true, canManageServices = false)
+            whenn()
+            fixture.setupStatus.value =
+                setupRequired(hasServiceGroups = true, canManageServices = false)
 
-        then()
-        val onboarding = sut.uiState.home.onboarding
-        assertEquals(listOf(false, false), listOf(onboarding.isServiceGroupStepEnabled, onboarding.isServiceStepEnabled))
-    }
+            then()
+            val onboarding = sut.uiState.home.onboarding
+            assertEquals(
+                listOf(false, false),
+                listOf(onboarding.isServiceGroupStepEnabled, onboarding.isServiceStepEnabled),
+            )
+        }
 
     @Test
     fun `disables client step without permission to manage clients`() = runUnitTest {
@@ -584,9 +655,13 @@ class DashboardViewModelTest {
             listOf(
                 DashboardRes.strings.dashboard_onboarding_group_subtitle.desc(),
                 DashboardRes.strings.dashboard_onboarding_service_subtitle.desc(),
-                DashboardRes.strings.dashboard_onboarding_client_subtitle.desc()
+                DashboardRes.strings.dashboard_onboarding_client_subtitle.desc(),
             ),
-            listOf(onboarding.serviceGroupStepSubtitle, onboarding.serviceStepSubtitle, onboarding.clientStepSubtitle)
+            listOf(
+                onboarding.serviceGroupStepSubtitle,
+                onboarding.serviceStepSubtitle,
+                onboarding.clientStepSubtitle,
+            ),
         )
     }
 
@@ -597,12 +672,18 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.setupStatus.value = setupRequired(canManageServices = false, missingViewPermissions = setOf(BusinessResource.SERVICES))
+        fixture.setupStatus.value = setupRequired(
+            canManageServices = false,
+            missingViewPermissions = setOf(BusinessResource.SERVICES),
+        )
 
         then()
         val onboarding = sut.uiState.home.onboarding
         val noAccess = DashboardRes.strings.dashboard_onboarding_step_no_services_access.desc()
-        assertEquals(listOf(noAccess, noAccess), listOf(onboarding.serviceGroupStepSubtitle, onboarding.serviceStepSubtitle))
+        assertEquals(
+            listOf(noAccess, noAccess),
+            listOf(onboarding.serviceGroupStepSubtitle, onboarding.serviceStepSubtitle),
+        )
     }
 
     @Test
@@ -612,10 +693,16 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.setupStatus.value = setupRequired(canManageClients = false, missingViewPermissions = setOf(BusinessResource.CLIENTS))
+        fixture.setupStatus.value = setupRequired(
+            canManageClients = false,
+            missingViewPermissions = setOf(BusinessResource.CLIENTS),
+        )
 
         then()
-        assertEquals(DashboardRes.strings.dashboard_onboarding_step_no_clients_access.desc(), sut.uiState.home.onboarding.clientStepSubtitle)
+        assertEquals(
+            DashboardRes.strings.dashboard_onboarding_step_no_clients_access.desc(),
+            sut.uiState.home.onboarding.clientStepSubtitle,
+        )
     }
 
     @Test
@@ -629,7 +716,12 @@ class DashboardViewModelTest {
         sut.uiState.home.onboarding.onAddServiceGroupClick?.invoke()
 
         then()
-        assertEquals(listOf<DashboardHomeNavigationDestination>(DashboardHomeNavigationDestination.AddServiceGroup), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<DashboardHomeNavigationDestination>(
+                DashboardHomeNavigationDestination.AddServiceGroup,
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -644,7 +736,12 @@ class DashboardViewModelTest {
         sut.uiState.home.onboarding.onAddServiceClick?.invoke()
 
         then()
-        assertEquals(listOf<DashboardHomeNavigationDestination>(DashboardHomeNavigationDestination.AddService(id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<DashboardHomeNavigationDestination>(
+                DashboardHomeNavigationDestination.AddService(id),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -673,7 +770,12 @@ class DashboardViewModelTest {
         sut.uiState.home.onboarding.onAddClientClick?.invoke()
 
         then()
-        assertEquals(listOf<DashboardHomeNavigationDestination>(DashboardHomeNavigationDestination.AddClient(id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<DashboardHomeNavigationDestination>(
+                DashboardHomeNavigationDestination.AddClient(id),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -791,7 +893,8 @@ class DashboardViewModelTest {
         then()
         verifySuspend { fixture.joinBusiness("ABC123") }
         val message = sut.uiState.notifications.presentationNotification
-            .filterIsInstance<PresentationNotification.GlobalMessage>().single()
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertEquals(PresentationNotification.GlobalMessage.State.SUCCESS, message.state)
     }
 
@@ -806,7 +909,12 @@ class DashboardViewModelTest {
         sut.submitJoinCode("ABC123")
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -820,14 +928,19 @@ class DashboardViewModelTest {
         sut.submitJoinCode("ABC123")
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `shows already processed message when invitation was used`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.joinBusiness(any()) } throws JoinBusiness.Error.AlreadyProcessed(TestException())
+        everySuspend { fixture.joinBusiness(any()) } throws
+            JoinBusiness.Error.AlreadyProcessed(TestException())
         val sut = fixture.sut()
 
         whenn()
@@ -842,7 +955,8 @@ class DashboardViewModelTest {
     fun `shows employee exists message when user already works there`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.joinBusiness(any()) } throws JoinBusiness.Error.EmployeeExists(TestException())
+        everySuspend { fixture.joinBusiness(any()) } throws
+            JoinBusiness.Error.EmployeeExists(TestException())
         val sut = fixture.sut()
 
         whenn()
@@ -868,18 +982,20 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `shows business selection with business tab disabled when no business is selected`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.sut()
+    fun `shows business selection with business tab disabled when no business is selected`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val sut = fixture.sut()
 
-        whenn()
-        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
+            whenn()
+            fixture.setupStatus.value =
+                DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
 
-        then()
-        assertEquals(HomeContent.BusinessNotSelected, sut.uiState.home.content)
-        assertFalse(sut.businessTab.isEnabled)
-    }
+            then()
+            assertEquals(HomeContent.BusinessNotSelected, sut.uiState.home.content)
+            assertFalse(sut.businessTab.isEnabled)
+        }
 
     @Test
     fun `offers the user businesses for selection`() = runUnitTest {
@@ -894,8 +1010,11 @@ class DashboardViewModelTest {
 
         then()
         assertEquals(
-            listOf(OnboardingBusinessItem(salon.id, "Salon"), OnboardingBusinessItem(barber.id, "Barber")),
-            sut.uiState.home.onboarding.businesses
+            listOf(
+                OnboardingBusinessItem(salon.id, "Salon"),
+                OnboardingBusinessItem(barber.id, "Barber"),
+            ),
+            sut.uiState.home.onboarding.businesses,
         )
     }
 
@@ -916,14 +1035,18 @@ class DashboardViewModelTest {
         given()
         val fixture = Fixture()
         val salon = stubBusiness(name = "Salon")
-        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(salon, stubBusiness(name = "Removed")))
+        fixture.setupStatus.value =
+            DashboardSetupStatus.BusinessNotSelected(listOf(salon, stubBusiness(name = "Removed")))
         val sut = fixture.sut()
 
         whenn()
         fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(salon))
 
         then()
-        assertEquals(listOf(OnboardingBusinessItem(salon.id, "Salon")), sut.uiState.home.onboarding.businesses)
+        assertEquals(
+            listOf(OnboardingBusinessItem(salon.id, "Salon")),
+            sut.uiState.home.onboarding.businesses,
+        )
     }
 
     @Test
@@ -935,7 +1058,9 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        sut.uiState.home.onboarding.onBusinessClick?.invoke(sut.uiState.home.onboarding.businesses.single())
+        sut.uiState.home.onboarding.onBusinessClick?.invoke(
+            sut.uiState.home.onboarding.businesses.single(),
+        )
 
         then()
         verifySuspend(VerifyMode.exactly(1)) { fixture.switchDashboardBusiness(salon.id) }
@@ -950,7 +1075,9 @@ class DashboardViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        sut.uiState.home.onboarding.onBusinessClick?.invoke(sut.uiState.home.onboarding.businesses.single())
+        sut.uiState.home.onboarding.onBusinessClick?.invoke(
+            sut.uiState.home.onboarding.businesses.single(),
+        )
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
@@ -975,7 +1102,8 @@ class DashboardViewModelTest {
     fun `opens home when the dashboard business is lost while on the settings tab`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.setupStatus.value = DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
+        fixture.setupStatus.value =
+            DashboardSetupStatus.AwaitingSetup(Uuid.random(), "Salon", emptySet())
         val sut = fixture.sut()
         sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
 
@@ -987,19 +1115,21 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `opens home when the dashboard business is lost but other businesses remain`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.setupStatus.value = DashboardSetupStatus.Ready
-        val sut = fixture.sut()
-        sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
+    fun `opens home when the dashboard business is lost but other businesses remain`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.setupStatus.value = DashboardSetupStatus.Ready
+            val sut = fixture.sut()
+            sut.uiState.tabItems.selectedItemId = TabItem.Id.SETTINGS
 
-        whenn()
-        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
+            whenn()
+            fixture.setupStatus.value =
+                DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
 
-        then()
-        assertEquals(TabItem.Id.HOME, sut.uiState.tabItems.selectedItemId)
-    }
+            then()
+            assertEquals(TabItem.Id.HOME, sut.uiState.tabItems.selectedItemId)
+        }
 
     @Test
     fun `keeps the selected tab while the dashboard business stays available`() = runUnitTest {
@@ -1074,18 +1204,20 @@ class DashboardViewModelTest {
     }
 
     @Test
-    fun `does not refresh setup data on pull to refresh without a dashboard business`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.setupStatus.value = DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
-        val sut = fixture.sut()
+    fun `does not refresh setup data on pull to refresh without a dashboard business`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.setupStatus.value =
+                DashboardSetupStatus.BusinessNotSelected(listOf(stubBusiness()))
+            val sut = fixture.sut()
 
-        whenn()
-        sut.uiState.home.onboarding.refresh.onRefresh()
+            whenn()
+            sut.uiState.home.onboarding.refresh.onRefresh()
 
-        then()
-        verifySuspend(VerifyMode.not) { fixture.refreshDashboardSetupStatus(any()) }
-    }
+            then()
+            verifySuspend(VerifyMode.not) { fixture.refreshDashboardSetupStatus(any()) }
+        }
 
     @Test
     fun `shows refreshing until pull to refresh completes`() = runUnitTest {
@@ -1102,7 +1234,10 @@ class DashboardViewModelTest {
         gate.complete(Unit)
 
         then()
-        assertEquals(listOf(true, false), listOf(isRefreshingWhileLoading, sut.uiState.home.onboarding.refresh.isRefreshing))
+        assertEquals(
+            listOf(true, false),
+            listOf(isRefreshingWhileLoading, sut.uiState.home.onboarding.refresh.isRefreshing),
+        )
     }
 
     @Test

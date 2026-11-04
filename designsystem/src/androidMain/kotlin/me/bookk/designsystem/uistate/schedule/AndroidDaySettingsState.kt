@@ -12,7 +12,9 @@ import me.bookk.designsystem.uistate.AndroidViewState
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.ButtonState
 
-class AndroidDaySettingsState : AndroidViewState(isVisible = false), DaySettingsState {
+class AndroidDaySettingsState :
+    AndroidViewState(isVisible = false),
+    DaySettingsState {
 
     override var title: StringDesc by mutableStateOf("".desc())
     override var dayIndicator: StringDesc by mutableStateOf("".desc())

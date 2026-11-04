@@ -34,8 +34,10 @@ import kotlin.uuid.Uuid
 internal class CommonAppointmentRequestDataSource(
     private val httpClient: HttpClient,
     private val appointmentRequestDao: AppointmentRequestDao,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), AppointmentRequestDataSource, LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    AppointmentRequestDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("appointment_requests_prefs")
 
@@ -55,31 +57,40 @@ internal class CommonAppointmentRequestDataSource(
                 .toDomain()
         }
 
-    override suspend fun getBusinessAppointmentRequests(businessId: Uuid): List<AppointmentRequest> = mapExceptions {
+    override suspend fun getBusinessAppointmentRequests(
+        businessId: Uuid,
+    ): List<AppointmentRequest> = mapExceptions {
         httpClient.get(Api.Appointment.Requests(businessId = businessId))
             .body<List<AppointmentRequestRemote>>()
             .map { it.toDomain() }
     }
 
     override suspend fun getOwnAppointmentRequests(businessId: Uuid) = mapExceptions {
-        httpClient.get(Api.Appointment.Requests.Own(Api.Appointment.Requests(businessId = businessId)))
+        httpClient.get(
+            Api.Appointment.Requests.Own(Api.Appointment.Requests(businessId = businessId)),
+        )
             .body<List<AppointmentRequestRemote>>()
             .map { it.toDomain() }
     }
 
-    override fun observeAppointmentRequestsDBChanges(businessId: Uuid): Flow<List<AppointmentRequest>> {
+    override fun observeAppointmentRequestsDBChanges(
+        businessId: Uuid,
+    ): Flow<List<AppointmentRequest>> {
         return appointmentRequestDao.observeForBusiness(businessId)
             .map { requests -> requests.map { it.toDomain() } }
             .mapErrors()
     }
 
-    override suspend fun getAppointmentRequestIdsInDb(businessId: Uuid): List<Uuid> = mapExceptions {
-        appointmentRequestDao.getIdsForBusiness(businessId)
-    }
+    override suspend fun getAppointmentRequestIdsInDb(businessId: Uuid): List<Uuid> =
+        mapExceptions {
+            appointmentRequestDao.getIdsForBusiness(businessId)
+        }
 
     override suspend fun deleteAppointmentRequestsInDb(ids: List<Uuid>) {
         mapExceptions {
-            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> appointmentRequestDao.deleteByIds(chunk) }
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk ->
+                appointmentRequestDao.deleteByIds(chunk)
+            }
         }
     }
 
@@ -87,20 +98,25 @@ internal class CommonAppointmentRequestDataSource(
         mapExceptions {
             appointmentRequestDao.upsertWithServices(
                 requests = requests.map { it.toRequestEntity() },
-                services = requests.flatMap { it.toRequestServiceEntities() }
+                services = requests.flatMap { it.toRequestServiceEntities() },
             )
         }
 
-    override suspend fun declineAppointmentRequest(requestId: Uuid, businessId: Uuid, reason: String) =
-        mapExceptions {
-            httpClient.post(Api.Appointment.RequestDecline(id = requestId)) {
-                setBody(AppointmentCancellationRemote(id = requestId, reason = reason))
-            }
-            Unit
+    override suspend fun declineAppointmentRequest(
+        requestId: Uuid,
+        businessId: Uuid,
+        reason: String,
+    ) = mapExceptions {
+        httpClient.post(Api.Appointment.RequestDecline(id = requestId)) {
+            setBody(AppointmentCancellationRemote(id = requestId, reason = reason))
         }
+        Unit
+    }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
-        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastSyncedAt(businessId))?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastSyncedAt(businessId: Uuid) {

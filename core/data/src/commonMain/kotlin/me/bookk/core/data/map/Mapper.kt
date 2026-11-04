@@ -15,21 +15,27 @@ suspend fun Throwable.toDomain(): Error {
         is IOException -> Error.NoConnectionError(this)
 
         is CancellationException -> Error.Cancelled(this)
+
         is ResponseException -> {
             when (response.status.value) {
                 401 -> Error.Unauthorized(this)
+
                 in 400..500 -> {
                     val body = runCatching { response.body<BusinessServerError>() }.getOrNull()
                     when {
                         body != null && body.isAccessSuspended(response.status.value) ->
                             Error.BusinessAccessSuspended(body.message)
+
                         body != null -> Error.BusinessError(body.errorCode, body.message)
+
                         response.status.value == 400 -> Error.BadRequest(this)
+
                         response.status.value == 500 -> Error.InternalServerError(this)
+
                         else -> Error.UnknownApiError(
                             message.orEmpty(),
                             this,
-                            response.status.value
+                            response.status.value,
                         )
                     }
                 }
@@ -47,5 +53,6 @@ suspend fun Throwable.toDomain(): Error {
 }
 
 private fun BusinessServerError.isAccessSuspended(status: Int): Boolean {
-    return status == HttpStatusCode.Forbidden.value && errorCode == ServerErrorCodes.BUSINESS_EMPLOYEE_ACCESS_SUSPENDED
+    return status == HttpStatusCode.Forbidden.value &&
+        errorCode == ServerErrorCodes.BUSINESS_EMPLOYEE_ACCESS_SUSPENDED
 }

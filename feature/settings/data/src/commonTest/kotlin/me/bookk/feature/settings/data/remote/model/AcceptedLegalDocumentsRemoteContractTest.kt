@@ -16,7 +16,8 @@ class AcceptedLegalDocumentsRemoteContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()

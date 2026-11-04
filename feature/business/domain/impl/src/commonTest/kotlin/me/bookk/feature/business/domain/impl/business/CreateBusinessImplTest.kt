@@ -56,7 +56,13 @@ class CreateBusinessImplTest {
         }
         val refreshBusinessInfo = mock<RefreshBusinessInfo>()
         val switchDashboardBusiness = mock<SwitchDashboardBusiness>()
-        val sut = CreateBusinessImpl(dataSource, deviceFacade, refreshBusinessInfo, switchDashboardBusiness)
+        val sut =
+            CreateBusinessImpl(
+                dataSource,
+                deviceFacade,
+                refreshBusinessInfo,
+                switchDashboardBusiness,
+            )
     }
 
     private fun stubBusiness() = Business(
@@ -69,7 +75,7 @@ class CreateBusinessImplTest {
         timeZone = TimeZone.UTC,
         socials = emptyMap(),
         schedule = WorkingSchedule(),
-        permissions = stubBusinessPermissions()
+        permissions = stubBusinessPermissions(),
     )
 
     @Test
@@ -94,7 +100,8 @@ class CreateBusinessImplTest {
         given()
         val fixture = Fixture()
         every { fixture.deviceFacade.getCurrencyCode() } returns "PLN"
-        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns
+            stubBusiness()
         everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
@@ -106,27 +113,30 @@ class CreateBusinessImplTest {
     }
 
     @Test
-    fun `creates business in fallback currency when device currency is not supported`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        every { fixture.deviceFacade.getCurrencyCode() } returns "JPY"
-        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
-        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
-        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
+    fun `creates business in fallback currency when device currency is not supported`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            every { fixture.deviceFacade.getCurrencyCode() } returns "JPY"
+            everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns
+                stubBusiness()
+            everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
+            everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
-        whenn()
-        fixture.sut("My Salon")
+            whenn()
+            fixture.sut("My Salon")
 
-        then()
-        verifySuspend { fixture.dataSource.createBusiness("My Salon", "USD", any()) }
-    }
+            then()
+            verifySuspend { fixture.dataSource.createBusiness("My Salon", "USD", any()) }
+        }
 
     @Test
     fun `creates business in fallback currency when device has no currency`() = runUnitTest {
         given()
         val fixture = Fixture()
         every { fixture.deviceFacade.getCurrencyCode() } returns null
-        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns
+            stubBusiness()
         everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
@@ -150,7 +160,9 @@ class CreateBusinessImplTest {
         fixture.sut("My Salon")
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.refreshBusinessInfo.refreshAndSelect(expected.id) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.refreshBusinessInfo.refreshAndSelect(expected.id)
+        }
     }
 
     @Test
@@ -173,7 +185,8 @@ class CreateBusinessImplTest {
     fun `sends trimmed name to backend`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns stubBusiness()
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } returns
+            stubBusiness()
         everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
         everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
@@ -196,12 +209,14 @@ class CreateBusinessImplTest {
         assertFailsWith<CreateBusiness.Error.EmptyName> { result.getOrThrow() }
         verifySuspend(VerifyMode.not) { fixture.dataSource.createBusiness(any(), any(), any()) }
     }
+
     @Test
     fun `maps backend error 200001 to BusinessAlreadyExists`() = runUnitTest {
         given()
         val fixture = Fixture()
 
-        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200001, "rejected")
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200001, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut("Business") }
@@ -215,7 +230,8 @@ class CreateBusinessImplTest {
         given()
         val fixture = Fixture()
 
-        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200002, "rejected")
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200002, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut("Business") }
@@ -229,7 +245,8 @@ class CreateBusinessImplTest {
         given()
         val fixture = Fixture()
 
-        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200035, "rejected")
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200035, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut("Business") }
@@ -237,5 +254,4 @@ class CreateBusinessImplTest {
         then()
         assertFailsWith<CreateBusiness.Error.InvalidCurrency> { result.getOrThrow() }
     }
-
 }

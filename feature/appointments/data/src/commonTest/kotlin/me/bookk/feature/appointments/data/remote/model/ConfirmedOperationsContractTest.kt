@@ -16,11 +16,22 @@ class ConfirmedOperationsContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()
-        assertEquals(listOf("businessId" to 1, "employeeId" to 2, "services" to 3, "date" to 4, "note" to 5, "offerToken" to 6, "clientId" to 7), fields)
+        assertEquals(
+            listOf(
+                "businessId" to 1,
+                "employeeId" to 2,
+                "services" to 3,
+                "date" to 4,
+                "note" to 5,
+                "offerToken" to 6,
+                "clientId" to 7,
+            ),
+            fields,
+        )
     }
-
 }

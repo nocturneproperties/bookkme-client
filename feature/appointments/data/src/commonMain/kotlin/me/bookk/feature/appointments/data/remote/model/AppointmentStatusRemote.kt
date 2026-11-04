@@ -8,7 +8,8 @@ enum class AppointmentStatusRemote {
     SCHEDULED,
     COMPLETED,
     CANCELLED,
-    NO_SHOW;
+    NO_SHOW,
+    ;
 
     fun toDomain() = when (this) {
         SCHEDULED -> AppointmentStatus.SCHEDULED

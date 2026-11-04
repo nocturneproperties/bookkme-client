@@ -7,7 +7,7 @@ data class UserProfile(
     val firstName: String,
     val lastName: String,
     val email: String,
-    val phone: String? = null
+    val phone: String? = null,
 ) {
     val fullName: String = "$firstName $lastName"
 }

@@ -56,8 +56,8 @@ class GetDeviceContactsImplTest {
                 name = "John",
                 lastName = "Doe",
                 phones = listOf("+48123456789", "+48987654321"),
-                emails = listOf("john@example.com", "doe@example.com")
-            )
+                emails = listOf("john@example.com", "doe@example.com"),
+            ),
         )
 
         whenn()
@@ -65,8 +65,15 @@ class GetDeviceContactsImplTest {
 
         then()
         assertEquals(
-            listOf(ClientImportEntry(name = "John", lastName = "Doe", phone = "+48123456789", email = "john@example.com")),
-            result
+            listOf(
+                ClientImportEntry(
+                    name = "John",
+                    lastName = "Doe",
+                    phone = "+48123456789",
+                    email = "john@example.com",
+                ),
+            ),
+            result,
         )
     }
 
@@ -128,7 +135,7 @@ class GetDeviceContactsImplTest {
         val fixture = Fixture()
         fixture.stubContacts(
             stubContact(phones = listOf("+48500123456,,123")),
-            stubContact(phones = listOf("+48500123456;123"))
+            stubContact(phones = listOf("+48500123456;123")),
         )
 
         whenn()
@@ -168,7 +175,9 @@ class GetDeviceContactsImplTest {
     fun `keeps a contact with an email when none of its phone numbers has digits`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.stubContacts(stubContact(phones = listOf("( - )"), emails = listOf("john@example.com")))
+        fixture.stubContacts(
+            stubContact(phones = listOf("( - )"), emails = listOf("john@example.com")),
+        )
 
         whenn()
         val result = fixture.sut()
@@ -197,7 +206,7 @@ class GetDeviceContactsImplTest {
         val fixture = Fixture()
         fixture.stubContacts(
             stubContact(name = "Anna", phones = listOf("( - )"), emails = listOf(" ")),
-            stubContact(name = "John", phones = listOf("+48500123456"))
+            stubContact(name = "John", phones = listOf("+48500123456")),
         )
 
         whenn()
@@ -223,7 +232,7 @@ class GetDeviceContactsImplTest {
     private fun stubContact(
         name: String = "John",
         phones: List<String> = emptyList(),
-        emails: List<String> = emptyList()
+        emails: List<String> = emptyList(),
     ): DeviceContact {
         return DeviceContact(name = name, lastName = "Doe", phones = phones, emails = emails)
     }

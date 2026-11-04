@@ -7,14 +7,15 @@ import me.bookk.android.designsystem.resources.DesignSystem
 class BannerErrorState(
     val text: StringDesc,
     val isRetrying: Boolean = false,
-    val onRetryClick: () -> Unit
+    val onRetryClick: () -> Unit,
 ) {
-    fun retrying(): BannerErrorState = BannerErrorState(text = text, isRetrying = true, onRetryClick = onRetryClick)
+    fun retrying(): BannerErrorState =
+        BannerErrorState(text = text, isRetrying = true, onRetryClick = onRetryClick)
 
     companion object {
         fun default(onRetryClick: () -> Unit): BannerErrorState = BannerErrorState(
             text = DesignSystem.strings.error_refresh_failed.desc(),
-            onRetryClick = onRetryClick
+            onRetryClick = onRetryClick,
         )
     }
 }

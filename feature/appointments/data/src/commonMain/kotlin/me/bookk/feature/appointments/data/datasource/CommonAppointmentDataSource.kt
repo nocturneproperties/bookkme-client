@@ -31,8 +31,8 @@ import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.appointments.data.remote.model.AppointmentPaginationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
-import me.bookk.feature.appointments.domain.api.entity.InstantAppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
+import me.bookk.feature.appointments.domain.api.entity.InstantAppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.PriceAdjustmentDraft
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.time.Clock
@@ -42,8 +42,10 @@ import kotlin.uuid.Uuid
 internal class CommonAppointmentDataSource(
     private val httpClient: HttpClient,
     private val appointmentDao: AppointmentDao,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), AppointmentDataSource, LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    AppointmentDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("appointments_prefs")
 
@@ -54,36 +56,43 @@ internal class CommonAppointmentDataSource(
     override suspend fun getAppointmentsForDate(
         businessId: Uuid,
         forDate: LocalDate,
-        employeeId: Uuid?
-    ): List<Appointment> =
-        mapExceptions {
-            httpClient.get(Api.Appointment.List(businessId = businessId, date = forDate, employeeId = employeeId))
-                .body<List<AppointmentRemote>>()
-                .map { it.toDomain() }
-        }
+        employeeId: Uuid?,
+    ): List<Appointment> = mapExceptions {
+        httpClient.get(
+            Api.Appointment.List(
+                businessId = businessId,
+                date = forDate,
+                employeeId = employeeId,
+            ),
+        )
+            .body<List<AppointmentRemote>>()
+            .map { it.toDomain() }
+    }
 
     override suspend fun getAppointmentHistory(
         businessId: Uuid,
         limit: Int,
         offset: Long,
-        query: String?
-    ): List<Appointment> =
-        mapExceptions {
-            httpClient.get(
-                Api.Appointment.History(businessId = businessId, limit = limit, offset = offset, query = query)
-            )
-                .body<AppointmentPaginationRemote>()
-                .data
-                .map { it.toDomain() }
-        }
+        query: String?,
+    ): List<Appointment> = mapExceptions {
+        httpClient.get(
+            Api.Appointment.History(
+                businessId = businessId,
+                limit = limit,
+                offset = offset,
+                query = query,
+            ),
+        )
+            .body<AppointmentPaginationRemote>()
+            .data
+            .map { it.toDomain() }
+    }
 
-    override suspend fun saveAppointmentsInDB(
-        appointments: List<Appointment>
-    ) = mapExceptions {
+    override suspend fun saveAppointmentsInDB(appointments: List<Appointment>) = mapExceptions {
         appointmentDao.upsertWithServices(
             appointments = appointments.map { it.toEntity() },
             services = appointments.flatMap { it.toServiceEntities() },
-            adjustmentServices = appointments.flatMap { it.toAdjustmentServiceEntities() }
+            adjustmentServices = appointments.flatMap { it.toAdjustmentServiceEntities() },
         )
     }
 
@@ -105,22 +114,22 @@ internal class CommonAppointmentDataSource(
                 .toDomain()
         }
 
-    override suspend fun updateAppointment(appointment: Appointment): Appointment =
-        mapExceptions {
-            httpClient.put(Api.Appointment.Id(id = appointment.id)) {
-                setBody(appointment.toUpdateRemote())
-            }
-                .body<AppointmentRemote>()
-                .toDomain()
-        }
-
-    override suspend fun completeAppointment(id: Uuid, priceAdjustment: PriceAdjustmentDraft?) = mapExceptions {
-        httpClient.post(Api.Appointment.Complete(id = id)) {
-            setBody(priceAdjustment.toCompleteRequestRemote())
+    override suspend fun updateAppointment(appointment: Appointment): Appointment = mapExceptions {
+        httpClient.put(Api.Appointment.Id(id = appointment.id)) {
+            setBody(appointment.toUpdateRemote())
         }
             .body<AppointmentRemote>()
             .toDomain()
     }
+
+    override suspend fun completeAppointment(id: Uuid, priceAdjustment: PriceAdjustmentDraft?) =
+        mapExceptions {
+            httpClient.post(Api.Appointment.Complete(id = id)) {
+                setBody(priceAdjustment.toCompleteRequestRemote())
+            }
+                .body<AppointmentRemote>()
+                .toDomain()
+        }
 
     override suspend fun markAppointmentNoShow(id: Uuid) = mapExceptions {
         httpClient.post(Api.Appointment.NoShow(id = id))
@@ -133,7 +142,7 @@ internal class CommonAppointmentDataSource(
             appointmentDao.upsertWithServices(
                 appointments = listOf(appointment.toEntity()),
                 services = appointment.toServiceEntities(),
-                adjustmentServices = appointment.toAdjustmentServiceEntities()
+                adjustmentServices = appointment.toAdjustmentServiceEntities(),
             )
         }
     }
@@ -141,7 +150,7 @@ internal class CommonAppointmentDataSource(
     override fun observeAppointmentsForDateDBChanges(
         businessId: Uuid,
         forDate: LocalDate,
-        employeeId: Uuid?
+        employeeId: Uuid?,
     ): Flow<List<Appointment>> {
         val (startOfDay, endOfDay) = forDate.dayBounds()
         return appointmentDao.observeForDate(businessId, startOfDay, endOfDay, employeeId)
@@ -152,7 +161,7 @@ internal class CommonAppointmentDataSource(
     override suspend fun getAppointmentIdsForDateInDb(
         businessId: Uuid,
         forDate: LocalDate,
-        employeeId: Uuid?
+        employeeId: Uuid?,
     ): List<Uuid> = mapExceptions {
         val (startOfDay, endOfDay) = forDate.dayBounds()
         appointmentDao.getIdsForDate(businessId, startOfDay, endOfDay, employeeId)
@@ -172,11 +181,16 @@ internal class CommonAppointmentDataSource(
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid, forDate: LocalDate): Instant? {
-        return preferences.get(Key.lastSyncedAt(businessId, forDate))?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastSyncedAt(businessId, forDate))?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastSyncedAt(businessId: Uuid, forDate: LocalDate) {
-        preferences.set(Key.lastSyncedAt(businessId, forDate), Clock.System.now().toEpochMilliseconds())
+        preferences.set(
+            Key.lastSyncedAt(businessId, forDate),
+            Clock.System.now().toEpochMilliseconds(),
+        )
     }
 
     override suspend fun doOnLogOut() {

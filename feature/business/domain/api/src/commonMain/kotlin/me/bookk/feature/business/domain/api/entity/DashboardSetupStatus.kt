@@ -14,12 +14,12 @@ sealed interface DashboardSetupStatus {
         val canEnableAppointments: Boolean,
         val canManageServices: Boolean,
         val canManageClients: Boolean,
-        val missingViewPermissions: Set<BusinessResource>
+        val missingViewPermissions: Set<BusinessResource>,
     ) : DashboardSetupStatus
     data class AwaitingSetup(
         val businessId: Uuid,
         val businessName: String,
-        val missingViewPermissions: Set<BusinessResource>
+        val missingViewPermissions: Set<BusinessResource>,
     ) : DashboardSetupStatus
     data object Ready : DashboardSetupStatus
 }

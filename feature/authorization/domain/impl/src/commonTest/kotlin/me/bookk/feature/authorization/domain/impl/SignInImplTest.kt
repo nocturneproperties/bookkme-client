@@ -52,11 +52,20 @@ class SignInImplTest {
         val deviceFacade = mock<DeviceFacade>()
         val passKeyManager = mock<PassKeyManager>()
         val initialAppDataFetch = mock<InitialAppDataFetch>()
-        val sut = SignInImpl(deviceDataSource, authorizationDataSource, deviceFacade, passKeyManager, initialAppDataFetch)
+        val sut =
+            SignInImpl(
+                deviceDataSource,
+                authorizationDataSource,
+                deviceFacade,
+                passKeyManager,
+                initialAppDataFetch,
+            )
     }
 
     private fun stubChallenge() = ServerAuthenticationChallenge(
-        requestId = "req-id", challengeJson = "{}", challenge = "challenge-bytes"
+        requestId = "req-id",
+        challengeJson = "{}",
+        challenge = "challenge-bytes",
     )
 
     private val tokenInfo = TokenInfo("access", "refresh")
@@ -118,8 +127,10 @@ class SignInImplTest {
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        everySuspend { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.UserCancelled()
+        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns
+            stubChallenge()
+        everySuspend { fixture.passKeyManager.authorize(any()) } throws
+            PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
@@ -129,24 +140,28 @@ class SignInImplTest {
     }
 
     @Test
-    fun `throws NoCredentialsAvailable when PassKeyManager throws CredentialsMissing`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
-        everySuspend { fixture.passKeyManager.authorize(any()) } throws PassKeyManager.Error.CredentialsMissing()
+    fun `throws NoCredentialsAvailable when PassKeyManager throws CredentialsMissing`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns
+                stubChallenge()
+            everySuspend { fixture.passKeyManager.authorize(any()) } throws
+                PassKeyManager.Error.CredentialsMissing()
 
-        whenn()
-        then()
-        assertFailsWith<SignIn.Error.NoCredentialsAvailable> {
-            fixture.sut()
+            whenn()
+            then()
+            assertFailsWith<SignIn.Error.NoCredentialsAvailable> {
+                fixture.sut()
+            }
         }
-    }
 
     @Test
     fun `throws NoAccountForThisPasskey on PASSKEY_OWNER_NOT_FOUND error`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { fixture.authorizationDataSource.getAuthorizationChallenge() } returns
+            stubChallenge()
         everySuspend { fixture.passKeyManager.authorize(any()) } returns payload
         everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
         everySuspend { fixture.deviceFacade.getDeviceName() } returns "Name"

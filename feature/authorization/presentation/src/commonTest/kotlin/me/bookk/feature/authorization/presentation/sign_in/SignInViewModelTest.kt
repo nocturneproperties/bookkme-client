@@ -54,7 +54,7 @@ class SignInViewModelTest {
             signIn = signIn,
             deviceFacade = deviceFacade,
             stateFactory = FakeAuthStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -154,6 +154,9 @@ class SignInViewModelTest {
         sut.onBackClick()
 
         then()
-        assertEquals(listOf<SignInNavigationDestination>(SignInNavigationDestination.Main), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<SignInNavigationDestination>(SignInNavigationDestination.Main),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

@@ -7,6 +7,8 @@ interface DownloadPersonalDataExport {
     suspend operator fun invoke(): String
 
     sealed interface Error {
-        class NotReady : Exception(), Error
+        class NotReady :
+            Exception(),
+            Error
     }
 }

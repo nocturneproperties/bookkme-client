@@ -42,7 +42,13 @@ private fun ViewModel.launchListLoad(
     call: suspend () -> Collection<*>,
 ) {
     val retry = weakVMClosure {
-        it.launchListLoad(listState, notifications, refreshIndicator = null, retriedBanner = listState.bannerError, call = call)
+        it.launchListLoad(
+            listState,
+            notifications,
+            refreshIndicator = null,
+            retriedBanner = listState.bannerError,
+            call = call,
+        )
     }
     launch(
         key = "loadList@${listState.hashCode()}",
@@ -62,17 +68,20 @@ private fun ViewModel.launchListLoad(
             if (retriedBanner != null) listState.bannerError = retriedBanner
             when (val notification = error.notification()) {
                 PresentationNotification.Ignore -> Unit
+
                 PresentationNotification.Unauthorized -> notifications.add(notification)
+
                 PresentationNotification.BusinessAccessSuspended -> {
                     notifications.add(notification)
                     listState.showLoadingError(error.description(), retry)
                 }
+
                 else -> listState.showLoadingError(error.description(), retry)
             }
         },
         onTerminate = {
             refreshIndicator?.isRefreshing = false
-        }
+        },
     )
 }
 
@@ -81,18 +90,17 @@ private fun ListState<*>.showLoadingError(description: ErrorDescription, retry: 
         errorState = ErrorState(
             title = description.title,
             subtitle = description.message,
-            onRetryClick = retry
+            onRetryClick = retry,
         )
     } else {
         bannerError = BannerErrorState.default(onRetryClick = retry)
     }
 }
 
-fun <K> Flow<K>.resetListOnChange(listState: ListState<*>): Flow<K> =
-    distinctUntilChanged()
-        .withIndex()
-        .onEach { if (it.index > 0) listState.resetToInitialLoading() }
-        .map { it.value }
+fun <K> Flow<K>.resetListOnChange(listState: ListState<*>): Flow<K> = distinctUntilChanged()
+    .withIndex()
+    .onEach { if (it.index > 0) listState.resetToInitialLoading() }
+    .map { it.value }
 
 private fun ListState<*>.resetToInitialLoading() {
     clear()

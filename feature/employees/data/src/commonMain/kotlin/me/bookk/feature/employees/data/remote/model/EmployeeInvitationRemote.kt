@@ -16,7 +16,7 @@ internal class EmployeeInvitationRemote(
     @ProtoNumber(3) val invitedBy: Uuid,
     @ProtoNumber(4) val code: String?,
     @ProtoNumber(5) val status: EmployeeInvitationStatusRemote,
-    @ProtoNumber(6) val createdAt: Instant
+    @ProtoNumber(6) val createdAt: Instant,
 ) {
     fun toDomain() = EmployeeInvitation(
         id = id,
@@ -24,7 +24,7 @@ internal class EmployeeInvitationRemote(
         invitedBy = invitedBy,
         code = code,
         status = status.toDomain(),
-        createdAt = createdAt.toLocalDateTime(TimeZone.currentSystemDefault())
+        createdAt = createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
     )
 }
 
@@ -33,7 +33,8 @@ internal enum class EmployeeInvitationStatusRemote {
     PENDING,
     REDEEMED,
     EXPIRED,
-    REVOKED;
+    REVOKED,
+    ;
 
     fun toDomain() = when (this) {
         PENDING -> EmployeeInvitationStatus.PENDING
@@ -44,6 +45,4 @@ internal enum class EmployeeInvitationStatusRemote {
 }
 
 @Serializable
-internal class EmployeeInvitationRedeemRequest(
-    @ProtoNumber(1) val code: String
-)
+internal class EmployeeInvitationRedeemRequest(@ProtoNumber(1) val code: String)

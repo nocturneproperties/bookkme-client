@@ -16,10 +16,18 @@ class AppointmentRequestRemoteContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()
-        assertEquals(listOf("id" to 1, "initiatorUserId" to 2, "businessId" to 3, "employee" to 4, "client" to 5, "services" to 6, "status" to 7, "date" to 8, "note" to 9, "declineReason" to 10), fields)
+        assertEquals(
+            listOf(
+                "id" to 1, "initiatorUserId" to 2, "businessId" to 3, "employee" to 4,
+                "client" to 5, "services" to 6, "status" to 7, "date" to 8, "note" to 9,
+                "declineReason" to 10,
+            ),
+            fields,
+        )
     }
 }

@@ -28,6 +28,6 @@ interface SignUpState {
         val emailHint: StringDesc,
         val confirmButtonText: StringDesc,
         val passkeyInfoCardData: PasskeyInfoCardData,
-        val learnMoreButtonText: StringDesc
+        val learnMoreButtonText: StringDesc,
     )
 }

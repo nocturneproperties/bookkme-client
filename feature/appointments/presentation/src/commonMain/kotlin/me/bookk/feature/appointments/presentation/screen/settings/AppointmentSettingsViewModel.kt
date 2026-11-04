@@ -2,13 +2,13 @@ package me.bookk.feature.appointments.presentation.screen.settings
 
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.flowOn
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.startLoading
@@ -29,7 +29,7 @@ class AppointmentSettingsViewModel(
     private val getAppointmentSettings: GetAppointmentSettings,
     private val updateAppointmentSettings: UpdateAppointmentSettings,
     stateFactory: AppointmentsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     private var loadedSettings = AppointmentSettings.stub(businessId = businessId)
@@ -58,7 +58,7 @@ class AppointmentSettingsViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { getAppointmentSettings.refresh(businessId) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -74,12 +74,12 @@ class AppointmentSettingsViewModel(
                 renderSettings(it)
                 uiState.notifications.add(
                     PresentationNotification.GlobalMessage(
-                        AppointmentsRes.strings.appointments_settings_updated.desc()
-                    )
+                        AppointmentsRes.strings.appointments_settings_updated.desc(),
+                    ),
                 )
             },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.save.stopLoading(enable = hasUnsavedChanges()) }
+            onTerminate = { uiState.save.stopLoading(enable = hasUnsavedChanges()) },
         )
     }
 
@@ -87,7 +87,7 @@ class AppointmentSettingsViewModel(
         automaticApproval = uiState.automaticApproval.isChecked,
         automaticCompletion = uiState.automaticCompletion.isChecked,
         inBetweenBreakInMinutes = uiState.minimalBreak.text.toIntOrNull() ?: DEFAULT_BREAK_MINUTES,
-        appointmentNote = uiState.note.text
+        appointmentNote = uiState.note.text,
     )
 
     private fun hasUnsavedChanges(): Boolean {
@@ -169,7 +169,8 @@ class AppointmentSettingsViewModel(
             vm.uiState.minimalBreak.text = v.filter { it.isDigit() }
             vm.renderSaveAvailability()
         }
-        minimalBreak.supportingTextRes = AppointmentsRes.strings.appointments_settings_break_footer.desc()
+        minimalBreak.supportingTextRes =
+            AppointmentsRes.strings.appointments_settings_break_footer.desc()
     }
 
     private companion object {

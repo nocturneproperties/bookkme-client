@@ -8,10 +8,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
-class SelectableDateRange(
-    val max: LocalDate?,
-    val min: LocalDate?,
-) : SelectableDates {
+class SelectableDateRange(val max: LocalDate?, val min: LocalDate?) : SelectableDates {
 
     init {
         require(min == null || max == null || min <= max) {
@@ -22,12 +19,12 @@ class SelectableDateRange(
     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
         val selectedDate = Instant.fromEpochMilliseconds(utcTimeMillis)
             .toLocalDateTime(TimeZone.currentSystemDefault())
-        return min?.let { selectedDate.date >= it } ?: true
-                && max?.let { selectedDate.date <= it } ?: true
+        return min?.let { selectedDate.date >= it } ?: true &&
+            max?.let { selectedDate.date <= it } ?: true
     }
 
     override fun isSelectableYear(year: Int): Boolean {
-        return min?.let { year >= it.year } ?: true
-                && max?.let { year <= it.year } ?: true
+        return min?.let { year >= it.year } ?: true &&
+            max?.let { year <= it.year } ?: true
     }
 }

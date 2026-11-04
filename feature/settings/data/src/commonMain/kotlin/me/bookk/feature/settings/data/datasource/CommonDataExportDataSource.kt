@@ -16,7 +16,9 @@ import me.bookk.feature.settings.data.remote.model.DataExportRequestRemote
 import me.bookk.feature.settings.domain.datasource.DataExportDataSource
 import kotlin.uuid.Uuid
 
-internal class CommonDataExportDataSource(private val httpClient: HttpClient) : DataSource(), DataExportDataSource {
+internal class CommonDataExportDataSource(private val httpClient: HttpClient) :
+    DataSource(),
+    DataExportDataSource {
     override suspend fun start(stepUpToken: String): DataExport = mapExceptions {
         httpClient.post(UserRouting.Api.User.Export()) {
             setBody(DataExportRequestRemote(stepUpToken))

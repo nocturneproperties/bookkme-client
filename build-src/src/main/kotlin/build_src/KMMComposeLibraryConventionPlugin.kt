@@ -56,7 +56,7 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                 .applyConvention(project)
 
             dependencies {
-                add("androidRuntimeClasspath",libs.compose.ui.tooling)
+                add("androidRuntimeClasspath", libs.compose.ui.tooling)
             }
         }
     }

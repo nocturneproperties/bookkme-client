@@ -63,8 +63,8 @@ class ObserveCurrentBusinessIdImplTest {
             employees = ResourcePermission(),
             clients = ResourcePermission(),
             services = ResourcePermission(),
-            appointments = ResourcePermission()
-        )
+            appointments = ResourcePermission(),
+        ),
     )
 
     @Test

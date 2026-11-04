@@ -11,7 +11,8 @@ internal enum class DataExportStatusRemote {
     NONE,
     RUNNING,
     READY,
-    FAILED;
+    FAILED,
+    ;
 
     fun toDomain(): DataExportStatus {
         return when (this) {
@@ -28,7 +29,7 @@ internal class DataExportRemote(
     @ProtoNumber(1) val status: DataExportStatusRemote,
     @ProtoNumber(2) val requestedAt: Instant? = null,
     @ProtoNumber(3) val expiresAt: Instant? = null,
-    @ProtoNumber(4) val availableAgainAt: Instant? = null
+    @ProtoNumber(4) val availableAgainAt: Instant? = null,
 ) {
     fun toDomain(): DataExport {
         return DataExport(status.toDomain(), requestedAt, expiresAt, availableAgainAt)

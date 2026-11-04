@@ -24,8 +24,10 @@ import kotlin.uuid.Uuid
 
 internal class CommonAppointmentSettingsDataSource(
     private val httpClient: HttpClient,
-    private val appointmentSettingsDao: AppointmentSettingsDao
-) : DataSource(), AppointmentSettingsDataSource, LogOutAction {
+    private val appointmentSettingsDao: AppointmentSettingsDao,
+) : DataSource(),
+    AppointmentSettingsDataSource,
+    LogOutAction {
 
     override suspend fun getAppointmentSettings(businessId: Uuid): AppointmentSettings =
         mapExceptions {
@@ -34,14 +36,15 @@ internal class CommonAppointmentSettingsDataSource(
                 .toDomain()
         }
 
-    override suspend fun updateAppointmentSettings(settings: AppointmentSettings): AppointmentSettings =
-        mapExceptions {
-            httpClient.put(Settings(businessId = settings.businessId)) {
-                setBody(settings.toRemote())
-            }
-                .body<AppointmentSettingsRemote>()
-                .toDomain()
+    override suspend fun updateAppointmentSettings(
+        settings: AppointmentSettings,
+    ): AppointmentSettings = mapExceptions {
+        httpClient.put(Settings(businessId = settings.businessId)) {
+            setBody(settings.toRemote())
         }
+            .body<AppointmentSettingsRemote>()
+            .toDomain()
+    }
 
     override fun observeAppointmentSettingsDBChanges(businessId: Uuid): Flow<AppointmentSettings?> =
         appointmentSettingsDao.observeByBusinessId(businessId)
@@ -54,7 +57,7 @@ internal class CommonAppointmentSettingsDataSource(
                 settings = settings.toEntity(),
                 daySchedules = settings.toDayScheduleEntities(),
                 workHours = settings.toWorkHourEntities(),
-                dayOffs = settings.toDayOffEntities()
+                dayOffs = settings.toDayOffEntities(),
             )
         }
     }

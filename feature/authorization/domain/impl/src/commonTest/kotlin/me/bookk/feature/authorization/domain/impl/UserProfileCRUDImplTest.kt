@@ -47,7 +47,10 @@ class UserProfileCRUDImplTest {
     }
 
     private fun stubProfile(id: Uuid = Uuid.random()) = UserProfile(
-        id = id, firstName = "John", lastName = "Doe", email = "john@example.com"
+        id = id,
+        firstName = "John",
+        lastName = "Doe",
+        email = "john@example.com",
     )
 
     @Test

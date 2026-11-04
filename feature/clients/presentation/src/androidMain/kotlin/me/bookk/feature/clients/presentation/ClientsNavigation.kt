@@ -7,7 +7,7 @@ class ClientsNavigation(
     val toAddClient: (Uuid) -> Unit,
     val toClientDetails: (Uuid) -> Unit,
     val toEditClient: (Uuid) -> Unit,
-    val onBack: () -> Unit
+    val onBack: () -> Unit,
 )
 
 internal val LocalNavigation = compositionLocalOf {
@@ -15,6 +15,6 @@ internal val LocalNavigation = compositionLocalOf {
         onBack = {},
         toAddClient = {},
         toClientDetails = {},
-        toEditClient = {}
+        toEditClient = {},
     )
 }

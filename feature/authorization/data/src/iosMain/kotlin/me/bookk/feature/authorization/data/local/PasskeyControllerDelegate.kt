@@ -17,20 +17,24 @@ import platform.Foundation.NSError
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
 
-private val PlatformAttachment = ASAuthorizationPublicKeyCredentialAttachment.ASAuthorizationPublicKeyCredentialAttachmentPlatform
-private val CrossPlatformAttachment = ASAuthorizationPublicKeyCredentialAttachment.ASAuthorizationPublicKeyCredentialAttachmentCrossPlatform
+private val PlatformAttachment = ASAuthorizationPublicKeyCredentialAttachment
+    .ASAuthorizationPublicKeyCredentialAttachmentPlatform
+private val CrossPlatformAttachment = ASAuthorizationPublicKeyCredentialAttachment
+    .ASAuthorizationPublicKeyCredentialAttachmentCrossPlatform
 
 class PasskeyControllerDelegate(
-    private val continuation: CancellableContinuation<PasskeyVerificationPayload>
-): NSObject(), ASAuthorizationControllerDelegateProtocol {
+    private val continuation: CancellableContinuation<PasskeyVerificationPayload>,
+) : NSObject(),
+    ASAuthorizationControllerDelegateProtocol {
 
-        override fun authorizationController(
-            controller: ASAuthorizationController,
-            didCompleteWithAuthorization: ASAuthorization
-        ) {
-            when (val cred = didCompleteWithAuthorization.credential) {
-                is ASAuthorizationPlatformPublicKeyCredentialRegistration -> {
-                    continuation.resume(PasskeyVerificationPayload(
+    override fun authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithAuthorization: ASAuthorization,
+    ) {
+        when (val cred = didCompleteWithAuthorization.credential) {
+            is ASAuthorizationPlatformPublicKeyCredentialRegistration -> {
+                continuation.resume(
+                    PasskeyVerificationPayload(
                         """
                             {
                               "id": "${cred.credentialID.toByteString().base64Url()}",
@@ -47,12 +51,15 @@ class PasskeyControllerDelegate(
                               },
                               "clientExtensionResults": {}
                             }
-                        """.trimIndent()
-                    ))
-                }
+                        """
+                            .trimIndent(),
+                    ),
+                )
+            }
 
-                is ASAuthorizationPlatformPublicKeyCredentialAssertion -> {
-                    continuation.resume(PasskeyVerificationPayload(
+            is ASAuthorizationPlatformPublicKeyCredentialAssertion -> {
+                continuation.resume(
+                    PasskeyVerificationPayload(
                         """
                             {
                               "id": "${cred.credentialID.toByteString().base64Url()}",
@@ -67,28 +74,32 @@ class PasskeyControllerDelegate(
                               },
                               "clientExtensionResults": {}
                             }
-                        """.trimIndent()
-                    ))
-                }
-
-                else -> {
-                    continuation.cancel(UnsupportedOperationException())
-                }
+                        """
+                            .trimIndent(),
+                    ),
+                )
             }
-        }
 
-        override fun authorizationController(
-            controller: ASAuthorizationController,
-            didCompleteWithError: NSError
-        ) {
-            val error = when (didCompleteWithError.code) {
-                ASAuthorizationErrorCanceled -> PassKeyManager.Error.UserCancelled()
-
-                ASAuthorizationErrorFailed,
-                ASAuthorizationErrorNotHandled -> PassKeyManager.Error.Infrastructure()
-
-                else -> PassKeyManager.Error.Unknown(Throwable(didCompleteWithError.code.toString()))
+            else -> {
+                continuation.cancel(UnsupportedOperationException())
             }
-            continuation.cancel(error)
         }
     }
+
+    override fun authorizationController(
+        controller: ASAuthorizationController,
+        didCompleteWithError: NSError,
+    ) {
+        val error = when (didCompleteWithError.code) {
+            ASAuthorizationErrorCanceled -> PassKeyManager.Error.UserCancelled()
+
+            ASAuthorizationErrorFailed,
+            ASAuthorizationErrorNotHandled,
+            -> PassKeyManager.Error.Infrastructure()
+
+            else ->
+                PassKeyManager.Error.Unknown(Throwable(didCompleteWithError.code.toString()))
+        }
+        continuation.cancel(error)
+    }
+}

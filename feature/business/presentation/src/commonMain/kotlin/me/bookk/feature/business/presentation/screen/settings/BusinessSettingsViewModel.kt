@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flowOn
 import library.device.api.DeviceFacade
 import library.money.api.Currency
 import library.money.api.Money
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -17,7 +18,6 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.resources.toOneLine
 import me.bookk.designsystem.simple
@@ -50,7 +50,7 @@ class BusinessSettingsViewModel(
     private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
     dateLocalizer: DateLocalizer,
     stateFactory: BusinessStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: BusinessSettingsState =
@@ -58,7 +58,7 @@ class BusinessSettingsViewModel(
     private val scheduleBinder = ScheduleBinder(
         state = uiState.schedule,
         dateLocalizer = dateLocalizer,
-        onChanged = weakVMClosure { it.invalidateSaveState() }
+        onChanged = weakVMClosure { it.invalidateSaveState() },
     )
     private var referenceBusiness: Business? = null
     private var businessLocation: Business.Location? = null
@@ -90,9 +90,12 @@ class BusinessSettingsViewModel(
         uiState.location.text = business.location?.toString().orEmpty()
         uiState.address.text = business.address
         uiState.currency.replaceOptions(Money.SupportedCurrency.entries.toCurrencyUI())
-        uiState.currency.selectedItem = uiState.currency.options.first { currencyUI ->
-            currencyUI.domainValue == Money.SupportedCurrency.valueOf(business.currency.code())
-        }.also { uiState.currency.textField.updateText(it.displayName) }
+        uiState.currency.selectedItem = uiState.currency.options
+            .first { currencyUI ->
+                currencyUI.domainValue ==
+                    Money.SupportedCurrency.valueOf(business.currency.code())
+            }
+            .also { uiState.currency.textField.updateText(it.displayName) }
         uiState.currency.textField.placeholder =
             BusinessRes.strings.business_settings_currency_label.desc()
         uiState.instagram.text = business.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
@@ -140,14 +143,16 @@ class BusinessSettingsViewModel(
             buttons = listOf(
                 ButtonDescriptor(
                     text = DesignSystem.strings.action_cancel.desc(),
-                    actionType = ActionType.CANCEL
+                    actionType = ActionType.CANCEL,
                 ),
                 ButtonDescriptor(
                     text = BusinessRes.strings.business_settings_unsaved_changes_discard.desc(),
                     actionType = ActionType.NEGATIVE,
-                    onClick = weakVMClosure { it.uiState.navigation.push(BusinessSettingsDestination.Back) }
-                )
-            )
+                    onClick = weakVMClosure {
+                        it.uiState.navigation.push(BusinessSettingsDestination.Back)
+                    },
+                ),
+            ),
         )
     }
 
@@ -164,9 +169,10 @@ class BusinessSettingsViewModel(
                 Social(SocialKind.PHONE, uiState.phone.text.trim()),
                 Social(SocialKind.INSTAGRAM, uiState.instagram.text.trim()),
                 Social(SocialKind.VIBER, uiState.viber.text.trim()),
-                Social(SocialKind.TELEGRAM, uiState.telegram.text.trim())
-            ).associateBy { it.kind },
-            schedule = snapshotSchedule()
+                Social(SocialKind.TELEGRAM, uiState.telegram.text.trim()),
+            )
+                .associateBy { it.kind },
+            schedule = snapshotSchedule(),
         )
         launch(
             launchIn = DispatcherProvider.io,
@@ -176,22 +182,27 @@ class BusinessSettingsViewModel(
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 referenceBusiness = it
                 renderSchedule(it.schedule)
-                uiState.notifications.add(GlobalMessage(BusinessRes.strings.business_settings_updated.desc()))
+                uiState.notifications.add(
+                    GlobalMessage(BusinessRes.strings.business_settings_updated.desc()),
+                )
             },
             onError = {
                 when (it) {
                     is UpdateBusiness.Error.ActiveDayWithoutWorkHours ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                BusinessRes.strings.business_settings_active_day_without_work_hours_error.desc()
-                            )
+                                BusinessRes.strings
+                                    .business_settings_active_day_without_work_hours_error
+                                    .desc(),
+                            ),
                         )
 
                     is UpdateBusiness.Error.InvalidDayOffRange ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                BusinessRes.strings.business_settings_invalid_day_off_range_error.desc()
-                            )
+                                BusinessRes.strings.business_settings_invalid_day_off_range_error
+                                    .desc(),
+                            ),
                         )
 
                     else -> uiState.notifications.add(errorMapper.mapToNotification(it))
@@ -200,7 +211,7 @@ class BusinessSettingsViewModel(
             onTerminate = {
                 uiState.save.stopLoading()
                 invalidateSaveState()
-            }
+            },
         )
     }
 
@@ -263,9 +274,7 @@ class BusinessSettingsViewModel(
         invalidateSaveState()
     }
 
-    fun onAddPhotoClicked() {
-
-    }
+    fun onAddPhotoClicked() {}
 
     private fun snapshotSchedule(): WorkingSchedule {
         return scheduleBinder.snapshot().toWorkingSchedule()
@@ -284,55 +293,57 @@ class BusinessSettingsViewModel(
                 thursday,
                 friday,
                 saturday,
-                sunday
-            ).map { day ->
-                WeekdaySchedule(
-                    dayOfWeek = day.dayOfWeek,
-                    isActive = day.isActive,
-                    workingHours = day.workingTime.map { WorkingHours(it.from, it.to) }
-                )
-            },
-            dayOffs = dayOffs.map { DayOffPeriod(it.start, it.end) }
+                sunday,
+            )
+                .map { day ->
+                    WeekdaySchedule(
+                        dayOfWeek = day.dayOfWeek,
+                        isActive = day.isActive,
+                        workingHours = day.workingTime.map { WorkingHours(it.from, it.to) },
+                    )
+                },
+            dayOffs = dayOffs.map { DayOffPeriod(it.start, it.end) },
         )
     }
 
     private fun WeekSchedule.toWorkingSchedule(): WorkingSchedule {
         return WorkingSchedule(
             days = days.associate { day ->
-                day.dayOfWeek to DayOfWeekSchedule(
-                    dayOfWeek = day.dayOfWeek,
-                    workingTime = day.workingHours.map { WorkHour(it.from, it.to) },
-                    isActive = day.isActive
-                )
+                day.dayOfWeek to
+                    DayOfWeekSchedule(
+                        dayOfWeek = day.dayOfWeek,
+                        workingTime = day.workingHours.map { WorkHour(it.from, it.to) },
+                        isActive = day.isActive,
+                    )
             },
-            dayOffs = dayOffs.map { DayOffRange(it.start, it.end) }
+            dayOffs = dayOffs.map { DayOffRange(it.start, it.end) },
         )
     }
 
     private fun invalidateSaveState() {
         val isAllFieldsValid = uiState.name.isValid &&
-                uiState.description.isValid &&
-                uiState.address.isValid &&
-                uiState.location.isValid &&
-                uiState.phone.isValid &&
-                uiState.instagram.isValid &&
-                uiState.telegram.isValid &&
-                uiState.viber.isValid
+            uiState.description.isValid &&
+            uiState.address.isValid &&
+            uiState.location.isValid &&
+            uiState.phone.isValid &&
+            uiState.instagram.isValid &&
+            uiState.telegram.isValid &&
+            uiState.viber.isValid
         uiState.save.isEnabled = isAllFieldsValid && hasUnsavedChanges()
     }
 
     private fun hasUnsavedChanges(): Boolean {
         val reference = referenceBusiness ?: return false
         return uiState.name.text != reference.name ||
-                uiState.description.text != reference.description ||
-                uiState.address.text != reference.address ||
-                uiState.currency.selectedItem?.domainValue?.code != reference.currency.code() ||
-                uiState.location.text != reference.location?.toString().orEmpty() ||
-                uiState.instagram.text != reference.socials[SocialKind.INSTAGRAM]?.value.orEmpty() ||
-                uiState.telegram.text != reference.socials[SocialKind.TELEGRAM]?.value.orEmpty() ||
-                uiState.viber.text != reference.socials[SocialKind.VIBER]?.value.orEmpty() ||
-                uiState.phone.text != reference.socials[SocialKind.PHONE]?.value.orEmpty() ||
-                isScheduleChanged(reference.schedule)
+            uiState.description.text != reference.description ||
+            uiState.address.text != reference.address ||
+            uiState.currency.selectedItem?.domainValue?.code != reference.currency.code() ||
+            uiState.location.text != reference.location?.toString().orEmpty() ||
+            uiState.instagram.text != reference.socials[SocialKind.INSTAGRAM]?.value.orEmpty() ||
+            uiState.telegram.text != reference.socials[SocialKind.TELEGRAM]?.value.orEmpty() ||
+            uiState.viber.text != reference.socials[SocialKind.VIBER]?.value.orEmpty() ||
+            uiState.phone.text != reference.socials[SocialKind.PHONE]?.value.orEmpty() ||
+            isScheduleChanged(reference.schedule)
     }
 
     private fun isScheduleChanged(reference: WorkingSchedule): Boolean {
@@ -357,7 +368,7 @@ class BusinessSettingsViewModel(
             telegramHint = BusinessRes.strings.business_settings_telegram_hint.desc(),
             telegramIcon = DesignSystem.images.telegram,
             viberIcon = DesignSystem.images.viber,
-            instaIcon = DesignSystem.images.instagram
+            instaIcon = DesignSystem.images.instagram,
         )
     }
 }

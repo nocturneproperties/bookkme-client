@@ -19,5 +19,6 @@ internal class AndroidAppointmentHistoryState : AppointmentHistoryState {
     override val appointments: ListState<AppointmentHistoryItemState> = AndroidListState()
     override val refresh: RefreshState = AndroidRefreshState()
     override val notifications: PresentationNotificationState = AndroidNotificationState()
-    override val navigation: NavigationState<AppointmentHistoryDestinations> = AndroidNavigationState()
+    override val navigation: NavigationState<AppointmentHistoryDestinations> =
+        AndroidNavigationState()
 }

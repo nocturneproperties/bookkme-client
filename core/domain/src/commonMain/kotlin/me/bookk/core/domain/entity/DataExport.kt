@@ -6,12 +6,12 @@ enum class DataExportStatus {
     NONE,
     RUNNING,
     READY,
-    FAILED
+    FAILED,
 }
 
 data class DataExport(
     val status: DataExportStatus,
     val requestedAt: Instant? = null,
     val expiresAt: Instant? = null,
-    val availableAgainAt: Instant? = null
+    val availableAgainAt: Instant? = null,
 )

@@ -1,6 +1,7 @@
 package me.bookk.shared
 
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.error.ErrorDescription
 import me.bookk.core.presentation.error.PresentationNotification
@@ -8,7 +9,6 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.android.designsystem.resources.DesignSystem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -30,9 +30,9 @@ class ErrorMapperImplTest {
         assertEquals(
             ErrorDescription(
                 title = DesignSystem.strings.error_connection_title.desc(),
-                message = DesignSystem.strings.error_connection_subtitle.desc()
+                message = DesignSystem.strings.error_connection_subtitle.desc(),
             ),
-            result
+            result,
         )
     }
 
@@ -48,9 +48,9 @@ class ErrorMapperImplTest {
         assertEquals(
             ErrorDescription(
                 title = DesignSystem.strings.error_server_title.desc(),
-                message = DesignSystem.strings.error_server.desc()
+                message = DesignSystem.strings.error_server.desc(),
             ),
-            result
+            result,
         )
     }
 
@@ -72,15 +72,17 @@ class ErrorMapperImplTest {
         val fixture = Fixture()
 
         whenn()
-        val result = fixture.sut.mapToDescription(Error.BusinessError(errorCode = 42, message = "Slot taken"))
+        val result = fixture.sut.mapToDescription(
+            Error.BusinessError(errorCode = 42, message = "Slot taken"),
+        )
 
         then()
         assertEquals(
             ErrorDescription(
                 title = DesignSystem.strings.error_generic_title.desc(),
-                message = "Slot taken".desc()
+                message = "Slot taken".desc(),
             ),
-            result
+            result,
         )
     }
 
@@ -96,9 +98,9 @@ class ErrorMapperImplTest {
         assertEquals(
             ErrorDescription(
                 title = DesignSystem.strings.error_generic_title.desc(),
-                message = DesignSystem.strings.error_unexpected.desc()
+                message = DesignSystem.strings.error_unexpected.desc(),
             ),
-            result
+            result,
         )
     }
 
@@ -108,7 +110,9 @@ class ErrorMapperImplTest {
         val fixture = Fixture()
 
         whenn()
-        val result = fixture.sut.mapToNotification(Error.BusinessAccessSuspended("Your access is suspended"))
+        val result = fixture.sut.mapToNotification(
+            Error.BusinessAccessSuspended("Your access is suspended"),
+        )
 
         then()
         assertEquals(PresentationNotification.BusinessAccessSuspended, result)
@@ -120,15 +124,17 @@ class ErrorMapperImplTest {
         val fixture = Fixture()
 
         whenn()
-        val result = fixture.sut.mapToDescription(Error.BusinessAccessSuspended("Your access is suspended"))
+        val result = fixture.sut.mapToDescription(
+            Error.BusinessAccessSuspended("Your access is suspended"),
+        )
 
         then()
         assertEquals(
             ErrorDescription(
                 title = DesignSystem.strings.error_access_suspended_title.desc(),
-                message = DesignSystem.strings.error_access_suspended.desc()
+                message = DesignSystem.strings.error_access_suspended.desc(),
             ),
-            result
+            result,
         )
     }
 }

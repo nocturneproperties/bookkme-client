@@ -10,8 +10,8 @@ import kotlin.uuid.Uuid
 @Entity(
     tableName = "appointment",
     indices = [
-        Index("businessId")
-    ]
+        Index("businessId"),
+    ],
 )
 class AppointmentEntity(
     @PrimaryKey val id: Uuid,
@@ -32,5 +32,5 @@ class AppointmentEntity(
     val adjustedPriceCurrency: String? = null,
     val adjustedPriceValue: Long? = null,
     val priceAdjustmentReason: String? = null,
-    val clientUserId: Uuid? = null
+    val clientUserId: Uuid? = null,
 )

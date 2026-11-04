@@ -6,7 +6,11 @@ interface DeleteClient {
     suspend operator fun invoke(client: Client)
 
     sealed interface Error {
-        class ConfirmationFailed : Exception(), Error
-        class ConfirmationRequired : Exception(), Error
+        class ConfirmationFailed :
+            Exception(),
+            Error
+        class ConfirmationRequired :
+            Exception(),
+            Error
     }
 }

@@ -14,7 +14,7 @@ import me.bookk.feature.settings.domain.api.DeleteAccount
 internal class DeleteAccountImpl(
     private val authorizationDataSource: AuthorizationDataSource,
     private val passKeyManager: PassKeyManager,
-    private val logOut: LogOut
+    private val logOut: LogOut,
 ) : DeleteAccount {
     override suspend fun invoke() {
         val challenge = authorizationDataSource.getAuthorizationChallenge()
@@ -26,40 +26,50 @@ internal class DeleteAccountImpl(
         authorizationDataSource.setAuthorizationStatus(false)
     }
 
-    private suspend fun authorizeWithPasskey(challenge: ServerAuthenticationChallenge): PasskeyVerificationPayload {
+    private suspend fun authorizeWithPasskey(
+        challenge: ServerAuthenticationChallenge,
+    ): PasskeyVerificationPayload {
         return runCatching {
             passKeyManager.authorize(
-                PassKeyManager.AuthorizationRequest(challenge.challengeJson, challenge.challenge)
+                PassKeyManager.AuthorizationRequest(challenge.challengeJson, challenge.challenge),
             )
         }
             .recoverCatching {
                 throw when (it) {
                     is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                    is PassKeyManager.Error.CredentialsMissing -> DeleteAccount.Error.AccountVerificationFailed()
+
+                    is PassKeyManager.Error.CredentialsMissing ->
+                        DeleteAccount.Error.AccountVerificationFailed()
+
                     else -> DeleteAccount.Error.AccountVerificationFailed()
                 }
-            }.getOrThrow()
+            }
+            .getOrThrow()
     }
 
     private suspend fun deleteAccountOnRemote(
         challenge: ServerAuthenticationChallenge,
-        payload: PasskeyVerificationPayload
+        payload: PasskeyVerificationPayload,
     ) {
         runCatching {
             authorizationDataSource.deleteAccount(
                 DeleteAccountRequest(
                     requestId = challenge.requestId,
-                    publicKeyCredentialJson = payload.jsonPayload
-                )
+                    publicKeyCredentialJson = payload.jsonPayload,
+                ),
             )
-        }.getOrElse {
-            throw when (it.businessOrThrow().errorCode) {
-                AuthErrorCodes.VERIFICATION_FAILED,
-                AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED,
-                AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND,
-                AuthErrorCodes.PASSKEY_NOT_OWNED -> DeleteAccount.Error.AccountVerificationFailed()
-                else -> it
-            }
         }
+            .getOrElse {
+                throw when (it.businessOrThrow().errorCode) {
+                    AuthErrorCodes.VERIFICATION_FAILED,
+                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED,
+                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND,
+                    AuthErrorCodes.PASSKEY_NOT_OWNED,
+                    ->
+                        DeleteAccount.Error.AccountVerificationFailed()
+
+                    else -> it
+                }
+            }
     }
 }

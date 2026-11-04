@@ -4,8 +4,9 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.LocalDateTime
-import library.money.api.Money
 import library.device.api.DeviceFacade
+import library.money.api.Money
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.dashOnBlank
@@ -14,27 +15,26 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
+import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.AppBarActionState
-import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.TopBarSize
-import me.bookk.designsystem.uistate.simple.InfoLine
-import me.bookk.core.presentation.error.ButtonDescriptor
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.clearError
 import me.bookk.designsystem.uistate.showError
+import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.appointments.domain.api.CancelAppointment
 import me.bookk.feature.appointments.domain.api.CancelAppointment.Error
 import me.bookk.feature.appointments.domain.api.CompleteAppointment
-import me.bookk.feature.appointments.domain.api.MarkAppointmentNoShow
 import me.bookk.feature.appointments.domain.api.GetAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
+import me.bookk.feature.appointments.domain.api.MarkAppointmentNoShow
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.UpdateAppointment
 import me.bookk.feature.appointments.domain.api.entity.Appointment
@@ -61,7 +61,7 @@ class AppointmentDetailsViewModel(
     private val dateLocalizer: DateLocalizer,
     private val device: DeviceFacade,
     stateFactory: AppointmentsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: AppointmentDetailsState = stateFactory.createAppointmentDetailsState().setup()
@@ -77,7 +77,7 @@ class AppointmentDetailsViewModel(
             launchIn = DispatcherProvider.io,
             call = { getAppointment(appointmentId) },
             onComplete = ::renderAppointment,
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -91,12 +91,14 @@ class AppointmentDetailsViewModel(
                     is Error.AppointmentAlreadyCancelled -> {
                         renderAppointment(appointment.copy(status = AppointmentStatus.CANCELLED))
                     }
+
                     is Error.AppointmentAlreadyCompleted -> {
                         renderAppointment(appointment.copy(status = AppointmentStatus.COMPLETED))
                     }
+
                     else -> uiState.notifications.add(it.notification())
                 }
-            }
+            },
         )
     }
 
@@ -122,12 +124,14 @@ class AppointmentDetailsViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { getAppointmentOptions(businessId) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
     private fun renderServiceOptions(options: AppointmentOptions) {
-        uiState.completion.servicePicker.replaceOptions(options.services.map(::ServicePickerPresentation))
+        uiState.completion.servicePicker.replaceOptions(
+            options.services.map(::ServicePickerPresentation),
+        )
     }
 
     private fun onCompletionServicesPicked(services: List<ServicePickerPresentation>) {
@@ -153,7 +157,8 @@ class AppointmentDetailsViewModel(
     }
 
     private fun calculatedPrice(provided: List<ServicePickerPresentation>): Money {
-        return provided.map { it.item }
+        return provided
+            .map { it.item }
             .ifEmpty { appointment.services }
             .map { it.price }
             .reduce { acc, money -> acc + money }
@@ -196,7 +201,7 @@ class AppointmentDetailsViewModel(
         return PriceAdjustmentDraft(
             additionalServiceIds = provided.map { it.item.id },
             price = priceText.toPriceOrNull() ?: calculatedPrice(provided),
-            reason = reason.ifEmpty { null }
+            reason = reason.ifEmpty { null },
         )
     }
 
@@ -210,22 +215,30 @@ class AppointmentDetailsViewModel(
                 uiState.completion.isSheetVisible = false
                 renderMutatedAppointment(it)
             },
-            onTerminate = { uiState.completion.confirmButton.stopLoading(enable = isCompletionInputValid()) },
-            onError = ::onCompletionError
+            onTerminate = {
+                uiState.completion.confirmButton.stopLoading(enable = isCompletionInputValid())
+            },
+            onError = ::onCompletionError,
         )
     }
 
     private fun onCompletionError(error: Throwable) {
         when (error) {
-            is CompleteAppointment.Error.NegativePrice -> uiState.completion.price.showError(
-                AppointmentsRes.strings.appointments_complete_price_error.desc()
-            )
-            is CompleteAppointment.Error.CurrencyMismatch -> uiState.completion.price.showError(
-                AppointmentsRes.strings.appointments_complete_currency_error.desc()
-            )
-            is CompleteAppointment.Error.ReasonTooLong -> uiState.completion.note.showError(
-                AppointmentsRes.strings.appointments_complete_note_too_long_error.desc()
-            )
+            is CompleteAppointment.Error.NegativePrice ->
+                uiState.completion.price.showError(
+                    AppointmentsRes.strings.appointments_complete_price_error.desc(),
+                )
+
+            is CompleteAppointment.Error.CurrencyMismatch ->
+                uiState.completion.price.showError(
+                    AppointmentsRes.strings.appointments_complete_currency_error.desc(),
+                )
+
+            is CompleteAppointment.Error.ReasonTooLong ->
+                uiState.completion.note.showError(
+                    AppointmentsRes.strings.appointments_complete_note_too_long_error.desc(),
+                )
+
             else -> {
                 uiState.completion.isSheetVisible = false
                 onCompletionRejected(error)
@@ -235,15 +248,24 @@ class AppointmentDetailsViewModel(
 
     private fun onCompletionRejected(error: Throwable) {
         when (error) {
-            is CompleteAppointment.Error.AppointmentAlreadyCancelled -> renderStatus(AppointmentStatus.CANCELLED)
-            is CompleteAppointment.Error.AppointmentMarkedNoShow -> renderStatus(AppointmentStatus.NO_SHOW)
-            is CompleteAppointment.Error.AppointmentNotStarted -> showMessage(
-                AppointmentsRes.strings.appointments_details_not_started_error.desc()
-            )
+            is CompleteAppointment.Error.AppointmentAlreadyCancelled ->
+                renderStatus(AppointmentStatus.CANCELLED)
+
+            is CompleteAppointment.Error.AppointmentMarkedNoShow ->
+                renderStatus(AppointmentStatus.NO_SHOW)
+
+            is CompleteAppointment.Error.AppointmentNotStarted ->
+                showMessage(
+                    AppointmentsRes.strings.appointments_details_not_started_error.desc(),
+                )
+
             is CompleteAppointment.Error.ServiceNotFound -> {
-                showMessage(AppointmentsRes.strings.appointments_complete_service_not_found_error.desc())
+                showMessage(
+                    AppointmentsRes.strings.appointments_complete_service_not_found_error.desc(),
+                )
                 refreshServiceOptions()
             }
+
             else -> uiState.notifications.add(error.notification())
         }
     }
@@ -254,14 +276,17 @@ class AppointmentDetailsViewModel(
                 title = DesignSystem.strings.action_confirm.desc(),
                 message = AppointmentsRes.strings.appointments_details_no_show_confirm.desc(),
                 buttons = listOf(
-                    ButtonDescriptor(DesignSystem.strings.action_cancel.desc(), actionType = ActionType.CANCEL),
+                    ButtonDescriptor(
+                        DesignSystem.strings.action_cancel.desc(),
+                        actionType = ActionType.CANCEL,
+                    ),
                     ButtonDescriptor(
                         AppointmentsRes.strings.appointments_details_no_show_action.desc(),
                         actionType = ActionType.NEGATIVE,
-                        onClick = weakVMClosure { it.onNoShowApproved() }
-                    )
-                )
-            )
+                        onClick = weakVMClosure { it.onNoShowApproved() },
+                    ),
+                ),
+            ),
         )
     }
 
@@ -274,13 +299,17 @@ class AppointmentDetailsViewModel(
             onTerminate = { uiState.noShowButton.stopLoading() },
             onError = {
                 when (it) {
-                    is MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled -> renderStatus(AppointmentStatus.CANCELLED)
-                    is MarkAppointmentNoShow.Error.AppointmentNotStarted -> showMessage(
-                        AppointmentsRes.strings.appointments_details_not_started_error.desc()
-                    )
+                    is MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled ->
+                        renderStatus(AppointmentStatus.CANCELLED)
+
+                    is MarkAppointmentNoShow.Error.AppointmentNotStarted ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_details_not_started_error.desc(),
+                        )
+
                     else -> uiState.notifications.add(it.notification())
                 }
-            }
+            },
         )
     }
 
@@ -301,8 +330,8 @@ class AppointmentDetailsViewModel(
                 cancelText = DesignSystem.strings.action_ignore.desc(),
                 confirmText = DesignSystem.strings.action_cancel.desc(),
                 confirmActionType = ActionType.NEGATIVE,
-                onConfirm = weakVMClosure { vm, reason -> vm.onCancellationApproved(reason) }
-            )
+                onConfirm = weakVMClosure { vm, reason -> vm.onCancellationApproved(reason) },
+            ),
         )
     }
 
@@ -319,38 +348,41 @@ class AppointmentDetailsViewModel(
                     is UpdateAppointment.Error.AppointmentOverlap -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_create_overlap_error.desc()
-                            )
+                                AppointmentsRes.strings.appointments_create_overlap_error.desc(),
+                            ),
                         )
                     }
 
                     is UpdateAppointment.Error.DateIsNotAllowed -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_create_date_error.desc()
-                            )
+                                AppointmentsRes.strings.appointments_create_date_error.desc(),
+                            ),
                         )
                     }
 
                     is UpdateAppointment.Error.TimeIsNotAllowed -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_create_time_error.desc()
-                            )
+                                AppointmentsRes.strings.appointments_create_time_error.desc(),
+                            ),
                         )
                     }
 
-                    is UpdateAppointment.Error.AppointmentNotScheduled -> showMessage(
-                        AppointmentsRes.strings.appointments_details_not_scheduled_error.desc()
-                    )
+                    is UpdateAppointment.Error.AppointmentNotScheduled ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_details_not_scheduled_error.desc(),
+                        )
 
-                    is UpdateAppointment.Error.EmployeeSuspended -> showMessage(
-                        AppointmentsRes.strings.appointments_details_employee_suspended_error.desc()
-                    )
+                    is UpdateAppointment.Error.EmployeeSuspended ->
+                        showMessage(
+                            AppointmentsRes.strings.appointments_details_employee_suspended_error
+                                .desc(),
+                        )
 
                     else -> uiState.notifications.add(it.notification())
                 }
-            }
+            },
         )
     }
 
@@ -388,7 +420,8 @@ class AppointmentDetailsViewModel(
         uiState.noShowButton.isVisible = appointment.canBeMarkedNoShow()
         uiState.infoSections.replace(createSections(appointment))
         uiState.completion.price.placeholder = calculatedPrice(emptyList()).toPriceInput().desc()
-        uiState.completion.price.suffix = appointment.services.first().price.currency.symbol().desc()
+        uiState.completion.price.suffix =
+            appointment.services.first().price.currency.symbol().desc()
         renderServices(appointment)
         renderPriceAdjustment(appointment.priceAdjustment)
         renderTotal(appointment)
@@ -400,11 +433,12 @@ class AppointmentDetailsViewModel(
 
     private fun renderServices(appointment: Appointment) {
         uiState.servicePicker.isVisible = true
-        uiState.servicePicker.pickerTitle = if (!appointment.priceAdjustment?.additionalServices.isNullOrEmpty()) {
-            AppointmentsRes.strings.appointments_details_initial_services.desc()
-        } else {
-            AppointmentsRes.strings.appointments_create_services.desc()
-        }
+        uiState.servicePicker.pickerTitle =
+            if (!appointment.priceAdjustment?.additionalServices.isNullOrEmpty()) {
+                AppointmentsRes.strings.appointments_details_initial_services.desc()
+            } else {
+                AppointmentsRes.strings.appointments_create_services.desc()
+            }
         uiState.servicePicker.replaceSelected(appointment.services.pickerItems())
     }
 
@@ -431,9 +465,9 @@ class AppointmentDetailsViewModel(
 
     private fun AppointmentDetailsState.setup() = apply {
         appBar.size = TopBarSize.LARGE
-        appBar.onBackClick =
-            weakVMClosure { it.uiState.navigation.push(AppointmentDetailsDestination.Back) }
-
+        appBar.onBackClick = weakVMClosure {
+            it.uiState.navigation.push(AppointmentDetailsDestination.Back)
+        }
 
         rescheduleButton.onClick = weakVMClosure { it.onRescheduleClick() }
         rescheduleButton.text = AppointmentsRes.strings.appointments_details_reschedule.desc()
@@ -448,10 +482,12 @@ class AppointmentDetailsViewModel(
         servicePicker.isVisible = false
         totalLabel = AppointmentsRes.strings.appointments_details_total.desc()
 
-        priceAdjustment.reasonTitle = AppointmentsRes.strings.appointments_details_price_adjustment_reason.desc()
+        priceAdjustment.reasonTitle =
+            AppointmentsRes.strings.appointments_details_price_adjustment_reason.desc()
         priceAdjustment.servicePicker.isEditable = false
         priceAdjustment.servicePicker.isVisible = false
-        priceAdjustment.servicePicker.pickerTitle = AppointmentsRes.strings.appointments_details_adjusted_services.desc()
+        priceAdjustment.servicePicker.pickerTitle =
+            AppointmentsRes.strings.appointments_details_adjusted_services.desc()
 
         completion.setup()
     }
@@ -462,9 +498,14 @@ class AppointmentDetailsViewModel(
         servicePicker.pickerTitle = AppointmentsRes.strings.appointments_create_services.desc()
         servicePicker.pickerType = PickerFieldState.PickerType.SCREEN
         servicePicker.addItemText = AppointmentsRes.strings.appointments_create_services_add.desc()
-        servicePicker.placeholder = AppointmentsRes.strings.appointments_create_services_empty.desc()
-        servicePicker.onItemsPicked = weakVMClosure { vm, items -> vm.onCompletionServicesPicked(items) }
-        servicePicker.onItemsRemoveRequested = weakVMClosure { vm, items -> vm.onCompletionServicesRemove(items) }
+        servicePicker.placeholder =
+            AppointmentsRes.strings.appointments_create_services_empty.desc()
+        servicePicker.onItemsPicked = weakVMClosure { vm, items ->
+            vm.onCompletionServicesPicked(items)
+        }
+        servicePicker.onItemsRemoveRequested = weakVMClosure { vm, items ->
+            vm.onCompletionServicesRemove(items)
+        }
         servicesHint = AppointmentsRes.strings.appointments_complete_services_hint.desc()
 
         price.label = AppointmentsRes.strings.appointments_details_final_price.desc()
@@ -484,15 +525,16 @@ class AppointmentDetailsViewModel(
             uiState.appBar.action(
                 contentDescription = DesignSystem.strings.action_cancel.desc(),
                 type = ActionType.NEGATIVE,
-                onClick = weakVMClosure { it.onCancelClick() }
-            )
+                onClick = weakVMClosure { it.onCancelClick() },
+            ),
         )
     }
 
     private fun dateLine(appointment: Appointment): InfoLine {
         return InfoLine(
             title = AppointmentsRes.strings.appointments_create_date,
-            value = dateLocalizer.forStyle(DateStyle.MEDIUM).format(appointment.date, relative = true)
+            value =
+            dateLocalizer.forStyle(DateStyle.MEDIUM).format(appointment.date, relative = true),
         )
     }
 
@@ -500,23 +542,27 @@ class AppointmentDetailsViewModel(
         return listOfNotNull(
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_cancellation_reason,
-                value = appointment.cancellationReason
-            ).takeIf { appointment.cancellationReason.isNotEmpty() },
+                value = appointment.cancellationReason,
+            )
+                .takeIf { appointment.cancellationReason.isNotEmpty() },
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_phone,
                 value = appointment.client.phone.dashOnBlank(),
-                onClick = weakVMClosure { vm -> vm.onPhoneClick(appointment.client.phone!!) }
-            ).takeIf { !appointment.client.phone.isNullOrBlank() },
+                onClick = weakVMClosure { vm -> vm.onPhoneClick(appointment.client.phone!!) },
+            )
+                .takeIf { !appointment.client.phone.isNullOrBlank() },
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_email,
                 value = appointment.client.email.dashOnBlank(),
-                onClick = weakVMClosure { vm -> vm.onEmailClick(appointment.client.email!!) }
-            ).takeIf { !appointment.client.email.isNullOrBlank() },
+                onClick = weakVMClosure { vm -> vm.onEmailClick(appointment.client.email!!) },
+            )
+                .takeIf { !appointment.client.email.isNullOrBlank() },
             dateLine(appointment),
             InfoLine(
                 title = AppointmentsRes.strings.appointments_details_note,
-                value = appointment.note
-            ).takeIf { appointment.note.isNotEmpty() }
+                value = appointment.note,
+            )
+                .takeIf { appointment.note.isNotEmpty() },
         )
     }
 

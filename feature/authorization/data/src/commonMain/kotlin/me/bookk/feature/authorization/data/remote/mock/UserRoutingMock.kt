@@ -23,12 +23,12 @@ private var currentUser = UserProfileRemote(
     firstName = "Mock",
     lastName = "User",
     email = "mock.user@email.com",
-    phone = null
+    phone = null,
 )
 
 internal class UserRoutingMock : RoutingMock {
     override val handlers = setOf<MockRequestHandler>(
-        GetUserHandler()
+        GetUserHandler(),
     ).groupBy { RoutingMock.RoutingKey(it.method, it.path) }
 }
 
@@ -36,14 +36,16 @@ private class GetUserHandler : MockRequestHandler {
     override val method: HttpMethod = HttpMethod.Get
     override val path: String = href(ResourcesFormat(), UserRouting.Api.User.Me())
 
-    override suspend fun handle(scope: MockRequestHandleScope, request: HttpRequestData): HttpResponseData {
+    override suspend fun handle(
+        scope: MockRequestHandleScope,
+        request: HttpRequestData,
+    ): HttpResponseData {
         return scope.respond(
             content = dataSerializer.encodeToByteArray(currentUser),
             headers = headersOf(
                 HttpHeaders.ContentType,
-                ContentType.Application.ProtoBuf.toString()
+                ContentType.Application.ProtoBuf.toString(),
             ),
         )
     }
-
 }

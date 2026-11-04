@@ -20,7 +20,7 @@ class FakeErrorMapper : ErrorMapper {
     override fun mapToDescription(e: Throwable): ErrorDescription {
         return ErrorDescription(
             title = "title of ${e::class.simpleName}".desc(),
-            message = "message of ${e::class.simpleName}".desc()
+            message = "message of ${e::class.simpleName}".desc(),
         )
     }
 
@@ -28,7 +28,7 @@ class FakeErrorMapper : ErrorMapper {
         fun errorNotification(e: Throwable): PresentationNotification.GlobalMessage {
             return PresentationNotification.GlobalMessage(
                 text = "mapped ${e::class.simpleName}".desc(),
-                state = PresentationNotification.GlobalMessage.State.ERROR
+                state = PresentationNotification.GlobalMessage.State.ERROR,
             )
         }
     }

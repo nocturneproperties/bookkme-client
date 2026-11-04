@@ -13,10 +13,7 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-internal data class RetryPolicy(
-    val initialDelay: Duration,
-    val maxDelay: Duration,
-) {
+internal data class RetryPolicy(val initialDelay: Duration, val maxDelay: Duration) {
     fun delayAfter(consecutiveFailures: Int): Duration {
         var delay = initialDelay
         repeat(consecutiveFailures - 1) {
@@ -59,7 +56,7 @@ internal fun <T> Flow<T>.retryingWithBackoff(
                 if (consecutiveFailures == 1) onError(cause)
                 delay(retryPolicy.delayAfter(consecutiveFailures))
                 true
-            }
+            },
     )
 }
 

@@ -20,6 +20,6 @@ interface DeleteAccountState {
         val title: StringDesc,
         val confirmationMessage: StringDesc,
         val switchMessage: StringDesc,
-        val buttonMessage: StringDesc
+        val buttonMessage: StringDesc,
     )
 }

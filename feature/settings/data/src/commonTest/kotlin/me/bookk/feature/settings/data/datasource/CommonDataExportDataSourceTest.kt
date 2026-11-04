@@ -8,12 +8,17 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.resources.Resources
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.OutgoingContent
 import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.protobuf.protobuf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import me.bookk.core.data.dataSerializer
 import me.bookk.core.domain.entity.DataExportStatus
 import me.bookk.core.test.given
@@ -23,25 +28,26 @@ import me.bookk.core.test.whenn
 import me.bookk.feature.settings.data.remote.model.DataExportRemote
 import me.bookk.feature.settings.data.remote.model.DataExportRequestRemote
 import me.bookk.feature.settings.data.remote.model.DataExportStatusRemote
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
-import kotlin.test.BeforeTest
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.uuid.Uuid
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CommonDataExportDataSourceTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+
     @BeforeTest
-    fun setUp() { Dispatchers.setMain(testDispatcher) }
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
     @AfterTest
-    fun tearDown() { Dispatchers.resetMain() }
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     private val id = Uuid.parse("00000000-0000-0000-0000-000000000001")
 
@@ -51,13 +57,26 @@ class CommonDataExportDataSourceTest {
         var path: String? = null
         var method: HttpMethod? = null
         var token: String? = null
-        val bytes = dataSerializer.encodeToByteArray(DataExportRemote.serializer(), DataExportRemote(DataExportStatusRemote.RUNNING))
-        val client = HttpClient(MockEngine {
-            path = it.url.encodedPath
-            method = it.method
-            token = dataSerializer.decodeFromByteArray(DataExportRequestRemote.serializer(), (it.body as OutgoingContent.ByteArrayContent).bytes()).stepUpToken
-            respond(bytes, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, ContentType.Application.ProtoBuf.toString()))
-        }) {
+        val bytes = dataSerializer.encodeToByteArray(
+            DataExportRemote.serializer(),
+            DataExportRemote(DataExportStatusRemote.RUNNING),
+        )
+        val client = HttpClient(
+            MockEngine {
+                path = it.url.encodedPath
+                method = it.method
+                token =
+                    dataSerializer.decodeFromByteArray(
+                        DataExportRequestRemote.serializer(),
+                        (it.body as OutgoingContent.ByteArrayContent).bytes(),
+                    ).stepUpToken
+                respond(
+                    bytes,
+                    HttpStatusCode.OK,
+                    headersOf(HttpHeaders.ContentType, ContentType.Application.ProtoBuf.toString()),
+                )
+            },
+        ) {
             install(Resources)
             install(ContentNegotiation) { protobuf(dataSerializer) }
             defaultRequest { contentType(ContentType.Application.ProtoBuf) }
@@ -65,7 +84,11 @@ class CommonDataExportDataSourceTest {
         val dataSource = CommonDataExportDataSource(client)
 
         whenn()
-        val result = try { dataSource.start("one-use") } finally { client.close() }
+        val result = try {
+            dataSource.start("one-use")
+        } finally {
+            client.close()
+        }
 
         then()
         assertEquals("/api/user/export", path)
@@ -80,18 +103,31 @@ class CommonDataExportDataSourceTest {
         val requested = Instant.parse("2026-11-04T00:00:00Z")
         val expires = Instant.parse("2026-11-07T00:00:00Z")
         val available = Instant.parse("2026-11-05T00:00:00Z")
-        val bytes = dataSerializer.encodeToByteArray(DataExportRemote.serializer(), DataExportRemote(DataExportStatusRemote.READY, requested, expires, available))
+        val bytes = dataSerializer.encodeToByteArray(
+            DataExportRemote.serializer(),
+            DataExportRemote(DataExportStatusRemote.READY, requested, expires, available),
+        )
         var path: String? = null
-        val client = HttpClient(MockEngine {
-            path = it.url.encodedPath
-            respond(bytes, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, ContentType.Application.ProtoBuf.toString()))
-        }) {
+        val client = HttpClient(
+            MockEngine {
+                path = it.url.encodedPath
+                respond(
+                    bytes,
+                    HttpStatusCode.OK,
+                    headersOf(HttpHeaders.ContentType, ContentType.Application.ProtoBuf.toString()),
+                )
+            },
+        ) {
             install(Resources)
             install(ContentNegotiation) { protobuf(dataSerializer) }
         }
 
         whenn()
-        val result = try { CommonDataExportDataSource(client).get() } finally { client.close() }
+        val result = try {
+            CommonDataExportDataSource(client).get()
+        } finally {
+            client.close()
+        }
 
         then()
         assertEquals("/api/user/export", path)
@@ -107,14 +143,24 @@ class CommonDataExportDataSourceTest {
         val json = "{\"records\":[1],\"description\":\"Zażółć\"}"
         var path: String? = null
         var accept: String? = null
-        val client = HttpClient(MockEngine {
-            path = it.url.encodedPath
-            accept = it.headers[HttpHeaders.Accept]
-            respond(json, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()))
-        }) { install(Resources) }
+        val client = HttpClient(
+            MockEngine {
+                path = it.url.encodedPath
+                accept = it.headers[HttpHeaders.Accept]
+                respond(
+                    json,
+                    HttpStatusCode.OK,
+                    headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
+                )
+            },
+        ) { install(Resources) }
 
         whenn()
-        val result = try { CommonDataExportDataSource(client).download() } finally { client.close() }
+        val result = try {
+            CommonDataExportDataSource(client).download()
+        } finally {
+            client.close()
+        }
 
         then()
         assertEquals("/api/user/export/download", path)

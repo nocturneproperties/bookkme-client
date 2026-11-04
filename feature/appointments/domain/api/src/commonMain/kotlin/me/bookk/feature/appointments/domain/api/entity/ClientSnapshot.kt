@@ -7,14 +7,14 @@ data class ClientSnapshot(
     val fullName: String,
     val phone: String?,
     val email: String?,
-    val userId: Uuid? = null
+    val userId: Uuid? = null,
 ) {
     companion object {
         fun stub() = ClientSnapshot(
             id = Uuid.random(),
             fullName = "Client Name",
             phone = "123456789",
-            email = "client@example.com"
+            email = "client@example.com",
         )
     }
 }

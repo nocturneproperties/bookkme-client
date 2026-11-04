@@ -52,7 +52,13 @@ class InitialAppDataFetchImplTest {
         val lowPriorityDataFetch = mock<LowPriorityDataFetch>(MockMode.autofill)
         val authorizationDataSource = mock<AuthorizationDataSource>(MockMode.autofill)
         val clock = mock<Clock>()
-        val sut = InitialAppDataFetchImpl(userProfileCRUD, refreshBusiness, lowPriorityDataFetch, authorizationDataSource, clock)
+        val sut = InitialAppDataFetchImpl(
+            userProfileCRUD,
+            refreshBusiness,
+            lowPriorityDataFetch,
+            authorizationDataSource,
+            clock,
+        )
     }
 
     private fun Fixture.stubFetchDue(lastFetchAt: Instant? = null) {
@@ -98,7 +104,8 @@ class InitialAppDataFetchImplTest {
         val fixture = Fixture()
         fixture.stubFetchDue()
         everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } throws RuntimeException("network error")
+        everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } throws
+            RuntimeException("network error")
 
         whenn()
         fixture.sut.timestampProtectedFetch()
@@ -123,92 +130,104 @@ class InitialAppDataFetchImplTest {
     }
 
     @Test
-    fun `timestampProtectedFetch triggers low priority data fetch even when refreshBusiness throws`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.stubFetchDue()
-        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } throws RuntimeException("network error")
+    fun `timestampProtectedFetch triggers low priority data fetch even when refreshBusiness throws`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue()
+            everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+            everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } throws
+                RuntimeException("network error")
 
-        whenn()
-        fixture.sut.timestampProtectedFetch()
+            whenn()
+            fixture.sut.timestampProtectedFetch()
 
-        then()
-        verify { fixture.lowPriorityDataFetch() }
-    }
-
-    @Test
-    fun `timestampProtectedFetch fetches when there is no previous fetch timestamp`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.stubFetchDue(lastFetchAt = null)
-        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } returns Unit
-
-        whenn()
-        fixture.sut.timestampProtectedFetch()
-
-        then()
-        verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
-    }
+            then()
+            verify { fixture.lowPriorityDataFetch() }
+        }
 
     @Test
-    fun `timestampProtectedFetch fetches when the last fetch was more than 30 minutes ago`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.stubFetchDue(lastFetchAt = now - 31.minutes)
-        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } returns Unit
+    fun `timestampProtectedFetch fetches when there is no previous fetch timestamp`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = null)
+            everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+            everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } returns
+                Unit
 
-        whenn()
-        fixture.sut.timestampProtectedFetch()
+            whenn()
+            fixture.sut.timestampProtectedFetch()
 
-        then()
-        verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
-    }
-
-    @Test
-    fun `timestampProtectedFetch skips the fetch when the last fetch was less than 30 minutes ago`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
-
-        whenn()
-        fixture.sut.timestampProtectedFetch()
-
-        then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.userProfileCRUD.updateFromRemote() }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.refreshBusiness(any()) }
-        verify(VerifyMode.exactly(0)) { fixture.lowPriorityDataFetch() }
-    }
+            then()
+            verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
+        }
 
     @Test
-    fun `timestampProtectedFetch does not save the last fetch timestamp when the fetch is skipped`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
+    fun `timestampProtectedFetch fetches when the last fetch was more than 30 minutes ago`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 31.minutes)
+            everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+            everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } returns
+                Unit
 
-        whenn()
-        fixture.sut.timestampProtectedFetch()
+            whenn()
+            fixture.sut.timestampProtectedFetch()
 
-        then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.authorizationDataSource.saveLastInitialDataFetchAt() }
-    }
+            then()
+            verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
+        }
 
     @Test
-    fun `timestampProtectedFetch saves the last fetch timestamp after a completed fetch`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.stubFetchDue()
-        everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } returns Unit
+    fun `timestampProtectedFetch skips the fetch when the last fetch was less than 30 minutes ago`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
 
-        whenn()
-        fixture.sut.timestampProtectedFetch()
+            whenn()
+            fixture.sut.timestampProtectedFetch()
 
-        then()
-        verifySuspend { fixture.authorizationDataSource.saveLastInitialDataFetchAt() }
-    }
+            then()
+            verifySuspend(VerifyMode.exactly(0)) { fixture.userProfileCRUD.updateFromRemote() }
+            verifySuspend(VerifyMode.exactly(0)) { fixture.refreshBusiness(any()) }
+            verify(VerifyMode.exactly(0)) { fixture.lowPriorityDataFetch() }
+        }
+
+    @Test
+    fun `timestampProtectedFetch does not save the last fetch timestamp when the fetch is skipped`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend(VerifyMode.exactly(0)) {
+                fixture.authorizationDataSource.saveLastInitialDataFetchAt()
+            }
+        }
+
+    @Test
+    fun `timestampProtectedFetch saves the last fetch timestamp after a completed fetch`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue()
+            everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+            everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } returns
+                Unit
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend { fixture.authorizationDataSource.saveLastInitialDataFetchAt() }
+        }
 
     // rawFetch()
 
@@ -245,7 +264,8 @@ class InitialAppDataFetchImplTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
-        everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = true) } throws RuntimeException("network error")
+        everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = true) } throws
+            RuntimeException("network error")
 
         whenn()
         fixture.sut.rawFetch()

@@ -10,58 +10,76 @@ actual enum class DateStyle(
     val dateTimeModifier: NSDateFormatter.() -> Unit,
     val sameYearDateTimeModifier: NSDateFormatter.() -> Unit,
     val sameYearDateModifier: NSDateFormatter.() -> Unit,
-    val timeModifier: NSDateFormatter.() -> Unit
+    val timeModifier: NSDateFormatter.() -> Unit,
 ) {
     SHORT(
         dateModifier = {
             matchToUserPreferences(dateStyle = NSDateFormatterShortStyle)
         },
         dateTimeModifier = {
-            matchToUserPreferences(dateStyle = NSDateFormatterShortStyle, timeStyle = NSDateFormatterShortStyle)
+            matchToUserPreferences(
+                dateStyle = NSDateFormatterShortStyle,
+                timeStyle = NSDateFormatterShortStyle,
+            )
         },
         sameYearDateTimeModifier = {
-            matchToUserPreferences(dateStyle = NSDateFormatterShortStyle, timeStyle = NSDateFormatterShortStyle)
+            matchToUserPreferences(
+                dateStyle = NSDateFormatterShortStyle,
+                timeStyle = NSDateFormatterShortStyle,
+            )
         },
         sameYearDateModifier = {
             matchToUserPreferences(dateStyle = NSDateFormatterShortStyle)
         },
         timeModifier = {
             matchToUserPreferences(timeStyle = NSDateFormatterShortStyle)
-        }
+        },
     ),
     MEDIUM(
         dateModifier = {
             matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle)
         },
         dateTimeModifier = {
-            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle, timeStyle = NSDateFormatterShortStyle)
+            matchToUserPreferences(
+                dateStyle = NSDateFormatterMediumStyle,
+                timeStyle = NSDateFormatterShortStyle,
+            )
         },
         sameYearDateTimeModifier = {
-            matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle, timeStyle = NSDateFormatterShortStyle)
+            matchToUserPreferences(
+                dateStyle = NSDateFormatterMediumStyle,
+                timeStyle = NSDateFormatterShortStyle,
+            )
         },
         sameYearDateModifier = {
             matchToUserPreferences(dateStyle = NSDateFormatterMediumStyle)
         },
         timeModifier = {
             matchToUserPreferences(timeStyle = NSDateFormatterMediumStyle)
-        }
+        },
     ),
     LONG(
         dateModifier = {
             matchToUserPreferences(dateStyle = NSDateFormatterLongStyle)
         },
         dateTimeModifier = {
-            matchToUserPreferences(dateStyle = NSDateFormatterLongStyle, timeStyle = NSDateFormatterLongStyle)
+            matchToUserPreferences(
+                dateStyle = NSDateFormatterLongStyle,
+                timeStyle = NSDateFormatterLongStyle,
+            )
         },
         sameYearDateTimeModifier = {
-            matchToUserPreferences(dateStyle = NSDateFormatterLongStyle, timeStyle = NSDateFormatterLongStyle)
+            matchToUserPreferences(
+                dateStyle = NSDateFormatterLongStyle,
+                timeStyle = NSDateFormatterLongStyle,
+            )
         },
         sameYearDateModifier = {
             matchToUserPreferences(dateStyle = NSDateFormatterLongStyle)
         },
         timeModifier = {
             matchToUserPreferences(timeStyle = NSDateFormatterLongStyle)
-        }
+        },
     ),
     D_MMM_YYYY_RELATIVE(
         dateModifier = {
@@ -78,7 +96,7 @@ actual enum class DateStyle(
         },
         timeModifier = {
             matchToUserPreferences("HH:mm")
-        }
+        },
     ),
     NARROW_WEEKDAY(
         dateModifier = {
@@ -95,7 +113,7 @@ actual enum class DateStyle(
         },
         timeModifier = {
             matchToUserPreferences("HH:mm")
-        }
+        },
     ),
     FULL_WEEKDAY(
         dateModifier = {
@@ -112,6 +130,6 @@ actual enum class DateStyle(
         },
         timeModifier = {
             matchToUserPreferences("HH:mm")
-        }
-    )
+        },
+    ),
 }

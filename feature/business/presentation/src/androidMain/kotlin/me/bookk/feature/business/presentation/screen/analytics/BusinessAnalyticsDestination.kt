@@ -26,7 +26,9 @@ internal fun NavGraphBuilder.analyticsScreen(navigation: BusinessNavigation) {
         ObserveNavigation(viewModel.uiState.navigation) {
             when (it) {
                 BusinessAnalyticsDestinations.Back -> {
-                    LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher?.onBackPressed()
+                    LocalOnBackPressedDispatcherOwner.current
+                        ?.onBackPressedDispatcher
+                        ?.onBackPressed()
                 }
             }
         }

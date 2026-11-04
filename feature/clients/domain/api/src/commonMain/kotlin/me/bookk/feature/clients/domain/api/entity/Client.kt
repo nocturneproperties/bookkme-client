@@ -19,7 +19,7 @@ sealed interface Client {
         override val phone: String?,
         override val email: String?,
         override val businessId: Uuid,
-        override val description: String? = null
+        override val description: String? = null,
     ) : Client {
         override val fullName: String = "$name $lastName"
     }
@@ -32,7 +32,7 @@ sealed interface Client {
         override val email: String?,
         override val businessId: Uuid,
         val userId: Uuid,
-        override val description: String? = null
+        override val description: String? = null,
     ) : Client {
         override val fullName: String = "$name $lastName"
     }

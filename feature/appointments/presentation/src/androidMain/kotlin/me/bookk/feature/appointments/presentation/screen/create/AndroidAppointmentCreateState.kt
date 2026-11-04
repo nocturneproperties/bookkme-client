@@ -37,5 +37,6 @@ internal class AndroidAppointmentCreateState : AppointmentCreateState {
     override val create: ButtonState = AndroidButtonState()
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()
-    override val navigation: NavigationState<AppointmentCreateDestination> = AndroidNavigationState()
+    override val navigation: NavigationState<AppointmentCreateDestination> =
+        AndroidNavigationState()
 }

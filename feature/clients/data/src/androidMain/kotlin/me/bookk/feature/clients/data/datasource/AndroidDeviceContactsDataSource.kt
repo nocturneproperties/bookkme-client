@@ -9,9 +9,8 @@ import android.provider.ContactsContract.Data
 import me.bookk.feature.clients.domain.datasource.DeviceContact
 import me.bookk.feature.clients.domain.datasource.DeviceContactsDataSource
 
-internal class AndroidDeviceContactsDataSource(
-    private val context: Context
-) : DeviceContactsDataSource {
+internal class AndroidDeviceContactsDataSource(private val context: Context) :
+    DeviceContactsDataSource {
 
     override suspend fun getContacts(): List<DeviceContact> {
         return queryContactRows()
@@ -25,8 +24,12 @@ internal class AndroidDeviceContactsDataSource(
             Data.CONTENT_URI,
             PROJECTION,
             "${Data.MIMETYPE} IN (?, ?, ?)",
-            arrayOf(StructuredName.CONTENT_ITEM_TYPE, Phone.CONTENT_ITEM_TYPE, Email.CONTENT_ITEM_TYPE),
-            "${Data.IS_PRIMARY} DESC"
+            arrayOf(
+                StructuredName.CONTENT_ITEM_TYPE,
+                Phone.CONTENT_ITEM_TYPE,
+                Email.CONTENT_ITEM_TYPE,
+            ),
+            "${Data.IS_PRIMARY} DESC",
         ) ?: return emptyList()
         return cursor.use {
             generateSequence { cursor.takeIf { it.moveToNext() }?.toContactRow() }.toList()
@@ -40,14 +43,19 @@ internal class AndroidDeviceContactsDataSource(
             detail = when (string(Data.MIMETYPE)) {
                 StructuredName.CONTENT_ITEM_TYPE -> ContactDetail.Name(
                     given = string(StructuredName.GIVEN_NAME),
-                    family = string(StructuredName.FAMILY_NAME)
+                    family = string(StructuredName.FAMILY_NAME),
                 )
+
                 Phone.CONTENT_ITEM_TYPE -> ContactDetail.PhoneNumber(
-                    number = string(Phone.NORMALIZED_NUMBER) ?: string(Phone.NUMBER)
+                    number = string(Phone.NORMALIZED_NUMBER) ?: string(Phone.NUMBER),
                 )
-                Email.CONTENT_ITEM_TYPE -> ContactDetail.EmailAddress(address = string(Email.ADDRESS))
+
+                Email.CONTENT_ITEM_TYPE -> ContactDetail.EmailAddress(
+                    address = string(Email.ADDRESS),
+                )
+
                 else -> null
-            }
+            },
         )
     }
 
@@ -59,17 +67,21 @@ internal class AndroidDeviceContactsDataSource(
         val details = mapNotNull { it.detail }
         val names = details.filterIsInstance<ContactDetail.Name>()
         return DeviceContact(
-            name = names.firstNotNullOfOrNull { it.given } ?: firstNotNullOfOrNull { it.displayName }.orEmpty(),
+            name =
+            names.firstNotNullOfOrNull { it.given }
+                ?: firstNotNullOfOrNull { it.displayName }.orEmpty(),
             lastName = names.firstNotNullOfOrNull { it.family }.orEmpty(),
             phones = details.filterIsInstance<ContactDetail.PhoneNumber>().mapNotNull { it.number },
-            emails = details.filterIsInstance<ContactDetail.EmailAddress>().mapNotNull { it.address }
+            emails = details.filterIsInstance<ContactDetail.EmailAddress>().mapNotNull {
+                it.address
+            },
         )
     }
 
     private class ContactRow(
         val contactId: Long,
         val displayName: String?,
-        val detail: ContactDetail?
+        val detail: ContactDetail?,
     )
 
     private sealed interface ContactDetail {
@@ -87,7 +99,7 @@ internal class AndroidDeviceContactsDataSource(
             StructuredName.FAMILY_NAME,
             Phone.NUMBER,
             Phone.NORMALIZED_NUMBER,
-            Email.ADDRESS
+            Email.ADDRESS,
         )
     }
 }

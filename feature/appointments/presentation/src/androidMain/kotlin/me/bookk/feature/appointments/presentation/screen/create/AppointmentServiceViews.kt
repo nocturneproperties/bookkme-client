@@ -46,24 +46,21 @@ internal fun SubtotalRow(label: StringDesc, price: String) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             label.localized(),
-            style = MaterialTheme.typography.bodyMedium.secondary()
+            style = MaterialTheme.typography.bodyMedium.secondary(),
         )
         Text(
             price,
-            style = MaterialTheme.typography.titleMedium.primary()
+            style = MaterialTheme.typography.titleMedium.primary(),
         )
     }
 }
 
 @Composable
-internal fun ServiceItem(
-    service: ServicePickerPresentation,
-    onItemRemove: (() -> Unit)?
-) {
+internal fun ServiceItem(service: ServicePickerPresentation, onItemRemove: (() -> Unit)?) {
     Row(
         modifier = Modifier
             .padding(vertical = 16.dp)
@@ -73,18 +70,18 @@ internal fun ServiceItem(
         Column(Modifier.padding(start = 16.dp)) {
             Text(
                 service.displayName.localized(),
-                style = MaterialTheme.typography.titleMedium.primary()
+                style = MaterialTheme.typography.titleMedium.primary(),
             )
             Text(
                 service.duration.localized(),
-                style = MaterialTheme.typography.labelMedium.secondary()
+                style = MaterialTheme.typography.labelMedium.secondary(),
             )
         }
         Spacer(Modifier.weight(1f))
         Text(
             service.price,
             modifier = Modifier.padding(end = if (onItemRemove == null) 16.dp else 0.dp),
-            style = MaterialTheme.typography.titleMedium.primary()
+            style = MaterialTheme.typography.titleMedium.primary(),
         )
         if (onItemRemove != null) {
             TextButton(onClick = onItemRemove) {
@@ -92,14 +89,14 @@ internal fun ServiceItem(
                     modifier = Modifier
                         .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
                         .size(28.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         "-",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyLarge.secondary(),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }

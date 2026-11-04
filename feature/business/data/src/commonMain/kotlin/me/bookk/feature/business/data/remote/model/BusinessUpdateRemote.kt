@@ -19,5 +19,5 @@ internal class BusinessUpdateRemote(
     val timeZone: TimeZone,
     @ProtoNumber(8) val socials: List<BusinessRemote.Social>,
     @ProtoNumber(9) val schedule: ScheduleRemote,
-    @ProtoNumber(10) val clientDataRetentionMonths: Int? = null
+    @ProtoNumber(10) val clientDataRetentionMonths: Int? = null,
 )

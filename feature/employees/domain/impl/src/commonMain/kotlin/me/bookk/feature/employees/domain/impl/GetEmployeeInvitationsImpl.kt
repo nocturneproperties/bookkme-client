@@ -6,9 +6,8 @@ import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
 import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
 import kotlin.uuid.Uuid
 
-internal class GetEmployeeInvitationsImpl(
-    private val dataSource: EmployeeInvitationDataSource
-) : GetEmployeeInvitations {
+internal class GetEmployeeInvitationsImpl(private val dataSource: EmployeeInvitationDataSource) :
+    GetEmployeeInvitations {
 
     override fun flow(businessId: Uuid): Flow<List<EmployeeInvitation>> =
         dataSource.observeInvitationsDBChanges(businessId)

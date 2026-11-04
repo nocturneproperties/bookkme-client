@@ -43,15 +43,17 @@ fun ImageResource.painter(): Painter {
 fun StringDesc.html(): AnnotatedString {
     val uriHandler = if (!LocalInspectionMode.current) {
         LocalUriHandler.current
-    } else null
+    } else {
+        null
+    }
     return AnnotatedString.fromHtml(
         htmlString = localized(),
         linkStyles = TextLinkStyles(
             style = SpanStyle(
                 color = LocalColors.current.actionText,
                 fontWeight = FontWeight.Medium,
-                textDecoration = TextDecoration.Underline
-            )
+                textDecoration = TextDecoration.Underline,
+            ),
         ),
         linkInteractionListener = { annotation ->
             when (annotation) {
@@ -63,7 +65,7 @@ fun StringDesc.html(): AnnotatedString {
                     }
                 }
             }
-        }
+        },
     )
 }
 

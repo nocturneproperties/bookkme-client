@@ -7,9 +7,7 @@ import platform.Foundation.NSNumberFormatterCurrencyStyle
 import platform.Foundation.currentLocale
 import platform.Foundation.numberWithDouble
 
-actual class Currency actual constructor(
-    private val code: String
-) {
+actual class Currency actual constructor(private val code: String) {
     private val formatter = NSNumberFormatter().apply {
         numberStyle = NSNumberFormatterCurrencyStyle
         currencyCode = code
@@ -24,7 +22,9 @@ actual class Currency actual constructor(
 
     actual fun format(value: Long): String {
         val doubleValue = value / 100.0
-        return formatter.stringFromNumber(NSNumber.Companion.numberWithDouble(doubleValue)).orEmpty()
+        return formatter.stringFromNumber(
+            NSNumber.Companion.numberWithDouble(doubleValue),
+        ).orEmpty()
     }
 
     actual fun symbol(): String {
@@ -48,5 +48,4 @@ actual class Currency actual constructor(
     actual override fun hashCode(): Int {
         return code().hashCode()
     }
-
 }

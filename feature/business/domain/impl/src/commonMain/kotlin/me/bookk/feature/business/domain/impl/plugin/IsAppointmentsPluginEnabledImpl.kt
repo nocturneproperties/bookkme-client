@@ -5,9 +5,8 @@ import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.business.domain.datasource.PluginDataSource
 import kotlin.uuid.Uuid
 
-internal class IsAppointmentsPluginEnabledImpl(
-    private val pluginDataSource: PluginDataSource
-) : IsAppointmentsPluginEnabled {
+internal class IsAppointmentsPluginEnabledImpl(private val pluginDataSource: PluginDataSource) :
+    IsAppointmentsPluginEnabled {
 
     override fun flow(businessId: Uuid): Flow<Boolean?> =
         pluginDataSource.observeAppointmentPluginAvailability(businessId)

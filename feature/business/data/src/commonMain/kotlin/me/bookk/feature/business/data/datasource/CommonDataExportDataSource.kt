@@ -16,20 +16,44 @@ import me.bookk.feature.business.data.remote.model.DataExportRequestRemote
 import me.bookk.feature.business.domain.datasource.DataExportDataSource
 import kotlin.uuid.Uuid
 
-internal class CommonDataExportDataSource(private val httpClient: HttpClient) : DataSource(), DataExportDataSource {
+internal class CommonDataExportDataSource(private val httpClient: HttpClient) :
+    DataSource(),
+    DataExportDataSource {
     override suspend fun start(businessId: Uuid, stepUpToken: String): DataExport = mapExceptions {
-        httpClient.post(BusinessRouting.Api.Business.Id.Export(BusinessRouting.Api.Business.Id(id = businessId))) {
-            setBody(DataExportRequestRemote(stepUpToken))
-        }.body<DataExportRemote>().toDomain()
+        httpClient
+            .post(
+                BusinessRouting.Api.Business.Id.Export(
+                    BusinessRouting.Api.Business.Id(id = businessId),
+                ),
+            ) {
+                setBody(DataExportRequestRemote(stepUpToken))
+            }
+            .body<DataExportRemote>()
+            .toDomain()
     }
 
     override suspend fun get(businessId: Uuid): DataExport = mapExceptions {
-        httpClient.get(BusinessRouting.Api.Business.Id.Export(BusinessRouting.Api.Business.Id(id = businessId))).body<DataExportRemote>().toDomain()
+        httpClient
+            .get(
+                BusinessRouting.Api.Business.Id.Export(
+                    BusinessRouting.Api.Business.Id(id = businessId),
+                ),
+            )
+            .body<DataExportRemote>()
+            .toDomain()
     }
 
     override suspend fun download(businessId: Uuid): String = mapExceptions {
-        httpClient.get(BusinessRouting.Api.Business.Id.Export.Download(BusinessRouting.Api.Business.Id.Export(BusinessRouting.Api.Business.Id(id = businessId)))) {
-            accept(ContentType.Application.Json)
-        }.bodyAsText()
+        httpClient
+            .get(
+                BusinessRouting.Api.Business.Id.Export.Download(
+                    BusinessRouting.Api.Business.Id.Export(
+                        BusinessRouting.Api.Business.Id(id = businessId),
+                    ),
+                ),
+            ) {
+                accept(ContentType.Application.Json)
+            }
+            .bodyAsText()
     }
 }

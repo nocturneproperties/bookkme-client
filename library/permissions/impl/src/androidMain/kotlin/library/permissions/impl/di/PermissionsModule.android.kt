@@ -11,8 +11,9 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 
 internal actual fun platformPermissionsModule(): Module = module {
-    single(qualifier(PermissionType.NOTIFICATIONS)) { NotificationPermissionChecker() } binds arrayOf(
-        AndroidActivityAware::class, PermissionChecker::class)
-    single(qualifier(PermissionType.CONTACTS)) { ContactsPermissionChecker() } binds arrayOf(
-        AndroidActivityAware::class, PermissionChecker::class)
+    single(qualifier(PermissionType.NOTIFICATIONS)) { NotificationPermissionChecker() } binds
+        arrayOf(AndroidActivityAware::class, PermissionChecker::class)
+    single(qualifier(PermissionType.CONTACTS)) {
+        ContactsPermissionChecker()
+    } binds arrayOf(AndroidActivityAware::class, PermissionChecker::class)
 }

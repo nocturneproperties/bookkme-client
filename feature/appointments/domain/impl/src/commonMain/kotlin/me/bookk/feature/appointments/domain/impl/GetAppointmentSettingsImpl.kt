@@ -7,7 +7,7 @@ import me.bookk.feature.appointments.domain.datasource.AppointmentSettingsDataSo
 import kotlin.uuid.Uuid
 
 internal class GetAppointmentSettingsImpl(
-    private val appointmentSettingsDataSource: AppointmentSettingsDataSource
+    private val appointmentSettingsDataSource: AppointmentSettingsDataSource,
 ) : GetAppointmentSettings {
 
     override fun flow(businessId: Uuid): Flow<AppointmentSettings?> =

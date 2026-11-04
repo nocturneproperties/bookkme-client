@@ -27,12 +27,12 @@ internal fun NavGraphBuilder.settingsScreen(navigation: BusinessNavigation) {
             onCurrencySelected = viewModel::onCurrencySelected,
             onInstagramChanged = viewModel::onInstagramChanged,
             onTestLocationClick = viewModel::onTestLocationClick,
-            onPhoneChanged = viewModel::onPhoneChanged
+            onPhoneChanged = viewModel::onPhoneChanged,
         )
 
         CompositionLocalProvider(
             LocalNavigation provides navigation,
-            LocalBusinessSettingsEventListener provides listener
+            LocalBusinessSettingsEventListener provides listener,
         ) {
             ObserveNotifications(viewModel.uiState.notifications)
             ObserveNavigation(viewModel.uiState.navigation) { destination ->

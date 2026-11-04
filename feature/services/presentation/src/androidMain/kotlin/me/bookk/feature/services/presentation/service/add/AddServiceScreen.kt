@@ -37,11 +37,11 @@ internal fun AddServiceScreen(state: AddServiceState) {
                     .padding(all = 16.dp)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 PickerField(
                     state = state.group,
-                    screenPicker = standardScreenPicker()
+                    screenPicker = standardScreenPicker(),
                 )
                 TextField(state.name)
                 TextField(state.duration)
@@ -54,8 +54,8 @@ internal fun AddServiceScreen(state: AddServiceState) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                state = state.create
+                state = state.create,
             )
-        }
+        },
     )
 }

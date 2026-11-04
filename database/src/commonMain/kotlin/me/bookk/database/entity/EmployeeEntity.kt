@@ -16,10 +16,10 @@ import kotlin.uuid.Uuid
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
+            onDelete = CASCADE,
         ),
     ],
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class EmployeeEntity(
     @PrimaryKey
@@ -46,5 +46,5 @@ class EmployeeEntity(
     @ColumnInfo(defaultValue = "0") val appointmentsPermissionView: Boolean = false,
     @ColumnInfo(defaultValue = "0") val appointmentsPermissionUpdate: Boolean = false,
     @ColumnInfo(defaultValue = "0") val appointmentsPermissionDelete: Boolean = false,
-    val suspendedAt: Instant? = null
+    val suspendedAt: Instant? = null,
 )

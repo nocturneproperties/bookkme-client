@@ -27,7 +27,9 @@ class AndroidSettingsStateFactory : SettingsStateFactory {
         return AndroidContactUsState(initData)
     }
 
-    override fun createDeleteAccountState(initData: DeleteAccountState.InitData): DeleteAccountState {
+    override fun createDeleteAccountState(
+        initData: DeleteAccountState.InitData,
+    ): DeleteAccountState {
         return AndroidDeleteAccountState(initData)
     }
 

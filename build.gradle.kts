@@ -1,5 +1,9 @@
+import com.diffplug.spotless.LineEnding
+
 plugins {
-    //trick: for the same plugin versions in all sub-modules
+    base
+    alias(libs.plugins.spotless)
+    // trick: for the same plugin versions in all sub-modules
     alias(libs.plugins.android.application).apply(false)
     alias(libs.plugins.android.library).apply(false)
     alias(libs.plugins.android.room).apply(false)
@@ -18,18 +22,55 @@ plugins {
     alias(libs.plugins.buldconfig).apply(false)
     alias(libs.plugins.kmm.resources).apply(false)
 }
+
+spotless {
+    lineEndings = LineEnding.UNIX
+    kotlin {
+        target(
+            fileTree(rootDir) {
+                include("**/src/**/*.kt")
+                exclude("**/build/**", "**/generated/**", "**/.gradle/**", "feature/.template/**")
+            },
+        )
+        ktlint(libs.versions.ktlint.get())
+            .editorConfigOverride(mapOf("ktlint_code_style" to "intellij_idea"))
+        suppressLintsFor {
+            path = "designsystem/src/iosMain/kotlin/me/bookk/designsystem/uistate/Info.kt"
+            shortCode = "standard:kdoc"
+        }
+        suppressLintsFor {
+            shortCode = "standard:filename"
+        }
+        suppressLintsFor {
+            shortCode = "standard:package-name"
+        }
+        suppressLintsFor {
+            shortCode = "standard:no-empty-file"
+        }
+    }
+    kotlinGradle {
+        target(
+            fileTree(rootDir) {
+                include("**/*.gradle.kts")
+                exclude("**/build/**", "**/generated/**", "**/.gradle/**", "feature/.template/**")
+            },
+        )
+        ktlint(libs.versions.ktlint.get())
+            .editorConfigOverride(mapOf("ktlint_code_style" to "intellij_idea"))
+    }
+}
+
 val flavor = run {
     val tskReqStr = gradle.startParameter.taskNames.toString()
-    val patternStr = when {
-        tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"
-        tskReqStr.contains("bundle") -> "(?<=bundle)\\w*?(?=Aar)"
-        tskReqStr.contains("assemble") -> "(?<=assemble)\\w*"
-        else -> "(?<=check)\\w*?(?=Manifest)"
-    }
+    val patternStr =
+        when {
+            tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"
+            tskReqStr.contains("bundle") -> "(?<=bundle)\\w*?(?=Aar)"
+            tskReqStr.contains("assemble") -> "(?<=assemble)\\w*"
+            else -> "(?<=check)\\w*?(?=Manifest)"
+        }
 
-    Regex(patternStr).find(tskReqStr)?.value
-        .orEmpty()
-        .replaceFirstChar { it.lowercase() }
+    Regex(patternStr).find(tskReqStr)?.value.orEmpty().replaceFirstChar { it.lowercase() }
 }
 
 allprojects {

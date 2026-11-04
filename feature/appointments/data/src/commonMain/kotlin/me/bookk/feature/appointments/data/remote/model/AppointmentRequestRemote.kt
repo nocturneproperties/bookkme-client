@@ -30,7 +30,7 @@ data class AppointmentRequestRemote(
             status = status.toDomain(),
             date = date,
             note = note,
-            declineReason = declineReason
+            declineReason = declineReason,
         )
     }
 }

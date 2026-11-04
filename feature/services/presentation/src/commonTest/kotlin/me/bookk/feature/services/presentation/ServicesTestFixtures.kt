@@ -7,20 +7,14 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
 
-internal fun stubGroup(
-    name: String = "Hair",
-    businessId: Uuid = Uuid.random()
-) = ServiceGroup(
+internal fun stubGroup(name: String = "Hair", businessId: Uuid = Uuid.random()) = ServiceGroup(
     id = Uuid.random(),
     businessId = businessId,
     name = name,
-    createdAt = Clock.System.now()
+    createdAt = Clock.System.now(),
 )
 
-internal fun stubService(
-    name: String = "Haircut",
-    group: ServiceGroup = stubGroup()
-) = Service(
+internal fun stubService(name: String = "Haircut", group: ServiceGroup = stubGroup()) = Service(
     id = Uuid.random(),
     businessId = group.businessId,
     group = group,
@@ -28,5 +22,5 @@ internal fun stubService(
     duration = 30.minutes,
     price = Money(10000L, Money.SupportedCurrency.UAH),
     isAvailable = true,
-    createdAt = Clock.System.now()
+    createdAt = Clock.System.now(),
 )

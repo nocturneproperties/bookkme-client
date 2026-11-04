@@ -19,7 +19,9 @@ import kotlin.uuid.Uuid
 internal class CommonPluginDataSource(
     private val httpClient: HttpClient,
     preferenceProvider: PreferenceProvider,
-) : DataSource(), PluginDataSource, LogOutAction {
+) : DataSource(),
+    PluginDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("plugin_prefs")
 

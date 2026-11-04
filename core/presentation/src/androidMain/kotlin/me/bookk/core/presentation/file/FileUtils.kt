@@ -12,7 +12,7 @@ fun File.createTempJpgFile(name: String = "IMG_${System.currentTimeMillis()}"): 
     return File.createTempFile(
         name,
         ".jpg",
-        this
+        this,
     )
 }
 

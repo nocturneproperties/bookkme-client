@@ -77,7 +77,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         EmployeeDayScheduleEntity::class,
         EmployeeWorkHourEntity::class,
         EmployeeDayOffEntity::class,
-        EmployeeServiceSnapshotEntity::class
+        EmployeeServiceSnapshotEntity::class,
     ],
     version = 22,
     autoMigrations = [
@@ -101,13 +101,13 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         AutoMigration(from = 18, to = 19),
         AutoMigration(from = 19, to = 20),
         AutoMigration(from = 20, to = 21),
-        AutoMigration(from = 21, to = 22)
-    ]
+        AutoMigration(from = 21, to = 22),
+    ],
 )
 @TypeConverters(
     UuidConverter::class,
     DurationConverter::class,
-    InstantConverter::class
+    InstantConverter::class,
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

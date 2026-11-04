@@ -7,5 +7,5 @@ import kotlin.uuid.Uuid
 @Serializable
 class UserBusinessesRemote(
     @ProtoNumber(1) val dashboardId: Uuid?,
-    @ProtoNumber(2) val businesses: List<BusinessRemote>
+    @ProtoNumber(2) val businesses: List<BusinessRemote>,
 )

@@ -44,9 +44,9 @@ class AppointmentRemoteContractTest {
                 "note" to 9,
                 "cancellationReason" to 10,
                 "completedBy" to 11,
-                "priceAdjustment" to 12
+                "priceAdjustment" to 12,
             ),
-            fields
+            fields,
         )
     }
 
@@ -97,7 +97,7 @@ class AppointmentRemoteContractTest {
         then()
         assertEquals(
             listOf("id" to 1, "date" to 8, "note" to 9, "employeeId" to 13, "services" to 14),
-            fields
+            fields,
         )
     }
 
@@ -153,9 +153,9 @@ class AppointmentRemoteContractTest {
                 "services" to 3,
                 "date" to 4,
                 "note" to 5,
-                "offerToken" to 6
+                "offerToken" to 6,
             ),
-            fields
+            fields,
         )
     }
 }

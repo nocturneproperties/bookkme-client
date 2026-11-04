@@ -15,7 +15,8 @@ class AppointmentTest {
     private val start = LocalDateTime(2026, 10, 3, 10, 0)
     private val beforeStart = LocalDateTime(2026, 10, 3, 9, 59)
 
-    private fun appointment(status: AppointmentStatus) = Appointment.stub(date = start).copy(status = status)
+    private fun appointment(status: AppointmentStatus) =
+        Appointment.stub(date = start).copy(status = status)
 
     @Test
     fun `only a started scheduled appointment can be completed`() = runUnitTest {

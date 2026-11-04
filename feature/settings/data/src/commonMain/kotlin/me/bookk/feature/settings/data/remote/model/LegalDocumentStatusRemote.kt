@@ -8,7 +8,7 @@ import kotlin.time.Instant
 @Serializable
 internal class LegalDocumentStatusRemote(
     @ProtoNumber(1) val current: LegalDocumentVersionRemote,
-    @ProtoNumber(2) val acceptedAt: Instant? = null
+    @ProtoNumber(2) val acceptedAt: Instant? = null,
 ) {
     fun toDomain(): LegalDocumentStatus {
         return LegalDocumentStatus(current.toDomain(), acceptedAt)

@@ -5,7 +5,7 @@ import me.bookk.feature.settings.domain.api.entity.NotificationSettings
 import me.bookk.feature.settings.domain.datasource.NotificationSettingsDataSource
 
 internal class UpdateNotificationSettingsImpl(
-    private val notificationSettingsDataSource: NotificationSettingsDataSource
+    private val notificationSettingsDataSource: NotificationSettingsDataSource,
 ) : UpdateNotificationSettings {
     override suspend fun invoke(settings: NotificationSettings): NotificationSettings {
         val result = notificationSettingsDataSource.updateNotificationSettings(settings)

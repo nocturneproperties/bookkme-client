@@ -10,5 +10,5 @@ data class InstantAppointmentDraft(
     val date: Instant,
     val note: String,
     val offerToken: String,
-    val clientId: Uuid
+    val clientId: Uuid,
 )

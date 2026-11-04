@@ -15,21 +15,18 @@ import kotlin.math.roundToLong
  * */
 
 @Serializable
-data class Money(
-    val value: Long,
-    val currencyType: SupportedCurrency,
-) {
+data class Money(val value: Long, val currencyType: SupportedCurrency) {
 
     val currency by lazy { Currency(currencyType.code) }
 
     constructor(
         value: Double,
-        currency: SupportedCurrency
+        currency: SupportedCurrency,
     ) : this(value.asPreciseLong(), currency)
 
     constructor(
         value: Float,
-        currency: SupportedCurrency
+        currency: SupportedCurrency,
     ) : this(value.asPreciseLong(), currency)
 
     operator fun plus(other: Money): Money {
@@ -88,7 +85,8 @@ data class Money(
         EUR("EUR"),
         PLN("PLN"),
         CZK("CZK"),
-        GBP("GBP");
+        GBP("GBP"),
+        ;
 
         companion object {
             fun fromCode(code: String): SupportedCurrency {

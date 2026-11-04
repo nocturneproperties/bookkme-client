@@ -61,7 +61,8 @@ class GetAppointmentImplTest {
         given()
         val fixture = Fixture()
         val id = Uuid.random()
-        everySuspend { fixture.dataSource.getAppointment(id) } throws IllegalStateException("not found")
+        everySuspend { fixture.dataSource.getAppointment(id) } throws
+            IllegalStateException("not found")
 
         whenn()
         val thrown = runCatching { fixture.sut(id) }.exceptionOrNull()

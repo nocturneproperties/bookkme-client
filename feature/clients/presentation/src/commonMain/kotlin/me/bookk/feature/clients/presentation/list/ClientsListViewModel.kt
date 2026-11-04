@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.flowOn
 import library.device.api.DeviceFacade
 import library.permissions.api.PermissionManager
 import library.permissions.api.PermissionType
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.clients.resources.ClientsRes
-import me.bookk.core.Logger
 import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.LaunchBehaviour
@@ -25,13 +25,12 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.core.presentation.text.TextCollator
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
-import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.action
-import me.bookk.designsystem.uistate.startLoading
-import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import me.bookk.feature.clients.domain.api.GetDeviceContacts
@@ -63,12 +62,12 @@ class ClientsListViewModel(
     private val importAction = uiState.appBar.action(
         icon = DesignSystem.images.contacts,
         contentDescription = DesignSystem.strings.action_import.desc(),
-        onClick = weakVMClosure { it.onImportClientsClick() }
+        onClick = weakVMClosure { it.onImportClientsClick() },
     )
     private val addAction = uiState.appBar.action(
         icon = DesignSystem.images.plus,
         contentDescription = DesignSystem.strings.action_add.desc(),
-        onClick = weakVMClosure { it.onAddClientClick() }
+        onClick = weakVMClosure { it.onAddClientClick() },
     )
 
     init {
@@ -77,7 +76,8 @@ class ClientsListViewModel(
     }
 
     private fun observeClients() {
-        getClientsList.flow()
+        getClientsList
+            .flow()
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderClients(it) }
             .onError { uiState.notifications.add(it.notification()) }
@@ -94,7 +94,7 @@ class ClientsListViewModel(
                     id = entry.key,
                     header = entry.key,
                     items = entry.value,
-                    onItemClick = weakVMClosure { vm, client -> vm.onClientClick(client) }
+                    onItemClick = weakVMClosure { vm, client -> vm.onClientClick(client) },
                 )
             }
         items = grouped
@@ -120,7 +120,7 @@ class ClientsListViewModel(
             launchIn = DispatcherProvider.io,
             call = { getClientsPermissions(businessId) },
             onComplete = { renderAppBarActions(it.canEdit) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -134,7 +134,7 @@ class ClientsListViewModel(
             listState = uiState.clientsList,
             notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = { getClientsList.refresh(businessId) }
+            call = { getClientsList.refresh(businessId) },
         )
     }
 
@@ -147,12 +147,9 @@ class ClientsListViewModel(
             launchIn = DispatcherProvider.main,
             call = { permissionManager.requestPermission(PermissionType.CONTACTS) },
             onComplete = { isGranted ->
-                if (isGranted)
-                    readDeviceContacts()
-                else
-                    showContactsAccessDialog()
+                if (isGranted) readDeviceContacts() else showContactsAccessDialog()
             },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -163,18 +160,19 @@ class ClientsListViewModel(
             call = { getDeviceContacts().toContactOptions() },
             onComplete = { showContactsPicker(it) },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { importAction.stopLoading() }
+            onTerminate = { importAction.stopLoading() },
         )
     }
 
-    private fun List<ClientImportEntry>.toContactOptions(): List<SimplePickerPresentation<ClientImportEntry>> {
+    private fun List<ClientImportEntry>.toContactOptions():
+        List<SimplePickerPresentation<ClientImportEntry>> {
         return map { contact -> contact.pickerName() to contact }
             .sortedWith(compareBy(textCollator.comparator()) { (name, _) -> name })
             .mapIndexed { index, (name, contact) ->
                 SimplePickerPresentation(
                     pickerItemId = index.toString(),
                     displayName = name.desc(),
-                    domain = contact
+                    domain = contact,
                 )
             }
     }
@@ -193,8 +191,8 @@ class ClientsListViewModel(
             PresentationNotification.Message(
                 title = ClientsRes.strings.clients_import_no_contacts_title.desc(),
                 message = ClientsRes.strings.clients_import_no_contacts_message.desc(),
-                buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
-            )
+                buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc())),
+            ),
         )
     }
 
@@ -222,7 +220,7 @@ class ClientsListViewModel(
                 showImportSummary(it)
             },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { importAction.stopLoading() }
+            onTerminate = { importAction.stopLoading() },
         )
     }
 
@@ -231,8 +229,8 @@ class ClientsListViewModel(
             PresentationNotification.Message(
                 title = ClientsRes.strings.clients_import_result_title.desc(),
                 message = result.summaryLines().joinToStringDesc(separator = "\n"),
-                buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()))
-            )
+                buttons = listOf(ButtonDescriptor(text = DesignSystem.strings.action_ok.desc())),
+            ),
         )
     }
 
@@ -243,15 +241,25 @@ class ClientsListViewModel(
         val reasonLines = RejectedClientImport.Reason.entries.mapNotNull { reason ->
             countsByReason[reason]?.let { reason.summaryLine().format(it) }
         }
-        return listOf(createdLine, ClientsRes.strings.clients_import_result_rejected.format(rejected.size)) + reasonLines
+        return listOf(
+            createdLine,
+            ClientsRes.strings.clients_import_result_rejected.format(rejected.size),
+        ) + reasonLines
     }
 
     private fun RejectedClientImport.Reason.summaryLine(): StringResource {
         return when (this) {
-            RejectedClientImport.Reason.INVALID_FIELDS -> ClientsRes.strings.clients_import_result_reason_invalid
-            RejectedClientImport.Reason.MISSING_CONTACT_INFO -> ClientsRes.strings.clients_import_result_reason_missing_contact
-            RejectedClientImport.Reason.ALREADY_EXISTS -> ClientsRes.strings.clients_import_result_reason_exists
-            RejectedClientImport.Reason.UNKNOWN -> ClientsRes.strings.clients_import_result_reason_unknown
+            RejectedClientImport.Reason.INVALID_FIELDS ->
+                ClientsRes.strings.clients_import_result_reason_invalid
+
+            RejectedClientImport.Reason.MISSING_CONTACT_INFO ->
+                ClientsRes.strings.clients_import_result_reason_missing_contact
+
+            RejectedClientImport.Reason.ALREADY_EXISTS ->
+                ClientsRes.strings.clients_import_result_reason_exists
+
+            RejectedClientImport.Reason.UNKNOWN ->
+                ClientsRes.strings.clients_import_result_reason_unknown
         }
     }
 
@@ -263,15 +271,16 @@ class ClientsListViewModel(
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.CANCEL
+                        actionType = ActionType.CANCEL,
                     ),
                     ButtonDescriptor(
-                        text = ClientsRes.strings.clients_import_permission_open_settings.desc(),
+                        text =
+                        ClientsRes.strings.clients_import_permission_open_settings.desc(),
                         actionType = ActionType.POSITIVE,
-                        onClick = weakVMClosure { it.device.openAppSettings() }
-                    )
-                )
-            )
+                        onClick = weakVMClosure { it.device.openAppSettings() },
+                    ),
+                ),
+            ),
         )
     }
 
@@ -280,7 +289,7 @@ class ClientsListViewModel(
             launchIn = DispatcherProvider.io,
             call = { observeCurrentBusinessId().filterNotNull().first() },
             onComplete = { uiState.navigation.push(AddClient(it)) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -292,9 +301,11 @@ class ClientsListViewModel(
         }
         val filtered = items
             .map {
-                it.copy(items = it.items.filter {
-                    it.fullName.contains(query, ignoreCase = true)
-                })
+                it.copy(
+                    items = it.items.filter {
+                        it.fullName.contains(query, ignoreCase = true)
+                    },
+                )
             }
             .filter { it.items.isNotEmpty() }
         uiState.clientsList.replace(filtered)
@@ -302,8 +313,9 @@ class ClientsListViewModel(
 
     private fun ClientsListState.setup(): ClientsListState {
         appBar.title = ClientsRes.strings.clients_title.desc()
-        appBar.onBackClick =
-            weakVMClosure { it.uiState.navigation.push(ClientsListDestination.Back) }
+        appBar.onBackClick = weakVMClosure {
+            it.uiState.navigation.push(ClientsListDestination.Back)
+        }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
         contactsPicker.pickerTitle = ClientsRes.strings.clients_import_contacts_title.desc()
@@ -311,7 +323,7 @@ class ClientsListViewModel(
         contactsPicker.onItemsPicked = weakVMClosure { vm, picked -> vm.onContactsPicked(picked) }
         clientsList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
-            label = ClientsRes.strings.clients_empty.desc()
+            label = ClientsRes.strings.clients_empty.desc(),
         )
         return this
     }

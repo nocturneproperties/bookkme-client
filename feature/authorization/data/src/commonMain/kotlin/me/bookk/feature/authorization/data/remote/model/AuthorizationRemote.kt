@@ -6,5 +6,5 @@ import kotlinx.serialization.protobuf.ProtoNumber
 @Serializable
 class TokenInfoResponse(
     @ProtoNumber(1) val accessToken: String,
-    @ProtoNumber(2) val refreshToken: String
+    @ProtoNumber(2) val refreshToken: String,
 )

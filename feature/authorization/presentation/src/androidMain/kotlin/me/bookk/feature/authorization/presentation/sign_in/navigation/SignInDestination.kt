@@ -25,7 +25,7 @@ internal fun NavGraphBuilder.signInScreen(navigation: AuthNavigation) {
 
             SignInScreen(
                 state = viewModel.uiState,
-                listener = viewModel
+                listener = viewModel,
             )
         }
     }

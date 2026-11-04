@@ -27,47 +27,47 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
     BusinessSettingsState {
     override val appBar: AppBarState = AndroidAppBarState(initData.title, size = TopBarSize.SMALL)
     override val photo: ButtonState = AndroidButtonState(
-        text = initData.addPhotoText
+        text = initData.addPhotoText,
     )
     override val name: TextFieldState = AndroidTextFieldState(
-        placeholder = initData.nameHint
+        placeholder = initData.nameHint,
     )
     override val description: TextFieldState = AndroidTextFieldState(
-        placeholder = initData.descriptionHint
+        placeholder = initData.descriptionHint,
     )
     override val location: TextFieldState = AndroidTextFieldState(
         placeholder = initData.locationHint,
-        readOnly = true
+        readOnly = true,
     )
     override val testLocation: ButtonState = AndroidButtonState(
         text = initData.testLocationText,
     )
     override val currency: PickerFieldState<CurrencyUI> = AndroidPickerFieldState(
         selectedItem = CurrencyUI("0", "".desc(), Money.SupportedCurrency.EUR),
-        items = listOf(CurrencyUI("0", "".desc(), Money.SupportedCurrency.EUR))
+        items = listOf(CurrencyUI("0", "".desc(), Money.SupportedCurrency.EUR)),
     )
     override val address: TextFieldState = AndroidTextFieldState(
-        placeholder = initData.addressHint
+        placeholder = initData.addressHint,
     )
     override val phone: TextFieldState = AndroidTextFieldState(
         startIcon = initData.phoneIcon,
-        placeholder = initData.phoneHint
+        placeholder = initData.phoneHint,
     )
     override val instagram: TextFieldState = AndroidTextFieldState(
         startIcon = initData.instaIcon,
-        placeholder = initData.instagramHint
+        placeholder = initData.instagramHint,
     )
     override val telegram: TextFieldState = AndroidTextFieldState(
         startIcon = initData.telegramIcon,
-        placeholder = initData.telegramHint
+        placeholder = initData.telegramHint,
     )
     override val viber: TextFieldState = AndroidTextFieldState(
         startIcon = initData.viberIcon,
-        placeholder = initData.viberHint
+        placeholder = initData.viberHint,
     )
     override val save: ButtonState = AndroidButtonState(
         text = initData.saveButtonText,
-        isEnabled = false
+        isEnabled = false,
     )
 
     override val schedule: ScheduleState = AndroidScheduleState()

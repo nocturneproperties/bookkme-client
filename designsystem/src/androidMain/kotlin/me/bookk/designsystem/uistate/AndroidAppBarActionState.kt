@@ -8,7 +8,9 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.core.presentation.error.ActionType
 
-class AndroidAppBarActionState : AndroidViewState(), AppBarActionState {
+class AndroidAppBarActionState :
+    AndroidViewState(),
+    AppBarActionState {
     override var icon: ImageResource? by mutableStateOf(null)
     override var contentDescription: StringDesc by mutableStateOf("".desc())
     override var type: ActionType by mutableStateOf(ActionType.POSITIVE)

@@ -9,6 +9,6 @@ internal fun settingsDiModule() = module {
     includes(
         settingsPresentationModule(),
         settingsDataModule(),
-        settingsDomainModule()
+        settingsDomainModule(),
     )
 }

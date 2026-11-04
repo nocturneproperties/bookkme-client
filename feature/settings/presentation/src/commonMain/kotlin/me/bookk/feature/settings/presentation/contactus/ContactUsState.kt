@@ -24,6 +24,6 @@ interface ContactUsState {
         val contactHint: StringDesc,
         val usageLogsText: StringDesc,
         val includeLogsExplanation: StringDesc,
-        val submitButtonText: StringDesc
+        val submitButtonText: StringDesc,
     )
 }

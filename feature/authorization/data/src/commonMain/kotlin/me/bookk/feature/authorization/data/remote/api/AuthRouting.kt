@@ -53,5 +53,4 @@ internal object AuthRouting {
             class Me(val parent: User = User())
         }
     }
-
 }

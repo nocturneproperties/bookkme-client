@@ -54,38 +54,35 @@ fun ScheduleSection(state: ScheduleState, modifier: Modifier = Modifier) {
             pickerContent = {
                 DateRangePicker(
                     state = state.dateRange,
-                    onDismiss = { state.dayOffs.isPickerVisible = false }
+                    onDismiss = { state.dayOffs.isPickerVisible = false },
                 )
             },
             itemContent = { item, onItemRemove ->
                 DayOffItem(item, onItemRemove.takeIf { state.dayOffs.isEditable })
-            }
+            },
         )
     }
 }
 
 @Composable
-private fun DayOffItem(
-    item: DateRangePickerPresentation,
-    onDeleteClick: (() -> Unit)?
-) {
+private fun DayOffItem(item: DateRangePickerPresentation, onDeleteClick: (() -> Unit)?) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Icon(Icons.TwoTone.CalendarToday, contentDescription = null)
         Text(
             item.displayName.localized(),
             modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
         )
         if (onDeleteClick != null) {
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     Icons.Filled.Delete,
                     contentDescription = DesignSystem.strings.action_delete.desc().localized(),
-                    tint = LocalColors.current.error
+                    tint = LocalColors.current.error,
                 )
             }
         }
@@ -98,14 +95,13 @@ private fun ScheduleStrip(schedule: ScheduleState) {
     Column(Modifier.fillMaxWidth()) {
         Header(DesignSystem.strings.schedule_title.desc().localized())
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .animateContentSize()
                 .background(
                     LocalColors.current.elevated,
-                    MaterialTheme.shapes.large
+                    MaterialTheme.shapes.large,
                 )
-                .padding(vertical = 8.dp, horizontal = 16.dp)
+                .padding(vertical = 8.dp, horizontal = 16.dp),
         ) {
             schedule.list.items.forEach { day ->
                 DayOfWeekCell(
@@ -117,7 +113,7 @@ private fun ScheduleStrip(schedule: ScheduleState) {
                             if (it !== day) it.isVisible = false
                         }
                         selectedState = day
-                    }
+                    },
                 )
             }
         }
@@ -128,11 +124,7 @@ private fun ScheduleStrip(schedule: ScheduleState) {
 }
 
 @Composable
-private fun DayOfWeekCell(
-    modifier: Modifier,
-    state: DaySettingsState,
-    onClick: () -> Unit
-) {
+private fun DayOfWeekCell(modifier: Modifier, state: DaySettingsState, onClick: () -> Unit) {
     val colors = LocalColors.current
     val background = if (state.isActive.isChecked) colors.buttonPrimary else Color.Transparent
     val animatedBg by animateColorAsState(background)
@@ -142,22 +134,29 @@ private fun DayOfWeekCell(
             .clickable { onClick() }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
             text = state.dayIndicator.localized(),
             textAlign = TextAlign.Center,
-            color = if (state.isActive.isChecked) LocalColors.current.onAction else LocalColors.current.primaryText,
+            color = if (state.isActive.isChecked) {
+                LocalColors.current.onAction
+            } else {
+                LocalColors.current.primaryText
+            },
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier
-                .background(animatedBg, CircleShape)
+            modifier = Modifier.background(animatedBg, CircleShape)
                 .border(
                     width = if (state.isVisible) 2.dp else 0.dp,
-                    color = if (state.isVisible) LocalColors.current.primaryText else Color.Transparent,
-                    shape = CircleShape
+                    color = if (state.isVisible) {
+                        LocalColors.current.primaryText
+                    } else {
+                        Color.Transparent
+                    },
+                    shape = CircleShape,
                 )
                 .size(40.dp)
-                .wrapContentHeight(align = Alignment.CenterVertically)
+                .wrapContentHeight(align = Alignment.CenterVertically),
         )
     }
 }
@@ -165,38 +164,42 @@ private fun DayOfWeekCell(
 @Composable
 private fun ScheduleDay(state: DaySettingsState, isEditable: Boolean) {
     AppCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
+        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
     ) {
         Column(Modifier.animateContentSize()) {
             Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                Modifier.fillMaxWidth().padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                val bgColor by animateColorAsState(
-                    if (state.isActive.isChecked) LocalColors.current.actionText else LocalColors.current.inactive
-                )
+                val bgColor by
+                    animateColorAsState(
+                        if (state.isActive.isChecked) {
+                            LocalColors.current.actionText
+                        } else {
+                            LocalColors.current.inactive
+                        },
+                    )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
                         text = state.dayIndicator.localized(),
                         textAlign = TextAlign.Center,
-                        color = if (state.isActive.isChecked) LocalColors.current.onAction else LocalColors.current.primaryText,
-                        modifier = Modifier
-                            .background(bgColor, CircleShape)
+                        color = if (state.isActive.isChecked) {
+                            LocalColors.current.onAction
+                        } else {
+                            LocalColors.current.primaryText
+                        },
+                        modifier = Modifier.background(bgColor, CircleShape)
                             .size(40.dp)
-                            .wrapContentHeight(align = Alignment.CenterVertically)
+                            .wrapContentHeight(align = Alignment.CenterVertically),
                     )
                     Text(
                         state.title.localized(),
                         modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
                     StateSwitch(state.isActive)
                 }
@@ -206,14 +209,14 @@ private fun ScheduleDay(state: DaySettingsState, isEditable: Boolean) {
                     TimeRow(
                         modifier = Modifier.padding(bottom = 8.dp, start = 16.dp),
                         timeSettings = interval,
-                        onDeleteClick = { state.onDeleteInterval(interval) }.takeIf { isEditable }
+                        onDeleteClick = { state.onDeleteInterval(interval) }.takeIf { isEditable },
                     )
                 }
             }
             if (isEditable) {
                 AlignStartTextButton(
                     state.addTimeButton,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -224,18 +227,18 @@ private fun ScheduleDay(state: DaySettingsState, isEditable: Boolean) {
 private fun TimeRow(
     modifier: Modifier,
     timeSettings: TimeSettingState,
-    onDeleteClick: (() -> Unit)?
+    onDeleteClick: (() -> Unit)?,
 ) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         TimePickerField(timeSettings.timeFromPicker, modifier = Modifier.weight(1f))
 
         Text(
             "-",
             modifier = Modifier.padding(horizontal = 8.dp),
-            style = MaterialTheme.typography.titleSmall.secondary()
+            style = MaterialTheme.typography.titleSmall.secondary(),
         )
 
         TimePickerField(timeSettings.timeToPicker, modifier = Modifier.weight(1f))

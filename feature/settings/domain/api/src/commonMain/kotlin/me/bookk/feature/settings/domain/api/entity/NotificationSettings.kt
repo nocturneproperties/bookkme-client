@@ -6,14 +6,14 @@ data class NotificationSettings(
     val id: Uuid,
     val userId: Uuid,
     val appointmentEnabled: Boolean,
-    val channels: List<NotificationChannelSettings>
+    val channels: List<NotificationChannelSettings>,
 ) {
 
     fun withToggled(channel: NotificationChannel, enabled: Boolean): NotificationSettings {
         return copy(
             channels = channels.map {
                 if (it.channel == channel) it.copy(enabled = enabled) else it
-            }
+            },
         )
     }
 
@@ -27,9 +27,9 @@ data class NotificationSettings(
                     id = Uuid.random(),
                     channel = it,
                     enabled = true,
-                    availableToClients = true
+                    availableToClients = true,
                 )
-            }
+            },
         )
     }
 }
@@ -38,11 +38,11 @@ data class NotificationChannelSettings(
     val id: Uuid,
     val channel: NotificationChannel,
     val enabled: Boolean,
-    val availableToClients: Boolean
+    val availableToClients: Boolean,
 )
 
 enum class NotificationChannel {
     TELEGRAM,
     EMAIL,
-    PUSH_NOTIFICATIONS
+    PUSH_NOTIFICATIONS,
 }

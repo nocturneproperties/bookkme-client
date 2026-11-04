@@ -6,6 +6,8 @@ interface DeletePasskey {
     suspend operator fun invoke(id: Uuid)
 
     sealed interface Error {
-        class LastPasskey : Exception(), Error
+        class LastPasskey :
+            Exception(),
+            Error
     }
 }

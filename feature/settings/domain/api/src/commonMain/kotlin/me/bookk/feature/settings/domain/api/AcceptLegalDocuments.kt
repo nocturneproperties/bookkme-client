@@ -6,6 +6,8 @@ interface AcceptLegalDocuments {
     suspend operator fun invoke(documents: AcceptedLegalDocuments)
 
     sealed interface Error {
-        class UnknownVersion : Exception(), Error
+        class UnknownVersion :
+            Exception(),
+            Error
     }
 }

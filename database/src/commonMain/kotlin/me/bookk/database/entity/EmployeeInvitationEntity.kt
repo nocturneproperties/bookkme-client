@@ -15,10 +15,10 @@ import kotlin.uuid.Uuid
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
+            onDelete = CASCADE,
         ),
     ],
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class EmployeeInvitationEntity(
     @PrimaryKey
@@ -27,5 +27,5 @@ class EmployeeInvitationEntity(
     val invitedBy: Uuid,
     val code: String?,
     val status: String,
-    val createdAt: Instant
+    val createdAt: Instant,
 )

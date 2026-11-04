@@ -17,12 +17,23 @@ class SignUpRemoteContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()
-        assertEquals(listOf("requestId" to 1, "deviceInfo" to 2, "userInfo" to 3, "publicKeyCredentialJson" to 4, "acceptedDocuments" to 5), fields)
+        assertEquals(
+            listOf(
+                "requestId" to 1,
+                "deviceInfo" to 2,
+                "userInfo" to 3,
+                "publicKeyCredentialJson" to 4,
+                "acceptedDocuments" to 5,
+            ),
+            fields,
+        )
     }
+
     @Test
     fun `accepted document versions use the backend wire numbers`() = runUnitTest {
         given()
@@ -30,7 +41,8 @@ class SignUpRemoteContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()
@@ -48,5 +60,4 @@ class SignUpRemoteContractTest {
         then()
         assertFalse(optional)
     }
-
 }

@@ -24,8 +24,14 @@ class BusinessRetentionTest {
             name = "Business", description = "", address = "", location = null,
             currency = Currency("USD"), timeZone = TimeZone.UTC, socials = emptyMap(),
             schedule = WorkingSchedule(emptyMap(), emptyList()),
-            permissions = BusinessPermissions(permissions, permissions, permissions, permissions, permissions),
-            clientDataRetentionMonths = months
+            permissions = BusinessPermissions(
+                permissions,
+                permissions,
+                permissions,
+                permissions,
+                permissions,
+            ),
+            clientDataRetentionMonths = months,
         )
     }
 
@@ -35,7 +41,12 @@ class BusinessRetentionTest {
         val business = business(36)
 
         whenn()
-        val restored = BusinessLocal(business.toLocal(), emptyList(), emptyList(), emptyList()).toDomain()
+        val restored = BusinessLocal(
+            business.toLocal(),
+            emptyList(),
+            emptyList(),
+            emptyList(),
+        ).toDomain()
 
         then()
         assertEquals(36, restored.clientDataRetentionMonths)
@@ -47,7 +58,12 @@ class BusinessRetentionTest {
         val business = business(null)
 
         whenn()
-        val restored = BusinessLocal(business.toLocal(), emptyList(), emptyList(), emptyList()).toDomain()
+        val restored = BusinessLocal(
+            business.toLocal(),
+            emptyList(),
+            emptyList(),
+            emptyList(),
+        ).toDomain()
 
         then()
         assertNull(restored.clientDataRetentionMonths)

@@ -19,8 +19,10 @@ import me.bookk.feature.authorization.presentation.troubleshoot.state.Troublesho
 internal class FakeAuthStateFactory : AuthStateFactory {
     var troubleshootInitData: TroubleshootState.InitData? = null
 
-    override fun createSignUpState(initData: SignUpState.InitData): SignUpState = FakeSignUpState(initData.passkeyInfoCardData)
-    override fun createSignInState(initData: SignInState.InitData): SignInState = FakeSignInState(initData.passkeyInfoCardData)
+    override fun createSignUpState(initData: SignUpState.InitData): SignUpState =
+        FakeSignUpState(initData.passkeyInfoCardData)
+    override fun createSignInState(initData: SignInState.InitData): SignInState =
+        FakeSignInState(initData.passkeyInfoCardData)
 
     override fun createTroubleshootState(initData: TroubleshootState.InitData): TroubleshootState {
         troubleshootInitData = initData
@@ -36,7 +38,8 @@ internal class FakeBootstrapState : BootstrapState {
     override val notifications = FakeNotificationState()
 }
 
-internal class FakeSignInState(override val passkeyInfoCardData: PasskeyInfoCardData) : SignInState {
+internal class FakeSignInState(override val passkeyInfoCardData: PasskeyInfoCardData) :
+    SignInState {
     override val appBar = FakeAppBarState()
     override val learnMoreButton = FakeButtonState()
     override val signInButton = FakeButtonState()
@@ -46,7 +49,8 @@ internal class FakeSignInState(override val passkeyInfoCardData: PasskeyInfoCard
     override val navigation = FakeNavigationState<SignInNavigationDestination>()
 }
 
-internal class FakeSignUpState(override val passkeyInfoCardData: PasskeyInfoCardData) : SignUpState {
+internal class FakeSignUpState(override val passkeyInfoCardData: PasskeyInfoCardData) :
+    SignUpState {
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
     override val lastName = FakeTextFieldState()
@@ -57,7 +61,9 @@ internal class FakeSignUpState(override val passkeyInfoCardData: PasskeyInfoCard
     override val navigation = FakeNavigationState<SignUpNavigationDestination>()
 }
 
-internal class FakeTroubleshootState(override val troubleshootCardStaticData: TroubleshootCardData) : TroubleshootState {
+internal class FakeTroubleshootState(
+    override val troubleshootCardStaticData: TroubleshootCardData,
+) : TroubleshootState {
     override val appBar = FakeAppBarState()
     override val contactSupportButton = FakeButtonState()
     override val navigation = FakeNavigationState<TroubleshootNavigationDestination>()

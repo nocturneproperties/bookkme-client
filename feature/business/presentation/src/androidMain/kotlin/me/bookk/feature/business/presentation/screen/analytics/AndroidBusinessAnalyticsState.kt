@@ -18,5 +18,6 @@ internal class AndroidBusinessAnalyticsState : BusinessAnalyticsState {
     override var message: StringDesc by mutableStateOf("".desc())
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()
-    override val navigation: NavigationState<BusinessAnalyticsDestinations> = AndroidNavigationState()
+    override val navigation: NavigationState<BusinessAnalyticsDestinations> =
+        AndroidNavigationState()
 }

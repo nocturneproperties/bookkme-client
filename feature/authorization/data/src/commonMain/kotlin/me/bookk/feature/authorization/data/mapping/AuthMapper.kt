@@ -1,7 +1,7 @@
 package me.bookk.feature.authorization.data.mapping
 
-import me.bookk.feature.authorization.data.remote.model.AcceptedLegalDocumentsRemote
 import me.bookk.database.entity.UserProfileEntity
+import me.bookk.feature.authorization.data.remote.model.AcceptedLegalDocumentsRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.DeleteAccountRemote
 import me.bookk.feature.authorization.data.remote.model.PassKeySignUpStartInfo
@@ -23,7 +23,7 @@ internal fun CreateAccount.UserData.toRemote(): PassKeySignUpStartInfo {
     return PassKeySignUpStartInfo(
         firstName = firstName,
         lastName = lastName,
-        email = email
+        email = email,
     )
 }
 
@@ -33,14 +33,14 @@ internal fun RegistrationChallengeResponse.toDomain(): ServerSignUpChallenge {
         displayName = displayName,
         jsonChallengeData = challengeJson,
         challenge = challenge,
-        userHandle = userHandle
+        userHandle = userHandle,
     )
 }
 
 internal fun TokenInfoResponse.toDomain(): TokenInfo {
     return TokenInfo(
         accessToken = accessToken,
-        refreshToken = refreshToken
+        refreshToken = refreshToken,
     )
 }
 
@@ -49,18 +49,18 @@ internal fun RegistrationData.toRemote(): VerifyAccountCreationRequest {
         requestId = requestId,
         deviceInfo = VerifyAccountCreationRequest.DeviceInfo(
             deviceName = deviceInfo.deviceName,
-            deviceUUID = deviceInfo.deviceUUID
+            deviceUUID = deviceInfo.deviceUUID,
         ),
         userInfo = VerifyAccountCreationRequest.UserInfo(
             name = userInfo.name,
             lastName = userInfo.lastName,
-            email = userInfo.email
+            email = userInfo.email,
         ),
         publicKeyCredentialJson = publicKeyCredentialJson,
         acceptedDocuments = AcceptedLegalDocumentsRemote(
             privacyPolicy = acceptedDocuments.privacyPolicy,
-            termsOfService = acceptedDocuments.termsOfService
-        )
+            termsOfService = acceptedDocuments.termsOfService,
+        ),
     )
 }
 
@@ -68,7 +68,7 @@ internal fun AuthChallengeResponse.toDomain(): ServerAuthenticationChallenge {
     return ServerAuthenticationChallenge(
         requestId = requestId,
         challengeJson = challengeJson,
-        challenge = challenge
+        challenge = challenge,
     )
 }
 
@@ -77,9 +77,9 @@ internal fun SignInData.toRemote(): VerifyAuthRequest {
         requestId = requestId,
         deviceInfo = VerifyAuthRequest.DeviceInfo(
             deviceUUID = deviceInfo.deviceUUID,
-            deviceName = deviceInfo.deviceName
+            deviceName = deviceInfo.deviceName,
         ),
-        publicKeyCredentialJson = publicKeyCredentialJson
+        publicKeyCredentialJson = publicKeyCredentialJson,
     )
 }
 
@@ -89,7 +89,7 @@ internal fun UserProfileEntity.toDomain(): UserProfile {
         firstName = firstName,
         lastName = lastName,
         email = email,
-        phone = phone
+        phone = phone,
     )
 }
 
@@ -99,7 +99,7 @@ internal fun UserProfile.toRemote(): UserProfileRemote {
         firstName = firstName,
         lastName = lastName,
         email = email,
-        phone = phone
+        phone = phone,
     )
 }
 
@@ -109,7 +109,7 @@ internal fun UserProfile.toDb(): UserProfileEntity {
         firstName = firstName,
         lastName = lastName,
         email = email,
-        phone = phone
+        phone = phone,
     )
 }
 
@@ -119,13 +119,13 @@ internal fun UserProfileRemote.toDomain(): UserProfile {
         firstName = firstName,
         lastName = lastName,
         email = email,
-        phone = phone
+        phone = phone,
     )
 }
 
 internal fun DeleteAccountRequest.toRemote(): DeleteAccountRemote {
     return DeleteAccountRemote(
         requestId = requestId,
-        publicKeyCredentialJson = publicKeyCredentialJson
+        publicKeyCredentialJson = publicKeyCredentialJson,
     )
 }

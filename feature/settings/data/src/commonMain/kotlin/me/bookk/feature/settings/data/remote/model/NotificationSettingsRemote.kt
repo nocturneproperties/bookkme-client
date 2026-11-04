@@ -12,13 +12,13 @@ data class NotificationSettingsRemote(
     @ProtoNumber(1) val id: Uuid,
     @ProtoNumber(2) val userId: Uuid,
     @ProtoNumber(3) val appointmentEnabled: Boolean,
-    @ProtoNumber(4) val channels: List<NotificationChannelSettingsRemote>
+    @ProtoNumber(4) val channels: List<NotificationChannelSettingsRemote>,
 ) {
     fun toDomain() = NotificationSettings(
         id = id,
         userId = userId,
         appointmentEnabled = appointmentEnabled,
-        channels = channels.map { it.toDomain() }
+        channels = channels.map { it.toDomain() },
     )
 }
 
@@ -27,13 +27,13 @@ data class NotificationChannelSettingsRemote(
     @ProtoNumber(1) val id: Uuid,
     @ProtoNumber(2) val channel: NotificationChannelRemote,
     @ProtoNumber(3) val enabled: Boolean,
-    @ProtoNumber(4) val availableToClients: Boolean
+    @ProtoNumber(4) val availableToClients: Boolean,
 ) {
     fun toDomain() = NotificationChannelSettings(
         id = id,
         channel = channel.toDomain(),
         enabled = enabled,
-        availableToClients = availableToClients
+        availableToClients = availableToClients,
     )
 }
 
@@ -41,7 +41,8 @@ data class NotificationChannelSettingsRemote(
 enum class NotificationChannelRemote {
     TELEGRAM,
     EMAIL,
-    PUSH_NOTIFICATIONS;
+    PUSH_NOTIFICATIONS,
+    ;
 
     fun toDomain() = when (this) {
         TELEGRAM -> NotificationChannel.TELEGRAM
@@ -54,5 +55,5 @@ enum class NotificationChannelRemote {
 data class UpdateNotificationSettingsRequestRemote(
     @ProtoNumber(1) val id: Uuid,
     @ProtoNumber(2) val appointmentEnabled: Boolean,
-    @ProtoNumber(3) val channels: List<NotificationChannelSettingsRemote>
+    @ProtoNumber(3) val channels: List<NotificationChannelSettingsRemote>,
 )

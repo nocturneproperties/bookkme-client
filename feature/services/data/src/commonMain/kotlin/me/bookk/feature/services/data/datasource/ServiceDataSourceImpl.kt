@@ -32,8 +32,10 @@ internal class ServiceDataSourceImpl(
     private val httpClient: HttpClient,
     private val serviceDao: ServiceDao,
     private val businessDao: BusinessDao,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), ServiceDataSource, LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    ServiceDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("services_prefs")
     override suspend fun getServices(businessId: Uuid): List<Service> = mapExceptions {
@@ -66,7 +68,7 @@ internal class ServiceDataSourceImpl(
 
     override suspend fun getBusinessCurrency(businessId: Uuid): Money.SupportedCurrency {
         return Money.SupportedCurrency.fromCode(
-            requireNotNull(businessDao.queryBusiness(businessId)).entity.currencyCode
+            requireNotNull(businessDao.queryBusiness(businessId)).entity.currencyCode,
         )
     }
 
@@ -103,7 +105,9 @@ internal class ServiceDataSourceImpl(
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
-        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastSyncedAt(businessId))?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastSyncedAt(businessId: Uuid) {

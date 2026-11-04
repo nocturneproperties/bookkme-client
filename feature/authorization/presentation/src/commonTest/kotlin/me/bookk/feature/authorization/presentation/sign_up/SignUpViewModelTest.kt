@@ -54,13 +54,21 @@ class SignUpViewModelTest {
 
     private class FakeValidateName : ValidateName {
         override fun invoke(name: String): ValidateName.Result {
-            return if (name.length >= 2) ValidateName.Result.Valid else ValidateName.Result.Invalid.Length
+            return if (name.length >= 2) {
+                ValidateName.Result.Valid
+            } else {
+                ValidateName.Result.Invalid.Length
+            }
         }
     }
 
     private class FakeValidateEmail : ValidateEmail {
         override fun invoke(email: String): ValidateEmail.Result {
-            return if ("@" in email) ValidateEmail.Result.Valid else ValidateEmail.Result.Invalid.Format
+            return if ("@" in email) {
+                ValidateEmail.Result.Valid
+            } else {
+                ValidateEmail.Result.Invalid.Format
+            }
         }
     }
 
@@ -78,7 +86,7 @@ class SignUpViewModelTest {
             createAccount = createAccount,
             deviceFacade = deviceFacade,
             stateFactory = FakeAuthStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -127,9 +135,18 @@ class SignUpViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        assertEquals(AuthRes.strings.sign_up_first_name_error.desc(), sut.uiState.name.supportingTextRes)
-        assertEquals(AuthRes.strings.sign_up_last_name_error.desc(), sut.uiState.lastName.supportingTextRes)
-        assertEquals(AuthRes.strings.sign_up_email_error.desc(), sut.uiState.email.supportingTextRes)
+        assertEquals(
+            AuthRes.strings.sign_up_first_name_error.desc(),
+            sut.uiState.name.supportingTextRes,
+        )
+        assertEquals(
+            AuthRes.strings.sign_up_last_name_error.desc(),
+            sut.uiState.lastName.supportingTextRes,
+        )
+        assertEquals(
+            AuthRes.strings.sign_up_email_error.desc(),
+            sut.uiState.email.supportingTextRes,
+        )
         assertEquals(ValidationState.ERROR, sut.uiState.email.validationState)
         assertFalse(sut.uiState.confirmButton.isEnabled)
     }
@@ -210,7 +227,11 @@ class SignUpViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notification.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -234,7 +255,8 @@ class SignUpViewModelTest {
     fun `marks email invalid when server rejects its format`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createAccount(any()) } throws CreateAccount.Error.InvalidEmailFormat()
+        everySuspend { fixture.createAccount(any()) } throws
+            CreateAccount.Error.InvalidEmailFormat()
         val sut = fixture.sut()
         sut.fillValidForm()
 
@@ -249,7 +271,8 @@ class SignUpViewModelTest {
     fun `shows message when passkey verification fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createAccount(any()) } throws CreateAccount.Error.PasskeyVerificationFailed()
+        everySuspend { fixture.createAccount(any()) } throws
+            CreateAccount.Error.PasskeyVerificationFailed()
         val sut = fixture.sut()
         sut.fillValidForm()
 
@@ -264,7 +287,8 @@ class SignUpViewModelTest {
     fun `shows message when account creation fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createAccount(any()) } throws CreateAccount.Error.AccountCreationFailed()
+        everySuspend { fixture.createAccount(any()) } throws
+            CreateAccount.Error.AccountCreationFailed()
         val sut = fixture.sut()
         sut.fillValidForm()
 
@@ -299,6 +323,9 @@ class SignUpViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<SignUpNavigationDestination>(SignUpNavigationDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<SignUpNavigationDestination>(SignUpNavigationDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

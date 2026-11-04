@@ -24,29 +24,34 @@ internal fun SupportSection(state: SupportSection) {
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = state.title.localized(),
             style = MaterialTheme.typography.titleMedium,
-            color = LocalColors.current.header
+            color = LocalColors.current.header,
         )
 
-        Column(modifier = Modifier.background(LocalColors.current.elevated, shape = MaterialTheme.shapes.large)) {
+        Column(
+            modifier = Modifier.background(
+                LocalColors.current.elevated,
+                shape = MaterialTheme.shapes.large,
+            ),
+        ) {
             SectionItem(
                 text = state.contact.text.localized(),
-                onClick = LocalNavigation.current.navigateToContact
+                onClick = LocalNavigation.current.navigateToContact,
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
                 text = state.terms.text.localized(),
-                onClick = LocalDashboardEventListener.current.showTerms
+                onClick = LocalDashboardEventListener.current.showTerms,
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
                 text = state.policy.text.localized(),
-                onClick = LocalDashboardEventListener.current.showPolicy
+                onClick = LocalDashboardEventListener.current.showPolicy,
             )
         }
     }

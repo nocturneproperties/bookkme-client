@@ -8,7 +8,8 @@ enum class AppointmentRequestStatusRemote {
     PENDING,
     APPROVED,
     DECLINED,
-    CANCELLED;
+    CANCELLED,
+    ;
 
     fun toDomain() = when (this) {
         PENDING -> AppointmentRequestStatus.PENDING

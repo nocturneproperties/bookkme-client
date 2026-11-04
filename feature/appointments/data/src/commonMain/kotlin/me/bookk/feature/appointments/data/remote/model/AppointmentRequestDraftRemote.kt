@@ -12,5 +12,5 @@ data class AppointmentRequestDraftRemote(
     @ProtoNumber(3) val services: List<RequestedServiceRemote>,
     @ProtoNumber(4) val date: Instant,
     @ProtoNumber(5) val note: String,
-    @ProtoNumber(6) val offerToken: String
+    @ProtoNumber(6) val offerToken: String,
 )

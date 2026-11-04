@@ -46,7 +46,15 @@ class GetLegalDocumentVersionsImplTest {
     fun `returns the backend records including optional or disabled values`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val records = listOf(LegalDocumentVersion(LegalDocument.PRIVACY_POLICY, "2026-11", "https://example.com/privacy", Instant.parse("2026-11-01T00:00:00Z")))
+        val records =
+            listOf(
+                LegalDocumentVersion(
+                    LegalDocument.PRIVACY_POLICY,
+                    "2026-11",
+                    "https://example.com/privacy",
+                    Instant.parse("2026-11-01T00:00:00Z"),
+                ),
+            )
         everySuspend { fixture.dataSource.getVersions() } returns records
 
         whenn()
@@ -73,7 +81,8 @@ class GetLegalDocumentVersionsImplTest {
     fun `propagates backend failures`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.getVersions() } throws IllegalStateException("unavailable")
+        everySuspend { fixture.dataSource.getVersions() } throws
+            IllegalStateException("unavailable")
 
         whenn()
         val result = runCatching { fixture.sut() }

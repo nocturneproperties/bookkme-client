@@ -23,8 +23,7 @@ internal actual fun platformBusinessDiModule(): Module = module {
 fun businessDashboardVM(): BusinessDashboardViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
-fun businessSettingsVM(): BusinessSettingsViewModel =
-    KoinPlatform.getKoin().get()
+fun businessSettingsVM(): BusinessSettingsViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun businessAnalyticsVM(): BusinessAnalyticsViewModel = KoinPlatform.getKoin().get()

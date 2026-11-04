@@ -30,12 +30,12 @@ fun AnimatedLinearProgress(
             .height(4.dp)
             .background(
                 color = LocalColors.current.divider,
-                shape = MaterialTheme.shapes.large
-            )
+                shape = MaterialTheme.shapes.large,
+            ),
     ) {
         val progressWidth by animateFloatAsState(
             targetValue = progress.coerceIn(0f, 1f),
-            label = "stepper_width"
+            label = "stepper_width",
         )
 
         Box(
@@ -44,8 +44,8 @@ fun AnimatedLinearProgress(
                 .fillMaxWidth(progressWidth)
                 .background(
                     shape = MaterialTheme.shapes.large,
-                    color = LocalColors.current.primaryText
-                )
+                    color = LocalColors.current.primaryText,
+                ),
         )
     }
 }
@@ -57,7 +57,7 @@ private fun Preview() {
         Surface {
             Column(
                 modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 AnimatedLinearProgress(progress = 0f)
                 AnimatedLinearProgress(progress = 0.5f)

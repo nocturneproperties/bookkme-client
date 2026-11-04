@@ -9,12 +9,12 @@ data class EmployeeInvitation(
     val invitedBy: Uuid,
     val code: String?,
     val status: EmployeeInvitationStatus,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 )
 
 enum class EmployeeInvitationStatus {
     PENDING,
     REDEEMED,
     EXPIRED,
-    REVOKED
+    REVOKED,
 }

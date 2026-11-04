@@ -21,13 +21,16 @@ internal class ObserveDashboardSetupStatusImpl(
     private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
     private val getServiceGroups: GetServiceGroups,
     private val getServices: GetServices,
-    private val getClientsList: GetClientsList
+    private val getClientsList: GetClientsList,
 ) : ObserveDashboardSetupStatus {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(): Flow<DashboardSetupStatus> {
         return businessDataSource.observeUserBusinessInfoInDb()
-            .flatMapLatest { info -> info.dashboardBusiness()?.setupStatus() ?: flowOf(info.unselectedStatus()) }
+            .flatMapLatest { info ->
+                info.dashboardBusiness()?.setupStatus()
+                    ?: flowOf(info.unselectedStatus())
+            }
     }
 
     private fun UserBusinessInfo.dashboardBusiness(): Business? {
@@ -47,7 +50,7 @@ internal class ObserveDashboardSetupStatusImpl(
             isAppointmentsPluginEnabled.flow(id),
             getServiceGroups.flow(),
             getServices.flow(),
-            getClientsList.flow()
+            getClientsList.flow(),
         ) { isEnabled, groups, services, clients ->
             val setup = DashboardSetupStatus.SetupRequired(
                 businessId = id,
@@ -58,7 +61,7 @@ internal class ObserveDashboardSetupStatusImpl(
                 canEnableAppointments = permissions.business.update,
                 canManageServices = permissions.services.view && permissions.services.update,
                 canManageClients = permissions.clients.view && permissions.clients.update,
-                missingViewPermissions = missingViewPermissions()
+                missingViewPermissions = missingViewPermissions(),
             )
             when {
                 setup.isComplete() -> DashboardSetupStatus.Ready

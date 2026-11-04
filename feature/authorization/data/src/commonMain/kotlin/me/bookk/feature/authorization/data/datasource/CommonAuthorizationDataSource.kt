@@ -9,10 +9,6 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.setBody
-import me.bookk.feature.authorization.domain.datasource.authorization.SensitiveActionConfirmation
-import me.bookk.feature.authorization.data.remote.model.StepUpRequestRemote
-import me.bookk.feature.authorization.data.remote.model.StepUpTokenRemote
-import me.bookk.feature.authorization.data.remote.model.SensitiveActionRemote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
@@ -27,9 +23,13 @@ import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting.Api.Auth
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
+import me.bookk.feature.authorization.data.remote.model.SensitiveActionRemote
+import me.bookk.feature.authorization.data.remote.model.StepUpRequestRemote
+import me.bookk.feature.authorization.data.remote.model.StepUpTokenRemote
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
+import me.bookk.feature.authorization.domain.datasource.authorization.SensitiveActionConfirmation
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
 import me.bookk.feature.authorization.domain.entity.TokenInfo
@@ -39,22 +39,27 @@ import kotlin.time.Instant
 class CommonAuthorizationDataSource(
     private val httpClient: HttpClient,
     private val noAuthHttpClient: HttpClient,
-    preferenceProvider: PreferenceProvider
-) : AuthorizationDataSource, DataSource(), LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    AuthorizationDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("authorization_prefs")
 
-    override suspend fun confirmSensitiveAction(confirmation: SensitiveActionConfirmation): String = mapExceptions {
-        httpClient.post(Auth.StepUp()) {
-            setBody(StepUpRequestRemote(
-                requestId = confirmation.requestId,
-                publicKeyCredentialJson = confirmation.publicKeyCredentialJson,
-                action = SensitiveActionRemote.fromDomain(confirmation.action),
-                businessId = confirmation.businessId,
-                targetId = confirmation.targetId
-            ))
-        }.body<StepUpTokenRemote>().token
-    }
+    override suspend fun confirmSensitiveAction(confirmation: SensitiveActionConfirmation): String =
+        mapExceptions {
+            httpClient.post(Auth.StepUp()) {
+                setBody(
+                    StepUpRequestRemote(
+                        requestId = confirmation.requestId,
+                        publicKeyCredentialJson = confirmation.publicKeyCredentialJson,
+                        action = SensitiveActionRemote.fromDomain(confirmation.action),
+                        businessId = confirmation.businessId,
+                        targetId = confirmation.targetId,
+                    ),
+                )
+            }.body<StepUpTokenRemote>().token
+        }
 
     override suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?) {
         preferences.set(Key.accessToken, tokenInfo?.accessToken)
@@ -123,7 +128,9 @@ class CommonAuthorizationDataSource(
     }
 
     override suspend fun getLastInitialDataFetchAt(): Instant? {
-        return preferences.get(Key.lastInitialDataFetchAt)?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastInitialDataFetchAt)?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastInitialDataFetchAt() {

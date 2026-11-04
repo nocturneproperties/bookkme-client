@@ -5,5 +5,5 @@ data class ClientImportEntry(
     val lastName: String,
     val phone: String?,
     val email: String?,
-    val description: String? = null
+    val description: String? = null,
 )

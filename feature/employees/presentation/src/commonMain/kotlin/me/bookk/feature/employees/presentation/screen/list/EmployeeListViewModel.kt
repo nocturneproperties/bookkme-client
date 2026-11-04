@@ -4,6 +4,7 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
@@ -12,7 +13,6 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.employees.domain.api.CanEditEmployees
@@ -27,7 +27,7 @@ class EmployeeListViewModel(
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     private val canEditEmployees: CanEditEmployees,
     stateFactory: EmployeesStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: EmployeeListState = stateFactory.createEmployeeListState().setup()
@@ -56,7 +56,7 @@ class EmployeeListViewModel(
                     id = entry.key,
                     header = entry.key,
                     items = entry.value,
-                    onItemClick = weakVMClosure { vm, employee -> vm.onEmployeeClick(employee) }
+                    onItemClick = weakVMClosure { vm, employee -> vm.onEmployeeClick(employee) },
                 )
             }
         items = grouped
@@ -82,7 +82,7 @@ class EmployeeListViewModel(
             launchIn = DispatcherProvider.io,
             call = { canEditEmployees(businessId) },
             onComplete = { renderAddAction(it) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -92,8 +92,8 @@ class EmployeeListViewModel(
                 uiState.appBar.action(
                     icon = DesignSystem.images.plus,
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.onAddEmployeeClick() }
-                )
+                    onClick = weakVMClosure { it.onAddEmployeeClick() },
+                ),
             )
         } else {
             emptyList()
@@ -106,7 +106,7 @@ class EmployeeListViewModel(
             listState = uiState.employeesList,
             notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = { getEmployees.refresh(businessId) }
+            call = { getEmployees.refresh(businessId) },
         )
     }
 
@@ -115,7 +115,7 @@ class EmployeeListViewModel(
             launchIn = DispatcherProvider.io,
             call = { observeCurrentBusinessId().filterNotNull().first() },
             onComplete = { uiState.navigation.push(EmployeeListDestinations.AddEmployee(it)) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -131,7 +131,11 @@ class EmployeeListViewModel(
         }
         val filtered = items
             .map { section ->
-                section.copy(items = section.items.filter { it.fullName.contains(query, ignoreCase = true) })
+                section.copy(
+                    items = section.items.filter {
+                        it.fullName.contains(query, ignoreCase = true)
+                    },
+                )
             }
             .filter { it.items.isNotEmpty() }
         uiState.employeesList.replace(filtered)
@@ -139,12 +143,13 @@ class EmployeeListViewModel(
 
     private fun EmployeeListState.setup() = apply {
         appBar.title = EmployeesRes.strings.employees_title.desc()
-        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(EmployeeListDestinations.Back) }
+        appBar.onBackClick =
+            weakVMClosure { it.uiState.navigation.push(EmployeeListDestinations.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
         employeesList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
-            label = EmployeesRes.strings.employees_empty.desc()
+            label = EmployeesRes.strings.employees_empty.desc(),
         )
     }
 

@@ -6,7 +6,8 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentCompletedBy
 @Serializable
 enum class AppointmentCompletedByRemote {
     SYSTEM,
-    USER;
+    USER,
+    ;
 
     fun toDomain() = when (this) {
         SYSTEM -> AppointmentCompletedBy.SYSTEM

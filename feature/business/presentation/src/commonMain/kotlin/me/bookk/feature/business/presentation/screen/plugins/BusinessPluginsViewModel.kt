@@ -3,13 +3,13 @@ package me.bookk.feature.business.presentation.screen.plugins
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.OptionalInfoLine
@@ -30,7 +30,7 @@ class BusinessPluginsViewModel(
     private val enableAppointmentsPlugin: EnableAppointmentsPlugin,
     private val canEditBusiness: CanEditBusiness,
     stateFactory: BusinessStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: BusinessPluginListState = stateFactory.createBusinessPluginListState().setup()
@@ -56,7 +56,7 @@ class BusinessPluginsViewModel(
             onStart = { uiState.appointmentPlugin.enable.startLoading() },
             call = { isAppointmentsPluginEnabled.refresh(businessId) },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.appointmentPlugin.enable.stopLoading() }
+            onTerminate = { uiState.appointmentPlugin.enable.stopLoading() },
         )
     }
 
@@ -65,7 +65,7 @@ class BusinessPluginsViewModel(
             launchIn = DispatcherProvider.io,
             call = { canEditBusiness(businessId) },
             onComplete = { uiState.appointmentPlugin.canEnable = it },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -87,12 +87,11 @@ class BusinessPluginsViewModel(
                     else -> uiState.notifications.add(it.notification())
                 }
             },
-            onTerminate = { uiState.appointmentPlugin.enable.stopLoading() }
+            onTerminate = { uiState.appointmentPlugin.enable.stopLoading() },
         )
     }
 
     private fun onAppointmentDemoClick() {
-
     }
 
     private fun BusinessPluginListState.setup() = apply {
@@ -116,8 +115,8 @@ class BusinessPluginsViewModel(
                     BusinessRes.strings.business_plugins_appointments_you_item5.desc()
                         .optionalLine(),
                     BusinessRes.strings.business_plugins_appointments_you_item6.desc()
-                        .optionalLine()
-                )
+                        .optionalLine(),
+                ),
             )
 
             clientCan.replace(
@@ -130,12 +129,12 @@ class BusinessPluginsViewModel(
                         BusinessRes.strings.business_plugins_appointments_clients_item2.desc(),
                         BusinessRes.strings.business_plugins_appointments_clients_item2_sub.desc(),
                     ),
-                )
+                ),
             )
 
             demo = Action(
                 BusinessRes.strings.business_plugins_demo.desc(),
-                onClick = weakVMClosure { it.onAppointmentDemoClick() }
+                onClick = weakVMClosure { it.onAppointmentDemoClick() },
             )
             enable.text = DesignSystem.strings.action_enable.desc()
             enable.onClick = weakVMClosure { it.enableAppointmentsPlugin() }

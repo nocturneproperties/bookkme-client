@@ -26,7 +26,7 @@ internal fun ClientDetailsScreen(state: ClientDetailsState) {
                 AppTopBar(state = state.appBar)
                 HorizontalDivider(
                     Modifier.padding(top = 8.dp),
-                    color = LocalColors.current.divider
+                    color = LocalColors.current.divider,
                 )
             }
         },
@@ -40,6 +40,6 @@ internal fun ClientDetailsScreen(state: ClientDetailsState) {
                     InfoSection(it)
                 }
             }
-        }
+        },
     )
 }

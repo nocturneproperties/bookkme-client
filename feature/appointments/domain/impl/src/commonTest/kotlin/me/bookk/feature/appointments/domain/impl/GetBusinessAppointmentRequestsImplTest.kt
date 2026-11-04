@@ -47,7 +47,8 @@ class GetBusinessAppointmentRequestsImplTest {
         given()
         val fixture = Fixture()
         val records = listOf(AppointmentRequest.stub(businessId = businessId))
-        everySuspend { fixture.dataSource.getBusinessAppointmentRequests(businessId) } returns records
+        everySuspend { fixture.dataSource.getBusinessAppointmentRequests(businessId) } returns
+            records
 
         whenn()
         val result = fixture.sut(businessId)
@@ -60,7 +61,8 @@ class GetBusinessAppointmentRequestsImplTest {
     fun `returns an empty list when there are no records`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.getBusinessAppointmentRequests(businessId) } returns emptyList()
+        everySuspend { fixture.dataSource.getBusinessAppointmentRequests(businessId) } returns
+            emptyList()
 
         whenn()
         val result = fixture.sut(businessId)
@@ -73,7 +75,8 @@ class GetBusinessAppointmentRequestsImplTest {
     fun `propagates backend failures`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.getBusinessAppointmentRequests(businessId) } throws IllegalStateException("unavailable")
+        everySuspend { fixture.dataSource.getBusinessAppointmentRequests(businessId) } throws
+            IllegalStateException("unavailable")
 
         whenn()
         val result = runCatching { fixture.sut(businessId) }

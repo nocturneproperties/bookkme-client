@@ -3,9 +3,7 @@ package me.bookk.core.domain.pagination
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-abstract class CounterPager<R : CounterPager.Request, T>(
-    protected val countPerPage: Int,
-) {
+abstract class CounterPager<R : CounterPager.Request, T>(protected val countPerPage: Int) {
     private var request: R? = null
     protected var pageData = PageInfo(0)
     private var isLoading: Boolean = false
@@ -45,9 +43,7 @@ abstract class CounterPager<R : CounterPager.Request, T>(
 
     class CounterPagerException(override val message: String) : Throwable()
 
-    protected class PageInfo(
-        private val countPerPage: Int,
-    ) {
+    protected class PageInfo(private val countPerPage: Int) {
         var loadedItemCount: Int = 0
             private set
         var isAllDataLoaded: Boolean = false

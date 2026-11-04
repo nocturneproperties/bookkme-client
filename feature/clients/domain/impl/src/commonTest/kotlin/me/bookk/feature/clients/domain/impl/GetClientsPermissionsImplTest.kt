@@ -56,7 +56,9 @@ class GetClientsPermissionsImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        fixture.stubBusinesses(stubBusiness(businessId, ResourcePermission(view = true, update = true)))
+        fixture.stubBusinesses(
+            stubBusiness(businessId, ResourcePermission(view = true, update = true)),
+        )
 
         whenn()
         val result = fixture.sut(businessId)
@@ -70,7 +72,9 @@ class GetClientsPermissionsImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        fixture.stubBusinesses(stubBusiness(businessId, ResourcePermission(view = true, delete = true)))
+        fixture.stubBusinesses(
+            stubBusiness(businessId, ResourcePermission(view = true, delete = true)),
+        )
 
         whenn()
         val result = fixture.sut(businessId)
@@ -85,8 +89,11 @@ class GetClientsPermissionsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         fixture.stubBusinesses(
-            stubBusiness(Uuid.random(), ResourcePermission(view = true, update = true, delete = true)),
-            stubBusiness(businessId, ResourcePermission(view = true))
+            stubBusiness(
+                Uuid.random(),
+                ResourcePermission(view = true, update = true, delete = true),
+            ),
+            stubBusiness(businessId, ResourcePermission(view = true)),
         )
 
         whenn()
@@ -124,7 +131,7 @@ class GetClientsPermissionsImplTest {
             employees = ResourcePermission(),
             clients = clients,
             services = ResourcePermission(),
-            appointments = ResourcePermission()
-        )
+            appointments = ResourcePermission(),
+        ),
     )
 }

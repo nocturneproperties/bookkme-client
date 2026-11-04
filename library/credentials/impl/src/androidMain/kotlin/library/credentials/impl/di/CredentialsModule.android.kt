@@ -11,5 +11,6 @@ import org.koin.dsl.module
 
 internal actual fun platformCredentialsModule(): Module = module {
     single { get<CredentialManager>() as AndroidCredentialManager } bind AndroidActivityAware::class
-    single { get<PasskeyCredentialUpdater>() as AndroidPasskeyCredentialUpdater } bind AndroidActivityAware::class
+    single { get<PasskeyCredentialUpdater>() as AndroidPasskeyCredentialUpdater } bind
+        AndroidActivityAware::class
 }

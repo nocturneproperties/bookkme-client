@@ -14,14 +14,14 @@ import kotlin.uuid.Uuid
             entity = AppointmentSettingsEntity::class,
             parentColumns = ["id"],
             childColumns = ["settingsId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("settingsId")]
+    indices = [Index("settingsId")],
 )
 class AppointmentSettingsWorkHourEntity(
     val settingsId: Uuid,
     val dayOfWeek: String,
     val from: String,
-    val to: String
+    val to: String,
 )

@@ -5,39 +5,45 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import dev.mokkery.verifySuspend
 import dev.mokkery.verify.VerifyMode
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import me.bookk.core.domain.entity.DataExport
+import me.bookk.core.domain.entity.DataExportStatus
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import kotlin.test.Test
-import kotlin.test.BeforeTest
+import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.authorization.domain.entity.SensitiveAction
+import me.bookk.feature.authorization.domain.entity.UserProfile
+import me.bookk.feature.settings.domain.api.DownloadPersonalDataExport
+import me.bookk.feature.settings.domain.datasource.DataExportDataSource
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
-import me.bookk.feature.settings.domain.api.DownloadPersonalDataExport
-import me.bookk.feature.settings.domain.datasource.DataExportDataSource
-import me.bookk.core.domain.entity.DataExport
-import me.bookk.core.domain.entity.DataExportStatus
-import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
-import me.bookk.feature.authorization.domain.entity.SensitiveAction
-import me.bookk.feature.authorization.domain.api.UserProfileCRUD
-import me.bookk.feature.authorization.domain.entity.UserProfile
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DownloadPersonalDataExportImplTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+
     @BeforeTest
-    fun setUp() { Dispatchers.setMain(testDispatcher) }
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
     @AfterTest
-    fun tearDown() { Dispatchers.resetMain() }
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     private class Fixture {
         val id = Uuid.parse("00000000-0000-0000-0000-000000000001")
@@ -47,9 +53,11 @@ class DownloadPersonalDataExportImplTest {
         val sut = DownloadPersonalDataExportImpl(dataSource)
         init {
             everySuspend { confirmation(any(), any(), any()) } returns "confirmed"
-            everySuspend { profile.get() } returns UserProfile(id, "John", "Doe", "john@example.com")
+            everySuspend { profile.get() } returns
+                UserProfile(id, "John", "Doe", "john@example.com")
         }
     }
+
     @Test
     fun `returns the backend download result unchanged`() = runUnitTest {
         given()
@@ -63,11 +71,17 @@ class DownloadPersonalDataExportImplTest {
         then()
         assertEquals(expected, result)
     }
+
     @Test
     fun `maps a missing download to NotReady`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.download() } throws me.bookk.core.domain.entity.Error.UnknownApiError("missing", IllegalStateException(), 404)
+        everySuspend { fixture.dataSource.download() } throws
+            me.bookk.core.domain.entity.Error.UnknownApiError(
+                "missing",
+                IllegalStateException(),
+                404,
+            )
 
         whenn()
         val result = runCatching { fixture.sut() }
@@ -75,6 +89,7 @@ class DownloadPersonalDataExportImplTest {
         then()
         assertFailsWith<DownloadPersonalDataExport.Error.NotReady> { result.getOrThrow() }
     }
+
     @Test
     fun `propagates unrelated failures`() = runUnitTest {
         given()
@@ -87,5 +102,4 @@ class DownloadPersonalDataExportImplTest {
         then()
         assertFailsWith<IllegalStateException> { result.getOrThrow() }
     }
-
 }

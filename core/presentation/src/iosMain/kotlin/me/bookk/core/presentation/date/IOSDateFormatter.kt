@@ -7,12 +7,11 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.daysUntil
 import me.bookk.android.core.presentation.CorePresentation
 
-internal class IOSDateFormatter(
-    val formatters: IOSFormatters
-) : DateLocalizer.Formatter {
+internal class IOSDateFormatter(val formatters: IOSFormatters) : DateLocalizer.Formatter {
 
     private val relativeToday = CorePresentation.strings.date_localizer_today.desc().localized()
-    private val relativeYesterday = CorePresentation.strings.date_localizer_yesterday.desc().localized()
+    private val relativeYesterday =
+        CorePresentation.strings.date_localizer_yesterday.desc().localized()
 
     override fun format(date: LocalDateTime, relative: Boolean): String {
         if (!relative) return formatters.dateTime.stringFromDate(date.nsDate())

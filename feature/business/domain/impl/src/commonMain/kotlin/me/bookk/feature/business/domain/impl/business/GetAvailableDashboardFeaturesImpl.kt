@@ -12,7 +12,7 @@ import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 
 internal class GetAvailableDashboardFeaturesImpl(
     private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
-    private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled
+    private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
 ) : GetAvailableDashboardFeatures {
 
     override fun invoke(): Flow<DashboardOverview?> {
@@ -33,7 +33,7 @@ internal class GetAvailableDashboardFeaturesImpl(
                         if (isAppointmentsEnabled == true && permissions.appointments.view) {
                             add(DashboardFeature.APPOINTMENTS)
                         }
-                    }
+                    },
                 )
             }
     }

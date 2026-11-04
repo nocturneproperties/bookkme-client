@@ -7,7 +7,7 @@ import kotlinx.serialization.protobuf.ProtoNumber
 data class PassKeySignUpStartInfo(
     @ProtoNumber(1) val firstName: String,
     @ProtoNumber(2) val lastName: String,
-    @ProtoNumber(3) val email: String
+    @ProtoNumber(3) val email: String,
 )
 
 @Serializable
@@ -25,13 +25,13 @@ class VerifyAccountCreationRequest(
     @ProtoNumber(2) val deviceInfo: DeviceInfo,
     @ProtoNumber(3) val userInfo: UserInfo,
     @ProtoNumber(4) val publicKeyCredentialJson: String,
-    @ProtoNumber(5) val acceptedDocuments: AcceptedLegalDocumentsRemote
+    @ProtoNumber(5) val acceptedDocuments: AcceptedLegalDocumentsRemote,
 ) {
     @Serializable
     class UserInfo(
         @ProtoNumber(1) val name: String,
         @ProtoNumber(2) val lastName: String,
-        @ProtoNumber(3) val email: String
+        @ProtoNumber(3) val email: String,
     )
 
     @Serializable
@@ -44,5 +44,5 @@ class VerifyAccountCreationRequest(
 @Serializable
 class AcceptedLegalDocumentsRemote(
     @ProtoNumber(1) val privacyPolicy: String? = null,
-    @ProtoNumber(2) val termsOfService: String? = null
+    @ProtoNumber(2) val termsOfService: String? = null,
 )

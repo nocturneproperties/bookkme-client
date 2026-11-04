@@ -7,6 +7,8 @@ interface DownloadBusinessDataExport {
     suspend operator fun invoke(businessId: Uuid): String
 
     sealed interface Error {
-        class NotReady : Exception(), Error
+        class NotReady :
+            Exception(),
+            Error
     }
 }

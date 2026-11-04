@@ -2,6 +2,7 @@ package me.bookk.feature.settings.presentation.dashboard
 
 import dev.icerock.moko.resources.desc.desc
 import library.device.api.DeviceFacade
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -10,7 +11,6 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.action
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
@@ -22,7 +22,7 @@ class SettingsDashboardViewModel(
     private val updateColorScheme: UpdateColorScheme,
     private val deviceFacade: DeviceFacade,
     settingsStateFactory: SettingsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: SettingsState = settingsStateFactory.createSettingsState(createInitData()).setup()
@@ -32,9 +32,9 @@ class SettingsDashboardViewModel(
             listOf(
                 appBar.action(
                     contentDescription = SettingsRes.strings.settings_profile_edit.desc(),
-                    onClick = weakVMClosure { it.onEditClick() }
-                )
-            )
+                    onClick = weakVMClosure { it.onEditClick() },
+                ),
+            ),
         )
     }
 
@@ -50,7 +50,7 @@ class SettingsDashboardViewModel(
                 uiState.notification.add(PresentationNotification.SuccessHaptic)
                 uiState.appearance.colorScheme = scheme
             },
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
         )
     }
 
@@ -70,15 +70,15 @@ class SettingsDashboardViewModel(
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.CANCEL
+                        actionType = ActionType.CANCEL,
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
                         actionType = ActionType.NEGATIVE,
-                        onClick = ::logout
-                    )
+                        onClick = ::logout,
+                    ),
                 ),
-            )
+            ),
         )
     }
 
@@ -100,22 +100,22 @@ class SettingsDashboardViewModel(
                 uiState.profile.lastName = it.profile.lastName.desc()
                 uiState.profile.email = it.profile.email.desc()
             },
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
         )
     }
-
 
     companion object {
         fun createInitData() = SettingsState.InitData(
             appearance = AppearanceSection.InitData(
-                title = SettingsRes.strings.settings_appearance_title.desc()
+                title = SettingsRes.strings.settings_appearance_title.desc(),
             ),
             account = AccountSection.InitData(
                 title = SettingsRes.strings.settings_account_title.desc(),
                 passkeyLabel = SettingsRes.strings.settings_account_passkey_label.desc(),
                 logoutLabel = SettingsRes.strings.settings_account_logout_label.desc(),
                 deleteAccountLabel = SettingsRes.strings.settings_account_delete_acc_label.desc(),
-                notificationsLabel = SettingsRes.strings.settings_account_notifications_lable.desc()
+                notificationsLabel = SettingsRes.strings.settings_account_notifications_lable
+                    .desc(),
             ),
             support = SupportSection.InitData(
                 title = SettingsRes.strings.settings_support_title.desc(),
@@ -123,8 +123,8 @@ class SettingsDashboardViewModel(
                 featureLabel = SettingsRes.strings.settings_support_feature_label.desc(),
                 termsLabel = SettingsRes.strings.settings_support_terms_label.desc(),
                 policyLabel = SettingsRes.strings.settings_support_privacy_label.desc(),
-                reportErrorLabel = SettingsRes.strings.settings_support_report_label.desc()
-            )
+                reportErrorLabel = SettingsRes.strings.settings_support_report_label.desc(),
+            ),
         )
     }
 }

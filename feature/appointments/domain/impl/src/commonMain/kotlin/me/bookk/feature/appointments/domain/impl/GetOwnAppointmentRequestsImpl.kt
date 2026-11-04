@@ -8,9 +8,8 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSource
 import kotlin.uuid.Uuid
 
-internal class GetOwnAppointmentRequestsImpl(
-    private val dataSource: AppointmentRequestDataSource
-) : GetOwnAppointmentRequests {
+internal class GetOwnAppointmentRequestsImpl(private val dataSource: AppointmentRequestDataSource) :
+    GetOwnAppointmentRequests {
 
     override fun flow(businessId: Uuid): Flow<List<AppointmentRequest>> {
         return dataSource.observeAppointmentRequestsDBChanges(businessId)
@@ -20,7 +19,10 @@ internal class GetOwnAppointmentRequestsImpl(
     override suspend fun refresh(businessId: Uuid): List<AppointmentRequest> {
         val requests = dataSource.getOwnAppointmentRequests(businessId)
         val freshIds = requests.map { it.id }.toSet()
-        val staleIds = dataSource.getAppointmentRequestIdsInDb(businessId).filterNot { it in freshIds }
+        val staleIds = dataSource.getAppointmentRequestIdsInDb(businessId).filterNot {
+            it in
+                freshIds
+        }
         if (staleIds.isNotEmpty()) {
             dataSource.deleteAppointmentRequestsInDb(staleIds)
         }

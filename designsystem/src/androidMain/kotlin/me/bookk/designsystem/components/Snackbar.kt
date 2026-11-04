@@ -9,14 +9,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 
-
 interface SnackbarProvider {
     fun showSnackbar(
         text: String,
         actionLabel: String?,
         state: GlobalMessage.State,
         duration: GlobalMessage.Duration,
-        onActionClick: (() -> Unit)?
+        onActionClick: (() -> Unit)?,
     )
 }
 
@@ -36,14 +35,14 @@ class StatefulSnackbarVisuals(
 
 class DefaultSnackbarProvider(
     private val scope: CoroutineScope,
-    private val snackbarHostState: SnackbarHostState
+    private val snackbarHostState: SnackbarHostState,
 ) : SnackbarProvider {
     override fun showSnackbar(
         text: String,
         actionLabel: String?,
         state: GlobalMessage.State,
         duration: GlobalMessage.Duration,
-        onActionClick: (() -> Unit)?
+        onActionClick: (() -> Unit)?,
     ) {
         scope.launch {
             val result = snackbarHostState.showSnackbar(
@@ -51,11 +50,12 @@ class DefaultSnackbarProvider(
                     message = text,
                     state = state,
                     duration = duration,
-                    actionLabel = actionLabel
-                )
+                    actionLabel = actionLabel,
+                ),
             )
             when (result) {
                 SnackbarResult.Dismissed -> {}
+
                 SnackbarResult.ActionPerformed -> {
                     onActionClick?.invoke()
                 }
@@ -71,7 +71,7 @@ val LocalSnackbarProvider = staticCompositionLocalOf<SnackbarProvider> {
             actionLabel: String?,
             state: GlobalMessage.State,
             duration: GlobalMessage.Duration,
-            onActionClick: (() -> Unit)?
+            onActionClick: (() -> Unit)?,
         ) {
         }
     }

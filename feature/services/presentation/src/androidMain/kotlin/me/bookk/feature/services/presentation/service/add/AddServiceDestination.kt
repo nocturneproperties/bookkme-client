@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.addServiceScreen(navigation: ServicesNavigation) {
     composable<ServicesDestination.AddService>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val route: ServicesDestination.AddService = it.toRoute()
         val viewModel: AddServiceViewModel = koinViewModel { parametersOf(route.businessId) }

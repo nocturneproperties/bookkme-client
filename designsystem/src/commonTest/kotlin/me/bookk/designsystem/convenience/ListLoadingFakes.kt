@@ -28,7 +28,7 @@ internal class FakeErrorMapper : ErrorMapper {
 
     override fun mapToDescription(e: Throwable) = ErrorDescription(
         title = "title of ${e::class.simpleName}".desc(),
-        message = "message of ${e::class.simpleName}".desc()
+        message = "message of ${e::class.simpleName}".desc(),
     )
 }
 

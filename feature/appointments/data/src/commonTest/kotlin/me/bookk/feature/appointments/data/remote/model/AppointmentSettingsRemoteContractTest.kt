@@ -43,9 +43,9 @@ class AppointmentSettingsRemoteContractTest {
                 "inBetweenBreakInMinutes" to 6,
                 "appointmentNote" to 7,
                 "permissions" to 8,
-                "automaticCompletion" to 9
+                "automaticCompletion" to 9,
             ),
-            fields
+            fields,
         )
     }
 
@@ -62,25 +62,26 @@ class AppointmentSettingsRemoteContractTest {
     }
 
     @Test
-    fun `AppointmentSettingsUpdate carries no schedule and matches the backend schema`() = runUnitTest {
-        given()
-        val descriptor = AppointmentSettingsUpdateRemote.serializer().descriptor
+    fun `AppointmentSettingsUpdate carries no schedule and matches the backend schema`() =
+        runUnitTest {
+            given()
+            val descriptor = AppointmentSettingsUpdateRemote.serializer().descriptor
 
-        whenn()
-        val fields = descriptor.protoFields()
+            whenn()
+            val fields = descriptor.protoFields()
 
-        then()
-        assertEquals(
-            listOf(
-                "businessId" to 1,
-                "automaticApproval" to 2,
-                "inBetweenBreakInMinutes" to 3,
-                "appointmentNote" to 4,
-                "automaticCompletion" to 5
-            ),
-            fields
-        )
-    }
+            then()
+            assertEquals(
+                listOf(
+                    "businessId" to 1,
+                    "automaticApproval" to 2,
+                    "inBetweenBreakInMinutes" to 3,
+                    "appointmentNote" to 4,
+                    "automaticCompletion" to 5,
+                ),
+                fields,
+            )
+        }
 
     @Test
     fun `Schedule carries day offs and matches the backend schema`() = runUnitTest {

@@ -8,7 +8,7 @@ import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "appointment_settings",
-    indices = [Index("businessId", unique = true)]
+    indices = [Index("businessId", unique = true)],
 )
 class AppointmentSettingsEntity(
     @PrimaryKey val id: Uuid,
@@ -20,5 +20,5 @@ class AppointmentSettingsEntity(
     @ColumnInfo(defaultValue = "0") val permissionView: Boolean = false,
     @ColumnInfo(defaultValue = "0") val permissionUpdate: Boolean = false,
     @ColumnInfo(defaultValue = "0") val permissionDelete: Boolean = false,
-    @ColumnInfo(defaultValue = "1") val automaticCompletion: Boolean = true
+    @ColumnInfo(defaultValue = "1") val automaticCompletion: Boolean = true,
 )

@@ -9,7 +9,7 @@ import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
 
 internal class MarkAppointmentNoShowImpl(
-    private val appointmentDataSource: AppointmentDataSource
+    private val appointmentDataSource: AppointmentDataSource,
 ) : MarkAppointmentNoShow {
 
     override suspend fun invoke(appointmentId: Uuid): Appointment {
@@ -17,12 +17,19 @@ internal class MarkAppointmentNoShowImpl(
             appointmentDataSource.markAppointmentNoShow(appointmentId).also {
                 appointmentDataSource.saveAppointmentInDB(it)
             }
-        }.onBusinessError {
-            when (it.errorCode) {
-                AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED -> throw Error.EditWindowClosed()
-                AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED -> throw Error.AppointmentAlreadyCancelled()
-                AppointmentErrorCodes.APPOINTMENT_NOT_STARTED -> throw Error.AppointmentNotStarted()
+        }
+            .onBusinessError {
+                when (it.errorCode) {
+                    AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED ->
+                        throw Error.EditWindowClosed()
+
+                    AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED ->
+                        throw Error.AppointmentAlreadyCancelled()
+
+                    AppointmentErrorCodes.APPOINTMENT_NOT_STARTED ->
+                        throw Error.AppointmentNotStarted()
+                }
             }
-        }.getOrThrow()
+            .getOrThrow()
     }
 }

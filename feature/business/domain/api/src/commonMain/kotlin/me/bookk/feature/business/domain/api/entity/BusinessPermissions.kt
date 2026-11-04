@@ -5,5 +5,5 @@ data class BusinessPermissions(
     val employees: ResourcePermission,
     val clients: ResourcePermission,
     val services: ResourcePermission,
-    val appointments: ResourcePermission
+    val appointments: ResourcePermission,
 )

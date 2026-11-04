@@ -9,10 +9,8 @@ import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalyticsDestinations.Back
 
-class BusinessAnalyticsViewModel(
-    stateFactory: BusinessStateFactory,
-    vmArgs: VmArgs
-) : ViewModel(vmArgs) {
+class BusinessAnalyticsViewModel(stateFactory: BusinessStateFactory, vmArgs: VmArgs) :
+    ViewModel(vmArgs) {
 
     val uiState: BusinessAnalyticsState = stateFactory.createBusinessAnalyticsState().setup()
 

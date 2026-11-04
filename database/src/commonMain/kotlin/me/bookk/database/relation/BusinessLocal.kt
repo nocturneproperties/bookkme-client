@@ -11,17 +11,17 @@ class BusinessLocal(
     @Embedded val entity: BusinessEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "businessId"
+        entityColumn = "businessId",
     )
     val daySchedules: List<BusinessDayScheduleEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "businessId"
+        entityColumn = "businessId",
     )
     val workHours: List<BusinessWorkHourEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "businessId"
+        entityColumn = "businessId",
     )
-    val dayOffs: List<BusinessDayOffEntity>
+    val dayOffs: List<BusinessDayOffEntity>,
 )

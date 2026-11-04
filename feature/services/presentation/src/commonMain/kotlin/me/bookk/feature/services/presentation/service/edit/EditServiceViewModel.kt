@@ -2,6 +2,7 @@ package me.bookk.feature.services.presentation.service.edit
 
 import dev.icerock.moko.resources.desc.desc
 import library.money.api.Money
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -9,7 +10,6 @@ import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.deleteConfirmation
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.TopBarSize
@@ -40,7 +40,7 @@ class EditServiceViewModel(
     private val getServiceGroups: GetServiceGroups,
     private val getServicesPermissions: GetServicesPermissions,
     stateFactory: ServicesStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: EditServiceState = stateFactory.createEditServiceState().setup()
@@ -62,7 +62,7 @@ class EditServiceViewModel(
                 renderPermissions(permissions)
                 loadGroups(service.businessId)
             },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -71,7 +71,7 @@ class EditServiceViewModel(
             launchIn = DispatcherProvider.io,
             call = { getServiceGroups.refresh(businessId) },
             onComplete = { uiState.group.replaceOptions(it.map(::ServiceGroupOption)) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -131,7 +131,7 @@ class EditServiceViewModel(
             name = uiState.name.text,
             duration = uiState.duration.text.toInt().minutes,
             price = Money(uiState.price.text.toDouble(), service.price.currencyType),
-            isAvailable = uiState.available.isChecked
+            isAvailable = uiState.available.isChecked,
         )
         launch(
             launchIn = DispatcherProvider.io,
@@ -145,15 +145,15 @@ class EditServiceViewModel(
             onTerminate = {
                 uiState.submit.stopLoading()
                 invalidateButton()
-            }
+            },
         )
     }
 
     private fun onDeleteClicked() {
         uiState.notifications.add(
             PresentationNotification.Message.deleteConfirmation(
-                onConfirmed = weakVMClosure { it.onDeleteConfirmed() }
-            )
+                onConfirmed = weakVMClosure { it.onDeleteConfirmed() },
+            ),
         )
     }
 
@@ -168,15 +168,15 @@ class EditServiceViewModel(
                 uiState.navigation.push(Back)
             },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.deleteButton.stopLoading() }
+            onTerminate = { uiState.deleteButton.stopLoading() },
         )
     }
 
     private fun invalidateButton() {
         uiState.submit.isEnabled = uiState.group.selectedItem != null &&
-                uiState.name.isValid &&
-                uiState.duration.isValid &&
-                uiState.price.isValid
+            uiState.name.isValid &&
+            uiState.duration.isValid &&
+            uiState.price.isValid
     }
 
     private fun EditServiceState.setup() = apply {

@@ -13,7 +13,7 @@ import kotlin.uuid.Uuid
 internal class GetServicesImpl(
     private val dataSource: ServiceDataSource,
     private val groupsDataSource: ServiceGroupDataSource,
-    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
 ) : GetServices {
 
     override fun flow(): Flow<List<Service>> {

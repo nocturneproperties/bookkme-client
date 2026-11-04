@@ -10,10 +10,9 @@ import me.bookk.feature.authorization.presentation.sign_up.state.TroubleshootCar
 import me.bookk.feature.authorization.presentation.troubleshoot.state.TroubleshootEventListener
 import me.bookk.feature.authorization.presentation.troubleshoot.state.TroubleshootState
 
-class TroubleshootViewModel(
-    stateFactory: AuthStateFactory,
-    vmArgs: VmArgs
-) : ViewModel(vmArgs), TroubleshootEventListener {
+class TroubleshootViewModel(stateFactory: AuthStateFactory, vmArgs: VmArgs) :
+    ViewModel(vmArgs),
+    TroubleshootEventListener {
 
     val uiState = stateFactory.createTroubleshootState(createInitData())
 
@@ -28,16 +27,20 @@ class TroubleshootViewModel(
                         Reason(
                             id = 0,
                             title = AuthRes.strings.troubleshoot_passkey_lost.desc(),
-                            description = AuthRes.strings.troubleshoot_passkey_lost_description.desc()
+                            description =
+                            AuthRes.strings.troubleshoot_passkey_lost_description
+                                .desc(),
                         ),
                         Reason(
                             id = 1,
                             title = AuthRes.strings.troubleshoot_passkey_missing.desc(),
-                            description = AuthRes.strings.troubleshoot_passkey_missing_description.desc()
-                        )
-                    )
+                            description =
+                            AuthRes.strings.troubleshoot_passkey_missing_description
+                                .desc(),
+                        ),
+                    ),
                 ),
-                buttonText = AuthRes.strings.troubleshoot_contact_support_button.desc()
+                buttonText = AuthRes.strings.troubleshoot_contact_support_button.desc(),
             )
         }
     }

@@ -46,7 +46,7 @@ class GetAvailablePasskeysImplTest {
         name = "iPhone 15",
         isBackedUp = true,
         createdAt = LocalDateTime(2024, 1, 1, 0, 0),
-        lastUsedAt = LocalDateTime(2024, 6, 1, 0, 0)
+        lastUsedAt = LocalDateTime(2024, 6, 1, 0, 0),
     )
 
     @Test

@@ -11,6 +11,8 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentHistory
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
 import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
+import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentsEnabled
 import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.MarkAppointmentNoShow
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
@@ -29,6 +31,8 @@ import me.bookk.feature.appointments.domain.impl.GetAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentOptionsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentSettingsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentsForBusinessImpl
+import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentRequestsImpl
+import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentsEnabledImpl
 import me.bookk.feature.appointments.domain.impl.GetOwnAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.MarkAppointmentNoShowImpl
 import me.bookk.feature.appointments.domain.impl.ObserveAppointmentOptionsImpl
@@ -36,10 +40,6 @@ import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessIdImpl
 import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentSettingsImpl
-import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentsEnabled
-import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentsEnabledImpl
-import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentRequests
-import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentRequestsImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module

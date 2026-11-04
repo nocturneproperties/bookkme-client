@@ -26,9 +26,7 @@ import me.bookk.designsystem.theme.typography.secondary
 import me.bookk.feature.appointments.presentation.screen.details.StatusLabel
 
 @Composable
-internal fun AppointmentHistoryScreen(
-    state: AppointmentHistoryState
-) {
+internal fun AppointmentHistoryScreen(state: AppointmentHistoryState) {
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -40,23 +38,23 @@ internal fun AppointmentHistoryScreen(
                     state.searchField,
                     Modifier
                         .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp)
+                        .padding(top = 16.dp),
                 )
             }
-        }
+        },
     ) { pv ->
         PullToRefresh(
             state = state.refresh,
             modifier = Modifier
                 .padding(pv)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
             List(
                 modifier = Modifier.fillMaxSize(),
                 state = state.appointments,
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                idProvider = { it.source.id }
+                idProvider = { it.source.id },
             ) {
                 AppointmentHistoryItem(Modifier.animateItem(), it)
             }
@@ -67,37 +65,37 @@ internal fun AppointmentHistoryScreen(
 @Composable
 private fun AppointmentHistoryItem(
     modifier: Modifier = Modifier,
-    state: AppointmentHistoryItemState
+    state: AppointmentHistoryItemState,
 ) {
     AppCard(
         modifier = modifier.fillMaxWidth(),
-        onClick = state.onItemClick
+        onClick = state.onItemClick,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = state.clientName,
-                    style = MaterialTheme.typography.titleMedium.primary()
+                    style = MaterialTheme.typography.titleMedium.primary(),
                 )
                 Text(
                     text = state.serviceName,
-                    style = MaterialTheme.typography.bodyMedium.secondary()
+                    style = MaterialTheme.typography.bodyMedium.secondary(),
                 )
                 Text(
                     text = state.scheduledAt,
-                    style = MaterialTheme.typography.bodySmall.secondary()
+                    style = MaterialTheme.typography.bodySmall.secondary(),
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = state.earnings,
-                    style = MaterialTheme.typography.titleSmall.primary()
+                    style = MaterialTheme.typography.titleSmall.primary(),
                 )
                 StatusLabel(state.status)
             }

@@ -14,8 +14,8 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.settings.domain.api.entity.LegalDocument
-import me.bookk.feature.settings.domain.api.entity.LegalDocumentVersion
 import me.bookk.feature.settings.domain.api.entity.LegalDocumentStatus
+import me.bookk.feature.settings.domain.api.entity.LegalDocumentVersion
 import me.bookk.feature.settings.domain.datasource.LegalDocumentsDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -47,7 +47,18 @@ class GetLegalDocumentStatusesImplTest {
     fun `returns the backend records including optional or disabled values`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val records = listOf(LegalDocumentStatus(LegalDocumentVersion(LegalDocument.TERMS_OF_SERVICE, "2026-11", "https://example.com/terms", Instant.parse("2026-11-01T00:00:00Z")), null))
+        val records =
+            listOf(
+                LegalDocumentStatus(
+                    LegalDocumentVersion(
+                        LegalDocument.TERMS_OF_SERVICE,
+                        "2026-11",
+                        "https://example.com/terms",
+                        Instant.parse("2026-11-01T00:00:00Z"),
+                    ),
+                    null,
+                ),
+            )
         everySuspend { fixture.dataSource.getStatuses() } returns records
 
         whenn()
@@ -74,7 +85,8 @@ class GetLegalDocumentStatusesImplTest {
     fun `propagates backend failures`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.getStatuses() } throws IllegalStateException("unavailable")
+        everySuspend { fixture.dataSource.getStatuses() } throws
+            IllegalStateException("unavailable")
 
         whenn()
         val result = runCatching { fixture.sut() }

@@ -12,7 +12,7 @@ internal class InitialAppDataFetchImpl(
     private val refreshBusiness: RefreshBusinessInfo,
     private val lowPriorityDataFetch: LowPriorityDataFetch,
     private val authorizationDataSource: AuthorizationDataSource,
-    private val clock: Clock
+    private val clock: Clock,
 ) : InitialAppDataFetch {
 
     override suspend fun timestampProtectedFetch() {

@@ -52,7 +52,7 @@ class CompleteAppointmentImplTest {
         val sut = CompleteAppointmentImpl(dataSource)
         val completed = stubAppointment().copy(
             status = AppointmentStatus.COMPLETED,
-            completedBy = AppointmentCompletedBy.USER
+            completedBy = AppointmentCompletedBy.USER,
         )
 
         fun stubSuccess() {
@@ -61,7 +61,8 @@ class CompleteAppointmentImplTest {
         }
 
         fun stubBusinessError(code: Int) {
-            everySuspend { dataSource.completeAppointment(any(), any()) } throws DomainError.BusinessError(code, "msg")
+            everySuspend { dataSource.completeAppointment(any(), any()) } throws
+                DomainError.BusinessError(code, "msg")
         }
     }
 
@@ -86,7 +87,7 @@ class CompleteAppointmentImplTest {
         val draft = PriceAdjustmentDraft(
             additionalServiceIds = listOf(Uuid.random()),
             price = Money(150.0, Money.SupportedCurrency.USD),
-            reason = "Extra polish"
+            reason = "Extra polish",
         )
         fixture.stubSuccess()
 
@@ -139,37 +140,58 @@ class CompleteAppointmentImplTest {
 
     @Test
     fun `throws AppointmentAlreadyCancelled on APPOINTMENT_ALREADY_CANCELED`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED, CompleteAppointment.Error.AppointmentAlreadyCancelled::class)
+        assertMapped(
+            AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED,
+            CompleteAppointment.Error.AppointmentAlreadyCancelled::class,
+        )
     }
 
     @Test
     fun `throws AppointmentNotStarted on APPOINTMENT_NOT_STARTED`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.APPOINTMENT_NOT_STARTED, CompleteAppointment.Error.AppointmentNotStarted::class)
+        assertMapped(
+            AppointmentErrorCodes.APPOINTMENT_NOT_STARTED,
+            CompleteAppointment.Error.AppointmentNotStarted::class,
+        )
     }
 
     @Test
     fun `throws AppointmentMarkedNoShow on APPOINTMENT_MARKED_NO_SHOW`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW, CompleteAppointment.Error.AppointmentMarkedNoShow::class)
+        assertMapped(
+            AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW,
+            CompleteAppointment.Error.AppointmentMarkedNoShow::class,
+        )
     }
 
     @Test
     fun `throws NegativePrice on PRICE_ADJUSTMENT_NEGATIVE_PRICE`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.PRICE_ADJUSTMENT_NEGATIVE_PRICE, CompleteAppointment.Error.NegativePrice::class)
+        assertMapped(
+            AppointmentErrorCodes.PRICE_ADJUSTMENT_NEGATIVE_PRICE,
+            CompleteAppointment.Error.NegativePrice::class,
+        )
     }
 
     @Test
     fun `throws CurrencyMismatch on PRICE_ADJUSTMENT_CURRENCY_MISMATCH`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.PRICE_ADJUSTMENT_CURRENCY_MISMATCH, CompleteAppointment.Error.CurrencyMismatch::class)
+        assertMapped(
+            AppointmentErrorCodes.PRICE_ADJUSTMENT_CURRENCY_MISMATCH,
+            CompleteAppointment.Error.CurrencyMismatch::class,
+        )
     }
 
     @Test
     fun `throws ReasonTooLong on PRICE_ADJUSTMENT_REASON_TOO_LONG`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.PRICE_ADJUSTMENT_REASON_TOO_LONG, CompleteAppointment.Error.ReasonTooLong::class)
+        assertMapped(
+            AppointmentErrorCodes.PRICE_ADJUSTMENT_REASON_TOO_LONG,
+            CompleteAppointment.Error.ReasonTooLong::class,
+        )
     }
 
     @Test
     fun `throws ServiceNotFound on BUSINESS_QUOTE_SERVICE_NOT_FOUND`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND, CompleteAppointment.Error.ServiceNotFound::class)
+        assertMapped(
+            AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND,
+            CompleteAppointment.Error.ServiceNotFound::class,
+        )
     }
 
     private suspend fun assertMapped(code: Int, expected: KClass<out Throwable>) {
@@ -183,11 +205,13 @@ class CompleteAppointmentImplTest {
         then()
         assertEquals(expected, error::class)
     }
+
     @Test
     fun `maps backend error 300026 to EditWindowClosed`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.completeAppointment(any(), any()) } throws DomainError.BusinessError(300026, "rejected")
+        everySuspend { fixture.dataSource.completeAppointment(any(), any()) } throws
+            DomainError.BusinessError(300026, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(kotlin.uuid.Uuid.random(), null) }
@@ -195,5 +219,4 @@ class CompleteAppointmentImplTest {
         then()
         assertFailsWith<CompleteAppointment.Error.EditWindowClosed> { result.getOrThrow() }
     }
-
 }

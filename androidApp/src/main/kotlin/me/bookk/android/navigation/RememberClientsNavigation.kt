@@ -14,6 +14,6 @@ fun rememberClientsNavigation(controller: NavController) = remember(controller) 
         onBack = { controller.popBackStack() },
         toAddClient = { controller.navigate(ClientsDestinations.CreateClient(it)) },
         toClientDetails = { controller.navigate(ClientsDestinations.ClientDetails(it)) },
-        toEditClient = { controller.navigate(ClientsDestinations.EditClient(it)) }
+        toEditClient = { controller.navigate(ClientsDestinations.EditClient(it)) },
     )
 }

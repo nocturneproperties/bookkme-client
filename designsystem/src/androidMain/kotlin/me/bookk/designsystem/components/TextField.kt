@@ -88,13 +88,26 @@ fun TextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     minLines: Int = 1,
     leadingIcon: (@Composable () -> Unit)? = state.startIcon?.let {
-        { Icon(painterResource(it), contentDescription = null, tint = LocalColors.current.secondaryText) }
+        {
+            Icon(
+                painterResource(it),
+                contentDescription = null,
+                tint = LocalColors.current.secondaryText,
+            )
+        }
     },
     trailingIcon: (@Composable () -> Unit)? = state.endIcon?.let {
-        { Icon(painterResource(it), contentDescription = null, tint = LocalColors.current.secondaryText) }
-    } ?: state.suffix?.let {
-        { Text(it.localized(), style = MaterialTheme.typography.bodySmall.secondary()) }
+        {
+            Icon(
+                painterResource(it),
+                contentDescription = null,
+                tint = LocalColors.current.secondaryText,
+            )
+        }
     }
+        ?: state.suffix?.let {
+            { Text(it.localized(), style = MaterialTheme.typography.bodySmall.secondary()) }
+        },
 ) {
     Column(modifier) {
         val label = state.label.localized()
@@ -106,21 +119,25 @@ fun TextField(
         CompositionLocalProvider(LocalTextSelectionColors provides colors.textSelectionColors) {
             BasicTextField(
                 value = state.text,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .onFocusChanged {
-                            isFocused = it.isFocused
-                        }
-                        .animateContentSize(),
+                modifier = Modifier.fillMaxWidth()
+                    .onFocusChanged {
+                        isFocused = it.isFocused
+                    }
+                    .animateContentSize(),
                 onValueChange = onValueChange,
                 enabled = state.enabled,
                 readOnly = state.readOnly,
                 textStyle = textStyle,
-                cursorBrush = SolidColor(if (state.validationState.isAtLeastWarning()) state.validationState.color else colors.cursorColor),
+                cursorBrush = SolidColor(
+                    if (state.validationState.isAtLeastWarning()) {
+                        state.validationState.color
+                    } else {
+                        colors.cursorColor
+                    },
+                ),
                 visualTransformation = visualTransformation,
                 keyboardOptions = keyboardOptions.copy(
-                    keyboardType = state.inputType.nativeInputType()
+                    keyboardType = state.inputType.nativeInputType(),
                 ),
                 keyboardActions = keyboardActions,
                 interactionSource = interactionSource,
@@ -128,48 +145,51 @@ fun TextField(
                 maxLines = maxLines,
                 minLines = minLines,
                 decorationBox =
-                    @Composable { innerTextField ->
-                        TextFieldDefaults.DecorationBox(
-                            value = state.text,
-                            visualTransformation = visualTransformation,
-                            innerTextField = innerTextField,
-                            placeholder = state.placeholder.localized().takeIf { it.isNotBlank() }
-                                ?.let {
-                                    {
-                                        Text(
-                                            text = it,
-                                            style = MaterialTheme.typography.bodyLarge.secondary()
-                                        )
-                                    }
-                                },
-                            supportingText = state.supportingTextRes?.let { supportingTextRes ->
+                @Composable { innerTextField ->
+                    TextFieldDefaults.DecorationBox(
+                        value = state.text,
+                        visualTransformation = visualTransformation,
+                        innerTextField = innerTextField,
+                        placeholder = state.placeholder
+                            .localized()
+                            .takeIf { it.isNotBlank() }
+                            ?.let {
                                 {
                                     Text(
-                                        text = supportingTextRes.localized(),
-                                        color = state.validationState.color,
-                                        style = MaterialTheme.typography.bodySmall.primary(),
+                                        text = it,
+                                        style =
+                                        MaterialTheme.typography.bodyLarge.secondary(),
                                     )
                                 }
                             },
-                            trailingIcon = trailingIcon,
-                            leadingIcon = leadingIcon,
-                            shape = MaterialTheme.shapes.large,
-                            singleLine = singleLine,
-                            enabled = state.enabled,
-                            isError = state.validationState.isAtLeastWarning(),
-                            interactionSource = interactionSource,
-                            colors = colors,
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                            container = {
-                                TextFieldContainer(
-                                    isFocused,
-                                    state,
-                                    colors,
-                                    interactionSource
+                        supportingText = state.supportingTextRes?.let { supportingTextRes ->
+                            {
+                                Text(
+                                    text = supportingTextRes.localized(),
+                                    color = state.validationState.color,
+                                    style = MaterialTheme.typography.bodySmall.primary(),
                                 )
                             }
-                        )
-                    },
+                        },
+                        trailingIcon = trailingIcon,
+                        leadingIcon = leadingIcon,
+                        shape = MaterialTheme.shapes.large,
+                        singleLine = singleLine,
+                        enabled = state.enabled,
+                        isError = state.validationState.isAtLeastWarning(),
+                        interactionSource = interactionSource,
+                        colors = colors,
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                        container = {
+                            TextFieldContainer(
+                                isFocused,
+                                state,
+                                colors,
+                                interactionSource,
+                            )
+                        },
+                    )
+                },
             )
         }
     }
@@ -192,34 +212,42 @@ fun SecureTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     onValueChange: (String) -> Unit = { state.onTextChanged?.invoke(it) },
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge.primary(),
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     AnimatedVisibility(
         visible = state.isVisible,
         enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically()
+        exit = fadeOut() + shrinkVertically(),
     ) {
         val colors = defaultTextFieldColors(state.validationState)
         val textState = rememberTextFieldState()
         var isFocused by remember { mutableStateOf(false) }
         var isPasswordVisible by remember { mutableStateOf(false) }
-        val obfuscation =
-            if (isPasswordVisible) TextObfuscationMode.Visible else TextObfuscationMode.RevealLastTyped
+        val obfuscation = if (isPasswordVisible) {
+            TextObfuscationMode.Visible
+        } else {
+            TextObfuscationMode.RevealLastTyped
+        }
         LaunchedEffect(textState.text) {
             onValueChange(textState.text.toString())
         }
         CompositionLocalProvider(LocalTextSelectionColors provides colors.textSelectionColors) {
             BasicSecureTextField(
                 state = textState,
-                modifier =
-                    modifier
-                        .onFocusChanged {
-                            isFocused = it.isFocused
-                        }
-                        .animateContentSize(),
+                modifier = modifier
+                    .onFocusChanged {
+                        isFocused = it.isFocused
+                    }
+                    .animateContentSize(),
                 enabled = state.enabled,
                 textStyle = textStyle,
-                cursorBrush = SolidColor(if (state.validationState.isAtLeastWarning()) colors.errorCursorColor else colors.cursorColor),
+                cursorBrush = SolidColor(
+                    if (state.validationState.isAtLeastWarning()) {
+                        colors.errorCursorColor
+                    } else {
+                        colors.cursorColor
+                    },
+                ),
                 keyboardOptions = keyboardOptions,
                 interactionSource = interactionSource,
                 textObfuscationMode = obfuscation,
@@ -229,28 +257,39 @@ fun SecureTextField(
                     lineLimits = TextFieldLineLimits.SingleLine,
                     interactionSource = interactionSource,
                     labelPosition = TextFieldLabelPosition.Attached(),
-                    label = state.label.localized().takeIf { it.isNotBlank() }?.let {
-                        {
-                            val animatedTextSize by animateFloatAsState(
-                                targetValue = if (isFocused || state.text.isNotEmpty()) 11.sp.value else 15.sp.value,
-                                label = "fontSizeAnimation"
-                            )
-                            Text(
-                                text = it,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontSize = animatedTextSize.sp
+                    label = state.label
+                        .localized()
+                        .takeIf { it.isNotBlank() }
+                        ?.let {
+                            {
+                                val animatedTextSize by
+                                    animateFloatAsState(
+                                        targetValue =
+                                        if (isFocused || state.text.isNotEmpty()) {
+                                            11.sp.value
+                                        } else {
+                                            15.sp.value
+                                        },
+                                        label = "fontSizeAnimation",
+                                    )
+                                Text(
+                                    text = it,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontSize = animatedTextSize.sp,
+                                    ),
                                 )
-                            )
-                        }
-                    },
-                    placeholder = state.placeholder.localized().takeIf { it.isNotBlank() }
+                            }
+                        },
+                    placeholder = state.placeholder
+                        .localized()
+                        .takeIf { it.isNotBlank() }
                         ?.let {
                             {
                                 Text(
                                     text = it,
-                                    style = MaterialTheme.typography.bodyMedium.secondary()
+                                    style = MaterialTheme.typography.bodyMedium.secondary(),
                                 )
                             }
                         },
@@ -268,12 +307,16 @@ fun SecureTextField(
                             val description =
                                 if (isPasswordVisible) "Hide password" else "Show password"
                             Crossfade(isPasswordVisible) {
-                                val icon =
-                                    if (it) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                                val icon = if (it) {
+                                    Icons.Filled.Visibility
+                                } else {
+                                    Icons.Filled.VisibilityOff
+                                }
                                 Image(
                                     imageVector = icon,
                                     contentDescription = description,
-                                    colorFilter = ColorFilter.tint(LocalColors.current.secondaryText)
+                                    colorFilter =
+                                    ColorFilter.tint(LocalColors.current.secondaryText),
                                 )
                             }
                         }
@@ -284,7 +327,9 @@ fun SecureTextField(
                     isError = state.validationState.isAtLeastWarning(),
                     colors = colors,
                     outputTransformation = null,
-                    container = { TextFieldContainer(isFocused, state, colors, interactionSource) },
+                    container = {
+                        TextFieldContainer(isFocused, state, colors, interactionSource)
+                    },
                 ),
             )
         }
@@ -296,29 +341,29 @@ private fun TextFieldContainer(
     isFocused: Boolean,
     state: TextFieldState,
     colors: TextFieldColors,
-    interactionSource: MutableInteractionSource
+    interactionSource: MutableInteractionSource,
 ) {
     val strokeWidth by animateDpAsState(if (isFocused) 2.dp else 1.dp)
-    val strokeColor by animateColorAsState(
-        when {
-            state.validationState.isAtLeastWarning() -> state.validationState.color
-            isFocused -> LocalColors.current.actionText
-            else -> LocalColors.current.divider
-        }
-    )
+    val strokeColor by
+        animateColorAsState(
+            when {
+                state.validationState.isAtLeastWarning() -> state.validationState.color
+                isFocused -> LocalColors.current.actionText
+                else -> LocalColors.current.divider
+            },
+        )
     Container(
-        modifier = Modifier
-            .height(48.dp)
+        modifier = Modifier.height(48.dp)
             .border(
                 strokeWidth,
                 strokeColor,
-                shape = MaterialTheme.shapes.large
+                shape = MaterialTheme.shapes.large,
             ),
         enabled = state.enabled,
         isError = state.validationState.isAtLeastWarning(),
         colors = colors,
         interactionSource = interactionSource,
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
     )
 }
 
@@ -345,7 +390,7 @@ internal fun defaultTextFieldColors(state: ValidationState): TextFieldColors {
         errorPlaceholderColor = state.color,
         disabledPlaceholderColor = LocalColors.current.actionTextDisabled,
         focusedPlaceholderColor = LocalColors.current.hintText,
-        unfocusedPlaceholderColor = LocalColors.current.hintText
+        unfocusedPlaceholderColor = LocalColors.current.hintText,
     )
 }
 
@@ -355,16 +400,16 @@ private fun Preview() {
     AppTheme(themeMode = ThemeMode.DARK) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             TextField(
                 state = AndroidTextFieldState(
                     label = "Type here...".desc(),
                     text = "",
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
             TextField(
                 state = AndroidTextFieldState(
@@ -372,9 +417,9 @@ private fun Preview() {
                     text = "",
                     supportingTextRes = "Error".desc(),
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
             TextField(
                 state = AndroidTextFieldState(
@@ -382,9 +427,9 @@ private fun Preview() {
                     text = "Text",
                     supportingTextRes = "Error".desc(),
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
             TextField(
                 state = AndroidTextFieldState(
@@ -393,9 +438,9 @@ private fun Preview() {
                     supportingTextRes = "Error description".desc(),
                     validationState = ValidationState.ERROR,
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
             TextField(
                 state = AndroidTextFieldState(
@@ -404,9 +449,9 @@ private fun Preview() {
                     supportingTextRes = "Error description".desc(),
                     validationState = ValidationState.ERROR,
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
         }
     }
@@ -418,16 +463,16 @@ private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             TextField(
                 state = AndroidTextFieldState(
                     label = "Type here...".desc(),
                     text = "",
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
             TextField(
                 state = AndroidTextFieldState(
@@ -435,9 +480,9 @@ private fun PreviewLight() {
                     text = "",
                     supportingTextRes = "Error".desc(),
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
             TextField(
                 state = AndroidTextFieldState(
@@ -445,9 +490,9 @@ private fun PreviewLight() {
                     text = "Text",
                     supportingTextRes = "Error".desc(),
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
             TextField(
                 state = AndroidTextFieldState(
@@ -456,9 +501,9 @@ private fun PreviewLight() {
                     supportingTextRes = "Error description".desc(),
                     validationState = ValidationState.ERROR,
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
             TextField(
                 state = AndroidTextFieldState(
@@ -467,9 +512,9 @@ private fun PreviewLight() {
                     supportingTextRes = "Error description".desc(),
                     validationState = ValidationState.ERROR,
                     enabled = true,
-                    readOnly = false
+                    readOnly = false,
                 ),
-                onValueChange = {}
+                onValueChange = {},
             )
         }
     }

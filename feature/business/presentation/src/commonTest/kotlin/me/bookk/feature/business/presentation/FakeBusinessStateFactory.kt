@@ -32,7 +32,9 @@ internal class FakeBusinessStateFactory : BusinessStateFactory {
         return FakeBusinessDashboardState()
     }
 
-    override fun createBusinessSettingsState(initData: BusinessSettingsState.InitData): BusinessSettingsState {
+    override fun createBusinessSettingsState(
+        initData: BusinessSettingsState.InitData,
+    ): BusinessSettingsState {
         businessSettingsInitData = initData
         return FakeBusinessSettingsState()
     }

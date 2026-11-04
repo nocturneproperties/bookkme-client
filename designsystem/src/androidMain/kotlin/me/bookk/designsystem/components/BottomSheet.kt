@@ -25,7 +25,7 @@ fun DesignSystemBottomSheet(
     sheetState: SheetState,
     title: String? = null,
     onDismiss: () -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     ModalBottomSheet(
         modifier = modifier,
@@ -40,12 +40,12 @@ fun DesignSystemBottomSheet(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp)
                 .navigationBarsPadding(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             title?.let {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyLarge.primary()
+                    style = MaterialTheme.typography.bodyLarge.primary(),
                 )
             }
             content()

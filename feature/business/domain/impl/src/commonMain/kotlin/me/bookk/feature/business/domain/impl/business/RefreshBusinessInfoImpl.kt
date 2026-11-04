@@ -8,13 +8,18 @@ import kotlin.uuid.Uuid
 
 internal class RefreshBusinessInfoImpl(
     private val businessDataSource: BusinessDataSource,
-    private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled
+    private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
 ) : RefreshBusinessInfo {
     override suspend fun invoke(applyDashboardIdFromRemote: Boolean) {
         val data = businessDataSource.getBusinessesFromRemote()
         deleteRemovedBusinesses(data)
         if (applyDashboardIdFromRemote) {
-            businessDataSource.saveBusinessListWithDashboardInDB(data.businesses, data.dashboardId?.takeIf { data.contains(it) })
+            businessDataSource.saveBusinessListWithDashboardInDB(
+                data.businesses,
+                data.dashboardId?.takeIf {
+                    data.contains(it)
+                },
+            )
         } else {
             businessDataSource.saveBusinessListInDB(data.businesses)
         }

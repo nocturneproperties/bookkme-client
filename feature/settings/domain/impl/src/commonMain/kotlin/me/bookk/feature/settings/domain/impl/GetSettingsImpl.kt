@@ -8,7 +8,7 @@ import me.bookk.feature.settings.domain.api.entity.SettingsProfile
 
 internal class GetSettingsImpl(
     private val getColorScheme: GetColorScheme,
-    private val userProfileCRUD: UserProfileCRUD
+    private val userProfileCRUD: UserProfileCRUD,
 ) : GetSettings {
     override suspend fun invoke(): Settings {
         val profile = userProfileCRUD.get()
@@ -17,8 +17,8 @@ internal class GetSettingsImpl(
             profile = SettingsProfile(
                 firstName = profile.firstName,
                 lastName = profile.lastName,
-                email = profile.email
-            )
+                email = profile.email,
+            ),
         )
     }
 }

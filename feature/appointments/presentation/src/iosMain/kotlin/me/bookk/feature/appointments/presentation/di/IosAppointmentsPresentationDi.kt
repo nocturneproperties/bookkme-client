@@ -24,8 +24,7 @@ internal actual fun platformAppointmentsDiModule(): Module = module {
 }
 
 @UsedInSwift
-fun appointmentListVM(): AppointmentListViewModel =
-    KoinPlatform.getKoin().get()
+fun appointmentListVM(): AppointmentListViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun appointmentCreateVM(businessId: Uuid): AppointmentCreateViewModel =
@@ -44,5 +43,4 @@ fun appointmentHistoryVM(businessId: Uuid): AppointmentHistoryViewModel =
     KoinPlatform.getKoin().get(parameters = { parametersOf(businessId) })
 
 @UsedInSwift
-fun appointmentRequestVM(): AppointmentRequestViewModel =
-    KoinPlatform.getKoin().get()
+fun appointmentRequestVM(): AppointmentRequestViewModel = KoinPlatform.getKoin().get()

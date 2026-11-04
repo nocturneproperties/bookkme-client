@@ -16,5 +16,6 @@ internal class AndroidNotificationSettingsState : NotificationSettingsState {
     override val pushNotificationsEnabled: BooleanState = AndroidBooleanState()
     override val telegramEnabled: BooleanState = AndroidBooleanState()
     override val notifications: PresentationNotificationState = AndroidNotificationState()
-    override val navigation: NavigationState<NotificationSettingsDestinations> = AndroidNavigationState()
+    override val navigation: NavigationState<NotificationSettingsDestinations> =
+        AndroidNavigationState()
 }

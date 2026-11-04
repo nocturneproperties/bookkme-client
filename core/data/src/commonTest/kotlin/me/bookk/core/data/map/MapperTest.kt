@@ -24,9 +24,27 @@ import kotlin.test.assertIs
 
 class MapperTest {
 
-    private suspend fun failureFor(status: HttpStatusCode, errorCode: Int, message: String = "error"): Throwable {
-        val body = dataSerializer.encodeToByteArray(BusinessServerError.serializer(), BusinessServerError(errorCode, message))
-        val client = HttpClient(MockEngine { respond(body, status, headersOf(HttpHeaders.ContentType, ContentType.Application.ProtoBuf.toString())) }) {
+    private suspend fun failureFor(
+        status: HttpStatusCode,
+        errorCode: Int,
+        message: String = "error",
+    ): Throwable {
+        val body = dataSerializer.encodeToByteArray(
+            BusinessServerError.serializer(),
+            BusinessServerError(errorCode, message),
+        )
+        val client = HttpClient(
+            MockEngine {
+                respond(
+                    body,
+                    status,
+                    headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.ProtoBuf.toString(),
+                    ),
+                )
+            },
+        ) {
             expectSuccess = true
             install(ContentNegotiation) { protobuf(dataSerializer) }
         }
@@ -36,7 +54,11 @@ class MapperTest {
     @Test
     fun `maps forbidden access suspended response to business access suspended`() = runUnitTest {
         given()
-        val failure = failureFor(HttpStatusCode.Forbidden, ServerErrorCodes.BUSINESS_EMPLOYEE_ACCESS_SUSPENDED, "suspended")
+        val failure = failureFor(
+            HttpStatusCode.Forbidden,
+            ServerErrorCodes.BUSINESS_EMPLOYEE_ACCESS_SUSPENDED,
+            "suspended",
+        )
 
         whenn()
         val result = failure.toDomain()
@@ -62,7 +84,10 @@ class MapperTest {
     @Test
     fun `maps access suspended code with non forbidden status to business error`() = runUnitTest {
         given()
-        val failure = failureFor(HttpStatusCode.UnprocessableEntity, ServerErrorCodes.BUSINESS_EMPLOYEE_ACCESS_SUSPENDED)
+        val failure = failureFor(
+            HttpStatusCode.UnprocessableEntity,
+            ServerErrorCodes.BUSINESS_EMPLOYEE_ACCESS_SUSPENDED,
+        )
 
         whenn()
         val result = failure.toDomain()

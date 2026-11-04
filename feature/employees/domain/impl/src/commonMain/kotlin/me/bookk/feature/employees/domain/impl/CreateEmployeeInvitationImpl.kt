@@ -8,9 +8,8 @@ import me.bookk.feature.employees.domain.datasource.EmployeeErrorCodes
 import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
 import kotlin.uuid.Uuid
 
-internal class CreateEmployeeInvitationImpl(
-    private val dataSource: EmployeeInvitationDataSource
-) : CreateEmployeeInvitation {
+internal class CreateEmployeeInvitationImpl(private val dataSource: EmployeeInvitationDataSource) :
+    CreateEmployeeInvitation {
     override suspend fun invoke(businessId: Uuid): EmployeeInvitation {
         return runCatching {
             dataSource.createInvitation(businessId)

@@ -1,10 +1,9 @@
 package me.bookk.feature.services.domain.impl.service
 
-import kotlin.test.assertFailsWith
-import dev.mokkery.matcher.any
-import dev.mokkery.answering.throws
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +21,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EditServiceImplTest {
@@ -90,18 +90,24 @@ class EditServiceImplTest {
         then()
         verifySuspend { fixture.dataSource.editService(trimmed) }
     }
+
     @Test
     fun `maps backend error 200007 to NameAlreadyExists`() = runUnitTest {
         given()
         val fixture = Fixture()
 
-        everySuspend { fixture.dataSource.editService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200007, "rejected")
+        everySuspend { fixture.dataSource.editService(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200007, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubService()) }
 
         then()
-        assertFailsWith<me.bookk.feature.services.domain.api.service.EditService.Error.NameAlreadyExists> { result.getOrThrow() }
+        assertFailsWith<
+            me.bookk.feature.services.domain.api.service.EditService.Error.NameAlreadyExists,
+            > {
+            result.getOrThrow()
+        }
     }
 
     @Test
@@ -109,13 +115,18 @@ class EditServiceImplTest {
         given()
         val fixture = Fixture()
 
-        everySuspend { fixture.dataSource.editService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200008, "rejected")
+        everySuspend { fixture.dataSource.editService(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200008, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubService()) }
 
         then()
-        assertFailsWith<me.bookk.feature.services.domain.api.service.EditService.Error.InvalidName> { result.getOrThrow() }
+        assertFailsWith<
+            me.bookk.feature.services.domain.api.service.EditService.Error.InvalidName,
+            > {
+            result.getOrThrow()
+        }
     }
 
     @Test
@@ -123,13 +134,18 @@ class EditServiceImplTest {
         given()
         val fixture = Fixture()
 
-        everySuspend { fixture.dataSource.editService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200012, "rejected")
+        everySuspend { fixture.dataSource.editService(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200012, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubService()) }
 
         then()
-        assertFailsWith<me.bookk.feature.services.domain.api.service.EditService.Error.GroupNotFound> { result.getOrThrow() }
+        assertFailsWith<
+            me.bookk.feature.services.domain.api.service.EditService.Error.GroupNotFound,
+            > {
+            result.getOrThrow()
+        }
     }
 
     @Test
@@ -137,13 +153,18 @@ class EditServiceImplTest {
         given()
         val fixture = Fixture()
 
-        everySuspend { fixture.dataSource.editService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200037, "rejected")
+        everySuspend { fixture.dataSource.editService(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200037, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubService()) }
 
         then()
-        assertFailsWith<me.bookk.feature.services.domain.api.service.EditService.Error.InvalidPricePrecision> { result.getOrThrow() }
+        assertFailsWith<
+            me.bookk.feature.services.domain.api.service.EditService.Error.InvalidPricePrecision,
+            > {
+            result.getOrThrow()
+        }
     }
 
     @Test
@@ -151,13 +172,17 @@ class EditServiceImplTest {
         given()
         val fixture = Fixture()
 
-        everySuspend { fixture.dataSource.editService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200038, "rejected")
+        everySuspend { fixture.dataSource.editService(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200038, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubService()) }
 
         then()
-        assertFailsWith<me.bookk.feature.services.domain.api.service.EditService.Error.InvalidBusinessCurrency> { result.getOrThrow() }
+        assertFailsWith<
+            me.bookk.feature.services.domain.api.service.EditService.Error.InvalidBusinessCurrency,
+            > {
+            result.getOrThrow()
+        }
     }
-
 }

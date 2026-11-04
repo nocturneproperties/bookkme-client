@@ -6,10 +6,10 @@ import library.picker.PickerNavigationDestination.FinishWithResult
 import library.picker.PickerScreenArgs.Choice
 import library.picker.state.PickOptionItem
 import library.picker.state.PickOptionState
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -17,7 +17,7 @@ import me.bookk.designsystem.uistate.simple.EmptyState
 class PickOptionViewModel(
     private val pickArgs: PickerScreenArgs,
     private val factory: PickOptionStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     private var options = listOf<PickOptionItem>()
@@ -46,7 +46,7 @@ class PickOptionViewModel(
         filteredOptions.isInitialLoading = false
         filteredOptions.emptyState = EmptyState(
             image = DesignSystem.images.empty,
-            label = DesignSystem.strings.list_empty.desc()
+            label = DesignSystem.strings.list_empty.desc(),
         )
 
         queryField.placeholder = DesignSystem.strings.action_search.desc()
@@ -63,7 +63,8 @@ class PickOptionViewModel(
 
     private fun PickOptionState.renderSelectAllButton() {
         val visibleOptions = filteredOptions.items
-        selectAllButton.isVisible = pickArgs.choice == Choice.MULTIPLE && visibleOptions.isNotEmpty()
+        selectAllButton.isVisible =
+            pickArgs.choice == Choice.MULTIPLE && visibleOptions.isNotEmpty()
         selectAllButton.text = if (visibleOptions.areAllChecked()) {
             DesignSystem.strings.action_unselect_all.desc()
         } else {
@@ -96,7 +97,7 @@ class PickOptionViewModel(
         }
         uiState.filteredOptions.replace(filtered)
         uiState.selectButton.isEnabled = filtered.isNotEmpty() &&
-                filtered.any { it.checkBox.isChecked }
+            filtered.any { it.checkBox.isChecked }
         uiState.renderSelectAllButton()
     }
 

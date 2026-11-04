@@ -4,6 +4,7 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -13,9 +14,8 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.deleteConfirmation
-import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.services.domain.api.GetServicesPermissions
@@ -39,7 +39,7 @@ class ServiceListViewModel(
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     private val getServicesPermissions: GetServicesPermissions,
     stateFactory: ServicesStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: ServiceListState = stateFactory.createServiceListState().setup()
@@ -73,7 +73,13 @@ class ServiceListViewModel(
                     name = group.name,
                     items = groupServices.map { ServiceUI(it) },
                     onItemClick = weakVMClosure { vm, item -> vm.onServiceClick(item) },
-                    onItemDeleteClick = if (canDelete) weakVMClosure { vm, item -> vm.onServiceDeleteClick(item) } else null
+                    onItemDeleteClick = if (canDelete) {
+                        weakVMClosure { vm, item ->
+                            vm.onServiceDeleteClick(item)
+                        }
+                    } else {
+                        null
+                    },
                 )
             }
         items = grouped
@@ -99,7 +105,7 @@ class ServiceListViewModel(
             launchIn = DispatcherProvider.io,
             call = { getServicesPermissions(businessId) },
             onComplete = { renderPermissions(it) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -109,8 +115,8 @@ class ServiceListViewModel(
             listOf(
                 uiState.appBar.action(
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.onAddServiceClick() }
-                )
+                    onClick = weakVMClosure { it.onAddServiceClick() },
+                ),
             )
         } else {
             emptyList()
@@ -124,7 +130,7 @@ class ServiceListViewModel(
             listState = uiState.services,
             notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = { getServices.refresh(businessId) }
+            call = { getServices.refresh(businessId) },
         )
     }
 
@@ -136,8 +142,8 @@ class ServiceListViewModel(
     private fun onServiceDeleteClick(serviceUI: ServiceUI) {
         uiState.notifications.add(
             PresentationNotification.Message.deleteConfirmation(
-                onConfirmed = { deleteServiceItem(serviceUI) }
-            )
+                onConfirmed = { deleteServiceItem(serviceUI) },
+            ),
         )
     }
 
@@ -148,7 +154,7 @@ class ServiceListViewModel(
             onStart = { uiState.refreshState.isRefreshing = true },
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.refreshState.isRefreshing = false }
+            onTerminate = { uiState.refreshState.isRefreshing = false },
         )
     }
 
@@ -157,7 +163,7 @@ class ServiceListViewModel(
             launchIn = DispatcherProvider.io,
             call = { observeCurrentBusinessId().filterNotNull().first() },
             onComplete = { uiState.navigation.push(AddService(it)) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -169,9 +175,11 @@ class ServiceListViewModel(
         }
         val filtered = items
             .map {
-                it.copy(items = it.items.filter {
-                    it.title.contains(query, ignoreCase = true)
-                })
+                it.copy(
+                    items = it.items.filter {
+                        it.title.contains(query, ignoreCase = true)
+                    },
+                )
             }
             .filter { it.items.isNotEmpty() }
         uiState.services.replace(filtered)
@@ -188,11 +196,11 @@ class ServiceListViewModel(
         searchField.onTextChanged = weakVMClosure { vm, query -> vm.onSearchQueryChanged(query) }
         groupsSection = Action(
             title = ServicesRes.strings.services_create_groups.desc(),
-            onClick = weakVMClosure { it.uiState.navigation.push(ServiceGroups) }
+            onClick = weakVMClosure { it.uiState.navigation.push(ServiceGroups) },
         )
         services.emptyState = EmptyState(
             image = DesignSystem.images.empty,
-            label = ServicesRes.strings.services_empty.desc()
+            label = ServicesRes.strings.services_empty.desc(),
         )
     }
 

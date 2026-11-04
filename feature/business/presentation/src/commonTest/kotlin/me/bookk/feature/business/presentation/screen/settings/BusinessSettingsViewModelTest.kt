@@ -1,5 +1,6 @@
 package me.bookk.feature.business.presentation.screen.settings
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -12,7 +13,6 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
-import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -21,8 +21,8 @@ import library.device.api.DeviceFacade
 import library.money.api.Currency
 import library.money.api.Money
 import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -89,7 +89,7 @@ class BusinessSettingsViewModelTest {
             observeDashboardBusinessChanges = observeDashboardBusinessChanges,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeBusinessStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
 
         fun sutWith(business: Business): BusinessSettingsViewModel {
@@ -98,18 +98,20 @@ class BusinessSettingsViewModelTest {
         }
 
         fun stubUpdateEcho() {
-            everySuspend { updateBusiness(capture(updates)) } calls { (update: Business.Update) ->
-                stubBusiness(id = update.id, name = update.name, schedule = update.schedule)
-            }
+            everySuspend { updateBusiness(capture(updates)) } calls
+                { (update: Business.Update) ->
+                    stubBusiness(id = update.id, name = update.name, schedule = update.schedule)
+                }
         }
     }
 
     private fun socialBusiness() = stubBusiness(
         name = "Salon",
         socials = mapOf(
-            Business.SocialKind.INSTAGRAM to Business.Social(Business.SocialKind.INSTAGRAM, "insta"),
-            Business.SocialKind.PHONE to Business.Social(Business.SocialKind.PHONE, "+380")
-        )
+            Business.SocialKind.INSTAGRAM to
+                Business.Social(Business.SocialKind.INSTAGRAM, "insta"),
+            Business.SocialKind.PHONE to Business.Social(Business.SocialKind.PHONE, "+380"),
+        ),
     )
 
     @Test
@@ -223,7 +225,9 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertFalse(sut.uiState.save.isLoading)
     }
 
@@ -238,7 +242,12 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -252,7 +261,11 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -318,7 +331,13 @@ class BusinessSettingsViewModelTest {
         val fixture = Fixture()
         fixture.stubUpdateEcho()
         val schedule = stubWorkingSchedule().let {
-            it.copy(days = it.days + (DayOfWeek.MONDAY to it.monday.copy(workingTime = emptyList(), isActive = true)))
+            it.copy(
+                days = it.days +
+                    (
+                        DayOfWeek.MONDAY to
+                            it.monday.copy(workingTime = emptyList(), isActive = true)
+                        ),
+            )
         }
         val sut = fixture.sutWith(stubBusiness(schedule = schedule))
         sut.uiState.schedule.monday.addTimeButton.onClick?.invoke()
@@ -330,7 +349,10 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        assertEquals(listOf(WorkHour(LocalTime(10, 0), LocalTime(18, 0))), fixture.updates.get().schedule.monday.workingTime)
+        assertEquals(
+            listOf(WorkHour(LocalTime(10, 0), LocalTime(18, 0))),
+            fixture.updates.get().schedule.monday.workingTime,
+        )
     }
 
     @Test
@@ -386,7 +408,9 @@ class BusinessSettingsViewModelTest {
     fun `ignores date range selection without end date`() = runUnitTest {
         given()
         val sut = Fixture().sutWith(stubBusiness())
-        sut.uiState.schedule.dateRange.startDate.datePicker.onDatePicked?.invoke(LocalDate(2030, 1, 10))
+        sut.uiState.schedule.dateRange.startDate.datePicker.onDatePicked?.invoke(
+            LocalDate(2030, 1, 10),
+        )
 
         whenn()
         sut.uiState.schedule.dateRange.onDateRangeSelected()
@@ -399,7 +423,10 @@ class BusinessSettingsViewModelTest {
     fun `removes day off`() = runUnitTest {
         given()
         val dayOff = DayOffRange(LocalDate(2030, 1, 10), LocalDate(2030, 1, 12))
-        val sut = Fixture().sutWith(stubBusiness(schedule = stubWorkingSchedule().copy(dayOffs = listOf(dayOff))))
+        val sut = Fixture()
+            .sutWith(
+                stubBusiness(schedule = stubWorkingSchedule().copy(dayOffs = listOf(dayOff))),
+            )
         val rendered = sut.uiState.schedule.dayOffs.selectedItems.toList()
 
         whenn()
@@ -414,7 +441,8 @@ class BusinessSettingsViewModelTest {
     fun `shows message when active day has no work hours`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateBusiness(any()) } throws UpdateBusiness.Error.ActiveDayWithoutWorkHours()
+        everySuspend { fixture.updateBusiness(any()) } throws
+            UpdateBusiness.Error.ActiveDayWithoutWorkHours()
         val sut = fixture.sutWith(stubBusiness())
 
         whenn()
@@ -429,7 +457,8 @@ class BusinessSettingsViewModelTest {
     fun `shows message when day off range is invalid`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateBusiness(any()) } throws UpdateBusiness.Error.InvalidDayOffRange()
+        everySuspend { fixture.updateBusiness(any()) } throws
+            UpdateBusiness.Error.InvalidDayOffRange()
         val sut = fixture.sutWith(stubBusiness())
 
         whenn()
@@ -506,16 +535,17 @@ class BusinessSettingsViewModelTest {
             viber.enabled,
             currency.textField.enabled,
             photo.isEnabled,
-            schedule.isEditable
+            schedule.isEditable,
         )
     }
 
     private fun editableBusiness() = stubBusiness(
-        permissions = stubPermissions(business = ResourcePermission(view = true, update = true))
+        permissions =
+        stubPermissions(business = ResourcePermission(view = true, update = true)),
     )
 
     private fun readOnlyBusiness() = stubBusiness(
-        permissions = stubPermissions(business = ResourcePermission(view = true))
+        permissions = stubPermissions(business = ResourcePermission(view = true)),
     )
 
     @Test
@@ -579,7 +609,11 @@ class BusinessSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertNotNull(sut.uiState.navigation.navigationDestination.singleOrNull { it == BusinessSettingsDestination.Back })
+        assertNotNull(
+            sut.uiState.navigation.navigationDestination.singleOrNull {
+                it == BusinessSettingsDestination.Back
+            },
+        )
     }
 
     @Test
@@ -592,9 +626,16 @@ class BusinessSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(BusinessRes.strings.business_settings_unsaved_changes_title.desc(), confirmation.title)
-        assertEquals(BusinessRes.strings.business_settings_unsaved_changes_message.desc(), confirmation.message)
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            BusinessRes.strings.business_settings_unsaved_changes_title.desc(),
+            confirmation.title,
+        )
+        assertEquals(
+            BusinessRes.strings.business_settings_unsaved_changes_message.desc(),
+            confirmation.message,
+        )
         assertNull(sut.uiState.navigation.navigationDestination.firstOrNull())
     }
 
@@ -618,13 +659,17 @@ class BusinessSettingsViewModelTest {
         val sut = Fixture().sutWith(stubBusiness(name = "Old"))
         sut.onNameChanged("New")
         sut.uiState.appBar.onBackClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
 
         whenn()
         confirmation.tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -633,7 +678,8 @@ class BusinessSettingsViewModelTest {
         val sut = Fixture().sutWith(stubBusiness(name = "Old"))
         sut.onNameChanged("New")
         sut.uiState.appBar.onBackClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
 
         whenn()
         confirmation.tap(ActionType.CANCEL)
@@ -656,8 +702,15 @@ class BusinessSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.Message })
-        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.Message
+            },
+        )
+        assertEquals(
+            listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -669,7 +722,14 @@ class BusinessSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.Message })
-        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.Message
+            },
+        )
+        assertEquals(
+            listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

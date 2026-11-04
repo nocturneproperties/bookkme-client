@@ -13,5 +13,5 @@ internal class InstantAppointmentDraftRemote(
     @ProtoNumber(4) val date: Instant,
     @ProtoNumber(5) val note: String,
     @ProtoNumber(6) val offerToken: String,
-    @ProtoNumber(7) val clientId: Uuid
+    @ProtoNumber(7) val clientId: Uuid,
 )

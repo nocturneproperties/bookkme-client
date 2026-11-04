@@ -182,11 +182,13 @@ class UpdateAppointmentImplTest {
             fixture.sut(appointment)
         }
     }
+
     @Test
     fun `maps backend error 300012 to DateInPast`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.updateAppointment(any()) } throws DomainError.BusinessError(300012, "rejected")
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(300012, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubAppointment()) }
@@ -199,7 +201,8 @@ class UpdateAppointmentImplTest {
     fun `maps backend error 300024 to InvalidServiceSelection`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.updateAppointment(any()) } throws DomainError.BusinessError(300024, "rejected")
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(300024, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubAppointment()) }
@@ -212,7 +215,8 @@ class UpdateAppointmentImplTest {
     fun `maps backend error 200013 to ServiceNotFound`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.updateAppointment(any()) } throws DomainError.BusinessError(200013, "rejected")
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(200013, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubAppointment()) }
@@ -225,7 +229,8 @@ class UpdateAppointmentImplTest {
     fun `maps backend error 200024 to EmployeeNotFound`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.updateAppointment(any()) } throws DomainError.BusinessError(200024, "rejected")
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(200024, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubAppointment()) }
@@ -238,7 +243,8 @@ class UpdateAppointmentImplTest {
     fun `maps backend error 900001 to ConcurrentModification`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.updateAppointment(any()) } throws DomainError.BusinessError(900001, "rejected")
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(900001, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubAppointment()) }
@@ -251,7 +257,8 @@ class UpdateAppointmentImplTest {
     fun `maps backend error 300026 to EditWindowClosed`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.updateAppointment(any()) } throws DomainError.BusinessError(300026, "rejected")
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(300026, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(stubAppointment()) }
@@ -259,5 +266,4 @@ class UpdateAppointmentImplTest {
         then()
         assertFailsWith<UpdateAppointment.Error.EditWindowClosed> { result.getOrThrow() }
     }
-
 }

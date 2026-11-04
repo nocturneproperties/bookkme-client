@@ -47,7 +47,7 @@ fun RadioButton(
     prefix: @Composable () -> Unit = {},
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium.primary(),
     onClick: (() -> Unit)? = state.onClick,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     Row(
         modifier = modifier
@@ -59,7 +59,7 @@ fun RadioButton(
                 role = Role.RadioButton,
                 interactionSource = interactionSource,
             ),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         prefix()
         Text(
@@ -67,7 +67,7 @@ fun RadioButton(
                 .weight(1f)
                 .padding(start = 16.dp),
             text = state.text.localized(),
-            style = textStyle
+            style = textStyle,
         )
 
         CustomRadioButtonDrawable(state)
@@ -88,17 +88,17 @@ private fun CustomRadioButtonDrawable(
     val dotRadius = animateDpAsState(
         targetValue = if (state.isSelected) (size / 4.5f) else 0.dp,
         animationSpec = tween(durationMillis = 100),
-        label = "radioButton"
+        label = "radioButton",
     )
     val itemColor by animateColorAsState(
         if (state.isEnabled) {
             if (state.isSelected) selectedColor else defaultColor
         } else {
             if (state.isSelected) strokeColorDisabled else defaultColor
-        }
+        },
     )
     val strokeColor by animateColorAsState(
-        if (state.isEnabled) strokeColor else strokeColorDisabled
+        if (state.isEnabled) strokeColor else strokeColorDisabled,
     )
     val colorBrush = SolidColor(itemColor)
     val strokeBrush = SolidColor(strokeColor)
@@ -108,30 +108,29 @@ private fun CustomRadioButtonDrawable(
             .minimumInteractiveComponentSize()
             .wrapContentSize(Alignment.Center)
             .padding(padding)
-            .requiredSize(size)
+            .requiredSize(size),
     ) {
         drawCircle(
             brush = colorBrush,
-            radius = (size / 2).toPx()
+            radius = (size / 2).toPx(),
         )
         val strokePx = strokeWidth.toPx()
         if (strokePx > 0f) {
             drawCircle(
                 brush = strokeBrush,
                 radius = (size / 2).toPx(),
-                style = Stroke(width = strokePx)
+                style = Stroke(width = strokePx),
             )
         }
         if (dotRadius.value > 0.dp) {
             drawCircle(
                 brush = defaultColorBrush,
                 radius = dotRadius.value.toPx(),
-                style = Fill
+                style = Fill,
             )
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -142,11 +141,11 @@ private fun PreviewCheckBox() {
             RadioButton(modifier = Modifier, AndroidRadioButtonState(isSelected = false))
             RadioButton(
                 modifier = Modifier,
-                AndroidRadioButtonState(isSelected = true, isEnabled = false)
+                AndroidRadioButtonState(isSelected = true, isEnabled = false),
             )
             RadioButton(
                 modifier = Modifier,
-                AndroidRadioButtonState(isSelected = false, isEnabled = false)
+                AndroidRadioButtonState(isSelected = false, isEnabled = false),
             )
         }
     }

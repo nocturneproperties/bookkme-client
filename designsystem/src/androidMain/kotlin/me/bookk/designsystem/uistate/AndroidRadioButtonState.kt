@@ -13,8 +13,9 @@ class AndroidRadioButtonState(
     isSelected: Boolean = false,
     isEnabled: Boolean = true,
     text: StringDesc = "".desc(),
-    onCheckedChange: (() -> Unit)? = null
-) : AndroidViewState(isVisible), RadioButtonState {
+    onCheckedChange: (() -> Unit)? = null,
+) : AndroidViewState(isVisible),
+    RadioButtonState {
     override var isEnabled: Boolean by mutableStateOf(isEnabled)
     override var isSelected: Boolean by mutableStateOf(isSelected)
     override var onClick: (() -> Unit)? by mutableStateOf(onCheckedChange)

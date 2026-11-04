@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.editEmployeeScreen(navigation: EmployeesNavigation) {
     composable<EmployeesDestinations.EditEmployee>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val route: EmployeesDestinations.EditEmployee = it.toRoute()
         val viewModel: EditEmployeeViewModel = koinViewModel { parametersOf(route.id) }

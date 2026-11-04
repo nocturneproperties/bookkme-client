@@ -16,6 +16,7 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -27,14 +28,13 @@ import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
-import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
-import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
+import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.CurrentBusiness
@@ -49,7 +49,7 @@ class AppointmentListViewModel(
     private val getOwnAppointmentRequests: GetOwnAppointmentRequests,
     private val dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     private val shortWeekdayFormat = dateLocalizer.forStyle(DateStyle.NARROW_WEEKDAY)
@@ -96,7 +96,10 @@ class AppointmentListViewModel(
             .observe()
     }
 
-    private fun employeeAppointments(business: CurrentBusiness, date: LocalDate): Flow<List<Appointment>> {
+    private fun employeeAppointments(
+        business: CurrentBusiness,
+        date: LocalDate,
+    ): Flow<List<Appointment>> {
         if (!business.canViewAppointments) return flowOf(emptyList())
         val employeeId = business.employeeId ?: return flowOf(emptyList())
         return getAppointmentsForBusiness.flow(date, employeeId)
@@ -126,7 +129,8 @@ class AppointmentListViewModel(
     }
 
     private fun renderRequestCount(count: Int) {
-        uiState.requestsButton.text = AppointmentsRes.strings.appointments_requests_count.format(count)
+        uiState.requestsButton.text =
+            AppointmentsRes.strings.appointments_requests_count.format(count)
     }
 
     private fun observeAppointmentsKey() {
@@ -150,7 +154,7 @@ class AppointmentListViewModel(
             notifications = uiState.notifications,
             refreshState = uiState.refresh,
             onRefresh = weakVMClosure { it.refreshRequests(it.businessId) },
-            call = { refreshEmployeeAppointments(business, date) }
+            call = { refreshEmployeeAppointments(business, date) },
         )
     }
 
@@ -161,7 +165,10 @@ class AppointmentListViewModel(
         uiState.refresh.onRefresh = weakVMClosure { it.refreshRequests(it.businessId) }
     }
 
-    private suspend fun refreshEmployeeAppointments(business: CurrentBusiness, date: LocalDate): List<Appointment> {
+    private suspend fun refreshEmployeeAppointments(
+        business: CurrentBusiness,
+        date: LocalDate,
+    ): List<Appointment> {
         val employeeId = business.employeeId ?: return emptyList()
         return getAppointmentsForBusiness.refresh(business.id, date, employeeId)
     }
@@ -172,7 +179,7 @@ class AppointmentListViewModel(
             onStart = { uiState.requestsButton.startLoading() },
             call = { getOwnAppointmentRequests.refresh(businessId) },
             onError = { /* Silently ignore */ },
-            onTerminate = { uiState.requestsButton.stopLoading() }
+            onTerminate = { uiState.requestsButton.stopLoading() },
         )
     }
 
@@ -191,7 +198,7 @@ class AppointmentListViewModel(
             DateInfo(
                 date = weekDay,
                 str = shortWeekdayFormat.format(weekDay),
-                isToday = weekDay == today
+                isToday = weekDay == today,
             )
         }
     }
@@ -218,7 +225,7 @@ class AppointmentListViewModel(
             AppointmentItemState(
                 appointment = appointment,
                 formatter = dateFormat,
-                onItemClick = weakVMClosure { it.onAppointmentClick(appointment) }
+                onItemClick = weakVMClosure { it.onAppointmentClick(appointment) },
             )
         }
         uiState.appointments.replace(items)
@@ -228,14 +235,21 @@ class AppointmentListViewModel(
         val pickDate = appBar.action(
             contentDescription = AppointmentsRes.strings.appointments_pick_date.desc(),
             icon = DesignSystem.images.date_range,
-            onClick = weakVMClosure { it.onPickDateClick() }
+            onClick = weakVMClosure { it.onPickDateClick() },
         )
         val newAppointment = appBar.action(
             contentDescription = DesignSystem.strings.action_new.desc(),
             icon = DesignSystem.images.plus,
-            onClick = weakVMClosure { it.onNewAppointmentClick() }
+            onClick = weakVMClosure { it.onNewAppointmentClick() },
         )
-        appBar.actions.replace(listOfNotNull(pickDate, newAppointment.takeIf { canCreateAppointments }))
+        appBar.actions.replace(
+            listOfNotNull(
+                pickDate,
+                newAppointment.takeIf {
+                    canCreateAppointments
+                },
+            ),
+        )
     }
 
     private fun AppointmentListState.setup() = apply {

@@ -6,7 +6,7 @@ import me.bookk.feature.settings.domain.datasource.NotificationSettingsDataSourc
 
 internal class UpdateNotificationTokenImpl(
     private val notificationSettingsDataSource: NotificationSettingsDataSource,
-    private val deviceDataSource: DeviceDataSource
+    private val deviceDataSource: DeviceDataSource,
 ) : UpdateNotificationToken {
 
     override suspend fun invoke(token: String) {

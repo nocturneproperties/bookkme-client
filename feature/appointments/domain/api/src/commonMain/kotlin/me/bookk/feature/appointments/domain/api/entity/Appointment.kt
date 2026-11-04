@@ -17,7 +17,7 @@ data class Appointment(
     val note: String,
     val cancellationReason: String,
     val completedBy: AppointmentCompletedBy? = null,
-    val priceAdjustment: PriceAdjustment? = null
+    val priceAdjustment: PriceAdjustment? = null,
 ) {
 
     val providedServices: List<ServiceSnapshot> by lazy(LazyThreadSafetyMode.NONE) {
@@ -41,7 +41,8 @@ data class Appointment(
     }
 
     fun canBeMarkedNoShow(now: LocalDateTime = LocalDateTime.now()): Boolean {
-        val markableStatus = status == AppointmentStatus.SCHEDULED || status == AppointmentStatus.COMPLETED
+        val markableStatus =
+            status == AppointmentStatus.SCHEDULED || status == AppointmentStatus.COMPLETED
         return markableStatus && hasStarted(now)
     }
 
@@ -58,7 +59,7 @@ data class Appointment(
             id: Uuid = Uuid.random(),
             userId: Uuid = Uuid.random(),
             businessId: Uuid = Uuid.random(),
-            date: LocalDateTime = LocalDateTime.now()
+            date: LocalDateTime = LocalDateTime.now(),
         ) = Appointment(
             id = id,
             userId = userId,
@@ -69,7 +70,7 @@ data class Appointment(
             status = AppointmentStatus.SCHEDULED,
             date = date,
             note = "Note",
-            cancellationReason = ""
+            cancellationReason = "",
         )
     }
 }

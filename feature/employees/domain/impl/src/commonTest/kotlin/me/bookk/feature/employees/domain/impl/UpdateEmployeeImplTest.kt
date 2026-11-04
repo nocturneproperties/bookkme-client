@@ -55,17 +55,27 @@ class UpdateEmployeeImplTest {
         }
         val sut = UpdateEmployeeImpl(dataSource, isBusinessOwner)
 
-        fun stubSuccess(employee: Employee, profile: Employee = employee, permissions: Employee = employee) {
+        fun stubSuccess(
+            employee: Employee,
+            profile: Employee = employee,
+            permissions: Employee = employee,
+        ) {
             everySuspend { dataSource.updateEmployee(employee) } returns profile
             everySuspend {
-                dataSource.updateEmployeePermissions(employee.businessId, employee.id, employee.permissions)
+                dataSource.updateEmployeePermissions(
+                    employee.businessId,
+                    employee.id,
+                    employee.permissions,
+                )
             } returns permissions
             everySuspend { dataSource.saveEmployeesInDb(any()) } returns Unit
         }
     }
 
     private fun Employee.withEmployeesAccess() = copy(
-        permissions = permissions.copy(employees = ResourcePermission(view = true, update = true, delete = false))
+        permissions = permissions.copy(
+            employees = ResourcePermission(view = true, update = true, delete = false),
+        ),
     )
 
     @Test
@@ -80,7 +90,11 @@ class UpdateEmployeeImplTest {
 
         then()
         verifySuspend(VerifyMode.exactly(1)) {
-            fixture.dataSource.updateEmployeePermissions(employee.businessId, employee.id, employee.permissions)
+            fixture.dataSource.updateEmployeePermissions(
+                employee.businessId,
+                employee.id,
+                employee.permissions,
+            )
         }
     }
 
@@ -97,24 +111,29 @@ class UpdateEmployeeImplTest {
         fixture.sut(owner)
 
         then()
-        verifySuspend(VerifyMode.not) { fixture.dataSource.updateEmployeePermissions(any(), any(), any()) }
+        verifySuspend(VerifyMode.not) {
+            fixture.dataSource.updateEmployeePermissions(any(), any(), any())
+        }
     }
 
     @Test
-    fun `does not send the permissions request when the current user is not the business owner`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val employee = stubEmployee().withEmployeesAccess()
-        everySuspend { fixture.isBusinessOwner(employee.businessId) } returns false
-        everySuspend { fixture.dataSource.updateEmployee(employee) } returns employee
-        everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
+    fun `does not send the permissions request when the current user is not the business owner`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val employee = stubEmployee().withEmployeesAccess()
+            everySuspend { fixture.isBusinessOwner(employee.businessId) } returns false
+            everySuspend { fixture.dataSource.updateEmployee(employee) } returns employee
+            everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
 
-        whenn()
-        fixture.sut(employee)
+            whenn()
+            fixture.sut(employee)
 
-        then()
-        verifySuspend(VerifyMode.not) { fixture.dataSource.updateEmployeePermissions(any(), any(), any()) }
-    }
+            then()
+            verifySuspend(VerifyMode.not) {
+                fixture.dataSource.updateEmployeePermissions(any(), any(), any())
+            }
+        }
 
     @Test
     fun `saves and returns the profile response for the business owner`() = runUnitTest {
@@ -135,20 +154,28 @@ class UpdateEmployeeImplTest {
     }
 
     @Test
-    fun `returns profile from the update response and permissions from the permissions response`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val employee = stubEmployee()
-        val profileResponse = employee.copy(name = "Updated")
-        val permissionsResponse = employee.withEmployeesAccess()
-        fixture.stubSuccess(employee, profile = profileResponse, permissions = permissionsResponse)
+    fun `returns profile from the update response and permissions from the permissions response`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val employee = stubEmployee()
+            val profileResponse = employee.copy(name = "Updated")
+            val permissionsResponse = employee.withEmployeesAccess()
+            fixture.stubSuccess(
+                employee,
+                profile = profileResponse,
+                permissions = permissionsResponse,
+            )
 
-        whenn()
-        val result = fixture.sut(employee)
+            whenn()
+            val result = fixture.sut(employee)
 
-        then()
-        assertEquals(profileResponse.copy(permissions = permissionsResponse.permissions), result)
-    }
+            then()
+            assertEquals(
+                profileResponse.copy(permissions = permissionsResponse.permissions),
+                result,
+            )
+        }
 
     @Test
     fun `sends both requests concurrently`() = runUnitTest {
@@ -156,16 +183,22 @@ class UpdateEmployeeImplTest {
         val fixture = Fixture()
         val employee = stubEmployee()
         val permissionsRequestStarted = CompletableDeferred<Unit>()
-        everySuspend { fixture.dataSource.updateEmployee(employee) } calls {
-            permissionsRequestStarted.await()
-            employee
-        }
+        everySuspend { fixture.dataSource.updateEmployee(employee) } calls
+            {
+                permissionsRequestStarted.await()
+                employee
+            }
         everySuspend {
-            fixture.dataSource.updateEmployeePermissions(employee.businessId, employee.id, employee.permissions)
-        } calls {
-            permissionsRequestStarted.complete(Unit)
-            employee
-        }
+            fixture.dataSource.updateEmployeePermissions(
+                employee.businessId,
+                employee.id,
+                employee.permissions,
+            )
+        } calls
+            {
+                permissionsRequestStarted.complete(Unit)
+                employee
+            }
         everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
 
         whenn()
@@ -189,7 +222,9 @@ class UpdateEmployeeImplTest {
 
         then()
         verifySuspend {
-            fixture.dataSource.saveEmployeesInDb(listOf(profileResponse.copy(permissions = permissionsResponse.permissions)))
+            fixture.dataSource.saveEmployeesInDb(
+                listOf(profileResponse.copy(permissions = permissionsResponse.permissions)),
+            )
         }
     }
 
@@ -200,7 +235,11 @@ class UpdateEmployeeImplTest {
         val employee = stubEmployee()
         everySuspend { fixture.dataSource.updateEmployee(employee) } returns employee
         everySuspend {
-            fixture.dataSource.updateEmployeePermissions(employee.businessId, employee.id, employee.permissions)
+            fixture.dataSource.updateEmployeePermissions(
+                employee.businessId,
+                employee.id,
+                employee.permissions,
+            )
         } throws IllegalStateException("network")
         everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
 
@@ -228,20 +267,24 @@ class UpdateEmployeeImplTest {
     }
 
     @Test
-    fun `throws ActiveDayWithoutWorkHours on BUSINESS_EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val employee = stubEmployee()
-        fixture.stubSuccess(employee)
-        everySuspend { fixture.dataSource.updateEmployee(employee) } throws
-            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS, "msg")
+    fun `throws ActiveDayWithoutWorkHours on BUSINESS_EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val employee = stubEmployee()
+            fixture.stubSuccess(employee)
+            everySuspend { fixture.dataSource.updateEmployee(employee) } throws
+                DomainError.BusinessError(
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS,
+                    "msg",
+                )
 
-        whenn()
-        then()
-        assertFailsWith<UpdateEmployee.Error.ActiveDayWithoutWorkHours> {
-            fixture.sut(employee)
+            whenn()
+            then()
+            assertFailsWith<UpdateEmployee.Error.ActiveDayWithoutWorkHours> {
+                fixture.sut(employee)
+            }
         }
-    }
 
     @Test
     fun `throws InvalidDayOffRange on BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE`() = runUnitTest {
@@ -250,7 +293,10 @@ class UpdateEmployeeImplTest {
         val employee = stubEmployee()
         fixture.stubSuccess(employee)
         everySuspend { fixture.dataSource.updateEmployee(employee) } throws
-            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE, "msg")
+            DomainError.BusinessError(
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE,
+                "msg",
+            )
 
         whenn()
         then()
@@ -266,8 +312,16 @@ class UpdateEmployeeImplTest {
         val employee = stubEmployee()
         fixture.stubSuccess(employee)
         everySuspend {
-            fixture.dataSource.updateEmployeePermissions(employee.businessId, employee.id, employee.permissions)
-        } throws DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_INSUFFICIENT_GRANT_PERMISSION, "msg")
+            fixture.dataSource.updateEmployeePermissions(
+                employee.businessId,
+                employee.id,
+                employee.permissions,
+            )
+        } throws
+            DomainError.BusinessError(
+                EmployeeErrorCodes.BUSINESS_INSUFFICIENT_GRANT_PERMISSION,
+                "msg",
+            )
 
         whenn()
         then()

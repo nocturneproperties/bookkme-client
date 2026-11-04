@@ -2,12 +2,12 @@ package me.bookk.feature.settings.domain.impl
 
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.domain.entity.onBusinessError
-import me.bookk.feature.settings.domain.datasource.SettingsErrorCodes
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
 import me.bookk.feature.settings.domain.api.entity.Passkey
+import me.bookk.feature.settings.domain.datasource.SettingsErrorCodes
 import me.bookk.feature.settings.domain.datasource.passkey.AddPasskeyChallenge
 import me.bookk.feature.settings.domain.datasource.passkey.ClientSignUpResult
 import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSource
@@ -15,41 +15,47 @@ import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSo
 internal class CreateNewPasskeyImpl(
     private val passkeySettingsDataSource: PasskeySettingsDataSource,
     private val passKeyManager: PassKeyManager,
-    private val getAvailablePasskeys: GetAvailablePasskeys
+    private val getAvailablePasskeys: GetAvailablePasskeys,
 ) : CreateNewPasskey {
     override suspend fun invoke(): List<Passkey> {
-        val challenge = runCatching { passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() }
+        val challenge = runCatching {
+            passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+        }
             .onBusinessError {
                 when (it.errorCode) {
-                    SettingsErrorCodes.UNABLE_TO_GENERATE_REGISTRATION_CHALLENGE -> throw CreateNewPasskey.Error.ChallengeCreationFailed()
+                    SettingsErrorCodes.UNABLE_TO_GENERATE_REGISTRATION_CHALLENGE ->
+                        throw CreateNewPasskey.Error.ChallengeCreationFailed()
                 }
-            }.getOrThrow()
+            }
+            .getOrThrow()
         val payload = createPasskeyFrom(challenge)
         passkeySettingsDataSource.sendVerifiedPasskey(
             ClientSignUpResult(
                 requestId = challenge.requestId,
-                publicKeyCredentialJson = payload.jsonPayload
-            )
+                publicKeyCredentialJson = payload.jsonPayload,
+            ),
         )
         return getAvailablePasskeys()
     }
 
-    private suspend fun createPasskeyFrom(challenge: AddPasskeyChallenge): PasskeyVerificationPayload {
+    private suspend fun createPasskeyFrom(
+        challenge: AddPasskeyChallenge,
+    ): PasskeyVerificationPayload {
         return runCatching {
             passKeyManager.create(
                 PassKeyManager.CreationRequest(
                     userId = challenge.userHandle,
                     userName = challenge.displayName,
                     challengeJson = challenge.jsonChallengeData,
-                    challenge = challenge.challenge
-                )
+                    challenge = challenge.challenge,
+                ),
             )
-        }.getOrElse {
-            throw when (it) {
-                is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                else -> CreateNewPasskey.Error.AccountCreationFailed()
-            }
         }
+            .getOrElse {
+                throw when (it) {
+                    is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
+                    else -> CreateNewPasskey.Error.AccountCreationFailed()
+                }
+            }
     }
-
 }

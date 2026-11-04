@@ -14,8 +14,9 @@ class AndroidPickerFieldState<T : PickerPresentation>(
     selectedItem: T? = null,
     title: StringDesc = "".desc(),
     type: PickerType = PickerType.BOTTOM_SHEET,
-    items: List<T> = emptyList()
-) : AndroidViewState(isVisible = true), PickerFieldState<T> {
+    items: List<T> = emptyList(),
+) : AndroidViewState(isVisible = true),
+    PickerFieldState<T> {
     override val textField: TextFieldState = AndroidTextFieldState(readOnly = true)
     override var pickerTitle: StringDesc by mutableStateOf(title)
     override var pickerType: PickerType by mutableStateOf(type)
@@ -30,5 +31,4 @@ class AndroidPickerFieldState<T : PickerPresentation>(
         this.options.clear()
         this.options.addAll(options)
     }
-
 }

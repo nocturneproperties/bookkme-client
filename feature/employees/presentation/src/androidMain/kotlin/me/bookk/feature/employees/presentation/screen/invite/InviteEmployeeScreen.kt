@@ -38,24 +38,24 @@ fun InviteEmployeeScreen(state: InviteEmployeeState) {
             Column(
                 modifier = Modifier
                     .padding(pv)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 AppCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp),
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Text(
                             text = state.descriptionText.localized(),
-                            style = MaterialTheme.typography.bodyMedium.secondary()
+                            style = MaterialTheme.typography.bodyMedium.secondary(),
                         )
                         ActionButton(
                             modifier = Modifier.fillMaxWidth(),
-                            state = state.generateCodeButton
+                            state = state.generateCodeButton,
                         )
                     }
                 }
@@ -65,13 +65,13 @@ fun InviteEmployeeScreen(state: InviteEmployeeState) {
                     List(
                         state = state.invitationsList,
                         modifier = Modifier.fillMaxSize(),
-                        idProvider = InvitationItem::id
+                        idProvider = InvitationItem::id,
                     ) {
                         InvitationRow(Modifier.animateItem(), it)
                     }
                 }
             }
-        }
+        },
     )
 }
 
@@ -84,17 +84,17 @@ private fun InvitationRow(modifier: Modifier, item: InvitationItem) {
                 .fillMaxWidth()
                 .let { if (onClick != null) it.clickable(onClick = onClick) else it }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = item.code.localized(),
                     style = MaterialTheme.typography.bodyLarge.primary(),
-                    maxLines = 1
+                    maxLines = 1,
                 )
                 Text(
                     text = item.createdOn.localized(),
-                    style = MaterialTheme.typography.bodySmall.secondary()
+                    style = MaterialTheme.typography.bodySmall.secondary(),
                 )
             }
             val statusColor = item.status.color.themed
@@ -102,13 +102,13 @@ private fun InvitationRow(modifier: Modifier, item: InvitationItem) {
                 modifier = Modifier
                     .background(
                         color = statusColor.copy(alpha = 0.15f),
-                        shape = MaterialTheme.shapes.large
+                        shape = MaterialTheme.shapes.large,
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 text = item.status.label.localized(),
                 style = MaterialTheme.typography.labelSmall,
                 color = statusColor,
-                maxLines = 1
+                maxLines = 1,
             )
         }
         HorizontalDivider(color = LocalColors.current.divider.copy(alpha = 0.5f))

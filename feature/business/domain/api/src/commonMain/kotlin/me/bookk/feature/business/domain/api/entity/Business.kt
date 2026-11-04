@@ -18,7 +18,7 @@ data class Business(
     val ownerId: Uuid? = null,
     val employeeId: Uuid? = null,
     val clientId: Uuid? = null,
-    val clientDataRetentionMonths: Int? = null
+    val clientDataRetentionMonths: Int? = null,
 ) {
     data class Update(
         val id: Uuid,
@@ -29,28 +29,22 @@ data class Business(
         val currency: Currency,
         val socials: Map<SocialKind, Social>,
         val schedule: WorkingSchedule,
-        val clientDataRetentionMonths: Int? = null
+        val clientDataRetentionMonths: Int? = null,
     )
 
-    data class Location(
-        val lat: Double,
-        val lng: Double
-    ) {
+    data class Location(val lat: Double, val lng: Double) {
         override fun toString(): String {
             return "$lat, $lng"
         }
     }
 
-    data class Social(
-        val kind: SocialKind,
-        val value: String?
-    )
+    data class Social(val kind: SocialKind, val value: String?)
 
     enum class SocialKind {
         PHONE,
         INSTAGRAM,
         TELEGRAM,
         VIBER,
-        WHATSAPP
+        WHATSAPP,
     }
 }

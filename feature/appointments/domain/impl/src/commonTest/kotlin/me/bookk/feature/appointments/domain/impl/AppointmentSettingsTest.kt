@@ -35,7 +35,7 @@ class AppointmentSettingsTest {
     private fun settings(
         activeDays: Set<DayOfWeek> = setOf(DayOfWeek.WEDNESDAY),
         workingTime: List<WorkHour> = listOf(WorkHour(LocalTime(9, 0), LocalTime(17, 0))),
-        dayOffs: List<DayOffRange> = emptyList()
+        dayOffs: List<DayOffRange> = emptyList(),
     ) = AppointmentSettings(
         id = Uuid.random(),
         businessId = Uuid.random(),
@@ -45,16 +45,16 @@ class AppointmentSettingsTest {
                 DayOfWeekSchedule(
                     dayOfWeek = day,
                     workingTime = if (day in activeDays) workingTime else emptyList(),
-                    isActive = day in activeDays
+                    isActive = day in activeDays,
                 )
             },
-            dayOffs = dayOffs
+            dayOffs = dayOffs,
         ),
         automaticApproval = false,
         inBetweenBreakInMinutes = 10,
         appointmentNote = "",
         permissions = ResourcePermission(),
-        automaticCompletion = true
+        automaticCompletion = true,
     )
 
     private fun instantAt(date: LocalDate, time: LocalTime) =
@@ -88,7 +88,9 @@ class AppointmentSettingsTest {
     fun `isInWorkday returns false when the date falls inside a day off range`() = runUnitTest {
         given()
         val sut = settings(
-            dayOffs = listOf(DayOffRange(start = LocalDate(2026, 8, 3), end = LocalDate(2026, 8, 7)))
+            dayOffs = listOf(
+                DayOffRange(start = LocalDate(2026, 8, 3), end = LocalDate(2026, 8, 7)),
+            ),
         )
 
         whenn()
@@ -102,7 +104,7 @@ class AppointmentSettingsTest {
     fun `isInWorkday returns false on the day off boundary dates`() = runUnitTest {
         given()
         val sut = settings(
-            dayOffs = listOf(DayOffRange(start = wednesday, end = wednesday))
+            dayOffs = listOf(DayOffRange(start = wednesday, end = wednesday)),
         )
 
         whenn()
@@ -116,7 +118,9 @@ class AppointmentSettingsTest {
     fun `isInWorkday returns true when day offs cover a different range`() = runUnitTest {
         given()
         val sut = settings(
-            dayOffs = listOf(DayOffRange(start = LocalDate(2026, 9, 1), end = LocalDate(2026, 9, 5)))
+            dayOffs = listOf(
+                DayOffRange(start = LocalDate(2026, 9, 1), end = LocalDate(2026, 9, 5)),
+            ),
         )
 
         whenn()

@@ -10,7 +10,7 @@ class AndroidDateTimePickerState(
     pickedDate: LocalDateTime? = null,
     maxDate: LocalDateTime? = null,
     minDate: LocalDateTime? = null,
-    onDatePicked: ((LocalDateTime) -> Unit)? = null
+    onDatePicked: ((LocalDateTime) -> Unit)? = null,
 ) : DateTimePickerState {
     override var isDatePickerVisible: Boolean by mutableStateOf(isDatePickerVisible)
     override var pickedDate: LocalDateTime? by mutableStateOf(pickedDate)

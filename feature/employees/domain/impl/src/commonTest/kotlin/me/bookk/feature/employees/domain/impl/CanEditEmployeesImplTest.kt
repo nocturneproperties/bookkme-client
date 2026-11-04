@@ -52,7 +52,9 @@ class CanEditEmployeesImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        fixture.stubBusinesses(stubBusiness(id = businessId, permissions = employeesPermission(update = true)))
+        fixture.stubBusinesses(
+            stubBusiness(id = businessId, permissions = employeesPermission(update = true)),
+        )
 
         whenn()
         val result = fixture.sut(businessId)
@@ -66,7 +68,9 @@ class CanEditEmployeesImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        fixture.stubBusinesses(stubBusiness(id = businessId, permissions = employeesPermission(update = false)))
+        fixture.stubBusinesses(
+            stubBusiness(id = businessId, permissions = employeesPermission(update = false)),
+        )
 
         whenn()
         val result = fixture.sut(businessId)
@@ -82,7 +86,7 @@ class CanEditEmployeesImplTest {
         val businessId = Uuid.random()
         fixture.stubBusinesses(
             stubBusiness(id = Uuid.random(), permissions = employeesPermission(update = true)),
-            stubBusiness(id = businessId, permissions = employeesPermission(update = false))
+            stubBusiness(id = businessId, permissions = employeesPermission(update = false)),
         )
 
         whenn()
@@ -106,6 +110,6 @@ class CanEditEmployeesImplTest {
     }
 
     private fun employeesPermission(update: Boolean) = stubBusinessPermissions().copy(
-        employees = ResourcePermission(view = true, update = update, delete = false)
+        employees = ResourcePermission(view = true, update = update, delete = false),
     )
 }

@@ -30,13 +30,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.components.TextField
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.feature.services.presentation.service.list.ServiceListState.ServiceGroupUI
@@ -54,7 +54,7 @@ internal fun ServiceListScreen(state: ServiceListState) {
                     state.searchField,
                     Modifier
                         .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp)
+                        .padding(top = 16.dp),
                 )
                 SectionItem(
                     modifier = Modifier
@@ -62,10 +62,10 @@ internal fun ServiceListScreen(state: ServiceListState) {
                         .padding(horizontal = 16.dp)
                         .background(
                             LocalColors.current.elevated,
-                            shape = MaterialTheme.shapes.large
+                            shape = MaterialTheme.shapes.large,
                         ),
                     text = state.groupsSection.title.localized(),
-                    onClick = state.groupsSection.onClick
+                    onClick = state.groupsSection.onClick,
                 )
             }
         },
@@ -73,7 +73,7 @@ internal fun ServiceListScreen(state: ServiceListState) {
             Column(
                 modifier = Modifier
                     .padding(pv)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 PullToRefresh(state.refreshState) {
                     List(state.services, idProvider = ServiceGroupUI::id) {
@@ -81,7 +81,7 @@ internal fun ServiceListScreen(state: ServiceListState) {
                     }
                 }
             }
-        }
+        },
     )
 }
 
@@ -104,11 +104,11 @@ private fun ServiceSectionItem(modifier: Modifier, group: ServiceGroupUI) {
                                 expanded = true
                             }
                         },
-                        onClick = { group.onItemClick(it) }
+                        onClick = { group.onItemClick(it) },
                     )
                     .height(48.dp)
                     .fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart
+                contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
                     modifier = Modifier
@@ -116,22 +116,22 @@ private fun ServiceSectionItem(modifier: Modifier, group: ServiceGroupUI) {
                         .fillMaxWidth(),
                     text = it.title,
                     style = MaterialTheme.typography.bodyLarge.primary(),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
                 )
                 group.onItemDeleteClick?.let { onItemDeleteClick ->
                     DropdownMenu(
                         expanded = expanded,
                         containerColor = LocalColors.current.elevated,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
                     ) {
                         DropdownMenuItem(
                             text = {
                                 Text(
                                     DesignSystem.strings.action_delete.desc().localized(),
-                                    color = LocalColors.current.error
+                                    color = LocalColors.current.error,
                                 )
                             },
-                            onClick = { onItemDeleteClick(it) }
+                            onClick = { onItemDeleteClick(it) },
                         )
                     }
                 }

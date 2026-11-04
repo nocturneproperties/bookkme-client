@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.navigation.NavType
 import kotlinx.serialization.json.Json
 
-internal val PickerScreenArgsNavType = object : NavType<PickerScreenArgs>(isNullableAllowed = false) {
+internal val PickerScreenArgsNavType = object : NavType<PickerScreenArgs>(
+    isNullableAllowed = false,
+) {
     override fun get(bundle: Bundle, key: String): PickerScreenArgs? {
         return bundle.getString(key)?.let { Json.decodeFromString(it) }
     }

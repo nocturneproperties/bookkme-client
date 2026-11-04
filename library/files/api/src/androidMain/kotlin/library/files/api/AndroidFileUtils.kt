@@ -6,10 +6,11 @@ import android.provider.OpenableColumns
 import kotlinx.coroutines.withContext
 import me.bookk.core.coroutine.DispatcherProvider
 
-
 suspend fun getFileWithName(uri: Uri, context: Context): Result<FileBytes> {
     return runCatching {
-        val inputStream = context.contentResolver.openInputStream(uri) ?: throw IllegalStateException("Failed to open InputStream from uri: $uri")
+        val inputStream =
+            context.contentResolver.openInputStream(uri)
+                ?: throw IllegalStateException("Failed to open InputStream from uri: $uri")
         val (name, base64Data) = withContext(DispatcherProvider.io) {
             inputStream.use {
                 getFileNameFromUri(uri, context) to it.readBytes()

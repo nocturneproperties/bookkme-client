@@ -6,6 +6,7 @@ import library.validation.api.ValidateEmail
 import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
 import library.validation.api.ValidateName
 import library.validation.api.ValidateName.Result.Invalid.Length.isValid
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -14,7 +15,6 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.Message
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.clearError
@@ -34,12 +34,15 @@ class SignUpViewModel(
     private val createAccount: CreateAccount,
     private val deviceFacade: DeviceFacade,
     stateFactory: AuthStateFactory,
-    vmArgs: VmArgs
-) : ViewModel(vmArgs), SignUpEventListener {
+    vmArgs: VmArgs,
+) : ViewModel(vmArgs),
+    SignUpEventListener {
 
     val uiState: SignUpState = stateFactory.createSignUpState(createInitData()).apply {
         appBar.size = TopBarSize.LARGE
-        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(SignUpNavigationDestination.Back) }
+        appBar.onBackClick = weakVMClosure {
+            it.uiState.navigation.push(SignUpNavigationDestination.Back)
+        }
         name.clearError()
         lastName.clearError()
         email.clearError()
@@ -72,15 +75,22 @@ class SignUpViewModel(
     private fun validateForm(): Boolean {
         return listOf(
             uiState.name.validate(
-                AuthRes.strings.sign_up_first_name_error.desc().takeIf { !validateName(uiState.name.text).isValid }
+                AuthRes.strings.sign_up_first_name_error.desc().takeIf {
+                    !validateName(uiState.name.text).isValid
+                },
             ),
             uiState.lastName.validate(
-                AuthRes.strings.sign_up_last_name_error.desc().takeIf { !validateName(uiState.lastName.text).isValid }
+                AuthRes.strings.sign_up_last_name_error.desc().takeIf {
+                    !validateName(uiState.lastName.text).isValid
+                },
             ),
             uiState.email.validate(
-                AuthRes.strings.sign_up_email_error.desc().takeIf { !validateEmail(uiState.email.text).isValid }
-            )
-        ).all { it }
+                AuthRes.strings.sign_up_email_error.desc().takeIf {
+                    !validateEmail(uiState.email.text).isValid
+                },
+            ),
+        )
+            .all { it }
     }
 
     override fun onConfirmButtonClick() {
@@ -96,8 +106,8 @@ class SignUpViewModel(
                     CreateAccount.UserData(
                         uiState.name.text,
                         uiState.lastName.text,
-                        uiState.email.text
-                    )
+                        uiState.email.text,
+                    ),
                 )
             },
             onComplete = { uiState.notification.add(PresentationNotification.SuccessHaptic) },
@@ -105,28 +115,36 @@ class SignUpViewModel(
                 when (it) {
                     is Error.EmailAlreadyExist ->
                         uiState.email.showError(AuthRes.strings.sign_up_email_exist.desc())
+
                     is Error.InvalidEmailFormat ->
                         uiState.email.showError(AuthRes.strings.sign_up_email_error.desc())
+
                     is Error.PasskeyVerificationFailed -> {
                         uiState.notification.add(
                             Message(
                                 message = AuthRes.strings.sign_up_passkey_failed.desc(),
                                 buttons = listOf(
-                                    ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()),
-                                )
-                            )
+                                    ButtonDescriptor(
+                                        text = DesignSystem.strings.action_ok.desc(),
+                                    ),
+                                ),
+                            ),
                         )
                     }
+
                     is Error.AccountCreationFailed -> {
                         uiState.notification.add(
                             Message(
                                 message = AuthRes.strings.sign_up_failed.desc(),
                                 buttons = listOf(
-                                    ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()),
-                                )
-                            )
+                                    ButtonDescriptor(
+                                        text = DesignSystem.strings.action_ok.desc(),
+                                    ),
+                                ),
+                            ),
                         )
                     }
+
                     else -> uiState.notification.add(errorMapper.mapToNotification(it))
                 }
             },
@@ -138,9 +156,8 @@ class SignUpViewModel(
     }
 
     private fun validateButton() {
-        uiState.confirmButton.isEnabled = uiState.name.isValid &&
-                uiState.lastName.isValid &&
-                uiState.email.isValid
+        uiState.confirmButton.isEnabled =
+            uiState.name.isValid && uiState.lastName.isValid && uiState.email.isValid
     }
 
     companion object {
@@ -152,9 +169,9 @@ class SignUpViewModel(
             learnMoreButtonText = AuthRes.strings.sign_in_passkey_learn_more_button.desc(),
             passkeyInfoCardData = PasskeyInfoCardData(
                 title = AuthRes.strings.sign_up_why_no_password_title.desc(),
-                description = AuthRes.strings.sign_up_why_no_password_description.desc()
+                description = AuthRes.strings.sign_up_why_no_password_description.desc(),
             ),
-            confirmButtonText = AuthRes.strings.sign_up_create_account_button.desc()
+            confirmButtonText = AuthRes.strings.sign_up_create_account_button.desc(),
         )
     }
 }

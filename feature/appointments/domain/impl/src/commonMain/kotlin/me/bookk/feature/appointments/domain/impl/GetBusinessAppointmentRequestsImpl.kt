@@ -6,7 +6,7 @@ import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSou
 import kotlin.uuid.Uuid
 
 internal class GetBusinessAppointmentRequestsImpl(
-    private val dataSource: AppointmentRequestDataSource
+    private val dataSource: AppointmentRequestDataSource,
 ) : GetBusinessAppointmentRequests {
     override suspend fun invoke(businessId: Uuid): List<AppointmentRequest> {
         return dataSource.getBusinessAppointmentRequests(businessId)

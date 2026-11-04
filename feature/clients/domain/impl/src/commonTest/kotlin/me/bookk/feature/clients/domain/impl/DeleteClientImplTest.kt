@@ -2,14 +2,10 @@ package me.bookk.feature.clients.domain.impl
 
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
-import dev.mokkery.verify.VerifyMode
-import kotlin.test.assertFailsWith
-import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
-import me.bookk.feature.authorization.domain.entity.SensitiveAction
-import me.bookk.feature.clients.domain.api.DeleteClient
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,11 +16,15 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.entity.SensitiveAction
+import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -57,7 +57,7 @@ class DeleteClientImplTest {
         lastName = "Smith",
         phone = "+380000000001",
         email = "jane@example.com",
-        businessId = Uuid.random()
+        businessId = Uuid.random(),
     )
 
     @Test
@@ -65,14 +65,18 @@ class DeleteClientImplTest {
         given()
         val fixture = Fixture()
         val client = stubClient()
-        everySuspend { fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token") } returns Unit
+        everySuspend {
+            fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token")
+        } returns Unit
         everySuspend { fixture.dataSource.deleteClientInDb(client.id) } returns Unit
 
         whenn()
         fixture.sut(client)
 
         then()
-        verifySuspend { fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token") }
+        verifySuspend {
+            fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token")
+        }
     }
 
     @Test
@@ -80,7 +84,9 @@ class DeleteClientImplTest {
         given()
         val fixture = Fixture()
         val client = stubClient()
-        everySuspend { fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token") } returns Unit
+        everySuspend {
+            fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token")
+        } returns Unit
         everySuspend { fixture.dataSource.deleteClientInDb(client.id) } returns Unit
 
         whenn()
@@ -88,7 +94,9 @@ class DeleteClientImplTest {
 
         then()
         verifySuspend { fixture.dataSource.deleteClientInDb(client.id) }
-    }    @Test
+    }
+
+    @Test
     fun `requests confirmation for the business and client being deleted`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -100,21 +108,26 @@ class DeleteClientImplTest {
         fixture.sut(client)
 
         then()
-        verifySuspend { fixture.confirmation(SensitiveAction.DELETE_CLIENT, client.businessId, client.id) }
+        verifySuspend {
+            fixture.confirmation(SensitiveAction.DELETE_CLIENT, client.businessId, client.id)
+        }
     }
 
     @Test
     fun `failed confirmation neither deletes remotely nor clears the cache`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.confirmation(any(), any(), any()) } throws ConfirmSensitiveAction.Error.VerificationFailed()
+        everySuspend { fixture.confirmation(any(), any(), any()) } throws
+            ConfirmSensitiveAction.Error.VerificationFailed()
 
         whenn()
         val result = runCatching { fixture.sut(stubClient()) }
 
         then()
         assertFailsWith<DeleteClient.Error.ConfirmationFailed> { result.getOrThrow() }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClient(any(), any(), any()) }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.dataSource.deleteClient(any(), any(), any())
+        }
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientInDb(any()) }
     }
 
@@ -122,7 +135,8 @@ class DeleteClientImplTest {
     fun `expired deletion token leaves the local client untouched`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.deleteClient(any(), any(), any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200040, "expired")
+        everySuspend { fixture.dataSource.deleteClient(any(), any(), any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200040, "expired")
 
         whenn()
         val result = runCatching { fixture.sut(stubClient()) }
@@ -131,5 +145,4 @@ class DeleteClientImplTest {
         assertFailsWith<DeleteClient.Error.ConfirmationRequired> { result.getOrThrow() }
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientInDb(any()) }
     }
-
 }

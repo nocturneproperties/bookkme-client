@@ -39,7 +39,7 @@ internal fun coreModule(creator: StateFactoryCreator) = module {
         presentationCoreModule(),
         stateModule(),
         networkModule(),
-        databaseModule()
+        databaseModule(),
     )
 }
 

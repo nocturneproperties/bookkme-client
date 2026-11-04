@@ -1,7 +1,5 @@
 package me.bookk.designsystem.test
 
-import me.bookk.core.presentation.error.ActionType
-import me.bookk.designsystem.uistate.AppBarActionState
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
@@ -9,8 +7,10 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import library.money.api.Money
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.navigation.NavigationDestination
+import me.bookk.designsystem.uistate.AppBarActionState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.BusinessMenuItem
@@ -43,7 +43,9 @@ import me.bookk.designsystem.uistate.simple.ErrorState
 import me.bookk.designsystem.uistate.simple.TextIcon
 import kotlin.uuid.Uuid
 
-class FakeListState<T>(initialItems: List<T> = emptyList()) : FakeViewState(), ListState<T> {
+class FakeListState<T>(initialItems: List<T> = emptyList()) :
+    FakeViewState(),
+    ListState<T> {
     override val items: MutableList<T> = initialItems.toMutableList()
     override var loadMore: (() -> Unit)? = null
     override var emptyState: EmptyState? = null
@@ -67,7 +69,9 @@ class FakeListState<T>(initialItems: List<T> = emptyList()) : FakeViewState(), L
     }
 }
 
-class FakeAppBarState : FakeViewState(), AppBarState {
+class FakeAppBarState :
+    FakeViewState(),
+    AppBarState {
     override var title: StringDesc = "".desc()
     override var subtitle: StringDesc? = null
     override var onBackClick: (() -> Unit)? = null
@@ -79,7 +83,9 @@ class FakeAppBarState : FakeViewState(), AppBarState {
     }
 }
 
-class FakeAppBarActionState : FakeViewState(), AppBarActionState {
+class FakeAppBarActionState :
+    FakeViewState(),
+    AppBarActionState {
     override var icon: ImageResource? = null
     override var contentDescription: StringDesc = "".desc()
     override var type: ActionType = ActionType.POSITIVE
@@ -88,7 +94,9 @@ class FakeAppBarActionState : FakeViewState(), AppBarActionState {
     override var onClick: () -> Unit = {}
 }
 
-class FakeButtonState : FakeViewState(), ButtonState {
+class FakeButtonState :
+    FakeViewState(),
+    ButtonState {
     override var icon: ImageResource? = null
     override var text: StringDesc = "".desc()
     override var isLoading: Boolean = false
@@ -96,12 +104,16 @@ class FakeButtonState : FakeViewState(), ButtonState {
     override var onClick: (() -> Unit)? = null
 }
 
-class FakeTextState : FakeViewState(), TextState {
+class FakeTextState :
+    FakeViewState(),
+    TextState {
     override var text: StringDesc = "".desc()
     override var isHighlighted: Boolean = false
 }
 
-class FakeBooleanState : FakeViewState(), BooleanState {
+class FakeBooleanState :
+    FakeViewState(),
+    BooleanState {
     override var text: StringDesc = "".desc()
     override var isEnabled: Boolean = true
     override var isChecked: Boolean = false
@@ -111,14 +123,18 @@ class FakeBooleanState : FakeViewState(), BooleanState {
     override var onCheckedChange: ((Boolean) -> Unit)? = null
 }
 
-class FakeRadioButtonState : FakeViewState(), RadioButtonState {
+class FakeRadioButtonState :
+    FakeViewState(),
+    RadioButtonState {
     override var text: StringDesc = "".desc()
     override var isEnabled: Boolean = true
     override var isSelected: Boolean = false
     override var onClick: (() -> Unit)? = null
 }
 
-class FakeTextFieldState : FakeViewState(), TextFieldState {
+class FakeTextFieldState :
+    FakeViewState(),
+    TextFieldState {
     override var placeholder: StringDesc = "".desc()
     override var label: StringDesc = "".desc()
     override var text: String = ""
@@ -153,12 +169,16 @@ class FakeDatePickerState : DatePickerState {
     override var onDatePicked: ((LocalDate) -> Unit)? = null
 }
 
-class FakeDatePickerFieldState : FakeViewState(), DatePickerFieldState {
+class FakeDatePickerFieldState :
+    FakeViewState(),
+    DatePickerFieldState {
     override val textField: FakeTextFieldState = FakeTextFieldState()
     override val datePicker: FakeDatePickerState = FakeDatePickerState()
 }
 
-class FakeDateRangePickerState : FakeViewState(), DateRangePickerState {
+class FakeDateRangePickerState :
+    FakeViewState(),
+    DateRangePickerState {
     override var title: StringDesc = "".desc()
     override val startDate: FakeDatePickerFieldState = FakeDatePickerFieldState()
     override val endDate: FakeDatePickerFieldState = FakeDatePickerFieldState()
@@ -181,18 +201,24 @@ class FakeTimePickerState : TimePickerState {
     override var onTimePicked: ((LocalTime) -> Unit)? = null
 }
 
-class FakeTimePickerFieldState : FakeViewState(), TimePickerFieldState {
+class FakeTimePickerFieldState :
+    FakeViewState(),
+    TimePickerFieldState {
     override val textField: FakeTextFieldState = FakeTextFieldState()
     override val timePicker: FakeTimePickerState = FakeTimePickerState()
 }
 
-class FakeMoneyFieldState : FakeViewState(), MoneyFieldState {
+class FakeMoneyFieldState :
+    FakeViewState(),
+    MoneyFieldState {
     override var currentValue: Money = Money(0L, Money.SupportedCurrency.UAH)
     override val textState: FakeTextFieldState = FakeTextFieldState()
     override var currency: TextIcon? = null
 }
 
-class FakePickerFieldState<T : PickerPresentation> : FakeViewState(), PickerFieldState<T> {
+class FakePickerFieldState<T : PickerPresentation> :
+    FakeViewState(),
+    PickerFieldState<T> {
     override val textField: FakeTextFieldState = FakeTextFieldState()
     override var pickerType: PickerFieldState.PickerType = PickerFieldState.PickerType.BOTTOM_SHEET
     override var pickerTitle: StringDesc = "".desc()
@@ -211,7 +237,9 @@ class FakePickerFieldState<T : PickerPresentation> : FakeViewState(), PickerFiel
     }
 }
 
-class FakeMultiPickerState<T : PickerPresentation> : FakeViewState(), MultiPickerState<T> {
+class FakeMultiPickerState<T : PickerPresentation> :
+    FakeViewState(),
+    MultiPickerState<T> {
     override var pickerTitle: StringDesc = "".desc()
     override var placeholder: StringDesc? = null
     override val selectedItems: MutableList<T> = mutableListOf()
@@ -227,7 +255,9 @@ class FakeMultiPickerState<T : PickerPresentation> : FakeViewState(), MultiPicke
     }
 }
 
-class FakeOptionsMultiPickerState<T : PickerPresentation> : FakeViewState(), OptionsMultiPickerState<T> {
+class FakeOptionsMultiPickerState<T : PickerPresentation> :
+    FakeViewState(),
+    OptionsMultiPickerState<T> {
     override var pickerTitle: StringDesc = "".desc()
     override var pickerType: PickerFieldState.PickerType = PickerFieldState.PickerType.BOTTOM_SHEET
     override var placeholder: StringDesc? = null

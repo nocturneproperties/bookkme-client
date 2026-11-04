@@ -27,7 +27,7 @@ class AppointmentHistoryItemState(
     val earnings: String,
     val status: UIAppointmentStatus,
     val source: Appointment,
-    val onItemClick: () -> Unit
+    val onItemClick: () -> Unit,
 ) {
 
     @UsedInSwift
@@ -36,7 +36,7 @@ class AppointmentHistoryItemState(
     constructor(
         appointment: Appointment,
         formatter: DateLocalizer.Formatter,
-        onItemClick: () -> Unit
+        onItemClick: () -> Unit,
     ) : this(
         clientName = appointment.client.fullName,
         serviceName = appointment.providedServices.joinToString { it.name },
@@ -44,6 +44,6 @@ class AppointmentHistoryItemState(
         scheduledAt = formatter.format(appointment.date),
         earnings = appointment.finalPrice.toString(),
         status = UIAppointmentStatus(appointment.status),
-        onItemClick = onItemClick
+        onItemClick = onItemClick,
     )
 }

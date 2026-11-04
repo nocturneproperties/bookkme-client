@@ -11,5 +11,6 @@ import org.koin.dsl.module
 
 fun employeesDataModule() = module {
     singleOf(::EmployeeDataSourceImpl) binds arrayOf(EmployeeDataSource::class, LogOutAction::class)
-    singleOf(::EmployeeInvitationDataSourceImpl) binds arrayOf(EmployeeInvitationDataSource::class, LogOutAction::class)
+    singleOf(::EmployeeInvitationDataSourceImpl) binds
+        arrayOf(EmployeeInvitationDataSource::class, LogOutAction::class)
 }

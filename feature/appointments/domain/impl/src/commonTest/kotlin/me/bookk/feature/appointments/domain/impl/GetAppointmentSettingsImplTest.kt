@@ -93,7 +93,8 @@ class GetAppointmentSettingsImplTest {
         val first = AppointmentSettings.stub(businessId)
         val second = AppointmentSettings.stub(businessId)
         emissions.tryEmit(first)
-        every { fixture.dataSource.observeAppointmentSettingsDBChanges(businessId) } returns emissions
+        every { fixture.dataSource.observeAppointmentSettingsDBChanges(businessId) } returns
+            emissions
         val results = mutableListOf<AppointmentSettings?>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut.flow(businessId).collect { results.add(it) }
@@ -138,7 +139,9 @@ class GetAppointmentSettingsImplTest {
 
         then()
         assertEquals(remote, result)
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentSettingsInDB(remote) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveAppointmentSettingsInDB(remote)
+        }
     }
 
     @Test
@@ -154,6 +157,8 @@ class GetAppointmentSettingsImplTest {
 
         then()
         assertEquals(error, thrown)
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveAppointmentSettingsInDB(any()) }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.dataSource.saveAppointmentSettingsInDB(any())
+        }
     }
 }

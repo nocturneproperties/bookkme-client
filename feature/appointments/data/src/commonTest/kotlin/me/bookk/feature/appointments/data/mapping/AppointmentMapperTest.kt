@@ -26,24 +26,28 @@ class AppointmentMapperTest {
         name = name,
         groupId = Uuid.random(),
         price = Money(50.0, Money.SupportedCurrency.USD),
-        duration = 30.minutes
+        duration = 30.minutes,
     )
 
     private fun appointment(services: List<ServiceSnapshot>) = Appointment.stub(
-        date = LocalDateTime(2026, 10, 3, 10, 0)
+        date = LocalDateTime(2026, 10, 3, 10, 0),
     ).copy(services = services)
 
     private fun Appointment.toLocal() = AppointmentLocal(
         entity = toEntity(),
         services = toServiceEntities(),
-        adjustmentServices = toAdjustmentServiceEntities()
+        adjustmentServices = toAdjustmentServiceEntities(),
     )
 
     @Test
     fun `cached appointment preserves the linked client user`() = runUnitTest {
         given()
         val original = appointment(emptyList())
-        val linked = original.copy(client = original.client.copy(userId = Uuid.parse("00000000-0000-0000-0000-000000000001")))
+        val linked = original.copy(
+            client = original.client.copy(
+                userId = Uuid.parse("00000000-0000-0000-0000-000000000001"),
+            ),
+        )
 
         whenn()
         val restored = linked.toLocal().toDomain()
@@ -53,75 +57,81 @@ class AppointmentMapperTest {
     }
 
     @Test
-    fun `update request groups repeated service snapshots into counts in booking order`() = runUnitTest {
-        given()
-        val haircut = service("Haircut")
-        val beard = service("Beard")
-        val appointment = appointment(listOf(haircut, beard, haircut))
+    fun `update request groups repeated service snapshots into counts in booking order`() =
+        runUnitTest {
+            given()
+            val haircut = service("Haircut")
+            val beard = service("Beard")
+            val appointment = appointment(listOf(haircut, beard, haircut))
 
-        whenn()
-        val update = appointment.toUpdateRemote()
+            whenn()
+            val update = appointment.toUpdateRemote()
 
-        then()
-        assertEquals(
-            listOf(RequestedServiceRemote(haircut.id, 2), RequestedServiceRemote(beard.id, 1)),
-            update.services
-        )
-    }
-
-    @Test
-    fun `update request carries the appointment id, assigned employee, note and date`() = runUnitTest {
-        given()
-        val appointment = appointment(listOf(service("Haircut"))).copy(note = "Window seat")
-
-        whenn()
-        val update = appointment.toUpdateRemote()
-
-        then()
-        assertEquals(appointment.id, update.id)
-        assertEquals(appointment.employee.id, update.employeeId)
-        assertEquals("Window seat", update.note)
-        assertEquals(appointment.toRemote().date, update.date)
-    }
-
-    @Test
-    fun `stored appointment keeps completer and price adjustment with its additional services`() = runUnitTest {
-        given()
-        val extra = service("Polish")
-        val appointment = appointment(listOf(service("Haircut"))).copy(
-            status = AppointmentStatus.COMPLETED,
-            completedBy = AppointmentCompletedBy.USER,
-            priceAdjustment = PriceAdjustment(
-                additionalServices = listOf(extra, extra),
-                price = Money(120.0, Money.SupportedCurrency.USD),
-                reason = "Extra polish"
+            then()
+            assertEquals(
+                listOf(RequestedServiceRemote(haircut.id, 2), RequestedServiceRemote(beard.id, 1)),
+                update.services,
             )
-        )
-
-        whenn()
-        val restored = appointment.toLocal().toDomain()
-
-        then()
-        assertEquals(appointment, restored)
-    }
+        }
 
     @Test
-    fun `stored appointment without adjustment restores no adjustment and no completer`() = runUnitTest {
-        given()
-        val appointment = appointment(listOf(service("Haircut")))
+    fun `update request carries the appointment id, assigned employee, note and date`() =
+        runUnitTest {
+            given()
+            val appointment = appointment(listOf(service("Haircut"))).copy(note = "Window seat")
 
-        whenn()
-        val restored = appointment.toLocal().toDomain()
+            whenn()
+            val update = appointment.toUpdateRemote()
 
-        then()
-        assertNull(restored.priceAdjustment)
-        assertNull(restored.completedBy)
-    }
+            then()
+            assertEquals(appointment.id, update.id)
+            assertEquals(appointment.employee.id, update.employeeId)
+            assertEquals("Window seat", update.note)
+            assertEquals(appointment.toRemote().date, update.date)
+        }
+
+    @Test
+    fun `stored appointment keeps completer and price adjustment with its additional services`() =
+        runUnitTest {
+            given()
+            val extra = service("Polish")
+            val appointment = appointment(listOf(service("Haircut"))).copy(
+                status = AppointmentStatus.COMPLETED,
+                completedBy = AppointmentCompletedBy.USER,
+                priceAdjustment = PriceAdjustment(
+                    additionalServices = listOf(extra, extra),
+                    price = Money(120.0, Money.SupportedCurrency.USD),
+                    reason = "Extra polish",
+                ),
+            )
+
+            whenn()
+            val restored = appointment.toLocal().toDomain()
+
+            then()
+            assertEquals(appointment, restored)
+        }
+
+    @Test
+    fun `stored appointment without adjustment restores no adjustment and no completer`() =
+        runUnitTest {
+            given()
+            val appointment = appointment(listOf(service("Haircut")))
+
+            whenn()
+            val restored = appointment.toLocal().toDomain()
+
+            then()
+            assertNull(restored.priceAdjustment)
+            assertNull(restored.completedBy)
+        }
 
     @Test
     fun `stored no-show appointment restores its status`() = runUnitTest {
         given()
-        val appointment = appointment(listOf(service("Haircut"))).copy(status = AppointmentStatus.NO_SHOW)
+        val appointment = appointment(
+            listOf(service("Haircut")),
+        ).copy(status = AppointmentStatus.NO_SHOW)
 
         whenn()
         val restored = appointment.toLocal().toDomain()
@@ -141,7 +151,12 @@ class AppointmentMapperTest {
         val restored = appointment.toLocal().toDomain()
 
         then()
-        assertEquals(mapOf(haircut.id to 2, beard.id to 1), restored.services.groupingBy { it.id }.eachCount())
+        assertEquals(
+            mapOf(haircut.id to 2, beard.id to 1),
+            restored.services.groupingBy {
+                it.id
+            }.eachCount(),
+        )
     }
 
     @Test

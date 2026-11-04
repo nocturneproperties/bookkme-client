@@ -5,13 +5,13 @@ import library.validation.api.ValidateEmail
 import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
 import library.validation.api.ValidateName
 import library.validation.api.ValidateName.Result.Invalid.Length.isValid
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.startLoading
@@ -28,7 +28,7 @@ class CreateClientViewModel(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
     stateFactory: ClientsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: CreateClientState = stateFactory.createClientState().setup()
@@ -64,7 +64,7 @@ class CreateClientViewModel(
             lastName = uiState.lastName.text,
             phone = uiState.phone.text,
             email = uiState.email.text,
-            businessId = businessId
+            businessId = businessId,
         )
         launch(
             launchIn = DispatcherProvider.io,
@@ -75,15 +75,15 @@ class CreateClientViewModel(
                 uiState.navigation.push(CreateClientDestination.Details(it.id))
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = { uiState.submit.stopLoading() }
+            onTerminate = { uiState.submit.stopLoading() },
         )
     }
 
     private fun invalidateButton() {
         uiState.submit.isEnabled = uiState.name.isValid &&
-                uiState.lastName.isValid &&
-                uiState.phone.isValid &&
-                uiState.email.isValid
+            uiState.lastName.isValid &&
+            uiState.phone.isValid &&
+            uiState.email.isValid
     }
 
     private fun CreateClientState.setup(): CreateClientState {
@@ -118,5 +118,4 @@ class CreateClientViewModel(
         submit.onClick = weakVMClosure { it.onSubmit() }
         return this
     }
-
 }

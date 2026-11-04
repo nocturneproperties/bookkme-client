@@ -16,10 +16,14 @@ class ClientSnapshotRemoteContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()
-        assertEquals(listOf("id" to 1, "fullName" to 2, "phone" to 3, "email" to 4, "userId" to 5), fields)
+        assertEquals(
+            listOf("id" to 1, "fullName" to 2, "phone" to 3, "email" to 4, "userId" to 5),
+            fields,
+        )
     }
 }

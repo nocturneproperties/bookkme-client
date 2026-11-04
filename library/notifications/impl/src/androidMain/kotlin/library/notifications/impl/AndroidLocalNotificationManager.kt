@@ -10,18 +10,16 @@ import library.notifications.api.LocalNotificationManager
 import me.bookk.android.library.notifications.resources.NotifcationRes
 import me.bookk.core.Logger
 
-
-class AndroidLocalNotificationManager(
-    private val appContext: Context
-) : LocalNotificationManager {
+class AndroidLocalNotificationManager(private val appContext: Context) : LocalNotificationManager {
 
     private val logger = Logger.create("LocalNotificationManager")
     private val notificationManager = NotificationManagerCompat.from(appContext)
 
-
     @RequiresPermission(android.Manifest.permission.POST_NOTIFICATIONS)
     override fun show(notification: LocalNotification) {
-        val defaultChannelId = NotifcationRes.strings.settings_notifications_channel_id.getString(appContext)
+        val defaultChannelId = NotifcationRes.strings.settings_notifications_channel_id.getString(
+            appContext,
+        )
         val builder = NotificationCompat.Builder(appContext, defaultChannelId)
             .setSmallIcon(appContext.applicationInfo.icon)
             .setContentTitle(notification.title)
@@ -49,14 +47,15 @@ class AndroidLocalNotificationManager(
     }
 
     private fun launchAppPendingIntent(notification: LocalNotification): PendingIntent? {
-        val launchIntent = appContext.packageManager.getLaunchIntentForPackage(appContext.packageName)
-            ?: return null
+        val launchIntent =
+            appContext.packageManager.getLaunchIntentForPackage(appContext.packageName)
+                ?: return null
         notification.data.forEach { (key, value) -> launchIntent.putExtra(key, value) }
         return PendingIntent.getActivity(
             appContext,
             notification.id.hashCode(),
             launchIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
     }
 }

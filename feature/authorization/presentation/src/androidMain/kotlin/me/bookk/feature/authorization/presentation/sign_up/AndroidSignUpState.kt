@@ -24,7 +24,7 @@ internal class AndroidSignUpState private constructor(
     override val notification: PresentationNotificationState,
     override val learnMoreButton: ButtonState,
     override val passkeyInfoCardData: PasskeyInfoCardData,
-    override val navigation: NavigationState<SignUpNavigationDestination>
+    override val navigation: NavigationState<SignUpNavigationDestination>,
 ) : SignUpState {
 
     constructor(initData: SignUpState.InitData) : this(
@@ -36,6 +36,6 @@ internal class AndroidSignUpState private constructor(
         learnMoreButton = AndroidButtonState(text = initData.learnMoreButtonText),
         passkeyInfoCardData = initData.passkeyInfoCardData,
         notification = AndroidNotificationState(),
-        navigation = AndroidNavigationState()
+        navigation = AndroidNavigationState(),
     )
 }

@@ -7,5 +7,5 @@ internal class IOSFormatters(
     val dateTimeSameYear: NSDateFormatter,
     val date: NSDateFormatter,
     val dateSameYear: NSDateFormatter,
-    val time: NSDateFormatter
+    val time: NSDateFormatter,
 )

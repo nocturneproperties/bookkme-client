@@ -20,7 +20,7 @@ internal class ServiceRemote(
     @Serializable(with = RemoteMoneySerializer::class)
     val price: Money,
     @ProtoNumber(7) val isAvailable: Boolean,
-    @ProtoNumber(8) val createdAt: Instant
+    @ProtoNumber(8) val createdAt: Instant,
 ) {
     fun toDomain(): Service {
         return Service(
@@ -31,7 +31,7 @@ internal class ServiceRemote(
             duration = duration,
             price = price,
             isAvailable = isAvailable,
-            createdAt = createdAt
+            createdAt = createdAt,
         )
     }
 
@@ -45,7 +45,7 @@ internal class ServiceRemote(
                 duration = duration,
                 price = price,
                 isAvailable = isAvailable,
-                createdAt = createdAt
+                createdAt = createdAt,
             )
         }
     }

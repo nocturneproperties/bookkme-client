@@ -24,7 +24,7 @@ fun SectionItem(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    color: Color = LocalColors.current.primaryText
+    color: Color = LocalColors.current.primaryText,
 ) {
     Row(
         modifier = modifier
@@ -33,19 +33,19 @@ fun SectionItem(
             .clip(MaterialTheme.shapes.large)
             .clickable { onClick() }
             .padding(horizontal = 24.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             modifier = Modifier.weight(1f),
             text = text,
             style = MaterialTheme.typography.titleMedium,
-            color = color
+            color = color,
         )
         Icon(
             modifier = Modifier.size(16.dp),
             imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
             tint = color,
-            contentDescription = null
+            contentDescription = null,
         )
     }
 }

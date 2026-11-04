@@ -21,7 +21,7 @@ internal class EmployeeRemote(
     @ProtoNumber(9) val schedule: ScheduleRemote,
     @ProtoNumber(10) val createdAt: Instant,
     @ProtoNumber(11) val permissions: BusinessPermissionsRemote,
-    @ProtoNumber(12) val suspendedAt: Instant? = null
+    @ProtoNumber(12) val suspendedAt: Instant? = null,
 ) {
     fun toDomain() = Employee(
         id = id,
@@ -35,7 +35,7 @@ internal class EmployeeRemote(
         schedule = schedule.toDomain(),
         createdAt = createdAt,
         permissions = permissions.toDomain(),
-        suspendedAt = suspendedAt
+        suspendedAt = suspendedAt,
     )
 }
 
@@ -48,7 +48,7 @@ internal class EmployeeUpdateRequest(
     @ProtoNumber(5) val phone: String?,
     @ProtoNumber(6) val email: String?,
     @ProtoNumber(8) val services: List<ServiceRemote>,
-    @ProtoNumber(9) val schedule: ScheduleRemote
+    @ProtoNumber(9) val schedule: ScheduleRemote,
 ) {
     companion object {
         fun fromDomain(employee: Employee): EmployeeUpdateRequest {
@@ -60,7 +60,7 @@ internal class EmployeeUpdateRequest(
                 phone = employee.phone,
                 email = employee.email,
                 services = employee.services.map { ServiceRemote.fromDomain(it) },
-                schedule = ScheduleRemote.fromDomain(employee.schedule)
+                schedule = ScheduleRemote.fromDomain(employee.schedule),
             )
         }
     }
@@ -72,7 +72,7 @@ internal class EmployeePermissionsRequest(
     @ProtoNumber(2) val employees: ResourcePermissionRemote? = null,
     @ProtoNumber(3) val clients: ResourcePermissionRemote? = null,
     @ProtoNumber(4) val services: ResourcePermissionRemote? = null,
-    @ProtoNumber(5) val appointments: ResourcePermissionRemote? = null
+    @ProtoNumber(5) val appointments: ResourcePermissionRemote? = null,
 ) {
     companion object {
         fun fromDomain(permissions: BusinessPermissions): EmployeePermissionsRequest {
@@ -81,22 +81,20 @@ internal class EmployeePermissionsRequest(
                 employees = ResourcePermissionRemote.fromDomain(permissions.employees),
                 clients = ResourcePermissionRemote.fromDomain(permissions.clients),
                 services = ResourcePermissionRemote.fromDomain(permissions.services),
-                appointments = ResourcePermissionRemote.fromDomain(permissions.appointments)
+                appointments = ResourcePermissionRemote.fromDomain(permissions.appointments),
             )
         }
     }
 }
 
 @Serializable
-internal class EmployeeSuspensionRequest(
-    @ProtoNumber(1) val suspended: Boolean
-)
+internal class EmployeeSuspensionRequest(@ProtoNumber(1) val suspended: Boolean)
 
 @Serializable
 internal class ResourcePermissionRemote(
     @ProtoNumber(1) val view: Boolean,
     @ProtoNumber(2) val update: Boolean,
-    @ProtoNumber(3) val delete: Boolean
+    @ProtoNumber(3) val delete: Boolean,
 ) {
     fun toDomain() = ResourcePermission(view = view, update = update, delete = delete)
 
@@ -104,7 +102,7 @@ internal class ResourcePermissionRemote(
         fun fromDomain(permission: ResourcePermission) = ResourcePermissionRemote(
             view = permission.view,
             update = permission.update,
-            delete = permission.delete
+            delete = permission.delete,
         )
     }
 }
@@ -115,13 +113,13 @@ internal class BusinessPermissionsRemote(
     @ProtoNumber(2) val employees: ResourcePermissionRemote,
     @ProtoNumber(3) val clients: ResourcePermissionRemote,
     @ProtoNumber(4) val services: ResourcePermissionRemote,
-    @ProtoNumber(5) val appointments: ResourcePermissionRemote
+    @ProtoNumber(5) val appointments: ResourcePermissionRemote,
 ) {
     fun toDomain() = BusinessPermissions(
         business = business.toDomain(),
         employees = employees.toDomain(),
         clients = clients.toDomain(),
         services = services.toDomain(),
-        appointments = appointments.toDomain()
+        appointments = appointments.toDomain(),
     )
 }

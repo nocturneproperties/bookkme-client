@@ -5,12 +5,12 @@ import library.validation.api.ValidateEmail
 import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
 import library.validation.api.ValidateName
 import library.validation.api.ValidateName.Result.Invalid.Length.isValid
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.uistate.clearError
 import me.bookk.designsystem.uistate.validate
 import me.bookk.feature.settings.domain.api.EditProfile
@@ -23,13 +23,13 @@ class EditProfileViewModel(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
     settingsStateFactory: SettingsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     private enum class Field {
         NAME,
         LAST,
-        EMAIL
+        EMAIL,
     }
 
     val uiState = settingsStateFactory.createEditProfileState(createInitData())
@@ -52,7 +52,7 @@ class EditProfileViewModel(
                 onLastNameTextChanged(it.profile.lastName)
                 onEmailTextChanged(it.profile.email)
             },
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
         )
     }
 
@@ -81,16 +81,16 @@ class EditProfileViewModel(
         return listOf(
             uiState.name.validate(
                 SettingsRes.strings.settings_edit_profile_first_name_error.desc()
-                    .takeIf { !validateName(uiState.name.text).isValid }
+                    .takeIf { !validateName(uiState.name.text).isValid },
             ),
             uiState.lastName.validate(
                 SettingsRes.strings.settings_edit_profile_last_name_error.desc()
-                    .takeIf { !validateName(uiState.lastName.text).isValid }
+                    .takeIf { !validateName(uiState.lastName.text).isValid },
             ),
             uiState.email.validate(
                 SettingsRes.strings.settings_edit_profile_email_error.desc()
-                    .takeIf { !validateEmail(uiState.email.text).isValid }
-            )
+                    .takeIf { !validateEmail(uiState.email.text).isValid },
+            ),
         ).all { it }
     }
 
@@ -109,7 +109,7 @@ class EditProfileViewModel(
                 editProfile(
                     firstName = uiState.name.text,
                     lastName = uiState.lastName.text,
-                    email = uiState.email.text
+                    email = uiState.email.text,
                 )
             },
             onComplete = {
@@ -125,19 +125,18 @@ class EditProfileViewModel(
             onTerminate = {
                 uiState.confirmButton.isLoading = false
                 validateButton()
-            }
+            },
         )
     }
 
     private fun validateButton() {
         val isChanged = (fieldInitialState[Field.NAME] != uiState.name.text) ||
-                (fieldInitialState[Field.LAST] != uiState.lastName.text) ||
-                (fieldInitialState[Field.EMAIL] != uiState.email.text)
+            (fieldInitialState[Field.LAST] != uiState.lastName.text) ||
+            (fieldInitialState[Field.EMAIL] != uiState.email.text)
         uiState.confirmButton.isEnabled = isChanged &&
-                uiState.name.isValid &&
-                uiState.lastName.isValid &&
-                uiState.email.isValid
-
+            uiState.name.isValid &&
+            uiState.lastName.isValid &&
+            uiState.email.isValid
     }
 
     companion object {
@@ -146,7 +145,7 @@ class EditProfileViewModel(
             nameHint = SettingsRes.strings.settings_edit_profile_first_name.desc(),
             lastNameHint = SettingsRes.strings.settings_edit_profile_last_name.desc(),
             emailHint = SettingsRes.strings.settings_edit_profile_email.desc(),
-            confirmButtonText = DesignSystem.strings.action_save.desc()
+            confirmButtonText = DesignSystem.strings.action_save.desc(),
         )
     }
 }

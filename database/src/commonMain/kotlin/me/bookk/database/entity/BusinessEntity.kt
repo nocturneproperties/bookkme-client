@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "business"
+    tableName = "business",
 )
 class BusinessEntity(
     @PrimaryKey
@@ -41,5 +41,5 @@ class BusinessEntity(
     val ownerId: Uuid? = null,
     val employeeId: Uuid? = null,
     val clientId: Uuid? = null,
-    val clientDataRetentionMonths: Int? = null
+    val clientDataRetentionMonths: Int? = null,
 )

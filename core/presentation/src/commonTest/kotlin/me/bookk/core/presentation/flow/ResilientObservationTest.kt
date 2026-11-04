@@ -24,7 +24,9 @@ class ResilientObservationTest {
     private class Fixture(
         private val scope: TestScope,
         val retryPolicy: RetryPolicy = RetryPolicy(initialDelay = 1.seconds, maxDelay = 30.seconds),
-        private val onAttempt: suspend kotlinx.coroutines.flow.FlowCollector<Int>.(attempt: Int) -> Unit,
+        private val onAttempt: suspend kotlinx.coroutines.flow.FlowCollector<Int>.(
+            attempt: Int,
+        ) -> Unit,
     ) {
         val subscriptionTimes = mutableListOf<Long>()
         val received = mutableListOf<Int>()
@@ -153,7 +155,12 @@ class ResilientObservationTest {
         runCurrent()
 
         then()
-        assertEquals(listOf("attempt 1", "attempt 2", "attempt 3", "attempt 4"), fixture.logged.map { it.message })
+        assertEquals(
+            listOf("attempt 1", "attempt 2", "attempt 3", "attempt 4"),
+            fixture.logged.map {
+                it.message
+            },
+        )
     }
 
     @Test
@@ -252,6 +259,11 @@ class ResilientObservationTest {
         runCurrent()
 
         then()
-        assertEquals(listOf("attempt 1", "attempt 2", "attempt 3"), fixture.logged.map { it.message })
+        assertEquals(
+            listOf("attempt 1", "attempt 2", "attempt 3"),
+            fixture.logged.map {
+                it.message
+            },
+        )
     }
 }

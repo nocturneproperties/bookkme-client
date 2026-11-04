@@ -11,7 +11,7 @@ internal fun stubServiceGroup(businessId: Uuid = Uuid.random()) = ServiceGroup(
     id = Uuid.random(),
     businessId = businessId,
     name = "Test Group",
-    createdAt = Instant.fromEpochMilliseconds(0)
+    createdAt = Instant.fromEpochMilliseconds(0),
 )
 
 internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
@@ -22,5 +22,5 @@ internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
     duration = Duration.parse("30m"),
     price = Money(1000L, Money.SupportedCurrency.USD),
     isAvailable = true,
-    createdAt = Instant.fromEpochMilliseconds(0)
+    createdAt = Instant.fromEpochMilliseconds(0),
 )

@@ -8,9 +8,7 @@ import me.bookk.feature.services.domain.datasource.QuoteDataSource
 import me.bookk.feature.services.domain.datasource.ServiceErrorCodes
 import kotlin.uuid.Uuid
 
-internal class CreateQuoteImpl(
-    private val dataSource: QuoteDataSource
-) : CreateQuote {
+internal class CreateQuoteImpl(private val dataSource: QuoteDataSource) : CreateQuote {
     override suspend fun invoke(businessId: Uuid, serviceIds: List<Uuid>): Quote = runCatching {
         dataSource.createQuote(businessId, serviceIds)
     }.onBusinessError { error ->

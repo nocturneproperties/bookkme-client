@@ -27,11 +27,12 @@ fun authDataModule() = module {
         CommonAuthorizationDataSource(
             get(),
             get(named(HttpClientType.NO_AUTH)),
-            get()
+            get(),
         )
     } binds arrayOf(AuthorizationDataSource::class, LogOutAction::class)
     singleOf(::CommonRegistrationDataSource) bind RegistrationDataSource::class
     singleOf(::CommonDeviceDataSource) bind DeviceDataSource::class
-    singleOf(::CommonUserProfileDataSource) binds arrayOf(UserProfileDataSource::class, LogOutAction::class)
+    singleOf(::CommonUserProfileDataSource) binds
+        arrayOf(UserProfileDataSource::class, LogOutAction::class)
     singleOf(::UserRoutingMock) bind RoutingMock::class
 }

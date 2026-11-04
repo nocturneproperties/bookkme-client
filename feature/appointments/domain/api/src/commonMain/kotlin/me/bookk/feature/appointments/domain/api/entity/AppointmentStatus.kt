@@ -4,5 +4,5 @@ enum class AppointmentStatus {
     SCHEDULED,
     COMPLETED,
     CANCELLED,
-    NO_SHOW
+    NO_SHOW,
 }

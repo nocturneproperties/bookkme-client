@@ -4,7 +4,8 @@ import org.gradle.internal.extensions.stdlib.capitalized
 
 enum class ProductFlavour(val title: String) {
     DEV("dev"),
-    PROD("prod");
+    PROD("prod"),
+    ;
 
     companion object {
         fun from(variant: String): ProductFlavour {

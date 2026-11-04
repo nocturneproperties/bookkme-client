@@ -37,10 +37,9 @@ fun GalleryLauncher(
         }
     }
 
-
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents(),
-        onResult = ::onResult
+        onResult = ::onResult,
     )
 
     LaunchedEffect(launchGallery) {

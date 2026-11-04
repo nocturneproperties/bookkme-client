@@ -31,17 +31,22 @@ import kotlin.uuid.Uuid
 
 internal class CommonBusinessDataSource(
     private val httpClient: HttpClient,
-    private val businessDao: BusinessDao
-) : DataSource(), BusinessDataSource, LogOutAction {
+    private val businessDao: BusinessDao,
+) : DataSource(),
+    BusinessDataSource,
+    LogOutAction {
 
-    override suspend fun createBusiness(name: String, currencyCode: String, timeZone: TimeZone): Business =
-        mapExceptions {
-            httpClient.post(BusinessRouting.Api.Business()) {
-                setBody(CreateBusinessRequest(name, currencyCode, timeZone))
-            }
-                .body<BusinessRemote>()
-                .toDomain()
+    override suspend fun createBusiness(
+        name: String,
+        currencyCode: String,
+        timeZone: TimeZone,
+    ): Business = mapExceptions {
+        httpClient.post(BusinessRouting.Api.Business()) {
+            setBody(CreateBusinessRequest(name, currencyCode, timeZone))
         }
+            .body<BusinessRemote>()
+            .toDomain()
+    }
 
     override suspend fun updateBusiness(business: Business) {
         mapExceptions {
@@ -61,7 +66,7 @@ internal class CommonBusinessDataSource(
                 business = business.toLocal(),
                 daySchedules = business.toDayScheduleEntities(),
                 workHours = business.toWorkHourEntities(),
-                dayOffs = business.toDayOffEntities()
+                dayOffs = business.toDayOffEntities(),
             )
         }
     }
@@ -72,19 +77,22 @@ internal class CommonBusinessDataSource(
                 businesses = businesses.map { it.toLocal() },
                 daySchedules = businesses.flatMap { it.toDayScheduleEntities() },
                 workHours = businesses.flatMap { it.toWorkHourEntities() },
-                dayOffs = businesses.flatMap { it.toDayOffEntities() }
+                dayOffs = businesses.flatMap { it.toDayOffEntities() },
             )
         }
     }
 
-    override suspend fun saveBusinessListWithDashboardInDB(businesses: List<Business>, dashboardBusinessId: Uuid?) {
+    override suspend fun saveBusinessListWithDashboardInDB(
+        businesses: List<Business>,
+        dashboardBusinessId: Uuid?,
+    ) {
         mapExceptions {
             businessDao.upsertAllWithChildrenAndDashboard(
                 businesses = businesses.map { it.toLocal() },
                 daySchedules = businesses.flatMap { it.toDayScheduleEntities() },
                 workHours = businesses.flatMap { it.toWorkHourEntities() },
                 dayOffs = businesses.flatMap { it.toDayOffEntities() },
-                dashboardBusinessId = dashboardBusinessId
+                dashboardBusinessId = dashboardBusinessId,
             )
         }
     }
@@ -116,7 +124,7 @@ internal class CommonBusinessDataSource(
             .map { rows ->
                 UserBusinessInfo(
                     dashboardId = rows.firstOrNull { it.isDashboard }?.business?.entity?.id,
-                    businesses = rows.map { it.business.toDomain() }
+                    businesses = rows.map { it.business.toDomain() },
                 )
             }
             .mapErrors()
@@ -124,7 +132,11 @@ internal class CommonBusinessDataSource(
 
     override suspend fun setDashboardBusinessOnRemote(businessId: Uuid) {
         mapExceptions {
-            httpClient.put(BusinessRouting.Api.Business.Id.Dashboard(parent = BusinessRouting.Api.Business.Id(id = businessId)))
+            httpClient.put(
+                BusinessRouting.Api.Business.Id.Dashboard(
+                    parent = BusinessRouting.Api.Business.Id(id = businessId),
+                ),
+            )
         }
     }
 

@@ -11,23 +11,18 @@ sealed class Error(val error: String, cause: Throwable?) : Throwable(error, caus
     class Unknown(cause: Throwable) : Error("Unknown error", cause)
     class InvalidApplicationState : Error("Invalid app state", null)
 
-    class BusinessError(
-        val errorCode: Int,
-        message: String
-    ) : Error(message, null)
+    class BusinessError(val errorCode: Int, message: String) : Error(message, null)
 
     class BusinessAccessSuspended(message: String) : Error(message, null)
 
-    class UnknownApiError(
-        error: String,
-        cause: Exception,
-        val errorCode: Int
-    ) : Error(error, cause)
+    class UnknownApiError(error: String, cause: Exception, val errorCode: Int) : Error(error, cause)
 }
 
 fun Throwable.businessOrThrow() = (this as? Error.BusinessError) ?: throw this
 
-suspend inline fun <T> Result<T>.onBusinessError(action: suspend (error: Error.BusinessError) -> Unit): Result<T> {
+suspend inline fun <T> Result<T>.onBusinessError(
+    action: suspend (error: Error.BusinessError) -> Unit,
+): Result<T> {
     return onFailure {
         action(it.businessOrThrow())
     }

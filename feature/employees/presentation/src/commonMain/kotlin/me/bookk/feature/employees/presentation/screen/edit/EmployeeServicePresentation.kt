@@ -10,7 +10,7 @@ data class EmployeeServicePresentation(
     override val displayName: StringDesc,
     val duration: StringDesc,
     val price: String,
-    val service: Service
+    val service: Service,
 ) : PickerPresentation() {
 
     constructor(service: Service) : this(
@@ -18,6 +18,6 @@ data class EmployeeServicePresentation(
         displayName = service.name.desc(),
         duration = service.duration.toString().desc(),
         price = service.price.toString(),
-        service = service
+        service = service,
     )
 }

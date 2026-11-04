@@ -16,7 +16,7 @@ data class AppointmentSettings(
     val inBetweenBreakInMinutes: Int,
     val appointmentNote: String,
     val permissions: ResourcePermission,
-    val automaticCompletion: Boolean
+    val automaticCompletion: Boolean,
 ) {
     companion object {
         fun stub(businessId: Uuid = Uuid.random()) = AppointmentSettings(businessId = businessId)
@@ -31,7 +31,7 @@ data class AppointmentSettings(
         inBetweenBreakInMinutes = 10,
         appointmentNote = "",
         permissions = ResourcePermission(),
-        automaticCompletion = true
+        automaticCompletion = true,
     )
 
     fun isInWorkday(date: Instant): Boolean {

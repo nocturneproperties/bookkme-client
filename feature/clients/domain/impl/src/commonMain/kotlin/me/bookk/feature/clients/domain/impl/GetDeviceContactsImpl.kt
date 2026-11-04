@@ -6,7 +6,7 @@ import me.bookk.feature.clients.domain.datasource.DeviceContact
 import me.bookk.feature.clients.domain.datasource.DeviceContactsDataSource
 
 internal class GetDeviceContactsImpl(
-    private val deviceContactsDataSource: DeviceContactsDataSource
+    private val deviceContactsDataSource: DeviceContactsDataSource,
 ) : GetDeviceContacts {
 
     override suspend fun invoke(): List<ClientImportEntry> {
@@ -20,7 +20,7 @@ internal class GetDeviceContactsImpl(
             name = name,
             lastName = lastName,
             phone = phones.firstNotNullOfOrNull { it.toDialablePhone() },
-            email = emails.firstOrNull { it.isNotBlank() }
+            email = emails.firstOrNull { it.isNotBlank() },
         )
     }
 

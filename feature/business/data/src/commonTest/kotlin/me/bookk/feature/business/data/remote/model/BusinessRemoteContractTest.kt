@@ -48,9 +48,9 @@ class BusinessRemoteContractTest {
                 "ownerId" to 11,
                 "employeeId" to 12,
                 "clientId" to 13,
-                "clientDataRetentionMonths" to 14
+                "clientDataRetentionMonths" to 14,
             ),
-            fields
+            fields,
         )
     }
 
@@ -76,8 +76,14 @@ class BusinessRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("business" to 1, "employees" to 2, "clients" to 3, "services" to 4, "appointments" to 5),
-            fields
+            listOf(
+                "business" to 1,
+                "employees" to 2,
+                "clients" to 3,
+                "services" to 4,
+                "appointments" to 5,
+            ),
+            fields,
         )
     }
 
@@ -101,9 +107,9 @@ class BusinessRemoteContractTest {
                 "timeZone" to 7,
                 "socials" to 8,
                 "schedule" to 9,
-                "clientDataRetentionMonths" to 10
+                "clientDataRetentionMonths" to 10,
             ),
-            fields
+            fields,
         )
     }
 

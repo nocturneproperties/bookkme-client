@@ -18,8 +18,7 @@ internal actual fun platformEmployeesDiModule(): Module = module {
 }
 
 @UsedInSwift
-fun employeeListVM(): EmployeeListViewModel =
-    KoinPlatform.getKoin().get()
+fun employeeListVM(): EmployeeListViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun inviteEmployeeVM(businessId: Uuid): InviteEmployeeViewModel =

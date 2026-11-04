@@ -22,7 +22,9 @@ internal fun NavGraphBuilder.notificationSettingsScreen(navigation: SettingsNavi
         ObserveNavigation(viewModel.uiState.navigation) {
             when (it) {
                 NotificationSettingsDestinations.Back -> {
-                    LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher?.onBackPressed()
+                    LocalOnBackPressedDispatcherOwner.current
+                        ?.onBackPressedDispatcher
+                        ?.onBackPressed()
                 }
             }
         }

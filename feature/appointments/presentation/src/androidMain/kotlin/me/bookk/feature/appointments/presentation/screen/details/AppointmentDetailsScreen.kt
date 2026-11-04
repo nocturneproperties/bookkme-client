@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,10 +60,15 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
                     .padding(pv)
                     .fillMaxSize(),
             ) {
-                StatusRow(state.status, state.statusNote, state.noShowButton, state.rescheduleButton)
+                StatusRow(
+                    state.status,
+                    state.statusNote,
+                    state.noShowButton,
+                    state.rescheduleButton,
+                )
                 HorizontalDivider(
                     Modifier.padding(top = 4.dp),
-                    color = LocalColors.current.divider
+                    color = LocalColors.current.divider,
                 )
                 val lines = state.infoSections.items
                 List(
@@ -79,13 +84,13 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
                             TotalRow(state.totalLabel, state.totalPrice, state.originalPrice)
                             CompleteAction(state.completeButton)
                         }
-                    }
+                    },
                 ) {
                     InfoCardLine(
                         line = it,
                         isFirst = it.id == lines.first().id,
                         isLast = it.id == lines.last().id,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 }
             }
@@ -93,7 +98,7 @@ internal fun AppointmentDetailsScreen(state: AppointmentDetailsState) {
                 DateTimePicker(state.dateTimePicker)
             }
             AppointmentCompletionSheet(state.completion)
-        }
+        },
     )
 }
 
@@ -104,7 +109,7 @@ private fun CompleteAction(completeButton: ButtonState) {
         completeButton,
         modifier = Modifier
             .padding(16.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
     )
 }
 
@@ -122,7 +127,7 @@ private fun PriceAdjustmentSection(state: PriceAdjustmentSectionState) {
     OptionsMultiPicker(
         state.servicePicker,
         Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
-        showDividers = true
+        showDividers = true,
     ) { item, _ ->
         ServiceItem(item, onItemRemove = null)
     }
@@ -135,25 +140,25 @@ private fun TotalRow(label: StringDesc, price: String, originalPrice: String?) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp, bottom = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = label.localized(),
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.titleLarge.primary(),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Column(horizontalAlignment = Alignment.End) {
             Text(
                 text = price,
                 style = MaterialTheme.typography.titleLarge.primary(),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             originalPrice?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodySmall.secondary(),
-                    textDecoration = TextDecoration.LineThrough
+                    textDecoration = TextDecoration.LineThrough,
                 )
             }
         }
@@ -164,7 +169,7 @@ private fun TotalRow(label: StringDesc, price: String, originalPrice: String?) {
 private fun PriceAdjustmentReasonSection(title: StringDesc, reason: StringDesc) {
     InfoCard(
         lines = listOf(InfoLine(id = PRICE_ADJUSTMENT_REASON_ID, title = title, value = reason)),
-        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp).padding(top = 16.dp),
     )
 }
 
@@ -173,28 +178,28 @@ private fun StatusRow(
     status: UIAppointmentStatus,
     statusNote: StringDesc?,
     noShowButton: ButtonState,
-    rescheduleButton: ButtonState
+    rescheduleButton: ButtonState,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 4.dp)
             .heightIn(min = 48.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         StatusLabel(status = status)
         statusNote?.let {
             Text(
                 text = it.localized(),
                 modifier = Modifier.padding(start = 8.dp),
-                style = MaterialTheme.typography.bodyMedium.secondary()
+                style = MaterialTheme.typography.bodyMedium.secondary(),
             )
         }
         Spacer(Modifier.weight(1f))
         if (noShowButton.isVisible) {
             StateTextButton(
                 noShowButton,
-                colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error)
+                colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error),
             )
         }
         if (rescheduleButton.isVisible) {

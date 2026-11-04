@@ -45,7 +45,8 @@ class GetBusinessCurrencyImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.getBusinessCurrency(businessId) } returns Money.SupportedCurrency.USD
+        everySuspend { fixture.dataSource.getBusinessCurrency(businessId) } returns
+            Money.SupportedCurrency.USD
 
         whenn()
         val result = fixture.sut(businessId)

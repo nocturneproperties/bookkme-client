@@ -1,10 +1,8 @@
 package me.bookk.feature.clients.presentation.list
 
-import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
-import me.bookk.feature.clients.domain.api.GetClientsPermissions
-import kotlinx.coroutines.CompletableDeferred
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.android.designsystem.resources.DesignSystem
+import dev.icerock.moko.resources.desc.joinToStringDesc
+import dev.icerock.moko.resources.format
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -15,39 +13,41 @@ import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
-import library.device.api.DeviceFacade
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
+import library.device.api.DeviceFacade
+import library.permissions.api.PermissionType
+import me.bookk.android.designsystem.resources.DesignSystem
+import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.designsystem.test.assertEmpty
-import me.bookk.designsystem.test.assertSingle
-import me.bookk.designsystem.test.tap
-import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeTextCollator
-import me.bookk.designsystem.uistate.AppBarActionState
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
+import me.bookk.designsystem.test.assertEmpty
 import me.bookk.designsystem.test.assertMappedSingle
+import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
+import me.bookk.designsystem.test.tap
+import me.bookk.designsystem.uistate.AppBarActionState
 import me.bookk.feature.clients.domain.api.GetClientsList
+import me.bookk.feature.clients.domain.api.GetClientsPermissions
 import me.bookk.feature.clients.domain.api.GetDeviceContacts
 import me.bookk.feature.clients.domain.api.ImportClients
-import me.bookk.feature.clients.domain.api.entity.ClientImportResult
-import dev.icerock.moko.resources.format
-import dev.icerock.moko.resources.desc.joinToStringDesc
-import me.bookk.feature.clients.domain.api.entity.RejectedClientImport
-import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
-import library.permissions.api.PermissionType
+import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
+import me.bookk.feature.clients.domain.api.entity.ClientImportResult
+import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
+import me.bookk.feature.clients.domain.api.entity.RejectedClientImport
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
 import me.bookk.feature.clients.presentation.FakePermissionChecker
 import me.bookk.feature.clients.presentation.permissionManagerOf
@@ -88,13 +88,19 @@ class ClientsListViewModelTest {
             every { invoke() } returns currentBusinessId
         }
         val getClientsPermissions = mock<GetClientsPermissions> {
-            everySuspend { invoke(any()) } calls { (id: Uuid) ->
-                ClientsPermissions(canEdit = id in editableBusinessIds, canDelete = false)
-            }
+            everySuspend { invoke(any()) } calls
+                { (id: Uuid) ->
+                    ClientsPermissions(canEdit = id in editableBusinessIds, canDelete = false)
+                }
         }
         val contactsPermission = FakePermissionChecker(PermissionType.CONTACTS)
         var deviceContacts = listOf(
-            ClientImportEntry(name = "John", lastName = "Doe", phone = "+48123456789", email = null)
+            ClientImportEntry(
+                name = "John",
+                lastName = "Doe",
+                phone = "+48123456789",
+                email = null,
+            ),
         )
         val getDeviceContacts = mock<GetDeviceContacts> {
             everySuspend { invoke() } calls { deviceContacts }
@@ -104,7 +110,8 @@ class ClientsListViewModelTest {
         }
         var textCollator = FakeTextCollator()
         val importClients = mock<ImportClients> {
-            everySuspend { invoke(any(), any()) } returns ClientImportResult(created = emptyList(), rejected = emptyList())
+            everySuspend { invoke(any(), any()) } returns
+                ClientImportResult(created = emptyList(), rejected = emptyList())
         }
         val errorMapper = FakeErrorMapper()
 
@@ -118,7 +125,7 @@ class ClientsListViewModelTest {
             permissionManager = permissionManagerOf(contactsPermission),
             device = device,
             stateFactory = FakeClientsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -145,7 +152,7 @@ class ClientsListViewModelTest {
         fixture.clients.value = listOf(
             stubDetachedClient(name = "bob"),
             stubDetachedClient(name = "Anna"),
-            stubDetachedClient(name = "Alex")
+            stubDetachedClient(name = "Alex"),
         )
 
         then()
@@ -176,7 +183,7 @@ class ClientsListViewModelTest {
         advanceUntilIdle()
         fixture.clients.value = listOf(
             stubDetachedClient(name = "Anna", lastName = "Smith"),
-            stubDetachedClient(name = "Bob", lastName = "Stone")
+            stubDetachedClient(name = "Bob", lastName = "Stone"),
         )
 
         whenn()
@@ -193,7 +200,8 @@ class ClientsListViewModelTest {
         val fixture = Fixture()
         val sut = fixture.sut()
         advanceUntilIdle()
-        fixture.clients.value = listOf(stubDetachedClient(name = "Anna"), stubDetachedClient(name = "Bob"))
+        fixture.clients.value =
+            listOf(stubDetachedClient(name = "Anna"), stubDetachedClient(name = "Bob"))
         (sut.uiState.searchField as FakeTextFieldState).type("anna")
 
         whenn()
@@ -216,23 +224,30 @@ class ClientsListViewModelTest {
         sut.uiState.clientsList.items.single().onItemClick(client)
 
         then()
-        assertEquals(listOf<ClientsListDestination>(ClientsListDestination.ClientDetails(client.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ClientsListDestination>(ClientsListDestination.ClientDetails(client.id)),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
-    fun `shows the import action left of the add action for a user who can edit clients`() = runUnitTest {
-        given()
-        val fixture = Fixture(canEdit = true)
+    fun `shows the import action left of the add action for a user who can edit clients`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture(canEdit = true)
 
-        whenn()
-        val sut = fixture.sut()
+            whenn()
+            val sut = fixture.sut()
 
-        then()
-        assertEquals(
-            listOf(DesignSystem.strings.action_import.desc(), DesignSystem.strings.action_add.desc()),
-            sut.uiState.appBar.actions.items.map { it.contentDescription }
-        )
-    }
+            then()
+            assertEquals(
+                listOf(
+                    DesignSystem.strings.action_import.desc(),
+                    DesignSystem.strings.action_add.desc(),
+                ),
+                sut.uiState.appBar.actions.items.map { it.contentDescription },
+            )
+        }
 
     @Test
     fun `hides the import and add actions for a user who cannot edit clients`() = runUnitTest {
@@ -247,17 +262,18 @@ class ClientsListViewModelTest {
     }
 
     @Test
-    fun `hides the add action after switching to a business where the user cannot edit clients`() = runUnitTest {
-        given()
-        val fixture = Fixture(canEdit = true)
-        val sut = fixture.sut()
+    fun `hides the add action after switching to a business where the user cannot edit clients`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture(canEdit = true)
+            val sut = fixture.sut()
 
-        whenn()
-        fixture.currentBusinessId.value = Uuid.random()
+            whenn()
+            fixture.currentBusinessId.value = Uuid.random()
 
-        then()
-        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
-    }
+            then()
+            assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+        }
 
     @Test
     fun `ignores a stale edit access result after the business changes`() = runUnitTest {
@@ -265,7 +281,10 @@ class ClientsListViewModelTest {
         val fixture = Fixture()
         val firstBusinessPermissions = CompletableDeferred<ClientsPermissions>()
         val secondBusinessId = Uuid.random()
-        everySuspend { fixture.getClientsPermissions(fixture.businessId) } calls { firstBusinessPermissions.await() }
+        everySuspend { fixture.getClientsPermissions(fixture.businessId) } calls
+            {
+                firstBusinessPermissions.await()
+            }
         val sut = fixture.sut()
         fixture.currentBusinessId.value = secondBusinessId
 
@@ -306,20 +325,21 @@ class ClientsListViewModelTest {
     }
 
     @Test
-    fun `opens app settings when open settings is tapped in contacts access dialog`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.contactsPermission.granted = false
-        val sut = fixture.sut()
-        sut.tapImport()
-        val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+    fun `opens app settings when open settings is tapped in contacts access dialog`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.contactsPermission.granted = false
+            val sut = fixture.sut()
+            sut.tapImport()
+            val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
 
-        whenn()
-        dialog.tap(ActionType.POSITIVE)
+            whenn()
+            dialog.tap(ActionType.POSITIVE)
 
-        then()
-        verify { fixture.device.openAppSettings() }
-    }
+            then()
+            verify { fixture.device.openAppSettings() }
+        }
 
     @Test
     fun `does not open app settings when contacts access dialog is cancelled`() = runUnitTest {
@@ -405,15 +425,28 @@ class ClientsListViewModelTest {
 
         then()
         assertTrue(sut.uiState.isContactsPickerVisible)
-        assertEquals(ClientsRes.strings.clients_import_contacts_title.desc(), sut.uiState.contactsPicker.pickerTitle)
+        assertEquals(
+            ClientsRes.strings.clients_import_contacts_title.desc(),
+            sut.uiState.contactsPicker.pickerTitle,
+        )
     }
 
     @Test
     fun `lists device contacts in contacts picker sorted by full name`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val anna = ClientImportEntry(name = "anna", lastName = "Smith", phone = "+48111111111", email = null)
-        val john = ClientImportEntry(name = "John", lastName = "Doe", phone = null, email = "john@example.com")
+        val anna = ClientImportEntry(
+            name = "anna",
+            lastName = "Smith",
+            phone = "+48111111111",
+            email = null,
+        )
+        val john = ClientImportEntry(
+            name = "John",
+            lastName = "Doe",
+            phone = null,
+            email = "john@example.com",
+        )
         fixture.deviceContacts = listOf(john, anna)
         val sut = fixture.sut()
 
@@ -432,8 +465,18 @@ class ClientsListViewModelTest {
         val fixture = Fixture()
         fixture.textCollator = FakeTextCollator(reverseOrder())
         fixture.deviceContacts = listOf(
-            ClientImportEntry(name = "Anna", lastName = "Smith", phone = "+48111111111", email = null),
-            ClientImportEntry(name = "Zofia", lastName = "Nowak", phone = "+48222222222", email = null)
+            ClientImportEntry(
+                name = "Anna",
+                lastName = "Smith",
+                phone = "+48111111111",
+                email = null,
+            ),
+            ClientImportEntry(
+                name = "Zofia",
+                lastName = "Nowak",
+                phone = "+48222222222",
+                email = null,
+            ),
         )
         val sut = fixture.sut()
 
@@ -441,31 +484,40 @@ class ClientsListViewModelTest {
         sut.tapImport()
 
         then()
-        assertEquals(listOf("Zofia Nowak".desc(), "Anna Smith".desc()), sut.uiState.contactsPicker.options.map { it.displayName })
+        assertEquals(
+            listOf("Zofia Nowak".desc(), "Anna Smith".desc()),
+            sut.uiState.contactsPicker.options.map { it.displayName },
+        )
     }
 
     @Test
-    fun `shows no contacts message instead of contacts picker when there are no contacts to import`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.deviceContacts = emptyList()
-        val sut = fixture.sut()
+    fun `shows no contacts message instead of contacts picker when there are no contacts to import`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.deviceContacts = emptyList()
+            val sut = fixture.sut()
 
-        whenn()
-        sut.tapImport()
+            whenn()
+            sut.tapImport()
 
-        then()
-        assertFalse(sut.uiState.isContactsPickerVisible)
-        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(ClientsRes.strings.clients_import_no_contacts_title.desc(), message.title)
-    }
+            then()
+            assertFalse(sut.uiState.isContactsPickerVisible)
+            val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(ClientsRes.strings.clients_import_no_contacts_title.desc(), message.title)
+        }
 
     @Test
     fun `names a contact by phone in contacts picker when it has no name`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.deviceContacts = listOf(
-            ClientImportEntry(name = " ", lastName = "", phone = "+48123456789", email = "john@example.com")
+            ClientImportEntry(
+                name = " ",
+                lastName = "",
+                phone = "+48123456789",
+                email = "john@example.com",
+            ),
         )
         val sut = fixture.sut()
 
@@ -473,24 +525,36 @@ class ClientsListViewModelTest {
         sut.tapImport()
 
         then()
-        assertEquals(listOf("+48123456789".desc()), sut.uiState.contactsPicker.options.map { it.displayName })
+        assertEquals(
+            listOf("+48123456789".desc()),
+            sut.uiState.contactsPicker.options.map { it.displayName },
+        )
     }
 
     @Test
-    fun `names a contact by email in contacts picker when it has no name and phone`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.deviceContacts = listOf(
-            ClientImportEntry(name = "", lastName = "", phone = null, email = "john@example.com")
-        )
-        val sut = fixture.sut()
+    fun `names a contact by email in contacts picker when it has no name and phone`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.deviceContacts = listOf(
+                ClientImportEntry(
+                    name = "",
+                    lastName = "",
+                    phone = null,
+                    email = "john@example.com",
+                ),
+            )
+            val sut = fixture.sut()
 
-        whenn()
-        sut.tapImport()
+            whenn()
+            sut.tapImport()
 
-        then()
-        assertEquals(listOf("john@example.com".desc()), sut.uiState.contactsPicker.options.map { it.displayName })
-    }
+            then()
+            assertEquals(
+                listOf("john@example.com".desc()),
+                sut.uiState.contactsPicker.options.map { it.displayName },
+            )
+        }
 
     @Test
     fun `does not open contacts picker when reading device contacts fails`() = runUnitTest {
@@ -524,8 +588,14 @@ class ClientsListViewModelTest {
     fun `imports picked contacts into current business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val anna = ClientImportEntry(name = "Anna", lastName = "Smith", phone = "+48111111111", email = null)
-        val john = ClientImportEntry(name = "John", lastName = "Doe", phone = "+48222222222", email = null)
+        val anna = ClientImportEntry(
+            name = "Anna",
+            lastName = "Smith",
+            phone = "+48111111111",
+            email = null,
+        )
+        val john =
+            ClientImportEntry(name = "John", lastName = "Doe", phone = "+48222222222", email = null)
         fixture.deviceContacts = listOf(anna, john)
         val sut = fixture.sut()
         sut.tapImport()
@@ -638,7 +708,11 @@ class ClientsListViewModelTest {
         sut.pickContacts()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.any { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.any {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -653,65 +727,93 @@ class ClientsListViewModelTest {
         sut.pickContacts()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
-    }
-
-    @Test
-    fun `shows imported count in import summary when every picked contact is imported`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.importClients(any(), any()) } returns ClientImportResult(
-            created = listOf(stubDetachedClient(name = "Anna"), stubDetachedClient(name = "John")),
-            rejected = emptyList()
-        )
-        val sut = fixture.sut()
-        sut.tapImport()
-
-        whenn()
-        sut.pickContacts()
-
-        then()
-        val summary = sut.importSummary()
-        assertEquals(ClientsRes.strings.clients_import_result_title.desc(), summary.title)
-        assertEquals(
-            listOf(ClientsRes.strings.clients_import_result_created.format(2)).joinToStringDesc("\n"),
-            summary.message
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
         )
     }
 
     @Test
-    fun `shows skipped count and reasons in import summary when some picked contacts are rejected`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.importClients(any(), any()) } returns ClientImportResult(
-            created = listOf(stubDetachedClient(name = "Anna")),
-            rejected = listOf(
-                RejectedClientImport(index = 1, reason = RejectedClientImport.Reason.ALREADY_EXISTS),
-                RejectedClientImport(index = 2, reason = RejectedClientImport.Reason.INVALID_FIELDS),
-                RejectedClientImport(index = 3, reason = RejectedClientImport.Reason.ALREADY_EXISTS),
-                RejectedClientImport(index = 4, reason = RejectedClientImport.Reason.UNKNOWN),
-                RejectedClientImport(index = 5, reason = RejectedClientImport.Reason.MISSING_CONTACT_INFO)
+    fun `shows imported count in import summary when every picked contact is imported`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.importClients(any(), any()) } returns
+                ClientImportResult(
+                    created = listOf(
+                        stubDetachedClient(name = "Anna"),
+                        stubDetachedClient(name = "John"),
+                    ),
+                    rejected = emptyList(),
+                )
+            val sut = fixture.sut()
+            sut.tapImport()
+
+            whenn()
+            sut.pickContacts()
+
+            then()
+            val summary = sut.importSummary()
+            assertEquals(ClientsRes.strings.clients_import_result_title.desc(), summary.title)
+            assertEquals(
+                listOf(ClientsRes.strings.clients_import_result_created.format(2))
+                    .joinToStringDesc("\n"),
+                summary.message,
             )
-        )
-        val sut = fixture.sut()
-        sut.tapImport()
+        }
 
-        whenn()
-        sut.pickContacts()
+    @Test
+    fun `shows skipped count and reasons in import summary when some picked contacts are rejected`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.importClients(any(), any()) } returns
+                ClientImportResult(
+                    created = listOf(stubDetachedClient(name = "Anna")),
+                    rejected = listOf(
+                        RejectedClientImport(
+                            index = 1,
+                            reason = RejectedClientImport.Reason.ALREADY_EXISTS,
+                        ),
+                        RejectedClientImport(
+                            index = 2,
+                            reason = RejectedClientImport.Reason.INVALID_FIELDS,
+                        ),
+                        RejectedClientImport(
+                            index = 3,
+                            reason = RejectedClientImport.Reason.ALREADY_EXISTS,
+                        ),
+                        RejectedClientImport(
+                            index = 4,
+                            reason = RejectedClientImport.Reason.UNKNOWN,
+                        ),
+                        RejectedClientImport(
+                            index = 5,
+                            reason = RejectedClientImport.Reason.MISSING_CONTACT_INFO,
+                        ),
+                    ),
+                )
+            val sut = fixture.sut()
+            sut.tapImport()
 
-        then()
-        assertEquals(
-            listOf(
-                ClientsRes.strings.clients_import_result_created.format(1),
-                ClientsRes.strings.clients_import_result_rejected.format(5),
-                ClientsRes.strings.clients_import_result_reason_invalid.format(1),
-                ClientsRes.strings.clients_import_result_reason_missing_contact.format(1),
-                ClientsRes.strings.clients_import_result_reason_exists.format(2),
-                ClientsRes.strings.clients_import_result_reason_unknown.format(1)
-            ).joinToStringDesc("\n"),
-            sut.importSummary().message
-        )
-    }
+            whenn()
+            sut.pickContacts()
+
+            then()
+            assertEquals(
+                listOf(
+                    ClientsRes.strings.clients_import_result_created.format(1),
+                    ClientsRes.strings.clients_import_result_rejected.format(5),
+                    ClientsRes.strings.clients_import_result_reason_invalid.format(1),
+                    ClientsRes.strings.clients_import_result_reason_missing_contact.format(1),
+                    ClientsRes.strings.clients_import_result_reason_exists.format(2),
+                    ClientsRes.strings.clients_import_result_reason_unknown.format(1),
+                )
+                    .joinToStringDesc("\n"),
+                sut.importSummary().message,
+            )
+        }
 
     @Test
     fun `does not show import summary when importing picked contacts fails`() = runUnitTest {
@@ -725,7 +827,11 @@ class ClientsListViewModelTest {
         sut.pickContacts()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.Message })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.Message
+            },
+        )
     }
 
     @Test
@@ -750,10 +856,15 @@ class ClientsListViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        sut.uiState.appBar.actions.items.single { it.contentDescription == DesignSystem.strings.action_add.desc() }.onClick()
+        sut.uiState.appBar.actions.items
+            .single { it.contentDescription == DesignSystem.strings.action_add.desc() }
+            .onClick()
 
         then()
-        assertEquals(listOf<ClientsListDestination>(ClientsListDestination.AddClient(fixture.businessId)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ClientsListDestination>(ClientsListDestination.AddClient(fixture.businessId)),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -810,7 +921,10 @@ class ClientsListViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<ClientsListDestination>(ClientsListDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ClientsListDestination>(ClientsListDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     private fun ClientsListViewModel.tapImport() {
@@ -818,11 +932,15 @@ class ClientsListViewModelTest {
     }
 
     private fun ClientsListViewModel.importAction(): AppBarActionState {
-        return uiState.appBar.actions.items.single { it.contentDescription == DesignSystem.strings.action_import.desc() }
+        return uiState.appBar.actions.items.single {
+            it.contentDescription == DesignSystem.strings.action_import.desc()
+        }
     }
 
     private fun ClientsListViewModel.importSummary(): PresentationNotification.Message {
-        return uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single()
+        return uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.Message>()
+            .single()
     }
 
     private fun ClientsListViewModel.pickContacts(vararg contacts: ClientImportEntry) {

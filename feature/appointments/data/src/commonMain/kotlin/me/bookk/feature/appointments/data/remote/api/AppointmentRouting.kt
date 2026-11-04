@@ -24,7 +24,7 @@ object AppointmentRouting {
                 val parent: Appointment = Appointment(),
                 val businessId: Uuid,
                 val date: LocalDate,
-                val employeeId: Uuid? = null
+                val employeeId: Uuid? = null,
             )
 
             @Resource("/history/{businessId}")
@@ -33,14 +33,11 @@ object AppointmentRouting {
                 val businessId: Uuid,
                 val limit: Int,
                 val offset: Long,
-                val query: String? = null
+                val query: String? = null,
             )
 
             @Resource("/request/{businessId}")
-            class Requests(
-                val parent: Appointment = Appointment(),
-                val businessId: Uuid,
-            ) {
+            class Requests(val parent: Appointment = Appointment(), val businessId: Uuid) {
                 @Resource("/mine")
                 class Own(val parent: Requests)
             }

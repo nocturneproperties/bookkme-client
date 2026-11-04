@@ -5,7 +5,7 @@ import me.bookk.feature.appointments.domain.api.entity.BusinessAppointmentsEnabl
 import me.bookk.feature.appointments.domain.datasource.BusinessAppointmentsDataSource
 
 internal class GetBusinessAppointmentsEnabledImpl(
-    private val dataSource: BusinessAppointmentsDataSource
+    private val dataSource: BusinessAppointmentsDataSource,
 ) : GetBusinessAppointmentsEnabled {
     override suspend fun invoke(): List<BusinessAppointmentsEnabled> {
         return dataSource.getEnabled()

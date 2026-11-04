@@ -2,4 +2,4 @@ package me.bookk.feature.settings.presentation.accdelete
 
 import me.bookk.core.presentation.navigation.NavigationDestination
 
-sealed class DeleteAccountNavigationDestination: NavigationDestination()
+sealed class DeleteAccountNavigationDestination : NavigationDestination()

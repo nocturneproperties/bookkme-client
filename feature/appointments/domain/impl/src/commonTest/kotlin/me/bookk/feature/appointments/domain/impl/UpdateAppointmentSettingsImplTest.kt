@@ -70,7 +70,9 @@ class UpdateAppointmentSettingsImplTest {
         fixture.sut(settings)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentSettingsInDB(updated) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveAppointmentSettingsInDB(updated)
+        }
     }
 
     @Test

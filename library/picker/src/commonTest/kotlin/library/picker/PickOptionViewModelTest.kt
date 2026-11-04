@@ -1,8 +1,10 @@
 package library.picker
 
+import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.image.ImageDesc
 import library.picker.state.PickOptionItem
 import library.picker.state.PickOptionState
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.core.domain.entity.KeyValueData
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.test.given
@@ -25,8 +27,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import dev.icerock.moko.resources.desc.desc
-import me.bookk.android.designsystem.resources.DesignSystem
 
 class PickOptionViewModelTest {
 
@@ -50,13 +50,13 @@ class PickOptionViewModelTest {
             id = "services",
             title = "Services",
             options = listOf(haircut, coloring, shave).map { PickerScreenArgs.PickerData(it) },
-            choice = choice
+            choice = choice,
         )
 
         fun sut() = PickOptionViewModel(
             pickArgs = args,
             factory = FakePickOptionStateFactory(),
-            vmArgs = VmArgs(FakeErrorMapper())
+            vmArgs = VmArgs(FakeErrorMapper()),
         )
     }
 
@@ -65,7 +65,9 @@ class PickOptionViewModelTest {
     }
 
     private fun PickOptionViewModel.check(data: KeyValueData) {
-        uiState.filteredOptions.items.single { it.identity == data }.checkBox.onCheckedChange?.invoke(true)
+        uiState.filteredOptions.items.single {
+            it.identity == data
+        }.checkBox.onCheckedChange?.invoke(true)
     }
 
     @Test
@@ -106,9 +108,12 @@ class PickOptionViewModelTest {
         then()
         assertEquals(
             listOf<PickerNavigationDestination>(
-                PickerNavigationDestination.FinishWithResult("services", listOf(fixture.haircut, fixture.shave))
+                PickerNavigationDestination.FinishWithResult(
+                    "services",
+                    listOf(fixture.haircut, fixture.shave),
+                ),
             ),
-            sut.uiState.navigation.navigationDestination
+            sut.uiState.navigation.navigationDestination,
         )
     }
 
@@ -122,7 +127,10 @@ class PickOptionViewModelTest {
 
         then()
         assertTrue(sut.uiState.selectAllButton.isVisible)
-        assertEquals(DesignSystem.strings.action_select_all.desc(), sut.uiState.selectAllButton.text)
+        assertEquals(
+            DesignSystem.strings.action_select_all.desc(),
+            sut.uiState.selectAllButton.text,
+        )
     }
 
     @Test
@@ -164,7 +172,10 @@ class PickOptionViewModelTest {
         sut.check(fixture.shave)
 
         then()
-        assertEquals(DesignSystem.strings.action_unselect_all.desc(), sut.uiState.selectAllButton.text)
+        assertEquals(
+            DesignSystem.strings.action_unselect_all.desc(),
+            sut.uiState.selectAllButton.text,
+        )
     }
 
     @Test
@@ -180,7 +191,10 @@ class PickOptionViewModelTest {
         then()
         assertTrue(sut.uiState.filteredOptions.items.none { it.checkBox.isChecked })
         assertFalse(sut.uiState.selectButton.isEnabled)
-        assertEquals(DesignSystem.strings.action_select_all.desc(), sut.uiState.selectAllButton.text)
+        assertEquals(
+            DesignSystem.strings.action_select_all.desc(),
+            sut.uiState.selectAllButton.text,
+        )
     }
 
     @Test
@@ -194,7 +208,10 @@ class PickOptionViewModelTest {
         sut.check(fixture.coloring)
 
         then()
-        assertEquals(DesignSystem.strings.action_select_all.desc(), sut.uiState.selectAllButton.text)
+        assertEquals(
+            DesignSystem.strings.action_select_all.desc(),
+            sut.uiState.selectAllButton.text,
+        )
     }
 
     @Test
@@ -211,7 +228,7 @@ class PickOptionViewModelTest {
         then()
         assertEquals(
             listOf(fixture.haircut, fixture.shave),
-            sut.uiState.filteredOptions.items.filter { it.checkBox.isChecked }.map { it.identity }
+            sut.uiState.filteredOptions.items.filter { it.checkBox.isChecked }.map { it.identity },
         )
     }
 
@@ -240,9 +257,9 @@ class PickOptionViewModelTest {
         then()
         assertEquals(
             listOf<PickerNavigationDestination>(
-                PickerNavigationDestination.FinishWithResult("services", listOf(fixture.coloring))
+                PickerNavigationDestination.FinishWithResult("services", listOf(fixture.coloring)),
             ),
-            sut.uiState.navigation.navigationDestination
+            sut.uiState.navigation.navigationDestination,
         )
     }
 }
@@ -261,7 +278,9 @@ private class FakePickOptionState : PickOptionState {
     override val navigation = FakeNavigationState<PickerNavigationDestination>()
 }
 
-private class FakePickOptionItem : FakeViewState(), PickOptionItem {
+private class FakePickOptionItem :
+    FakeViewState(),
+    PickOptionItem {
     override var identity: KeyValueData = KeyValueData("", "")
     override var icon: ImageDesc? = null
     override val checkBox = FakeBooleanState()

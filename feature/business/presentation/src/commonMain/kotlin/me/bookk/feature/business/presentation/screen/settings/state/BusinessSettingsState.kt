@@ -47,6 +47,6 @@ interface BusinessSettingsState {
         val telegramHint: StringDesc,
         val instaIcon: ImageResource,
         val viberIcon: ImageResource,
-        val telegramIcon: ImageResource
+        val telegramIcon: ImageResource,
     )
 }

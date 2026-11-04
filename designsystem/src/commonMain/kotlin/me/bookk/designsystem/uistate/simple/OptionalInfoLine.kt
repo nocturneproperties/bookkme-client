@@ -6,7 +6,7 @@ import kotlin.uuid.Uuid
 class OptionalInfoLine(
     val title: StringDesc,
     val value: StringDesc? = null,
-    val onClick: (() -> Unit)? = null
+    val onClick: (() -> Unit)? = null,
 ) {
     val id = Uuid.random().toString()
 }

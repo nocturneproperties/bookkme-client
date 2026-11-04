@@ -17,13 +17,10 @@ import library.files.api.FileProvider
 import kotlin.reflect.KClass
 import library.cache.api.Preferences as AppPreferences
 
-internal class PreferencesImpl(
-    fileName: String,
-    fileProvider: FileProvider
-) : AppPreferences {
+internal class PreferencesImpl(fileName: String, fileProvider: FileProvider) : AppPreferences {
 
     private val dataStore = PreferenceDataStoreFactory.createWithPath(
-        produceFile = { fileProvider.touchPrefsFile("$fileName.preferences_pb") }
+        produceFile = { fileProvider.touchPrefsFile("$fileName.preferences_pb") },
     )
 
     override suspend fun <T : Any> get(key: AppPreferences.Key<T>, cls: KClass<T>): T? {

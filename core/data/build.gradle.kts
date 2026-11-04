@@ -37,7 +37,7 @@ buildkonfig {
             BOOLEAN,
             "DEBUG",
             getCurrentVariant().contains("debug", ignoreCase = true).toString(),
-            const = true
+            const = true,
         )
     }
 }

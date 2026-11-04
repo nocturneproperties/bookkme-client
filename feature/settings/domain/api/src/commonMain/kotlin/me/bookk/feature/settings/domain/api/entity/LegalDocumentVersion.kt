@@ -6,5 +6,5 @@ data class LegalDocumentVersion(
     val document: LegalDocument,
     val version: String,
     val url: String,
-    val effectiveAt: Instant
+    val effectiveAt: Instant,
 )

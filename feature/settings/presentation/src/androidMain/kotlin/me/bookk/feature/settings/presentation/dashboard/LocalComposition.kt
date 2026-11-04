@@ -7,7 +7,7 @@ internal class DashboardEventListener(
     val selectScheme: (UIColorScheme) -> Unit,
     val showTerms: () -> Unit,
     val showPolicy: () -> Unit,
-    val performLogout: () -> Unit
+    val performLogout: () -> Unit,
 )
 
 internal val LocalDashboardEventListener = compositionLocalOf {
@@ -15,6 +15,6 @@ internal val LocalDashboardEventListener = compositionLocalOf {
         selectScheme = {},
         showTerms = {},
         showPolicy = {},
-        performLogout = {}
+        performLogout = {},
     )
 }

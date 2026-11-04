@@ -91,7 +91,9 @@ class MarkAppointmentNoShowImplTest {
 
         whenn()
         then()
-        assertFailsWith<MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled> { fixture.sut(Uuid.random()) }
+        assertFailsWith<MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled> {
+            fixture.sut(Uuid.random())
+        }
         verifySuspend(VerifyMode.not) { fixture.dataSource.saveAppointmentInDB(any()) }
     }
 
@@ -104,13 +106,17 @@ class MarkAppointmentNoShowImplTest {
 
         whenn()
         then()
-        assertFailsWith<MarkAppointmentNoShow.Error.AppointmentNotStarted> { fixture.sut(Uuid.random()) }
+        assertFailsWith<MarkAppointmentNoShow.Error.AppointmentNotStarted> {
+            fixture.sut(Uuid.random())
+        }
     }
+
     @Test
     fun `maps backend error 300026 to EditWindowClosed`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.dataSource.markAppointmentNoShow(any()) } throws DomainError.BusinessError(300026, "rejected")
+        everySuspend { fixture.dataSource.markAppointmentNoShow(any()) } throws
+            DomainError.BusinessError(300026, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(kotlin.uuid.Uuid.random()) }
@@ -118,5 +124,4 @@ class MarkAppointmentNoShowImplTest {
         then()
         assertFailsWith<MarkAppointmentNoShow.Error.EditWindowClosed> { result.getOrThrow() }
     }
-
 }

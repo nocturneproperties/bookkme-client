@@ -16,10 +16,11 @@ import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.appointmentDetailsScreen(navigation: AppointmentNavigation) {
     composable<AppointmentsDestination.Details>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val route: AppointmentsDestination.Details = it.toRoute()
-        val viewModel: AppointmentDetailsViewModel = koinViewModel { parametersOf(route.appointmentId) }
+        val viewModel: AppointmentDetailsViewModel =
+            koinViewModel { parametersOf(route.appointmentId) }
 
         ObserveNotifications(viewModel.uiState.notifications)
         SendLifecycleEventsTo(viewModel)

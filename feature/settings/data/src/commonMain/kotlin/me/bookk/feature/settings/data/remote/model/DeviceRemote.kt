@@ -13,7 +13,7 @@ data class DeviceRemote(
     @ProtoNumber(3) val deviceUuid: Uuid,
     @ProtoNumber(4) val userId: Uuid,
     @ProtoNumber(5) val notificationToken: String? = null,
-    @ProtoNumber(6) val language: DeviceLanguageRemote
+    @ProtoNumber(6) val language: DeviceLanguageRemote,
 ) {
     fun toDomain() = Device(
         id = id,
@@ -21,7 +21,7 @@ data class DeviceRemote(
         deviceUuid = deviceUuid,
         userId = userId,
         notificationToken = notificationToken,
-        language = language.toDomain()
+        language = language.toDomain(),
     )
 }
 
@@ -29,7 +29,8 @@ data class DeviceRemote(
 enum class DeviceLanguageRemote {
     EN,
     UK,
-    PL;
+    PL,
+    ;
 
     fun toDomain(): DeviceLanguage {
         return when (this) {

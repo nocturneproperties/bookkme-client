@@ -11,7 +11,7 @@ data class ClientSnapshotRemote(
     @ProtoNumber(2) val fullName: String,
     @ProtoNumber(3) val phone: String?,
     @ProtoNumber(4) val email: String?,
-    @ProtoNumber(5) val userId: Uuid? = null
+    @ProtoNumber(5) val userId: Uuid? = null,
 ) {
     fun toDomain(): ClientSnapshot {
         return ClientSnapshot(
@@ -19,7 +19,7 @@ data class ClientSnapshotRemote(
             fullName = fullName,
             phone = phone,
             email = email,
-            userId = userId
+            userId = userId,
         )
     }
 }

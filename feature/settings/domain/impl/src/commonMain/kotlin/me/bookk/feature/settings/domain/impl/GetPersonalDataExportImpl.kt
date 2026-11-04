@@ -5,9 +5,8 @@ import me.bookk.feature.settings.domain.api.GetPersonalDataExport
 import me.bookk.feature.settings.domain.datasource.DataExportDataSource
 import kotlin.uuid.Uuid
 
-internal class GetPersonalDataExportImpl(
-    private val dataSource: DataExportDataSource
-) : GetPersonalDataExport {
+internal class GetPersonalDataExportImpl(private val dataSource: DataExportDataSource) :
+    GetPersonalDataExport {
     override suspend fun invoke(): DataExport {
         return dataSource.get()
     }

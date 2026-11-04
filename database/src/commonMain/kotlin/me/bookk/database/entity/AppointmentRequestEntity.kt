@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 
 @Entity(
     tableName = "appointment_request",
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class AppointmentRequestEntity(
     @PrimaryKey val id: Uuid,
@@ -26,5 +26,5 @@ class AppointmentRequestEntity(
     val clientFullName: String,
     val clientPhone: String?,
     val clientEmail: String?,
-    val clientUserId: Uuid? = null
+    val clientUserId: Uuid? = null,
 )

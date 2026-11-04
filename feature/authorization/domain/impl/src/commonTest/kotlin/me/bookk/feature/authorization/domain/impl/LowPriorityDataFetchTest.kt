@@ -71,8 +71,8 @@ class LowPriorityDataFetchTest {
             employees = ResourcePermission(),
             clients = ResourcePermission(),
             services = ResourcePermission(),
-            appointments = ResourcePermission()
-        )
+            appointments = ResourcePermission(),
+        ),
     )
 
     private class Fixture {
@@ -96,7 +96,7 @@ class LowPriorityDataFetchTest {
             getNotificationSettings,
             getAppointmentEnabled,
             getAppointmentSettings,
-            observeDashboardBusinessChanges
+            observeDashboardBusinessChanges,
         )
     }
 
@@ -107,9 +107,11 @@ class LowPriorityDataFetchTest {
         everySuspend { fixture.getClientsList.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getEmployees.refresh(business.id) } returns emptyList()
         everySuspend { fixture.getAppointmentEnabled.refresh(business.id) } returns true
-        everySuspend { fixture.getAppointmentSettings.refresh(business.id) } returns AppointmentSettings.stub()
+        everySuspend { fixture.getAppointmentSettings.refresh(business.id) } returns
+            AppointmentSettings.stub()
         everySuspend { fixture.updateNotificationToken() } returns Unit
-        everySuspend { fixture.getNotificationSettings.refresh() } returns NotificationSettings.stub()
+        everySuspend { fixture.getNotificationSettings.refresh() } returns
+            NotificationSettings.stub()
     }
 
     @Test
@@ -169,21 +171,23 @@ class LowPriorityDataFetchTest {
     }
 
     @Test
-    fun `still fetches appointment settings and notification data when the first group fails`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = stubBusiness()
-        stubHappyPath(fixture, business)
-        everySuspend { fixture.getServices.refresh(business.id) } throws RuntimeException("network error")
+    fun `still fetches appointment settings and notification data when the first group fails`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = stubBusiness()
+            stubHappyPath(fixture, business)
+            everySuspend { fixture.getServices.refresh(business.id) } throws
+                RuntimeException("network error")
 
-        whenn()
-        fixture.sut()
+            whenn()
+            fixture.sut()
 
-        then()
-        verifySuspend { fixture.getAppointmentSettings.refresh(business.id) }
-        verifySuspend { fixture.updateNotificationToken() }
-        verifySuspend { fixture.getNotificationSettings.refresh() }
-    }
+            then()
+            verifySuspend { fixture.getAppointmentSettings.refresh(business.id) }
+            verifySuspend { fixture.updateNotificationToken() }
+            verifySuspend { fixture.getNotificationSettings.refresh() }
+        }
 
     @Test
     fun `still fetches notification data when appointment settings fail`() = runUnitTest {
@@ -191,7 +195,8 @@ class LowPriorityDataFetchTest {
         val fixture = Fixture()
         val business = stubBusiness()
         stubHappyPath(fixture, business)
-        everySuspend { fixture.getAppointmentSettings.refresh(business.id) } throws RuntimeException("network error")
+        everySuspend { fixture.getAppointmentSettings.refresh(business.id) } throws
+            RuntimeException("network error")
 
         whenn()
         fixture.sut()

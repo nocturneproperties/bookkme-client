@@ -7,7 +7,7 @@ interface CreateAccount {
         val firstName: String,
         val lastName: String,
         val email: String,
-        val acceptedDocuments: AcceptedLegalDocuments = AcceptedLegalDocuments()
+        val acceptedDocuments: AcceptedLegalDocuments = AcceptedLegalDocuments(),
     )
 
     suspend operator fun invoke(userData: UserData)

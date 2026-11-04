@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -18,7 +19,6 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
@@ -39,7 +39,7 @@ class AppointmentRequestViewModel(
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     stateFactory: AppointmentsStateFactory,
     dateLocalizer: DateLocalizer,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: AppointmentRequestState = stateFactory.createAppointmentRequestState().setup()
@@ -86,7 +86,7 @@ class AppointmentRequestViewModel(
             call = {
                 val businessId = observeCurrentBusinessId().filterNotNull().first()
                 getOwnAppointmentRequests.refresh(businessId)
-            }
+            },
         )
     }
 
@@ -120,15 +120,19 @@ class AppointmentRequestViewModel(
                     is Error.AppointmentExists -> {
                         AppointmentsRes.strings.appointments_request_overlap_error.desc()
                     }
+
                     is Error.DateInPast -> {
                         AppointmentsRes.strings.appointments_request_in_past.desc()
                     }
+
                     is Error.DateNotAllowed -> {
                         AppointmentsRes.strings.appointments_request_date_error.desc()
                     }
+
                     is Error.TimeNotAllowed -> {
                         AppointmentsRes.strings.appointments_request_time_error.desc()
                     }
+
                     null -> null
                 }
                 if (resource != null) {
@@ -170,9 +174,8 @@ class AppointmentRequestViewModel(
                 cancelText = DesignSystem.strings.action_ignore.desc(),
                 confirmText = DesignSystem.strings.action_confirm.desc(),
                 confirmActionType = ActionType.NEGATIVE,
-                onConfirm = weakVMClosure { vm, reason -> vm.onDecline(requestId, reason) }
-            )
+                onConfirm = weakVMClosure { vm, reason -> vm.onDecline(requestId, reason) },
+            ),
         )
     }
-
 }

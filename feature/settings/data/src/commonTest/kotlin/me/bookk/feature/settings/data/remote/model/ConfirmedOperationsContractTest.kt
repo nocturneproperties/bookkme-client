@@ -16,12 +16,22 @@ class ConfirmedOperationsContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()
-        assertEquals(listOf("status" to 1, "requestedAt" to 2, "expiresAt" to 3, "availableAgainAt" to 4), fields)
+        assertEquals(
+            listOf(
+                "status" to 1,
+                "requestedAt" to 2,
+                "expiresAt" to 3,
+                "availableAgainAt" to 4,
+            ),
+            fields,
+        )
     }
+
     @Test
     fun `DataExportRequestRemote pins its backend wire fields`() = runUnitTest {
         given()
@@ -29,12 +39,14 @@ class ConfirmedOperationsContractTest {
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
-            descriptor.getElementName(it) to descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
         }
 
         then()
         assertEquals(listOf("stepUpToken" to 1), fields)
     }
+
     @Test
     fun `DataExportStatusRemote ordinals match the backend`() = runUnitTest {
         given()
@@ -46,5 +58,4 @@ class ConfirmedOperationsContractTest {
         then()
         assertEquals(listOf("NONE", "RUNNING", "READY", "FAILED"), names)
     }
-
 }

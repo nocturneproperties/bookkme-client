@@ -56,29 +56,25 @@ import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequ
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-internal fun AppointmentListScreen(
-    state: AppointmentListState
-) {
+internal fun AppointmentListScreen(state: AppointmentListState) {
     Scaffold(
-        modifier = Modifier
-            .systemBarsPadding()
-            .imePadding(),
+        modifier = Modifier.systemBarsPadding().imePadding(),
         topBar = {
             Column {
                 AppTopBar(
                     state = state.appBar,
                     navigationIcon = {
                         StateTextButton(state.requestsButton)
-                    }
+                    },
                 )
                 DateStrip(
                     dates = state.dates.items,
                     selectedDate = state.datePicker.pickedDate ?: LocalDate.today(),
-                    onDateSelected = { state.datePicker.onDatePicked?.invoke(it) }
+                    onDateSelected = { state.datePicker.onDatePicked?.invoke(it) },
                 )
                 HorizontalDivider(color = LocalColors.current.divider)
             }
-        }
+        },
     ) { pv ->
         if (state.datePicker.isDatePickerVisible) {
             AppDatePicker(state.datePicker)
@@ -96,9 +92,7 @@ internal fun AppointmentListScreen(
             }
         }
         Column(
-            modifier = Modifier
-                .padding(pv)
-                .fillMaxSize()
+            modifier = Modifier.padding(pv).fillMaxSize(),
         ) {
             PullToRefresh(state = state.refresh) {
                 List(
@@ -106,7 +100,7 @@ internal fun AppointmentListScreen(
                     state = state.appointments,
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    idProvider = { it.source.id }
+                    idProvider = { it.source.id },
                 ) {
                     AppointmentRequestItem(Modifier.animateItem(), it)
                 }
@@ -119,7 +113,7 @@ internal fun AppointmentListScreen(
 private fun DateStrip(
     dates: List<DateInfo>,
     selectedDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
 ) {
     Row {
         dates.forEach { info ->
@@ -127,7 +121,7 @@ private fun DateStrip(
                 modifier = Modifier.weight(1f),
                 date = info.date,
                 isSelected = info.date == selectedDate,
-                onClick = { onDateSelected(info.date) }
+                onClick = { onDateSelected(info.date) },
             )
         }
     }
@@ -138,7 +132,7 @@ private fun DateCell(
     modifier: Modifier,
     date: LocalDate,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val colors = LocalColors.current
     val background = if (isSelected) colors.buttonPrimary else colors.background
@@ -152,67 +146,62 @@ private fun DateCell(
             .clickable { onClick() }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(
             text = date.dayOfWeek.name.take(1),
             style = MaterialTheme.typography.labelSmall,
-            color = LocalColors.current.primaryText
+            color = LocalColors.current.primaryText,
         )
         Text(
-            modifier = Modifier
-                .size(30.dp, 30.dp)
+            modifier = Modifier.size(30.dp, 30.dp)
                 .background(animatedBg, CircleShape)
                 .wrapContentHeight(align = Alignment.CenterVertically),
             text = date.day.toString(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-            color = if (isSelected) LocalColors.current.onAction else LocalColors.current.primaryText
+            color =
+            if (isSelected) LocalColors.current.onAction else LocalColors.current.primaryText,
         )
     }
 }
 
 @Composable
-private fun AppointmentRequestItem(
-    modifier: Modifier = Modifier,
-    state: AppointmentItemState
-) {
+private fun AppointmentRequestItem(modifier: Modifier = Modifier, state: AppointmentItemState) {
     AppCard(
         modifier = modifier.fillMaxWidth(),
-        onClick = state.onItemClick
+        onClick = state.onItemClick,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
                 text = state.scheduledAt,
                 style = MaterialTheme.typography.titleLarge.primary(),
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
             )
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             ) {
                 Text(
                     text = state.clientName,
-                    style = MaterialTheme.typography.titleMedium.primary()
+                    style = MaterialTheme.typography.titleMedium.primary(),
                 )
                 Text(
                     text = state.serviceName,
-                    style = MaterialTheme.typography.bodyMedium.secondary()
+                    style = MaterialTheme.typography.bodyMedium.secondary(),
                 )
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 state.completedMark?.let { CompletedMark(it) }
                 Text(
                     text = state.earnings,
-                    style = MaterialTheme.typography.titleSmall.primary()
+                    style = MaterialTheme.typography.titleSmall.primary(),
                 )
             }
         }
@@ -225,6 +214,6 @@ private fun CompletedMark(status: UIAppointmentStatus) {
         modifier = Modifier.size(16.dp),
         imageVector = Icons.Filled.CheckCircle,
         contentDescription = status.label.localized(),
-        tint = status.color.themed
+        tint = status.color.themed,
     )
 }

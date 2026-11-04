@@ -31,7 +31,7 @@ import kotlin.uuid.Uuid
 internal class BusinessRoutingMock : RoutingMock {
     override val handlers = setOf(
         GetBusinessesHandler(),
-        UpdateBusinessesHandler()
+        UpdateBusinessesHandler(),
     ).groupBy { RoutingMock.RoutingKey(it.method, it.path) }
 }
 
@@ -46,13 +46,13 @@ private var mockBusiness = BusinessRemote(
     socials = listOf(
         BusinessRemote.Social(BusinessRemote.SocialKind.VIBER, "viber"),
         BusinessRemote.Social(BusinessRemote.SocialKind.INSTAGRAM, "insta"),
-        BusinessRemote.Social(BusinessRemote.SocialKind.TELEGRAM, "telegram")
+        BusinessRemote.Social(BusinessRemote.SocialKind.TELEGRAM, "telegram"),
     ),
     schedule = WorkingSchedule().toRemote(),
     permissions = mockOwnerPermissions(),
     ownerId = Uuid.random(),
     employeeId = Uuid.random(),
-    clientId = null
+    clientId = null,
 )
 
 private fun mockOwnerPermissions(): BusinessPermissionsRemote {
@@ -62,7 +62,7 @@ private fun mockOwnerPermissions(): BusinessPermissionsRemote {
         employees = fullAccess,
         clients = fullAccess,
         services = fullAccess,
-        appointments = fullAccess
+        appointments = fullAccess,
     )
 }
 
@@ -72,14 +72,14 @@ private class GetBusinessesHandler : MockRequestHandler {
 
     override suspend fun handle(
         scope: MockRequestHandleScope,
-        request: HttpRequestData
+        request: HttpRequestData,
     ): HttpResponseData {
         val businesses = UserBusinessesRemote(mockBusiness.id, listOf(mockBusiness))
         return scope.respond(
             content = dataSerializer.encodeToByteArray(businesses),
             headers = headersOf(
                 HttpHeaders.ContentType,
-                ContentType.Application.ProtoBuf.toString()
+                ContentType.Application.ProtoBuf.toString(),
             ),
         )
     }
@@ -92,9 +92,11 @@ private class UpdateBusinessesHandler : MockRequestHandler {
 
     override suspend fun handle(
         scope: MockRequestHandleScope,
-        request: HttpRequestData
+        request: HttpRequestData,
     ): HttpResponseData {
-        val business = dataSerializer.decodeFromByteArray<BusinessUpdateRemote>(request.body.toByteArray())
+        val business = dataSerializer.decodeFromByteArray<BusinessUpdateRemote>(
+            request.body.toByteArray(),
+        )
         mockBusiness = BusinessRemote(
             id = business.id,
             name = business.name,
@@ -108,7 +110,7 @@ private class UpdateBusinessesHandler : MockRequestHandler {
             permissions = mockBusiness.permissions,
             ownerId = mockBusiness.ownerId,
             employeeId = mockBusiness.employeeId,
-            clientId = mockBusiness.clientId
+            clientId = mockBusiness.clientId,
         )
         return scope.respondOk()
     }

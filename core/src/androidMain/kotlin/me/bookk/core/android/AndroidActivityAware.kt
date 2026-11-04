@@ -6,17 +6,17 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
+import kotlin.time.Duration.Companion.milliseconds
 
-open class AndroidActivityAware: DefaultLifecycleObserver {
-    @Volatile
-    private var activity: ComponentActivity? = null
+open class AndroidActivityAware : DefaultLifecycleObserver {
+    @Volatile private var activity: ComponentActivity? = null
 
     protected fun requireActivity() = requireNotNull(activity)
 
-    suspend fun awaitActivity() = withTimeout(2000L) {
+    suspend fun awaitActivity() = withTimeout(2000L.milliseconds) {
         if (activity != null) return@withTimeout requireActivity()
         while (activity == null) {
-            delay(20)
+            delay(20.milliseconds)
         }
         return@withTimeout requireActivity()
     }

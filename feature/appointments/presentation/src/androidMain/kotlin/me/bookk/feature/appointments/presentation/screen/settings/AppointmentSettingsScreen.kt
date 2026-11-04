@@ -22,12 +22,10 @@ import me.bookk.designsystem.components.StateSwitch
 import me.bookk.designsystem.components.TextField
 
 @Composable
-internal fun AppointmentSettingsScreen(
-    state: AppointmentSettingsState
-) {
+internal fun AppointmentSettingsScreen(state: AppointmentSettingsState) {
     Scaffold(
         modifier = Modifier.imePadding(),
-        topBar = { AppTopBar(state = state.appBar) }
+        topBar = { AppTopBar(state = state.appBar) },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -35,7 +33,7 @@ internal fun AppointmentSettingsScreen(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             RequestsSettings(state)
 
@@ -43,7 +41,7 @@ internal fun AppointmentSettingsScreen(
                 state.save,
                 Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp),
             )
         }
     }

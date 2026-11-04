@@ -8,17 +8,14 @@ class PickerScreenArgs(
     val id: String,
     val title: String,
     val options: List<PickerData>,
-    val choice: Choice
+    val choice: Choice,
 ) {
 
     enum class Choice {
         SINGLE,
-        MULTIPLE
+        MULTIPLE,
     }
 
     @Serializable
-    data class PickerData(
-        val data: KeyValueData,
-        val iconUrl: String? = null
-    )
+    data class PickerData(val data: KeyValueData, val iconUrl: String? = null)
 }

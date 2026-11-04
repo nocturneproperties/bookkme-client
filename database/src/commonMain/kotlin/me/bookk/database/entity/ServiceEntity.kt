@@ -16,19 +16,19 @@ import kotlin.uuid.Uuid
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
+            onDelete = CASCADE,
         ),
         ForeignKey(
             entity = ServiceGroupEntity::class,
             parentColumns = ["id"],
             childColumns = ["groupId"],
-            onDelete = CASCADE
+            onDelete = CASCADE,
         ),
     ],
     indices = [
         Index("businessId"),
         Index("groupId"),
-    ]
+    ],
 )
 class ServiceEntity(
     @PrimaryKey
@@ -40,5 +40,5 @@ class ServiceEntity(
     val priceCurrency: String,
     val priceValue: Long,
     val isAvailable: Boolean,
-    val createdAt: Instant
+    val createdAt: Instant,
 )

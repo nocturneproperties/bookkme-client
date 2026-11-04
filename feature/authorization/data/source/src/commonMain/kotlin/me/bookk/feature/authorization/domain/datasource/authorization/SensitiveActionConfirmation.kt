@@ -8,5 +8,5 @@ data class SensitiveActionConfirmation(
     val publicKeyCredentialJson: String,
     val action: SensitiveAction,
     val businessId: Uuid,
-    val targetId: Uuid
+    val targetId: Uuid,
 )

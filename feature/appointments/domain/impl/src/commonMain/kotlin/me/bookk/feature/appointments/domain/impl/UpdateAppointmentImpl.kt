@@ -17,6 +17,12 @@ internal class UpdateAppointmentImpl(
             result
         }.onBusinessError {
             when (it.errorCode) {
+                AppointmentErrorCodes.DATE_IN_PAST -> throw UpdateAppointment.Error.DateInPast()
+                AppointmentErrorCodes.SERVICE_SELECTION_INVALID -> throw UpdateAppointment.Error.InvalidServiceSelection()
+                AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND -> throw UpdateAppointment.Error.ServiceNotFound()
+                AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS -> throw UpdateAppointment.Error.EmployeeNotFound()
+                AppointmentErrorCodes.TRANSACTION_CONFLICT -> throw UpdateAppointment.Error.ConcurrentModification()
+                AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED -> throw UpdateAppointment.Error.EditWindowClosed()
                 AppointmentErrorCodes.DATE_NOT_ALLOWED -> throw UpdateAppointment.Error.DateIsNotAllowed()
                 AppointmentErrorCodes.TIME_NOT_ALLOWED -> throw UpdateAppointment.Error.TimeIsNotAllowed()
                 AppointmentErrorCodes.APPOINTMENT_EXISTS -> throw UpdateAppointment.Error.AppointmentOverlap()

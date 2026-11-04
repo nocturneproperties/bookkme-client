@@ -47,7 +47,8 @@ class BusinessRemoteContractTest {
                 "permissions" to 10,
                 "ownerId" to 11,
                 "employeeId" to 12,
-                "clientId" to 13
+                "clientId" to 13,
+                "clientDataRetentionMonths" to 14
             ),
             fields
         )
@@ -99,7 +100,8 @@ class BusinessRemoteContractTest {
                 "currencyCode" to 6,
                 "timeZone" to 7,
                 "socials" to 8,
-                "schedule" to 9
+                "schedule" to 9,
+                "clientDataRetentionMonths" to 10
             ),
             fields
         )

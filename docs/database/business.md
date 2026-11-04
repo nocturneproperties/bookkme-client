@@ -50,6 +50,7 @@ erDiagram
         uuid ownerId "nullable; user id of the business owner"
         uuid employeeId "nullable; current user's own employee record id, null while not an active employee"
         uuid clientId "nullable; current user's own client record id"
+        int clientDataRetentionMonths "nullable until fetched; backend range 12-120"
     }
 
     BUSINESS_DAY_SCHEDULE {
@@ -107,3 +108,7 @@ erDiagram
   `NotAnEmployee`. 19 → 20 added the `dashboard_business` table (auto-migration) and moved the selection there
   from the `business_prefs` DataStore bucket. The old value is not migrated: after the update the selection is
   empty until the user picks a business (or signs in again, which applies the server's selection).
+
+22 adds nullable `business.clientDataRetentionMonths` via auto-migration 21 → 22. Old rows remain
+unknown until refreshed; no fabricated retention policy is written. Updates that omit the value preserve
+the cached period. `CommonBusinessDataSource.doOnLogOut` clears the entire business row including this field.

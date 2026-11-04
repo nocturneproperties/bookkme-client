@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.data.mapping
 
+import me.bookk.feature.authorization.data.remote.model.AcceptedLegalDocumentsRemote
 import me.bookk.database.entity.UserProfileEntity
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.DeleteAccountRemote
@@ -55,7 +56,11 @@ internal fun RegistrationData.toRemote(): VerifyAccountCreationRequest {
             lastName = userInfo.lastName,
             email = userInfo.email
         ),
-        publicKeyCredentialJson = publicKeyCredentialJson
+        publicKeyCredentialJson = publicKeyCredentialJson,
+        acceptedDocuments = AcceptedLegalDocumentsRemote(
+            privacyPolicy = acceptedDocuments.privacyPolicy,
+            termsOfService = acceptedDocuments.termsOfService
+        )
     )
 }
 

@@ -22,7 +22,7 @@ grouped by the feature whose datasource **writes** the table.
 
 ## Conventions
 
-- **Version and migrations.** The schema is at `version = 20`. Every step from 1 to 20 is a Room
+- **Version and migrations.** The schema is at `version = 22`. Every step from 1 to 22 is a Room
   `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The builder also sets `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
   If a migration is missing, the cache is wiped instead of the app crashing, which is safe only because every
@@ -61,14 +61,14 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | Table(s) | Cleared by | Cleared on logout? |
 |---|---|---|
 | `user_profile` | `CommonUserProfileDataSource` | ✅ `profileDao.clear()` |
-| `client` | `CommonClientsDataSource` | ✅ |
+| `client` | `CommonClientsDataSource` | ✅; confirmed deletion also evicts associated appointment/request snapshots |
 | `service` | `ServiceDataSourceImpl` | ✅ |
 | `service_group` | `ServiceGroupDataSourceImpl` | ✅ (also cascades to `service`) |
 | `employee` (+ 4 child tables) | `EmployeeDataSourceImpl` | ✅ |
 | `employee_invitation` | `EmployeeInvitationDataSourceImpl` | ✅ |
-| `appointment` (+ service snapshot, adjustment services) | `CommonAppointmentDataSource` | ✅ `appointmentDao.clear()`, children cascade |
-| `appointment_request` (+ snapshot) | `CommonAppointmentRequestDataSource` | ✅ |
-| `business` (+ 3 schedule tables, `dashboard_business`) | `CommonBusinessDataSource` | ✅ `clearDashboardBusiness()` then `businessDao.clear()`, which also cascades to any client/employee/service rows still left |
+| `appointment` (+ service snapshot, adjustment services) | `CommonAppointmentDataSource` | ✅ `appointmentDao.clear()`, including `clientUserId`; children cascade |
+| `appointment_request` (+ snapshot) | `CommonAppointmentRequestDataSource` | ✅ including `clientUserId` |
+| `business` (+ 3 schedule tables, `dashboard_business`) | `CommonBusinessDataSource` | ✅ `clearDashboardBusiness()` then `businessDao.clear()` (including retention), which also cascades to any client/employee/service rows still left |
 | `appointment_settings` (+ 3 child tables) | `CommonAppointmentSettingsDataSource` | ✅ `appointmentSettingsDao.clear()` |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
 

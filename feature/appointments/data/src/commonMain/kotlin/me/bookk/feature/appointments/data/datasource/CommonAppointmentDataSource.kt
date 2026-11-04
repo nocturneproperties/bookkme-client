@@ -31,6 +31,7 @@ import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.appointments.data.remote.model.AppointmentPaginationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.InstantAppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.api.entity.PriceAdjustmentDraft
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
@@ -86,10 +87,10 @@ internal class CommonAppointmentDataSource(
         )
     }
 
-    override suspend fun createAppointment(appointment: Appointment): Appointment =
+    override suspend fun createAppointment(draft: InstantAppointmentDraft): Appointment =
         mapExceptions {
             httpClient.post(Api.Appointment.Instant()) {
-                setBody(appointment.toRemote())
+                setBody(draft.toRemote())
             }
                 .body<AppointmentRemote>()
                 .toDomain()

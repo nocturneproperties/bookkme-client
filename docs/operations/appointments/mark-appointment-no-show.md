@@ -16,8 +16,11 @@ flowchart TD
     Net -- business error --> Code{errorCode}
     Code -- 300005 APPOINTMENT_ALREADY_CANCELED --> E1([throw Error.AppointmentAlreadyCancelled])
     Code -- 300018 APPOINTMENT_NOT_STARTED --> E2([throw Error.AppointmentNotStarted])
+    Code -- 300026 --> Added300026([throw Error.EditWindowClosed])
     Code -- other --> EX([rethrow])
 ```
 
 The details screen shows the button only when `Appointment.canBeMarkedNoShow()` is true (`SCHEDULED` or
 `COMPLETED`, and `date <= now`), which mirrors the backend's `requireNoShowMarkable` guard.
+
+`EditWindowClosed` means the appointment ended more than seven days ago.

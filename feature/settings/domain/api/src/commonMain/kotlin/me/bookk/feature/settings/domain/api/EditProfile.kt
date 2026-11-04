@@ -6,4 +6,8 @@ interface EditProfile {
         lastName: String,
         email: String
     )
+
+    sealed interface Error {
+        class ContactAlreadyTaken : Exception(), Error
+    }
 }

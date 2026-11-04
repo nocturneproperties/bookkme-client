@@ -25,6 +25,7 @@ import me.bookk.feature.clients.data.remote.model.ClientImportEntryRemote
 import me.bookk.feature.clients.data.remote.model.ClientImportRequest
 import me.bookk.feature.clients.data.remote.model.ClientImportResultRemote
 import me.bookk.feature.clients.data.remote.model.ClientRemote
+import me.bookk.feature.clients.data.remote.model.DeleteClientRequest
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.entity.ClientImportResult
@@ -97,9 +98,11 @@ internal class CommonClientsDataSource(
         }
     }
 
-    override suspend fun deleteClient(businessId: Uuid, id: Uuid) {
+    override suspend fun deleteClient(businessId: Uuid, id: Uuid, stepUpToken: String) {
         mapExceptions {
-            httpClient.delete(Api.Clients.Id(Api.Clients(businessId = businessId), id = id))
+            httpClient.delete(Api.Clients.Id(Api.Clients(businessId = businessId), id = id)) {
+                setBody(DeleteClientRequest(stepUpToken))
+            }
         }
     }
 
@@ -108,7 +111,7 @@ internal class CommonClientsDataSource(
     }
 
     override suspend fun deleteClientInDb(id: Uuid) {
-        mapExceptions { clientsDao.deleteById(id) }
+        mapExceptions { clientsDao.deleteWithAppointmentCaches(id) }
     }
 
     override suspend fun getClientIdsInDb(businessId: Uuid): List<Uuid> {

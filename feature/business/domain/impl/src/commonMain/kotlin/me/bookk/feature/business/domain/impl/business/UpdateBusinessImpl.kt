@@ -18,7 +18,8 @@ internal class UpdateBusinessImpl(
             location = model.location,
             currency = model.currency,
             socials = model.socials,
-            schedule = model.schedule
+            schedule = model.schedule,
+            clientDataRetentionMonths = model.clientDataRetentionMonths ?: currentBusiness.clientDataRetentionMonths
         )
         return runCatching {
             businessDataSource.updateBusiness(newBusiness)
@@ -26,6 +27,9 @@ internal class UpdateBusinessImpl(
             newBusiness
         }.onBusinessError {
             when (it.errorCode) {
+                BusinessErrorCodes.BUSINESS_INVALID_CURRENCY -> throw UpdateBusiness.Error.InvalidCurrency()
+                BusinessErrorCodes.BUSINESS_CURRENCY_LOCKED -> throw UpdateBusiness.Error.CurrencyLocked()
+                BusinessErrorCodes.BUSINESS_CLIENT_DATA_RETENTION_OUT_OF_RANGE -> throw UpdateBusiness.Error.InvalidRetentionPeriod()
                 BusinessErrorCodes.BUSINESS_ACTIVE_DAY_WITHOUT_WORK_HOURS ->
                     throw UpdateBusiness.Error.ActiveDayWithoutWorkHours()
                 BusinessErrorCodes.BUSINESS_INVALID_DAY_OFF_RANGE ->

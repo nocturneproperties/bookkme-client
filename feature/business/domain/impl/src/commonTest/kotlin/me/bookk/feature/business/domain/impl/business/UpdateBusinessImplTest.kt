@@ -211,4 +211,83 @@ class UpdateBusinessImplTest {
         then()
         assertNotNull(thrown)
     }
+    @Test
+    fun `preserves cached retention when the update omits it`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness().copy(clientDataRetentionMonths = 36)
+        everySuspend { fixture.dataSource.getBusinessById(business.id) } returns business
+        everySuspend { fixture.dataSource.updateBusiness(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessInDB(any()) } returns Unit
+
+        whenn()
+        val result = fixture.sut(stubUpdate(business.id).copy(clientDataRetentionMonths = null))
+
+        then()
+        assertEquals(36, result.clientDataRetentionMonths)
+        verifySuspend { fixture.dataSource.saveBusinessInDB(matches({ "retention" }) { it.clientDataRetentionMonths == 36 }) }
+    }
+
+    @Test
+    fun `updates retention when explicitly supplied`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness().copy(clientDataRetentionMonths = 36)
+        everySuspend { fixture.dataSource.getBusinessById(business.id) } returns business
+        everySuspend { fixture.dataSource.updateBusiness(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessInDB(any()) } returns Unit
+
+        whenn()
+        val result = fixture.sut(stubUpdate(business.id).copy(clientDataRetentionMonths = 60))
+
+        then()
+        assertEquals(60, result.clientDataRetentionMonths)
+        verifySuspend { fixture.dataSource.saveBusinessInDB(matches({ "retention" }) { it.clientDataRetentionMonths == 60 }) }
+    }
+
+    @Test
+    fun `maps backend error 200035 to InvalidCurrency`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
+        everySuspend { fixture.dataSource.updateBusiness(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200035, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUpdate(id)) }
+
+        then()
+        assertFailsWith<me.bookk.feature.business.domain.api.business.UpdateBusiness.Error.InvalidCurrency> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200036 to CurrencyLocked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
+        everySuspend { fixture.dataSource.updateBusiness(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200036, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUpdate(id)) }
+
+        then()
+        assertFailsWith<me.bookk.feature.business.domain.api.business.UpdateBusiness.Error.CurrencyLocked> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200041 to InvalidRetentionPeriod`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
+        everySuspend { fixture.dataSource.updateBusiness(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200041, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUpdate(id)) }
+
+        then()
+        assertFailsWith<me.bookk.feature.business.domain.api.business.UpdateBusiness.Error.InvalidRetentionPeriod> { result.getOrThrow() }
+    }
+
 }

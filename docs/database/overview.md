@@ -84,3 +84,7 @@ Business rows are deleted on logout (`businessDao.clear()`), which empties every
 appointment rows behind. The other cascades that fire in practice are `service_group` → `service`
 ([Delete service group](../operations/services/delete-service-group.md)) and the parent-to-child aggregate
 cascades triggered by the `deleteByIds` stale-row deletion inside each `refresh()`.
+
+Confirmed client deletion is an explicit cross-feature invalidation: `ClientsDao.deleteWithAppointmentCaches`
+deletes matching appointment/request rows and then the client atomically. It does not introduce an FK,
+and deleting a client through other reconciliation paths does not trigger this explicit operation.

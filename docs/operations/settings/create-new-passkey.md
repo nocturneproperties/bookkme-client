@@ -11,6 +11,7 @@ Registers an additional passkey on the signed-in account and returns the refresh
 flowchart TD
     Start([invoke]) --> Ch[PasskeySettingsDataSource.getRegistrationChallengeForNewPasskey<br/>GET /api/auth/passkey/add/challenge]
     Ch --> PK[PassKeyManager.create challenge]
+    Ch -- 10 UNABLE_TO_GENERATE_REGISTRATION_CHALLENGE --> E2([throw Error.ChallengeCreationFailed])
     PK -- UserCancelled --> Ign([throw Error.Ignore])
     PK -- other failure --> E1([throw Error.AccountCreationFailed])
     PK -- payload --> Fin[sendVerifiedPasskey requestId, credentialJson<br/>POST /api/auth/passkey/add/finish]

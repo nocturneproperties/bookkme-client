@@ -21,6 +21,7 @@ kotlin {
             implementation(libs.ktor.client.resources)
         }
         commonTest.dependencies {
+            implementation(libs.ktor.client.negotiation)
             implementation(projects.core.testFixtures)
             implementation(libs.kotlin.serialization.core)
         }

@@ -20,6 +20,8 @@ import me.bookk.database.relation.AppointmentLocal
 import me.bookk.database.relation.AppointmentRequestLocal
 import me.bookk.database.relation.AppointmentSettingsLocal
 import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRemote
+import me.bookk.feature.appointments.data.remote.model.InstantAppointmentDraftRemote
+import me.bookk.feature.appointments.domain.api.entity.InstantAppointmentDraft
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestDraftRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentSettingsUpdateRemote
@@ -61,18 +63,20 @@ internal fun AppointmentRequestDraft.toRemote(): AppointmentRequestDraftRemote {
     )
 }
 
-internal fun Appointment.toRemote() = AppointmentRemote(
-    id = id,
-    userId = userId,
-    businessId = businessId,
-    employee = employee.toRemote(),
-    client = client.toRemote(),
-    services = services.map { it.toRemote() },
-    status = status.toRemote(),
-    date = date.toInstant(TimeZone.currentSystemDefault()),
-    note = note,
-    cancellationReason = cancellationReason
-)
+internal fun Appointment.toRemote(): AppointmentRemote {
+    return AppointmentRemote(
+        id = id,
+        initiatorUserId = userId,
+        businessId = businessId,
+        employee = employee.toRemote(),
+        client = client.toRemote(),
+        services = services.map { it.toRemote() },
+        status = status.toRemote(),
+        date = date.toInstant(TimeZone.currentSystemDefault()),
+        note = note,
+        cancellationReason = cancellationReason
+    )
+}
 
 internal fun Appointment.toUpdateRemote(): AppointmentUpdateRemote {
     return AppointmentUpdateRemote(
@@ -109,12 +113,15 @@ private fun EmployeeSnapshot.toRemote() = EmployeeSnapshotRemote(
     fullName = fullName
 )
 
-private fun ClientSnapshot.toRemote() = ClientSnapshotRemote(
-    id = id,
-    fullName = fullName,
-    phone = phone,
-    email = email
-)
+private fun ClientSnapshot.toRemote(): ClientSnapshotRemote {
+    return ClientSnapshotRemote(
+        id = id,
+        fullName = fullName,
+        phone = phone,
+        email = email,
+        userId = userId
+    )
+}
 
 private fun ServiceSnapshot.toRemote() = ServiceSnapshotRemote(
     id = id,
@@ -131,26 +138,29 @@ private fun AppointmentStatus.toRemote() = when (this) {
     AppointmentStatus.NO_SHOW -> AppointmentStatusRemote.NO_SHOW
 }
 
-internal fun Appointment.toEntity() = AppointmentEntity(
-    id = id,
-    userId = userId,
-    businessId = businessId,
-    employeeId = employee.id,
-    employeeUserId = employee.userId,
-    employeeFullName = employee.fullName,
-    date = date.toInstant(TimeZone.currentSystemDefault()),
-    status = status.name,
-    note = note,
-    cancellationReason = cancellationReason,
-    clientId = client.id,
-    clientFullName = client.fullName,
-    clientPhone = client.phone,
-    clientEmail = client.email,
-    completedBy = completedBy?.name,
-    adjustedPriceCurrency = priceAdjustment?.price?.currencyType?.code,
-    adjustedPriceValue = priceAdjustment?.price?.value,
-    priceAdjustmentReason = priceAdjustment?.reason
-)
+internal fun Appointment.toEntity(): AppointmentEntity {
+    return AppointmentEntity(
+        id = id,
+        userId = userId,
+        businessId = businessId,
+        employeeId = employee.id,
+        employeeUserId = employee.userId,
+        employeeFullName = employee.fullName,
+        date = date.toInstant(TimeZone.currentSystemDefault()),
+        status = status.name,
+        note = note,
+        cancellationReason = cancellationReason,
+        clientId = client.id,
+        clientFullName = client.fullName,
+        clientPhone = client.phone,
+        clientUserId = client.userId,
+        clientEmail = client.email,
+        completedBy = completedBy?.name,
+        adjustedPriceCurrency = priceAdjustment?.price?.currencyType?.code,
+        adjustedPriceValue = priceAdjustment?.price?.value,
+        priceAdjustmentReason = priceAdjustment?.reason
+    )
+}
 
 internal fun Appointment.toServiceEntities(): List<AppointmentServiceSnapshotEntity> {
     return services.groupBy { it.id }.values.map { bookings ->
@@ -201,51 +211,57 @@ private fun AppointmentLocal.priceAdjustment(): PriceAdjustment? {
     )
 }
 
-internal fun AppointmentLocal.toDomain() = Appointment(
-    id = entity.id,
-    userId = entity.userId,
-    businessId = entity.businessId,
-    employee = EmployeeSnapshot(id = entity.employeeId, userId = entity.employeeUserId, fullName = entity.employeeFullName),
-    date = entity.date.toLocalDateTime(TimeZone.currentSystemDefault()),
-    client = ClientSnapshot(
-        id = entity.clientId,
-        fullName = entity.clientFullName,
-        phone = entity.clientPhone,
-        email = entity.clientEmail
-    ),
-    services = services.flatMap { service ->
-        val snapshot = ServiceSnapshot(
-            id = service.id,
-            name = service.name,
-            groupId = service.groupId,
-            price = Money(service.priceValue, Money.SupportedCurrency.fromCode(service.priceCurrency)),
-            duration = service.duration
-        )
-        List(service.count) { snapshot }
-    },
-    status = AppointmentStatus.valueOf(entity.status),
-    note = entity.note,
-    cancellationReason = entity.cancellationReason,
-    completedBy = entity.completedBy?.let { AppointmentCompletedBy.valueOf(it) },
-    priceAdjustment = priceAdjustment()
-)
+internal fun AppointmentLocal.toDomain(): Appointment {
+    return Appointment(
+        id = entity.id,
+        userId = entity.userId,
+        businessId = entity.businessId,
+        employee = EmployeeSnapshot(id = entity.employeeId, userId = entity.employeeUserId, fullName = entity.employeeFullName),
+        date = entity.date.toLocalDateTime(TimeZone.currentSystemDefault()),
+        client = ClientSnapshot(
+            id = entity.clientId,
+            fullName = entity.clientFullName,
+            phone = entity.clientPhone,
+            userId = entity.clientUserId,
+            email = entity.clientEmail
+        ),
+        services = services.flatMap { service ->
+            val snapshot = ServiceSnapshot(
+                id = service.id,
+                name = service.name,
+                groupId = service.groupId,
+                price = Money(service.priceValue, Money.SupportedCurrency.fromCode(service.priceCurrency)),
+                duration = service.duration
+            )
+            List(service.count) { snapshot }
+        },
+        status = AppointmentStatus.valueOf(entity.status),
+        note = entity.note,
+        cancellationReason = entity.cancellationReason,
+        completedBy = entity.completedBy?.let { AppointmentCompletedBy.valueOf(it) },
+        priceAdjustment = priceAdjustment()
+    )
+}
 
-internal fun AppointmentRequest.toRequestEntity() = AppointmentRequestEntity(
-    id = id,
-    userId = userId,
-    businessId = businessId,
-    employeeId = employee.id,
-    employeeUserId = employee.userId,
-    employeeFullName = employee.fullName,
-    status = status.name,
-    date = date,
-    note = note,
-    declineReason = declineReason,
-    clientId = client.id,
-    clientFullName = client.fullName,
-    clientPhone = client.phone,
-    clientEmail = client.email
-)
+internal fun AppointmentRequest.toRequestEntity(): AppointmentRequestEntity {
+    return AppointmentRequestEntity(
+        id = id,
+        userId = userId,
+        businessId = businessId,
+        employeeId = employee.id,
+        employeeUserId = employee.userId,
+        employeeFullName = employee.fullName,
+        status = status.name,
+        date = date,
+        note = note,
+        declineReason = declineReason,
+        clientId = client.id,
+        clientFullName = client.fullName,
+        clientPhone = client.phone,
+        clientUserId = client.userId,
+        clientEmail = client.email
+    )
+}
 
 internal fun AppointmentRequest.toRequestServiceEntities() = services.map { service ->
     AppointmentRequestServiceSnapshotEntity(
@@ -259,31 +275,34 @@ internal fun AppointmentRequest.toRequestServiceEntities() = services.map { serv
     )
 }
 
-internal fun AppointmentRequestLocal.toDomain() = AppointmentRequest(
-    id = entity.id,
-    userId = entity.userId,
-    businessId = entity.businessId,
-    employee = EmployeeSnapshot(id = entity.employeeId, userId = entity.employeeUserId, fullName = entity.employeeFullName),
-    client = ClientSnapshot(
-        id = entity.clientId,
-        fullName = entity.clientFullName,
-        phone = entity.clientPhone,
-        email = entity.clientEmail
-    ),
-    services = services.map { service ->
-        ServiceSnapshot(
-            id = service.id,
-            name = service.name,
-            groupId = service.groupId,
-            price = Money(service.priceValue, Money.SupportedCurrency.fromCode(service.priceCurrency)),
-            duration = service.duration
-        )
-    },
-    status = AppointmentRequestStatus.valueOf(entity.status),
-    date = entity.date,
-    note = entity.note,
-    declineReason = entity.declineReason
-)
+internal fun AppointmentRequestLocal.toDomain(): AppointmentRequest {
+    return AppointmentRequest(
+        id = entity.id,
+        userId = entity.userId,
+        businessId = entity.businessId,
+        employee = EmployeeSnapshot(id = entity.employeeId, userId = entity.employeeUserId, fullName = entity.employeeFullName),
+        client = ClientSnapshot(
+            id = entity.clientId,
+            fullName = entity.clientFullName,
+            phone = entity.clientPhone,
+            userId = entity.clientUserId,
+            email = entity.clientEmail
+        ),
+        services = services.map { service ->
+            ServiceSnapshot(
+                id = service.id,
+                name = service.name,
+                groupId = service.groupId,
+                price = Money(service.priceValue, Money.SupportedCurrency.fromCode(service.priceCurrency)),
+                duration = service.duration
+            )
+        },
+        status = AppointmentRequestStatus.valueOf(entity.status),
+        date = entity.date,
+        note = entity.note,
+        declineReason = entity.declineReason
+    )
+}
 
 internal fun AppointmentSettings.toRemote() = AppointmentSettingsUpdateRemote(
     businessId = businessId,
@@ -362,3 +381,15 @@ internal fun AppointmentSettingsLocal.toDomain() = AppointmentSettings(
     ),
     automaticCompletion = entity.automaticCompletion
 )
+
+internal fun InstantAppointmentDraft.toRemote(): InstantAppointmentDraftRemote {
+    return InstantAppointmentDraftRemote(
+        businessId = businessId,
+        employeeId = employeeId,
+        services = services.map { RequestedServiceRemote(it.serviceId, it.count) },
+        date = date,
+        note = note,
+        offerToken = offerToken,
+        clientId = clientId
+    )
+}

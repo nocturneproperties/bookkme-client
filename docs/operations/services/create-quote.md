@@ -3,11 +3,12 @@
 # Create quote
 
 `CreateQuote(businessId, serviceIds)` → `POST /api/business/{businessId}/service/quote`
-· **no callers yet**
+· called from [Create appointment](../appointments/create-appointment.md)
 
-Asks the server for a signed price and duration quote (`offerToken`) for a set of services. It is meant for the
-client-side booking flow (`AppointmentRequestDataSource.createAppointmentRequest(request, offerToken)`,
-which also has no use case yet). Nothing is persisted.
+Asks the server for full current service models and a signed price/duration token for the selected
+service ids. Instant booking compares this result with the caller's displayed snapshots before using
+the token. Quote retrieval itself persists nothing; mismatch recovery refreshes the service cache in
+the booking use case.
 
 ```mermaid
 flowchart TD

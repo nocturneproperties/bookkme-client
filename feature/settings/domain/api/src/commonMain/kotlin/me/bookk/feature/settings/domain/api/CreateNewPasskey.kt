@@ -6,6 +6,7 @@ interface CreateNewPasskey {
     suspend operator fun invoke(): List<Passkey>
 
     sealed class Error : Throwable() {
+        class ChallengeCreationFailed : Error()
         class AccountCreationFailed : Error()
     }
 }

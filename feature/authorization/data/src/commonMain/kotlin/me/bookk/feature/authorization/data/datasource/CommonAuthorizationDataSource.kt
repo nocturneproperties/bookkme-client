@@ -9,6 +9,10 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.setBody
+import me.bookk.feature.authorization.domain.datasource.authorization.SensitiveActionConfirmation
+import me.bookk.feature.authorization.data.remote.model.StepUpRequestRemote
+import me.bookk.feature.authorization.data.remote.model.StepUpTokenRemote
+import me.bookk.feature.authorization.data.remote.model.SensitiveActionRemote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import library.cache.api.PreferenceProvider
@@ -39,6 +43,18 @@ class CommonAuthorizationDataSource(
 ) : AuthorizationDataSource, DataSource(), LogOutAction {
 
     private val preferences = preferenceProvider.get("authorization_prefs")
+
+    override suspend fun confirmSensitiveAction(confirmation: SensitiveActionConfirmation): String = mapExceptions {
+        httpClient.post(Auth.StepUp()) {
+            setBody(StepUpRequestRemote(
+                requestId = confirmation.requestId,
+                publicKeyCredentialJson = confirmation.publicKeyCredentialJson,
+                action = SensitiveActionRemote.fromDomain(confirmation.action),
+                businessId = confirmation.businessId,
+                targetId = confirmation.targetId
+            ))
+        }.body<StepUpTokenRemote>().token
+    }
 
     override suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?) {
         preferences.set(Key.accessToken, tokenInfo?.accessToken)

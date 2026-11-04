@@ -32,6 +32,7 @@ erDiagram
         string clientFullName "snapshot"
         string clientPhone "nullable; snapshot"
         string clientEmail "nullable; snapshot"
+        uuid clientUserId "nullable; linked backend user, snapshot"
         string completedBy "nullable; AppointmentCompletedBy.name"
         string adjustedPriceCurrency "nullable; set iff a price adjustment exists"
         long adjustedPriceValue "nullable"
@@ -75,6 +76,7 @@ erDiagram
         string clientFullName
         string clientPhone "nullable"
         string clientEmail "nullable"
+        uuid clientUserId "nullable; linked backend user, snapshot"
     }
 
     APPOINTMENT_REQUEST_SERVICE_SNAPSHOT {
@@ -154,3 +156,13 @@ erDiagram
   `refresh()` and [Update appointment settings](../operations/appointments/update-appointment-settings.md). They have no sync marker, because
   a `null` row is itself unambiguous.
 - Cleared on logout: yes, all of them.
+
+Schema 21 adds nullable `clientUserId` to `appointment` and `appointment_request` with an automatic
+20 → 21 migration. Older rows retain `null` until refreshed. Both datasource logout hooks clear the
+entire parent row, including the linked user snapshot. `userId` remains the initiator of the booking,
+which the API names `initiatorUserId`; it is distinct from `clientUserId`.
+
+After a confirmed client deletion, `CommonClientsDataSource.deleteClientInDb` also evicts cached
+`appointment` and `appointment_request` aggregates by `clientId` through `ClientsDao` in the same
+transaction as client removal. This removes personal snapshots until refreshed backend data returns.
+No cross-feature foreign key is introduced. Logout still clears these tables through their owning datasources.

@@ -28,5 +28,6 @@ data class Device(
 
 enum class DeviceLanguage {
     EN,
-    UK
+    UK,
+    PL
 }

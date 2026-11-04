@@ -8,6 +8,7 @@ interface CompleteAppointment {
     suspend operator fun invoke(appointmentId: Uuid, priceAdjustment: PriceAdjustmentDraft? = null): Appointment
 
     sealed interface Error {
+        class EditWindowClosed : Throwable(), Error
         class AppointmentAlreadyCancelled : Throwable(), Error
         class AppointmentNotStarted : Throwable(), Error
         class AppointmentMarkedNoShow : Throwable(), Error

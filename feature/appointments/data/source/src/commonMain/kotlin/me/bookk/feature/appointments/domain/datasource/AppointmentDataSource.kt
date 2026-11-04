@@ -3,6 +3,7 @@ package me.bookk.feature.appointments.domain.datasource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.InstantAppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.api.entity.PriceAdjustmentDraft
 import kotlin.time.Instant
@@ -38,7 +39,7 @@ interface AppointmentDataSource {
         query: String? = null
     ): List<Appointment>
 
-    suspend fun createAppointment(appointment: Appointment): Appointment
+    suspend fun createAppointment(draft: InstantAppointmentDraft): Appointment
 
     suspend fun cancelAppointment(cancellation: AppointmentCancellation): Appointment
 

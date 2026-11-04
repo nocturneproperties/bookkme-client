@@ -42,7 +42,8 @@ internal fun BusinessRemote.toDomain(): Business {
         permissions = permissions.toDomain(),
         ownerId = ownerId,
         employeeId = employeeId,
-        clientId = clientId
+        clientId = clientId,
+        clientDataRetentionMonths = clientDataRetentionMonths
     )
 }
 
@@ -85,7 +86,8 @@ internal fun Business.toLocal(): BusinessEntity {
         appointmentsPermissionDelete = permissions.appointments.delete,
         ownerId = ownerId,
         employeeId = employeeId,
-        clientId = clientId
+        clientId = clientId,
+        clientDataRetentionMonths = clientDataRetentionMonths
     )
 }
 
@@ -178,7 +180,8 @@ internal fun BusinessLocal.toDomain(): Business {
         ),
         ownerId = entity.ownerId,
         employeeId = entity.employeeId,
-        clientId = entity.clientId
+        clientId = entity.clientId,
+        clientDataRetentionMonths = entity.clientDataRetentionMonths
     )
 }
 
@@ -204,7 +207,8 @@ internal fun Business.toRemote(): BusinessUpdateRemote {
         currencyCode = currency.code(),
         timeZone = timeZone,
         socials = socials.values.map { it.toRemote() },
-        schedule = schedule.toRemote()
+        schedule = schedule.toRemote(),
+        clientDataRetentionMonths = clientDataRetentionMonths
     )
 }
 

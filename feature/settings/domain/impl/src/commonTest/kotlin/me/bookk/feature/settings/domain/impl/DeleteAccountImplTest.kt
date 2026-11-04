@@ -228,4 +228,46 @@ class DeleteAccountImplTest {
     private companion object {
         const val UNKNOWN_ERROR_CODE = 999_999
     }
+    @Test
+    fun `maps backend error 6 to AccountVerificationFailed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubVerifiedDeletion()
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(6, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 7 to AccountVerificationFailed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubVerifiedDeletion()
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(7, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 11 to AccountVerificationFailed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubVerifiedDeletion()
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(11, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
+    }
+
 }

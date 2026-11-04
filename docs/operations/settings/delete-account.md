@@ -18,6 +18,9 @@ flowchart TD
     PK -- payload --> Del[AuthorizationDataSource.deleteAccount<br/>DELETE /api/auth/account]
     Del -- business error --> Code{errorCode}
     Code -- 4 VERIFICATION_FAILED --> E1
+    Code -- 6 CHALLENGE_WINDOW_EXPIRED --> E1
+    Code -- 7 PASSKEY_OWNER_NOT_FOUND --> E1
+    Code -- 11 PASSKEY_NOT_OWNED --> E1
     Code -- other --> EX([rethrow])
     Del -- network / other --> EX
     Del -- 2xx --> Sig[PassKeyManager.signalAccountDeleted<br/>unknown credential: assertion id<br/>all accepted credentials: none for assertion userHandle]

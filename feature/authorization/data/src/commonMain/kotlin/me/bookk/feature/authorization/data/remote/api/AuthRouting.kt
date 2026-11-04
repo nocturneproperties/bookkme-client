@@ -33,6 +33,9 @@ internal object AuthRouting {
                 class Id(val parent: PassKey = PassKey(), val id: Long)
             }
 
+            @Resource("/passkey/step_up")
+            class StepUp(val parent: Auth = Auth())
+
             @Resource("/refresh")
             class Refresh(val parent: Auth = Auth())
 

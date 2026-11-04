@@ -36,11 +36,17 @@ import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessIdImpl
 import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentSettingsImpl
+import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentsEnabled
+import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentsEnabledImpl
+import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentRequests
+import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentRequestsImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun appointmentsDomainModule() = module {
+    factoryOf(::GetBusinessAppointmentRequestsImpl) bind GetBusinessAppointmentRequests::class
+    factoryOf(::GetBusinessAppointmentsEnabledImpl) bind GetBusinessAppointmentsEnabled::class
     factoryOf(::GetAppointmentOptionsImpl) bind GetAppointmentOptions::class
     factoryOf(::ObserveAppointmentOptionsImpl) bind ObserveAppointmentOptions::class
     factoryOf(::GetAppointmentSettingsImpl) bind GetAppointmentSettings::class

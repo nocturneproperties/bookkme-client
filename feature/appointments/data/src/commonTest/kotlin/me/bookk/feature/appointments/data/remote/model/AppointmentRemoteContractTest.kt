@@ -34,7 +34,7 @@ class AppointmentRemoteContractTest {
         assertEquals(
             listOf(
                 "id" to 1,
-                "userId" to 2,
+                "initiatorUserId" to 2,
                 "businessId" to 3,
                 "employee" to 4,
                 "client" to 5,

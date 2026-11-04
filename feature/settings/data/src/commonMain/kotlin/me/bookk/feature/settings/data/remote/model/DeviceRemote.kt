@@ -28,11 +28,15 @@ data class DeviceRemote(
 @Serializable
 enum class DeviceLanguageRemote {
     EN,
-    UK;
+    UK,
+    PL;
 
-    fun toDomain() = when (this) {
-        EN -> DeviceLanguage.EN
-        UK -> DeviceLanguage.UK
+    fun toDomain(): DeviceLanguage {
+        return when (this) {
+            EN -> DeviceLanguage.EN
+            UK -> DeviceLanguage.UK
+            PL -> DeviceLanguage.PL
+        }
     }
 }
 

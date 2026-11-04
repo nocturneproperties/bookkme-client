@@ -1,5 +1,7 @@
 package me.bookk.feature.settings.domain.impl
 
+import kotlin.test.assertFailsWith
+import dev.mokkery.answering.throws
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
@@ -95,4 +97,18 @@ class EditProfileImplTest {
             )
         }
     }
+    @Test
+    fun `maps backend error 100002 to ContactAlreadyTaken`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.profileCRUD.get() } returns UserProfile(Uuid.random(), "John", "Doe", "old@example.com")
+        everySuspend { fixture.profileCRUD.update(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(100002, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut("John", "Doe", "john@example.com") }
+
+        then()
+        assertFailsWith<me.bookk.feature.settings.domain.api.EditProfile.Error.ContactAlreadyTaken> { result.getOrThrow() }
+    }
+
 }

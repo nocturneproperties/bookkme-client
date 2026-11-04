@@ -40,5 +40,6 @@ class BusinessEntity(
     @ColumnInfo(defaultValue = "0") val appointmentsPermissionDelete: Boolean = false,
     val ownerId: Uuid? = null,
     val employeeId: Uuid? = null,
-    val clientId: Uuid? = null
+    val clientId: Uuid? = null,
+    val clientDataRetentionMonths: Int? = null
 )

@@ -183,4 +183,17 @@ class CompleteAppointmentImplTest {
         then()
         assertEquals(expected, error::class)
     }
+    @Test
+    fun `maps backend error 300026 to EditWindowClosed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.completeAppointment(any(), any()) } throws DomainError.BusinessError(300026, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(kotlin.uuid.Uuid.random(), null) }
+
+        then()
+        assertFailsWith<CompleteAppointment.Error.EditWindowClosed> { result.getOrThrow() }
+    }
+
 }

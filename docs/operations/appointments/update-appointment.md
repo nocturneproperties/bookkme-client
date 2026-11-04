@@ -26,5 +26,16 @@ flowchart TD
     Code -- 300004 APPOINTMENT_EXISTS --> E3([throw Error.AppointmentOverlap])
     Code -- 300005 / 300006 / 300019 --> E4([throw Error.AppointmentNotScheduled])
     Code -- 200033 BUSINESS_EMPLOYEE_SUSPENDED --> E5([throw Error.EmployeeSuspended])
+    Code -- 300012 --> Added300012([throw Error.DateInPast])
+    Code -- 300024 --> Added300024([throw Error.InvalidServiceSelection])
+    Code -- 200013 --> Added200013([throw Error.ServiceNotFound])
+    Code -- 200024 --> Added200024([throw Error.EmployeeNotFound])
+    Code -- 900001 --> Added900001([throw Error.ConcurrentModification])
+    Code -- 300026 --> Added300026([throw Error.EditWindowClosed])
     Code -- other --> EX([rethrow])
 ```
+
+A transaction conflict is reported as `ConcurrentModification` without automatically retrying; callers
+can choose to reload rather than replaying a stale appointment over newer server changes.
+
+`EditWindowClosed` means the appointment ended more than seven days ago.

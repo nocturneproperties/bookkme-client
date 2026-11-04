@@ -3,6 +3,9 @@ package me.bookk.feature.appointments.domain.api.entity
 object AppointmentErrorCodes {
     private const val BASE = 300000
 
+    const val APPOINTMENT_EDIT_WINDOW_CLOSED = BASE + 26
+    const val TRANSACTION_CONFLICT = 900001
+
     const val REQUEST_EXISTS = BASE + 1
     const val TIME_NOT_ALLOWED = BASE + 2
     const val DATE_NOT_ALLOWED = BASE + 3
@@ -24,6 +27,8 @@ object AppointmentErrorCodes {
     const val PRICE_ADJUSTMENT_REASON_TOO_LONG = BASE + 23
     const val SERVICE_SELECTION_INVALID = BASE + 24
     const val BUSINESS_QUOTE_SERVICE_NOT_FOUND = 200013
+    const val BUSINESS_QUOTE_EMPTY_SERVICE_LIST = 200014
+    const val BUSINESS_CLIENT_NOT_EXISTS = 200006
     const val BUSINESS_EMPLOYEE_NOT_EXISTS = 200024
     const val BUSINESS_EMPLOYEE_SUSPENDED = 200033
 }

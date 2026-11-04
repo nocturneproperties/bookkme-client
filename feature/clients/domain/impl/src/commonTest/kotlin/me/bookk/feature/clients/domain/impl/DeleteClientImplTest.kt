@@ -1,6 +1,12 @@
 package me.bookk.feature.clients.domain.impl
 
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.verify.VerifyMode
+import kotlin.test.assertFailsWith
+import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.entity.SensitiveAction
+import me.bookk.feature.clients.domain.api.DeleteClient
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -38,7 +44,11 @@ class DeleteClientImplTest {
 
     private class Fixture {
         val dataSource = mock<ClientsDataSource>()
-        val sut = DeleteClientImpl(dataSource)
+        val confirmation = mock<ConfirmSensitiveAction>()
+        val sut = DeleteClientImpl(dataSource, confirmation)
+        init {
+            everySuspend { confirmation.invoke(any(), any(), any()) } returns "confirmed-token"
+        }
     }
 
     private fun stubClient() = Client.Detached(
@@ -55,14 +65,14 @@ class DeleteClientImplTest {
         given()
         val fixture = Fixture()
         val client = stubClient()
-        everySuspend { fixture.dataSource.deleteClient(client.businessId, client.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token") } returns Unit
         everySuspend { fixture.dataSource.deleteClientInDb(client.id) } returns Unit
 
         whenn()
         fixture.sut(client)
 
         then()
-        verifySuspend { fixture.dataSource.deleteClient(client.businessId, client.id) }
+        verifySuspend { fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token") }
     }
 
     @Test
@@ -70,7 +80,7 @@ class DeleteClientImplTest {
         given()
         val fixture = Fixture()
         val client = stubClient()
-        everySuspend { fixture.dataSource.deleteClient(client.businessId, client.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteClient(client.businessId, client.id, "confirmed-token") } returns Unit
         everySuspend { fixture.dataSource.deleteClientInDb(client.id) } returns Unit
 
         whenn()
@@ -78,5 +88,48 @@ class DeleteClientImplTest {
 
         then()
         verifySuspend { fixture.dataSource.deleteClientInDb(client.id) }
+    }    @Test
+    fun `requests confirmation for the business and client being deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val client = stubClient()
+        everySuspend { fixture.dataSource.deleteClient(any(), any(), any()) } returns Unit
+        everySuspend { fixture.dataSource.deleteClientInDb(any()) } returns Unit
+
+        whenn()
+        fixture.sut(client)
+
+        then()
+        verifySuspend { fixture.confirmation(SensitiveAction.DELETE_CLIENT, client.businessId, client.id) }
     }
+
+    @Test
+    fun `failed confirmation neither deletes remotely nor clears the cache`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.confirmation(any(), any(), any()) } throws ConfirmSensitiveAction.Error.VerificationFailed()
+
+        whenn()
+        val result = runCatching { fixture.sut(stubClient()) }
+
+        then()
+        assertFailsWith<DeleteClient.Error.ConfirmationFailed> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClient(any(), any(), any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientInDb(any()) }
+    }
+
+    @Test
+    fun `expired deletion token leaves the local client untouched`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.deleteClient(any(), any(), any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200040, "expired")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubClient()) }
+
+        then()
+        assertFailsWith<DeleteClient.Error.ConfirmationRequired> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientInDb(any()) }
+    }
+
 }

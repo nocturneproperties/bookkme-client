@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class AppointmentRequestRemote(
     @ProtoNumber(1) val id: Uuid,
-    @ProtoNumber(2) val userId: Uuid,
+    @ProtoNumber(2) val initiatorUserId: Uuid,
     @ProtoNumber(3) val businessId: Uuid,
     @ProtoNumber(4) val employee: EmployeeSnapshotRemote,
     @ProtoNumber(5) val client: ClientSnapshotRemote,
@@ -19,16 +19,18 @@ data class AppointmentRequestRemote(
     @ProtoNumber(9) val note: String,
     @ProtoNumber(10) val declineReason: String,
 ) {
-    fun toDomain() = AppointmentRequest(
-        id = id,
-        userId = userId,
-        businessId = businessId,
-        employee = employee.toDomain(),
-        client = client.toDomain(),
-        services = services.map { it.toDomain() },
-        status = status.toDomain(),
-        date = date,
-        note = note,
-        declineReason = declineReason
-    )
+    fun toDomain(): AppointmentRequest {
+        return AppointmentRequest(
+            id = id,
+            userId = initiatorUserId,
+            businessId = businessId,
+            employee = employee.toDomain(),
+            client = client.toDomain(),
+            services = services.map { it.toDomain() },
+            status = status.toDomain(),
+            date = date,
+            note = note,
+            declineReason = declineReason
+        )
+    }
 }

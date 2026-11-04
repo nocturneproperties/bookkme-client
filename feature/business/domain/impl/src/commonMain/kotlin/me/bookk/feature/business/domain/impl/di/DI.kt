@@ -28,11 +28,20 @@ import me.bookk.feature.business.domain.impl.business.SwitchDashboardBusinessImp
 import me.bookk.feature.business.domain.impl.business.UpdateBusinessImpl
 import me.bookk.feature.business.domain.impl.plugin.EnableAppointmentsPluginImpl
 import me.bookk.feature.business.domain.impl.plugin.IsAppointmentsPluginEnabledImpl
+import me.bookk.feature.business.domain.api.StartBusinessDataExport
+import me.bookk.feature.business.domain.impl.StartBusinessDataExportImpl
+import me.bookk.feature.business.domain.api.GetBusinessDataExport
+import me.bookk.feature.business.domain.impl.GetBusinessDataExportImpl
+import me.bookk.feature.business.domain.api.DownloadBusinessDataExport
+import me.bookk.feature.business.domain.impl.DownloadBusinessDataExportImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun businessDomainModule() = module {
+    factoryOf(::DownloadBusinessDataExportImpl) bind DownloadBusinessDataExport::class
+    factoryOf(::GetBusinessDataExportImpl) bind GetBusinessDataExport::class
+    factoryOf(::StartBusinessDataExportImpl) bind StartBusinessDataExport::class
     factoryOf(::CreateBusinessImpl) bind CreateBusiness::class
     factoryOf(::RefreshBusinessInfoImpl) bind RefreshBusinessInfo::class
     factoryOf(::ObserveDashboardBusinessChangesImpl) bind ObserveDashboardBusinessChanges::class

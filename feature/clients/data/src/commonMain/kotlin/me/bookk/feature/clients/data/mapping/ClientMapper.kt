@@ -19,12 +19,13 @@ internal fun Client.toRemote(): ClientRemote {
 }
 
 internal fun Client.toUpdateRemote(): ClientUpdateRemote {
+    val detached = this as? Client.Detached
     return ClientUpdateRemote(
         id = id,
-        name = name,
-        lastName = lastName,
-        phone = phone,
-        email = email,
+        name = detached?.name,
+        lastName = detached?.lastName,
+        phone = detached?.phone,
+        email = detached?.email,
         description = description
     )
 }

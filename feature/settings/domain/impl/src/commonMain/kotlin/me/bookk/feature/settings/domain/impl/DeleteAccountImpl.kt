@@ -54,7 +54,10 @@ internal class DeleteAccountImpl(
             )
         }.getOrElse {
             throw when (it.businessOrThrow().errorCode) {
-                AuthErrorCodes.VERIFICATION_FAILED -> DeleteAccount.Error.AccountVerificationFailed()
+                AuthErrorCodes.VERIFICATION_FAILED,
+                AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED,
+                AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND,
+                AuthErrorCodes.PASSKEY_NOT_OWNED -> DeleteAccount.Error.AccountVerificationFailed()
                 else -> it
             }
         }

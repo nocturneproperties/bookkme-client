@@ -1,10 +1,13 @@
 package me.bookk.feature.authorization.domain.datasource.registration
 
+import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
+
 class RegistrationData(
     val requestId: String,
     val deviceInfo: DeviceInfo,
     val userInfo: UserInfo,
-    val publicKeyCredentialJson: String
+    val publicKeyCredentialJson: String,
+    val acceptedDocuments: AcceptedLegalDocuments
 ) {
 
     class UserInfo(

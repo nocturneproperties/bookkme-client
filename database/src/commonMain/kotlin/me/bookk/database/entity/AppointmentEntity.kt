@@ -31,5 +31,6 @@ class AppointmentEntity(
     val completedBy: String? = null,
     val adjustedPriceCurrency: String? = null,
     val adjustedPriceValue: Long? = null,
-    val priceAdjustmentReason: String? = null
+    val priceAdjustmentReason: String? = null,
+    val clientUserId: Uuid? = null
 )

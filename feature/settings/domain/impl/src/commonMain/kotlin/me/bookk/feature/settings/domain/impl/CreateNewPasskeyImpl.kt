@@ -1,6 +1,8 @@
 package me.bookk.feature.settings.domain.impl
 
 import me.bookk.core.domain.entity.Error
+import me.bookk.core.domain.entity.onBusinessError
+import me.bookk.feature.settings.domain.datasource.SettingsErrorCodes
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
@@ -16,7 +18,12 @@ internal class CreateNewPasskeyImpl(
     private val getAvailablePasskeys: GetAvailablePasskeys
 ) : CreateNewPasskey {
     override suspend fun invoke(): List<Passkey> {
-        val challenge = passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+        val challenge = runCatching { passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() }
+            .onBusinessError {
+                when (it.errorCode) {
+                    SettingsErrorCodes.UNABLE_TO_GENERATE_REGISTRATION_CHALLENGE -> throw CreateNewPasskey.Error.ChallengeCreationFailed()
+                }
+            }.getOrThrow()
         val payload = createPasskeyFrom(challenge)
         passkeySettingsDataSource.sendVerifiedPasskey(
             ClientSignUpResult(

@@ -1,5 +1,8 @@
 package me.bookk.feature.services.domain.impl.service
 
+import kotlin.test.assertFailsWith
+import dev.mokkery.matcher.any
+import dev.mokkery.answering.throws
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
@@ -86,4 +89,74 @@ class CreateServiceImplTest {
         then()
         verifySuspend { fixture.dataSource.createService(trimmed) }
     }
+    @Test
+    fun `maps backend error 200007 to NameAlreadyExists`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200007, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubService()) }
+
+        then()
+        assertFailsWith<me.bookk.feature.services.domain.api.service.CreateService.Error.NameAlreadyExists> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200008 to InvalidName`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200008, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubService()) }
+
+        then()
+        assertFailsWith<me.bookk.feature.services.domain.api.service.CreateService.Error.InvalidName> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200012 to GroupNotFound`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200012, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubService()) }
+
+        then()
+        assertFailsWith<me.bookk.feature.services.domain.api.service.CreateService.Error.GroupNotFound> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200037 to InvalidPricePrecision`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200037, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubService()) }
+
+        then()
+        assertFailsWith<me.bookk.feature.services.domain.api.service.CreateService.Error.InvalidPricePrecision> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200038 to InvalidBusinessCurrency`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createService(any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200038, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubService()) }
+
+        then()
+        assertFailsWith<me.bookk.feature.services.domain.api.service.CreateService.Error.InvalidBusinessCurrency> { result.getOrThrow() }
+    }
+
 }

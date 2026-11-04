@@ -17,7 +17,8 @@ data class Business(
     val permissions: BusinessPermissions,
     val ownerId: Uuid? = null,
     val employeeId: Uuid? = null,
-    val clientId: Uuid? = null
+    val clientId: Uuid? = null,
+    val clientDataRetentionMonths: Int? = null
 ) {
     data class Update(
         val id: Uuid,
@@ -27,7 +28,8 @@ data class Business(
         val location: Location?,
         val currency: Currency,
         val socials: Map<SocialKind, Social>,
-        val schedule: WorkingSchedule
+        val schedule: WorkingSchedule,
+        val clientDataRetentionMonths: Int? = null
     )
 
     data class Location(

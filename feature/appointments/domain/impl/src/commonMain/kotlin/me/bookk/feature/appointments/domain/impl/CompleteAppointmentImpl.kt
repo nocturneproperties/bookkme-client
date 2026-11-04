@@ -20,6 +20,7 @@ internal class CompleteAppointmentImpl(
             }
         }.onBusinessError {
             when (it.errorCode) {
+                AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED -> throw CompleteAppointment.Error.EditWindowClosed()
                 AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED -> throw Error.AppointmentAlreadyCancelled()
                 AppointmentErrorCodes.APPOINTMENT_NOT_STARTED -> throw Error.AppointmentNotStarted()
                 AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW -> throw Error.AppointmentMarkedNoShow()

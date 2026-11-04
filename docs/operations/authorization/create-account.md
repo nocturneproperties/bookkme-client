@@ -5,6 +5,13 @@
 `CreateAccount(userData)` → `POST /api/auth/passkey/sign_up/challenge`, then `POST /api/auth/sign_up`
 · called from `SignUpViewModel`
 
+`UserData.acceptedDocuments` carries the exact privacy-policy and terms-of-service versions accepted
+by the caller. These values are preserved unchanged through trimming and sent as required protobuf field 5;
+inside that message `privacyPolicy` is field 1 and `termsOfService` is field 2. Null means not accepted.
+The backend requires the versions in effect for all published documents (`GET /api/user/legal`). This use
+case never fetches versions and never infers consent. Existing callers default to empty acceptance and can
+receive `LegalDocumentsNotAccepted` until the signup UI supplies the accepted versions.
+
 First name, last name and email are trimmed before anything is sent. A three-step WebAuthn registration: the server issues a challenge, the platform `PassKeyManager` creates the
 credential, and the server verifies it and returns tokens. After the tokens are saved, the Ktor bearer cache
 is invalidated so the next request loads the new tokens. Then `rawFetch()` runs. `authorized = true` is
@@ -23,12 +30,16 @@ flowchart TD
     PK -- UserCancelled --> Ign([throw Error.Ignore])
     PK -- other failure --> E3([throw Error.AccountCreationFailed])
     PK -- payload --> Dev[DeviceDataSource.getOrCreateDeviceUUID<br/>+ DeviceFacade.getDeviceName]
-    Dev --> Fin[RegistrationDataSource.finishRegistration<br/>POST /api/auth/sign_up]
+    Dev --> Docs[Preserve userData.acceptedDocuments<br/>privacyPolicy and termsOfService versions]
+    Docs --> Fin[RegistrationDataSource.finishRegistration<br/>POST /api/auth/sign_up with acceptedDocuments]
     Fin -- business error --> FinC{errorCode}
     FinC -- 3 USER_ALREADY_EXIST --> E1
     FinC -- 2 INVALID_EMAIL_FORMAT --> E2
     FinC -- 4 VERIFICATION_FAILED --> E4([throw Error.PasskeyVerificationFailed])
     FinC -- 5 ACCOUNT_CREATION_FAILED --> E3
+    FinC -- 6 CHALLENGE_WINDOW_EXPIRED --> E5([throw Error.ChallengeWindowExpired])
+    FinC -- 100003 LEGAL_DOCUMENT_VERSION_UNKNOWN --> E6([throw Error.LegalDocumentVersionUnknown])
+    FinC -- 100004 LEGAL_DOCUMENTS_NOT_ACCEPTED --> E7([throw Error.LegalDocumentsNotAccepted])
     FinC -- other --> EX
     Fin -- tokens --> Save[authorization_prefs: access_token, refresh_token]
     Save --> Inv[invalidateClientTokens<br/>BearerAuthProvider.clearToken]

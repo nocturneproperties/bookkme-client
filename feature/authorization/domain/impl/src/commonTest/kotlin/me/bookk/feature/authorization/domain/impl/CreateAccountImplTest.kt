@@ -28,6 +28,7 @@ import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVeri
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
 import me.bookk.feature.authorization.domain.entity.TokenInfo
+import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -218,4 +219,140 @@ class CreateAccountImplTest {
             )
         }
     }
+    @Test
+    fun `maps registration error 100003 to LegalDocumentVersionUnknown`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+        everySuspend { fixture.registrationDataSource.finishRegistration(any()) } throws Error.BusinessError(100003, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUserData()) }
+
+        then()
+        assertFailsWith<CreateAccount.Error.LegalDocumentVersionUnknown> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps registration error 100004 to LegalDocumentsNotAccepted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+        everySuspend { fixture.registrationDataSource.finishRegistration(any()) } throws Error.BusinessError(100004, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUserData()) }
+
+        then()
+        assertFailsWith<CreateAccount.Error.LegalDocumentsNotAccepted> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps registration error 6 to ChallengeWindowExpired`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+        everySuspend { fixture.registrationDataSource.finishRegistration(any()) } throws Error.BusinessError(6, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUserData()) }
+
+        then()
+        assertFailsWith<CreateAccount.Error.ChallengeWindowExpired> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps registration error 2 to InvalidEmailFormat`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+        everySuspend { fixture.registrationDataSource.finishRegistration(any()) } throws Error.BusinessError(2, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUserData()) }
+
+        then()
+        assertFailsWith<CreateAccount.Error.InvalidEmailFormat> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps registration error 4 to PasskeyVerificationFailed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+        everySuspend { fixture.registrationDataSource.finishRegistration(any()) } throws Error.BusinessError(4, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUserData()) }
+
+        then()
+        assertFailsWith<CreateAccount.Error.PasskeyVerificationFailed> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps registration error 5 to AccountCreationFailed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+        everySuspend { fixture.registrationDataSource.finishRegistration(any()) } throws Error.BusinessError(5, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUserData()) }
+
+        then()
+        assertFailsWith<CreateAccount.Error.AccountCreationFailed> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `preserves the caller accepted versions through trimming and registration`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+        val documents = AcceptedLegalDocuments(privacyPolicy = "privacy-v3", termsOfService = "terms-v2")
+        val userData = CreateAccount.UserData(" John ", " Doe ", " john@example.com ", documents)
+
+        whenn()
+        fixture.sut(userData)
+
+        then()
+        verifySuspend {
+            fixture.registrationDataSource.finishRegistration(matches({ "accepted versions" }) {
+                it.acceptedDocuments == documents
+            })
+        }
+    }
+
+    @Test
+    fun `does not infer document acceptance for legacy callers`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+
+        whenn()
+        fixture.sut(stubUserData())
+
+        then()
+        verifySuspend {
+            fixture.registrationDataSource.finishRegistration(matches({ "no inferred consent" }) {
+                it.acceptedDocuments.privacyPolicy == null && it.acceptedDocuments.termsOfService == null
+            })
+        }
+    }
+
+    @Test
+    fun `does not store tokens when legal acceptance is rejected`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.setupHappyPath()
+        everySuspend { fixture.registrationDataSource.finishRegistration(any()) } throws Error.BusinessError(100004, "rejected")
+
+        whenn()
+        runCatching { fixture.sut(stubUserData()) }
+
+        then()
+        verifySuspend(dev.mokkery.verify.VerifyMode.exactly(0)) {
+            fixture.authorizationDataSource.saveAuthorizationTokens(any())
+        }
+    }
+
 }

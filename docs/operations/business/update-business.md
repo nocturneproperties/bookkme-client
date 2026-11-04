@@ -14,12 +14,18 @@ is what gets written back to Room, not a server response.
 flowchart TD
     Start([invoke model]) --> Read[(BusinessDataSource.getBusinessById model.id)]
     Read -- null --> E0([throw IllegalArgumentException])
-    Read -- current --> Merge[current.copy name, description, address, location,<br/>currency, socials, schedule]
+    Read -- current --> Merge[current.copy name, description, address, location,<br/>currency, socials, schedule,<br/>retention = model value or cached value]
     Merge --> Net[BusinessDataSource.updateBusiness<br/>PUT /api/business/id]
     Net -- 2xx --> Save[(saveBusinessInDB merged<br/>upsertWithChildren)]
     Save --> R([return merged Business])
     Net -- business error --> Code{errorCode}
     Code -- 200019 BUSINESS_ACTIVE_DAY_WITHOUT_WORK_HOURS --> E1([throw Error.ActiveDayWithoutWorkHours])
     Code -- 200020 BUSINESS_INVALID_DAY_OFF_RANGE --> E2([throw Error.InvalidDayOffRange])
+    Code -- 200035 --> Added200035([throw Error.InvalidCurrency])
+    Code -- 200036 --> Added200036([throw Error.CurrencyLocked])
+    Code -- 200041 --> Added200041([throw Error.InvalidRetentionPeriod])
     Code -- other --> EX([rethrow])
 ```
+
+`clientDataRetentionMonths` is persisted and sent in the update. A null value in `Business.Update`
+preserves the cached period; null on an older cached business means it has not been fetched yet.

@@ -21,12 +21,15 @@ import me.bookk.feature.authorization.domain.impl.LowPriorityDataFetch
 import me.bookk.feature.authorization.domain.impl.RefreshTokenImpl
 import me.bookk.feature.authorization.domain.impl.SignInImpl
 import me.bookk.feature.authorization.domain.impl.UserProfileCRUDImpl
+import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.impl.ConfirmSensitiveActionImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import kotlin.time.Clock
 
 fun authDomainModule() = module {
+    factoryOf(::ConfirmSensitiveActionImpl) bind ConfirmSensitiveAction::class
     single<Clock> { Clock.System }
     factoryOf(::CreateAccountImpl) bind CreateAccount::class
     factoryOf(::GetTokenInfoImpl) bind GetTokenInfo::class

@@ -24,11 +24,29 @@ import me.bookk.feature.settings.domain.impl.SendContactFormImpl
 import me.bookk.feature.settings.domain.impl.UpdateColorSchemeImpl
 import me.bookk.feature.settings.domain.impl.UpdateNotificationSettingsImpl
 import me.bookk.feature.settings.domain.impl.UpdateNotificationTokenImpl
+import me.bookk.feature.settings.domain.api.GetLegalDocumentVersions
+import me.bookk.feature.settings.domain.impl.GetLegalDocumentVersionsImpl
+import me.bookk.feature.settings.domain.api.GetLegalDocumentStatuses
+import me.bookk.feature.settings.domain.impl.GetLegalDocumentStatusesImpl
+import me.bookk.feature.settings.domain.api.AcceptLegalDocuments
+import me.bookk.feature.settings.domain.impl.AcceptLegalDocumentsImpl
+import me.bookk.feature.settings.domain.api.StartPersonalDataExport
+import me.bookk.feature.settings.domain.impl.StartPersonalDataExportImpl
+import me.bookk.feature.settings.domain.api.GetPersonalDataExport
+import me.bookk.feature.settings.domain.impl.GetPersonalDataExportImpl
+import me.bookk.feature.settings.domain.api.DownloadPersonalDataExport
+import me.bookk.feature.settings.domain.impl.DownloadPersonalDataExportImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun settingsDomainModule() = module {
+    factoryOf(::DownloadPersonalDataExportImpl) bind DownloadPersonalDataExport::class
+    factoryOf(::GetPersonalDataExportImpl) bind GetPersonalDataExport::class
+    factoryOf(::StartPersonalDataExportImpl) bind StartPersonalDataExport::class
+    factoryOf(::AcceptLegalDocumentsImpl) bind AcceptLegalDocuments::class
+    factoryOf(::GetLegalDocumentStatusesImpl) bind GetLegalDocumentStatuses::class
+    factoryOf(::GetLegalDocumentVersionsImpl) bind GetLegalDocumentVersions::class
     factoryOf(::GetColorSchemeImpl) bind GetColorScheme::class
     factoryOf(::UpdateColorSchemeImpl) bind UpdateColorScheme::class
     factoryOf(::GetSettingsImpl) bind GetSettings::class

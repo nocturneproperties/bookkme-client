@@ -24,7 +24,8 @@ class VerifyAccountCreationRequest(
     @ProtoNumber(1) val requestId: String,
     @ProtoNumber(2) val deviceInfo: DeviceInfo,
     @ProtoNumber(3) val userInfo: UserInfo,
-    @ProtoNumber(4) val publicKeyCredentialJson: String
+    @ProtoNumber(4) val publicKeyCredentialJson: String,
+    @ProtoNumber(5) val acceptedDocuments: AcceptedLegalDocumentsRemote
 ) {
     @Serializable
     class UserInfo(
@@ -39,3 +40,9 @@ class VerifyAccountCreationRequest(
         @ProtoNumber(2) val deviceName: String,
     )
 }
+
+@Serializable
+class AcceptedLegalDocumentsRemote(
+    @ProtoNumber(1) val privacyPolicy: String? = null,
+    @ProtoNumber(2) val termsOfService: String? = null
+)

@@ -136,4 +136,18 @@ class CreateNewPasskeyImplTest {
             fixture.sut()
         }
     }
+    @Test
+    fun `maps backend error 10 to ChallengeCreationFailed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } throws me.bookk.core.domain.entity.Error.BusinessError(10, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<CreateNewPasskey.Error.ChallengeCreationFailed> { result.getOrThrow() }
+    }
+
 }

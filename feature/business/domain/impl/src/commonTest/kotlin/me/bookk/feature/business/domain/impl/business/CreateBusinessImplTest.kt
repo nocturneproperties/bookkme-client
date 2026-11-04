@@ -1,6 +1,7 @@
 package me.bookk.feature.business.domain.impl.business
 
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
@@ -195,4 +196,46 @@ class CreateBusinessImplTest {
         assertFailsWith<CreateBusiness.Error.EmptyName> { result.getOrThrow() }
         verifySuspend(VerifyMode.not) { fixture.dataSource.createBusiness(any(), any(), any()) }
     }
+    @Test
+    fun `maps backend error 200001 to BusinessAlreadyExists`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200001, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut("Business") }
+
+        then()
+        assertFailsWith<CreateBusiness.Error.BusinessAlreadyExists> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200002 to InvalidName`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200002, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut("Business") }
+
+        then()
+        assertFailsWith<CreateBusiness.Error.InvalidName> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200035 to InvalidCurrency`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws me.bookk.core.domain.entity.Error.BusinessError(200035, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut("Business") }
+
+        then()
+        assertFailsWith<CreateBusiness.Error.InvalidCurrency> { result.getOrThrow() }
+    }
+
 }

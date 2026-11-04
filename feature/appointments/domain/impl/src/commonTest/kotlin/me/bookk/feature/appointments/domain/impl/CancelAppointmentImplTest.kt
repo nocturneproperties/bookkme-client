@@ -140,4 +140,17 @@ class CancelAppointmentImplTest {
             fixture.sut(Uuid.random(), Uuid.random(), "reason")
         }
     }
+    @Test
+    fun `maps backend error 300026 to EditWindowClosed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.cancelAppointment(any()) } throws DomainError.BusinessError(300026, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(kotlin.uuid.Uuid.random(), kotlin.uuid.Uuid.random(), "reason") }
+
+        then()
+        assertFailsWith<CancelAppointment.Error.EditWindowClosed> { result.getOrThrow() }
+    }
+
 }

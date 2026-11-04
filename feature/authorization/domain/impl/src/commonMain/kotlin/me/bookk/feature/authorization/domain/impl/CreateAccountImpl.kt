@@ -48,6 +48,9 @@ internal class CreateAccountImpl(
                     AuthErrorCodes.INVALID_EMAIL_FORMAT -> CreateAccount.Error.InvalidEmailFormat()
                     AuthErrorCodes.VERIFICATION_FAILED -> CreateAccount.Error.PasskeyVerificationFailed()
                     AuthErrorCodes.ACCOUNT_CREATION_FAILED -> CreateAccount.Error.AccountCreationFailed()
+                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> CreateAccount.Error.ChallengeWindowExpired()
+                    AuthErrorCodes.LEGAL_DOCUMENT_VERSION_UNKNOWN -> CreateAccount.Error.LegalDocumentVersionUnknown()
+                    AuthErrorCodes.LEGAL_DOCUMENTS_NOT_ACCEPTED -> CreateAccount.Error.LegalDocumentsNotAccepted()
                     else -> it
                 }
             }
@@ -57,7 +60,8 @@ internal class CreateAccountImpl(
         return UserData(
             firstName = firstName.trim(),
             lastName = lastName.trim(),
-            email = email.trim()
+            email = email.trim(),
+            acceptedDocuments = acceptedDocuments
         )
     }
 
@@ -107,7 +111,8 @@ internal class CreateAccountImpl(
                 lastName = userData.lastName,
                 email = userData.email
             ),
-            publicKeyCredentialJson = payload.jsonPayload
+            publicKeyCredentialJson = payload.jsonPayload,
+            acceptedDocuments = userData.acceptedDocuments
         )
     }
 }

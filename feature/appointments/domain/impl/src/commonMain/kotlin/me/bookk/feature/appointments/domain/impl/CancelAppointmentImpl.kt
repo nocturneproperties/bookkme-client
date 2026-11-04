@@ -28,6 +28,7 @@ internal class CancelAppointmentImpl(
             }
         }.onBusinessError {
             when (it.errorCode) {
+                AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED -> throw CancelAppointment.Error.EditWindowClosed()
                 AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED -> throw CancelAppointment.Error.AppointmentAlreadyCancelled()
                 AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED -> throw CancelAppointment.Error.AppointmentAlreadyCompleted()
                 AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW -> throw CancelAppointment.Error.AppointmentMarkedNoShow()

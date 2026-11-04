@@ -40,6 +40,19 @@ class AppointmentMapperTest {
     )
 
     @Test
+    fun `cached appointment preserves the linked client user`() = runUnitTest {
+        given()
+        val original = appointment(emptyList())
+        val linked = original.copy(client = original.client.copy(userId = Uuid.parse("00000000-0000-0000-0000-000000000001")))
+
+        whenn()
+        val restored = linked.toLocal().toDomain()
+
+        then()
+        assertEquals(linked.client.userId, restored.client.userId)
+    }
+
+    @Test
     fun `update request groups repeated service snapshots into counts in booking order`() = runUnitTest {
         given()
         val haircut = service("Haircut")

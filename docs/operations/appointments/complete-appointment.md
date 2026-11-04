@@ -27,8 +27,11 @@ flowchart TD
     Code -- 300022 PRICE_ADJUSTMENT_CURRENCY_MISMATCH --> E5([throw Error.CurrencyMismatch])
     Code -- 300023 PRICE_ADJUSTMENT_REASON_TOO_LONG --> E6([throw Error.ReasonTooLong])
     Code -- 200013 BUSINESS_QUOTE_SERVICE_NOT_FOUND --> E7([throw Error.ServiceNotFound])
+    Code -- 300026 --> Added300026([throw Error.EditWindowClosed])
     Code -- other --> EX([rethrow])
 ```
 
 The details screen shows the button only when `Appointment.canBeCompleted()` is true (`SCHEDULED` and
 `date <= now`), which mirrors the backend's `requireCompletable` guard.
+
+`EditWindowClosed` means the appointment ended more than seven days ago.

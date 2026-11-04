@@ -6,7 +6,8 @@ data class ClientSnapshot(
     val id: Uuid,
     val fullName: String,
     val phone: String?,
-    val email: String?
+    val email: String?,
+    val userId: Uuid? = null
 ) {
     companion object {
         fun stub() = ClientSnapshot(

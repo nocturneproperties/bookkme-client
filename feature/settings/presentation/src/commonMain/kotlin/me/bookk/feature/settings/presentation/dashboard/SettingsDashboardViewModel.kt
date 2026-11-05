@@ -1,10 +1,13 @@
 package me.bookk.feature.settings.presentation.dashboard
 
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.flowOn
 import library.device.api.DeviceFacade
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -35,19 +38,16 @@ class SettingsDashboardViewModel(
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
-    private var legalStatuses: List<LegalDocumentStatus> = emptyList()
-
     val uiState: SettingsState = settingsStateFactory.createSettingsState(createInitData()).setup()
 
     init {
-        loadLegalDocuments()
+        observeLegalDocuments()
     }
 
     private fun SettingsState.setup(): SettingsState = apply {
         legal.title = SettingsRes.strings.settings_legal_title.desc()
         legal.accept.text = SettingsRes.strings.settings_legal_accept.desc()
         legal.accept.isVisible = false
-        legal.accept.isEnabled = false
         legal.retry.text = SettingsRes.strings.settings_legal_retry.desc()
         legal.retry.isVisible = false
         legal.retry.onClick = weakVMClosure { it.loadLegalDocuments() }
@@ -59,10 +59,12 @@ class SettingsDashboardViewModel(
                 ),
             ),
         )
+        renderLegalDocuments(emptyList())
     }
 
     override fun onViewPresented() {
         loadSettings()
+        loadLegalDocuments()
     }
 
     fun onSchemeSelected(scheme: UIColorScheme) {
@@ -77,77 +79,93 @@ class SettingsDashboardViewModel(
         )
     }
 
+    private fun observeLegalDocuments() {
+        getLegalDocumentStatuses.flow()
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { uiState.renderLegalDocuments(it) }
+            .onError { showLegalDocumentsError() }
+            .observe()
+    }
+
+    private fun showLegalDocumentsError() {
+        if (uiState.legal.documents.all { it.onClick == null }) {
+            uiState.legal.message = SettingsRes.strings.settings_legal_load_error.desc()
+        }
+        uiState.legal.retry.isVisible = true
+    }
+
     private fun loadLegalDocuments() {
-        if (uiState.legal.isLoading || uiState.legal.accept.isLoading) return
         launch(
+            key = LOAD_LEGAL_DOCUMENTS_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = {
                 uiState.legal.isLoading = true
-                if (uiState.legal.documents.isEmpty()) {
-                    uiState.legal.message = null
-                }
                 uiState.legal.retry.isVisible = false
-                uiState.legal.accept.isEnabled = false
-                uiState.legal.accept.onClick = null
-                legalStatuses = emptyList()
             },
-            call = { getLegalDocumentStatuses() },
-            onComplete = { renderLegalDocuments(it) },
-            onError = {
-                uiState.legal.documents = emptyList()
-                uiState.legal.accept.isVisible = false
-                uiState.legal.message = SettingsRes.strings.settings_legal_load_error.desc()
-                uiState.legal.retry.isVisible = true
-            },
+            call = { getLegalDocumentStatuses.refresh() },
+            onError = { showLegalDocumentsError() },
             onTerminate = {
                 uiState.legal.isLoading = false
-                updateLegalAcceptanceEnabled()
             },
         )
     }
 
-    private fun renderLegalDocuments(statuses: List<LegalDocumentStatus>) {
-        legalStatuses = statuses
-        uiState.legal.documents = statuses.map { status ->
-            LegalDocumentItem(
-                id = status.current.document.name,
-                title = when (status.current.document) {
-                    LegalDocument.PRIVACY_POLICY ->
-                        SettingsRes.strings.settings_support_privacy_label.desc()
-
-                    LegalDocument.TERMS_OF_SERVICE ->
-                        SettingsRes.strings.settings_support_terms_label.desc()
-                },
-                version = status.current.version,
-                status = if (status.acceptedAt == null) {
-                    SettingsRes.strings.settings_legal_pending.desc()
-                } else {
-                    SettingsRes.strings.settings_legal_accepted.desc()
-                },
-                statusColor = if (status.acceptedAt == null) {
-                    ColorToken.ActionText
-                } else {
-                    ColorToken.SecondaryText
-                },
-                onClick = weakVMClosure { it.deviceFacade.openUrlPreview(status.current.url) },
-            )
+    private fun SettingsState.renderLegalDocuments(statuses: List<LegalDocumentStatus>) {
+        legal.documents = LegalDocument.entries.map { document ->
+            createLegalDocumentItem(document, statuses.find { it.current.document == document })
         }
-        uiState.legal.message = when {
-            statuses.isEmpty() -> SettingsRes.strings.settings_legal_empty.desc()
-
-            statuses.any { it.acceptedAt == null } ->
-                SettingsRes.strings.settings_legal_consent.desc()
-
-            else -> null
+        val hasPendingDocuments = statuses.any { it.acceptedAt == null }
+        legal.message = if (hasPendingDocuments) {
+            SettingsRes.strings.settings_legal_consent.desc()
+        } else {
+            null
         }
-        uiState.legal.accept.isVisible = statuses.any { it.acceptedAt == null }
-        uiState.legal.accept.onClick = weakVMClosure { it.acceptLegalDocuments(statuses) }
+        legal.accept.isVisible = hasPendingDocuments
+        legal.accept.onClick = weakVMClosure { it.acceptLegalDocuments(statuses) }
+    }
+
+    private fun createLegalDocumentItem(
+        document: LegalDocument,
+        status: LegalDocumentStatus?,
+    ): LegalDocumentItem {
+        return LegalDocumentItem(
+            id = document.name,
+            title = document.title(),
+            version = status?.current?.version,
+            status = status.acceptanceDescription(),
+            statusColor = status.acceptanceColor(),
+            onClick = status?.let { loadedStatus ->
+                weakVMClosure { it.deviceFacade.openUrlPreview(loadedStatus.current.url) }
+            },
+        )
+    }
+
+    private fun LegalDocument.title(): StringDesc {
+        return when (this) {
+            LegalDocument.PRIVACY_POLICY -> SettingsRes.strings.settings_support_privacy_label.desc()
+            LegalDocument.TERMS_OF_SERVICE -> SettingsRes.strings.settings_support_terms_label.desc()
+        }
+    }
+
+    private fun LegalDocumentStatus?.acceptanceDescription(): StringDesc {
+        return when {
+            this == null -> SettingsRes.strings.settings_legal_unknown.desc()
+            acceptedAt == null -> SettingsRes.strings.settings_legal_pending.desc()
+            else -> SettingsRes.strings.settings_legal_accepted.desc()
+        }
+    }
+
+    private fun LegalDocumentStatus?.acceptanceColor(): ColorToken {
+        return if (this != null && acceptedAt == null) {
+            ColorToken.ActionText
+        } else {
+            ColorToken.SecondaryText
+        }
     }
 
     private fun acceptLegalDocuments(displayedStatuses: List<LegalDocumentStatus>) {
-        if (legalStatuses !== displayedStatuses || !uiState.legal.accept.isEnabled) return
         val pending = displayedStatuses.filter { it.acceptedAt == null }
-        if (pending.isEmpty()) return
         val documents = AcceptedLegalDocuments(
             privacyPolicy = pending.find {
                 it.current.document == LegalDocument.PRIVACY_POLICY
@@ -157,12 +175,13 @@ class SettingsDashboardViewModel(
             }?.current?.version,
         )
         launch(
+            key = ACCEPT_LEGAL_DOCUMENTS_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.legal.accept.startLoading() },
             call = { acceptLegalDocuments(documents) },
             onComplete = {
                 uiState.notification.add(PresentationNotification.SuccessHaptic)
-                uiState.legal.accept.stopLoading(enable = false)
                 loadLegalDocuments()
             },
             onError = {
@@ -174,23 +193,14 @@ class SettingsDashboardViewModel(
                                 state = PresentationNotification.GlobalMessage.State.INFO,
                             ),
                         )
-                        uiState.legal.accept.stopLoading(enable = false)
                         loadLegalDocuments()
                     }
 
                     else -> uiState.notification.add(it.notification())
                 }
             },
-            onTerminate = {
-                uiState.legal.accept.isLoading = false
-                updateLegalAcceptanceEnabled()
-            },
+            onTerminate = { uiState.legal.accept.stopLoading() },
         )
-    }
-
-    private fun updateLegalAcceptanceEnabled() {
-        uiState.legal.accept.isEnabled = !uiState.legal.isLoading &&
-            !uiState.legal.accept.isLoading && legalStatuses.any { it.acceptedAt == null }
     }
 
     fun onLogOutClick() {
@@ -236,6 +246,9 @@ class SettingsDashboardViewModel(
     }
 
     companion object {
+        private const val LOAD_LEGAL_DOCUMENTS_KEY = "loadLegalDocuments"
+        private const val ACCEPT_LEGAL_DOCUMENTS_KEY = "acceptLegalDocuments"
+
         fun createInitData() = SettingsState.InitData(
             appearance = AppearanceSection.InitData(
                 title = SettingsRes.strings.settings_appearance_title.desc(),

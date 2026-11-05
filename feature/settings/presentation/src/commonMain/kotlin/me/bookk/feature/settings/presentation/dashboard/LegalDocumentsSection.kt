@@ -16,8 +16,8 @@ interface LegalDocumentsSection {
 data class LegalDocumentItem(
     val id: String,
     val title: StringDesc,
-    val version: String,
+    val version: String?,
     val status: StringDesc,
     val statusColor: ColorToken,
-    val onClick: () -> Unit,
+    val onClick: (() -> Unit)?,
 )

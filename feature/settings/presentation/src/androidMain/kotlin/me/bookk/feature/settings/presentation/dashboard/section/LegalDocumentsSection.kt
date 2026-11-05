@@ -80,13 +80,6 @@ internal fun LegalDocumentsSection(state: LegalDocumentsSection) {
                     LegalDocumentRow(document)
                 }
             }
-            if (state.documents.isEmpty()) {
-                if (state.isLoading) {
-                    LegalDocumentsMessage(loadingLabel)
-                } else {
-                    state.message?.let { LegalDocumentsMessage(it.localized()) }
-                }
-            }
             if (state.retry.isVisible) {
                 StateTextButton(
                     state.retry,
@@ -94,15 +87,13 @@ internal fun LegalDocumentsSection(state: LegalDocumentsSection) {
                 )
             }
         }
-        if (state.documents.isNotEmpty()) {
-            state.message?.let {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                    text = it.localized(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = LocalColors.current.secondaryText,
-                )
-            }
+        state.message?.let {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                text = it.localized(),
+                style = MaterialTheme.typography.bodySmall,
+                color = LocalColors.current.secondaryText,
+            )
         }
         if (state.accept.isVisible) {
             ActionButton(state.accept, modifier = Modifier.fillMaxWidth())
@@ -115,7 +106,11 @@ private fun LegalDocumentRow(document: LegalDocumentItem) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = document.onClick)
+            .clickable(
+                enabled = document.onClick != null,
+                role = Role.Button,
+                onClick = document.onClick ?: {},
+            )
             .heightIn(min = 64.dp)
             .padding(horizontal = 24.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -136,21 +131,13 @@ private fun LegalDocumentRow(document: LegalDocumentItem) {
                 color = document.statusColor.themed,
             )
         }
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-            contentDescription = null,
-            tint = LocalColors.current.secondaryText,
-            modifier = Modifier.size(18.dp),
-        )
+        if (document.onClick != null) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                contentDescription = null,
+                tint = LocalColors.current.secondaryText,
+                modifier = Modifier.size(18.dp),
+            )
+        }
     }
-}
-
-@Composable
-private fun LegalDocumentsMessage(text: String) {
-    Text(
-        modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp),
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
-        color = LocalColors.current.secondaryText,
-    )
 }

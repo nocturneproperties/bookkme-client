@@ -18,6 +18,7 @@ import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.ClientsDao
 import me.bookk.database.dao.EmployeeDao
 import me.bookk.database.dao.EmployeeInvitationDao
+import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.ServiceDao
 import me.bookk.database.dao.ServiceGroupDao
@@ -43,6 +44,7 @@ import me.bookk.database.entity.EmployeeEntity
 import me.bookk.database.entity.EmployeeInvitationEntity
 import me.bookk.database.entity.EmployeeServiceSnapshotEntity
 import me.bookk.database.entity.EmployeeWorkHourEntity
+import me.bookk.database.entity.LegalDocumentStatusEntity
 import me.bookk.database.entity.NotificationSettingsChannelEntity
 import me.bookk.database.entity.NotificationSettingsEntity
 import me.bookk.database.entity.ServiceEntity
@@ -79,8 +81,9 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         EmployeeWorkHourEntity::class,
         EmployeeDayOffEntity::class,
         EmployeeServiceSnapshotEntity::class,
+        LegalDocumentStatusEntity::class,
     ],
-    version = 23,
+    version = 24,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -103,6 +106,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         AutoMigration(from = 19, to = 20),
         AutoMigration(from = 20, to = 21),
         AutoMigration(from = 21, to = 22),
+        AutoMigration(from = 23, to = 24),
     ],
 )
 @TypeConverters(
@@ -122,6 +126,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appointmentRequestDao(): AppointmentRequestDao
     abstract fun appointmentSettingsDao(): AppointmentSettingsDao
     abstract fun notificationSettingsDao(): NotificationSettingsDao
+    abstract fun legalDocumentStatusDao(): LegalDocumentStatusDao
     abstract fun employeeInvitationDao(): EmployeeInvitationDao
     abstract fun employeeDao(): EmployeeDao
 

@@ -16,16 +16,17 @@ grouped by the feature whose datasource **writes** the table.
 - [Services](services.md): `service`, `service_group`
 - [Employees](employees.md): `employee` and its schedule and service snapshot tables, `employee_invitation`
 - [Appointments](appointments.md): `appointment`, `appointment_request`, `appointment_settings` and their child tables
-- [Settings](settings.md): `notification_settings`, `notification_settings_channel`
+- [Settings](settings.md): `notification_settings`, `notification_settings_channel`, `legal_document_status`
 - [Whole-database overview](overview.md): real foreign keys compared with logical references
 - [Key-value preferences (DataStore)](preferences.md): every `PreferenceProvider` bucket, its keys, and whether logout clears it
 
 ## Conventions
 
-- **Version and migrations.** The schema is at `version = 23`. Every step from 1 to 22 is a Room
+- **Version and migrations.** The schema is at `version = 24`. Every step from 1 to 22 is a Room
   `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The manual 22 → 23 migration (`DefaultBusinessRetention`) makes business retention non-null,
   backfills missing values with 36 months and preserves custom periods and dependent rows.
+  The additive 23 → 24 auto-migration adds the `legal_document_status` table.
   The builder also sets `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
   If a migration is missing, the cache is wiped instead of the app crashing, which is safe only because every
   table can be refetched.
@@ -53,7 +54,8 @@ grouped by the feature whose datasource **writes** the table.
   steps touch the table, so observers never see an empty list partway through. See e.g. [Get clients
   list](../operations/clients/get-clients-list.md).
 - **Sync markers live in preferences, not tables.** Each list `refresh()` records a
-  `last_synced_at_<businessId>` key in the owning datasource's DataStore bucket. Nothing reads these keys any more; see [preferences](preferences.md).
+  `last_synced_at_<businessId>` key in the owning datasource's DataStore bucket. Those timestamps are currently write-only.
+  See [preferences](preferences.md). Legal-document statuses need no sync marker and observe Room directly.
 
 ## What logout clears
 
@@ -73,6 +75,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `appointment_request` (+ snapshot) | `CommonAppointmentRequestDataSource` | ✅ including `clientUserId` |
 | `business` (+ 3 schedule tables, `dashboard_business`) | `CommonBusinessDataSource` | ✅ `clearDashboardBusiness()` then `businessDao.clear()` (including retention, default 36 months), which also cascades to any client/employee/service rows still left |
 | `appointment_settings` (+ 3 child tables) | `CommonAppointmentSettingsDataSource` | ✅ `appointmentSettingsDao.clear()` |
+| `legal_document_status` | `CommonLegalDocumentsDataSource` | ✅ `legalDocumentStatusDao.clear()` |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
 
 Every table is cleared on logout. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)

@@ -26,6 +26,9 @@ erDiagram
     SERVICE |o..o{ EMPLOYEE : "via employee_service_snapshot.id"
     USER_PROFILE |o..o| NOTIFICATION_SETTINGS : "userId (logical, UK)"
 
+    LEGAL_DOCUMENT_STATUS {
+        string document PK
+    }
     BUSINESS {
         uuid id PK
     }
@@ -88,3 +91,6 @@ cascades triggered by the `deleteByIds` stale-row deletion inside each `refresh(
 Confirmed client deletion is an explicit cross-feature invalidation: `ClientsDao.deleteWithAppointmentCaches`
 deletes matching appointment/request rows and then the client atomically. It does not introduce an FK,
 and deleting a client through other reconciliation paths does not trigger this explicit operation.
+
+Legal-document acceptance is a current-account read cache keyed by document type. It has no FK to
+`user_profile`; `CommonLegalDocumentsDataSource` clears it on logout. See [Settings](settings.md).

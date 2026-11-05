@@ -64,9 +64,9 @@
     <string name="settings_legal_title">Legal</string>
     <string name="settings_legal_accepted">Accepted</string>
     <string name="settings_legal_pending">Needs your review</string>
+    <string name="settings_legal_unknown">Unknown acceptance status</string>
     <string name="settings_legal_accept">Accept documents</string>
     <string name="settings_legal_retry">Retry</string>
-    <string name="settings_legal_empty">No legal documents are currently published.</string>
     <string name="settings_legal_load_error">Could not load legal documents. Please retry.</string>
     <string name="settings_legal_changed">Legal documents have changed. Review the current versions and accept again.</string>
     <string name="settings_legal_consent">By selecting “Accept documents”, you agree to the documents marked for review.</string>

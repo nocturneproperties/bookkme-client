@@ -18,7 +18,8 @@ import org.koin.dsl.module
 
 fun settingsDataModule() = module {
     singleOf(::CommonDataExportDataSource) bind DataExportDataSource::class
-    singleOf(::CommonLegalDocumentsDataSource) bind LegalDocumentsDataSource::class
+    singleOf(::CommonLegalDocumentsDataSource) binds
+        arrayOf(LegalDocumentsDataSource::class, LogOutAction::class)
     singleOf(::CommonSettingsDataSource) bind SettingsDataSource::class
     singleOf(::PasskeySettingsDataSourceImpl) bind PasskeySettingsDataSource::class
     singleOf(::CommonNotificationSettingsDataSource) binds

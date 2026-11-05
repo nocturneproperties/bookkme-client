@@ -150,7 +150,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `GetPersonalDataExport` | `GET /api/user/export` | [Get personal data export](settings/get-personal-data-export.md) |
 | `StartPersonalDataExport` | `POST /api/user/export` | [Start personal data export](settings/start-personal-data-export.md) |
 | `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings | [Accept legal documents](settings/accept-legal-documents.md) |
-| `GetLegalDocumentStatuses` | `GET /api/user/me/legal`; Settings review and post-acceptance refresh | [Get legal document statuses](settings/get-legal-document-statuses.md) |
+| `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Settings review and post-acceptance refresh | [Get legal document statuses](settings/get-legal-document-statuses.md) |
 | `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |
 | `GetSettings` | local-first | [Get settings](settings/get-settings.md) |
 | `EditProfile` | `PATCH /api/user/me`; contact-conflict error | [Edit profile](settings/edit-profile.md) |

@@ -12,6 +12,8 @@ import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
@@ -27,6 +29,7 @@ import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
+import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.test.tap
 import me.bookk.feature.settings.domain.api.AcceptLegalDocuments
 import me.bookk.feature.settings.domain.api.GetLegalDocumentStatuses
@@ -45,6 +48,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
@@ -68,8 +73,15 @@ class SettingsDashboardViewModelTest {
                 Settings(ColorScheme.DARK, SettingsProfile("Anna", "Smith", "anna@example.com"))
         }
         val updateColorScheme = mock<UpdateColorScheme>()
+        val statuses = MutableStateFlow<List<LegalDocumentStatus>>(emptyList())
+        val remoteStatuses = mock<GetLegalDocumentStatuses> {
+            everySuspend { refresh() } returns listOf(privacy(), terms())
+        }
         val getLegalDocumentStatuses = mock<GetLegalDocumentStatuses> {
-            everySuspend { invoke() } returns listOf(privacy(), terms())
+            every { flow() } returns statuses
+            everySuspend { refresh() } calls {
+                remoteStatuses.refresh().also { statuses.value = it }
+            }
         }
         val acceptLegalDocuments = mock<AcceptLegalDocuments> {
             everySuspend { invoke(any()) } returns Unit
@@ -90,6 +102,272 @@ class SettingsDashboardViewModelTest {
                 vmArgs = VmArgs(errorMapper),
             )
         }
+    }
+
+    @Test
+    fun `shows both static document rows before the status flow emits`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.getLegalDocumentStatuses.flow() } returns emptyFlow()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        val documents = sut.uiState.legal.documents
+        assertEquals(listOf("PRIVACY_POLICY", "TERMS_OF_SERVICE"), documents.map { it.id })
+        assertEquals(
+            listOf(
+                SettingsRes.strings.settings_support_privacy_label.desc(),
+                SettingsRes.strings.settings_support_terms_label.desc(),
+            ),
+            documents.map { it.title },
+        )
+        documents.forEach {
+            assertEquals(SettingsRes.strings.settings_legal_unknown.desc(), it.status)
+            assertEquals(ColorToken.SecondaryText, it.statusColor)
+            assertNull(it.version)
+            assertNull(it.onClick)
+        }
+        assertTrue(!sut.uiState.legal.accept.isVisible)
+    }
+
+    @Test
+    fun `keeps document rows in static order when statuses arrive in a different order`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.remoteStatuses.refresh() } returns listOf(terms(), privacy())
+        val sut = fixture.sut()
+        val initialIds = sut.uiState.legal.documents.map { it.id }
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals(initialIds, sut.uiState.legal.documents.map { it.id })
+        assertEquals(listOf("privacy-v2", "terms-v3"), sut.uiState.legal.documents.map { it.version })
+    }
+
+    @Test
+    fun `keeps an unknown row for a document missing from the loaded statuses`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.remoteStatuses.refresh() } returns listOf(privacy())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        val documents = sut.uiState.legal.documents
+        assertEquals(2, documents.size)
+        assertEquals(SettingsRes.strings.settings_legal_pending.desc(), documents[0].status)
+        assertTrue(documents[0].onClick != null)
+        assertEquals(SettingsRes.strings.settings_legal_unknown.desc(), documents[1].status)
+        assertNull(documents[1].onClick)
+        assertTrue(sut.uiState.legal.accept.isVisible)
+    }
+
+    @Test
+    fun `refreshes when no job is active regardless of presentation loading flags`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.uiState.legal.isLoading = true
+        sut.uiState.legal.accept.isLoading = true
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.getLegalDocumentStatuses.refresh() }
+        assertEquals(listOf("privacy-v2", "terms-v3"), sut.uiState.legal.documents.map { it.version })
+    }
+
+    @Test
+    fun `drops repeated refreshes while a refresh job is active`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val response = CompletableDeferred<List<LegalDocumentStatus>>()
+        everySuspend { fixture.remoteStatuses.refresh() } calls { response.await() }
+        val sut = fixture.sut()
+        sut.onViewPresented()
+
+        whenn()
+        sut.uiState.legal.isLoading = false
+        sut.onViewPresented()
+        response.complete(listOf(privacy()))
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.getLegalDocumentStatuses.refresh() }
+        assertEquals("privacy-v2", sut.uiState.legal.documents.first().version)
+    }
+
+    @Test
+    fun `drops repeated acceptance while an acceptance job is active`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val save = CompletableDeferred<Unit>()
+        everySuspend { fixture.acceptLegalDocuments(any()) } calls { save.await() }
+        val sut = fixture.sut()
+        sut.onViewPresented()
+        val accept = sut.uiState.legal.accept.onClick
+
+        whenn()
+        accept?.invoke()
+        accept?.invoke()
+        save.complete(Unit)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.acceptLegalDocuments(any()) }
+        verifySuspend(VerifyMode.exactly(2)) { fixture.getLegalDocumentStatuses.refresh() }
+    }
+
+    @Test
+    fun `renders cached documents while the remote refresh is pending`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.statuses.value = listOf(privacy(version = "cached-v1"))
+        val response = CompletableDeferred<List<LegalDocumentStatus>>()
+        everySuspend { fixture.remoteStatuses.refresh() } calls { response.await() }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+        val versions = sut.uiState.legal.documents.map { it.version }
+        val wasEnabled = sut.uiState.legal.accept.isEnabled
+        response.complete(listOf(privacy()))
+
+        then()
+        assertEquals(listOf("cached-v1", null), versions)
+        assertTrue(wasEnabled)
+        assertEquals(listOf("privacy-v2", null), sut.uiState.legal.documents.map { it.version })
+    }
+
+    @Test
+    fun `recovers from a refresh failure when cached statuses are unchanged`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.statuses.value = listOf(privacy())
+        everySuspend { fixture.remoteStatuses.refresh() } throws TestException()
+        val sut = fixture.sut()
+        sut.onViewPresented()
+        everySuspend { fixture.remoteStatuses.refresh() } returns listOf(privacy())
+
+        whenn()
+        sut.uiState.legal.retry.onClick?.invoke()
+
+        then()
+        assertEquals(SettingsRes.strings.settings_legal_consent.desc(), sut.uiState.legal.message)
+        assertTrue(!sut.uiState.legal.retry.isVisible)
+        assertTrue(sut.uiState.legal.accept.isEnabled)
+    }
+
+    @Test
+    fun `renders changes from the local flow without another refresh`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.onViewPresented()
+
+        whenn()
+        fixture.statuses.value = listOf(privacy(accepted = true, version = "updated-v4"))
+
+        then()
+        assertEquals("updated-v4", sut.uiState.legal.documents.first().version)
+        assertTrue(!sut.uiState.legal.accept.isVisible)
+        verifySuspend(VerifyMode.exactly(1)) { fixture.getLegalDocumentStatuses.refresh() }
+    }
+
+    @Test
+    fun `renders the flow snapshot instead of the refresh return value`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.statuses.value = listOf(privacy(version = "cached-v1"))
+        everySuspend { fixture.getLegalDocumentStatuses.refresh() } returns listOf(terms())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals("cached-v1", sut.uiState.legal.documents.first().version)
+    }
+
+    @Test
+    fun `keeps document rows and callbacks unchanged until the flow emits`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.statuses.value = listOf(privacy(version = "cached-v1"))
+        val refreshed = listOf(privacy(version = "fresh-v2"))
+        everySuspend { fixture.getLegalDocumentStatuses.refresh() } returns refreshed
+        val sut = fixture.sut()
+        val cachedRows = sut.uiState.legal.documents
+        val cachedCallback = sut.uiState.legal.accept.onClick
+
+        whenn()
+        sut.onViewPresented()
+        val rowsAfterRefresh = sut.uiState.legal.documents
+        val callbackAfterRefresh = sut.uiState.legal.accept.onClick
+        fixture.statuses.value = refreshed
+
+        then()
+        assertSame(cachedRows, rowsAfterRefresh)
+        assertSame(cachedCallback, callbackAfterRefresh)
+        assertTrue(sut.uiState.legal.accept.isEnabled)
+        assertEquals("fresh-v2", sut.uiState.legal.documents.first().version)
+    }
+
+    @Test
+    fun `keeps cached rows and acceptance available when refreshing fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.statuses.value = listOf(privacy(version = "cached-v1"))
+        everySuspend { fixture.remoteStatuses.refresh() } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals("cached-v1", sut.uiState.legal.documents.first().version)
+        assertTrue(sut.uiState.legal.retry.isVisible)
+        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
+        assertTrue(sut.uiState.legal.accept.isVisible)
+        assertTrue(sut.uiState.legal.accept.isEnabled)
+    }
+
+    @Test
+    fun `restores unknown rows when the local cache is cleared`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.onViewPresented()
+
+        whenn()
+        fixture.statuses.value = emptyList()
+
+        then()
+        assertEquals(2, sut.uiState.legal.documents.size)
+        assertTrue(sut.uiState.legal.documents.all { it.onClick == null })
+        assertTrue(!sut.uiState.legal.accept.isVisible)
+        verifySuspend(VerifyMode.exactly(0)) { fixture.acceptLegalDocuments(any()) }
+    }
+
+    @Test
+    fun `shows local observation errors inline without a notification`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.getLegalDocumentStatuses.flow() } returns failOnceThenSuspend()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals(SettingsRes.strings.settings_legal_load_error.desc(), sut.uiState.legal.message)
+        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
+        assertTrue(!sut.uiState.legal.accept.isVisible)
     }
 
     @Test
@@ -258,7 +536,7 @@ class SettingsDashboardViewModelTest {
         sut.onViewPresented()
 
         whenn()
-        sut.uiState.legal.documents[0].onClick()
+        sut.uiState.legal.documents[0].onClick?.invoke()
 
         then()
         verify { fixture.deviceFacade.openUrlPreview("https://bookk.test/privacy") }
@@ -273,7 +551,7 @@ class SettingsDashboardViewModelTest {
         sut.onViewPresented()
 
         whenn()
-        sut.uiState.legal.documents[1].onClick()
+        sut.uiState.legal.documents[1].onClick?.invoke()
 
         then()
         verify { fixture.deviceFacade.openUrlPreview("https://bookk.test/terms") }
@@ -300,7 +578,7 @@ class SettingsDashboardViewModelTest {
     fun `submits both pending versions`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns
+        everySuspend { fixture.remoteStatuses.refresh() } returns
             listOf(privacy(), terms(accepted = false))
         val sut = fixture.sut()
         sut.onViewPresented()
@@ -318,7 +596,7 @@ class SettingsDashboardViewModelTest {
     fun `accepts a terms only publication`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns listOf(terms(accepted = false))
+        everySuspend { fixture.remoteStatuses.refresh() } returns listOf(terms(accepted = false))
         val sut = fixture.sut()
         sut.onViewPresented()
 
@@ -335,13 +613,12 @@ class SettingsDashboardViewModelTest {
     fun `hides acceptance when all current versions are accepted`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns
+        everySuspend { fixture.remoteStatuses.refresh() } returns
             listOf(privacy(accepted = true), terms())
         val sut = fixture.sut()
-        sut.onViewPresented()
 
         whenn()
-        sut.uiState.legal.accept.onClick?.invoke()
+        sut.onViewPresented()
 
         then()
         assertTrue(!sut.uiState.legal.accept.isVisible)
@@ -349,38 +626,39 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
-    fun `shows an empty message when no documents are published`() = runUnitTest {
+    fun `keeps both static rows when no documents are published`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns emptyList()
+        everySuspend { fixture.remoteStatuses.refresh() } returns emptyList()
         val sut = fixture.sut()
-        sut.onViewPresented()
 
         whenn()
-        sut.uiState.legal.accept.onClick?.invoke()
+        sut.onViewPresented()
 
         then()
-        assertTrue(sut.uiState.legal.documents.isEmpty())
-        assertEquals(SettingsRes.strings.settings_legal_empty.desc(), sut.uiState.legal.message)
+        assertEquals(2, sut.uiState.legal.documents.size)
+        assertTrue(sut.uiState.legal.documents.all { it.onClick == null })
+        assertNull(sut.uiState.legal.message)
         assertTrue(!sut.uiState.legal.accept.isVisible)
     }
 
     @Test
-    fun `blocks acceptance while loading`() = runUnitTest {
+    fun `hides acceptance before any documents are loaded`() = runUnitTest {
         given()
         val fixture = Fixture()
         val response = CompletableDeferred<List<LegalDocumentStatus>>()
-        everySuspend { fixture.getLegalDocumentStatuses() } calls { response.await() }
+        everySuspend { fixture.remoteStatuses.refresh() } calls { response.await() }
         val sut = fixture.sut()
         sut.onViewPresented()
 
         whenn()
-        sut.uiState.legal.accept.onClick?.invoke()
         val wasLoading = sut.uiState.legal.isLoading
+        val wasVisible = sut.uiState.legal.accept.isVisible
         response.complete(emptyList())
 
         then()
         assertTrue(wasLoading)
+        assertTrue(!wasVisible)
         verifySuspend(VerifyMode.exactly(0)) { fixture.acceptLegalDocuments(any()) }
     }
 
@@ -388,12 +666,11 @@ class SettingsDashboardViewModelTest {
     fun `offers retry and blocks acceptance after loading failure`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getLegalDocumentStatuses() } throws TestException()
+        everySuspend { fixture.remoteStatuses.refresh() } throws TestException()
         val sut = fixture.sut()
-        sut.onViewPresented()
 
         whenn()
-        sut.uiState.legal.accept.onClick?.invoke()
+        sut.onViewPresented()
 
         then()
         assertTrue(sut.uiState.legal.retry.isVisible)
@@ -401,7 +678,8 @@ class SettingsDashboardViewModelTest {
             SettingsRes.strings.settings_legal_load_error.desc(),
             sut.uiState.legal.message,
         )
-        assertTrue(!sut.uiState.legal.accept.isEnabled)
+        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
+        assertTrue(!sut.uiState.legal.accept.isVisible)
         verifySuspend(VerifyMode.exactly(0)) { fixture.acceptLegalDocuments(any()) }
     }
 
@@ -409,16 +687,16 @@ class SettingsDashboardViewModelTest {
     fun `recovers from a failed load through retry`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getLegalDocumentStatuses() } throws TestException()
+        everySuspend { fixture.remoteStatuses.refresh() } throws TestException()
         val sut = fixture.sut()
         sut.onViewPresented()
 
         whenn()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns listOf(privacy())
+        everySuspend { fixture.remoteStatuses.refresh() } returns listOf(privacy())
         sut.uiState.legal.retry.onClick?.invoke()
 
         then()
-        assertEquals(1, sut.uiState.legal.documents.size)
+        assertEquals(2, sut.uiState.legal.documents.size)
         assertTrue(!sut.uiState.legal.retry.isVisible)
         assertTrue(sut.uiState.legal.accept.isEnabled)
     }
@@ -431,7 +709,7 @@ class SettingsDashboardViewModelTest {
         sut.onViewPresented()
 
         whenn()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns
+        everySuspend { fixture.remoteStatuses.refresh() } returns
             listOf(privacy(accepted = true), terms())
         sut.uiState.legal.accept.onClick?.invoke()
 
@@ -451,15 +729,15 @@ class SettingsDashboardViewModelTest {
         sut.onViewPresented()
 
         whenn()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns
+        everySuspend { fixture.remoteStatuses.refresh() } returns
             listOf(privacy(version = "privacy-v4"))
         sut.uiState.legal.accept.onClick?.invoke()
 
         then()
-        assertEquals("privacy-v4", sut.uiState.legal.documents.single().version)
+        assertEquals("privacy-v4", sut.uiState.legal.documents.first().version)
         assertEquals(
             SettingsRes.strings.settings_legal_pending.desc(),
-            sut.uiState.legal.documents.single().status,
+            sut.uiState.legal.documents.first().status,
         )
         verifySuspend {
             fixture.acceptLegalDocuments(AcceptedLegalDocuments(privacyPolicy = "privacy-v2"))
@@ -476,12 +754,12 @@ class SettingsDashboardViewModelTest {
         sut.onViewPresented()
 
         whenn()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns
+        everySuspend { fixture.remoteStatuses.refresh() } returns
             listOf(privacy(version = "privacy-v4"))
         sut.uiState.legal.accept.onClick?.invoke()
 
         then()
-        assertEquals("privacy-v4", sut.uiState.legal.documents.single().version)
+        assertEquals("privacy-v4", sut.uiState.legal.documents.first().version)
         assertTrue(sut.uiState.legal.accept.isEnabled)
         verifySuspend(VerifyMode.exactly(1)) { fixture.acceptLegalDocuments(any()) }
         assertTrue(
@@ -492,25 +770,26 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
-    fun `ignores acceptance callbacks for replaced documents`() = runUnitTest {
+    fun `submits the versions from the current document callback`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
         sut.onViewPresented()
-
-        whenn()
-        val oldAccept = sut.uiState.legal.accept.onClick
-        everySuspend { fixture.getLegalDocumentStatuses() } returns
+        everySuspend { fixture.remoteStatuses.refresh() } returns
             listOf(privacy(version = "privacy-v4"))
         sut.onViewPresented()
-        oldAccept?.invoke()
+
+        whenn()
+        sut.uiState.legal.accept.onClick?.invoke()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.acceptLegalDocuments(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.acceptLegalDocuments(AcceptedLegalDocuments(privacyPolicy = "privacy-v4"))
+        }
     }
 
     @Test
-    fun `prevents duplicate acceptance and overlapping refresh`() = runUnitTest {
+    fun `deduplicates acceptance while allowing a separate refresh`() = runUnitTest {
         given()
         val fixture = Fixture()
         val save = CompletableDeferred<Unit>()
@@ -529,7 +808,7 @@ class SettingsDashboardViewModelTest {
         then()
         assertTrue(wasSaving)
         verifySuspend(VerifyMode.exactly(1)) { fixture.acceptLegalDocuments(any()) }
-        verifySuspend(VerifyMode.exactly(2)) { fixture.getLegalDocumentStatuses() }
+        verifySuspend(VerifyMode.exactly(3)) { fixture.getLegalDocumentStatuses.refresh() }
     }
 
     @Test
@@ -573,20 +852,21 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
-    fun `discards stale status when post acceptance refresh fails`() = runUnitTest {
+    fun `keeps cached pending documents available when post acceptance refresh fails`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
         sut.onViewPresented()
 
         whenn()
-        everySuspend { fixture.getLegalDocumentStatuses() } throws TestException()
+        everySuspend { fixture.remoteStatuses.refresh() } throws TestException()
         sut.uiState.legal.accept.onClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.legal.documents.isEmpty())
+        assertEquals(listOf("privacy-v2", "terms-v3"), sut.uiState.legal.documents.map { it.version })
         assertTrue(sut.uiState.legal.retry.isVisible)
-        assertTrue(!sut.uiState.legal.accept.isEnabled)
+        assertTrue(sut.uiState.legal.accept.isVisible)
+        assertTrue(sut.uiState.legal.accept.isEnabled)
     }
 
     @Test
@@ -622,28 +902,26 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
-    fun `keeps document rows visible while refreshing and blocks stale acceptance`() = runUnitTest {
+    fun `keeps document rows and acceptance available while refreshing`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
         sut.onViewPresented()
         val displayed = sut.uiState.legal.documents
-        val oldAccept = sut.uiState.legal.accept.onClick
         val response = CompletableDeferred<List<LegalDocumentStatus>>()
-        everySuspend { fixture.getLegalDocumentStatuses() } calls { response.await() }
+        everySuspend { fixture.remoteStatuses.refresh() } calls { response.await() }
 
         whenn()
         sut.onViewPresented()
         val refreshingDocuments = sut.uiState.legal.documents
         val wasLoading = sut.uiState.legal.isLoading
         val wasEnabled = sut.uiState.legal.accept.isEnabled
-        oldAccept?.invoke()
         response.complete(listOf(privacy(), terms()))
 
         then()
         assertEquals(displayed, refreshingDocuments)
         assertTrue(wasLoading)
-        assertTrue(!wasEnabled)
+        assertTrue(wasEnabled)
         verifySuspend(VerifyMode.exactly(0)) { fixture.acceptLegalDocuments(any()) }
     }
 
@@ -651,7 +929,7 @@ class SettingsDashboardViewModelTest {
     fun `removes the consent explanation after all documents are accepted`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getLegalDocumentStatuses() } returns
+        everySuspend { fixture.remoteStatuses.refresh() } returns
             listOf(privacy(accepted = true), terms())
         val sut = fixture.sut()
 

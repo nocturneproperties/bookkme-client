@@ -13,19 +13,6 @@ struct LegalDocumentsView: View {
             ForEach(state.documents, id: \.id) { document in
                 LegalDocumentRow(document: document)
             }
-            if state.documents.isEmpty {
-                if state.isLoading {
-                    Text(SettingsRes.strings().settings_legal_loading.desc().localized())
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .padding(.vertical, 8)
-                } else if let message = state.message {
-                    Text(message.localized())
-                        .font(.subheadline)
-						.foregroundStyle(AppColors.primary)
-                        .padding(.vertical, 8)
-                }
-            }
             if state.retry.isVisible {
                 TextButton(state.retry, textAlignment: .leading)
             }
@@ -42,22 +29,20 @@ struct LegalDocumentsView: View {
                 }
             }
         } footer: {
-            if !state.documents.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    if let message = state.message {
-                        Text(message.localized())
-                            .font(.footnote)
-							.foregroundStyle(AppColors.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    if state.accept.isVisible {
-                        StateButton(state.accept)
-                            .font(.body)
-                    }
+            VStack(alignment: .leading, spacing: 12) {
+                if let message = state.message {
+                    Text(message.localized())
+                        .font(.footnote)
+                        .foregroundStyle(AppColors.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(.top, 4)
-                .textCase(nil)
+                if state.accept.isVisible {
+                    StateButton(state.accept)
+                        .font(.body)
+                }
             }
+            .padding(.top, 4)
+            .textCase(nil)
         }
         .listRowBackground(AppColors.elevated)
     }
@@ -68,7 +53,7 @@ private struct LegalDocumentRow: View {
 
     var body: some View {
         Button {
-            document.onClick()
+            document.onClick?()
         } label: {
             HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -80,15 +65,18 @@ private struct LegalDocumentRow: View {
                         .foregroundStyle(document.statusColor.color)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                Image(systemName: "arrow.up.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
+                if document.onClick != nil {
+                    Image(systemName: "arrow.up.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                }
             }
             .frame(minHeight: 32)
             .padding(.vertical, 4)
             .contentShape(Rectangle())
         }
+        .disabled(document.onClick == nil)
         .buttonStyle(.plain)
     }
 }

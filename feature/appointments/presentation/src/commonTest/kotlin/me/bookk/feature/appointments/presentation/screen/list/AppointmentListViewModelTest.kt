@@ -250,7 +250,7 @@ class AppointmentListViewModelTest {
     }
 
     @Test
-    fun `offers new appointment action again after switching to a business where appointments are visible`() =
+    fun `restores create action after switching to a business with appointment access`() =
         runUnitTest {
             given()
             val fixture = Fixture()
@@ -325,7 +325,7 @@ class AppointmentListViewModelTest {
     }
 
     @Test
-    fun `restores the regular empty state after switching to a business where appointments are visible`() =
+    fun `restores empty state after switching to a business with appointment access`() =
         runUnitTest {
             given()
             val fixture = Fixture()
@@ -533,6 +533,7 @@ class AppointmentListViewModelTest {
             AppointmentStatus.SCHEDULED,
             AppointmentStatus.CANCELLED,
             AppointmentStatus.NO_SHOW,
+            AppointmentStatus.UNRESOLVED,
         )
             .map { Appointment.stub().copy(status = it) }
         val sut = fixture.sut()

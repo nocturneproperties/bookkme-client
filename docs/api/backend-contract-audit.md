@@ -19,6 +19,17 @@ in data/domain layers with regression tests:
   and domain model use the same default. The backend response model uses non-null retention too;
   remote-to-domain mapping copies it directly, preserving field number 14.
 - Appointment edit-window and update validation/concurrency failures have typed domain errors.
+- `GetAppointment.refresh(id)` uses the added `GET /api/appointments/{id}` endpoint and caches the
+  returned aggregate. The existing `invoke(id)` remains local. Plain-text HTTP 404 maps to
+  shared `core.domain.entity.Error.NotFound`, then to `GetAppointment.Error.NotFound`; 401 and
+  suspended access keep the shared handling. Structured 404 business errors retain their code and
+  message. Export downloads translate the shared `NotFound` to their existing `NotReady`. Details show
+  short global messages and reload after concurrent modification or a closed edit window without
+  retrying the mutation. Missing or inaccessible refreshed appointments close details.
+- The current appointment schema appends `UNRESOLVED` at enum ordinal 4. Mobile remote/domain
+  enums, mappings, text-based cache restoration and localized shared UI status support it while
+  retaining ordinals 0–3. Unresolved appointments show no mutation actions. No database migration
+  or change to appointment protobuf field numbers is required.
 - Service validation, business update currency/retention validation, profile contact conflicts and
   last-passkey deletion have typed errors; the service-group error code is corrected to 200012.
 - Existing accounts can submit legal-document acceptance through a registered use case.

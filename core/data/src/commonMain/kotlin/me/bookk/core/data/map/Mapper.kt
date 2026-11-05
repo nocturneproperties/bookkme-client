@@ -30,6 +30,8 @@ suspend fun Throwable.toDomain(): Error {
 
                         response.status.value == 400 -> Error.BadRequest(this)
 
+                        response.status.value == 404 -> Error.NotFound(this)
+
                         response.status.value == 500 -> Error.InternalServerError(this)
 
                         else -> Error.UnknownApiError(

@@ -42,16 +42,27 @@ class UIAppointmentStatus(val label: StringDesc, val color: ColorToken) {
     )
 }
 
-private fun AppointmentStatus.label(): StringDesc = when (this) {
-    AppointmentStatus.SCHEDULED -> AppointmentsRes.strings.appointments_status_scheduled.desc()
-    AppointmentStatus.COMPLETED -> AppointmentsRes.strings.appointments_status_completed.desc()
-    AppointmentStatus.CANCELLED -> AppointmentsRes.strings.appointments_status_cancelled.desc()
-    AppointmentStatus.NO_SHOW -> AppointmentsRes.strings.appointments_status_no_show.desc()
+private fun AppointmentStatus.label(): StringDesc {
+    return when (this) {
+        AppointmentStatus.SCHEDULED -> AppointmentsRes.strings.appointments_status_scheduled.desc()
+
+        AppointmentStatus.COMPLETED -> AppointmentsRes.strings.appointments_status_completed.desc()
+
+        AppointmentStatus.CANCELLED -> AppointmentsRes.strings.appointments_status_cancelled.desc()
+
+        AppointmentStatus.NO_SHOW -> AppointmentsRes.strings.appointments_status_no_show.desc()
+
+        AppointmentStatus.UNRESOLVED ->
+            AppointmentsRes.strings.appointments_status_unresolved.desc()
+    }
 }
 
-private fun AppointmentStatus.color(): ColorToken = when (this) {
-    AppointmentStatus.SCHEDULED -> ColorToken.ActionText
-    AppointmentStatus.COMPLETED -> ColorToken.Success
-    AppointmentStatus.CANCELLED -> ColorToken.Error
-    AppointmentStatus.NO_SHOW -> ColorToken.SecondaryText
+private fun AppointmentStatus.color(): ColorToken {
+    return when (this) {
+        AppointmentStatus.SCHEDULED -> ColorToken.ActionText
+        AppointmentStatus.COMPLETED -> ColorToken.Success
+        AppointmentStatus.CANCELLED -> ColorToken.Error
+        AppointmentStatus.NO_SHOW -> ColorToken.SecondaryText
+        AppointmentStatus.UNRESOLVED -> ColorToken.SecondaryText
+    }
 }

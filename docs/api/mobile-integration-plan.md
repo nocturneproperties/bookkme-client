@@ -1,6 +1,6 @@
 # Mobile API integration and UI plan
 
-Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Steps 4–5 are deferred until the simpler steps are complete. Step 7 is skipped for now at the user's request. Step 8 is excluded from the mobile app's scope; Steps 9–10 have not started.
+Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Steps 4–5 are deferred until the simpler steps are complete. Step 7 is skipped for now at the user's request. Step 8 is excluded from the mobile app's scope. Step 9 is implemented and validated, awaiting user review; Step 10 has not started.
 
 Execution order updated at the user's request: proceed with Step 6 before the export UI in Steps 4–5.
 
@@ -414,19 +414,47 @@ Client-facing employee selection will be implemented on the website, outside thi
 
 ### 9. Improve appointment error recovery
 
-When the existing database observer delivers refreshed service options, reconcile selected services
-with those options, recalculate the subtotal and require review before another booking attempt.
-Keep the observer as the source of screen data; no additional refresh-result rendering is needed.
+Status: Implemented and validated, awaiting user review.
 
-For `ConcurrentModification` and every `EditWindowClosed` failure, show a short global message and
-reload the appointment. Do not automatically retry the rejected mutation. The user subsequently
-requested local edit-window checks in the `Appointment.canBe…` methods: completion and no-show are
-allowed through seven days after the scheduled end (start plus all booked service durations).
-Rescheduling remains limited to scheduled appointments that have not started. Reloading applies
-these checks to action visibility; server rejection handling remains necessary.
+Implemented:
 
-Review output: corrected state transitions and regression tests for stale selections and
-message-and-reload recovery for both errors.
+- The existing database observer reconciles selected services with refreshed options by id, removes
+  missing selections and recalculates the subtotal and Create availability. Other form inputs stay
+  intact. The next booking attempt is explicit and uses current service snapshots; no refresh return
+  value is rendered alongside the observer.
+- `ConcurrentModification` and every `EditWindowClosed` failure show a short error global message and
+  reload the exact appointment. Completion closes its sheet first. Recovery does not retry mutations
+  or play success haptics. Separate launch keys allow refresh from a mutation's error handler, while
+  a shared mutation key prevents overlapping writes to the appointment.
+- `GetAppointment.invoke(id)` still reads Room. Its new `refresh(id)` uses the verified
+  `GET /api/appointments/{id}` route and then saves the returned aggregate through the existing cache
+  write. Plain-text HTTP 404 becomes `Error.NotFound`; details close with an unavailable global
+  message. Other refresh failures use the normal error handler and leave the previous cache intact.
+- Completion, no-show and cancellation respect the seven-day window after scheduled end (start plus
+  all booked service durations), inclusive at the cutoff. Rescheduling stays limited to scheduled
+  appointments that have not started. Reloading recalculates all action visibility with an injected
+  clock. The appended `UNRESOLVED` status decodes, caches and displays with no mutation actions.
+- Android and iOS share the behavior through their existing state and notification handlers. English,
+  Russian, Ukrainian and Polish messages, operation diagrams, API audit and database documentation
+  are updated. No database migration, preference key, logout binding or navigation route is added.
+
+Validation:
+
+- Red: five service-reconciliation regressions failed on stale selections/subtotal. The status
+  contract failed on the missing appended enum value. Refresh tests initially failed to compile
+  against missing datasource/use-case methods. Seven recovery regressions failed before the new
+  global messages and reloads; cancellation boundary tests required a domain predicate.
+- Green: all 421 appointment tests pass: 41 data, 174 domain and 206 presentation.
+- Android assembly (`:androidApp:assembleDevDebug`) and shared iOS compilation
+  (`:shared:compileKotlinIosArm64`) pass.
+- Changed Kotlin files are formatted, all seven affected Mermaid diagrams parse, and all four
+  locales have matching string keys, placeholders and newline markers. `git diff --check` passes.
+- Coverage includes service refresh/removal and preserved inputs, explicit booking retry, enum wire
+  order and cache restoration, edit-window boundaries, GET route and protobuf response, plain-text
+  404, suspended access, cache write/read failures, every recovery path, current details rendering,
+  unavailable appointments, and absence of mutation retry or success haptics during recovery.
+- Backend access was limited to fetching Swagger. HTTP behavior uses MockEngine; no live mutation
+  was submitted. No UI-test tooling was added.
 
 ### 10. Align client-deletion UI with the current behavior
 

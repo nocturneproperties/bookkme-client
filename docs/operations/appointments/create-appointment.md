@@ -43,5 +43,11 @@ and quote-related booking races refresh backend services before returning the mi
 refresh fails, its error propagates and booking is not retried. A refreshed quote never silently accepts
 changed booking details. A fresh request from the caller is required after reviewing updates.
 
+The creation screen observes the local service cache through `ObserveAppointmentOptions`. Each
+emission replaces selected service snapshots by id, removes selections missing from the options,
+and recalculates the subtotal and Create availability. The client, date, time and note are preserved.
+Option changes keep Create disabled while a booking is pending. Quote rejection explains that the
+employee must review the updated form; the ViewModel never automatically retries the booking.
+
 Composes `CreateQuote`, `GetServices.refresh` on mismatch, and `ObserveUserBusinessesChanges` for the
 default employee. Quote retrieval and cache refresh are use-case orchestration, never combined in a datasource.

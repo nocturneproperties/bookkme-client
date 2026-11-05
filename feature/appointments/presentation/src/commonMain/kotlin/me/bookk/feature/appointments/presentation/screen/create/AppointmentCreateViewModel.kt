@@ -9,6 +9,7 @@ import kotlinx.datetime.LocalTime
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -62,6 +63,8 @@ class AppointmentCreateViewModel(
 
     private fun refreshOptions() {
         launch(
+            key = OPTIONS_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             call = { getAppointmentOptions(businessId) },
             onError = { uiState.notifications.add(it.notification()) },
@@ -70,7 +73,15 @@ class AppointmentCreateViewModel(
 
     private fun renderOptions(options: AppointmentOptions) {
         uiState.clientPicker.replaceOptions(options.clients.map(ClientSnapshot::pickerItem))
-        uiState.servicePicker.replaceOptions(options.services.map(::ServicePickerPresentation))
+        val services = options.services.map(::ServicePickerPresentation)
+        val servicesById = services.associateBy { it.pickerItemId }
+        val selected = uiState.servicePicker.selectedItems.mapNotNull {
+            servicesById[it.pickerItemId]
+        }
+        uiState.servicePicker.replaceOptions(services)
+        uiState.servicePicker.replaceSelected(selected)
+        updateSubtotal()
+        invalidateButton()
     }
 
     private fun onClientSelected(client: SimplePickerPresentation<ClientSnapshot>?) {
@@ -123,7 +134,8 @@ class AppointmentCreateViewModel(
     }
 
     private fun invalidateButton() {
-        uiState.create.isEnabled = uiState.clientPicker.selectedItem != null &&
+        uiState.create.isEnabled = !uiState.create.isLoading &&
+            uiState.clientPicker.selectedItem != null &&
             uiState.servicePicker.selectedItems.isNotEmpty() &&
             uiState.datePicker.datePicker.pickedDate != null &&
             uiState.timePicker.timePicker.pickedTime != null &&
@@ -146,6 +158,8 @@ class AppointmentCreateViewModel(
         )
 
         launch(
+            key = CREATE_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.create.startLoading() },
             call = { createAppointment(draft) },
@@ -182,35 +196,41 @@ class AppointmentCreateViewModel(
                     is CreateAppointment.Error.PriceChanged ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_create_price_changed_error.desc(),
+                                AppointmentsRes.strings.appointments_create_price_changed_error
+                                    .desc(),
                             ),
                         )
 
                     is CreateAppointment.Error.DurationChanged ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_create_duration_changed_error.desc(),
+                                AppointmentsRes.strings.appointments_create_duration_changed_error
+                                    .desc(),
                             ),
                         )
 
                     is CreateAppointment.Error.ServicesChanged ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_create_services_changed_error.desc(),
+                                AppointmentsRes.strings.appointments_create_services_changed_error
+                                    .desc(),
                             ),
                         )
 
                     is CreateAppointment.Error.ServiceNotFound ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_complete_service_not_found_error.desc(),
+                                AppointmentsRes.strings
+                                    .appointments_complete_service_not_found_error
+                                    .desc(),
                             ),
                         )
 
                     is CreateAppointment.Error.EmptyServices ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_create_empty_services_error.desc(),
+                                AppointmentsRes.strings.appointments_create_empty_services_error
+                                    .desc(),
                             ),
                         )
 
@@ -231,7 +251,8 @@ class AppointmentCreateViewModel(
                     is CreateAppointment.Error.EmployeeNotFound ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_employee_not_found_error.desc(),
+                                AppointmentsRes.strings.appointments_employee_not_found_error
+                                    .desc(),
                             ),
                         )
 
@@ -245,7 +266,9 @@ class AppointmentCreateViewModel(
                     is CreateAppointment.Error.EmployeeSuspended ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_details_employee_suspended_error.desc(),
+                                AppointmentsRes.strings
+                                    .appointments_details_employee_suspended_error
+                                    .desc(),
                             ),
                         )
 
@@ -309,5 +332,10 @@ class AppointmentCreateViewModel(
         create.text = DesignSystem.strings.action_create.desc()
         create.isEnabled = false
         create.onClick = weakVMClosure { it.onCreateClick() }
+    }
+
+    private companion object {
+        const val OPTIONS_KEY = "appointment-create-options"
+        const val CREATE_KEY = "appointment-create"
     }
 }

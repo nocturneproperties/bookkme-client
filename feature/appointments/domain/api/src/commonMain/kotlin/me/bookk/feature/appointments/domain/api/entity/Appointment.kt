@@ -54,6 +54,10 @@ data class Appointment(
         return status == AppointmentStatus.SCHEDULED && !hasStarted(now)
     }
 
+    fun canBeCancelled(now: LocalDateTime = LocalDateTime.now()): Boolean {
+        return status == AppointmentStatus.SCHEDULED && isWithinEditWindow(now)
+    }
+
     private fun hasStarted(now: LocalDateTime): Boolean {
         return date <= now
     }

@@ -59,7 +59,10 @@ class AppointmentRemoteContractTest {
         val order = descriptor.enumOrder()
 
         then()
-        assertEquals(listOf("SCHEDULED", "COMPLETED", "CANCELLED", "NO_SHOW"), order)
+        assertEquals(
+            listOf("SCHEDULED", "COMPLETED", "CANCELLED", "NO_SHOW", "UNRESOLVED"),
+            order,
+        )
     }
 
     @Test

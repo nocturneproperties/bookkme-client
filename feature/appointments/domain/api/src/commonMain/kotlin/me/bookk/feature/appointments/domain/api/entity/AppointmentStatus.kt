@@ -5,4 +5,5 @@ enum class AppointmentStatus {
     COMPLETED,
     CANCELLED,
     NO_SHOW,
+    UNRESOLVED,
 }

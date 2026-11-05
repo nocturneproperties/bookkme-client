@@ -35,7 +35,9 @@ flowchart TD
     Code -- other --> EX([rethrow])
 ```
 
-A transaction conflict is reported as `ConcurrentModification` without automatically retrying; callers
-can choose to reload rather than replaying a stale appointment over newer server changes.
+A transaction conflict is reported as `ConcurrentModification`. For it and `EditWindowClosed`, the
+details ViewModel shows a short error global message and calls `GetAppointment.refresh(id)`. The fresh
+appointment is cached and rendered, including a changed date or status. The rejected update is not
+automatically retried, and reloading does not play a success haptic.
 
 `EditWindowClosed` means the appointment ended more than seven days ago.

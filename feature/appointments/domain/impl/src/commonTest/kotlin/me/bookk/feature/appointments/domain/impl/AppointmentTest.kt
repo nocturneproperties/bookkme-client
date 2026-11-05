@@ -213,4 +213,61 @@ class AppointmentTest {
         then()
         assertEquals(true, markable)
     }
+
+    @Test
+    fun `unresolved appointment cannot be completed marked no-show or rescheduled`() = runUnitTest {
+        given()
+        val appointment = appointment(AppointmentStatus.UNRESOLVED)
+
+        whenn()
+        val times = listOf(beforeStart, start, LocalDateTime(2026, 10, 11, 10, 0))
+        val availability = times.map { now ->
+            listOf(
+                appointment.canBeCompleted(now),
+                appointment.canBeMarkedNoShow(now),
+                appointment.canBeRescheduled(now),
+            )
+        }
+
+        then()
+        assertEquals(List(3) { listOf(false, false, false) }, availability)
+    }
+
+    @Test
+    fun `only scheduled appointments can be cancelled within the edit window`() = runUnitTest {
+        given()
+        val statuses = AppointmentStatus.entries
+
+        whenn()
+        val cancellable = statuses.filter { appointment(it).canBeCancelled(now = beforeStart) }
+
+        then()
+        assertEquals(listOf(AppointmentStatus.SCHEDULED), cancellable)
+    }
+
+    @Test
+    fun `scheduled appointment can be cancelled at its edit cutoff`() = runUnitTest {
+        given()
+        val appointment = appointment(AppointmentStatus.SCHEDULED)
+        val cutoff = LocalDateTime(2026, 10, 10, 10, 30)
+
+        whenn()
+        val cancellable = appointment.canBeCancelled(now = cutoff)
+
+        then()
+        assertEquals(true, cancellable)
+    }
+
+    @Test
+    fun `scheduled appointment cannot be cancelled after its edit window closes`() = runUnitTest {
+        given()
+        val appointment = appointment(AppointmentStatus.SCHEDULED)
+        val afterCutoff = LocalDateTime(2026, 10, 10, 10, 30, 1)
+
+        whenn()
+        val cancellable = appointment.canBeCancelled(now = afterCutoff)
+
+        then()
+        assertEquals(false, cancellable)
+    }
 }

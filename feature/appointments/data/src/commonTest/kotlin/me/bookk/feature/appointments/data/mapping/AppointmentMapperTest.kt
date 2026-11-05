@@ -2,11 +2,13 @@ package me.bookk.feature.appointments.data.mapping
 
 import kotlinx.datetime.LocalDateTime
 import library.money.api.Money
+import me.bookk.core.data.dataSerializer
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.database.relation.AppointmentLocal
+import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
 import me.bookk.feature.appointments.data.remote.model.RequestedServiceRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCompletedBy
@@ -138,6 +140,51 @@ class AppointmentMapperTest {
 
         then()
         assertEquals(AppointmentStatus.NO_SHOW, restored.status)
+    }
+
+    @Test
+    fun `decodes appended unresolved wire status into the domain status`() = runUnitTest {
+        given()
+        val payload = byteArrayOf(4)
+
+        whenn()
+        val status = dataSerializer.decodeFromByteArray(
+            AppointmentStatusRemote.serializer(),
+            payload,
+        ).toDomain()
+
+        then()
+        assertEquals(AppointmentStatus.UNRESOLVED, status)
+    }
+
+    @Test
+    fun `maps unresolved appointment to the appended remote status`() = runUnitTest {
+        given()
+        val appointment = appointment(listOf(service("Haircut"))).copy(
+            status = AppointmentStatus.UNRESOLVED,
+        )
+
+        whenn()
+        val remote = appointment.toRemote()
+
+        then()
+        assertEquals(AppointmentStatusRemote.UNRESOLVED, remote.status)
+    }
+
+    @Test
+    fun `stored unresolved appointment restores its status`() = runUnitTest {
+        given()
+        val appointment = appointment(listOf(service("Haircut"))).copy(
+            status = AppointmentStatus.UNRESOLVED,
+        )
+
+        whenn()
+        val local = appointment.toLocal()
+        val restored = local.toDomain()
+
+        then()
+        assertEquals("UNRESOLVED", local.entity.status)
+        assertEquals(appointment, restored)
     }
 
     @Test

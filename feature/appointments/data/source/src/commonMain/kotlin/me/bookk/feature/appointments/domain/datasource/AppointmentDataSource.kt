@@ -12,6 +12,8 @@ import kotlin.uuid.Uuid
 interface AppointmentDataSource {
     suspend fun getAppointment(id: Uuid): Appointment
 
+    suspend fun getAppointmentFromRemote(id: Uuid): Appointment
+
     suspend fun getAppointmentsForDate(
         businessId: Uuid,
         forDate: LocalDate,

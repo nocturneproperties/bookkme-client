@@ -7,6 +7,7 @@ sealed class Error(val error: String, cause: Throwable?) : Throwable(error, caus
     class Cancelled(cause: Throwable) : Error("Cancelled", cause)
     class Unauthorized(cause: Throwable) : Error("Unauthorized", cause)
     class BadRequest(cause: Throwable) : Error("BadRequest", cause)
+    class NotFound(cause: Throwable) : Error("Not Found", cause)
     class Ignore(cause: Throwable) : Error("Exception can be ignored", cause)
     class Unknown(cause: Throwable) : Error("Unknown error", cause)
     class InvalidApplicationState : Error("Invalid app state", null)

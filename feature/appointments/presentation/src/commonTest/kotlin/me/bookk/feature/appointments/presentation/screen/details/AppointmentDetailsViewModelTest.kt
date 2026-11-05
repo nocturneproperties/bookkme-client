@@ -599,6 +599,7 @@ class AppointmentDetailsViewModelTest {
         assertFalse(sut.uiState.completeButton.isVisible)
         assertFalse(sut.uiState.noShowButton.isVisible)
         assertFalse(sut.uiState.rescheduleButton.isVisible)
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
     }
 
     @Test
@@ -615,6 +616,38 @@ class AppointmentDetailsViewModelTest {
 
         then()
         assertFalse(sut.uiState.noShowButton.isVisible)
+    }
+
+    @Test
+    fun `shows unresolved status with a neutral color`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(fixture.startedAppointment(AppointmentStatus.UNRESOLVED))
+
+        then()
+        assertEquals(
+            AppointmentsRes.strings.appointments_status_unresolved.desc(),
+            sut.uiState.status.label,
+        )
+        assertEquals(ColorToken.SecondaryText, sut.uiState.status.color)
+        assertNull(sut.uiState.statusNote)
+    }
+
+    @Test
+    fun `hides mutation actions for unresolved appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(fixture.startedAppointment(AppointmentStatus.UNRESOLVED))
+
+        then()
+        assertFalse(sut.uiState.completeButton.isVisible)
+        assertFalse(sut.uiState.noShowButton.isVisible)
+        assertFalse(sut.uiState.rescheduleButton.isVisible)
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
     }
 
     @Test
@@ -1782,106 +1815,199 @@ class AppointmentDetailsViewModelTest {
         assertTrue(sut.uiState.servicePicker.isVisible)
     }
 
+    private fun AppointmentDetailsViewModel.assertRecoveryMessage(expected: StringResource) {
+        val message = uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        assertEquals(expected.desc(), message.text)
+        assertEquals(PresentationNotification.GlobalMessage.State.ERROR, message.state)
+        assertEquals(PresentationNotification.GlobalMessage.Duration.SHORT, message.duration)
+    }
+
     @Test
-    fun `explains closed edit window for CancelAppointment`() = runUnitTest {
-        listOf(
-            CancelAppointment.Error.EditWindowClosed() to
-                AppointmentsRes.strings.appointments_edit_window_closed_error,
-        ).forEach { (error, expected) ->
-            given()
-            val fixture = Fixture()
-            everySuspend { fixture.cancelAppointment(any(), any(), any()) } throws error
-            val sut = fixture.sutWith(fixture.appointment())
+    fun `reloads after edit window rejects cancellation without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.startedAppointment(AppointmentStatus.UNRESOLVED)
+        everySuspend { fixture.cancelAppointment(any(), any(), any()) } throws
+            CancelAppointment.Error.EditWindowClosed()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.appointment())
 
-            whenn()
-            sut.confirmCancellation("reason")
+        whenn()
+        sut.confirmCancellation("reason")
 
-            then()
-            assertEquals(
-                listOf(expected.desc()),
-                sut.uiState.notifications.presentationNotification
-                    .filterIsInstance<PresentationNotification.Message>()
-                    .map { it.message },
-            )
-            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
-            assertTrue(
-                sut.uiState.notifications.presentationNotification.none {
-                    it is PresentationNotification.SuccessHaptic
-                },
-            )
+        then()
+        sut.assertRecoveryMessage(AppointmentsRes.strings.appointments_edit_window_closed_error)
+        assertEquals(
+            AppointmentsRes.strings.appointments_status_unresolved.desc(),
+            sut.uiState.status.label,
+        )
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.cancelAppointment(any(), any(), any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
         }
     }
 
     @Test
-    fun `explains closed edit window for CompleteAppointment`() = runUnitTest {
-        listOf(
-            CompleteAppointment.Error.EditWindowClosed() to
-                AppointmentsRes.strings.appointments_edit_window_closed_error,
-        ).forEach { (error, expected) ->
-            given()
-            val fixture = Fixture()
-            everySuspend { fixture.completeAppointment(any(), any()) } throws error
-            val sut = fixture.sutWith(fixture.appointment())
+    fun `reloads after edit window rejects completion without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.startedAppointment(AppointmentStatus.UNRESOLVED)
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.EditWindowClosed()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.startedAppointment())
 
-            whenn()
-            sut.uiState.completeButton.onClick?.invoke()
-            sut.uiState.completion.confirmButton.onClick?.invoke()
+        whenn()
+        sut.confirmCompletion()
 
-            then()
-            assertEquals(
-                listOf(expected.desc()),
-                sut.uiState.notifications.presentationNotification
-                    .filterIsInstance<PresentationNotification.Message>()
-                    .map { it.message },
-            )
-            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
-            assertTrue(
-                sut.uiState.notifications.presentationNotification.none {
-                    it is PresentationNotification.SuccessHaptic
-                },
-            )
+        then()
+        sut.assertRecoveryMessage(AppointmentsRes.strings.appointments_edit_window_closed_error)
+        assertFalse(sut.uiState.completion.isSheetVisible)
+        assertFalse(sut.uiState.completeButton.isVisible)
+        assertFalse(sut.uiState.noShowButton.isVisible)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.completeAppointment(any(), any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
         }
     }
 
     @Test
-    fun `explains closed edit window for MarkAppointmentNoShow`() = runUnitTest {
-        listOf(
-            MarkAppointmentNoShow.Error.EditWindowClosed() to
-                AppointmentsRes.strings.appointments_edit_window_closed_error,
-        ).forEach { (error, expected) ->
-            given()
-            val fixture = Fixture()
-            everySuspend { fixture.markAppointmentNoShow(any()) } throws error
-            val sut = fixture.sutWith(fixture.appointment())
+    fun `reloads after edit window rejects no-show without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.startedAppointment(AppointmentStatus.UNRESOLVED)
+        everySuspend { fixture.markAppointmentNoShow(any()) } throws
+            MarkAppointmentNoShow.Error.EditWindowClosed()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.startedAppointment())
+        sut.uiState.noShowButton.onClick?.invoke()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notifications.removeFirst()
 
-            whenn()
-            sut.uiState.noShowButton.onClick?.invoke()
-            val confirmation =
-                sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-            sut.uiState.notifications.removeFirst()
-            confirmation.tap(ActionType.NEGATIVE)
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
 
-            then()
-            assertEquals(
-                listOf(expected.desc()),
-                sut.uiState.notifications.presentationNotification
-                    .filterIsInstance<PresentationNotification.Message>()
-                    .map { it.message },
-            )
-            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
-            assertTrue(
-                sut.uiState.notifications.presentationNotification.none {
-                    it is PresentationNotification.SuccessHaptic
-                },
-            )
+        then()
+        sut.assertRecoveryMessage(AppointmentsRes.strings.appointments_edit_window_closed_error)
+        assertFalse(sut.uiState.noShowButton.isVisible)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.markAppointmentNoShow(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
         }
+    }
+
+    @Test
+    fun `reloads after edit window rejects rescheduling without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.startedAppointment(AppointmentStatus.UNRESOLVED)
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.EditWindowClosed()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        sut.assertRecoveryMessage(AppointmentsRes.strings.appointments_edit_window_closed_error)
+        assertFalse(sut.uiState.rescheduleButton.isVisible)
+        assertEquals(latest.date, sut.uiState.dateTimePicker.pickedDate)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateAppointment(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `reloads the latest date after a concurrent modification without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.appointment(date = LocalDateTime(2030, 2, 2, 15, 0))
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.ConcurrentModification()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        sut.assertRecoveryMessage(
+            AppointmentsRes.strings.appointments_concurrent_modification_error,
+        )
+        assertEquals(latest.date, sut.uiState.dateTimePicker.pickedDate)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateAppointment(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `reports reload failure without retrying the rejected mutation`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val original = fixture.appointment()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.ConcurrentModification()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } throws
+            TestException()
+        val sut = fixture.sutWith(original)
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+        assertEquals(original.date, sut.uiState.dateTimePicker.pickedDate)
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateAppointment(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `closes details when the refreshed appointment is no longer accessible`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.ConcurrentModification()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } throws
+            GetAppointment.Error.NotFound()
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        assertEquals(
+            listOf<AppointmentDetailsDestination>(AppointmentDetailsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        val messages = sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+        assertEquals(2, messages.size)
+        assertTrue(messages.all { it.state == PresentationNotification.GlobalMessage.State.ERROR })
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateAppointment(any()) }
     }
 
     @Test
     fun `explains rescheduling failures`() = runUnitTest {
         listOf(
-            UpdateAppointment.Error.EditWindowClosed() to
-                AppointmentsRes.strings.appointments_edit_window_closed_error,
             UpdateAppointment.Error.DateInPast() to
                 AppointmentsRes.strings.appointments_date_in_past_error,
             UpdateAppointment.Error.InvalidServiceSelection() to
@@ -1890,8 +2016,6 @@ class AppointmentDetailsViewModelTest {
                 AppointmentsRes.strings.appointments_complete_service_not_found_error,
             UpdateAppointment.Error.EmployeeNotFound() to
                 AppointmentsRes.strings.appointments_employee_not_found_error,
-            UpdateAppointment.Error.ConcurrentModification() to
-                AppointmentsRes.strings.appointments_concurrent_modification_error,
         ).forEach { (error, expected) ->
             given()
             val fixture = Fixture()

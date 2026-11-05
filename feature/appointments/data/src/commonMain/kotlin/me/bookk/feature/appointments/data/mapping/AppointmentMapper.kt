@@ -133,11 +133,14 @@ private fun ServiceSnapshot.toRemote() = ServiceSnapshotRemote(
     duration = duration,
 )
 
-private fun AppointmentStatus.toRemote() = when (this) {
-    AppointmentStatus.SCHEDULED -> AppointmentStatusRemote.SCHEDULED
-    AppointmentStatus.COMPLETED -> AppointmentStatusRemote.COMPLETED
-    AppointmentStatus.CANCELLED -> AppointmentStatusRemote.CANCELLED
-    AppointmentStatus.NO_SHOW -> AppointmentStatusRemote.NO_SHOW
+private fun AppointmentStatus.toRemote(): AppointmentStatusRemote {
+    return when (this) {
+        AppointmentStatus.SCHEDULED -> AppointmentStatusRemote.SCHEDULED
+        AppointmentStatus.COMPLETED -> AppointmentStatusRemote.COMPLETED
+        AppointmentStatus.CANCELLED -> AppointmentStatusRemote.CANCELLED
+        AppointmentStatus.NO_SHOW -> AppointmentStatusRemote.NO_SHOW
+        AppointmentStatus.UNRESOLVED -> AppointmentStatusRemote.UNRESOLVED
+    }
 }
 
 internal fun Appointment.toEntity(): AppointmentEntity {

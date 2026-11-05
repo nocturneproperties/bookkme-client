@@ -8,6 +8,10 @@ Booked appointments, pending appointment requests, and a business's booking sett
 These tables have **no foreign key to `business`**. `businessId` is only indexed. Deleting a business row
 does not cascade here, and the client/employee references are denormalized snapshot columns.
 
+Appointment statuses are stored by name: `SCHEDULED`, `COMPLETED`, `CANCELLED`, `NO_SHOW` and
+`UNRESOLVED`. The unresolved outcome round-trips through the existing text column without a schema
+migration. It is displayed as a neutral status and offers no mutation actions.
+
 ```mermaid
 erDiagram
     APPOINTMENT ||--o{ APPOINTMENT_SERVICE_SNAPSHOT : "includes (CASCADE)"
@@ -25,7 +29,7 @@ erDiagram
         uuid employeeUserId "default 000..0"
         string employeeFullName "default ''; snapshot"
         instant date "range-queried per local day"
-        string status "AppointmentStatus.name, incl. NO_SHOW"
+        string status "AppointmentStatus.name, incl. UNRESOLVED"
         string note
         string cancellationReason
         uuid clientId "logical FK -> client.id"
@@ -138,7 +142,8 @@ erDiagram
 - **Price adjustment** is spread over the nullable `adjusted*`/`priceAdjustmentReason` columns plus
   `appointment_adjustment_service` (ordered by `position`). `adjustedPriceValue`/`adjustedPriceCurrency` being
   non-null is what marks an adjustment as present.
-- **Writes:** list refreshes, [Create appointment](../operations/appointments/create-appointment.md),
+- **Writes:** list refreshes, [Get appointment](../operations/appointments/get-appointment.md)
+  `refresh(id)`, [Create appointment](../operations/appointments/create-appointment.md),
   [Approve request](../operations/appointments/approve-appointment-request.md),
   [Update appointment](../operations/appointments/update-appointment.md),
   [Cancel appointment](../operations/appointments/cancel-appointment.md),
@@ -150,8 +155,10 @@ erDiagram
   [Approve request](../operations/appointments/approve-appointment-request.md) and
   [Decline request](../operations/appointments/decline-appointment-request.md) also delete the handled
   `appointment_request` row (`deleteByIds`), so request `flow()` subscribers drop it at once.
-  [Get appointment](../operations/appointments/get-appointment.md) reads only from the database (`getById` is
-  non-nullable).
+  [Get appointment](../operations/appointments/get-appointment.md) `invoke(id)` reads only from the
+  database (`getById` is non-nullable). Its `refresh(id)` fetches one appointment and saves the returned
+  aggregate with the same `upsertWithServices` path. Failed reads do not overwrite the cache; no per-day
+  sync marker is advanced by a single-record refresh.
 - **Settings** are written by [Get appointment settings](../operations/appointments/get-appointment-settings.md)
   `refresh()` and [Update appointment settings](../operations/appointments/update-appointment-settings.md). They have no sync marker, because
   a `null` row is itself unambiguous.

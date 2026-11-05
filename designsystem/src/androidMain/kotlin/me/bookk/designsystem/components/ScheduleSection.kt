@@ -8,10 +8,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -201,7 +203,10 @@ private fun ScheduleDay(state: DaySettingsState, isEditable: Boolean) {
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleMedium,
                     )
-                    StateSwitch(state.isActive)
+                    StateSwitch(
+                        state.isActive,
+                        modifier = Modifier.width(IntrinsicSize.Min),
+                    )
                 }
             }
             state.intervals.forEach { interval ->

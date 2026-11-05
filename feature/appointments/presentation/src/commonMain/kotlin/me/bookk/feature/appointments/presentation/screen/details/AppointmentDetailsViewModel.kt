@@ -12,6 +12,7 @@ import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.dashOnBlank
+import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -76,24 +77,59 @@ class AppointmentDetailsViewModel(
         loadAppointment()
     }
 
-    private fun loadAppointment() {
+    private fun loadAppointment(refresh: Boolean = false) {
         launch(
+            key = LOAD_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
-            call = { getAppointment(appointmentId) },
+            call = {
+                if (refresh) {
+                    getAppointment.refresh(appointmentId)
+                } else {
+                    getAppointment(appointmentId)
+                }
+            },
             onComplete = ::renderAppointment,
-            onError = { uiState.notifications.add(it.notification()) },
+            onError = {
+                when (it) {
+                    is GetAppointment.Error.NotFound -> {
+                        showGlobalMessage(
+                            AppointmentsRes.strings.appointments_unavailable_error.desc(),
+                        )
+                        uiState.navigation.push(AppointmentDetailsDestination.Back)
+                    }
+
+                    else -> uiState.notifications.add(it.notification())
+                }
+            },
+        )
+    }
+
+    private fun recoverAppointment(message: StringDesc) {
+        showGlobalMessage(message)
+        loadAppointment(refresh = true)
+    }
+
+    private fun showGlobalMessage(message: StringDesc) {
+        uiState.notifications.add(
+            PresentationNotification.GlobalMessage(
+                text = message,
+                state = PresentationNotification.GlobalMessage.State.ERROR,
+            ),
         )
     }
 
     private fun onCancellationApproved(reason: String) {
         launch(
+            key = MUTATION_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             call = { cancelAppointment(appointmentId, appointment.businessId, reason) },
             onComplete = ::renderMutatedAppointment,
             onError = {
                 when (it) {
                     is Error.EditWindowClosed ->
-                        showMessage(
+                        recoverAppointment(
                             AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
                         )
 
@@ -131,6 +167,8 @@ class AppointmentDetailsViewModel(
     private fun refreshServiceOptions() {
         val businessId = appointment.businessId
         launch(
+            key = OPTIONS_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             call = { getAppointmentOptions(businessId) },
             onError = { uiState.notifications.add(it.notification()) },
@@ -217,6 +255,8 @@ class AppointmentDetailsViewModel(
     private fun onConfirmCompletion() {
         val priceAdjustment = priceAdjustmentDraft()
         launch(
+            key = MUTATION_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.completion.confirmButton.startLoading() },
             call = { completeAppointment(appointmentId, priceAdjustment) },
@@ -258,7 +298,7 @@ class AppointmentDetailsViewModel(
     private fun onCompletionRejected(error: Throwable) {
         when (error) {
             is CompleteAppointment.Error.EditWindowClosed ->
-                showMessage(
+                recoverAppointment(
                     AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
                 )
 
@@ -306,6 +346,8 @@ class AppointmentDetailsViewModel(
 
     private fun onNoShowApproved() {
         launch(
+            key = MUTATION_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.noShowButton.startLoading() },
             call = { markAppointmentNoShow(appointmentId) },
@@ -314,7 +356,7 @@ class AppointmentDetailsViewModel(
             onError = {
                 when (it) {
                     is MarkAppointmentNoShow.Error.EditWindowClosed ->
-                        showMessage(
+                        recoverAppointment(
                             AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
                         )
 
@@ -357,6 +399,8 @@ class AppointmentDetailsViewModel(
     private fun onDatePicked(date: LocalDateTime) {
         val newAppointment = appointment.copy(date = date)
         launch(
+            key = MUTATION_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.rescheduleButton.startLoading() },
             call = { updateAppointment(newAppointment) },
@@ -365,7 +409,7 @@ class AppointmentDetailsViewModel(
             onError = {
                 when (it) {
                     is UpdateAppointment.Error.EditWindowClosed ->
-                        showMessage(
+                        recoverAppointment(
                             AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
                         )
 
@@ -392,7 +436,7 @@ class AppointmentDetailsViewModel(
                         )
 
                     is UpdateAppointment.Error.ConcurrentModification ->
-                        showMessage(
+                        recoverAppointment(
                             AppointmentsRes.strings.appointments_concurrent_modification_error
                                 .desc(),
                         )
@@ -465,7 +509,7 @@ class AppointmentDetailsViewModel(
         uiState.appBar.title = appointment.client.fullName.desc()
         uiState.status = UIAppointmentStatus(appointment.status)
         uiState.statusNote = statusNote(appointment)
-        uiState.appBar.actions.replace(appBarActions(appointment))
+        uiState.appBar.actions.replace(appBarActions(appointment, now))
         uiState.dateTimePicker.pickedDate = appointment.date
         uiState.dateTimePicker.onDatePicked = weakVMClosure { vm, v -> vm.onDatePicked(v) }
         uiState.rescheduleButton.isVisible = appointment.canBeRescheduled(now)
@@ -572,8 +616,11 @@ class AppointmentDetailsViewModel(
         confirmButton.onClick = weakVMClosure { it.onConfirmCompletion() }
     }
 
-    private fun appBarActions(appointment: Appointment): List<AppBarActionState> {
-        if (appointment.status != AppointmentStatus.SCHEDULED) return emptyList()
+    private fun appBarActions(
+        appointment: Appointment,
+        now: LocalDateTime,
+    ): List<AppBarActionState> {
+        if (!appointment.canBeCancelled(now)) return emptyList()
         return listOf(
             uiState.appBar.action(
                 contentDescription = DesignSystem.strings.action_cancel.desc(),
@@ -622,5 +669,11 @@ class AppointmentDetailsViewModel(
     private fun statusNote(appointment: Appointment): StringDesc? {
         if (appointment.completedBy != AppointmentCompletedBy.USER) return null
         return AppointmentsRes.strings.appointments_details_marked_manually.desc()
+    }
+
+    private companion object {
+        const val LOAD_KEY = "appointment-details-load"
+        const val MUTATION_KEY = "appointment-details-mutation"
+        const val OPTIONS_KEY = "appointment-details-options"
     }
 }

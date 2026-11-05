@@ -11,6 +11,7 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 class ErrorMapperImplTest {
 
@@ -133,6 +134,37 @@ class ErrorMapperImplTest {
             ErrorDescription(
                 title = DesignSystem.strings.error_access_suspended_title.desc(),
                 message = DesignSystem.strings.error_access_suspended.desc(),
+            ),
+            result,
+        )
+    }
+
+    @Test
+    fun `notifies unhandled not found errors as a server issue`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = fixture.sut.mapToNotification(Error.NotFound(Exception()))
+
+        then()
+        assertIs<PresentationNotification.Message>(result)
+        assertEquals(DesignSystem.strings.error_server.desc(), result.message)
+    }
+
+    @Test
+    fun `describes unhandled not found errors as a server issue`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = fixture.sut.mapToDescription(Error.NotFound(Exception()))
+
+        then()
+        assertEquals(
+            ErrorDescription(
+                title = DesignSystem.strings.error_server_title.desc(),
+                message = DesignSystem.strings.error_server.desc(),
             ),
             result,
         )

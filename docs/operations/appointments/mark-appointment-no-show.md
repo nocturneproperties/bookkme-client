@@ -26,3 +26,7 @@ is the start plus all booked service durations; the exact edit-window cutoff is 
 ViewModel uses its injected clock when rendering action visibility.
 
 `EditWindowClosed` means the appointment ended more than seven days ago.
+
+On this error, the details ViewModel shows a short error global message and calls
+`GetAppointment.refresh(id)` to update the cached appointment and action visibility. No-show marking
+is not retried, and refresh plays no success haptic.

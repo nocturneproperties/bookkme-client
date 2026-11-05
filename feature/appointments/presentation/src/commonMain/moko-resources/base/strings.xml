@@ -36,6 +36,7 @@
     <string name="appointments_status_completed">Completed</string>
     <string name="appointments_status_cancelled">Cancelled</string>
     <string name="appointments_status_no_show">No-show</string>
+    <string name="appointments_status_unresolved">Unresolved</string>
     <string name="appointments_details_complete">Complete</string>
     <string name="appointments_details_no_show">No-show</string>
     <string name="appointments_details_no_show_confirm">Mark this appointment as a no-show?</string>
@@ -81,14 +82,15 @@
     <string name="appointments_request_in_past">Appointment time is in the past. This request will be automatically canceled soon, or you can decline it manually</string>
     <string name="appointments_request_date_error">Appointments for this day are forbidden by settings, this day may be marked as day-off.</string>
     <string name="appointments_request_time_error">Appointments for this time are forbidden by settings</string>
-    <string name="appointments_create_price_changed_error">Service prices have changed. Select the services again and check the total.</string>
-    <string name="appointments_create_duration_changed_error">Service durations have changed. Select the services and appointment time again.</string>
-    <string name="appointments_create_services_changed_error">The selected services have changed. Select them again.</string>
+    <string name="appointments_create_price_changed_error">Service prices have changed. Review the updated total and try again.</string>
+    <string name="appointments_create_duration_changed_error">Service durations have changed. Review the services and appointment time.</string>
+    <string name="appointments_create_services_changed_error">The selected services have changed. Review your selection and try again.</string>
     <string name="appointments_create_empty_services_error">Select at least one service.</string>
     <string name="appointments_date_in_past_error">The appointment time is in the past. Choose a future date and time.</string>
     <string name="appointments_create_offer_used_error">This booking offer has already been used. Check the appointments list before trying again.</string>
     <string name="appointments_employee_not_found_error">This employee is no longer available. Refresh the appointments and try again.</string>
     <string name="appointments_client_not_found_error">This client is no longer available. Select another client.</string>
-    <string name="appointments_edit_window_closed_error">The time limit for changing this appointment has passed.</string>
-    <string name="appointments_concurrent_modification_error">This appointment changed while you were editing it. Reopen it and try again.</string>
+    <string name="appointments_edit_window_closed_error">This appointment can no longer be changed.</string>
+    <string name="appointments_concurrent_modification_error">Appointment changed. Please try again.</string>
+    <string name="appointments_unavailable_error">Appointment is no longer available.</string>
 </resources>

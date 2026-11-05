@@ -79,11 +79,7 @@ class DownloadPersonalDataExportImplTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.dataSource.download() } throws
-            me.bookk.core.domain.entity.Error.UnknownApiError(
-                "missing",
-                IllegalStateException(),
-                404,
-            )
+            me.bookk.core.domain.entity.Error.NotFound(IllegalStateException())
 
         whenn()
         val result = runCatching { fixture.sut() }

@@ -28,6 +28,11 @@ while a refresh is running are dropped.
 Legend: `[(…)]` is a Room or DataStore access, `[…]` with an HTTP verb is a network call, and `([…])` is a
 terminal (return, emit or throw). "local only" means the use case never touches the network.
 
+**Not found.** HTTP 404 responses without a structured business-error body become the shared
+`me.bookk.core.domain.entity.Error.NotFound`, retaining the original cause. Use cases translate that
+type into their own errors where needed (appointment `NotFound`, export-download `NotReady`). A 404
+carrying a structured business-error body retains its `Error.BusinessError` code and message.
+
 - [Authorization](#authorization)
 - [Business](#business)
 - [Clients](#clients)
@@ -57,7 +62,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `DownloadBusinessDataExport` | `GET /api/business/{id}/export/download` | [Download business data export](business/download-business-data-export.md) |
+| `DownloadBusinessDataExport` | `GET /api/business/{id}/export/download`; shared `NotFound` → `NotReady` | [Download business data export](business/download-business-data-export.md) |
 | `GetBusinessDataExport` | `GET /api/business/{id}/export` | [Get business data export](business/get-business-data-export.md) |
 | `StartBusinessDataExport` | `POST /api/business/{id}/export` | [Start business data export](business/start-business-data-export.md) |
 | `CreateBusiness` | `POST /api/business`; typed backend errors | [Create business](business/create-business.md) |
@@ -126,13 +131,13 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `GetBusinessAppointmentRequests` | `GET /api/appointments/request/{businessId}` | [Get business appointment requests](appointments/get-business-appointment-requests.md) |
 | `GetBusinessAppointmentsEnabled` | `GET /api/appointments/enabled` | [Get business appointments enabled](appointments/get-business-appointments-enabled.md) |
 | `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=[&employeeId=]` | [Get appointments for business](appointments/get-appointments-for-business.md) |
-| `GetAppointment` | local only | [Get appointment](appointments/get-appointment.md) |
+| `GetAppointment` | local read; `refresh(id)` fetches and caches `GET /api/appointments/{id}`; shared `NotFound` → use-case `NotFound` | [Get appointment](appointments/get-appointment.md) |
 | `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}` (paged) | [Get appointment history](appointments/get-appointment-history.md) |
-| `CreateAppointment` | fresh service quote + `POST /api/appointments/instant`; refresh on mismatch | [Create appointment](appointments/create-appointment.md) |
-| `UpdateAppointment` | `PUT /api/appointments/{id}`; typed scheduling and concurrency errors | [Update appointment](appointments/update-appointment.md) |
-| `CancelAppointment` | `POST /api/appointments/{id}/cancel`; edit-window error | [Cancel appointment](appointments/cancel-appointment.md) |
-| `CompleteAppointment` | `POST /api/appointments/{id}/complete`; edit-window error | [Complete appointment](appointments/complete-appointment.md) |
-| `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show`; edit-window error | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
+| `CreateAppointment` | fresh service quote + `POST /api/appointments/instant`; refresh on mismatch; UI reconciles selected services from cache | [Create appointment](appointments/create-appointment.md) |
+| `UpdateAppointment` | `PUT /api/appointments/{id}`; UI reloads after conflict or closed edit window | [Update appointment](appointments/update-appointment.md) |
+| `CancelAppointment` | `POST /api/appointments/{id}/cancel`; UI reloads after closed edit window | [Cancel appointment](appointments/cancel-appointment.md) |
+| `CompleteAppointment` | `POST /api/appointments/{id}/complete`; UI reloads after closed edit window | [Complete appointment](appointments/complete-appointment.md) |
+| `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show`; UI reloads after closed edit window | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
 | `GetOwnAppointmentRequests` | `GET /api/appointments/request/{businessId}/mine` | [Get own appointment requests](appointments/get-own-appointment-requests.md) |
 | `CreateAppointmentRequest` | `POST /api/appointments/request` | [Create appointment request](appointments/create-appointment-request.md) |
 | `ApproveAppointmentRequest` | `POST /api/appointments` | [Approve appointment request](appointments/approve-appointment-request.md) |
@@ -146,7 +151,7 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `DownloadPersonalDataExport` | `GET /api/user/export/download` | [Download personal data export](settings/download-personal-data-export.md) |
+| `DownloadPersonalDataExport` | `GET /api/user/export/download`; shared `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
 | `GetPersonalDataExport` | `GET /api/user/export` | [Get personal data export](settings/get-personal-data-export.md) |
 | `StartPersonalDataExport` | `POST /api/user/export` | [Start personal data export](settings/start-personal-data-export.md) |
 | `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings | [Accept legal documents](settings/accept-legal-documents.md) |

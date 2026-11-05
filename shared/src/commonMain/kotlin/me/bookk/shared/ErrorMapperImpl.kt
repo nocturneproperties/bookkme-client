@@ -20,6 +20,7 @@ class ErrorMapperImpl : ErrorMapper {
             is Error -> when (e) {
                 is Error.UnknownApiError,
                 is Error.BadRequest,
+                is Error.NotFound,
                 is Error.InternalServerError,
                 -> PresentationNotification.Message(
                     message = DesignSystem.strings.error_server.desc(),
@@ -81,35 +82,38 @@ class ErrorMapperImpl : ErrorMapper {
         }
     }
 
-    override fun mapToDescription(e: Throwable): ErrorDescription = when (e) {
-        is Error.NoConnectionError -> ErrorDescription(
-            title = DesignSystem.strings.error_connection_title.desc(),
-            message = DesignSystem.strings.error_connection_subtitle.desc(),
-        )
+    override fun mapToDescription(e: Throwable): ErrorDescription {
+        return when (e) {
+            is Error.NoConnectionError -> ErrorDescription(
+                title = DesignSystem.strings.error_connection_title.desc(),
+                message = DesignSystem.strings.error_connection_subtitle.desc(),
+            )
 
-        is Error.UnknownApiError,
-        is Error.BadRequest,
-        is Error.InternalServerError,
-        -> ErrorDescription(
-            title = DesignSystem.strings.error_server_title.desc(),
-            message = DesignSystem.strings.error_server.desc(),
-        )
+            is Error.UnknownApiError,
+            is Error.BadRequest,
+            is Error.NotFound,
+            is Error.InternalServerError,
+            -> ErrorDescription(
+                title = DesignSystem.strings.error_server_title.desc(),
+                message = DesignSystem.strings.error_server.desc(),
+            )
 
-        is Error.BusinessAccessSuspended -> ErrorDescription(
-            title = DesignSystem.strings.error_access_suspended_title.desc(),
-            message = DesignSystem.strings.error_access_suspended.desc(),
-        )
+            is Error.BusinessAccessSuspended -> ErrorDescription(
+                title = DesignSystem.strings.error_access_suspended_title.desc(),
+                message = DesignSystem.strings.error_access_suspended.desc(),
+            )
 
-        is Error.BusinessError,
-        is Error.WrappedError,
-        -> ErrorDescription(
-            title = DesignSystem.strings.error_generic_title.desc(),
-            message = e.message.orEmpty().desc(),
-        )
+            is Error.BusinessError,
+            is Error.WrappedError,
+            -> ErrorDescription(
+                title = DesignSystem.strings.error_generic_title.desc(),
+                message = e.message.orEmpty().desc(),
+            )
 
-        else -> ErrorDescription(
-            title = DesignSystem.strings.error_generic_title.desc(),
-            message = DesignSystem.strings.error_unexpected.desc(),
-        )
+            else -> ErrorDescription(
+                title = DesignSystem.strings.error_generic_title.desc(),
+                message = DesignSystem.strings.error_unexpected.desc(),
+            )
+        }
     }
 }

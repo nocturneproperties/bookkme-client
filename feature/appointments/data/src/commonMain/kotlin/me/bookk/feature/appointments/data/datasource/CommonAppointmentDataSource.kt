@@ -53,6 +53,12 @@ internal class CommonAppointmentDataSource(
         appointmentDao.getById(id).toDomain()
     }
 
+    override suspend fun getAppointmentFromRemote(id: Uuid): Appointment = mapExceptions {
+        httpClient.get(Api.Appointment.Id(id = id))
+            .body<AppointmentRemote>()
+            .toDomain()
+    }
+
     override suspend fun getAppointmentsForDate(
         businessId: Uuid,
         forDate: LocalDate,

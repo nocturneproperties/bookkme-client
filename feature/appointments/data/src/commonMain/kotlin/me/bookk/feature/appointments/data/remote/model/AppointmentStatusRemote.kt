@@ -9,12 +9,16 @@ enum class AppointmentStatusRemote {
     COMPLETED,
     CANCELLED,
     NO_SHOW,
+    UNRESOLVED,
     ;
 
-    fun toDomain() = when (this) {
-        SCHEDULED -> AppointmentStatus.SCHEDULED
-        COMPLETED -> AppointmentStatus.COMPLETED
-        CANCELLED -> AppointmentStatus.CANCELLED
-        NO_SHOW -> AppointmentStatus.NO_SHOW
+    fun toDomain(): AppointmentStatus {
+        return when (this) {
+            SCHEDULED -> AppointmentStatus.SCHEDULED
+            COMPLETED -> AppointmentStatus.COMPLETED
+            CANCELLED -> AppointmentStatus.CANCELLED
+            NO_SHOW -> AppointmentStatus.NO_SHOW
+            UNRESOLVED -> AppointmentStatus.UNRESOLVED
+        }
     }
 }

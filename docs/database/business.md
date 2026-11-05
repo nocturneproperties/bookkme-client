@@ -50,7 +50,7 @@ erDiagram
         uuid ownerId "nullable; user id of the business owner"
         uuid employeeId "nullable; current user's own employee record id, null while not an active employee"
         uuid clientId "nullable; current user's own client record id"
-        int clientDataRetentionMonths "nullable until fetched; backend range 12-120"
+        int clientDataRetentionMonths "NOT NULL; default 36 months; range 12-120"
     }
 
     BUSINESS_DAY_SCHEDULE {
@@ -109,6 +109,12 @@ erDiagram
   from the `business_prefs` DataStore bucket. The old value is not migrated: after the update the selection is
   empty until the user picks a business (or signs in again, which applies the server's selection).
 
-22 adds nullable `business.clientDataRetentionMonths` via auto-migration 21 → 22. Old rows remain
-unknown until refreshed; no fabricated retention policy is written. Updates that omit the value preserve
-the cached period. `CommonBusinessDataSource.doOnLogOut` clears the entire business row including this field.
+Version 22 added nullable `business.clientDataRetentionMonths` via auto-migration 21 → 22.
+Version 23 makes the column `NOT NULL DEFAULT 36`. The manual `DefaultBusinessRetention` migration
+22 → 23 copies each existing period into a temporary non-null column, substitutes 36 for null,
+then drops the old column and renames the replacement. It keeps the business table and its dependent
+rows intact. Both `BusinessEntity` and the domain `Business` use non-null retention with a Kotlin
+default of 36. `BusinessRemote` also carries non-null retention with a default of 36;
+remote-to-domain and domain-to-local mapping copy the value directly. Existing custom periods are preserved. The mobile database is
+the source of truth for this setting, so saving it with other business fields is intentional.
+`CommonBusinessDataSource.doOnLogOut` clears the entire business row including this field.

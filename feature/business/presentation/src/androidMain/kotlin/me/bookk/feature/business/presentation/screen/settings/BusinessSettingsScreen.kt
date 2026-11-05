@@ -91,6 +91,17 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                         )
                     }
                     BusinessSocialsCard(state)
+                    Column {
+                        Header(
+                            BusinessRes.strings.business_settings_retention_title
+                                .desc().localized(),
+                        )
+                        TextField(
+                            state = state.clientDataRetentionMonths,
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                        )
+                    }
                 }
             }
         },

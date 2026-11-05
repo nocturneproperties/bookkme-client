@@ -13,7 +13,11 @@ in data/domain layers with regression tests:
 - Integrated-client patches omit protected personal fields.
 - Polish device language is represented and mapped.
 - Business retention is carried through remote/domain/cache models, with migration 21 → 22 and
-  preservation when an update omits it.
+  preservation when an update omits it. Business Settings now exposes the stored period on Android
+  and iOS, validates whole months from 12 to 120, and reports backend error 200041 inline. Unknown
+  periods in older cached rows become 36 months in migration 22 → 23; the non-null database column
+  and domain model use the same default. The backend response model uses non-null retention too;
+  remote-to-domain mapping copies it directly, preserving field number 14.
 - Appointment edit-window and update validation/concurrency failures have typed domain errors.
 - Service validation, business update currency/retention validation, profile contact conflicts and
   last-passkey deletion have typed errors; the service-group error code is corrected to 200012.
@@ -139,16 +143,22 @@ the domain enum.
 
 ## Missing fields and incomplete error handling
 
-### P2 — Business client-data retention is absent throughout the app
+### P2 — Business client-data retention (implemented through the UI)
 
 Backend: `Business.clientDataRetentionMonths` and nullable
 `BusinessUpdateModel.clientDataRetentionMonths`; allowed range 12–120 months, error 200041.
 
-App: [BusinessRemote](../../feature/business/data/src/commonMain/kotlin/me/bookk/feature/business/data/remote/model/BusinessRemote.kt),
-[BusinessUpdateRemote](../../feature/business/data/src/commonMain/kotlin/me/bookk/feature/business/data/remote/model/BusinessUpdateRemote.kt),
-`Business`, `Business.Update`, mappers and Room entity omit it. Existing reads can ignore the extra
-protobuf field, but the value cannot be exposed, cached or updated by domain callers. Adding persistence
-requires a Room migration and corresponding database documentation.
+Resolved: remote/domain/cache models carry the period. Room migration 21 → 22 added the field;
+22 → 23 makes it non-null and replaces missing periods with 36 months while retaining custom values.
+Both `BusinessRemote` and domain `Business` use non-null retention with a default of 36.
+Remote-to-domain mapping copies the value directly. Business Settings on Android and iOS displays the stored value and
+explains retention
+of client details on ended appointments and requests, validates 12–120 whole months, and includes it
+in save and unsaved-change detection. Backend error 200041 marks the field invalid with a recovery
+message. The mobile database is authoritative for this setting and stores 36 months when the value
+is missing. Normal settings saves continue sending that persisted value. The Business API contract
+was rechecked against the monolith Swagger endpoint on 2026-11-05. The non-null domain refinement
+requires no wire-tag changes or further database migration.
 
 ### P2 — New appointment mutation errors have no dedicated domain mapping
 

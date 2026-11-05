@@ -114,6 +114,12 @@ struct BusinessSettingsContent: View {
 			}
 			.textFieldStyle(.inList)
 		}
+
+		SectionTextField(
+			state.clientDataRetentionMonths,
+			header: BusinessRes.strings().business_settings_retention_title.desc().localized()
+		)
+		.textFieldStyle(.inList)
 	}
 }
 

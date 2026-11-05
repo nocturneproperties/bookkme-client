@@ -26,7 +26,7 @@ class BusinessRemote(
     @ProtoNumber(11) val ownerId: Uuid,
     @ProtoNumber(12) val employeeId: Uuid?,
     @ProtoNumber(13) val clientId: Uuid?,
-    @ProtoNumber(14) val clientDataRetentionMonths: Int? = null,
+    @ProtoNumber(14) val clientDataRetentionMonths: Int = 36,
 ) {
     @Serializable
     class Location(@ProtoNumber(1) val lat: Double, @ProtoNumber(2) val lng: Double)

@@ -86,4 +86,8 @@
     <string name="create_business_already_exists_error">Этот бизнес уже существует. Обновите список бизнесов и повторите попытку.</string>
     <string name="create_business_invalid_name_error">Введите корректное название бизнеса.</string>
     <string name="business_settings_currency_locked_error">Валюту этого бизнеса больше нельзя изменить.</string>
+    <string name="business_settings_retention_title">Срок хранения данных клиентов</string>
+    <string name="business_settings_retention_months">мес.</string>
+    <string name="business_settings_retention_explanation">Храните данные клиентов в завершённых записях и заявках от 12 до 120 месяцев. По истечении этого срока данные обезличиваются или удаляются.</string>
+    <string name="business_settings_retention_error">Введите целое число от 12 до 120 месяцев.</string>
 </resources>

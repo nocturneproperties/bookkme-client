@@ -11,7 +11,8 @@ and [Initial app data fetch](../authorization/initial-app-data-fetch.md); `refre
 Fetches every business the user owns or is an active employee of, together with the server-side dashboard
 selection. Each business carries the caller's own standing in it: permissions, `employeeId` (their employee
 record id, `null` while their access is suspended) and `clientId` (their client record id, if any). These are
-stored on the `business` row like any other column. The selection
+stored on the `business` row like any other column. Retention is non-null in both the backend response
+and domain record and is copied directly during mapping. The selection
 (`dashboard_business`) changes in the same Room transaction as the business list, so observers never see the
 new rows without the new selection or the other way round:
 
@@ -35,7 +36,7 @@ business.
 
 ```mermaid
 flowchart TD
-    Start([invoke applyDashboardIdFromRemote<br/>or refreshAndSelect businessId]) --> Net[BusinessDataSource.getBusinessesFromRemote<br/>GET /api/business/mine]
+    Start([invoke applyDashboardIdFromRemote<br/>or refreshAndSelect businessId]) --> Net[BusinessDataSource.getBusinessesFromRemote<br/>GET /api/business/mine<br/>toDomain: copy non-null retention]
     Net --> Ids[(getBusinessIdsInDb)]
     Ids --> Stale{local ids missing<br/>from response?}
     Stale -- yes --> Del[(deleteBusinessesInDb stale ids<br/>CASCADE to clients, employees, invitations,<br/>service groups, services, dashboard_business)]

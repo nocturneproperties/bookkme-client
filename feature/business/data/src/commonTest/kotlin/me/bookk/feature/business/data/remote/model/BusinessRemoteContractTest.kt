@@ -8,6 +8,8 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * The API speaks `application/x-protobuf`. Every remote model pins its wire numbers explicitly
@@ -51,6 +53,24 @@ class BusinessRemoteContractTest {
                 "clientDataRetentionMonths" to 14,
             ),
             fields,
+        )
+    }
+
+    @Test
+    fun `business retention is nonnull and supports the backend default`() = runUnitTest {
+        given()
+        val descriptor = BusinessRemote.serializer().descriptor
+        val index = descriptor.getElementIndex("clientDataRetentionMonths")
+
+        whenn()
+        val retention = descriptor.getElementDescriptor(index)
+
+        then()
+        assertFalse(retention.isNullable)
+        assertTrue(descriptor.isElementOptional(index))
+        assertEquals(
+            14,
+            descriptor.getElementAnnotations(index).filterIsInstance<ProtoNumber>().single().number,
         )
     }
 

@@ -1,6 +1,8 @@
 # Mobile API integration and UI plan
 
-Status: Steps 1–2 reviewed. Step 3 implemented and validated; awaiting user review. Steps 4–10 have not started.
+Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Steps 4–5 are deferred until the simpler steps are complete; Steps 7–10 have not started.
+
+Execution order updated at the user's request: proceed with Step 6 before the export UI in Steps 4–5.
 
 Source: `GET http://localhost/api/monolith/internal/swagger/documentation.yaml`, fetched 2026-11-04.
 The current schema was compared with the schema fetched during the preceding UI-gap review and with
@@ -280,7 +282,7 @@ Added tests in `SettingsDashboardViewModelTest`:
 | `removes the consent explanation after all documents are accepted` | Accepted-only sections do not show an unnecessary consent prompt. |
 
 The previous placeholder-link test is replaced by the two exact-URL/no-consent regressions.
-Step 3 is ready for evaluation. Step 4 awaits user review of this step.
+Step 3 was reviewed and pushed. The user deferred Steps 4–5 and authorized Step 6.
 
 ### 4. Add personal data export UI
 
@@ -302,6 +304,95 @@ Display and edit the stored retention period, validate 12–120 months, explain 
 appointments and requests, and include the field in save/change detection.
 
 Review output: Android/iOS setting, translations and boundary/save tests.
+
+#### Step 6 review output
+
+Implemented:
+
+- Business Settings on Android and iOS displays the stored client-data retention period with a
+  numeric keyboard, month units and an explanation of anonymizing or deleting client details on
+  ended appointments and requests. Editing follows the existing business-update permission.
+- Whole months from 12 through 120 are accepted. Empty, noninteger, overflowing and out-of-range
+  input is rejected inline and cannot be submitted, including through a direct save callback.
+  Correcting input restores the explanation and recalculates save availability.
+- Retention participates in save and discard-confirmation state. Restoring the original value
+  disables redundant saving; successful saves update the reference value and play a success haptic.
+  Edits while saving cannot re-enable the button or start a second request.
+- Backend error 200041 (`InvalidRetentionPeriod`) now marks the retention field invalid, preserves
+  entered text and plays no success haptic. The existing generic-error regression retains invalid
+  currency coverage; retention now has its own inline-recovery regression.
+- The user requested a persisted default of 36 months and confirmed that the mobile database is
+  authoritative for retention. `BusinessEntity` is now non-null with Kotlin and SQL defaults of 36;
+  migration 22 → 23 fills missing periods and preserves custom values and dependent rows. Domain
+  `Business` and `BusinessRemote` also use non-null `Int = 36`; mapping copies the value directly.
+  `Business.Update` remains nullable to represent an omitted edit. Normal saves continue sending
+  the persisted period. Business changes replace the displayed value and clear previous validation.
+  The obsolete unknown-period UI branch and its strings have been removed.
+- All new callbacks use weak ViewModel references. English, Russian, Ukrainian and Polish strings,
+  the API audit and operation documentation are updated. The field is configured in `setup()`;
+  the existing screen's InitData contract is unchanged.
+- The current monolith Swagger contract was fetched on 2026-11-05. Existing remote/domain/cache
+  support and typed errors were sufficient. The review refinement adds database version 23 and
+  a retention-default migration; payloads, use-case logic, preferences, logout hooks and navigation
+  are unchanged. Export UI remains deferred.
+
+Validation:
+
+- Red: the new ViewModel tests failed to compile before implementation because the retention
+  screen-state field and resources did not exist.
+- Green: all 234 Business tests pass: 91 presentation (55 Business Settings), 122 domain and 21 data.
+  Sixteen retention regressions were added; existing permission tests now include the field.
+- `:androidApp:assembleDevDebug` and `:shared:compileKotlinIosArm64` pass.
+- `xcodebuild -project iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
+  -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` passes.
+- Spotless is applied to all six changed Kotlin files. `git diff --check` passes. All four translation
+  files have matching keys, placeholders and newline markers.
+- Backend access was limited to fetching Swagger; no live business update was submitted. Validation
+  uses shared-state unit tests and builds, without adding UI-test tooling.
+
+Added tests in `BusinessSettingsViewModelTest`:
+
+| Test | Protection |
+|---|---|
+| `renders the stored retention period with its units and explanation` | Displays the exact stored value and guidance, with no initial unsaved change. |
+| `renders the default retention period without unsaved changes` | The default 36-month period is displayed without enabling save. |
+| `accepts both retention boundaries and enables saving` | Both 12 and 120 months are valid. |
+| `rejects empty noninteger and out of range retention periods` | Empty, invalid, overflowing and values beyond either bound block saving. |
+| `does not submit invalid retention even if save is invoked directly` | The save callback cannot bypass field validation. |
+| `restores retention guidance after correcting invalid input` | Valid edits clear validation and restore save availability. |
+| `disables saving when the original retention period is restored` | Reverting an edit removes the unsaved change. |
+| `submits the selected retention period` | Save sends the edited number and establishes the saved reference. |
+| `keeps default retention when saving unrelated changes` | Name-only edits keep the authoritative 36-month default. |
+| `can change the default retention period` | An explicit edit replaces the 36-month default. |
+| `asks before discarding a retention change` | Back navigation protects valid unsaved edits. |
+| `asks before discarding an invalid retention change` | Back navigation also protects incomplete edits. |
+| `shows retention rejection inline without a success haptic` | Server rejection keeps input, blocks saving and avoids success feedback. |
+| `plays success haptic when retention is saved` | A confirmed retention save plays the existing success haptic. |
+| `refreshes retention and clears validation when the business changes` | A new business cannot inherit the old period or error. |
+| `does not enable save or submit twice while retention is being saved` | In-flight edits cannot cause duplicate saves; later edits remain unsaved. |
+
+Review refinements:
+
+- `renderBusiness` delegates to details, currency and socials helpers using per-field `.apply {}` blocks.
+- Retention-default tests cover entity construction, null backfill, custom-value preservation,
+  dependent-row preservation, future SQL insert defaults and null rejection. The former
+  null-cache mapping regression now checks the non-null domain default and its cache round trip.
+- All 240 database/Business tests pass after the default refinements (6 database tests plus the
+  existing 234 Business tests). Android assembly, shared iOS compilation and compilation of the
+  new migration tests for the iOS simulator pass. The migration matches the full exported version
+  23 schema and foreign keys, with custom retention and dashboard selection preserved.
+
+- The non-null domain refinement was red on `expected Int, actual Int?` before implementation.
+  The two new `BusinessRetentionTest` regressions verify that the backend default period maps to 36
+  and that a custom remote period is preserved. Default rendering and unrelated-save tests now use
+  a non-null default business instead of constructing an impossible null domain value.
+
+- The backend response refinement was red on the contract's non-null assertion before implementation
+  (1 failure in 21 data tests). `BusinessRemote` now uses `Int = 36` with protobuf field 14 unchanged.
+  Its contract regression checks nullability, the optional default and the pinned field number;
+  the mapper fallback has been removed. Update-request retention remains nullable for omitted edits.
+
+Step 6 awaits user review before another step starts.
 
 ### 7. Expose business-wide appointment requests
 

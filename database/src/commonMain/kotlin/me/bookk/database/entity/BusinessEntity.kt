@@ -41,5 +41,5 @@ class BusinessEntity(
     val ownerId: Uuid? = null,
     val employeeId: Uuid? = null,
     val clientId: Uuid? = null,
-    val clientDataRetentionMonths: Int? = null,
+    @ColumnInfo(defaultValue = "36") val clientDataRetentionMonths: Int = 36,
 )

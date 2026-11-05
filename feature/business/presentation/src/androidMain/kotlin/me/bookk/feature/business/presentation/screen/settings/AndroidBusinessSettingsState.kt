@@ -49,6 +49,7 @@ internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.Init
     override val address: TextFieldState = AndroidTextFieldState(
         placeholder = initData.addressHint,
     )
+    override val clientDataRetentionMonths: TextFieldState = AndroidTextFieldState()
     override val phone: TextFieldState = AndroidTextFieldState(
         startIcon = initData.phoneIcon,
         placeholder = initData.phoneHint,

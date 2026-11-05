@@ -61,8 +61,8 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `GetBusinessDataExport` | `GET /api/business/{id}/export` | [Get business data export](business/get-business-data-export.md) |
 | `StartBusinessDataExport` | `POST /api/business/{id}/export` | [Start business data export](business/start-business-data-export.md) |
 | `CreateBusiness` | `POST /api/business`; typed backend errors | [Create business](business/create-business.md) |
-| `UpdateBusiness` | `PUT /api/business/{id}`; retention + validation errors | [Update business](business/update-business.md) |
-| `RefreshBusinessInfo` | `GET /api/business/mine` | [Refresh business info](business/refresh-business-info.md) |
+| `UpdateBusiness` | `PUT /api/business/{id}`; Business Settings retention (12–120 months; cache default 36) + inline validation errors | [Update business](business/update-business.md) |
+| `RefreshBusinessInfo` | `GET /api/business/mine`; cache retention defaults to 36 months | [Refresh business info](business/refresh-business-info.md) |
 | `SwitchDashboardBusiness` | `PUT /api/business/{id}/dashboard` (best-effort) | [Switch dashboard business](business/switch-dashboard-business.md) |
 | `JoinBusiness` | via `RedeemEmployeeInvitation` | [Join business](business/join-business.md) |
 | `EnableAppointmentsPlugin` | `POST /api/appointments/enabled/{businessId}` | [Enable appointments plugin](business/enable-appointments-plugin.md) |

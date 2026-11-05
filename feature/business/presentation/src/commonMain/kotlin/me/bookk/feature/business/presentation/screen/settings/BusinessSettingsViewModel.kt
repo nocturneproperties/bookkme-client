@@ -21,12 +21,14 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.resources.toOneLine
 import me.bookk.designsystem.simple
+import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.designsystem.uistate.schedule.DayOffPeriod
 import me.bookk.designsystem.uistate.schedule.ScheduleBinder
 import me.bookk.designsystem.uistate.schedule.WeekSchedule
 import me.bookk.designsystem.uistate.schedule.WeekdaySchedule
 import me.bookk.designsystem.uistate.schedule.WorkingHours
+import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
@@ -70,6 +72,15 @@ class BusinessSettingsViewModel(
     private fun BusinessSettingsState.setup() = apply {
         save.isVisible = false
         appBar.onBackClick = weakVMClosure { it.onBackClick() }
+        clientDataRetentionMonths.apply {
+            suffix = BusinessRes.strings.business_settings_retention_months.desc()
+            supportingTextRes = BusinessRes.strings.business_settings_retention_explanation.desc()
+            inputType = InputType.DIGIT
+            enabled = false
+            onTextChanged = weakVMClosure { viewModel, text ->
+                viewModel.onRetentionChanged(text)
+            }
+        }
     }
 
     private fun observeCurrentBusiness() {
@@ -85,33 +96,66 @@ class BusinessSettingsViewModel(
     private fun renderBusiness(business: Business) {
         referenceBusiness = business
         businessLocation = business.location
-        uiState.name.text = business.name
-        uiState.description.text = business.description
-        uiState.location.text = business.location?.toString().orEmpty()
-        uiState.address.text = business.address
-        uiState.currency.replaceOptions(Money.SupportedCurrency.entries.toCurrencyUI())
-        uiState.currency.selectedItem = uiState.currency.options
-            .first { currencyUI ->
-                currencyUI.domainValue ==
-                    Money.SupportedCurrency.valueOf(business.currency.code())
-            }
-            .also { uiState.currency.textField.updateText(it.displayName) }
-        uiState.currency.textField.placeholder =
-            BusinessRes.strings.business_settings_currency_label.desc()
-        uiState.instagram.text = business.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
-        uiState.telegram.text = business.socials[SocialKind.TELEGRAM]?.value.orEmpty()
-        uiState.viber.text = business.socials[SocialKind.VIBER]?.value.orEmpty()
-        uiState.phone.text = business.socials[SocialKind.PHONE]?.value.orEmpty()
-        uiState.description.isValid = true
-        uiState.location.isValid = true
-        uiState.address.isValid = true
-        uiState.instagram.isValid = true
-        uiState.viber.isValid = true
-        uiState.telegram.isValid = true
-        uiState.name.isValid = true
-        uiState.phone.isValid = true
+        uiState.apply {
+            renderDetails(business)
+            renderCurrency(business)
+            renderSocials(business)
+            clientDataRetentionMonths.text = business.clientDataRetentionMonths.toString()
+        }
+        validateRetention()
         renderSchedule(business.schedule)
         renderEditable(business.permissions.business.update)
+        invalidateSaveState()
+    }
+
+    private fun BusinessSettingsState.renderDetails(business: Business) {
+        name.apply {
+            text = business.name
+            isValid = true
+        }
+        description.apply {
+            text = business.description
+            isValid = true
+        }
+        location.apply {
+            text = business.location?.toString().orEmpty()
+            isValid = true
+        }
+        address.apply {
+            text = business.address
+            isValid = true
+        }
+    }
+
+    private fun BusinessSettingsState.renderCurrency(business: Business) {
+        currency.apply {
+            replaceOptions(Money.SupportedCurrency.entries.toCurrencyUI())
+            selectedItem = options
+                .first {
+                    it.domainValue == Money.SupportedCurrency.valueOf(business.currency.code())
+                }
+                .also { textField.updateText(it.displayName) }
+            textField.placeholder = BusinessRes.strings.business_settings_currency_label.desc()
+        }
+    }
+
+    private fun BusinessSettingsState.renderSocials(business: Business) {
+        instagram.apply {
+            text = business.socials[SocialKind.INSTAGRAM]?.value.orEmpty()
+            isValid = true
+        }
+        telegram.apply {
+            text = business.socials[SocialKind.TELEGRAM]?.value.orEmpty()
+            isValid = true
+        }
+        viber.apply {
+            text = business.socials[SocialKind.VIBER]?.value.orEmpty()
+            isValid = true
+        }
+        phone.apply {
+            text = business.socials[SocialKind.PHONE]?.value.orEmpty()
+            isValid = true
+        }
     }
 
     private fun renderEditable(isEditable: Boolean) = with(uiState) {
@@ -123,6 +167,7 @@ class BusinessSettingsViewModel(
         telegram.enabled = isEditable
         viber.enabled = isEditable
         currency.textField.enabled = isEditable
+        clientDataRetentionMonths.enabled = isEditable
         photo.isEnabled = isEditable
         save.isVisible = isEditable
         scheduleBinder.isEditable = isEditable
@@ -158,6 +203,7 @@ class BusinessSettingsViewModel(
 
     fun onSaveClick() {
         val reference = referenceBusiness ?: return
+        if (uiState.save.isLoading || !uiState.clientDataRetentionMonths.isValid) return
         val update = Business.Update(
             id = reference.id,
             name = uiState.name.text.trim(),
@@ -173,6 +219,7 @@ class BusinessSettingsViewModel(
             )
                 .associateBy { it.kind },
             schedule = snapshotSchedule(),
+            clientDataRetentionMonths = uiState.clientDataRetentionMonths.text.toInt(),
         )
         launch(
             launchIn = DispatcherProvider.io,
@@ -188,6 +235,11 @@ class BusinessSettingsViewModel(
             },
             onError = {
                 when (it) {
+                    is UpdateBusiness.Error.InvalidRetentionPeriod ->
+                        uiState.clientDataRetentionMonths.showError(
+                            BusinessRes.strings.business_settings_retention_error.desc(),
+                        )
+
                     is UpdateBusiness.Error.CurrencyLocked ->
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
@@ -242,6 +294,25 @@ class BusinessSettingsViewModel(
     fun onDescriptionChanged(description: String) {
         uiState.description.text = description
         invalidateSaveState()
+    }
+
+    private fun onRetentionChanged(text: String) {
+        uiState.clientDataRetentionMonths.text = text
+        validateRetention()
+        invalidateSaveState()
+    }
+
+    private fun validateRetention() {
+        val field = uiState.clientDataRetentionMonths
+        val months = field.text.toIntOrNull()
+        field.isValid = months != null && months in 12..120 && field.text.all { it.isDigit() }
+        field.validationState =
+            if (field.isValid) ValidationState.DEFAULT else ValidationState.ERROR
+        field.supportingTextRes = if (field.isValid) {
+            BusinessRes.strings.business_settings_retention_explanation.desc()
+        } else {
+            BusinessRes.strings.business_settings_retention_error.desc()
+        }
     }
 
     fun onLocationChanged(lat: Double, lng: Double) {
@@ -335,8 +406,9 @@ class BusinessSettingsViewModel(
             uiState.phone.isValid &&
             uiState.instagram.isValid &&
             uiState.telegram.isValid &&
-            uiState.viber.isValid
-        uiState.save.isEnabled = isAllFieldsValid && hasUnsavedChanges()
+            uiState.viber.isValid &&
+            uiState.clientDataRetentionMonths.isValid
+        uiState.save.isEnabled = !uiState.save.isLoading && isAllFieldsValid && hasUnsavedChanges()
     }
 
     private fun hasUnsavedChanges(): Boolean {
@@ -350,6 +422,9 @@ class BusinessSettingsViewModel(
             uiState.telegram.text != reference.socials[SocialKind.TELEGRAM]?.value.orEmpty() ||
             uiState.viber.text != reference.socials[SocialKind.VIBER]?.value.orEmpty() ||
             uiState.phone.text != reference.socials[SocialKind.PHONE]?.value.orEmpty() ||
+            uiState.clientDataRetentionMonths.text.toIntOrNull() !=
+            reference.clientDataRetentionMonths ||
+            !uiState.clientDataRetentionMonths.isValid ||
             isScheduleChanged(reference.schedule)
     }
 

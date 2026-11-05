@@ -48,6 +48,7 @@ import me.bookk.database.entity.NotificationSettingsEntity
 import me.bookk.database.entity.ServiceEntity
 import me.bookk.database.entity.ServiceGroupEntity
 import me.bookk.database.entity.UserProfileEntity
+import me.bookk.database.migration.DefaultBusinessRetention
 import me.bookk.database.migration.DeleteEmployeeInvitationEmail
 
 @Database(
@@ -79,7 +80,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         EmployeeDayOffEntity::class,
         EmployeeServiceSnapshotEntity::class,
     ],
-    version = 22,
+    version = 23,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -130,6 +131,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun create(builder: Builder<AppDatabase>): AppDatabase {
             return builder
+                .addMigrations(DefaultBusinessRetention)
                 .fallbackToDestructiveMigrationOnDowngrade(true)
                 .fallbackToDestructiveMigration(true)
                 .setDriver(BundledSQLiteDriver())

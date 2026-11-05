@@ -14,7 +14,7 @@
     <string name="clients_create_email_placeholder">opcjonalnie</string>
     <string name="clients_details_description">Opis</string>
     <string name="clients_delete_title">Usuń klienta</string>
-    <string name="clients_delete_desc">Czy na pewno chcesz usunąć tego klienta?</string>
+    <string name="clients_delete_data_warning">Usunięcie tego klienta spowoduje również usunięcie jego danych osobowych z wizyt w tej firmie.\n\nTej operacji nie można cofnąć. Przed usunięciem konieczne będzie potwierdzenie za pomocą klucza dostępu.</string>
     <string name="clients_delete_button">Usuń klienta</string>
 
     <string name="clients_edit_title">Edytuj klienta</string>

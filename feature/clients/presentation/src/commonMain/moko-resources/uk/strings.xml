@@ -14,7 +14,7 @@
     <string name="clients_create_email_placeholder">необовʼязково</string>
     <string name="clients_details_description">Опис</string>
     <string name="clients_delete_title">Видалити клієнта</string>
-    <string name="clients_delete_desc">Ви впевнені, що хочете видалити цього клієнта?</string>
+    <string name="clients_delete_data_warning">Після видалення клієнта його персональні дані також буде видалено із записів на послуги цього бізнесу.\n\nЦю дію неможливо скасувати. Перед видаленням потрібно буде підтвердити її за допомогою ключа доступу.</string>
     <string name="clients_delete_button">Видалити клієнта</string>
 
     <string name="clients_edit_title">Редагувати клієнта</string>

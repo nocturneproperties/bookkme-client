@@ -1,6 +1,6 @@
 # Mobile API integration and UI plan
 
-Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Steps 4–5 are deferred until the simpler steps are complete. Step 7 is skipped for now at the user's request. Step 8 is excluded from the mobile app's scope. Step 9 is implemented and validated, awaiting user review; Step 10 has not started.
+Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Steps 4–5 are deferred until the simpler steps are complete. Step 7 is skipped for now at the user's request. Step 8 is excluded from the mobile app's scope. Step 9 is complete. Step 10 is implemented and validated, awaiting user review.
 
 Execution order updated at the user's request: proceed with Step 6 before the export UI in Steps 4–5.
 
@@ -414,7 +414,7 @@ Client-facing employee selection will be implemented on the website, outside thi
 
 ### 9. Improve appointment error recovery
 
-Status: Implemented and validated, awaiting user review.
+Status: Complete; the user authorized Step 10.
 
 Implemented:
 
@@ -462,3 +462,58 @@ Apply the owner-only rule for deleting integrated clients. Explain appointment-d
 passkey confirmation before deletion. Keep detached-client deletion governed by its normal permission.
 
 Review output: Android/iOS deletion behavior, translations and permission/state tests.
+
+
+#### Step 10 review output
+
+Status: Implemented and validated, awaiting user review.
+
+Implemented:
+
+- `GetClientsPermissions` now provides `canDeleteIntegrated`, comparing the target business's cached
+  owner id with the first local profile emission. Missing business, owner or profile denies integrated
+  deletion. Ownership of another business does not grant access. Ownership is independent of the
+  delegated delete grant; detached clients continue using their normal delete permission.
+- The Android and iOS edit screen uses the shared client-type-specific delete visibility. No platform
+  state, navigation or DI registration changes are needed; existing constructor factories resolve the
+  added authorization dependency inside clients domain implementation.
+- The shared dialog explains irreversible erasure of client personal data from the business's
+  appointments and the upcoming passkey confirmation. English, Russian, Ukrainian and Polish strings
+  are updated together. The dialog callback uses a weak ViewModel reference.
+- Cancel does not invoke deletion or navigate. Confirm continues through the existing action-bound
+  passkey operation, remote DELETE and local cache invalidation. Success haptics and error behavior
+  are preserved. No new endpoint, request model, database migration or persisted state is added.
+- Operation diagrams/index, profile-observer consumers and the API audit are updated. Per the user's
+  instruction, no server documentation fetch was required; the saved Step 9 API snapshot confirms the
+  owner-only rule. No live deletion was performed.
+
+Validation:
+
+- Red: the initial tests failed to compile against the missing permission field and warning resource.
+  A further regression failed because an absent cached profile still granted ownership when using
+  `UserProfileCRUD.get()`. Switching to the local `observe().first()` lookup fixes that failure and
+  avoids its remote fallback.
+- Green: all 163 client tests pass: 15 data, 56 domain and 92 presentation. Twelve regressions were
+  added; existing deletion confirmation, error, navigation and success/failure haptic tests still pass.
+- `:androidApp:assembleDevDebug` and `:shared:compileKotlinIosArm64` pass.
+- All four locales have matching string keys, placeholders and newline markers. All three affected
+  operation diagrams parse with Mermaid. Changed Kotlin files pass Spotless; `git diff --check` passes.
+- Both existing platform views and notification handlers were inspected; shared state tests verify
+  their behavior without adding UI-test tooling. No Compose or SwiftUI source changes are required.
+
+Added tests:
+
+| Test file | Test | Protection |
+|---|---|---|
+| `GetClientsPermissionsImplTest` | `allows integrated client deletion for the business owner` | Ownership grants integrated deletion. |
+| `GetClientsPermissionsImplTest` | `allows owner integrated deletion without a delegated delete grant` | Owner eligibility is distinct from detached-client permission. |
+| `GetClientsPermissionsImplTest` | `denies integrated client deletion to employees with delete permission` | A delegated grant cannot bypass ownership. |
+| `GetClientsPermissionsImplTest` | `ownership of another business does not allow integrated client deletion` | Ownership is scoped to the client's business. |
+| `GetClientsPermissionsImplTest` | `missing cached owner denies integrated deletion while preserving detached deletion` | Unknown ownership does not remove ordinary grants. |
+| `GetClientsPermissionsImplTest` | `missing cached user profile denies integrated deletion` | Permission lookup stays local and does not infer identity. |
+| `EditClientViewModelTest` | `hides integrated client deletion for an employee with delete permission` | Employees cannot see an owner-only action. |
+| `EditClientViewModelTest` | `shows integrated client deletion for the business owner` | Owners can see the action. |
+| `EditClientViewModelTest` | `keeps detached client deletion governed by its normal permission` | Integrated eligibility cannot bypass detached-client permission. |
+| `EditClientViewModelTest` | `warns about appointment data erasure and passkey verification` | The revised warning appears before any deletion operation. |
+| `EditClientViewModelTest` | `cancelling the deletion dialog leaves the client unchanged` | Cancel performs no deletion, navigation or success feedback. |
+| `EditClientViewModelTest` | `deletes the integrated client after the owner confirms` | Confirmation uses the correct client and returns to the client list. |

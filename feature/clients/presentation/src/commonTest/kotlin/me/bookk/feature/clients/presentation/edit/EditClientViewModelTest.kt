@@ -61,12 +61,16 @@ class EditClientViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(canDelete: Boolean = true) {
+    private class Fixture(canDelete: Boolean = true, canDeleteIntegrated: Boolean = false) {
         val id = Uuid.random()
         val getClient = mock<GetClient>()
         val getClientsPermissions = mock<GetClientsPermissions> {
             everySuspend { invoke(any()) } returns
-                ClientsPermissions(canEdit = true, canDelete = canDelete)
+                ClientsPermissions(
+                    canEdit = true,
+                    canDelete = canDelete,
+                    canDeleteIntegrated = canDeleteIntegrated,
+                )
         }
         val editClient = mock<EditClient>()
         val deleteClient = mock<DeleteClient>()
@@ -263,6 +267,42 @@ class EditClientViewModelTest {
     }
 
     @Test
+    fun `hides integrated client deletion for an employee with delete permission`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDelete = true, canDeleteIntegrated = false)
+
+        whenn()
+        val sut = fixture.sutWith(stubIntegratedClient())
+
+        then()
+        assertFalse(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `shows integrated client deletion for the business owner`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDelete = false, canDeleteIntegrated = true)
+
+        whenn()
+        val sut = fixture.sutWith(stubIntegratedClient())
+
+        then()
+        assertTrue(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `keeps detached client deletion governed by its normal permission`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDelete = false, canDeleteIntegrated = true)
+
+        whenn()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        then()
+        assertFalse(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
     fun `checks delete permission in the business of the client`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -300,6 +340,65 @@ class EditClientViewModelTest {
         then()
         sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
         verifySuspend(VerifyMode.not) { fixture.deleteClient(any()) }
+    }
+
+    @Test
+    fun `warns about appointment data erasure and passkey verification`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        whenn()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        then()
+        assertEquals(
+            ClientsRes.strings.clients_delete_data_warning.desc(),
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>().message,
+        )
+        verifySuspend(VerifyMode.not) { fixture.deleteClient(any()) }
+    }
+
+    @Test
+    fun `cancelling the deletion dialog leaves the client unchanged`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(stubDetachedClient())
+        sut.uiState.deleteButton.onClick?.invoke()
+        val confirmation = sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+        sut.uiState.notifications.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.CANCEL)
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.deleteClient(any()) }
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
+        assertFalse(sut.uiState.deleteButton.isLoading)
+    }
+
+    @Test
+    fun `deletes the integrated client after the owner confirms`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDeleteIntegrated = true)
+        val client = stubIntegratedClient()
+        everySuspend { fixture.deleteClient(any()) } returns Unit
+        val sut = fixture.sutWith(client)
+        sut.uiState.deleteButton.onClick?.invoke()
+        val confirmation = sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        verifySuspend { fixture.deleteClient(client) }
+        assertEquals(
+            listOf<EditClientDestination>(EditClientDestination.Deleted),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -456,5 +555,4 @@ class EditClientViewModelTest {
             fixture.errorMapper.assertMappedSingle(error::class)
         }
     }
-
 }

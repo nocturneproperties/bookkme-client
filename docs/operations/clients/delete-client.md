@@ -4,6 +4,13 @@
 
 `DeleteClient(client)` confirms the action, deletes remotely, then invalidates local records.
 
+Before invoking it, the Android and iOS edit screen shows the shared confirmation dialog explaining that
+client deletion also erases personal data from the business's appointments, cannot be undone and needs
+passkey confirmation. Cancel leaves the client unchanged. The delete action is visible to the business
+owner for integrated clients, and follows the ordinary delete permission for detached clients; see
+[Get clients permissions](get-clients-permissions.md). Successful deletion plays a success haptic and
+returns to the client list; failure preserves the screen without a success haptic.
+
 ```mermaid
 flowchart TD
     Start([invoke client]) --> Confirm[ConfirmSensitiveAction<br/>DELETE_CLIENT, client.businessId, client.id]

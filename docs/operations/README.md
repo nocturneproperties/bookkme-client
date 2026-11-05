@@ -90,7 +90,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `GetDeviceContacts` | local only (device address book) | [Get device contacts](clients/get-device-contacts.md) |
 | `EditClient` | `PATCH /api/business/{businessId}/clients/{id}`; integrated-client patch | [Edit client](clients/edit-client.md) |
 | `DeleteClient` | passkey confirmation + `DELETE /api/business/{businessId}/clients/{id}` | [Delete client](clients/delete-client.md) |
-| `GetClientsPermissions` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Get clients permissions](clients/get-clients-permissions.md) |
+| `GetClientsPermissions` | local only (`business` and `user_profile` observers; owner-only integrated deletion) | [Get clients permissions](clients/get-clients-permissions.md) |
 
 ## Services
 
@@ -189,7 +189,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Create appointment](appointments/create-appointment.md) | `CreateQuote`, `GetServices.refresh` on mismatch, `ObserveUserBusinessesChanges` for the default employee |
 | [Can edit employees](employees/can-edit-employees.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
-| [Get clients permissions](clients/get-clients-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
+| [Get clients permissions](clients/get-clients-permissions.md) | `ObserveUserBusinessesChanges`, `UserProfileCRUD.observe` (cross-feature wrapper) |
 | [Get services permissions](services/get-services-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Update employee](employees/update-employee.md) | `IsBusinessOwner` |
 | [Is business owner](employees/is-business-owner.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |

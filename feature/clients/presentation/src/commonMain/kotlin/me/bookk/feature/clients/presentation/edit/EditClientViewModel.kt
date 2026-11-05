@@ -58,7 +58,10 @@ class EditClientViewModel(
             },
             onComplete = { (it, permissions) ->
                 client = it
-                uiState.deleteButton.isVisible = permissions.canDelete
+                uiState.deleteButton.isVisible = when (it) {
+                    is Client.Detached -> permissions.canDelete
+                    is Client.Integrated -> permissions.canDeleteIntegrated
+                }
                 uiState.isAttachedInfoVisible = it is Client.Integrated
                 uiState.name.enabled = it is Client.Detached
                 uiState.lastName.enabled = it is Client.Detached
@@ -138,8 +141,8 @@ class EditClientViewModel(
     private fun onDeleteClicked() {
         uiState.notifications.add(
             PresentationNotification.Message.deleteConfirmation(
-                message = ClientsRes.strings.clients_delete_desc.desc(),
-                onConfirmed = ::onDeleteConfirmed,
+                message = ClientsRes.strings.clients_delete_data_warning.desc(),
+                onConfirmed = weakVMClosure { it.onDeleteConfirmed() },
             ),
         )
     }

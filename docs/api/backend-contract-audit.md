@@ -40,7 +40,10 @@ The three product decisions have now been integrated:
 - Instant creation fetches a fresh quote, validates the displayed service data, refreshes the service
   cache on mismatch, and throws without silently rebooking. It sends the backend's ID-only draft.
 - Client deletion performs passkey confirmation internally and evicts referencing cached appointment
-  and request aggregates after a successful DELETE, within the client-removal transaction.
+  and request aggregates after a successful DELETE, within the client-removal transaction. Android and
+  iOS now show integrated-client deletion only to the selected client's business owner; detached-client
+  deletion keeps its ordinary permission. The shared dialog explains irreversible appointment-data
+  erasure and the upcoming passkey confirmation.
 - Personal and business export start/status/download operations are registered. Starts perform
   action-bound confirmation; downloads return raw JSON strings without creating local files.
 

@@ -35,4 +35,14 @@
     <string name="troubleshoot_contact_support_button">Связаться с поддержкой</string>
 
     <string name="sign_up_challenge_expired_error">Время подтверждения истекло. Попробуйте создать аккаунт ещё раз.</string>
+    <string name="sign_up_accept_legal_documents">Я подтверждаю ознакомление, даю согласие и принимаю\nПолитику конфиденциальности и Условия использования</string>
+    <string name="sign_up_accept_privacy_policy">Я принимаю Политику конфиденциальности</string>
+    <string name="sign_up_accept_terms_of_service">Я принимаю Условия использования</string>
+    <string name="sign_up_privacy_policy_link">Политику конфиденциальности</string>
+    <string name="sign_up_terms_of_service_link">Условия использования</string>
+    <string name="sign_up_legal_loading">Загрузка юридических документов…</string>
+    <string name="sign_up_legal_load_error">Не удалось загрузить юридические документы. Повторите попытку перед созданием аккаунта.</string>
+    <string name="sign_up_legal_retry">Повторить</string>
+    <string name="sign_up_legal_documents_changed">Юридические документы изменились. Ознакомьтесь с актуальными документами и примите их перед повторной попыткой.</string>
+    <string name="sign_up_legal_acceptance_error">Примите Политику конфиденциальности и Условия использования, чтобы создать аккаунт.</string>
 </resources>

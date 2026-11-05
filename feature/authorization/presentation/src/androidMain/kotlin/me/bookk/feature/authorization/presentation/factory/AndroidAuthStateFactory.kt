@@ -5,14 +5,20 @@ import me.bookk.feature.authorization.presentation.bootstrap.AndroidBootstrapSta
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
 import me.bookk.feature.authorization.presentation.sign_in.AndroidSignInState
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
+import me.bookk.feature.authorization.presentation.sign_up.AndroidSignUpLegalDocumentState
 import me.bookk.feature.authorization.presentation.sign_up.AndroidSignUpState
+import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 import me.bookk.feature.authorization.presentation.troubleshoot.AndroidTroubleshootState
 import me.bookk.feature.authorization.presentation.troubleshoot.state.TroubleshootState
 
 class AndroidAuthStateFactory : AuthStateFactory {
-    override fun createSignUpState(initData: SignUpState.InitData): SignUpState {
-        return AndroidSignUpState(initData)
+    override fun createSignUpState(): SignUpState {
+        return AndroidSignUpState()
+    }
+
+    override fun createSignUpLegalDocumentState(): SignUpLegalDocumentState {
+        return AndroidSignUpLegalDocumentState()
     }
 
     override fun createSignInState(initData: SignInState.InitData): SignInState {

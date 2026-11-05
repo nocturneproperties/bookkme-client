@@ -20,7 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.color
@@ -40,25 +43,33 @@ fun CheckBox(
         disabledCheckedColor = LocalColors.current.inactive,
         disabledUncheckedColor = LocalColors.current.inactive,
     ),
+    text: AnnotatedString = state.text.html(),
+    textColor: Color = Color.Unspecified,
+    textSize: TextUnit = TextUnit.Unspecified,
+    textLineHeight: TextUnit = TextUnit.Unspecified,
 ) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(MaterialTheme.shapes.large)
-                .clickable {
+                .clickable(enabled = state.isEnabled) {
                     state.onCheckedChange?.invoke(!state.isChecked)
                 },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Checkbox(
+                enabled = state.isEnabled,
                 checked = state.isChecked,
                 colors = colors,
                 onCheckedChange = state.onCheckedChange,
             )
             Text(
-                text = state.text.html(),
+                text = text,
+                color = textColor,
+                fontSize = textSize,
+                lineHeight = textLineHeight,
                 style = MaterialTheme.typography.bodyLarge.primary(),
             )
         }

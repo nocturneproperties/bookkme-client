@@ -1,16 +1,22 @@
 package me.bookk.feature.authorization.presentation
 
+import dev.icerock.moko.resources.desc.StringDesc
+import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.test.FakeAppBarState
+import me.bookk.designsystem.test.FakeBooleanState
 import me.bookk.designsystem.test.FakeButtonState
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
 import me.bookk.designsystem.test.FakeTextFieldState
+import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
 import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
 import me.bookk.feature.authorization.presentation.sign_in.SignInNavigationDestination
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
 import me.bookk.feature.authorization.presentation.sign_up.SignUpNavigationDestination
+import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentState
+import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentsState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 import me.bookk.feature.authorization.presentation.sign_up.state.TroubleshootCardData
 import me.bookk.feature.authorization.presentation.troubleshoot.TroubleshootNavigationDestination
@@ -19,8 +25,13 @@ import me.bookk.feature.authorization.presentation.troubleshoot.state.Troublesho
 internal class FakeAuthStateFactory : AuthStateFactory {
     var troubleshootInitData: TroubleshootState.InitData? = null
 
-    override fun createSignUpState(initData: SignUpState.InitData): SignUpState =
-        FakeSignUpState(initData.passkeyInfoCardData)
+    override fun createSignUpState(): SignUpState {
+        return FakeSignUpState()
+    }
+
+    override fun createSignUpLegalDocumentState(): SignUpLegalDocumentState {
+        return FakeSignUpLegalDocumentState()
+    }
     override fun createSignInState(initData: SignInState.InitData): SignInState =
         FakeSignInState(initData.passkeyInfoCardData)
 
@@ -49,8 +60,11 @@ internal class FakeSignInState(override val passkeyInfoCardData: PasskeyInfoCard
     override val navigation = FakeNavigationState<SignInNavigationDestination>()
 }
 
-internal class FakeSignUpState(override val passkeyInfoCardData: PasskeyInfoCardData) :
-    SignUpState {
+internal class FakeSignUpState : SignUpState {
+    override var passkeyInfoCardData = PasskeyInfoCardData("".desc(), "".desc())
+    override val legalAcceptance = FakeBooleanState()
+    override var legalDocuments: SignUpLegalDocumentsState? = null
+    override val reloadLegalDocuments = FakeButtonState()
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
     override val lastName = FakeTextFieldState()
@@ -67,4 +81,11 @@ internal class FakeTroubleshootState(
     override val appBar = FakeAppBarState()
     override val contactSupportButton = FakeButtonState()
     override val navigation = FakeNavigationState<TroubleshootNavigationDestination>()
+}
+
+internal class FakeSignUpLegalDocumentState : SignUpLegalDocumentState {
+    override var document: SignUpLegalDocument? = null
+    override var linkText: StringDesc = "".desc()
+    override var linkUrl = ""
+    override var onLinkClick: (() -> Unit)? = null
 }

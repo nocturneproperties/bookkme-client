@@ -61,6 +61,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | Table(s) | Cleared by | Cleared on logout? |
 |---|---|---|
 | `user_profile` | `CommonUserProfileDataSource` | ✅ `profileDao.clear()` |
+| `signup_legal_documents_prefs` (public legal metadata) | No `LogOutAction` binding for `CommonSignUpLegalDocumentsDataSource` | ❌ intentionally retained for cache-only signup |
 | `client` | `CommonClientsDataSource` | ✅; confirmed deletion also evicts associated appointment/request snapshots |
 | `service` | `ServiceDataSourceImpl` | ✅ |
 | `service_group` | `ServiceGroupDataSourceImpl` | ✅ (also cascades to `service`) |

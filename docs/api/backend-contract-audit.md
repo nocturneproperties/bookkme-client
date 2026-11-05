@@ -30,8 +30,10 @@ The three product decisions have now been integrated:
   action-bound confirmation; downloads return raw JSON strings without creating local files.
 
 All nine previously missing external operations now have domain/data entry points. The findings below
-are retained as the original audit evidence; they no longer describe missing implementations. Existing ViewModels now show specific mutation/validation errors. Newly added exports and legal/request
-entry points still need UI work to expose them.
+are retained as the original audit evidence; they no longer describe missing implementations. Existing
+ViewModels now show specific mutation/validation errors. Signup now exposes current legal documents and
+explicit version-bound acceptance on Android and iOS. Settings legal review, exports and business-wide
+request entry points still need UI work to expose them.
 
 
 ## ActionConfirmation follow-up

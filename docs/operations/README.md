@@ -43,10 +43,11 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | Use case | Network | Diagram |
 |---|---|---|
 | `ConfirmSensitiveAction` | `GET challenge + POST /api/auth/passkey/confirm_action` | [Confirm sensitive action](authorization/confirm-sensitive-action.md) |
+| `GetSignUpLegalDocuments` | `invoke`: persisted cache only; `refresh`: via `GetLegalDocumentVersions`, `GET /api/user/legal` | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) |
 | `CreateAccount` | `POST /api/auth/passkey/sign_up/challenge`, `POST /api/auth/sign_up` with accepted legal-document versions | [Create account](authorization/create-account.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
-| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `GET /api/user/me`, `GET /api/business/mine`, then per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
+| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `timestampProtectedFetch`: `GET /api/user/legal` first; private requests only when authorized; `rawFetch`: profile, business, per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
 | `LogOut` | `DELETE /api/auth/session` | [Log out](authorization/log-out.md) |
 | `RefreshToken` | `POST /api/auth/refresh` | [Refresh token](authorization/refresh-token.md) |
 | `UserProfileCRUD` | `GET` / `PATCH /api/user/me` | [User profile CRUD](authorization/user-profile-crud.md) |
@@ -167,8 +168,9 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | Use case | Calls |
 |---|---|
 | [Create account](authorization/create-account.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
+| [Get signup legal documents](authorization/get-sign-up-legal-documents.md) | `refresh`: `GetLegalDocumentVersions` (cross-feature wrapper); `invoke`: local cache only |
 | [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |
-| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
+| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `timestampProtectedFetch`: `GetSignUpLegalDocuments.refresh` before authorization check; authorized path: `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
 | [Create business](business/create-business.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Join business](business/join-business.md) | `RedeemEmployeeInvitation` (cross-feature wrapper) |

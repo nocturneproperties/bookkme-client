@@ -3,6 +3,7 @@ package me.bookk.feature.authorization.domain.impl.di
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.CreateAccount
 import me.bookk.feature.authorization.domain.api.GetSettingsColorScheme
+import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.InitiateBusinessSuspend
@@ -14,6 +15,7 @@ import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.impl.ConfirmSensitiveActionImpl
 import me.bookk.feature.authorization.domain.impl.CreateAccountImpl
 import me.bookk.feature.authorization.domain.impl.GetSettingsColorSchemeImpl
+import me.bookk.feature.authorization.domain.impl.GetSignUpLegalDocumentsImpl
 import me.bookk.feature.authorization.domain.impl.GetTokenInfoImpl
 import me.bookk.feature.authorization.domain.impl.InitialAppDataFetchImpl
 import me.bookk.feature.authorization.domain.impl.InitiateBusinessSuspendImpl
@@ -31,6 +33,7 @@ import kotlin.time.Clock
 fun authDomainModule() = module {
     factoryOf(::ConfirmSensitiveActionImpl) bind ConfirmSensitiveAction::class
     single<Clock> { Clock.System }
+    factoryOf(::GetSignUpLegalDocumentsImpl) bind GetSignUpLegalDocuments::class
     factoryOf(::CreateAccountImpl) bind CreateAccount::class
     factoryOf(::GetTokenInfoImpl) bind GetTokenInfo::class
     factoryOf(::RefreshTokenImpl) bind RefreshToken::class

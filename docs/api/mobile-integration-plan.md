@@ -1,6 +1,6 @@
 # Mobile API integration and UI plan
 
-Status: Step 1 implemented and validated; awaiting user review. Steps 2–10 have not started.
+Status: Steps 1–2 implemented and validated. Step 2 awaits user review. Steps 3–10 have not started.
 
 Source: `GET http://localhost/api/monolith/internal/swagger/documentation.yaml`, fetched 2026-11-04.
 The current schema was compared with the schema fetched during the preceding UI-gap review and with
@@ -71,8 +71,11 @@ Implemented:
   reads `ActionConfirmationTokenRemote`. The datasource request is named `ActionConfirmationRequest`.
 - Client deletion and both export starts send `confirmationToken` with their existing field tag 1.
 - The action enum appends `DELETE_ACCOUNT` at ordinal 3, preserving ordinals 0–2.
-- Account deletion resolves the caller id, confirms the action with a nil business UUID, and sends the
-  token-only `DeleteAccountRequestRemote`. The previous direct-assertion request model is removed.
+- Account deletion resolves the caller id, confirms the action with `Uuid.NIL` as business UUID, and sends
+  the token-only `DeleteAccountRequestRemote`. The previous direct-assertion request model is removed.
+- Review refinements replace nil UUID parsing with `Uuid.NIL` in personal export and account deletion,
+  including their tests. `DeleteAccountImpl.invoke()` now delegates to `confirmAccountDeletion`,
+  `deleteAccountOnRemote`, `signalAccountDeleted` and `clearSession`; ordering and behavior are unchanged.
 - `ConfirmSensitiveAction` returns an in-memory `ActionConfirmation` containing the token and verified
   assertion JSON. Account deletion reuses that assertion for best-effort credential removal signaling
   after the remote DELETE succeeds. Other callers consume only the token.
@@ -89,6 +92,8 @@ Validation:
   also failed to compile before the new result type and confirmation composition existed.
 - Green: all 384 tests across the affected authorization/settings/business/clients data and domain
   suites pass (`testAndroidHostTest` on each of the eight modules).
+- Follow-up review validation: all 74 settings domain tests pass after the `Uuid.NIL` change; all 18
+  account-deletion tests and the file formatting check pass after extracting helper methods.
 - `:androidApp:assembleDevDebug` passes.
 - `:shared:compileKotlinIosArm64` passes.
 - All five changed operation diagrams parse with Mermaid.
@@ -109,7 +114,7 @@ Existing expiry and passkey ownership tests now inject those errors at the share
 matching the current backend. Credential cleanup tests assert exact assertion content rather than payload
 object identity, because the result crosses a domain boundary before the platform payload is reconstructed.
 
-The implementation is ready for evaluation. Do not begin Step 2 until the user has reviewed Step 1.
+Step 1 was reviewed; the user authorized Step 2.
 
 ### 2. Add legal acceptance to signup
 
@@ -118,6 +123,82 @@ identifiers. Handle documents changing during signup and avoid blocking signup w
 are published. Keep cross-feature access behind authorization-owned use cases.
 
 Review output: Android/iOS signup flow, translations and ViewModel/use-case tests.
+
+#### Step 2 review output
+
+Implemented:
+
+- Signup loads published legal documents and links through the authorization-owned
+  `GetSignUpLegalDocuments` wrapper around settings `GetLegalDocumentVersions`.
+- One unchecked checkbox accepts all published documents on Android and iOS. Both document names are
+  underlined hyperlinks inside its label; a single published document uses its own label and link. The
+  checkbox is hidden when no documents are published. Link taps open the published URL through a
+  `weakVMClosure` callback and never accept documents. Signup submits both displayed version identifiers
+  after the shared checkbox is explicitly checked.
+- Loading and loading failures block signup. Failure is shown beneath the acceptance checkbox using
+  `legalAcceptance.validationState` and `supportingTextRes`, with retry alongside it. Retry clears the
+  validation error before loading again. No separate error flag is stored. A successful empty response
+  allows signup with empty acceptance; a single published document requires only its acceptance.
+- Both legal rejections (`LegalDocumentVersionUnknown` and `LegalDocumentsNotAccepted`) explain that
+  documents changed, uncheck shared consent and reload the requirements. The user must accept again and
+  retry signup explicitly. Entered profile data is preserved. Callbacks from replaced controls cannot
+  accept new documents, and a failed reload cannot reuse stale consent.
+- Signup reads the displayed document records from screen state, snapshots entered data and accepted
+  versions before registration, and blocks duplicate submissions while registration is in progress.
+  Consent callbacks are bound to the displayed document states, preventing old callbacks from accepting
+  replacement documents without a stored revision counter. Existing success/failure haptics are preserved.
+- Signup now uses parameterless state creation and `setup()` callbacks on both platforms. English,
+  Russian, Ukrainian and Polish strings, operation diagrams and the API audit are updated.
+- No API payload, cache schema, preference key or logout-hook change was required. Steps 3–10 are untouched.
+
+Validation:
+
+- Red: the new use-case and signup tests initially failed to compile against the missing legal-document
+  API/state. A subsequent regression reproduced an old acceptance callback accepting a replacement
+  document (`ignores acceptance callbacks from a replaced document version`, 1 failure in 29 tests).
+- Green: all 132 authorization domain/presentation tests pass: 80 domain tests and 52 presentation tests,
+  including 33 signup ViewModel tests and 3 new wrapper use-case tests. Review coverage verifies the shared
+  label, one-click acceptance of both versions, each single-document case, and document names and URLs.
+  The reading test exercises both link callbacks and verifies that neither checks the shared checkbox.
+- `:androidApp:assembleDevDebug` passes.
+- `:shared:compileKotlinIosArm64` passes.
+- `xcodebuild -project iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
+  -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` passes.
+- Spotless formatting is applied to the changed Kotlin files; `git diff --check` passes.
+- Both affected operation diagrams parse with Mermaid. All four translation files have matching keys,
+  placeholders and newline markers. Each linked document name occurs exactly once in its acceptance
+  label in all four languages.
+- No live signup/account creation was performed; backend access was limited to fetching the Swagger
+  contract. UI behavior is covered through shared state tests, without adding UI-test tooling.
+
+Added tests (`SignUpViewModelTest` unless otherwise noted):
+
+| Test | Protection |
+|---|---|
+| `requires explicit acceptance before submitting published documents` | Signup is blocked until the shared checkbox is checked. |
+| `uses one acceptance label containing both linked documents` | Both document names appear in the single unchecked consent label. |
+| `one checkbox accepts both published versions` | One user action supplies the exact displayed privacy and terms versions. |
+| `allows signup with empty acceptance when no documents are published` | No-document installations can register. |
+| `requires only the single published document` | A privacy-only response needs only privacy acceptance. |
+| `requires only terms when privacy policy is not published` | A terms-only response uses its own label and version. |
+| `revoking acceptance blocks signup` | Consent can be withdrawn before submission. |
+| `provides each document name and published URL for its inline link` | Both acceptance labels expose the correct linked document name and server URL. |
+| `opens the published document link without accepting it` | Reading uses the server URL and does not imply consent. |
+| `blocks signup while legal documents are loading` | In-flight requirements cannot be bypassed. |
+| `keeps signup blocked after document loading fails` | Failure sets the acceptance validation state and supporting text and cannot bypass consent. |
+| `retries a failed document load` | A successful retry clears acceptance validation and recovers the form. |
+| `clears the acceptance error while retrying document loading` | Retry immediately clears the supporting text and validation error while keeping signup blocked. |
+| `requires renewed consent after either legal rejection` | Both backend legal errors clear consent, refresh and explain recovery. |
+| `submits refreshed versions only after accepting again` | A second explicit attempt submits current identifiers. |
+| `blocks stale consent when reloading after rejection fails` | Old acceptance cannot bypass failed refresh. |
+| `does not start a second signup while one is in progress` | Field edits cannot re-enable concurrent submission. |
+| `ignores acceptance callbacks from a replaced document version` | Retained callbacks cannot accept replacement documents. |
+| `GetSignUpLegalDocumentsImplTest`: `returns published versions and links in authorization owned records` | Both document kinds preserve their version and URL across the feature boundary. |
+| `GetSignUpLegalDocumentsImplTest`: `returns no requirements when no documents are published` | The wrapper preserves a successful empty response. |
+| `GetSignUpLegalDocumentsImplTest`: `propagates loading failures instead of treating them as no documents` | The wrapper cannot silently bypass requirements on failure. |
+
+The previous generic-legal-error test is replaced by the recovery tests required by this step.
+Step 2 is ready for evaluation. Do not begin Step 3 until the user has reviewed Step 2.
 
 ### 3. Add legal review and renewed acceptance in Settings
 

@@ -1,6 +1,6 @@
 # Mobile API integration and UI plan
 
-Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Steps 4–5 are deferred until the simpler steps are complete; Steps 7–10 have not started.
+Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Steps 4–5 are deferred until the simpler steps are complete. Step 7 is skipped for now at the user's request. Step 8 is excluded from the mobile app's scope; Steps 9–10 have not started.
 
 Execution order updated at the user's request: proceed with Step 6 before the export UI in Steps 4–5.
 
@@ -396,28 +396,37 @@ Step 6 awaits user review before another step starts.
 
 ### 7. Expose business-wide appointment requests
 
+Status: Skipped for now at the user's request. Excluded from the current work sequence; revisit only if requested.
+
 Connect the existing business-wide read use case to the request UI with appropriate access checks.
 Keep the current employee's requests and business-wide requests distinct, including their refresh
 behavior and caches.
 
 Review output: Android/iOS request scope behavior and state tests.
 
-### 8. Add employee selection when creating appointments
+### 8. Employee selection — excluded from mobile scope
 
-Allow callers with appointment-update permission to select an eligible employee. Keep view-only
-callers restricted to themselves and pass the selected employee id into the appointment draft.
+Status: Not planned for the mobile app, per the user's product clarification.
 
-Review output: Android/iOS picker and permission/selection tests.
+The mobile app serves employees and business owners. Appointment creation is intentionally limited
+to the employee attached to the current user. Preserve this behavior; no employee picker is needed.
+Client-facing employee selection will be implemented on the website, outside this mobile plan.
 
 ### 9. Improve appointment error recovery
 
-After quote/service changes, reconcile selected services with refreshed options, recalculate the
-subtotal and require review before another booking attempt. Reload appointment details after a
-concurrent-modification error. Hide or disable mutations after the seven-day edit window, with an
-explanation, while retaining server-side rejection handling.
+When the existing database observer delivers refreshed service options, reconcile selected services
+with those options, recalculate the subtotal and require review before another booking attempt.
+Keep the observer as the source of screen data; no additional refresh-result rendering is needed.
 
-Review output: corrected state transitions and regression tests for stale selections, conflicts and
-edit-window boundaries.
+For `ConcurrentModification` and every `EditWindowClosed` failure, show a short global message and
+reload the appointment. Do not automatically retry the rejected mutation. The user subsequently
+requested local edit-window checks in the `Appointment.canBe…` methods: completion and no-show are
+allowed through seven days after the scheduled end (start plus all booked service durations).
+Rescheduling remains limited to scheduled appointments that have not started. Reloading applies
+these checks to action visibility; server rejection handling remains necessary.
+
+Review output: corrected state transitions and regression tests for stale selections and
+message-and-reload recovery for both errors.
 
 ### 10. Align client-deletion UI with the current behavior
 

@@ -31,7 +31,9 @@ flowchart TD
     Code -- other --> EX([rethrow])
 ```
 
-The details screen shows the button only when `Appointment.canBeCompleted()` is true (`SCHEDULED` and
-`date <= now`), which mirrors the backend's `requireCompletable` guard.
+The details screen shows the button only when `Appointment.canBeCompleted()` is true: `SCHEDULED`,
+`date <= now`, and no more than seven days after the scheduled end. The scheduled end is the start
+plus all booked service durations; the exact edit-window cutoff is inclusive. The ViewModel uses
+its injected clock when rendering action visibility.
 
 `EditWindowClosed` means the appointment ended more than seven days ago.

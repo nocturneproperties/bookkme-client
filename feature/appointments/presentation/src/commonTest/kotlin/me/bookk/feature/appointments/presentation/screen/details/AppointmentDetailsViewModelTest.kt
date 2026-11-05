@@ -58,7 +58,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class AppointmentDetailsViewModelTest {
@@ -76,6 +78,11 @@ class AppointmentDetailsViewModelTest {
     }
 
     private class Fixture {
+        val clock = object : Clock {
+            override fun now(): Instant {
+                return Instant.parse("2020-01-02T10:00:00Z")
+            }
+        }
         val appointmentId = Uuid.random()
         val businessId = Uuid.random()
         val getAppointment = mock<GetAppointment>()
@@ -133,6 +140,7 @@ class AppointmentDetailsViewModelTest {
             observeAppointmentOptions = observeAppointmentOptions,
             dateLocalizer = FakeDateLocalizer(),
             device = device,
+            clock = clock,
             stateFactory = FakeAppointmentsStateFactory(),
             vmArgs = VmArgs(errorMapper),
         )
@@ -576,6 +584,37 @@ class AppointmentDetailsViewModelTest {
         then()
         assertFalse(sut.uiState.completeButton.isVisible)
         assertTrue(sut.uiState.noShowButton.isVisible)
+    }
+
+    @Test
+    fun `hides scheduled appointment actions after edit window closes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment(date = LocalDateTime(2019, 12, 20, 10, 0))
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        assertFalse(sut.uiState.completeButton.isVisible)
+        assertFalse(sut.uiState.noShowButton.isVisible)
+        assertFalse(sut.uiState.rescheduleButton.isVisible)
+    }
+
+    @Test
+    fun `hides no-show after a completed appointment edit window closes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment(
+            status = AppointmentStatus.COMPLETED,
+            date = LocalDateTime(2019, 12, 20, 10, 0),
+        )
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        assertFalse(sut.uiState.noShowButton.isVisible)
     }
 
     @Test
@@ -1817,7 +1856,8 @@ class AppointmentDetailsViewModelTest {
 
             whenn()
             sut.uiState.noShowButton.onClick?.invoke()
-            val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            val confirmation =
+                sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
             sut.uiState.notifications.removeFirst()
             confirmation.tap(ActionType.NEGATIVE)
 
@@ -1876,5 +1916,4 @@ class AppointmentDetailsViewModelTest {
             )
         }
     }
-
 }

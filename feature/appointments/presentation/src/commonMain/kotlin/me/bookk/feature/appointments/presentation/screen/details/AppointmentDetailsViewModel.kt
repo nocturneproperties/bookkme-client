@@ -4,6 +4,8 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import library.device.api.DeviceFacade
 import library.money.api.Money
 import me.bookk.android.designsystem.resources.DesignSystem
@@ -47,6 +49,7 @@ import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPresentation
 import org.koin.core.annotation.InjectedParam
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 class AppointmentDetailsViewModel(
@@ -60,6 +63,7 @@ class AppointmentDetailsViewModel(
     private val observeAppointmentOptions: ObserveAppointmentOptions,
     private val dateLocalizer: DateLocalizer,
     private val device: DeviceFacade,
+    private val clock: Clock,
     stateFactory: AppointmentsStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
@@ -372,12 +376,14 @@ class AppointmentDetailsViewModel(
 
                     is UpdateAppointment.Error.InvalidServiceSelection ->
                         showMessage(
-                            AppointmentsRes.strings.appointments_create_services_changed_error.desc(),
+                            AppointmentsRes.strings.appointments_create_services_changed_error
+                                .desc(),
                         )
 
                     is UpdateAppointment.Error.ServiceNotFound ->
                         showMessage(
-                            AppointmentsRes.strings.appointments_complete_service_not_found_error.desc(),
+                            AppointmentsRes.strings.appointments_complete_service_not_found_error
+                                .desc(),
                         )
 
                     is UpdateAppointment.Error.EmployeeNotFound ->
@@ -387,7 +393,8 @@ class AppointmentDetailsViewModel(
 
                     is UpdateAppointment.Error.ConcurrentModification ->
                         showMessage(
-                            AppointmentsRes.strings.appointments_concurrent_modification_error.desc(),
+                            AppointmentsRes.strings.appointments_concurrent_modification_error
+                                .desc(),
                         )
 
                     is UpdateAppointment.Error.AppointmentOverlap -> {
@@ -453,6 +460,7 @@ class AppointmentDetailsViewModel(
     }
 
     private fun renderAppointment(appointment: Appointment) {
+        val now = clock.now().toLocalDateTime(TimeZone.currentSystemDefault())
         this.appointment = appointment
         uiState.appBar.title = appointment.client.fullName.desc()
         uiState.status = UIAppointmentStatus(appointment.status)
@@ -460,9 +468,9 @@ class AppointmentDetailsViewModel(
         uiState.appBar.actions.replace(appBarActions(appointment))
         uiState.dateTimePicker.pickedDate = appointment.date
         uiState.dateTimePicker.onDatePicked = weakVMClosure { vm, v -> vm.onDatePicked(v) }
-        uiState.rescheduleButton.isVisible = appointment.canBeRescheduled()
-        uiState.completeButton.isVisible = appointment.canBeCompleted()
-        uiState.noShowButton.isVisible = appointment.canBeMarkedNoShow()
+        uiState.rescheduleButton.isVisible = appointment.canBeRescheduled(now)
+        uiState.completeButton.isVisible = appointment.canBeCompleted(now)
+        uiState.noShowButton.isVisible = appointment.canBeMarkedNoShow(now)
         uiState.infoSections.replace(createSections(appointment))
         uiState.completion.price.placeholder = calculatedPrice(emptyList()).toPriceInput().desc()
         uiState.completion.price.suffix =

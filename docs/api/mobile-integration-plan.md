@@ -1,6 +1,6 @@
 # Mobile API integration and UI plan
 
-Status: Steps 1–2 implemented and validated. Step 2 awaits user review. Steps 3–10 have not started.
+Status: Steps 1–2 reviewed. Step 3 implemented and validated; awaiting user review. Steps 4–10 have not started.
 
 Source: `GET http://localhost/api/monolith/internal/swagger/documentation.yaml`, fetched 2026-11-04.
 The current schema was compared with the schema fetched during the preceding UI-gap review and with
@@ -198,7 +198,7 @@ Added tests (`SignUpViewModelTest` unless otherwise noted):
 | `GetSignUpLegalDocumentsImplTest`: `propagates loading failures instead of treating them as no documents` | The wrapper cannot silently bypass requirements on failure. |
 
 The previous generic-legal-error test is replaced by the recovery tests required by this step.
-Step 2 is ready for evaluation. Do not begin Step 3 until the user has reviewed Step 2.
+Step 2 was reviewed; the user authorized Step 3.
 
 ### 3. Add legal review and renewed acceptance in Settings
 
@@ -206,6 +206,81 @@ Replace Android's Google placeholder links and iOS's Contact Us destinations wit
 document links. Show acceptance status and allow acceptance of newly effective versions.
 
 Review output: Android/iOS Settings behavior and state tests.
+
+#### Step 3 review output
+
+Implemented:
+
+- Settings has a Legal section on Android and iOS. It replaces Android's placeholder links and iOS's
+  Contact Us destinations with the current published document links supplied by `GetLegalDocumentStatuses`.
+- Each published document has a compact Settings row with its name, accepted/review-needed status and
+  an external-link indicator. Raw version identifiers stay out of the visible layout; the exact version
+  remains bound to the record submitted through `AcceptLegalDocuments`. Opening a link only reads the
+  document. Already accepted versions are omitted from the explicit acceptance action.
+- Pending documents show a short consent explanation beside an “Accept documents” button. Accepted
+  documents use a quieter status color resolved from shared state. Stable document identities keep
+  rows consistent when data is refreshed; both platforms support wrapping text and full-row link taps.
+- A successful save plays a success haptic and reloads server status. A newer version returned by that
+  reload remains pending and needs another explicit acceptance. Unknown-version rejection explains the
+  change and reloads without submitting replacement versions automatically.
+- Loading and failure states block acceptance. Failure provides inline retry; a successful empty response
+  shows that no documents are published. Refresh keeps document rows visible with a small progress
+  indicator while invalidating consent callbacks and disabling acceptance. Failed reads discard the
+  stale rows and offer inline retry. Duplicate submissions and overlapping status refreshes are blocked.
+- All new callbacks use weak ViewModel references. English, Russian, Ukrainian and Polish strings and
+  API/operation documentation are updated. Existing Koin constructor registrations resolve the added
+  use cases on both platforms.
+- No new screen, route, use case, remote payload, database schema, preference key or logout binding was
+  required. Steps 4–10 are untouched.
+
+Validation:
+
+- Red: the new shared-state tests failed to compile before implementation because the Settings legal
+  state and ViewModel dependencies did not exist.
+- Green: all 84 Settings presentation tests pass, including 32 dashboard tests (23 added legal
+  regressions replacing the old generic placeholder-link test).
+- The UX refinement added failing tests for consent guidance, shared status styling
+  and preserving rows while blocking stale acceptance during refresh, plus accepted-state coverage.
+- `:androidApp:assembleDevDebug` passes.
+- `:shared:compileKotlinIosArm64` passes.
+- `xcodebuild -project iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
+  -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` passes.
+- Spotless is applied to changed Kotlin files; `git diff --check` passes. All four translation files
+  have matching keys, placeholders and newline markers.
+- Backend access was limited to fetching the current Swagger contract. No live legal acceptance was
+  submitted. UI behavior is verified through shared state tests; no UI-test tooling was added.
+- Operation call graphs are unchanged; their documentation now records the Settings entry points.
+
+Added tests in `SettingsDashboardViewModelTest`:
+
+| Test | Protection |
+|---|---|
+| `shows current versions and acceptance status` | Both document versions and accepted/pending labels match server records. |
+| `opens the published privacy URL without accepting` | Privacy reading opens the exact URL and never records consent. |
+| `opens the published terms URL without accepting` | Terms reading opens the exact URL and never records consent. |
+| `submits only pending displayed versions` | Already accepted versions are omitted. |
+| `submits both pending versions` | One explicit acceptance submits both displayed pending versions. |
+| `accepts a terms only publication` | A single published document needs only its own acceptance. |
+| `hides acceptance when all current versions are accepted` | No redundant acceptance is offered or submitted. |
+| `shows an empty message when no documents are published` | Successful empty publication is distinct from loading failure. |
+| `blocks acceptance while loading` | In-flight requirements cannot be submitted. |
+| `offers retry and blocks acceptance after loading failure` | Errors cannot be mistaken for an empty publication. |
+| `recovers from a failed load through retry` | Retry restores current documents and acceptance. |
+| `refreshes server acceptance after saving` | Status is re-read instead of assuming acceptance locally. |
+| `keeps a newly published version pending after saving` | Saving an old version never accepts a replacement silently. |
+| `reloads unknown versions and requires another explicit acceptance` | Rejection reloads without automatically resubmitting. |
+| `ignores acceptance callbacks for replaced documents` | Retained callbacks cannot submit old displayed versions. |
+| `prevents duplicate acceptance and overlapping refresh` | Concurrent taps and lifecycle callbacks do not race saves and reads. |
+| `plays success haptic when legal acceptance is saved` | Success follows a confirmed server write. |
+| `does not play success haptic when legal acceptance fails` | Failed writes preserve pending state and report errors. |
+| `discards stale status when post acceptance refresh fails` | Failed confirmation reads require retry before another submission. |
+| `explains explicit acceptance beside pending documents` | Pending documents explain what the explicit action means. |
+| `distinguishes pending documents from quiet accepted states` | Shared state supplies status color tokens for pending and accepted documents. |
+| `keeps document rows visible while refreshing and blocks stale acceptance` | Refresh preserves the reading layout while preventing submissions from stale callbacks. |
+| `removes the consent explanation after all documents are accepted` | Accepted-only sections do not show an unnecessary consent prompt. |
+
+The previous placeholder-link test is replaced by the two exact-URL/no-consent regressions.
+Step 3 is ready for evaluation. Step 4 awaits user review of this step.
 
 ### 4. Add personal data export UI
 

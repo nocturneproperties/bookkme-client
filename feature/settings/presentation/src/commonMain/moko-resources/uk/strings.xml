@@ -60,4 +60,15 @@
     <string name="settings_notifications_telegram_label">Telegram</string>
     <string name="settings_edit_profile_email_taken_error">Ця електронна адреса вже використовується.</string>
     <string name="settings_passkey_last_error">Не можна видалити останній ключ доступу. Спочатку додайте інший ключ, щоб зберегти доступ до облікового запису.</string>
+
+    <string name="settings_legal_title">Правова інформація</string>
+    <string name="settings_legal_accepted">Прийнято</string>
+    <string name="settings_legal_pending">Потребує ознайомлення</string>
+    <string name="settings_legal_accept">Прийняти документи</string>
+    <string name="settings_legal_retry">Повторити</string>
+    <string name="settings_legal_empty">Правові документи поки не опубліковані.</string>
+    <string name="settings_legal_load_error">Не вдалося завантажити правові документи. Спробуйте ще раз.</string>
+    <string name="settings_legal_changed">Правові документи змінилися. Ознайомтеся з поточними версіями та прийміть їх знову.</string>
+    <string name="settings_legal_consent">Натискаючи «Прийняти документи», ви погоджуєтеся з документами, що потребують ознайомлення.</string>
+    <string name="settings_legal_loading">Перевіряємо документи…</string>
 </resources>

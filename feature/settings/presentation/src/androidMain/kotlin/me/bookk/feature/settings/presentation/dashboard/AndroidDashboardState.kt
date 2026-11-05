@@ -20,6 +20,7 @@ internal class AndroidDashboardState(initData: SettingsState.InitData) : Setting
     override val appearance: AppearanceSection = AndroidAppearanceSectionState(initData.appearance)
     override val profile: ProfileSection = AndroidProfileSectionState()
     override val account: AccountSection = AndroidAccountSectionState(initData.account)
+    override val legal: LegalDocumentsSection = AndroidLegalDocumentsSectionState()
     override val support: SupportSection = AndroidSupportState(initData.support)
     override val notification: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<SettingsDashboardDestination> =

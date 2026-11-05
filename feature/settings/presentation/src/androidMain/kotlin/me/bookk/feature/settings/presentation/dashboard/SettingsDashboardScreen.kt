@@ -18,6 +18,7 @@ import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.feature.settings.presentation.dashboard.section.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.section.AppearanceSection
+import me.bookk.feature.settings.presentation.dashboard.section.LegalDocumentsSection
 import me.bookk.feature.settings.presentation.dashboard.section.ProfileSection
 import me.bookk.feature.settings.presentation.dashboard.section.SupportSection
 
@@ -40,6 +41,7 @@ internal fun SettingsDashboardScreen(state: SettingsState) {
                 ProfileSection(state.profile)
                 AppearanceSection(state.appearance)
                 AccountSection(state.account)
+                LegalDocumentsSection(state.legal)
                 SupportSection(state.support)
             }
         },

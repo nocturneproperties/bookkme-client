@@ -32,7 +32,8 @@ The three product decisions have now been integrated:
 All nine previously missing external operations now have domain/data entry points. The findings below
 are retained as the original audit evidence; they no longer describe missing implementations. Existing
 ViewModels now show specific mutation/validation errors. Signup now exposes current legal documents and
-explicit version-bound acceptance on Android and iOS. Settings legal review, exports and business-wide
+explicit version-bound acceptance on Android and iOS. Settings now exposes published document links,
+current acceptance status and explicit renewed acceptance on both platforms. Exports and business-wide
 request entry points still need UI work to expose them.
 
 
@@ -66,6 +67,18 @@ properties; the existing mobile notification update payload remains compatible.
 
 The original findings below retain their historical route/model names. Validation uses mocked HTTP
 requests and domain tests; no live destructive operation has been performed.
+
+## Settings legal review follow-up
+
+The schema was fetched again on 2026-11-05 for Step 3. `GET /api/user/me/legal` still returns each
+currently effective document and `acceptedAt` (absent when pending). `POST /api/user/me/legal` accepts
+explicit version identifiers, leaves omitted documents unchanged and rejects unpublished versions with
+100003. No contract changes were required.
+
+Both Settings implementations now use these existing operations. Link taps only open the published URL;
+the explicit acceptance action sends pending displayed versions and then reloads status. Unknown-version
+rejection reloads documents for another review. Loading failures offer retry and block acceptance.
+Validation uses shared state tests and builds; no live authenticated acceptance was submitted.
 
 ## Existing calls with incompatible contracts
 

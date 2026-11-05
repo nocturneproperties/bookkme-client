@@ -14,8 +14,6 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: SettingsNavigation) {
     composable<SettingsDestination.Dashboard> {
         val viewModel: SettingsDashboardViewModel = koinViewModel()
         val listener = DashboardEventListener(
-            showTerms = viewModel::showTerms,
-            showPolicy = viewModel::showPolicy,
             selectScheme = viewModel::onSchemeSelected,
             performLogout = viewModel::onLogOutClick,
         )

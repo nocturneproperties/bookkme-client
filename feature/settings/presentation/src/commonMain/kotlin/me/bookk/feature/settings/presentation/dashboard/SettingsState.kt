@@ -14,6 +14,7 @@ interface SettingsState {
     val appearance: AppearanceSection
     val profile: ProfileSection
     val account: AccountSection
+    val legal: LegalDocumentsSection
     val support: SupportSection
 
     val notification: PresentationNotificationState

@@ -26,6 +26,9 @@ erDiagram
     SERVICE |o..o{ EMPLOYEE : "via employee_service_snapshot.id"
     USER_PROFILE |o..o| NOTIFICATION_SETTINGS : "userId (logical, UK)"
 
+    PERSONAL_DATA_EXPORT {
+        int id PK "singleton 0"
+    }
     LEGAL_DOCUMENT_STATUS {
         string document PK
     }
@@ -94,3 +97,7 @@ and deleting a client through other reconciliation paths does not trigger this e
 
 Legal-document acceptance is a current-account read cache keyed by document type. It has no FK to
 `user_profile`; `CommonLegalDocumentsDataSource` clears it on logout. See [Settings](settings.md).
+
+Personal export status is a separate current-account cache with singleton key `0`, no profile FK and
+explicit logout cleanup through `CommonDataExportDataSource`. A missing row means unknown; a saved
+`NONE` row with all timestamps null means no request history. See [Settings](settings.md).

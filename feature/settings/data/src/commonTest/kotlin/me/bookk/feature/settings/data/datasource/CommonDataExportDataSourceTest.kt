@@ -1,5 +1,6 @@
 package me.bookk.feature.settings.data.datasource
 
+import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -25,6 +26,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.database.dao.PersonalDataExportDao
 import me.bookk.feature.settings.data.remote.model.DataExportRemote
 import me.bookk.feature.settings.data.remote.model.DataExportRequestRemote
 import me.bookk.feature.settings.data.remote.model.DataExportStatusRemote
@@ -81,7 +83,7 @@ class CommonDataExportDataSourceTest {
             install(ContentNegotiation) { protobuf(dataSerializer) }
             defaultRequest { contentType(ContentType.Application.ProtoBuf) }
         }
-        val dataSource = CommonDataExportDataSource(client)
+        val dataSource = CommonDataExportDataSource(client, mock<PersonalDataExportDao>(), TestExportFileProvider())
 
         whenn()
         val result = try {
@@ -124,7 +126,7 @@ class CommonDataExportDataSourceTest {
 
         whenn()
         val result = try {
-            CommonDataExportDataSource(client).get()
+            CommonDataExportDataSource(client, mock<PersonalDataExportDao>(), TestExportFileProvider()).get()
         } finally {
             client.close()
         }
@@ -157,7 +159,7 @@ class CommonDataExportDataSourceTest {
 
         whenn()
         val result = try {
-            CommonDataExportDataSource(client).download()
+            CommonDataExportDataSource(client, mock<PersonalDataExportDao>(), TestExportFileProvider()).download()
         } finally {
             client.close()
         }

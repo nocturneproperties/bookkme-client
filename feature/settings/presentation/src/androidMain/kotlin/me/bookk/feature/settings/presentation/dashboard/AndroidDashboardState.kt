@@ -40,6 +40,7 @@ internal class AndroidProfileSectionState : ProfileSection {
 }
 
 internal class AndroidAccountSectionState(initData: AccountSection.InitData) : AccountSection {
+    override val dataExport = AndroidTextState()
     override val title: StringDesc = initData.title
     override val notifications: TextState = AndroidTextState(initData.notificationsLabel)
     override val passkey: TextState = AndroidTextState(initData.passkeyLabel)

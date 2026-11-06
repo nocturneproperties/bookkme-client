@@ -50,6 +50,11 @@ internal fun AccountSection(state: AccountSection) {
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
+                text = state.dataExport.text.localized(),
+                onClick = LocalNavigation.current.navigateToPersonalDataExport,
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            SectionItem(
                 text = state.logout.text.localized(),
                 onClick = LocalDashboardEventListener.current.performLogout,
             )

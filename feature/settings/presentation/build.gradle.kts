@@ -11,6 +11,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)
+            implementation(projects.core.domain)
             implementation(projects.core.presentation)
             implementation(projects.designsystem)
             implementation(projects.feature.authorization.domain.api)

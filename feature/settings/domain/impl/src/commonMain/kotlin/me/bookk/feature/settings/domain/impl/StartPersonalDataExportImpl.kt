@@ -19,14 +19,18 @@ internal class StartPersonalDataExportImpl(
     override suspend fun invoke(): DataExport {
         val targetId = profile.get().id
         val token = getConfirmationToken(targetId)
-        return requestPersonalDataExport(token)
+        return requestPersonalDataExport(token).also {
+            dataSource.deleteFiles()
+            dataSource.saveInDb(it)
+        }
     }
 
     private suspend fun requestPersonalDataExport(token: String): DataExport = runCatching {
         dataSource.start(token)
     }.onBusinessError {
         when (it.errorCode) {
-            SettingsErrorCodes.USER_ACTION_CONFIRMATION_INVALID -> throw Error.ConfirmationRequired()
+            SettingsErrorCodes.USER_ACTION_CONFIRMATION_INVALID ->
+                throw Error.ConfirmationRequired()
 
             SettingsErrorCodes.DATA_EXPORT_TOO_FREQUENT -> throw Error.TooFrequent()
         }

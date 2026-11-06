@@ -67,6 +67,7 @@ interface ProfileSection {
 }
 
 interface AccountSection {
+    val dataExport: TextState
     val title: StringDesc
     val notifications: TextState
     val passkey: TextState

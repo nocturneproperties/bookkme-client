@@ -20,6 +20,14 @@ Public signup legal metadata remains in its separate bucket.
 erDiagram
     NOTIFICATION_SETTINGS ||--o{ NOTIFICATION_SETTINGS_CHANNEL : "has (CASCADE)"
 
+    PERSONAL_DATA_EXPORT {
+        int id PK "singleton 0"
+        string status "DataExportStatus.name"
+        int requestedAt "nullable epoch milliseconds"
+        int expiresAt "nullable epoch milliseconds"
+        int availableAgainAt "nullable epoch milliseconds"
+    }
+
     LEGAL_DOCUMENT_STATUS {
         string document PK "LegalDocument.name"
         string version
@@ -57,3 +65,34 @@ erDiagram
 - Added in schema 24 by `AutoMigration(23, 24)`. Domain ↔ entity mapping stays in the feature data module;
   the database module has no feature-domain dependency.
 - Legal status logout cleanup: `legalDocumentStatusDao.clear()`.
+
+Personal data export status and timestamps live in the singleton `personal_data_export` Room row,
+owned by `CommonDataExportDataSource`. `PersonalDataExportDao.observe()` emits a nullable row at key
+`0`; `GetPersonalDataExport.flow()` maps a record whose known expiry is at or before now (injected
+clock) to null without writing. A missing row also emits null. Unexpired records and records with no
+expiry pass through unchanged. The export screen refreshes from the server on open only when the first
+observed value is null (missing or expired) or RUNNING; that refresh also removes an expired file
+once the server confirms it.
+
+`GetPersonalDataExport.refresh()` and successful `StartPersonalDataExport` calls fetch from the network,
+then call the separate `saveInDb()` write. The database observer alone renders status; neither network
+return value is rendered directly. Writes upsert key `0` and retain all observation emissions, including
+unchanged snapshots needed to reconcile retry UI. Network failures preserve the cached row. Logout
+clears the table through `CommonDataExportDataSource` bound as datasource and `LogOutAction`. There is
+no user-profile FK or preferences marker. Schema 25 adds this table with `AutoMigration(24, 25)`;
+existing tables and rows are preserved. Domain mapping stays in the settings data module.
+
+The JSON export payload is stored as one UTF-8 file at
+`personal_data_exports/<requestedAt>-<expiresAt>/bookk-personal-data.json` in the app cache (epoch
+milliseconds), not in Room or preferences. `DownloadPersonalDataExport` reuses the file matching the
+current READY export or downloads and saves JSON through separate datasource calls; `saveFile()`
+clears the directory first, so only one export is kept. The cache survives screen recreation; OS
+eviction causes a download on the next action. New export requests, refreshes returning a status that
+is not READY or already expired, and logout clear the directory. Atomic file replacement prevents
+partially written JSON from being reused. All filesystem access goes through `FileProvider`
+(`exists`, atomic `writeText`, `deleteRecursively`), implemented once in `CommonFileProvider`.
+
+The native share sheet opens this cached file directly; no temporary copies are made. Android exposes
+only `cache/personal_data_exports/` through the settings presentation module's non-exported
+`FileProvider`. Files explicitly saved or shared outside the app remain under the user's control. No
+Room schema or preference keys are added for downloaded files.

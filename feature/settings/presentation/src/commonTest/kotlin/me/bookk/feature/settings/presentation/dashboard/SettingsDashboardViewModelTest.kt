@@ -67,6 +67,21 @@ class SettingsDashboardViewModelTest {
         dispatchers.uninstall()
     }
 
+    @Test
+    fun `sets the personal data export account label`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_export_title.desc(),
+            sut.uiState.account.dataExport.text,
+        )
+    }
+
     private class Fixture {
         val getSettings = mock<GetSettings> {
             everySuspend { invoke() } returns

@@ -71,4 +71,34 @@
     <string name="settings_legal_changed">Dokumenty prawne uległy zmianie. Zapoznaj się z aktualnymi wersjami i zaakceptuj je ponownie.</string>
     <string name="settings_legal_consent">Wybierając „Akceptuję dokumenty”, zgadzasz się na dokumenty wymagające zapoznania się.</string>
     <string name="settings_legal_loading">Sprawdzanie dokumentów…</string>
+
+    <string name="settings_export_title">Eksport moich danych</string>
+    <string name="settings_export_loading">Sprawdzanie stanu eksportu…</string>
+    <string name="settings_export_request_title">Kopia Twoich danych osobowych</string>
+    <string name="settings_export_description">Poproś o kopię danych osobowych, które aplikacja przechowuje na Twój temat. Zostaną przygotowane w pliku JSON — uporządkowanym formacie, który możesz pobrać, zapisać, udostępnić lub otworzyć w zgodnym oprogramowaniu.</string>
+    <string name="settings_export_request">Poproś o eksport</string>
+    <string name="settings_export_download">Pobierz eksport</string>
+    <string name="settings_export_refresh">Odśwież stan</string>
+    <string name="settings_export_confirmation">Potwierdź za pomocą klucza dostępu.</string>
+    <string name="settings_export_running_title">Przygotowujemy Twój eksport</string>
+    <string name="settings_export_running_message">Twój plik jest przygotowywany. Sprawdź ponownie za chwilę.</string>
+    <string name="settings_export_ready_title">Twój eksport jest gotowy</string>
+    <string name="settings_export_ready_message">Zapisz lub udostępnij plik po pobraniu.</string>
+    <string name="settings_export_failed_title">Nie udało się przygotować eksportu</string>
+    <string name="settings_export_failed_message">Poproś o kolejny eksport, gdy będzie to możliwe.</string>
+    <string name="settings_export_expired_title">Twój eksport wygasł</string>
+    <string name="settings_export_expired_message">Ten plik nie jest już dostępny. Poproś o kolejny eksport, gdy będzie to możliwe.</string>
+    <string name="settings_export_expiry_label">Dostępny do</string>
+    <string name="settings_export_cooldown">O kolejny eksport możesz poprosić po %s</string>
+    <string name="settings_export_request_after_expiry">Nowy eksport możesz zlecić po wygaśnięciu bieżącego.</string>
+    <string name="settings_export_load_error">Nie udało się sprawdzić stanu eksportu. Odśwież stan, aby spróbować ponownie.</string>
+    <string name="settings_export_request_error">Nie udało się zlecić eksportu. Spróbuj ponownie.</string>
+    <string name="settings_export_confirmation_error">Potwierdzenie kluczem dostępu nie powiodło się lub wygasło. Poproś o eksport ponownie, aby potwierdzić.</string>
+    <string name="settings_export_too_frequent">Nie można jeszcze zlecić kolejnego eksportu. Odśwież stan, aby sprawdzić dostępność.</string>
+    <string name="settings_export_unavailable">Ten eksport nie jest już dostępny. Odśwież stan, aby sprawdzić dostępne opcje.</string>
+    <string name="settings_export_download_error">Nie udało się pobrać lub udostępnić pliku. Spróbuj ponownie.</string>
+    <string name="settings_export_request_footer">Możesz nadal korzystać z aplikacji podczas przygotowywania eksportu.</string>
+    <string name="settings_export_running_footer">Możesz opuścić ten ekran i wrócić później.</string>
+    <string name="settings_export_file_title">Dane osobowe</string>
+    <string name="settings_export_file_type">Plik JSON</string>
 </resources>

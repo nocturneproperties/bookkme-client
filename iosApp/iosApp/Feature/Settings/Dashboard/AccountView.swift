@@ -28,6 +28,9 @@ struct AccountView: View {
 		NavigationLink(value: SettingsDestination.Passkey()) {
 			Text(state.passkey.text.localized())
 		}
+		NavigationLink(value: SettingsDestination.PersonalDataExport()) {
+			Text(state.dataExport.text.localized())
+		}
 		Button {
 			logoutClick()
 		} label: {

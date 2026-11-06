@@ -21,6 +21,8 @@ sealed class Error(val error: String, cause: Throwable?) : Throwable(error, caus
 
 fun Throwable.businessOrThrow() = (this as? Error.BusinessError) ?: throw this
 
+fun Throwable.notFoundOrThrow() = (this as? Error.NotFound) ?: throw this
+
 suspend inline fun <T> Result<T>.onBusinessError(
     action: suspend (error: Error.BusinessError) -> Unit,
 ): Result<T> {
@@ -28,3 +30,12 @@ suspend inline fun <T> Result<T>.onBusinessError(
         action(it.businessOrThrow())
     }
 }
+
+suspend inline fun <T> Result<T>.onNotFound(
+    action: suspend (error: Error.NotFound) -> Unit,
+): Result<T> {
+    return onFailure {
+        action(it.notFoundOrThrow())
+    }
+}
+

@@ -5,6 +5,7 @@ import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.contactus.ContactUsViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
+import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsViewModel
 import me.bookk.feature.settings.presentation.passkey.PasskeyViewModel
 import org.koin.core.module.Module
@@ -19,6 +20,7 @@ internal actual fun platformSettingsDiModule(): Module = module {
     factoryOf(::DeleteAccountViewModel)
     factoryOf(::PasskeyViewModel)
     factoryOf(::NotificationSettingsViewModel)
+    factoryOf(::PersonalDataExportViewModel)
 }
 
 @UsedInSwift
@@ -38,3 +40,8 @@ fun passkeyVM(): PasskeyViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun notificationSettingsVM(): NotificationSettingsViewModel = KoinPlatform.getKoin().get()
+
+@UsedInSwift
+fun personalDataExportVM(): PersonalDataExportViewModel {
+    return KoinPlatform.getKoin().get()
+}

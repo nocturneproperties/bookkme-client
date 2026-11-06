@@ -25,7 +25,8 @@ flowchart TD
     Loop --> A9[BiometryCore<br/>biometry_opt_in := null]
     Loop --> A10[CommonAppointmentSettingsDataSource<br/>appointment_settings]
     Loop --> A11[CommonNotificationSettingsDataSource<br/>notification_settings]
-    A1 & A2 & A3 & A4 & A5 & A6 & A7 & A8 & A9 & A10 & A11 --> R([Unit, errors swallowed per action])
+    Loop --> A12[CommonDataExportDataSource<br/>personal_data_export.clear + FileProvider.deleteRecursively personal_data_exports]
+    A1 & A2 & A3 & A4 & A5 & A6 & A7 & A8 & A9 & A10 & A11 & A12 --> R([Unit, errors swallowed per action])
 ```
 
 `authorization_prefs.clear()` runs **before** `DELETE /api/auth/session`. The sign-out request therefore

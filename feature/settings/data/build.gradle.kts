@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.feature.settings.data.source)
             implementation(projects.database)
             implementation(projects.library.cache.api)
+            implementation(projects.library.files.api)
             implementation(libs.ktor.client.resources)
         }
     }

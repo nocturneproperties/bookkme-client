@@ -10,6 +10,10 @@ import shared
 
 @MainActor
 class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
+	func createPersonalDataExportState() -> any PersonalDataExportState {
+		return IOSPersonalDataExportState()
+	}
+
 	
 	func createEditProfileState(initData: EditProfileStateInitData) -> any EditProfileState {
 		return IOSEditProfileState(initData: initData)

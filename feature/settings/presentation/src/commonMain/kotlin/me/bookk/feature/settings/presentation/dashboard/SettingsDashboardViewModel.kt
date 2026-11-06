@@ -45,6 +45,7 @@ class SettingsDashboardViewModel(
     }
 
     private fun SettingsState.setup(): SettingsState = apply {
+        account.dataExport.text = SettingsRes.strings.settings_export_title.desc()
         legal.title = SettingsRes.strings.settings_legal_title.desc()
         legal.accept.text = SettingsRes.strings.settings_legal_accept.desc()
         legal.accept.isVisible = false

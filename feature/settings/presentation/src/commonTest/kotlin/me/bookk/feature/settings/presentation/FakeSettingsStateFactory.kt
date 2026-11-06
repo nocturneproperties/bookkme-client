@@ -2,6 +2,7 @@ package me.bookk.feature.settings.presentation
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.test.FakeAppBarState
 import me.bookk.designsystem.test.FakeBooleanState
 import me.bookk.designsystem.test.FakeButtonState
@@ -24,11 +25,18 @@ import me.bookk.feature.settings.presentation.dashboard.SettingsState
 import me.bookk.feature.settings.presentation.dashboard.SupportSection
 import me.bookk.feature.settings.presentation.editprofile.EditProfileNavigationDestination
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
+import me.bookk.feature.settings.presentation.export.PersonalDataExportDestinations
+import me.bookk.feature.settings.presentation.export.PersonalDataExportState
+import me.bookk.feature.settings.presentation.export.UIExportStatus
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsDestinations
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
 import me.bookk.feature.settings.presentation.passkey.PasskeyState
 
 internal class FakeSettingsStateFactory : SettingsStateFactory {
+    override fun createPersonalDataExportState(): PersonalDataExportState {
+        return FakePersonalDataExportState()
+    }
+
     override fun createSettingsState(initData: SettingsState.InitData): SettingsState =
         FakeSettingsState()
 
@@ -62,6 +70,7 @@ internal class FakeSettingsState : SettingsState {
         override var email: StringDesc = "".desc()
     }
     override val account = object : AccountSection {
+        override val dataExport = FakeTextState()
         override val title: StringDesc = "".desc()
         override val notifications = FakeTextState()
         override val passkey = FakeTextState()
@@ -139,4 +148,25 @@ internal class FakeLegalDocumentsSectionState : LegalDocumentsSection {
     override var message: StringDesc? = null
     override val accept = FakeButtonState()
     override val retry = FakeButtonState()
+}
+
+internal class FakePersonalDataExportState : PersonalDataExportState {
+    override val appBar = FakeAppBarState()
+    override var status = UIExportStatus(
+        title = "".desc(),
+        message = null,
+        footer = null,
+        icon = null,
+        color = ColorToken.ActionText,
+        isInProgress = false,
+        showsFile = false,
+    )
+    override var expiry: StringDesc? = null
+    override var requestAvailability: StringDesc? = null
+    override var error: StringDesc? = null
+    override val request = FakeButtonState()
+    override val download = FakeButtonState()
+    override val refresh = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<PersonalDataExportDestinations>()
 }

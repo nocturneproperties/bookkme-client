@@ -7,6 +7,7 @@ class SettingsNavigation(
     val navigateToEditProfile: () -> Unit,
     val navigateToPasskey: () -> Unit,
     val navigateToNotifications: () -> Unit,
+    val navigateToPersonalDataExport: () -> Unit,
     val navigateToDeleteAccount: () -> Unit,
     val navigateToContact: () -> Unit,
 )
@@ -19,5 +20,6 @@ internal val LocalNavigation = compositionLocalOf {
         navigateToDeleteAccount = {},
         navigateToContact = {},
         navigateToNotifications = {},
+        navigateToPersonalDataExport = {},
     )
 }

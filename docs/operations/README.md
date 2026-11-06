@@ -53,7 +53,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
 | `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `timestampProtectedFetch`: `GET /api/user/legal` first; private requests only when authorized; `rawFetch`: profile, business, per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
-| `LogOut` | `DELETE /api/auth/session` | [Log out](authorization/log-out.md) |
+| `LogOut` | `DELETE /api/auth/session`; bound cleanup includes export status and temporary files | [Log out](authorization/log-out.md) |
 | `RefreshToken` | `POST /api/auth/refresh` | [Refresh token](authorization/refresh-token.md) |
 | `UserProfileCRUD` | `GET` / `PATCH /api/user/me` | [User profile CRUD](authorization/user-profile-crud.md) |
 | `IsUserLoggedIn`, `GetTokenInfo`, `GetSettingsColorScheme` | local only | [Is user logged in / Get token info / Get settings color scheme](authorization/is-user-logged-in.md) |
@@ -151,9 +151,9 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `DownloadPersonalDataExport` | `GET /api/user/export/download`; shared `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
-| `GetPersonalDataExport` | `GET /api/user/export` | [Get personal data export](settings/get-personal-data-export.md) |
-| `StartPersonalDataExport` | `POST /api/user/export` | [Start personal data export](settings/start-personal-data-export.md) |
+| `DownloadPersonalDataExport` | Local READY status (else `NotReady`) → reuse JSON file per export; cache miss → `GET /api/user/export/download` → save through `FileProvider` → return file path for the `Share` destination; `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
+| `GetPersonalDataExport` | Read-only flow maps expired records to null; ViewModel refreshes on open only for a null or RUNNING first value and polls RUNNING every 10 s (max 30); `refresh` always uses `GET /api/user/export` → clear personal files unless READY and unexpired → save server response | [Get personal data export](settings/get-personal-data-export.md) |
+| `StartPersonalDataExport` | `POST /api/user/export`; passkey confirmation → clear all personal export JSON files → status cache upsert | [Start personal data export](settings/start-personal-data-export.md) |
 | `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings | [Accept legal documents](settings/accept-legal-documents.md) |
 | `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Settings review and post-acceptance refresh | [Get legal document statuses](settings/get-legal-document-statuses.md) |
 | `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |

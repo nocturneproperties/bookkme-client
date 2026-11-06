@@ -29,3 +29,7 @@ reads them**. `getLastSyncedAt(...)` is still on every list datasource interface
 tests. Every `refresh()` still writes them with `saveLastSyncedAt(...)`, so today they are write-only state.
 They can be used again or removed; the empty-state behaviour itself now comes from the presentation layer's
 list-loading mechanism.
+
+Personal export status and its timestamps use the singleton `personal_data_export` Room table,
+not a preferences bucket or serialized JSON. Row absence distinguishes an unknown status from a
+confirmed `NONE` result. Logout clears the table. See [Settings](settings.md).

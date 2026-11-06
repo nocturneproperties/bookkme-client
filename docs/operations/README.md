@@ -155,8 +155,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `DownloadPersonalDataExport` | Local READY status (else `NotReady`) → reuse JSON file per export; cache miss → `GET /api/user/export/download` → save through `FileProvider` → return file path for the `Share` destination; `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
 | `GetPersonalDataExport` | Read-only flow maps expired records to null; ViewModel refreshes on open only for a null or RUNNING first value and polls RUNNING every 10 s (max 30); `refresh` always uses `GET /api/user/export` → clear personal files unless READY and unexpired → save server response | [Get personal data export](settings/get-personal-data-export.md) |
 | `StartPersonalDataExport` | `POST /api/user/export`; passkey confirmation → clear all personal export JSON files → status cache upsert | [Start personal data export](settings/start-personal-data-export.md) |
-| `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings | [Accept legal documents](settings/accept-legal-documents.md) |
-| `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Settings review and post-acceptance refresh | [Get legal document statuses](settings/get-legal-document-statuses.md) |
+| `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings → Privacy | [Accept legal documents](settings/accept-legal-documents.md) |
+| `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Privacy screen review and post-acceptance refresh; dashboard "Action required" row status | [Get legal document statuses](settings/get-legal-document-statuses.md) |
 | `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |
 | `GetSettings` | local-first | [Get settings](settings/get-settings.md) |
 | `EditProfile` | `PATCH /api/user/me`; contact-conflict error | [Edit profile](settings/edit-profile.md) |

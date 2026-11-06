@@ -8,6 +8,7 @@ import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsViewModel
 import me.bookk.feature.settings.presentation.passkey.PasskeyViewModel
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -21,6 +22,7 @@ internal actual fun platformSettingsDiModule(): Module = module {
     factoryOf(::PasskeyViewModel)
     factoryOf(::NotificationSettingsViewModel)
     factoryOf(::PersonalDataExportViewModel)
+    factoryOf(::PrivacySettingsViewModel)
 }
 
 @UsedInSwift
@@ -43,5 +45,10 @@ fun notificationSettingsVM(): NotificationSettingsViewModel = KoinPlatform.getKo
 
 @UsedInSwift
 fun personalDataExportVM(): PersonalDataExportViewModel {
+    return KoinPlatform.getKoin().get()
+}
+
+@UsedInSwift
+fun privacySettingsVM(): PrivacySettingsViewModel {
     return KoinPlatform.getKoin().get()
 }

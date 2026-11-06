@@ -62,6 +62,8 @@
     <string name="settings_passkey_last_error">Nie możesz usunąć ostatniego klucza dostępu. Najpierw dodaj inny klucz, aby zachować dostęp do konta.</string>
 
     <string name="settings_privacy_title">Prywatność</string>
+    <string name="settings_privacy_diagnostics_title">Diagnostyka</string>
+    <string name="settings_privacy_action_required">Wymagane działanie</string>
     <string name="settings_privacy_crash_reports_label">Wysyłaj raporty o awariach</string>
     <string name="settings_privacy_crash_reports_description">Gdy aplikacja ulegnie awarii, wysyła do Firebase Crashlytics techniczne informacje o błędzie i Twoim urządzeniu, abyśmy mogli go naprawić. Raporty nie zawierają Twojego imienia, adresu e-mail ani danych firmy czy klientów.</string>
     <string name="settings_legal_title">Informacje prawne</string>

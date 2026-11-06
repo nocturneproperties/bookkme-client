@@ -16,8 +16,6 @@ class IOSSettingsState: @MainActor SettingsState {
 	var account: any AccountSection
 	var appearance: any AppearanceSection
 	var profile: any ProfileSection
-	let privacy: any PrivacySection
-	let legal: any LegalDocumentsSection
 	var support: any SupportSection
 	
 	var notification: any PresentationNotificationState
@@ -28,8 +26,6 @@ class IOSSettingsState: @MainActor SettingsState {
 		account = IOSAccountSection(initData: initData.account)
 		appearance = IOSAppearanceSection(initData: initData.appearance)
 		profile = IOSProfileSection()
-		privacy = IOSPrivacySection()
-		legal = IOSLegalDocumentsSection()
 		support = IOSSupportSection(initData: initData.support)
 		notification = IOSNotificationState()
 		navigation = IOSNavigationState()
@@ -40,6 +36,8 @@ class IOSSettingsState: @MainActor SettingsState {
 @Observable
 class IOSAccountSection: @MainActor AccountSection {
 	let dataExport: any TextState = IOSTextState(text: RawStringDesc(string: ""))
+	let privacy: any TextState = IOSTextState(text: RawStringDesc(string: ""))
+	var privacyStatus: (any StringDesc)? = nil
 	
 	var title: any StringDesc
 	var deleteAccount: any TextState

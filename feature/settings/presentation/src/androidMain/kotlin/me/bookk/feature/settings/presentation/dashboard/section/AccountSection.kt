@@ -50,6 +50,12 @@ internal fun AccountSection(state: AccountSection) {
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
+                text = state.privacy.text.localized(),
+                trailingText = state.privacyStatus?.localized(),
+                onClick = LocalNavigation.current.navigateToPrivacy,
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            SectionItem(
                 text = state.dataExport.text.localized(),
                 onClick = LocalNavigation.current.navigateToPersonalDataExport,
             )

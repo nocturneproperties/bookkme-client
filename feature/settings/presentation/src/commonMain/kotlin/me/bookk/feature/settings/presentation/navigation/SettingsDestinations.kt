@@ -16,6 +16,9 @@ sealed class SettingsDestination {
     data object PersonalDataExport : SettingsDestination()
 
     @Serializable
+    data object Privacy : SettingsDestination()
+
+    @Serializable
     data object Notifications : SettingsDestination()
 
     @Serializable

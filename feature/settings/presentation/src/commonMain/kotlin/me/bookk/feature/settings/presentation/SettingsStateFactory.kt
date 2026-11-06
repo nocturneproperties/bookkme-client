@@ -7,6 +7,7 @@ import me.bookk.feature.settings.presentation.editprofile.EditProfileState
 import me.bookk.feature.settings.presentation.export.PersonalDataExportState
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
 import me.bookk.feature.settings.presentation.passkey.PasskeyState
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsState
 
 interface SettingsStateFactory {
     fun createPersonalDataExportState(): PersonalDataExportState
@@ -16,4 +17,5 @@ interface SettingsStateFactory {
     fun createDeleteAccountState(initData: DeleteAccountState.InitData): DeleteAccountState
     fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState
     fun createNotificationSettingsState(): NotificationSettingsState
+    fun createPrivacySettingsState(): PrivacySettingsState
 }

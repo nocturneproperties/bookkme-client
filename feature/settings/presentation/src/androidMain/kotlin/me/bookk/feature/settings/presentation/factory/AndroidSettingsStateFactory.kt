@@ -15,6 +15,8 @@ import me.bookk.feature.settings.presentation.notifications.AndroidNotificationS
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
 import me.bookk.feature.settings.presentation.passkey.AndroidPasskeyState
 import me.bookk.feature.settings.presentation.passkey.PasskeyState
+import me.bookk.feature.settings.presentation.privacy.AndroidPrivacySettingsState
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsState
 
 class AndroidSettingsStateFactory : SettingsStateFactory {
     override fun createPersonalDataExportState(): PersonalDataExportState {
@@ -45,5 +47,9 @@ class AndroidSettingsStateFactory : SettingsStateFactory {
 
     override fun createNotificationSettingsState(): NotificationSettingsState {
         return AndroidNotificationSettingsState()
+    }
+
+    override fun createPrivacySettingsState(): PrivacySettingsState {
+        return AndroidPrivacySettingsState()
     }
 }

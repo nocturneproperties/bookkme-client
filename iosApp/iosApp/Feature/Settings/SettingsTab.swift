@@ -32,6 +32,9 @@ struct SettingsTab: View {
 				.navigationDestination(for: SettingsDestination.Notifications.self) { _ in
 					NotificationSettingsScreen()
 				}
+				.navigationDestination(for: SettingsDestination.Privacy.self) { _ in
+					PrivacySettingsScreen()
+				}
 		}.environmentObject(navigationStack)
 	}
 }

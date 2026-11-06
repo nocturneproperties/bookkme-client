@@ -40,6 +40,9 @@ fun SettingsTab() {
                 navigateToPersonalDataExport = {
                     settingsController.navigate(SettingsDestination.PersonalDataExport)
                 },
+                navigateToPrivacy = {
+                    settingsController.navigate(SettingsDestination.Privacy)
+                },
                 navigateToNotifications = {
                     settingsController.navigate(SettingsDestination.Notifications)
                 },

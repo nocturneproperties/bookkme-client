@@ -3,7 +3,7 @@
 # Get / update crash reporting
 
 `GetCrashReportingEnabled()` and `UpdateCrashReportingEnabled(enabled)`, **local only**. Both are called from
-`SettingsDashboardViewModel` (Privacy section, "Send crash reports" switch).
+`PrivacySettingsViewModel` (Settings → Account → Privacy, "Send crash reports" switch).
 
 Both go through `library.crashreporting.api.CrashReporter`. The apps implement it with Firebase Crashlytics
 (`AndroidCrashReporter` in `androidApp`, `IOSCrashReporter` in `iosApp/iosApp/Library/CrashReporting`) and

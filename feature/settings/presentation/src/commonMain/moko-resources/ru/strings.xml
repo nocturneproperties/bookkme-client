@@ -62,6 +62,8 @@
     <string name="settings_passkey_last_error">Нельзя удалить последний ключ доступа. Сначала добавьте другой ключ, чтобы сохранить доступ к аккаунту.</string>
 
     <string name="settings_privacy_title">Конфиденциальность</string>
+    <string name="settings_privacy_diagnostics_title">Диагностика</string>
+    <string name="settings_privacy_action_required">Требуется действие</string>
     <string name="settings_privacy_crash_reports_label">Отправлять отчёты о сбоях</string>
     <string name="settings_privacy_crash_reports_description">При сбое приложение отправляет в Firebase Crashlytics технические сведения об ошибке и вашем устройстве, чтобы мы могли её исправить. Отчёты не содержат ваше имя, email, данные бизнеса или клиентов.</string>
     <string name="settings_legal_title">Правовая информация</string>

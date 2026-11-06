@@ -35,6 +35,10 @@ class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
 		return IOSPasskeyState(initData: initData)
 	}
 
+	func createPrivacySettingsState() -> any PrivacySettingsState {
+		return IOSPrivacySettingsState()
+	}
+
 	func createNotificationSettingsState() -> any NotificationSettingsState {
 		return IOSNotificationSettingsState()
 	}

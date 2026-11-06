@@ -88,7 +88,9 @@ milliseconds), not in Room or preferences. `DownloadPersonalDataExport` reuses t
 current READY export or downloads and saves JSON through separate datasource calls; `saveFile()`
 clears the directory first, so only one export is kept. The cache survives screen recreation; OS
 eviction causes a download on the next action. New export requests, refreshes returning a status that
-is not READY or already expired, and logout clear the directory. Atomic file replacement prevents
+is not READY or already expired, and logout clear the directory. On every app start,
+`DeleteExpiredPersonalDataExportFile` (from `InitialAppDataFetch.timestampProtectedFetch`) also clears it
+unless the cached row is READY and unexpired, so an expired file does not wait for the screen to reopen. Atomic file replacement prevents
 partially written JSON from being reused. All filesystem access goes through `FileProvider`
 (`exists`, atomic `writeText`, `deleteRecursively`), implemented once in `CommonFileProvider`.
 

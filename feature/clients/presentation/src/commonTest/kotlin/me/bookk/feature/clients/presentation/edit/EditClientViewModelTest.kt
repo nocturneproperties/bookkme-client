@@ -62,7 +62,7 @@ class EditClientViewModelTest {
     }
 
     private class Fixture(
-        canDelete: Boolean = true,
+        canDeleteDetached: Boolean = true,
         canDeleteIntegrated: Boolean = false,
     ) {
         val id = Uuid.random()
@@ -71,7 +71,7 @@ class EditClientViewModelTest {
             everySuspend { invoke(any()) } returns
                 ClientsPermissions(
                     canEdit = true,
-                    canDelete = canDelete,
+                    canDeleteDetached = canDeleteDetached,
                     canDeleteIntegrated = canDeleteIntegrated,
                 )
         }
@@ -248,7 +248,7 @@ class EditClientViewModelTest {
     @Test
     fun `shows delete for a user who can delete clients`() = runUnitTest {
         given()
-        val fixture = Fixture(canDelete = true)
+        val fixture = Fixture(canDeleteDetached = true)
 
         whenn()
         val sut = fixture.sutWith(stubDetachedClient())
@@ -260,7 +260,7 @@ class EditClientViewModelTest {
     @Test
     fun `hides delete for a user who cannot delete clients`() = runUnitTest {
         given()
-        val fixture = Fixture(canDelete = false)
+        val fixture = Fixture(canDeleteDetached = false)
 
         whenn()
         val sut = fixture.sutWith(stubDetachedClient())
@@ -272,7 +272,7 @@ class EditClientViewModelTest {
     @Test
     fun `hides integrated client deletion for an employee with delete permission`() = runUnitTest {
         given()
-        val fixture = Fixture(canDelete = true, canDeleteIntegrated = false)
+        val fixture = Fixture(canDeleteDetached = true, canDeleteIntegrated = false)
 
         whenn()
         val sut = fixture.sutWith(stubIntegratedClient())
@@ -284,7 +284,7 @@ class EditClientViewModelTest {
     @Test
     fun `shows integrated client deletion for the business owner`() = runUnitTest {
         given()
-        val fixture = Fixture(canDelete = false, canDeleteIntegrated = true)
+        val fixture = Fixture(canDeleteDetached = false, canDeleteIntegrated = true)
 
         whenn()
         val sut = fixture.sutWith(stubIntegratedClient())
@@ -296,7 +296,7 @@ class EditClientViewModelTest {
     @Test
     fun `keeps detached client deletion governed by its normal permission`() = runUnitTest {
         given()
-        val fixture = Fixture(canDelete = false, canDeleteIntegrated = true)
+        val fixture = Fixture(canDeleteDetached = false, canDeleteIntegrated = true)
 
         whenn()
         val sut = fixture.sutWith(stubDetachedClient())

@@ -6,6 +6,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.database.entity.DEFAULT_CLIENT_DATA_RETENTION_MONTHS
 import me.bookk.database.relation.BusinessLocal
 import me.bookk.feature.business.data.remote.model.BusinessPermissionsRemote
 import me.bookk.feature.business.data.remote.model.BusinessRemote
@@ -13,6 +14,7 @@ import me.bookk.feature.business.data.remote.model.ResourcePermissionRemote
 import me.bookk.feature.business.data.remote.model.toRemote
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ClientDataRetention
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import kotlin.test.Test
@@ -71,6 +73,18 @@ class BusinessRetentionTest {
         then()
         assertEquals(36, defaultRetention)
         assertEquals(36, restored.clientDataRetentionMonths)
+    }
+
+    @Test
+    fun `migrated cached businesses get the same default retention as the domain`() = runUnitTest {
+        given()
+        val domainDefault = ClientDataRetention.DEFAULT_MONTHS
+
+        whenn()
+        val databaseDefault = DEFAULT_CLIENT_DATA_RETENTION_MONTHS
+
+        then()
+        assertEquals(domainDefault, databaseDefault)
     }
 
     @Test

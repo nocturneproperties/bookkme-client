@@ -57,7 +57,11 @@ class ClientDetailsViewModelTest {
         }
         val getClientsPermissions = mock<GetClientsPermissions> {
             everySuspend { invoke(any()) } returns
-                ClientsPermissions(canEdit = canEdit, canDelete = false)
+                ClientsPermissions(
+                    canEdit = canEdit,
+                    canDeleteDetached = false,
+                    canDeleteIntegrated = false,
+                )
         }
         val device = mock<DeviceFacade> {
             every { dial(any()) } returns Unit

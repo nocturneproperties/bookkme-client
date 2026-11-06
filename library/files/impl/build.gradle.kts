@@ -16,7 +16,6 @@ kotlin {
             implementation(projects.core)
             implementation(projects.core.domain)
             implementation(projects.library.files.api)
-            implementation(libs.okio)
         }
     }
 }

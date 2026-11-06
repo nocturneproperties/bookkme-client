@@ -77,7 +77,14 @@ class GetClientsPermissionsImplTest {
         val result = fixture.sut(businessId)
 
         then()
-        assertEquals(ClientsPermissions(canEdit = true, canDelete = false), result)
+        assertEquals(
+            ClientsPermissions(
+                canEdit = true,
+                canDeleteDetached = false,
+                canDeleteIntegrated = false,
+            ),
+            result,
+        )
     }
 
     @Test
@@ -93,7 +100,14 @@ class GetClientsPermissionsImplTest {
         val result = fixture.sut(businessId)
 
         then()
-        assertEquals(ClientsPermissions(canEdit = false, canDelete = true), result)
+        assertEquals(
+            ClientsPermissions(
+                canEdit = false,
+                canDeleteDetached = true,
+                canDeleteIntegrated = false,
+            ),
+            result,
+        )
     }
 
     @Test
@@ -113,7 +127,14 @@ class GetClientsPermissionsImplTest {
         val result = fixture.sut(businessId)
 
         then()
-        assertEquals(ClientsPermissions(canEdit = false, canDelete = false), result)
+        assertEquals(
+            ClientsPermissions(
+                canEdit = false,
+                canDeleteDetached = false,
+                canDeleteIntegrated = false,
+            ),
+            result,
+        )
     }
 
     @Test
@@ -126,7 +147,14 @@ class GetClientsPermissionsImplTest {
         val result = fixture.sut(Uuid.random())
 
         then()
-        assertEquals(ClientsPermissions(canEdit = false, canDelete = false), result)
+        assertEquals(
+            ClientsPermissions(
+                canEdit = false,
+                canDeleteDetached = false,
+                canDeleteIntegrated = false,
+            ),
+            result,
+        )
     }
 
     @Test
@@ -144,7 +172,11 @@ class GetClientsPermissionsImplTest {
 
         then()
         assertEquals(
-            ClientsPermissions(canEdit = false, canDelete = true, canDeleteIntegrated = true),
+            ClientsPermissions(
+                canEdit = false,
+                canDeleteDetached = true,
+                canDeleteIntegrated = true,
+            ),
             result,
         )
     }
@@ -164,7 +196,11 @@ class GetClientsPermissionsImplTest {
 
         then()
         assertEquals(
-            ClientsPermissions(canEdit = false, canDelete = false, canDeleteIntegrated = true),
+            ClientsPermissions(
+                canEdit = false,
+                canDeleteDetached = false,
+                canDeleteIntegrated = true,
+            ),
             result,
         )
     }
@@ -184,7 +220,11 @@ class GetClientsPermissionsImplTest {
 
         then()
         assertEquals(
-            ClientsPermissions(canEdit = false, canDelete = true, canDeleteIntegrated = false),
+            ClientsPermissions(
+                canEdit = false,
+                canDeleteDetached = true,
+                canDeleteIntegrated = false,
+            ),
             result,
         )
     }
@@ -206,7 +246,11 @@ class GetClientsPermissionsImplTest {
 
         then()
         assertEquals(
-            ClientsPermissions(canEdit = false, canDelete = true, canDeleteIntegrated = false),
+            ClientsPermissions(
+                canEdit = false,
+                canDeleteDetached = true,
+                canDeleteIntegrated = false,
+            ),
             result,
         )
     }
@@ -224,7 +268,11 @@ class GetClientsPermissionsImplTest {
 
             then()
             assertEquals(
-                ClientsPermissions(canEdit = false, canDelete = true, canDeleteIntegrated = false),
+                ClientsPermissions(
+                    canEdit = false,
+                    canDeleteDetached = true,
+                    canDeleteIntegrated = false,
+                ),
                 result,
             )
         }
@@ -245,7 +293,11 @@ class GetClientsPermissionsImplTest {
 
         then()
         assertEquals(
-            ClientsPermissions(canEdit = false, canDelete = true, canDeleteIntegrated = false),
+            ClientsPermissions(
+                canEdit = false,
+                canDeleteDetached = true,
+                canDeleteIntegrated = false,
+            ),
             result,
         )
     }

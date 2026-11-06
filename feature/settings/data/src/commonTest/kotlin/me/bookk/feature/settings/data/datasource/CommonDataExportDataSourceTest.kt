@@ -83,7 +83,12 @@ class CommonDataExportDataSourceTest {
             install(ContentNegotiation) { protobuf(dataSerializer) }
             defaultRequest { contentType(ContentType.Application.ProtoBuf) }
         }
-        val dataSource = CommonDataExportDataSource(client, mock<PersonalDataExportDao>(), TestExportFileProvider())
+        val dataSource =
+            CommonDataExportDataSource(
+                client,
+                mock<PersonalDataExportDao>(),
+                TestExportFileProvider(),
+            )
 
         whenn()
         val result = try {
@@ -126,7 +131,11 @@ class CommonDataExportDataSourceTest {
 
         whenn()
         val result = try {
-            CommonDataExportDataSource(client, mock<PersonalDataExportDao>(), TestExportFileProvider()).get()
+            CommonDataExportDataSource(
+                client,
+                mock<PersonalDataExportDao>(),
+                TestExportFileProvider(),
+            ).get()
         } finally {
             client.close()
         }
@@ -159,7 +168,11 @@ class CommonDataExportDataSourceTest {
 
         whenn()
         val result = try {
-            CommonDataExportDataSource(client, mock<PersonalDataExportDao>(), TestExportFileProvider()).download()
+            CommonDataExportDataSource(
+                client,
+                mock<PersonalDataExportDao>(),
+                TestExportFileProvider(),
+            ).download()
         } finally {
             client.close()
         }

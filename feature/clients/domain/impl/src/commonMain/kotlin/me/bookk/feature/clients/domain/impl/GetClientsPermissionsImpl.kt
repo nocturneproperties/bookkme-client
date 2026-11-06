@@ -17,7 +17,7 @@ internal class GetClientsPermissionsImpl(
         val clients = business?.permissions?.clients
         return ClientsPermissions(
             canEdit = clients?.update == true,
-            canDelete = clients?.delete == true,
+            canDeleteDetached = clients?.delete == true,
             canDeleteIntegrated = business?.ownerId != null &&
                 business.ownerId == userProfileCRUD.observe().first()?.id,
         )

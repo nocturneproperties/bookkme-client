@@ -8,7 +8,10 @@
 
 It warms the cache so the first screens can render locally. The variants differ as follows:
 `rawFetch` always runs and **adopts the server's dashboard business selection**.
-`timestampProtectedFetch` runs only when at least 30 minutes have passed since
+`timestampProtectedFetch` first calls
+[`DeleteExpiredPersonalDataExportFile`](../settings/delete-expired-personal-data-export-file.md) inside
+`runCatching` on every call, before the throttle and authorization check. The fetch itself runs only
+when at least 30 minutes have passed since
 `authorization_prefs.last_initial_data_fetch_at`, and it keeps the local selection. When due, it first
 calls `GetSignUpLegalDocuments.refresh()` to fetch and persist both public legal documents. It then reads
 `AuthorizationDataSource.getIsAuthorizedFlow().first()`. If unauthorized, it returns immediately: no profile,
@@ -18,7 +21,8 @@ existing authenticated flow and does not preload legal documents.
 ```mermaid
 flowchart TD
     A([rawFetch]) --> P
-    B([timestampProtectedFetch]) --> Due{now - last_initial_data_fetch_at >= 30 min<br/>or never fetched?}
+    B([timestampProtectedFetch]) --> Cleanup[runCatching DeleteExpiredPersonalDataExportFile<br/>local: delete personal_data_exports unless READY and unexpired]
+    Cleanup --> Due{now - last_initial_data_fetch_at >= 30 min<br/>or never fetched?}
     Due -- no --> Skip([return])
     Due -- yes --> Legal[GetSignUpLegalDocuments.refresh<br/>GET /api/user/legal then persist signup_legal_documents_prefs.documents]
     Legal --> Auth[AuthorizationDataSource.getIsAuthorizedFlow.first]

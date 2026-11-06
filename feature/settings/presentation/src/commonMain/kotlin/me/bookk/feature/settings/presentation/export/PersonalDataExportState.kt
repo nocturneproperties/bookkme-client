@@ -66,7 +66,9 @@ private fun DataExportStatus.message(): StringDesc? {
 private fun DataExportStatus.footer(canRequest: Boolean): StringDesc? {
     return when (this) {
         DataExportStatus.RUNNING -> SettingsRes.strings.settings_export_running_footer.desc()
+
         DataExportStatus.READY -> SettingsRes.strings.settings_export_ready_message.desc()
+
         DataExportStatus.FAILED,
         DataExportStatus.NONE,
         -> SettingsRes.strings.settings_export_request_footer.desc().takeIf { canRequest }
@@ -76,7 +78,9 @@ private fun DataExportStatus.footer(canRequest: Boolean): StringDesc? {
 private fun DataExportStatus.icon(): ImageResource? {
     return when (this) {
         DataExportStatus.RUNNING -> null
+
         DataExportStatus.READY -> DesignSystem.images.export_ready
+
         DataExportStatus.FAILED,
         DataExportStatus.NONE,
         -> DesignSystem.images.export_document
@@ -86,7 +90,9 @@ private fun DataExportStatus.icon(): ImageResource? {
 private fun DataExportStatus.color(): ColorToken {
     return when (this) {
         DataExportStatus.RUNNING -> ColorToken.SecondaryText
+
         DataExportStatus.READY -> ColorToken.Success
+
         DataExportStatus.FAILED,
         DataExportStatus.NONE,
         -> ColorToken.ActionText

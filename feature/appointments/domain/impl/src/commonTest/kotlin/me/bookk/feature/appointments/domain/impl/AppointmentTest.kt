@@ -1,6 +1,8 @@
 package me.bookk.feature.appointments.domain.impl
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -14,6 +16,7 @@ import kotlin.time.Duration.Companion.minutes
 
 class AppointmentTest {
 
+    private val zone = TimeZone.UTC
     private val start = LocalDateTime(2026, 10, 3, 10, 0)
     private val beforeStart = LocalDateTime(2026, 10, 3, 9, 59)
 
@@ -26,7 +29,9 @@ class AppointmentTest {
         val statuses = AppointmentStatus.entries
 
         whenn()
-        val completable = statuses.filter { appointment(it).canBeCompleted(now = start) }
+        val completable = statuses.filter {
+            appointment(it).canBeCompleted(now = start.toInstant(zone), timeZone = zone)
+        }
 
         then()
         assertEquals(listOf(AppointmentStatus.SCHEDULED), completable)
@@ -38,7 +43,10 @@ class AppointmentTest {
         val appointment = appointment(AppointmentStatus.SCHEDULED)
 
         whenn()
-        val completable = appointment.canBeCompleted(now = beforeStart)
+        val completable = appointment.canBeCompleted(
+            now = beforeStart.toInstant(zone),
+            timeZone = zone,
+        )
 
         then()
         assertEquals(false, completable)
@@ -50,7 +58,9 @@ class AppointmentTest {
         val statuses = AppointmentStatus.entries
 
         whenn()
-        val markable = statuses.filter { appointment(it).canBeMarkedNoShow(now = start) }
+        val markable = statuses.filter {
+            appointment(it).canBeMarkedNoShow(now = start.toInstant(zone), timeZone = zone)
+        }
 
         then()
         assertEquals(listOf(AppointmentStatus.SCHEDULED, AppointmentStatus.COMPLETED), markable)
@@ -62,7 +72,10 @@ class AppointmentTest {
         val appointment = appointment(AppointmentStatus.SCHEDULED)
 
         whenn()
-        val markable = appointment.canBeMarkedNoShow(now = beforeStart)
+        val markable = appointment.canBeMarkedNoShow(
+            now = beforeStart.toInstant(zone),
+            timeZone = zone,
+        )
 
         then()
         assertEquals(false, markable)
@@ -74,7 +87,9 @@ class AppointmentTest {
         val statuses = AppointmentStatus.entries
 
         whenn()
-        val reschedulable = statuses.filter { appointment(it).canBeRescheduled(now = beforeStart) }
+        val reschedulable = statuses.filter {
+            appointment(it).canBeRescheduled(now = beforeStart.toInstant(zone), timeZone = zone)
+        }
 
         then()
         assertEquals(listOf(AppointmentStatus.SCHEDULED), reschedulable)
@@ -86,7 +101,10 @@ class AppointmentTest {
         val appointment = appointment(AppointmentStatus.SCHEDULED)
 
         whenn()
-        val reschedulable = appointment.canBeRescheduled(now = start)
+        val reschedulable = appointment.canBeRescheduled(
+            now = start.toInstant(zone),
+            timeZone = zone,
+        )
 
         then()
         assertEquals(false, reschedulable)
@@ -99,7 +117,10 @@ class AppointmentTest {
         val beforeCutoff = LocalDateTime(2026, 10, 10, 10, 29, 59)
 
         whenn()
-        val completable = appointment.canBeCompleted(now = beforeCutoff)
+        val completable = appointment.canBeCompleted(
+            now = beforeCutoff.toInstant(zone),
+            timeZone = zone,
+        )
 
         then()
         assertEquals(true, completable)
@@ -112,7 +133,7 @@ class AppointmentTest {
         val cutoff = LocalDateTime(2026, 10, 10, 10, 30)
 
         whenn()
-        val completable = appointment.canBeCompleted(now = cutoff)
+        val completable = appointment.canBeCompleted(now = cutoff.toInstant(zone), timeZone = zone)
 
         then()
         assertEquals(true, completable)
@@ -125,7 +146,10 @@ class AppointmentTest {
         val afterCutoff = LocalDateTime(2026, 10, 10, 10, 30, 1)
 
         whenn()
-        val completable = appointment.canBeCompleted(now = afterCutoff)
+        val completable = appointment.canBeCompleted(
+            now = afterCutoff.toInstant(zone),
+            timeZone = zone,
+        )
 
         then()
         assertEquals(false, completable)
@@ -143,7 +167,7 @@ class AppointmentTest {
         val cutoff = LocalDateTime(2026, 10, 10, 11, 15)
 
         whenn()
-        val completable = appointment.canBeCompleted(now = cutoff)
+        val completable = appointment.canBeCompleted(now = cutoff.toInstant(zone), timeZone = zone)
 
         then()
         assertEquals(true, completable)
@@ -161,7 +185,10 @@ class AppointmentTest {
         val afterCutoff = LocalDateTime(2026, 10, 10, 11, 15, 1)
 
         whenn()
-        val completable = appointment.canBeCompleted(now = afterCutoff)
+        val completable = appointment.canBeCompleted(
+            now = afterCutoff.toInstant(zone),
+            timeZone = zone,
+        )
 
         then()
         assertEquals(false, completable)
@@ -175,7 +202,7 @@ class AppointmentTest {
 
             whenn()
             val markable = AppointmentStatus.entries.filter {
-                appointment(it).canBeMarkedNoShow(now = cutoff)
+                appointment(it).canBeMarkedNoShow(now = cutoff.toInstant(zone), timeZone = zone)
             }
 
             then()
@@ -189,7 +216,7 @@ class AppointmentTest {
 
         whenn()
         val markable = AppointmentStatus.entries.filter {
-            appointment(it).canBeMarkedNoShow(now = afterCutoff)
+            appointment(it).canBeMarkedNoShow(now = afterCutoff.toInstant(zone), timeZone = zone)
         }
 
         then()
@@ -208,7 +235,7 @@ class AppointmentTest {
         val cutoff = LocalDateTime(2026, 10, 10, 11, 15)
 
         whenn()
-        val markable = appointment.canBeMarkedNoShow(now = cutoff)
+        val markable = appointment.canBeMarkedNoShow(now = cutoff.toInstant(zone), timeZone = zone)
 
         then()
         assertEquals(true, markable)
@@ -223,9 +250,9 @@ class AppointmentTest {
         val times = listOf(beforeStart, start, LocalDateTime(2026, 10, 11, 10, 0))
         val availability = times.map { now ->
             listOf(
-                appointment.canBeCompleted(now),
-                appointment.canBeMarkedNoShow(now),
-                appointment.canBeRescheduled(now),
+                appointment.canBeCompleted(now.toInstant(zone), zone),
+                appointment.canBeMarkedNoShow(now.toInstant(zone), zone),
+                appointment.canBeRescheduled(now.toInstant(zone), zone),
             )
         }
 
@@ -239,7 +266,9 @@ class AppointmentTest {
         val statuses = AppointmentStatus.entries
 
         whenn()
-        val cancellable = statuses.filter { appointment(it).canBeCancelled(now = beforeStart) }
+        val cancellable = statuses.filter {
+            appointment(it).canBeCancelled(now = beforeStart.toInstant(zone), timeZone = zone)
+        }
 
         then()
         assertEquals(listOf(AppointmentStatus.SCHEDULED), cancellable)
@@ -252,7 +281,7 @@ class AppointmentTest {
         val cutoff = LocalDateTime(2026, 10, 10, 10, 30)
 
         whenn()
-        val cancellable = appointment.canBeCancelled(now = cutoff)
+        val cancellable = appointment.canBeCancelled(now = cutoff.toInstant(zone), timeZone = zone)
 
         then()
         assertEquals(true, cancellable)
@@ -265,9 +294,28 @@ class AppointmentTest {
         val afterCutoff = LocalDateTime(2026, 10, 10, 10, 30, 1)
 
         whenn()
-        val cancellable = appointment.canBeCancelled(now = afterCutoff)
+        val cancellable = appointment.canBeCancelled(
+            now = afterCutoff.toInstant(zone),
+            timeZone = zone,
+        )
 
         then()
         assertEquals(false, cancellable)
     }
+
+    @Test
+    fun `edit window is measured in the given time zone across a daylight saving change`() =
+        runUnitTest {
+            given()
+            val warsaw = TimeZone.of("Europe/Warsaw")
+            val appointment = Appointment.stub(date = LocalDateTime(2026, 10, 24, 10, 0))
+                .copy(status = AppointmentStatus.SCHEDULED)
+            val naiveWallClockCutoff = LocalDateTime(2026, 10, 31, 10, 30).toInstant(warsaw)
+
+            whenn()
+            val cancellable = appointment.canBeCancelled(naiveWallClockCutoff, warsaw)
+
+            then()
+            assertEquals(false, cancellable)
+        }
 }

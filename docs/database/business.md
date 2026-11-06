@@ -113,8 +113,10 @@ Version 22 added nullable `business.clientDataRetentionMonths` via auto-migratio
 Version 23 makes the column `NOT NULL DEFAULT 36`. The manual `DefaultBusinessRetention` migration
 22 → 23 copies each existing period into a temporary non-null column, substitutes 36 for null,
 then drops the old column and renames the replacement. It keeps the business table and its dependent
-rows intact. Both `BusinessEntity` and the domain `Business` use non-null retention with a Kotlin
-default of 36. `BusinessRemote` also carries non-null retention with a default of 36;
+rows intact. The database default lives in one constant, `DEFAULT_CLIENT_DATA_RETENTION_MONTHS`
+(`BusinessEntity.kt`), used by the column default, the entity's Kotlin default and the migration SQL.
+The domain `Business` and `BusinessRemote` default to `ClientDataRetention.DEFAULT_MONTHS`; the
+database module cannot see the domain, so `BusinessRetentionTest` pins both constants to the same value;
 remote-to-domain and domain-to-local mapping copy the value directly. Existing custom periods are preserved. The mobile database is
 the source of truth for this setting, so saving it with other business fields is intentional.
 `CommonBusinessDataSource.doOnLogOut` clears the entire business row including this field.

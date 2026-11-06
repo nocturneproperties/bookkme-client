@@ -69,4 +69,3 @@ suspend inline fun <T> Result<T>.onNotFound(
         action(it.notFoundOrThrow())
     }
 }
-

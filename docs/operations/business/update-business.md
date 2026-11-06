@@ -32,7 +32,9 @@ preserves the cached period. Cached periods are non-null with a 36-month default
 
 Business Settings on Android and iOS displays the stored retention value in months and explains that
 client details on ended appointments and requests are anonymized or deleted after that period.
-The ViewModel accepts whole numbers from 12 to 120 inclusive, blocks invalid submissions, and handles
+The ViewModel accepts unsigned whole numbers in `ClientDataRetention.ALLOWED_MONTHS` (12 to 120 inclusive)
+and disables Save while the value is invalid. Save runs under a `DropLatest` launch key, so a repeated
+tap while a save is running is ignored. It handles
 `InvalidRetentionPeriod` (200041) as an inline field error. Retention edits participate in save-button
 and discard-confirmation state. The persisted and domain periods are non-null and default to 36 months, including rows migrated
 from an older cache. The backend response model also carries non-null retention; mapping copies it

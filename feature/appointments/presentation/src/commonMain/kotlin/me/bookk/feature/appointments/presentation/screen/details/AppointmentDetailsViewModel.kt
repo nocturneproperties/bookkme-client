@@ -5,7 +5,6 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import library.device.api.DeviceFacade
 import library.money.api.Money
 import me.bookk.android.designsystem.resources.DesignSystem
@@ -51,6 +50,7 @@ import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPresentation
 import org.koin.core.annotation.InjectedParam
 import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class AppointmentDetailsViewModel(
@@ -533,17 +533,18 @@ class AppointmentDetailsViewModel(
     }
 
     private fun renderAppointment(appointment: Appointment) {
-        val now = clock.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val now = clock.now()
+        val timeZone = TimeZone.currentSystemDefault()
         this.appointment = appointment
         uiState.appBar.title = appointment.client.fullName.desc()
         uiState.status = UIAppointmentStatus(appointment.status)
         uiState.statusNote = statusNote(appointment)
-        uiState.appBar.actions.replace(appBarActions(appointment, now))
+        uiState.appBar.actions.replace(appBarActions(appointment, now, timeZone))
         uiState.dateTimePicker.pickedDate = appointment.date
         uiState.dateTimePicker.onDatePicked = weakVMClosure { vm, v -> vm.onDatePicked(v) }
-        uiState.rescheduleButton.isVisible = appointment.canBeRescheduled(now)
-        uiState.completeButton.isVisible = appointment.canBeCompleted(now)
-        uiState.noShowButton.isVisible = appointment.canBeMarkedNoShow(now)
+        uiState.rescheduleButton.isVisible = appointment.canBeRescheduled(now, timeZone)
+        uiState.completeButton.isVisible = appointment.canBeCompleted(now, timeZone)
+        uiState.noShowButton.isVisible = appointment.canBeMarkedNoShow(now, timeZone)
         uiState.infoSections.replace(createSections(appointment))
         uiState.completion.price.placeholder = calculatedPrice(emptyList()).toPriceInput().desc()
         uiState.completion.price.suffix =
@@ -647,9 +648,10 @@ class AppointmentDetailsViewModel(
 
     private fun appBarActions(
         appointment: Appointment,
-        now: LocalDateTime,
+        now: Instant,
+        timeZone: TimeZone,
     ): List<AppBarActionState> {
-        if (!appointment.canBeCancelled(now)) return emptyList()
+        if (!appointment.canBeCancelled(now, timeZone)) return emptyList()
         return listOf(
             uiState.appBar.action(
                 contentDescription = DesignSystem.strings.action_cancel.desc(),

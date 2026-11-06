@@ -3,6 +3,7 @@ package me.bookk.feature.settings.domain.impl.di
 import me.bookk.feature.settings.domain.api.AcceptLegalDocuments
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.DeleteExpiredPersonalDataExportFile
 import me.bookk.feature.settings.domain.api.DeletePasskey
 import me.bookk.feature.settings.domain.api.DownloadPersonalDataExport
 import me.bookk.feature.settings.domain.api.EditProfile
@@ -21,6 +22,7 @@ import me.bookk.feature.settings.domain.api.UpdateNotificationToken
 import me.bookk.feature.settings.domain.impl.AcceptLegalDocumentsImpl
 import me.bookk.feature.settings.domain.impl.CreateNewPasskeyImpl
 import me.bookk.feature.settings.domain.impl.DeleteAccountImpl
+import me.bookk.feature.settings.domain.impl.DeleteExpiredPersonalDataExportFileImpl
 import me.bookk.feature.settings.domain.impl.DeletePasskeyImpl
 import me.bookk.feature.settings.domain.impl.DownloadPersonalDataExportImpl
 import me.bookk.feature.settings.domain.impl.EditProfileImpl
@@ -41,6 +43,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun settingsDomainModule() = module {
+    factoryOf(::DeleteExpiredPersonalDataExportFileImpl) bind
+        DeleteExpiredPersonalDataExportFile::class
     factoryOf(::DownloadPersonalDataExportImpl) bind DownloadPersonalDataExport::class
     factoryOf(::GetPersonalDataExportImpl) bind GetPersonalDataExport::class
     factoryOf(::StartPersonalDataExportImpl) bind StartPersonalDataExport::class

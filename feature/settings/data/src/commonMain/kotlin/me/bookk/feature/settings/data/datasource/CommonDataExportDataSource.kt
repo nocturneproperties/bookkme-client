@@ -48,7 +48,7 @@ internal class CommonDataExportDataSource(
 
     private fun DataExport.file(): Path {
         val key = "${requestedAt?.toEpochMilliseconds()}-${expiresAt?.toEpochMilliseconds()}"
-        return directory / key / me.bookk.feature.settings.data.datasource.CommonDataExportDataSource.Companion.FILE_NAME
+        return directory / key / FILE_NAME
     }
 
     override suspend fun start(confirmationToken: String): DataExport = mapExceptions {

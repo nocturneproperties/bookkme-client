@@ -51,7 +51,8 @@ class CommonFileProviderTest {
     }
 
     private class Fixture {
-        val directory = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "bookk-file-provider-test-${Uuid.random()}"
+        val directory =
+            FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "bookk-file-provider-test-${Uuid.random()}"
         val fileSystem = FailingFileSystem()
         val sut = object : CommonFileProvider(fileSystem) {
             override fun touchPrefsFile(fileName: String): Path {
@@ -130,21 +131,22 @@ class CommonFileProviderTest {
     }
 
     @Test
-    fun `failed replacement preserves existing content and removes temporary files`() = runUnitTest {
-        given()
-        val fixture = Fixture().also { resources.add(it) }
-        val file = fixture.sut.touchCacheFile("export.json")
-        fixture.sut.writeText(file, "original")
-        fixture.fileSystem.failAtomicMove = true
+    fun `failed replacement preserves existing content and removes temporary files`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture().also { resources.add(it) }
+            val file = fixture.sut.touchCacheFile("export.json")
+            fixture.sut.writeText(file, "original")
+            fixture.fileSystem.failAtomicMove = true
 
-        whenn()
-        val result = runCatching { fixture.sut.writeText(file, "replacement") }
+            whenn()
+            val result = runCatching { fixture.sut.writeText(file, "replacement") }
 
-        then()
-        assertFailsWith<IOException> { result.getOrThrow() }
-        assertEquals("original", fixture.read(file))
-        assertEquals(listOf(file), fixture.list(file.parent!!))
-    }
+            then()
+            assertFailsWith<IOException> { result.getOrThrow() }
+            assertEquals("original", fixture.read(file))
+            assertEquals(listOf(file), fixture.list(file.parent!!))
+        }
 
     @Test
     fun `failed initial write leaves no cached content or temporary files`() = runUnitTest {

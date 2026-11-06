@@ -9,9 +9,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import me.bookk.android.designsystem.resources.DesignSystem
@@ -194,14 +194,18 @@ class PersonalDataExportViewModel(
         when (error) {
             is StartPersonalDataExport.Error.ConfirmationFailed,
             is StartPersonalDataExport.Error.ConfirmationRequired,
-            -> uiState.error = SettingsRes.strings.settings_export_confirmation_error.desc()
+            -> {
+                uiState.error = SettingsRes.strings.settings_export_confirmation_error.desc()
+            }
 
             is StartPersonalDataExport.Error.TooFrequent -> {
                 renderStatus(exportStatus, canRequest = false)
                 uiState.error = SettingsRes.strings.settings_export_too_frequent.desc()
             }
 
-            else -> showError(error, SettingsRes.strings.settings_export_request_error)
+            else -> {
+                showError(error, SettingsRes.strings.settings_export_request_error)
+            }
         }
     }
 

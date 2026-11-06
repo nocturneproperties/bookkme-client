@@ -174,7 +174,8 @@ class CommonPersonalDataExportCacheTest {
         then()
         assertNull(fixture.dao.export)
         assertEquals(listOf(fixture.ready, null), emissions)
-        assertNull(CommonDataExportDataSource(fixture.client, fixture.dao, fixture.files).observe().first())
+        val recreated = CommonDataExportDataSource(fixture.client, fixture.dao, fixture.files)
+        assertNull(recreated.observe().first())
     }
 
     @Test

@@ -6,6 +6,7 @@ import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
+import me.bookk.feature.settings.domain.api.DeleteExpiredPersonalDataExportFile
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
@@ -16,9 +17,11 @@ internal class InitialAppDataFetchImpl(
     private val authorizationDataSource: AuthorizationDataSource,
     private val clock: Clock,
     private val getSignUpLegalDocuments: GetSignUpLegalDocuments,
+    private val deleteExpiredPersonalDataExportFile: DeleteExpiredPersonalDataExportFile,
 ) : InitialAppDataFetch {
 
     override suspend fun timestampProtectedFetch() {
+        runCatching { deleteExpiredPersonalDataExportFile() }
         if (!isFetchDue()) return
         getSignUpLegalDocuments.refresh()
         if (!authorizationDataSource.getIsAuthorizedFlow().first()) return

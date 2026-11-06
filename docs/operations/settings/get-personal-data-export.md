@@ -58,8 +58,9 @@ READY with a future or absent expiry, NONE and FAILED are trusted: their expiry 
 local timestamps, a missing download yields `NotReady` with a refresh action, and a request blocked
 elsewhere yields `TooFrequent`. Opening a valid READY export offline therefore makes no network call.
 Later null values never trigger a refresh, so a server response that is already expired cannot loop.
-If the app is offline while the opening refresh runs, an expired file stays until the next
-successful refresh, export request or logout.
+If the app is offline while the opening refresh runs, or the screen is never reopened, an expired
+file is removed on the next app start by
+[`DeleteExpiredPersonalDataExportFile`](delete-expired-personal-data-export-file.md).
 
 Refresh loading and failures belong to the ViewModel; a failed request leaves the local observation
 active and preserves the cached value for retry.

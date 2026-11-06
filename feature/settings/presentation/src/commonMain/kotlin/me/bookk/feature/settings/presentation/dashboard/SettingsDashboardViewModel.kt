@@ -19,9 +19,11 @@ import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.settings.domain.api.AcceptLegalDocuments
+import me.bookk.feature.settings.domain.api.GetCrashReportingEnabled
 import me.bookk.feature.settings.domain.api.GetLegalDocumentStatuses
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
+import me.bookk.feature.settings.domain.api.UpdateCrashReportingEnabled
 import me.bookk.feature.settings.domain.api.entity.AcceptedLegalDocuments
 import me.bookk.feature.settings.domain.api.entity.LegalDocument
 import me.bookk.feature.settings.domain.api.entity.LegalDocumentStatus
@@ -33,6 +35,8 @@ class SettingsDashboardViewModel(
     private val getLegalDocumentStatuses: GetLegalDocumentStatuses,
     private val acceptLegalDocuments: AcceptLegalDocuments,
     private val updateColorScheme: UpdateColorScheme,
+    private val getCrashReportingEnabled: GetCrashReportingEnabled,
+    private val updateCrashReportingEnabled: UpdateCrashReportingEnabled,
     private val deviceFacade: DeviceFacade,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs,
@@ -42,6 +46,7 @@ class SettingsDashboardViewModel(
 
     init {
         observeLegalDocuments()
+        loadCrashReporting()
     }
 
     private fun SettingsState.setup(): SettingsState = apply {
@@ -52,6 +57,14 @@ class SettingsDashboardViewModel(
         legal.retry.text = SettingsRes.strings.settings_legal_retry.desc()
         legal.retry.isVisible = false
         legal.retry.onClick = weakVMClosure { it.loadLegalDocuments() }
+        privacy.title = SettingsRes.strings.settings_privacy_title.desc()
+        privacy.crashReporting.text =
+            SettingsRes.strings.settings_privacy_crash_reports_label.desc()
+        privacy.crashReportingDescription =
+            SettingsRes.strings.settings_privacy_crash_reports_description.desc()
+        privacy.crashReporting.onCheckedChange = weakVMClosure { vm, enabled ->
+            vm.onCrashReportingChanged(enabled)
+        }
         appBar.actions.replace(
             listOf(
                 appBar.action(
@@ -77,6 +90,30 @@ class SettingsDashboardViewModel(
                 uiState.appearance.colorScheme = scheme
             },
             onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
+        )
+    }
+
+    private fun loadCrashReporting() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { getCrashReportingEnabled() },
+            onComplete = { uiState.privacy.crashReporting.isChecked = it },
+            onError = { uiState.notification.add(it.notification()) },
+        )
+    }
+
+    private fun onCrashReportingChanged(enabled: Boolean) {
+        launch(
+            key = UPDATE_CRASH_REPORTING_KEY,
+            launchBehaviour = LaunchBehaviour.DropOldest,
+            launchIn = DispatcherProvider.io,
+            onStart = { uiState.privacy.crashReporting.isChecked = enabled },
+            call = { updateCrashReportingEnabled(enabled) },
+            onComplete = { uiState.notification.add(PresentationNotification.SuccessHaptic) },
+            onError = {
+                uiState.privacy.crashReporting.isChecked = !enabled
+                uiState.notification.add(it.notification())
+            },
         )
     }
 
@@ -256,6 +293,7 @@ class SettingsDashboardViewModel(
     companion object {
         private const val LOAD_LEGAL_DOCUMENTS_KEY = "loadLegalDocuments"
         private const val ACCEPT_LEGAL_DOCUMENTS_KEY = "acceptLegalDocuments"
+        private const val UPDATE_CRASH_REPORTING_KEY = "updateCrashReporting"
 
         fun createInitData() = SettingsState.InitData(
             appearance = AppearanceSection.InitData(

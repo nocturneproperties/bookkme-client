@@ -16,6 +16,7 @@ class IOSSettingsState: @MainActor SettingsState {
 	var account: any AccountSection
 	var appearance: any AppearanceSection
 	var profile: any ProfileSection
+	let privacy: any PrivacySection
 	let legal: any LegalDocumentsSection
 	var support: any SupportSection
 	
@@ -27,6 +28,7 @@ class IOSSettingsState: @MainActor SettingsState {
 		account = IOSAccountSection(initData: initData.account)
 		appearance = IOSAppearanceSection(initData: initData.appearance)
 		profile = IOSProfileSection()
+		privacy = IOSPrivacySection()
 		legal = IOSLegalDocumentsSection()
 		support = IOSSupportSection(initData: initData.support)
 		notification = IOSNotificationState()

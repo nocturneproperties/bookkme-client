@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.AndroidAppBarState
+import me.bookk.designsystem.uistate.AndroidBooleanState
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidTextState
@@ -22,6 +23,7 @@ internal class AndroidDashboardState(
     override val appearance: AppearanceSection = AndroidAppearanceSectionState(initData.appearance)
     override val profile: ProfileSection = AndroidProfileSectionState()
     override val account: AccountSection = AndroidAccountSectionState(initData.account)
+    override val privacy: PrivacySection = AndroidPrivacySectionState()
     override val legal: LegalDocumentsSection = AndroidLegalDocumentsSectionState()
     override val support: SupportSection = AndroidSupportState(initData.support)
     override val notification: PresentationNotificationState = AndroidNotificationState()
@@ -51,6 +53,12 @@ internal class AndroidAccountSectionState(
     override val passkey: TextState = AndroidTextState(initData.passkeyLabel)
     override val logout: TextState = AndroidTextState(initData.logoutLabel)
     override val deleteAccount: TextState = AndroidTextState(initData.deleteAccountLabel)
+}
+
+internal class AndroidPrivacySectionState : PrivacySection {
+    override var title: StringDesc by mutableStateOf("".desc())
+    override var crashReportingDescription: StringDesc by mutableStateOf("".desc())
+    override val crashReporting = AndroidBooleanState()
 }
 
 internal class AndroidSupportState(

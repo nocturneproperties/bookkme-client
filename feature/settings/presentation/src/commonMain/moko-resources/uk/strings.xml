@@ -61,6 +61,9 @@
     <string name="settings_edit_profile_email_taken_error">Ця електронна адреса вже використовується.</string>
     <string name="settings_passkey_last_error">Не можна видалити останній ключ доступу. Спочатку додайте інший ключ, щоб зберегти доступ до облікового запису.</string>
 
+    <string name="settings_privacy_title">Конфіденційність</string>
+    <string name="settings_privacy_crash_reports_label">Надсилати звіти про збої</string>
+    <string name="settings_privacy_crash_reports_description">Під час збою застосунок надсилає до Firebase Crashlytics технічні відомості про помилку та ваш пристрій, щоб ми могли її виправити. Звіти не містять вашого імені, email, даних бізнесу чи клієнтів.</string>
     <string name="settings_legal_title">Правова інформація</string>
     <string name="settings_legal_accepted">Прийнято</string>
     <string name="settings_legal_pending">Потребує ознайомлення</string>

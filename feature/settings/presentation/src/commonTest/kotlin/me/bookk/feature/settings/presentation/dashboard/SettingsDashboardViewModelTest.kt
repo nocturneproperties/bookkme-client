@@ -32,9 +32,11 @@ import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.test.tap
 import me.bookk.feature.settings.domain.api.AcceptLegalDocuments
+import me.bookk.feature.settings.domain.api.GetCrashReportingEnabled
 import me.bookk.feature.settings.domain.api.GetLegalDocumentStatuses
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
+import me.bookk.feature.settings.domain.api.UpdateCrashReportingEnabled
 import me.bookk.feature.settings.domain.api.entity.AcceptedLegalDocuments
 import me.bookk.feature.settings.domain.api.entity.ColorScheme
 import me.bookk.feature.settings.domain.api.entity.LegalDocument
@@ -48,6 +50,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -88,6 +91,12 @@ class SettingsDashboardViewModelTest {
                 Settings(ColorScheme.DARK, SettingsProfile("Anna", "Smith", "anna@example.com"))
         }
         val updateColorScheme = mock<UpdateColorScheme>()
+        val getCrashReportingEnabled = mock<GetCrashReportingEnabled> {
+            everySuspend { invoke() } returns true
+        }
+        val updateCrashReportingEnabled = mock<UpdateCrashReportingEnabled> {
+            everySuspend { invoke(any()) } returns Unit
+        }
         val statuses = MutableStateFlow<List<LegalDocumentStatus>>(emptyList())
         val remoteStatuses = mock<GetLegalDocumentStatuses> {
             everySuspend { refresh() } returns listOf(privacy(), terms())
@@ -112,6 +121,8 @@ class SettingsDashboardViewModelTest {
                 getLegalDocumentStatuses = getLegalDocumentStatuses,
                 acceptLegalDocuments = acceptLegalDocuments,
                 updateColorScheme = updateColorScheme,
+                getCrashReportingEnabled = getCrashReportingEnabled,
+                updateCrashReportingEnabled = updateCrashReportingEnabled,
                 deviceFacade = deviceFacade,
                 settingsStateFactory = FakeSettingsStateFactory(),
                 vmArgs = VmArgs(errorMapper),
@@ -494,6 +505,145 @@ class SettingsDashboardViewModelTest {
         assertEquals(UIColorScheme.SYSTEM, sut.uiState.appearance.colorScheme)
         fixture.errorMapper.assertMappedSingle(TestException::class)
     }
+
+    @Test
+    fun `labels the crash reporting switch and explains what reports contain`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(SettingsRes.strings.settings_privacy_title.desc(), sut.uiState.privacy.title)
+        assertEquals(
+            SettingsRes.strings.settings_privacy_crash_reports_label.desc(),
+            sut.uiState.privacy.crashReporting.text,
+        )
+        assertEquals(
+            SettingsRes.strings.settings_privacy_crash_reports_description.desc(),
+            sut.uiState.privacy.crashReportingDescription,
+        )
+    }
+
+    @Test
+    fun `shows crash reporting as on when collection is enabled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getCrashReportingEnabled() } returns true
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.privacy.crashReporting.isChecked)
+    }
+
+    @Test
+    fun `shows crash reporting as off when collection is disabled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getCrashReportingEnabled() } returns false
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.privacy.crashReporting.isChecked)
+    }
+
+    @Test
+    fun `shows mapped error when crash reporting state cannot be loaded`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getCrashReportingEnabled() } throws TestException()
+
+        whenn()
+        fixture.sut()
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    @Test
+    fun `turns crash reporting off when the switch is turned off`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.privacy.crashReporting.onCheckedChange?.invoke(false)
+
+        then()
+        verifySuspend { fixture.updateCrashReportingEnabled(false) }
+        assertFalse(sut.uiState.privacy.crashReporting.isChecked)
+    }
+
+    @Test
+    fun `turns crash reporting on when the switch is turned on`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getCrashReportingEnabled() } returns false
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.privacy.crashReporting.onCheckedChange?.invoke(true)
+
+        then()
+        verifySuspend { fixture.updateCrashReportingEnabled(true) }
+        assertTrue(sut.uiState.privacy.crashReporting.isChecked)
+    }
+
+    @Test
+    fun `plays success haptic when crash reporting choice is saved`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.privacy.crashReporting.onCheckedChange?.invoke(false)
+
+        then()
+        assertEquals(
+            1,
+            sut.uiState.notification.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
+    }
+
+    @Test
+    fun `does not play success haptic when crash reporting choice fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateCrashReportingEnabled(any()) } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.privacy.crashReporting.onCheckedChange?.invoke(false)
+
+        then()
+        assertTrue(
+            sut.uiState.notification.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
+    }
+
+    @Test
+    fun `restores the switch and shows mapped error when crash reporting choice fails`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateCrashReportingEnabled(any()) } throws TestException()
+            val sut = fixture.sut()
+
+            whenn()
+            sut.uiState.privacy.crashReporting.onCheckedChange?.invoke(false)
+
+            then()
+            assertTrue(sut.uiState.privacy.crashReporting.isChecked)
+            fixture.errorMapper.assertMappedSingle(TestException::class)
+        }
 
     @Test
     fun `asks for confirmation before logging out`() = runUnitTest {

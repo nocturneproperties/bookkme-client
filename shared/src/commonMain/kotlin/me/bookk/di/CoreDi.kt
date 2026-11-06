@@ -1,6 +1,7 @@
 package me.bookk.di
 
 import kotlinx.coroutines.CoroutineScope
+import library.crashreporting.api.CrashReporter
 import library.credentials.api.PasskeyCredentialUpdater
 import library.credentials.di.CredentialModuleFactory
 import library.picker.PickOptionStateFactory
@@ -53,6 +54,7 @@ private fun stateModule() = module {
     factory<ServicesStateFactory> { get<StateFactoryCreator>().createServicesFactory() }
     factory<CredentialModuleFactory> { get<StateFactoryCreator>().createCredentialModuleFactory() }
     single<PasskeyCredentialUpdater> { get<StateFactoryCreator>().createPasskeyCredentialUpdater() }
+    single<CrashReporter> { get<StateFactoryCreator>().createCrashReporter() }
     factory<PickOptionStateFactory> { get<StateFactoryCreator>().createPickOptionFactory() }
     factory<AppointmentsStateFactory> { get<StateFactoryCreator>().createAppointmentsFactory() }
 }

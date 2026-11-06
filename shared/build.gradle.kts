@@ -99,6 +99,7 @@ kotlin {
             implementation(projects.library.validation.api)
             implementation(projects.library.validation.impl)
             api(projects.library.notifications.api)
+            api(projects.library.crashreporting.api)
             implementation(projects.library.notifications.impl)
             api(projects.library.credentials.api)
             implementation(projects.library.credentials.impl)
@@ -189,6 +190,7 @@ kotlin {
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)
             export(projects.library.notifications.api)
+            export(projects.library.crashreporting.api)
             export(projects.library.picker)
         }
     }

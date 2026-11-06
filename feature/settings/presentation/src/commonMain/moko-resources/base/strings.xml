@@ -61,6 +61,9 @@
     <string name="settings_edit_profile_email_taken_error">This email address is already in use.</string>
     <string name="settings_passkey_last_error">You cannot delete your last passkey. Add another passkey first to keep access to your account.</string>
 
+    <string name="settings_privacy_title">Privacy</string>
+    <string name="settings_privacy_crash_reports_label">Send crash reports</string>
+    <string name="settings_privacy_crash_reports_description">When the app crashes, it sends Firebase Crashlytics technical details about the error and your device so we can fix it. Reports do not include your name, email, business or client data.</string>
     <string name="settings_legal_title">Legal</string>
     <string name="settings_legal_accepted">Accepted</string>
     <string name="settings_legal_pending">Needs your review</string>

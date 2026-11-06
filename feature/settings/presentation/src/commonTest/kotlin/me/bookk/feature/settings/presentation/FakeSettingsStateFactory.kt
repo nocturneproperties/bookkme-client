@@ -17,8 +17,6 @@ import me.bookk.feature.settings.presentation.contactus.ContactUsNavigationDesti
 import me.bookk.feature.settings.presentation.contactus.ContactUsState
 import me.bookk.feature.settings.presentation.dashboard.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection
-import me.bookk.feature.settings.presentation.dashboard.LegalDocumentItem
-import me.bookk.feature.settings.presentation.dashboard.LegalDocumentsSection
 import me.bookk.feature.settings.presentation.dashboard.ProfileSection
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
@@ -31,6 +29,10 @@ import me.bookk.feature.settings.presentation.export.UIExportStatus
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsDestinations
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
 import me.bookk.feature.settings.presentation.passkey.PasskeyState
+import me.bookk.feature.settings.presentation.privacy.LegalDocumentItem
+import me.bookk.feature.settings.presentation.privacy.LegalDocumentsSection
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsDestinations
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsState
 
 internal class FakeSettingsStateFactory : SettingsStateFactory {
     override fun createPersonalDataExportState(): PersonalDataExportState {
@@ -55,6 +57,10 @@ internal class FakeSettingsStateFactory : SettingsStateFactory {
 
     override fun createNotificationSettingsState(): NotificationSettingsState =
         FakeNotificationSettingsState()
+
+    override fun createPrivacySettingsState(): PrivacySettingsState {
+        return FakePrivacySettingsState()
+    }
 }
 
 internal class FakeSettingsState : SettingsState {
@@ -71,13 +77,14 @@ internal class FakeSettingsState : SettingsState {
     }
     override val account = object : AccountSection {
         override val dataExport = FakeTextState()
+        override val privacy = FakeTextState()
+        override var privacyStatus: StringDesc? = null
         override val title: StringDesc = "".desc()
         override val notifications = FakeTextState()
         override val passkey = FakeTextState()
         override val logout = FakeTextState()
         override val deleteAccount = FakeTextState()
     }
-    override val legal = FakeLegalDocumentsSectionState()
     override val support = object : SupportSection {
         override val title: StringDesc = "".desc()
         override val contact = FakeTextState()
@@ -139,6 +146,16 @@ internal class FakeNotificationSettingsState : NotificationSettingsState {
     override val telegramEnabled = FakeBooleanState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<NotificationSettingsDestinations>()
+}
+
+internal class FakePrivacySettingsState : PrivacySettingsState {
+    override val appBar = FakeAppBarState()
+    override var diagnosticsTitle: StringDesc = "".desc()
+    override val crashReporting = FakeBooleanState()
+    override var crashReportingDescription: StringDesc = "".desc()
+    override val legal = FakeLegalDocumentsSectionState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<PrivacySettingsDestinations>()
 }
 
 internal class FakeLegalDocumentsSectionState : LegalDocumentsSection {

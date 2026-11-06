@@ -161,6 +161,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `GetSettings` | local-first | [Get settings](settings/get-settings.md) |
 | `EditProfile` | `PATCH /api/user/me`; contact-conflict error | [Edit profile](settings/edit-profile.md) |
 | `GetColorScheme`, `UpdateColorScheme` | local only | [Get / update color scheme](settings/get-color-scheme.md) |
+| `GetCrashReportingEnabled`, `UpdateCrashReportingEnabled` | local only, through the platform `CrashReporter` (Firebase Crashlytics); every change deletes unsent reports | [Get / update crash reporting](settings/get-crash-reporting-enabled.md) |
 | `GetNotificationSettings` | `GET /api/notifications/settings` | [Get notification settings](settings/get-notification-settings.md) |
 | `UpdateNotificationSettings` | `PUT /api/notifications/settings` | [Update notification settings](settings/update-notification-settings.md) |
 | `UpdateNotificationToken` | `PUT /api/notifications/{deviceUuid}/token` | [Update notification token](settings/update-notification-token.md) |

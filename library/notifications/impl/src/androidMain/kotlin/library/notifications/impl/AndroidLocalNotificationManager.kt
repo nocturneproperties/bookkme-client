@@ -10,7 +10,9 @@ import library.notifications.api.LocalNotificationManager
 import me.bookk.android.library.notifications.resources.NotifcationRes
 import me.bookk.core.Logger
 
-class AndroidLocalNotificationManager(private val appContext: Context) : LocalNotificationManager {
+class AndroidLocalNotificationManager(
+    private val appContext: Context,
+) : LocalNotificationManager {
 
     private val logger = Logger.create("LocalNotificationManager")
     private val notificationManager = NotificationManagerCompat.from(appContext)

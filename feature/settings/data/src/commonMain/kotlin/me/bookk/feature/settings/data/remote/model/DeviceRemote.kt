@@ -42,4 +42,6 @@ enum class DeviceLanguageRemote {
 }
 
 @Serializable
-data class UpdateTokenRequestRemote(@ProtoNumber(1) val token: String)
+data class UpdateTokenRequestRemote(
+    @ProtoNumber(1) val token: String,
+)

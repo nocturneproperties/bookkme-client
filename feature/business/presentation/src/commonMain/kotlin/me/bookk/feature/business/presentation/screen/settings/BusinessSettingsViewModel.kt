@@ -235,19 +235,21 @@ class BusinessSettingsViewModel(
             },
             onError = {
                 when (it) {
-                    is UpdateBusiness.Error.InvalidRetentionPeriod ->
+                    is UpdateBusiness.Error.InvalidRetentionPeriod -> {
                         uiState.clientDataRetentionMonths.showError(
                             BusinessRes.strings.business_settings_retention_error.desc(),
                         )
+                    }
 
-                    is UpdateBusiness.Error.CurrencyLocked ->
+                    is UpdateBusiness.Error.CurrencyLocked -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings.business_settings_currency_locked_error.desc(),
                             ),
                         )
+                    }
 
-                    is UpdateBusiness.Error.ActiveDayWithoutWorkHours ->
+                    is UpdateBusiness.Error.ActiveDayWithoutWorkHours -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings
@@ -255,16 +257,20 @@ class BusinessSettingsViewModel(
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is UpdateBusiness.Error.InvalidDayOffRange ->
+                    is UpdateBusiness.Error.InvalidDayOffRange -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings.business_settings_invalid_day_off_range_error
                                     .desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(errorMapper.mapToNotification(it))
+                    else -> {
+                        uiState.notifications.add(errorMapper.mapToNotification(it))
+                    }
                 }
             },
             onTerminate = {

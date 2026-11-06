@@ -15,7 +15,10 @@ import kotlin.math.roundToLong
  * */
 
 @Serializable
-data class Money(val value: Long, val currencyType: SupportedCurrency) {
+data class Money(
+    val value: Long,
+    val currencyType: SupportedCurrency,
+) {
 
     val currency by lazy { Currency(currencyType.code) }
 
@@ -79,7 +82,9 @@ data class Money(val value: Long, val currencyType: SupportedCurrency) {
         return (value / 100.0).toString()
     }
 
-    enum class SupportedCurrency(val code: String) {
+    enum class SupportedCurrency(
+        val code: String,
+    ) {
         UAH("UAH"),
         USD("USD"),
         EUR("EUR"),

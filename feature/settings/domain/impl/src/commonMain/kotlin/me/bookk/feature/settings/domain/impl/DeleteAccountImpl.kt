@@ -39,10 +39,13 @@ internal class DeleteAccountImpl(
         }
             .getOrElse {
                 throw when (it) {
-                    is ConfirmSensitiveAction.Error ->
+                    is ConfirmSensitiveAction.Error -> {
                         DeleteAccount.Error.AccountVerificationFailed()
+                    }
 
-                    else -> it
+                    else -> {
+                        it
+                    }
                 }
             }
     }

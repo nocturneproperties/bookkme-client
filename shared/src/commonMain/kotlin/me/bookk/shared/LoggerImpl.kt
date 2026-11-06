@@ -4,8 +4,9 @@ import io.github.aakira.napier.Napier
 import me.bookk.core.Logger
 import io.ktor.client.plugins.logging.Logger as KtorLogger
 
-internal class LoggerImpl(private val name: String) :
-    Logger,
+internal class LoggerImpl(
+    private val name: String,
+) : Logger,
     KtorLogger {
 
     override fun d(message: String) {

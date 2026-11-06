@@ -61,7 +61,10 @@ class EditClientViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(canDelete: Boolean = true, canDeleteIntegrated: Boolean = false) {
+    private class Fixture(
+        canDelete: Boolean = true,
+        canDeleteIntegrated: Boolean = false,
+    ) {
         val id = Uuid.random()
         val getClient = mock<GetClient>()
         val getClientsPermissions = mock<GetClientsPermissions> {

@@ -44,7 +44,9 @@ class AndroidPassKeyManager(
                     PasskeyVerificationPayload(response.registrationResponseJson)
                 }
 
-                else -> throw PassKeyManager.Error.Unknown(null)
+                else -> {
+                    throw PassKeyManager.Error.Unknown(null)
+                }
             }
         }.recoverCatching {
             throw when (it) {
@@ -86,7 +88,9 @@ class AndroidPassKeyManager(
                     PasskeyVerificationPayload(responseJson)
                 }
 
-                else -> throw PassKeyManager.Error.Unknown(null)
+                else -> {
+                    throw PassKeyManager.Error.Unknown(null)
+                }
             }
         }.recoverCatching {
             throw when (it) {

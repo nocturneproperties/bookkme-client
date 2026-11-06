@@ -23,8 +23,9 @@ import me.bookk.feature.business.presentation.screen.settings.state.BusinessSett
 import me.bookk.feature.business.presentation.screen.settings.state.CurrencyUI
 
 @Immutable
-internal class AndroidBusinessSettingsState(initData: BusinessSettingsState.InitData) :
-    BusinessSettingsState {
+internal class AndroidBusinessSettingsState(
+    initData: BusinessSettingsState.InitData,
+) : BusinessSettingsState {
     override val appBar: AppBarState = AndroidAppBarState(initData.title, size = TopBarSize.SMALL)
     override val photo: ButtonState = AndroidButtonState(
         text = initData.addPhotoText,

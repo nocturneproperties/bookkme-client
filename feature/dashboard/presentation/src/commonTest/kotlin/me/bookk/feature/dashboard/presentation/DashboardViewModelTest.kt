@@ -73,7 +73,9 @@ class DashboardViewModelTest {
         override var isEnabled: Boolean,
     ) : TabItem
 
-    private class FakeDashboardState(initData: TabItemsState.InitData) : DashboardState {
+    private class FakeDashboardState(
+        initData: TabItemsState.InitData,
+    ) : DashboardState {
         override val tabItems = object : TabItemsState {
             override var selectedItemId: TabItem.Id = initData.selectedItemId
             override val items: List<TabItem> =
@@ -1305,5 +1307,4 @@ class DashboardViewModelTest {
             fixture.errorMapper.assertMappedSingle(error::class)
         }
     }
-
 }

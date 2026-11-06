@@ -16,11 +16,13 @@ internal class DeclineAppointmentRequestImpl(
     }
         .onBusinessError {
             when (it.errorCode) {
-                AppointmentErrorCodes.REQUEST_ALREADY_DECLINED ->
+                AppointmentErrorCodes.REQUEST_ALREADY_DECLINED -> {
                     throw DeclineAppointmentRequest.Error.AlreadyDeclined()
+                }
 
-                AppointmentErrorCodes.REQUEST_ALREADY_APPROVED ->
+                AppointmentErrorCodes.REQUEST_ALREADY_APPROVED -> {
                     throw DeclineAppointmentRequest.Error.AlreadyApproved()
+                }
             }
         }
         .getOrThrow()

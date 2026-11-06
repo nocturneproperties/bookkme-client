@@ -10,8 +10,10 @@ import me.bookk.feature.authorization.presentation.sign_up.state.TroubleshootCar
 import me.bookk.feature.authorization.presentation.troubleshoot.state.TroubleshootEventListener
 import me.bookk.feature.authorization.presentation.troubleshoot.state.TroubleshootState
 
-class TroubleshootViewModel(stateFactory: AuthStateFactory, vmArgs: VmArgs) :
-    ViewModel(vmArgs),
+class TroubleshootViewModel(
+    stateFactory: AuthStateFactory,
+    vmArgs: VmArgs,
+) : ViewModel(vmArgs),
     TroubleshootEventListener {
 
     val uiState = stateFactory.createTroubleshootState(createInitData())

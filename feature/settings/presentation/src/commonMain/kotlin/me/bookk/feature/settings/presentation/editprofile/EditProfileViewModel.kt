@@ -122,12 +122,15 @@ class EditProfileViewModel(
             },
             onError = {
                 when (it) {
-                    is EditProfile.Error.ContactAlreadyTaken ->
+                    is EditProfile.Error.ContactAlreadyTaken -> {
                         uiState.email.showError(
                             SettingsRes.strings.settings_edit_profile_email_taken_error.desc(),
                         )
+                    }
 
-                    else -> uiState.notification.add(it.notification())
+                    else -> {
+                        uiState.notification.add(it.notification())
+                    }
                 }
             },
             onTerminate = {

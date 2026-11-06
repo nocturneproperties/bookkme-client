@@ -16,7 +16,9 @@ import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
 
 @Immutable
-internal class AndroidContactUsState(initData: ContactUsState.InitData) : ContactUsState {
+internal class AndroidContactUsState(
+    initData: ContactUsState.InitData,
+) : ContactUsState {
     override val appBar: AppBarState = AndroidAppBarState(title = initData.title)
     override val contactField: TextFieldState =
         AndroidTextFieldState(placeholder = initData.contactHint)

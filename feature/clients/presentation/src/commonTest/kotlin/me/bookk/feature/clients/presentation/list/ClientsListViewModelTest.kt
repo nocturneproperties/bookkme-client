@@ -75,7 +75,9 @@ class ClientsListViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(canEdit: Boolean = true) {
+    private class Fixture(
+        canEdit: Boolean = true,
+    ) {
         val businessId = Uuid.random()
         val editableBusinessIds = if (canEdit) mutableSetOf(businessId) else mutableSetOf()
         val clients = MutableStateFlow<List<Client>>(emptyList())

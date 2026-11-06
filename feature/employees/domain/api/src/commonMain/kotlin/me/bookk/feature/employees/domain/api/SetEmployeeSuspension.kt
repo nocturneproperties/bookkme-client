@@ -7,8 +7,9 @@ interface SetEmployeeSuspension {
     suspend operator fun invoke(businessId: Uuid, id: Uuid, suspended: Boolean): Employee
 
     sealed interface Error {
-        class OwnerSuspensionNotAllowed(cause: Throwable) :
-            Throwable(cause),
+        class OwnerSuspensionNotAllowed(
+            cause: Throwable,
+        ) : Throwable(cause),
             Error
     }
 }

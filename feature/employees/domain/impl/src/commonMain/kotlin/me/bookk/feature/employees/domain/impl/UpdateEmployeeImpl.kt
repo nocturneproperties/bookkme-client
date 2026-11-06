@@ -24,17 +24,21 @@ internal class UpdateEmployeeImpl(
         }
             .onBusinessError { error ->
                 when (error.errorCode) {
-                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_VALIDATION_ERROR ->
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_VALIDATION_ERROR -> {
                         throw Error.ValidationError(error)
+                    }
 
-                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS ->
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS -> {
                         throw Error.ActiveDayWithoutWorkHours(error)
+                    }
 
-                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE ->
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE -> {
                         throw Error.InvalidDayOffRange(error)
+                    }
 
-                    EmployeeErrorCodes.BUSINESS_INSUFFICIENT_GRANT_PERMISSION ->
+                    EmployeeErrorCodes.BUSINESS_INSUFFICIENT_GRANT_PERMISSION -> {
                         throw Error.InsufficientGrant(error)
+                    }
                 }
             }
             .getOrThrow()

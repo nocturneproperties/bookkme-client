@@ -8,8 +8,9 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSource
 import kotlin.uuid.Uuid
 
-internal class GetOwnAppointmentRequestsImpl(private val dataSource: AppointmentRequestDataSource) :
-    GetOwnAppointmentRequests {
+internal class GetOwnAppointmentRequestsImpl(
+    private val dataSource: AppointmentRequestDataSource,
+) : GetOwnAppointmentRequests {
 
     override fun flow(businessId: Uuid): Flow<List<AppointmentRequest>> {
         return dataSource.observeAppointmentRequestsDBChanges(businessId)

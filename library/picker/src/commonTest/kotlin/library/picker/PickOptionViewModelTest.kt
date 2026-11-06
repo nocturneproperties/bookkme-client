@@ -42,7 +42,9 @@ class PickOptionViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(choice: PickerScreenArgs.Choice) {
+    private class Fixture(
+        choice: PickerScreenArgs.Choice,
+    ) {
         val haircut = KeyValueData("1", "Haircut")
         val coloring = KeyValueData("2", "Coloring")
         val shave = KeyValueData("3", "Shave")

@@ -35,7 +35,10 @@ interface AppointmentDetailsState {
     val navigation: NavigationState<AppointmentDetailsDestination>
 }
 
-class UIAppointmentStatus(val label: StringDesc, val color: ColorToken) {
+class UIAppointmentStatus(
+    val label: StringDesc,
+    val color: ColorToken,
+) {
     internal constructor(status: AppointmentStatus) : this(
         label = status.label(),
         color = status.color(),
@@ -44,16 +47,25 @@ class UIAppointmentStatus(val label: StringDesc, val color: ColorToken) {
 
 private fun AppointmentStatus.label(): StringDesc {
     return when (this) {
-        AppointmentStatus.SCHEDULED -> AppointmentsRes.strings.appointments_status_scheduled.desc()
+        AppointmentStatus.SCHEDULED -> {
+            AppointmentsRes.strings.appointments_status_scheduled.desc()
+        }
 
-        AppointmentStatus.COMPLETED -> AppointmentsRes.strings.appointments_status_completed.desc()
+        AppointmentStatus.COMPLETED -> {
+            AppointmentsRes.strings.appointments_status_completed.desc()
+        }
 
-        AppointmentStatus.CANCELLED -> AppointmentsRes.strings.appointments_status_cancelled.desc()
+        AppointmentStatus.CANCELLED -> {
+            AppointmentsRes.strings.appointments_status_cancelled.desc()
+        }
 
-        AppointmentStatus.NO_SHOW -> AppointmentsRes.strings.appointments_status_no_show.desc()
+        AppointmentStatus.NO_SHOW -> {
+            AppointmentsRes.strings.appointments_status_no_show.desc()
+        }
 
-        AppointmentStatus.UNRESOLVED ->
+        AppointmentStatus.UNRESOLVED -> {
             AppointmentsRes.strings.appointments_status_unresolved.desc()
+        }
     }
 }
 

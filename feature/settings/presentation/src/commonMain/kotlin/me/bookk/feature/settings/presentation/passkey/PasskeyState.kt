@@ -33,5 +33,8 @@ interface PasskeyState {
         val addedOn: StringDesc,
     )
 
-    class InitData(val title: StringDesc, val addButtonText: StringDesc)
+    class InitData(
+        val title: StringDesc,
+        val addButtonText: StringDesc,
+    )
 }

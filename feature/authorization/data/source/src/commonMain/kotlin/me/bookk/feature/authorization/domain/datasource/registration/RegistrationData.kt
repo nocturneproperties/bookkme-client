@@ -10,7 +10,14 @@ class RegistrationData(
     val acceptedDocuments: AcceptedLegalDocuments,
 ) {
 
-    class UserInfo(val name: String, val lastName: String, val email: String)
+    class UserInfo(
+        val name: String,
+        val lastName: String,
+        val email: String,
+    )
 
-    class DeviceInfo(val deviceUUID: String, val deviceName: String)
+    class DeviceInfo(
+        val deviceUUID: String,
+        val deviceName: String,
+    )
 }

@@ -49,14 +49,17 @@ class SignInViewModel(
             onError = {
                 val message = if (it is SignIn.Error) {
                     val message = when (it) {
-                        is SignIn.Error.NoAccountForThisPasskey ->
+                        is SignIn.Error.NoAccountForThisPasskey -> {
                             AuthRes.strings.sign_in_error_no_account
+                        }
 
-                        is SignIn.Error.PasskeyVerificationFailed ->
+                        is SignIn.Error.PasskeyVerificationFailed -> {
                             AuthRes.strings.sign_in_error_passkey_verification
+                        }
 
-                        is SignIn.Error.NoCredentialsAvailable ->
+                        is SignIn.Error.NoCredentialsAvailable -> {
                             AuthRes.strings.sign_in_error_no_passkeys_on_device
+                        }
                     }.desc()
                     PresentationNotification.Message(
                         message = message,

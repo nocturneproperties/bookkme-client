@@ -151,21 +151,25 @@ class ServiceGroupListViewModel(
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
-                    is CreateServiceGroup.Error.InvalidName ->
+                    is CreateServiceGroup.Error.InvalidName -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_group_add_name_invalid.desc(),
                             ),
                         )
+                    }
 
-                    is CreateServiceGroup.Error.NameExists ->
+                    is CreateServiceGroup.Error.NameExists -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_group_add_name_exists.desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
             onTerminate = { uiState.refreshState.isRefreshing = false },

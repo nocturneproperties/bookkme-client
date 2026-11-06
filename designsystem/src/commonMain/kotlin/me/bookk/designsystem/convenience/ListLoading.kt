@@ -67,16 +67,22 @@ private fun ViewModel.launchListLoad(
         onError = { error ->
             if (retriedBanner != null) listState.bannerError = retriedBanner
             when (val notification = error.notification()) {
-                PresentationNotification.Ignore -> Unit
+                PresentationNotification.Ignore -> {
+                    Unit
+                }
 
-                PresentationNotification.Unauthorized -> notifications.add(notification)
+                PresentationNotification.Unauthorized -> {
+                    notifications.add(notification)
+                }
 
                 PresentationNotification.BusinessAccessSuspended -> {
                     notifications.add(notification)
                     listState.showLoadingError(error.description(), retry)
                 }
 
-                else -> listState.showLoadingError(error.description(), retry)
+                else -> {
+                    listState.showLoadingError(error.description(), retry)
+                }
             }
         },
         onTerminate = {

@@ -18,30 +18,33 @@ internal class StartBusinessDataExportImpl(
         return requestDataExport(businessId, token)
     }
 
-    private suspend fun requestDataExport(
-        businessId: Uuid,
-        token: String,
-    ): DataExport = runCatching {
-        dataSource.start(businessId, token)
-    }.onBusinessError {
-        when (it.errorCode) {
-            BusinessErrorCodes.BUSINESS_ACTION_CONFIRMATION_INVALID ->
-                throw StartBusinessDataExport.Error.ConfirmationRequired()
+    private suspend fun requestDataExport(businessId: Uuid, token: String): DataExport =
+        runCatching {
+            dataSource.start(businessId, token)
+        }.onBusinessError {
+            when (it.errorCode) {
+                BusinessErrorCodes.BUSINESS_ACTION_CONFIRMATION_INVALID -> {
+                    throw StartBusinessDataExport.Error.ConfirmationRequired()
+                }
 
-            BusinessErrorCodes.DATA_EXPORT_TOO_FREQUENT ->
-                throw StartBusinessDataExport.Error.TooFrequent()
-        }
-    }.getOrThrow()
+                BusinessErrorCodes.DATA_EXPORT_TOO_FREQUENT -> {
+                    throw StartBusinessDataExport.Error.TooFrequent()
+                }
+            }
+        }.getOrThrow()
 
     private suspend fun getConfirmationToken(businessId: Uuid): String = runCatching {
         confirmation(SensitiveAction.EXPORT_BUSINESS_DATA, businessId, businessId).token
     }
         .getOrElse {
             throw when (it) {
-                is ConfirmSensitiveAction.Error ->
+                is ConfirmSensitiveAction.Error -> {
                     StartBusinessDataExport.Error.ConfirmationFailed()
+                }
 
-                else -> it
+                else -> {
+                    it
+                }
             }
         }
 }

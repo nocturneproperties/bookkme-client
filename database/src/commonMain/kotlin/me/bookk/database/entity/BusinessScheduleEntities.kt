@@ -19,7 +19,11 @@ import kotlin.uuid.Uuid
     ],
     indices = [Index("businessId")],
 )
-class BusinessDayScheduleEntity(val businessId: Uuid, val dayOfWeek: String, val isActive: Boolean)
+class BusinessDayScheduleEntity(
+    val businessId: Uuid,
+    val dayOfWeek: String,
+    val isActive: Boolean,
+)
 
 @Entity(
     tableName = "business_working_time",
@@ -54,4 +58,8 @@ class BusinessWorkHourEntity(
     ],
     indices = [Index("businessId")],
 )
-class BusinessDayOffEntity(val businessId: Uuid, val start: String, val end: String)
+class BusinessDayOffEntity(
+    val businessId: Uuid,
+    val start: String,
+    val end: String,
+)

@@ -25,7 +25,9 @@ internal fun NavGraphBuilder.createClientScreen(navigation: ClientsNavigation) {
             ObserveNotifications(viewModel.uiState.notifications)
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
-                    CreateClientDestination.Back -> navigation.onBack()
+                    CreateClientDestination.Back -> {
+                        navigation.onBack()
+                    }
 
                     is CreateClientDestination.Details -> {
                         navigation.onBack()

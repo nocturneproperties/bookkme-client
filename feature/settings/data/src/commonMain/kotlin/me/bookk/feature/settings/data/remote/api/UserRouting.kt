@@ -6,24 +6,38 @@ internal object UserRouting {
     @Resource("api")
     class Api {
         @Resource("/user")
-        class User(val parent: Api = Api()) {
+        class User(
+            val parent: Api = Api(),
+        ) {
             @Resource("/legal")
-            class Legal(val parent: User = User())
+            class Legal(
+                val parent: User = User(),
+            )
 
             @Resource("/me")
-            class Me(val parent: User = User()) {
+            class Me(
+                val parent: User = User(),
+            ) {
                 @Resource("/legal")
-                class Legal(val parent: Me = Me())
+                class Legal(
+                    val parent: Me = Me(),
+                )
             }
 
             @Resource("/export")
-            class Export(val parent: User = User()) {
+            class Export(
+                val parent: User = User(),
+            ) {
                 @Resource("/download")
-                class Download(val parent: Export = Export())
+                class Download(
+                    val parent: Export = Export(),
+                )
             }
 
             @Resource("/contactus")
-            class ContactUs(val parent: User = User())
+            class ContactUs(
+                val parent: User = User(),
+            )
         }
     }
 }

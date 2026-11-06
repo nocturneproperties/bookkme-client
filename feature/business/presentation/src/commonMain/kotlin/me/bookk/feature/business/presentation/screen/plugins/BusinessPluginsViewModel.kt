@@ -84,7 +84,9 @@ class BusinessPluginsViewModel(
                         uiState.appointmentPlugin.isEnabled = true
                     }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
             onTerminate = { uiState.appointmentPlugin.enable.stopLoading() },

@@ -27,8 +27,10 @@ class AndroidDashboardState(
     )
 }
 
-class AndroidTabItemState(selectedItemId: TabItem.Id, override val items: List<TabItem>) :
-    TabItemsState {
+class AndroidTabItemState(
+    selectedItemId: TabItem.Id,
+    override val items: List<TabItem>,
+) : TabItemsState {
 
     override var selectedItemId: TabItem.Id by mutableStateOf(selectedItemId)
 
@@ -38,7 +40,9 @@ class AndroidTabItemState(selectedItemId: TabItem.Id, override val items: List<T
     )
 }
 
-class AndroidTabItem(data: TabItem.InitData) : TabItem {
+class AndroidTabItem(
+    data: TabItem.InitData,
+) : TabItem {
     override val id: TabItem.Id = data.id
     override val text: StringDesc = data.text
     override var badgeText: StringDesc? by mutableStateOf(data.badgeText)

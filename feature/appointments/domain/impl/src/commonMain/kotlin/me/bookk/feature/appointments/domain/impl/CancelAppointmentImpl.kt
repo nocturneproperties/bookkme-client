@@ -8,8 +8,9 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
 
-internal class CancelAppointmentImpl(private val appointmentDataSource: AppointmentDataSource) :
-    CancelAppointment {
+internal class CancelAppointmentImpl(
+    private val appointmentDataSource: AppointmentDataSource,
+) : CancelAppointment {
 
     override suspend fun invoke(
         appointmentId: Uuid,
@@ -28,17 +29,21 @@ internal class CancelAppointmentImpl(private val appointmentDataSource: Appointm
         }
             .onBusinessError {
                 when (it.errorCode) {
-                    AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED ->
+                    AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED -> {
                         throw CancelAppointment.Error.EditWindowClosed()
+                    }
 
-                    AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED ->
+                    AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED -> {
                         throw CancelAppointment.Error.AppointmentAlreadyCancelled()
+                    }
 
-                    AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED ->
+                    AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED -> {
                         throw CancelAppointment.Error.AppointmentAlreadyCompleted()
+                    }
 
-                    AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW ->
+                    AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW -> {
                         throw CancelAppointment.Error.AppointmentMarkedNoShow()
+                    }
                 }
             }
             .getOrThrow()

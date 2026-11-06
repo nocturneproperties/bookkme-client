@@ -123,35 +123,41 @@ class AddServiceViewModel(
             },
             onError = {
                 when (it) {
-                    is CreateService.Error.NameAlreadyExists ->
+                    is CreateService.Error.NameAlreadyExists -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_name_exists_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateService.Error.InvalidName ->
+                    is CreateService.Error.InvalidName -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_invalid_name_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateService.Error.GroupNotFound ->
+                    is CreateService.Error.GroupNotFound -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_group_not_found_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateService.Error.InvalidPricePrecision ->
+                    is CreateService.Error.InvalidPricePrecision -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_price_precision_error.desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
             onTerminate = { uiState.create.stopLoading() },

@@ -5,6 +5,10 @@ import kotlin.uuid.Uuid
 
 sealed class EmployeeListDestinations : NavigationDestination() {
     data object Back : EmployeeListDestinations()
-    data class AddEmployee(val businessId: Uuid) : EmployeeListDestinations()
-    data class EditEmployee(val id: Uuid) : EmployeeListDestinations()
+    data class AddEmployee(
+        val businessId: Uuid,
+    ) : EmployeeListDestinations()
+    data class EditEmployee(
+        val id: Uuid,
+    ) : EmployeeListDestinations()
 }

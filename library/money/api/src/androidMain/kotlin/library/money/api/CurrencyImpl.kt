@@ -4,7 +4,9 @@ import android.icu.text.DecimalFormatSymbols
 import android.icu.text.NumberFormat
 import org.joda.money.CurrencyUnit
 
-internal actual class CurrencyImpl actual constructor(code: String) : Currency {
+internal actual class CurrencyImpl actual constructor(
+    code: String,
+) : Currency {
     private val currencyUnit: CurrencyUnit = CurrencyUnit.of(code)
     private val formatter = NumberFormat.getCurrencyInstance().apply {
         currency = android.icu.util.Currency.getInstance(currencyUnit.code)

@@ -1,8 +1,12 @@
 package me.bookk.core
 
 sealed interface KResult<out T> {
-    data class Success<T>(val value: T) : KResult<T>
-    data class Failure(val error: Throwable) : KResult<Nothing>
+    data class Success<T>(
+        val value: T,
+    ) : KResult<T>
+    data class Failure(
+        val error: Throwable,
+    ) : KResult<Nothing>
 }
 
 fun <T> Result<T>.asKResult(): KResult<T> {

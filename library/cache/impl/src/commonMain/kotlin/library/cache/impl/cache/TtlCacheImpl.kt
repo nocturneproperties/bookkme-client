@@ -8,7 +8,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
 import kotlin.time.Duration
 
-internal class TtlCacheImpl(cacheName: String) : Cache {
+internal class TtlCacheImpl(
+    cacheName: String,
+) : Cache {
 
     private val logger = Logger.create(cacheName)
     private val mutex = Mutex()

@@ -7,8 +7,9 @@ import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.domain.logout.LogOutAction
 
-class CommonBiometryOptManager(preferenceProvider: PreferenceProvider) :
-    BiometryOptManager,
+class CommonBiometryOptManager(
+    preferenceProvider: PreferenceProvider,
+) : BiometryOptManager,
     LogOutAction {
 
     private val preferences = preferenceProvider.get("biometry_prefs")

@@ -47,9 +47,15 @@ data class DayOfWeekSchedule(
     }
 }
 
-data class WorkHour(val from: LocalTime, val to: LocalTime)
+data class WorkHour(
+    val from: LocalTime,
+    val to: LocalTime,
+)
 
-data class DayOffRange(val start: LocalDate, val end: LocalDate)
+data class DayOffRange(
+    val start: LocalDate,
+    val end: LocalDate,
+)
 
 fun DayOfWeek.nineToFive() = WorkHour(
     from = LocalTime(9, 0),

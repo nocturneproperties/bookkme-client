@@ -9,7 +9,9 @@ import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationNotification
 import kotlin.coroutines.CoroutineContext
 
-expect abstract class ViewModel(vmArgs: VmArgs) {
+expect abstract class ViewModel(
+    vmArgs: VmArgs,
+) {
     protected val viewModelScope: CoroutineScope
     protected val errorMapper: ErrorMapper
     protected open val viewModelScopeErrorHandler: CoroutineExceptionHandler

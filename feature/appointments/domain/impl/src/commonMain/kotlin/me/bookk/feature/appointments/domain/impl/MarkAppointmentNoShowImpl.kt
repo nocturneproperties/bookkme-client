@@ -20,14 +20,17 @@ internal class MarkAppointmentNoShowImpl(
         }
             .onBusinessError {
                 when (it.errorCode) {
-                    AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED ->
+                    AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED -> {
                         throw Error.EditWindowClosed()
+                    }
 
-                    AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED ->
+                    AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED -> {
                         throw Error.AppointmentAlreadyCancelled()
+                    }
 
-                    AppointmentErrorCodes.APPOINTMENT_NOT_STARTED ->
+                    AppointmentErrorCodes.APPOINTMENT_NOT_STARTED -> {
                         throw Error.AppointmentNotStarted()
+                    }
                 }
             }
             .getOrThrow()

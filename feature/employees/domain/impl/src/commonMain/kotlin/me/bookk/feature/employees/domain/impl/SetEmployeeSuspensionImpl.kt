@@ -8,16 +8,18 @@ import me.bookk.feature.employees.domain.datasource.EmployeeDataSource
 import me.bookk.feature.employees.domain.datasource.EmployeeErrorCodes
 import kotlin.uuid.Uuid
 
-internal class SetEmployeeSuspensionImpl(private val dataSource: EmployeeDataSource) :
-    SetEmployeeSuspension {
+internal class SetEmployeeSuspensionImpl(
+    private val dataSource: EmployeeDataSource,
+) : SetEmployeeSuspension {
     override suspend fun invoke(businessId: Uuid, id: Uuid, suspended: Boolean): Employee {
         return runCatching {
             dataSource.setEmployeeSuspension(businessId, id, suspended)
         }
             .onBusinessError { error ->
                 when (error.errorCode) {
-                    EmployeeErrorCodes.BUSINESS_OWNER_SUSPENSION_NOT_ALLOWED ->
+                    EmployeeErrorCodes.BUSINESS_OWNER_SUSPENSION_NOT_ALLOWED -> {
                         throw Error.OwnerSuspensionNotAllowed(error)
+                    }
                 }
             }
             .getOrThrow()

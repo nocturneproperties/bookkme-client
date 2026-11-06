@@ -23,6 +23,9 @@ plugins {
     alias(libs.plugins.kmm.resources).apply(false)
 }
 
+val classSignatureMultilineThreshold =
+    "ktlint_class_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than"
+
 spotless {
     lineEndings = LineEnding.UNIX
     kotlin {
@@ -33,7 +36,13 @@ spotless {
             },
         )
         ktlint(libs.versions.ktlint.get())
-            .editorConfigOverride(mapOf("ktlint_code_style" to "intellij_idea"))
+            .editorConfigOverride(
+                mapOf(
+                    "ktlint_code_style" to "intellij_idea",
+                    "ktlint_standard_when-entry-bracing" to "enabled",
+                    classSignatureMultilineThreshold to "1",
+                ),
+            )
         suppressLintsFor {
             path = "designsystem/src/iosMain/kotlin/me/bookk/designsystem/uistate/Info.kt"
             shortCode = "standard:kdoc"

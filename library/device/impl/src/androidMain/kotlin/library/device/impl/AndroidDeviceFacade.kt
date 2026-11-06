@@ -15,7 +15,9 @@ import me.bookk.core.Logger
 import java.util.Currency
 import java.util.Locale
 
-class AndroidDeviceFacade(private val appContext: Context) : DeviceFacade {
+class AndroidDeviceFacade(
+    private val appContext: Context,
+) : DeviceFacade {
 
     private val logger = Logger.create("DeviceFacade")
 

@@ -7,8 +7,9 @@ import me.bookk.feature.business.domain.datasource.AppointmentsErrorCodes
 import me.bookk.feature.business.domain.datasource.PluginDataSource
 import kotlin.uuid.Uuid
 
-internal class EnableAppointmentsPluginImpl(private val pluginDataSource: PluginDataSource) :
-    EnableAppointmentsPlugin {
+internal class EnableAppointmentsPluginImpl(
+    private val pluginDataSource: PluginDataSource,
+) : EnableAppointmentsPlugin {
     override suspend fun invoke(businessId: Uuid) {
         runCatching {
             pluginDataSource.enableAppointmentsPlugin(businessId)

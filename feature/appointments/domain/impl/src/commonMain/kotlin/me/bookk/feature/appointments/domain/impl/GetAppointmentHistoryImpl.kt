@@ -6,8 +6,9 @@ import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
 
-internal class GetAppointmentHistoryImpl(private val dataSource: AppointmentDataSource) :
-    GetAppointmentHistory {
+internal class GetAppointmentHistoryImpl(
+    private val dataSource: AppointmentDataSource,
+) : GetAppointmentHistory {
 
     private val pager = object : CounterPager<HistoryRequest, Appointment>(
         countPerPage = PAGE_SIZE,
@@ -27,8 +28,10 @@ internal class GetAppointmentHistoryImpl(private val dataSource: AppointmentData
 
     override suspend fun loadMore(): List<Appointment> = pager.loadMore()
 
-    private data class HistoryRequest(val businessId: Uuid, val query: String?) :
-        CounterPager.Request
+    private data class HistoryRequest(
+        val businessId: Uuid,
+        val query: String?,
+    ) : CounterPager.Request
 
     companion object {
         private const val PAGE_SIZE = 20

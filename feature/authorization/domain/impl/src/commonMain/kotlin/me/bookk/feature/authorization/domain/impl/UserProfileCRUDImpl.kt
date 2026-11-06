@@ -6,8 +6,9 @@ import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataS
 import me.bookk.feature.authorization.domain.entity.UserProfile
 import kotlin.uuid.Uuid
 
-internal class UserProfileCRUDImpl(private val userProfileDataSource: UserProfileDataSource) :
-    UserProfileCRUD {
+internal class UserProfileCRUDImpl(
+    private val userProfileDataSource: UserProfileDataSource,
+) : UserProfileCRUD {
 
     override suspend fun updateFromRemote() {
         val user = userProfileDataSource.getProfileFromBackend()

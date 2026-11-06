@@ -44,26 +44,37 @@ internal class CreateAccountImpl(
         return runCatching { registrationDataSource.finishRegistration(data) }
             .getOrElse {
                 throw when (it.businessOrThrow().errorCode) {
-                    AuthErrorCodes.USER_ALREADY_EXIST -> CreateAccount.Error.EmailAlreadyExist()
+                    AuthErrorCodes.USER_ALREADY_EXIST -> {
+                        CreateAccount.Error.EmailAlreadyExist()
+                    }
 
-                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> CreateAccount.Error.InvalidEmailFormat()
+                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> {
+                        CreateAccount.Error.InvalidEmailFormat()
+                    }
 
-                    AuthErrorCodes.VERIFICATION_FAILED ->
+                    AuthErrorCodes.VERIFICATION_FAILED -> {
                         CreateAccount.Error.PasskeyVerificationFailed()
+                    }
 
-                    AuthErrorCodes.ACCOUNT_CREATION_FAILED ->
+                    AuthErrorCodes.ACCOUNT_CREATION_FAILED -> {
                         CreateAccount.Error.AccountCreationFailed()
+                    }
 
-                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED ->
+                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> {
                         CreateAccount.Error.ChallengeWindowExpired()
+                    }
 
-                    AuthErrorCodes.LEGAL_DOCUMENT_VERSION_UNKNOWN ->
+                    AuthErrorCodes.LEGAL_DOCUMENT_VERSION_UNKNOWN -> {
                         CreateAccount.Error.LegalDocumentVersionUnknown()
+                    }
 
-                    AuthErrorCodes.LEGAL_DOCUMENTS_NOT_ACCEPTED ->
+                    AuthErrorCodes.LEGAL_DOCUMENTS_NOT_ACCEPTED -> {
                         CreateAccount.Error.LegalDocumentsNotAccepted()
+                    }
 
-                    else -> it
+                    else -> {
+                        it
+                    }
                 }
             }
     }

@@ -85,18 +85,22 @@ class InviteEmployeeViewModel(
             },
             onError = {
                 when (it) {
-                    is CreateEmployeeInvitation.Error.PendingInvitationsLimitReached ->
+                    is CreateEmployeeInvitation.Error.PendingInvitationsLimitReached -> {
                         showSimpleMessage(
                             EmployeesRes.strings.employees_invite_generate_error_pending_limit
                                 .desc(),
                         )
+                    }
 
-                    is CreateEmployeeInvitation.Error.DailyInvitationsLimitReached ->
+                    is CreateEmployeeInvitation.Error.DailyInvitationsLimitReached -> {
                         showSimpleMessage(
                             EmployeesRes.strings.employees_invite_generate_error_daily_limit.desc(),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
             onTerminate = { uiState.generateCodeButton.stopLoading() },
@@ -143,13 +147,16 @@ class InviteEmployeeViewModel(
             },
             onError = {
                 when (it) {
-                    is RevokeEmployeeInvitation.Error.AlreadyProcessed ->
+                    is RevokeEmployeeInvitation.Error.AlreadyProcessed -> {
                         showSimpleMessage(
                             EmployeesRes.strings.employees_invite_revoke_error_already_processed
                                 .desc(),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
         )

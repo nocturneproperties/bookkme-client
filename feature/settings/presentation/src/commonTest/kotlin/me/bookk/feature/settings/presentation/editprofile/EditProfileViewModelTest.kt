@@ -289,5 +289,4 @@ class EditProfileViewModelTest {
         assertNull(sut.uiState.email.supportingTextRes)
         assertTrue(sut.uiState.confirmButton.isEnabled)
     }
-
 }

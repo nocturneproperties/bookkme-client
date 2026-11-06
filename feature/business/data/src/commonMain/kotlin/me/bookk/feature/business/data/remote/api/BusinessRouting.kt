@@ -8,27 +8,46 @@ object BusinessRouting {
     class Api {
 
         @Resource("/business")
-        class Business(val parent: Api = Api()) {
+        class Business(
+            val parent: Api = Api(),
+        ) {
             @Resource("/mine")
-            class Mine(val parent: Business = Business())
+            class Mine(
+                val parent: Business = Business(),
+            )
 
             @Resource("/{id}")
-            class Id(val parent: Business = Business(), val id: Uuid) {
+            class Id(
+                val parent: Business = Business(),
+                val id: Uuid,
+            ) {
                 @Resource("/export")
-                class Export(val parent: Id) {
+                class Export(
+                    val parent: Id,
+                ) {
                     @Resource("/download")
-                    class Download(val parent: Export)
+                    class Download(
+                        val parent: Export,
+                    )
                 }
 
                 @Resource("/dashboard")
-                class Dashboard(val parent: Id)
+                class Dashboard(
+                    val parent: Id,
+                )
             }
         }
 
         @Resource("/business/{businessId}/clients")
-        class Clients(val parent: Api = Api(), val businessId: Uuid) {
+        class Clients(
+            val parent: Api = Api(),
+            val businessId: Uuid,
+        ) {
             @Resource("/{id}")
-            class Id(val parent: Clients, val id: Uuid)
+            class Id(
+                val parent: Clients,
+                val id: Uuid,
+            )
         }
     }
 }

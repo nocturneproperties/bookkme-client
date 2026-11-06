@@ -25,30 +25,49 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
         val listener = DashboardEventListener(
             onItemClicked = {
                 when (val navItem = it.navigation) {
-                    DashboardNavigationDestination.Analytics -> navigation.toAnalytics()
+                    DashboardNavigationDestination.Analytics -> {
+                        navigation.toAnalytics()
+                    }
 
-                    is DashboardNavigationDestination.AppointmentSettings ->
+                    is DashboardNavigationDestination.AppointmentSettings -> {
                         navigation.toAppointmentSettings(navItem.businessId)
+                    }
 
-                    DashboardNavigationDestination.Assortment -> navigation.toShopAssortment()
+                    DashboardNavigationDestination.Assortment -> {
+                        navigation.toShopAssortment()
+                    }
 
-                    DashboardNavigationDestination.Clients -> navigation.toClients()
+                    DashboardNavigationDestination.Clients -> {
+                        navigation.toClients()
+                    }
 
-                    DashboardNavigationDestination.Employees -> navigation.toEmployees()
+                    DashboardNavigationDestination.Employees -> {
+                        navigation.toEmployees()
+                    }
 
-                    is DashboardNavigationDestination.History ->
+                    is DashboardNavigationDestination.History -> {
                         navigation.toAppointmentHistory(navItem.businessId)
+                    }
 
-                    DashboardNavigationDestination.Orders -> navigation.toShopOrders()
+                    DashboardNavigationDestination.Orders -> {
+                        navigation.toShopOrders()
+                    }
 
-                    DashboardNavigationDestination.Services -> navigation.toBusinessServices()
+                    DashboardNavigationDestination.Services -> {
+                        navigation.toBusinessServices()
+                    }
 
-                    DashboardNavigationDestination.Settings -> navigation.toBusinessSettings()
+                    DashboardNavigationDestination.Settings -> {
+                        navigation.toBusinessSettings()
+                    }
 
-                    is DashboardNavigationDestination.Plugins ->
+                    is DashboardNavigationDestination.Plugins -> {
                         navigation.toBusinessPlugins(navItem.id)
+                    }
 
-                    DashboardNavigationDestination.Warehouse -> navigation.toShopWarehouse()
+                    DashboardNavigationDestination.Warehouse -> {
+                        navigation.toShopWarehouse()
+                    }
                 }
             },
         )

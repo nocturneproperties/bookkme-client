@@ -7,27 +7,47 @@ object EmployeeRouting {
     @Resource("api")
     class Api {
         @Resource("/business/{businessId}/employee")
-        class Employee(val parent: Api = Api(), val businessId: Uuid) {
+        class Employee(
+            val parent: Api = Api(),
+            val businessId: Uuid,
+        ) {
             @Resource("/{id}")
-            class Id(val parent: Employee, val id: Uuid) {
+            class Id(
+                val parent: Employee,
+                val id: Uuid,
+            ) {
                 @Resource("/permissions")
-                class Permissions(val parent: Id)
+                class Permissions(
+                    val parent: Id,
+                )
 
                 @Resource("/suspension")
-                class Suspension(val parent: Id)
+                class Suspension(
+                    val parent: Id,
+                )
             }
         }
 
         @Resource("/business/{businessId}/employee_invitation")
-        class EmployeeInvitation(val parent: Api = Api(), val businessId: Uuid) {
+        class EmployeeInvitation(
+            val parent: Api = Api(),
+            val businessId: Uuid,
+        ) {
             @Resource("/{id}/revoke")
-            class Revoke(val parent: EmployeeInvitation, val id: Uuid)
+            class Revoke(
+                val parent: EmployeeInvitation,
+                val id: Uuid,
+            )
         }
 
         @Resource("/business/employee_invitation")
-        class EmployeeInvitationRedeem(val parent: Api = Api()) {
+        class EmployeeInvitationRedeem(
+            val parent: Api = Api(),
+        ) {
             @Resource("/redeem")
-            class Redeem(val parent: EmployeeInvitationRedeem = EmployeeInvitationRedeem())
+            class Redeem(
+                val parent: EmployeeInvitationRedeem = EmployeeInvitationRedeem(),
+            )
         }
     }
 }

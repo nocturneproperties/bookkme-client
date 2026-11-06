@@ -93,7 +93,10 @@ data class DayOfWeekScheduleRemote(
 }
 
 @Serializable
-data class WorkHourRemote(@ProtoNumber(1) val from: LocalTime, @ProtoNumber(2) val to: LocalTime) {
+data class WorkHourRemote(
+    @ProtoNumber(1) val from: LocalTime,
+    @ProtoNumber(2) val to: LocalTime,
+) {
     fun toDomain() = WorkHour(from = from, to = to)
 }
 

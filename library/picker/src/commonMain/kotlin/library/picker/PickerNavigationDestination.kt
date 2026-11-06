@@ -5,6 +5,8 @@ import me.bookk.core.presentation.navigation.NavigationDestination
 
 sealed class PickerNavigationDestination : NavigationDestination() {
     data object Back : PickerNavigationDestination()
-    data class FinishWithResult(val resultId: String, val pickResults: List<KeyValueData>) :
-        PickerNavigationDestination()
+    data class FinishWithResult(
+        val resultId: String,
+        val pickResults: List<KeyValueData>,
+    ) : PickerNavigationDestination()
 }

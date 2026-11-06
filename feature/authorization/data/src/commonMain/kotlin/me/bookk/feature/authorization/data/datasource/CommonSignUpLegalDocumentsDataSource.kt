@@ -10,8 +10,9 @@ import me.bookk.feature.authorization.data.local.SignUpLegalDocumentsLocal
 import me.bookk.feature.authorization.domain.datasource.SignUpLegalDocumentsDataSource
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocuments
 
-internal class CommonSignUpLegalDocumentsDataSource(preferenceProvider: PreferenceProvider) :
-    SignUpLegalDocumentsDataSource {
+internal class CommonSignUpLegalDocumentsDataSource(
+    preferenceProvider: PreferenceProvider,
+) : SignUpLegalDocumentsDataSource {
     private val preferences = preferenceProvider.get("signup_legal_documents_prefs")
 
     override suspend fun getDocuments(): SignUpLegalDocuments? {

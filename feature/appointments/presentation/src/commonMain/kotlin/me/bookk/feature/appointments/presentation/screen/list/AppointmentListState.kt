@@ -57,4 +57,8 @@ class AppointmentItemState(
     )
 }
 
-class DateInfo(val date: LocalDate, val str: String, val isToday: Boolean)
+class DateInfo(
+    val date: LocalDate,
+    val str: String,
+    val isToday: Boolean,
+)

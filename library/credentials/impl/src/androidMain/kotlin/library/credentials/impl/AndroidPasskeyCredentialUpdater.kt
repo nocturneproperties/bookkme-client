@@ -8,13 +8,17 @@ import me.bookk.core.android.AndroidActivityAware
 import org.json.JSONArray
 import org.json.JSONObject
 
-class AndroidPasskeyCredentialUpdater : PasskeyCredentialUpdater, AndroidActivityAware() {
+class AndroidPasskeyCredentialUpdater :
+    AndroidActivityAware(),
+    PasskeyCredentialUpdater {
 
     override suspend fun reportUnknownCredential(relyingParty: String, credentialId: String) {
         val requestJson = JSONObject()
             .put("rpId", relyingParty)
             .put("credentialId", credentialId)
-        credentialManager().signalCredentialState(SignalUnknownCredentialRequest(requestJson.toString()))
+        credentialManager().signalCredentialState(
+            SignalUnknownCredentialRequest(requestJson.toString()),
+        )
     }
 
     override suspend fun reportNoAcceptedCredentials(relyingParty: String, userHandle: String) {
@@ -22,7 +26,9 @@ class AndroidPasskeyCredentialUpdater : PasskeyCredentialUpdater, AndroidActivit
             .put("rpId", relyingParty)
             .put("userId", userHandle)
             .put("allAcceptedCredentialIds", JSONArray())
-        credentialManager().signalCredentialState(SignalAllAcceptedCredentialIdsRequest(requestJson.toString()))
+        credentialManager().signalCredentialState(
+            SignalAllAcceptedCredentialIdsRequest(requestJson.toString()),
+        )
     }
 
     private suspend fun credentialManager(): CredentialManager {

@@ -48,7 +48,7 @@ class CreateClientImplTest {
         lastName = "Doe",
         phone = "+380000000000",
         email = "john@example.com",
-        businessId = businessId
+        businessId = businessId,
     )
 
     @Test
@@ -93,7 +93,7 @@ class CreateClientImplTest {
             lastName = " Doe\n",
             phone = " +380000000000  ",
             email = "john@example.com ",
-            description = "  Prefers mornings "
+            description = "  Prefers mornings ",
         )
         val expected = trimmed.copy(description = "Prefers mornings")
         everySuspend { fixture.dataSource.createClient(expected) } returns expected
@@ -118,14 +118,14 @@ class CreateClientImplTest {
             email = "john@example.com",
             businessId = Uuid.random(),
             userId = Uuid.random(),
-            description = "VIP client"
+            description = "VIP client",
         )
         val input = trimmed.copy(
             name = " John ",
             lastName = "Doe ",
             phone = " +380000000000",
             email = " john@example.com\n",
-            description = " VIP client "
+            description = " VIP client ",
         )
         everySuspend { fixture.dataSource.createClient(trimmed) } returns trimmed
         everySuspend { fixture.dataSource.saveClientsInDb(listOf(trimmed)) } returns Unit

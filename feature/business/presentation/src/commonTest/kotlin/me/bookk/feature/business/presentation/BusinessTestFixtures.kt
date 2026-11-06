@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 
 internal fun stubWorkingSchedule() = WorkingSchedule(
     days = DayOfWeek.entries.associateWith { DayOfWeekSchedule.default(it) },
-    dayOffs = emptyList()
+    dayOffs = emptyList(),
 )
 
 internal fun stubBusiness(
@@ -20,7 +20,7 @@ internal fun stubBusiness(
     name: String = "Test Business",
     schedule: WorkingSchedule = stubWorkingSchedule(),
     socials: Map<Business.SocialKind, Business.Social> = emptyMap(),
-    permissions: BusinessPermissions = stubPermissions()
+    permissions: BusinessPermissions = stubPermissions(),
 ) = Business(
     id = id,
     name = name,
@@ -31,13 +31,14 @@ internal fun stubBusiness(
     timeZone = TimeZone.UTC,
     socials = socials,
     schedule = schedule,
-    permissions = permissions
+    permissions = permissions,
 )
 
-internal fun stubPermissions(business: ResourcePermission = ResourcePermission()) = BusinessPermissions(
-    business = business,
-    employees = ResourcePermission(),
-    clients = ResourcePermission(),
-    services = ResourcePermission(),
-    appointments = ResourcePermission()
-)
+internal fun stubPermissions(business: ResourcePermission = ResourcePermission()) =
+    BusinessPermissions(
+        business = business,
+        employees = ResourcePermission(),
+        clients = ResourcePermission(),
+        services = ResourcePermission(),
+        appointments = ResourcePermission(),
+    )

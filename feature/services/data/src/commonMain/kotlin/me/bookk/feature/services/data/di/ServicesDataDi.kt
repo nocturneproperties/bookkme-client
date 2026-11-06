@@ -13,7 +13,8 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun servicesDataModule() = module {
-    singleOf(::ServiceGroupDataSourceImpl) binds arrayOf(ServiceGroupDataSource::class, LogOutAction::class)
+    singleOf(::ServiceGroupDataSourceImpl) binds
+        arrayOf(ServiceGroupDataSource::class, LogOutAction::class)
     singleOf(::ServiceDataSourceImpl) binds arrayOf(ServiceDataSource::class, LogOutAction::class)
     singleOf(::QuoteDataSourceImpl) bind QuoteDataSource::class
 }

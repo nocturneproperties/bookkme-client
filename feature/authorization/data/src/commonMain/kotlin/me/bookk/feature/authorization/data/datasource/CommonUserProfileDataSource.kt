@@ -22,8 +22,10 @@ import kotlin.uuid.Uuid
 
 internal class CommonUserProfileDataSource(
     private val profileDao: UserProfileDao,
-    private val httpClient: HttpClient
-) : DataSource(), UserProfileDataSource, LogOutAction {
+    private val httpClient: HttpClient,
+) : DataSource(),
+    UserProfileDataSource,
+    LogOutAction {
     override suspend fun getProfileFromDatabase(): UserProfile? = mapExceptions {
         profileDao.queryProfile()?.toDomain()
     }

@@ -31,9 +31,7 @@ import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
 
 @Composable
-internal fun AppointmentRequestContent(
-    state: AppointmentRequestState
-) {
+internal fun AppointmentRequestContent(state: AppointmentRequestState) {
     List(state.requests, modifier = Modifier.fillMaxSize()) {
         RequestItemCard(
             modifier = Modifier
@@ -45,10 +43,7 @@ internal fun AppointmentRequestContent(
 }
 
 @Composable
-private fun RequestItemCard(
-    modifier: Modifier = Modifier,
-    item: AppointmentRequestItemState,
-) {
+private fun RequestItemCard(modifier: Modifier = Modifier, item: AppointmentRequestItemState) {
     AppCard(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
@@ -111,7 +106,7 @@ private fun RequestItemCard(
                         .padding(vertical = 8.dp)
                         .background(
                             color = LocalColors.current.primaryText.copy(alpha = 0.05f),
-                            shape = MaterialTheme.shapes.small
+                            shape = MaterialTheme.shapes.small,
                         )
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -138,8 +133,8 @@ private fun RequestItemCard(
                     modifier = Modifier.weight(1f),
                     state = item.declineButton,
                     colors = ButtonDefaults.stateButtonColors(
-                        contentColor = LocalColors.current.error
-                    )
+                        contentColor = LocalColors.current.error,
+                    ),
                 )
                 ActionButton(
                     modifier = Modifier.weight(1f),
@@ -149,4 +144,3 @@ private fun RequestItemCard(
         }
     }
 }
-

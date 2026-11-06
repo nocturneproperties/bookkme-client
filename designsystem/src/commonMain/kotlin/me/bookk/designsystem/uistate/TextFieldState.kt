@@ -29,7 +29,7 @@ enum class InputType {
     PHONE,
     EMAIL,
     ASCII,
-    PASSWORD
+    PASSWORD,
 }
 
 fun TextFieldState.clearError() {

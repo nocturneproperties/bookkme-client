@@ -48,10 +48,7 @@ import me.bookk.feature.authorization.presentation.troubleshoot.state.Troublesho
 import me.bookk.feature.authorization.presentation.troubleshoot.state.TroubleshootState
 
 @Composable
-internal fun TroubleshootScreen(
-    state: TroubleshootState,
-    listener: TroubleshootEventListener
-) {
+internal fun TroubleshootScreen(state: TroubleshootState, listener: TroubleshootEventListener) {
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -59,7 +56,7 @@ internal fun TroubleshootScreen(
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                onNavigationIconClick = LocalNavigation.current.navigateBack
+                onNavigationIconClick = LocalNavigation.current.navigateBack,
             )
         },
         content = { paddings ->
@@ -67,7 +64,7 @@ internal fun TroubleshootScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(paddings)
-                    .padding(all = 16.dp)
+                    .padding(all = 16.dp),
             ) {
                 PassKeyTroubleshootCard(state = state)
             }
@@ -77,15 +74,15 @@ internal fun TroubleshootScreen(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 ActionButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.contactSupportButton,
-                    onClick = LocalNavigation.current.navigateToContactSupport
+                    onClick = LocalNavigation.current.navigateToContactSupport,
                 )
             }
-        }
+        },
     )
 }
 
@@ -93,7 +90,7 @@ internal fun TroubleshootScreen(
 private fun PassKeyTroubleshootCard(state: TroubleshootState) {
     AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
     ) {
         Column {
             Row(
@@ -101,26 +98,26 @@ private fun PassKeyTroubleshootCard(state: TroubleshootState) {
                     start = 24.dp,
                     top = 24.dp,
                     bottom = 24.dp,
-                    end = 16.dp
+                    end = 16.dp,
                 ),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 16.dp),
                     style = MaterialTheme.typography.titleMedium,
-                    text = state.troubleshootCardStaticData.title.localized()
+                    text = state.troubleshootCardStaticData.title.localized(),
                 )
 
                 Box(
                     modifier = Modifier.size(48.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         modifier = Modifier.fillMaxSize(),
                         painter = painterResource(state.troubleshootCardStaticData.icon),
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
             }
@@ -128,7 +125,7 @@ private fun PassKeyTroubleshootCard(state: TroubleshootState) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(LocalColors.current.divider)
+                    .background(LocalColors.current.divider),
             )
             Column(modifier = Modifier.padding(vertical = 8.dp)) {
                 state.troubleshootCardStaticData.reasons.forEach {
@@ -146,14 +143,14 @@ private fun ReasonItem(reason: TroubleshootCardData.Reason) {
         targetValue = if (isExpanded) 90f else 0f,
         animationSpec = tween(
             durationMillis = 200,
-            easing = LinearEasing
+            easing = LinearEasing,
         ),
-        label = "ArrowRotationAnimation"
+        label = "ArrowRotationAnimation",
     )
     Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
         Row(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = reason.title.localized(),
@@ -163,7 +160,7 @@ private fun ReasonItem(reason: TroubleshootCardData.Reason) {
             Icon(
                 modifier = Modifier.rotate(angle),
                 imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                contentDescription = null
+                contentDescription = null,
             )
         }
         AnimatedVisibility(isExpanded) {
@@ -171,7 +168,7 @@ private fun ReasonItem(reason: TroubleshootCardData.Reason) {
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                 text = reason.description.localized(),
                 style = MaterialTheme.typography.bodySmall,
-                color = LocalColors.current.secondaryText
+                color = LocalColors.current.secondaryText,
             )
         }
     }
@@ -183,7 +180,7 @@ private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         TroubleshootScreen(
             state = AndroidTroubleshootState(TroubleshootViewModel.createInitData()),
-            listener = mockListener()
+            listener = mockListener(),
         )
     }
 }
@@ -194,7 +191,7 @@ private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         TroubleshootScreen(
             state = AndroidTroubleshootState(TroubleshootViewModel.createInitData()),
-            listener = mockListener()
+            listener = mockListener(),
         )
     }
 }

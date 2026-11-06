@@ -58,4 +58,17 @@
     <string name="settings_notifications_email_label">E-mail</string>
     <string name="settings_notifications_push_label">Powiadomienia push</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
+    <string name="settings_edit_profile_email_taken_error">Ten adres e-mail jest już używany.</string>
+    <string name="settings_passkey_last_error">Nie możesz usunąć ostatniego klucza dostępu. Najpierw dodaj inny klucz, aby zachować dostęp do konta.</string>
+
+    <string name="settings_legal_title">Informacje prawne</string>
+    <string name="settings_legal_accepted">Zaakceptowano</string>
+    <string name="settings_legal_pending">Wymaga zapoznania się</string>
+    <string name="settings_legal_unknown">Nieznany status akceptacji</string>
+    <string name="settings_legal_accept">Akceptuję dokumenty</string>
+    <string name="settings_legal_retry">Spróbuj ponownie</string>
+    <string name="settings_legal_load_error">Nie udało się wczytać dokumentów prawnych. Spróbuj ponownie.</string>
+    <string name="settings_legal_changed">Dokumenty prawne uległy zmianie. Zapoznaj się z aktualnymi wersjami i zaakceptuj je ponownie.</string>
+    <string name="settings_legal_consent">Wybierając „Akceptuję dokumenty”, zgadzasz się na dokumenty wymagające zapoznania się.</string>
+    <string name="settings_legal_loading">Sprawdzanie dokumentów…</string>
 </resources>

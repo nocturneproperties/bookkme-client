@@ -57,7 +57,7 @@ class GetNotificationSettingsImplTest {
         id = userId,
         firstName = "First",
         lastName = "Last",
-        email = "user@example.com"
+        email = "user@example.com",
     )
 
     @Test
@@ -67,7 +67,8 @@ class GetNotificationSettingsImplTest {
         val userId = Uuid.random()
         val settings = NotificationSettings.stub(userId)
         every { fixture.profileCRUD.observe() } returns flowOf(profile(userId))
-        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns flowOf(settings)
+        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns
+            flowOf(settings)
 
         whenn()
         val result = fixture.sut.flow().first()
@@ -82,7 +83,8 @@ class GetNotificationSettingsImplTest {
         val fixture = Fixture()
         val userId = Uuid.random()
         every { fixture.profileCRUD.observe() } returns flowOf(profile(userId))
-        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns flowOf(null)
+        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns
+            flowOf(null)
 
         whenn()
         val result = fixture.sut.flow().first()
@@ -112,7 +114,8 @@ class GetNotificationSettingsImplTest {
         val userId = Uuid.random()
         val settings = NotificationSettings.stub(userId)
         every { fixture.profileCRUD.observe() } returns flowOf(null, profile(userId))
-        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns flowOf(settings)
+        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns
+            flowOf(settings)
 
         whenn()
         val result = fixture.sut.flow().toList()
@@ -127,7 +130,8 @@ class GetNotificationSettingsImplTest {
         val fixture = Fixture()
         val userId = Uuid.random()
         every { fixture.profileCRUD.observe() } returns flowOf(profile(userId))
-        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns flowOf(null)
+        every { fixture.dataSource.observeNotificationSettingsDBChanges(userId) } returns
+            flowOf(null)
 
         whenn()
         fixture.sut.flow().first()
@@ -152,7 +156,9 @@ class GetNotificationSettingsImplTest {
 
         then()
         assertEquals(remote, result)
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveNotificationSettingsInDB(remote) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveNotificationSettingsInDB(remote)
+        }
     }
 
     @Test
@@ -201,6 +207,8 @@ class GetNotificationSettingsImplTest {
 
         then()
         assertFailsWith<IllegalStateException> { throw error!! }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveNotificationSettingsInDB(any()) }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.dataSource.saveNotificationSettingsInDB(any())
+        }
     }
 }

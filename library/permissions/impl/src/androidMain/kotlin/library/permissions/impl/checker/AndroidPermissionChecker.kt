@@ -13,7 +13,7 @@ import kotlin.coroutines.resume
 
 internal class LauncherContext<Input, Output>(
     activity: ComponentActivity,
-    contract: ActivityResultContract<Input, Output>
+    contract: ActivityResultContract<Input, Output>,
 ) {
     private val launcher = activity.registerForActivityResult(contract) {
         continuation?.resume(it)
@@ -27,7 +27,9 @@ internal class LauncherContext<Input, Output>(
     }
 }
 
-internal abstract class AndroidPermissionChecker : PermissionChecker, AndroidActivityAware() {
+internal abstract class AndroidPermissionChecker :
+    AndroidActivityAware(),
+    PermissionChecker {
 
     private var singleChecker: LauncherContext<String, Boolean>? = null
     private var multipleChecker: LauncherContext<Array<String>, Map<String, Boolean>>? = null

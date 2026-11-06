@@ -65,7 +65,7 @@ class ObserveDashboardSetupStatusImplTest {
             isAppointmentsPluginEnabled,
             getServiceGroups,
             getServices,
-            getClientsList
+            getClientsList,
         )
     }
 
@@ -74,14 +74,17 @@ class ObserveDashboardSetupStatusImplTest {
         canEditServices: Boolean = false,
         canEditClients: Boolean = false,
         canViewServices: Boolean = true,
-        canViewClients: Boolean = true
+        canViewClients: Boolean = true,
     ): Business {
         return stubBusiness(
-            permissions = stubBusinessPermissions().copy(
-                business = ResourcePermission(view = true, update = canEditBusiness),
-                services = ResourcePermission(view = canViewServices, update = canEditServices),
-                clients = ResourcePermission(view = canViewClients, update = canEditClients)
-            )
+            permissions = stubBusinessPermissions()
+                .copy(
+                    business = ResourcePermission(view = true, update = canEditBusiness),
+                    services =
+                    ResourcePermission(view = canViewServices, update = canEditServices),
+                    clients =
+                    ResourcePermission(view = canViewClients, update = canEditClients),
+                ),
         )
     }
 
@@ -94,10 +97,12 @@ class ObserveDashboardSetupStatusImplTest {
         isAppointmentsEnabled: Boolean?,
         groups: List<ServiceGroup> = emptyList(),
         services: List<Service> = emptyList(),
-        clients: List<Client> = emptyList()
+        clients: List<Client> = emptyList(),
     ) {
-        every { businessDataSource.observeUserBusinessInfoInDb() } returns flowOf(UserBusinessInfo(business.id, listOf(business)))
-        every { isAppointmentsPluginEnabled.flow(business.id) } returns flowOf(isAppointmentsEnabled)
+        every { businessDataSource.observeUserBusinessInfoInDb() } returns
+            flowOf(UserBusinessInfo(business.id, listOf(business)))
+        every { isAppointmentsPluginEnabled.flow(business.id) } returns
+            flowOf(isAppointmentsEnabled)
         every { getServiceGroups.flow() } returns flowOf(groups)
         every { getServices.flow() } returns flowOf(services)
         every { getClientsList.flow() } returns flowOf(clients)
@@ -111,7 +116,7 @@ class ObserveDashboardSetupStatusImplTest {
         hasClients: Boolean = false,
         canManageServices: Boolean = business.permissions.services.update,
         canManageClients: Boolean = business.permissions.clients.update,
-        missingViewPermissions: Set<BusinessResource> = emptySet()
+        missingViewPermissions: Set<BusinessResource> = emptySet(),
     ): DashboardSetupStatus.SetupRequired {
         return DashboardSetupStatus.SetupRequired(
             businessId = business.id,
@@ -122,22 +127,27 @@ class ObserveDashboardSetupStatusImplTest {
             canEnableAppointments = business.permissions.business.update,
             canManageServices = canManageServices,
             canManageClients = canManageClients,
-            missingViewPermissions = missingViewPermissions
+            missingViewPermissions = missingViewPermissions,
         )
     }
 
     private fun awaitingSetup(
         business: Business,
-        missingViewPermissions: Set<BusinessResource> = emptySet()
+        missingViewPermissions: Set<BusinessResource> = emptySet(),
     ): DashboardSetupStatus.AwaitingSetup {
-        return DashboardSetupStatus.AwaitingSetup(business.id, business.name, missingViewPermissions)
+        return DashboardSetupStatus.AwaitingSetup(
+            business.id,
+            business.name,
+            missingViewPermissions,
+        )
     }
 
     @Test
     fun `emits no business when user has no businesses`() = runUnitTest {
         given()
         val fixture = Fixture()
-        every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns flowOf(UserBusinessInfo(null, emptyList()))
+        every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns
+            flowOf(UserBusinessInfo(null, emptyList()))
 
         whenn()
         val result = fixture.sut().first()
@@ -147,18 +157,20 @@ class ObserveDashboardSetupStatusImplTest {
     }
 
     @Test
-    fun `emits business not selected with user businesses when there is no dashboard business`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businesses = listOf(stubBusiness(), stubBusiness())
-        every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns flowOf(UserBusinessInfo(null, businesses))
+    fun `emits business not selected with user businesses when there is no dashboard business`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businesses = listOf(stubBusiness(), stubBusiness())
+            every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns
+                flowOf(UserBusinessInfo(null, businesses))
 
-        whenn()
-        val result = fixture.sut().first()
+            whenn()
+            val result = fixture.sut().first()
 
-        then()
-        assertEquals(DashboardSetupStatus.BusinessNotSelected(businesses), result)
-    }
+            then()
+            assertEquals(DashboardSetupStatus.BusinessNotSelected(businesses), result)
+        }
 
     @Test
     fun `emits setup required with no steps done for a new owned business`() = runUnitTest {
@@ -184,14 +196,17 @@ class ObserveDashboardSetupStatusImplTest {
             isAppointmentsEnabled = null,
             groups = listOf(stubServiceGroup()),
             services = listOf(stubService()),
-            clients = listOf(stubClient())
+            clients = listOf(stubClient()),
         )
 
         whenn()
         val result = fixture.sut().first()
 
         then()
-        assertEquals(setupRequired(business, hasServiceGroups = true, hasServices = true, hasClients = true), result)
+        assertEquals(
+            setupRequired(business, hasServiceGroups = true, hasServices = true, hasClients = true),
+            result,
+        )
     }
 
     @Test
@@ -219,7 +234,10 @@ class ObserveDashboardSetupStatusImplTest {
         val result = fixture.sut().first()
 
         then()
-        assertEquals(setupRequired(business, isAppointmentsEnabled = true, hasServiceGroups = true), result)
+        assertEquals(
+            setupRequired(business, isAppointmentsEnabled = true, hasServiceGroups = true),
+            result,
+        )
     }
 
     @Test
@@ -227,13 +245,26 @@ class ObserveDashboardSetupStatusImplTest {
         given()
         val fixture = Fixture()
         val business = ownedBusiness()
-        fixture.stub(business, isAppointmentsEnabled = true, groups = listOf(stubServiceGroup()), services = listOf(stubService()))
+        fixture.stub(
+            business,
+            isAppointmentsEnabled = true,
+            groups = listOf(stubServiceGroup()),
+            services = listOf(stubService()),
+        )
 
         whenn()
         val result = fixture.sut().first()
 
         then()
-        assertEquals(setupRequired(business, isAppointmentsEnabled = true, hasServiceGroups = true, hasServices = true), result)
+        assertEquals(
+            setupRequired(
+                business,
+                isAppointmentsEnabled = true,
+                hasServiceGroups = true,
+                hasServices = true,
+            ),
+            result,
+        )
     }
 
     @Test
@@ -247,7 +278,10 @@ class ObserveDashboardSetupStatusImplTest {
         val result = fixture.sut().first()
 
         then()
-        assertEquals(setupRequired(business, isAppointmentsEnabled = true, hasClients = true), result)
+        assertEquals(
+            setupRequired(business, isAppointmentsEnabled = true, hasClients = true),
+            result,
+        )
     }
 
     @Test
@@ -259,7 +293,7 @@ class ObserveDashboardSetupStatusImplTest {
             isAppointmentsEnabled = true,
             groups = listOf(stubServiceGroup()),
             services = listOf(stubService()),
-            clients = listOf(stubClient())
+            clients = listOf(stubClient()),
         )
 
         whenn()
@@ -278,7 +312,7 @@ class ObserveDashboardSetupStatusImplTest {
             isAppointmentsEnabled = true,
             groups = listOf(stubServiceGroup()),
             services = listOf(stubService()),
-            clients = listOf(stubClient())
+            clients = listOf(stubClient()),
         )
 
         whenn()
@@ -289,123 +323,157 @@ class ObserveDashboardSetupStatusImplTest {
     }
 
     @Test
-    fun `emits awaiting setup when user cannot edit anything and setup is incomplete`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith()
-        fixture.stub(business, isAppointmentsEnabled = true)
+    fun `emits awaiting setup when user cannot edit anything and setup is incomplete`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith()
+            fixture.stub(business, isAppointmentsEnabled = true)
 
-        whenn()
-        val result = fixture.sut().first()
+            whenn()
+            val result = fixture.sut().first()
 
-        then()
-        assertEquals(awaitingSetup(business), result)
-    }
-
-    @Test
-    fun `emits setup required for a user who can only edit clients while client step is missing`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditClients = true)
-        fixture.stub(business, isAppointmentsEnabled = false)
-
-        whenn()
-        val result = fixture.sut().first()
-
-        then()
-        assertEquals(setupRequired(business), result)
-    }
+            then()
+            assertEquals(awaitingSetup(business), result)
+        }
 
     @Test
-    fun `emits awaiting setup for a user who can only edit clients once a client exists`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditClients = true)
-        fixture.stub(business, isAppointmentsEnabled = false, clients = listOf(stubClient()))
+    fun `emits setup required for a user who can only edit clients while client step is missing`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditClients = true)
+            fixture.stub(business, isAppointmentsEnabled = false)
 
-        whenn()
-        val result = fixture.sut().first()
+            whenn()
+            val result = fixture.sut().first()
 
-        then()
-        assertEquals(awaitingSetup(business), result)
-    }
-
-    @Test
-    fun `emits setup required for a user who can only edit services while service group step is missing`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditServices = true)
-        fixture.stub(business, isAppointmentsEnabled = true, clients = listOf(stubClient()))
-
-        whenn()
-        val result = fixture.sut().first()
-
-        then()
-        assertEquals(setupRequired(business, isAppointmentsEnabled = true, hasClients = true), result)
-    }
+            then()
+            assertEquals(setupRequired(business), result)
+        }
 
     @Test
-    fun `emits setup required for a user who can only edit services while service step is missing`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditServices = true)
-        fixture.stub(business, isAppointmentsEnabled = true, groups = listOf(stubServiceGroup()), clients = listOf(stubClient()))
+    fun `emits awaiting setup for a user who can only edit clients once a client exists`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditClients = true)
+            fixture.stub(business, isAppointmentsEnabled = false, clients = listOf(stubClient()))
 
-        whenn()
-        val result = fixture.sut().first()
+            whenn()
+            val result = fixture.sut().first()
 
-        then()
-        assertEquals(setupRequired(business, isAppointmentsEnabled = true, hasServiceGroups = true, hasClients = true), result)
-    }
-
-    @Test
-    fun `emits awaiting setup for a user who can only edit services once groups and services exist`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditServices = true)
-        fixture.stub(business, isAppointmentsEnabled = false, groups = listOf(stubServiceGroup()), services = listOf(stubService()))
-
-        whenn()
-        val result = fixture.sut().first()
-
-        then()
-        assertEquals(awaitingSetup(business), result)
-    }
+            then()
+            assertEquals(awaitingSetup(business), result)
+        }
 
     @Test
-    fun `emits setup required for a user who can only edit business while plugin is disabled`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditBusiness = true)
-        fixture.stub(business, isAppointmentsEnabled = false)
+    fun `emits setup required for a user who can only edit services while service group step is missing`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditServices = true)
+            fixture.stub(business, isAppointmentsEnabled = true, clients = listOf(stubClient()))
 
-        whenn()
-        val result = fixture.sut().first()
+            whenn()
+            val result = fixture.sut().first()
 
-        then()
-        assertEquals(setupRequired(business), result)
-    }
+            then()
+            assertEquals(
+                setupRequired(business, isAppointmentsEnabled = true, hasClients = true),
+                result,
+            )
+        }
 
     @Test
-    fun `emits awaiting setup for a user who can only edit business once plugin is enabled`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditBusiness = true)
-        fixture.stub(business, isAppointmentsEnabled = true)
+    fun `emits setup required for a user who can only edit services while service step is missing`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditServices = true)
+            fixture.stub(
+                business,
+                isAppointmentsEnabled = true,
+                groups = listOf(stubServiceGroup()),
+                clients = listOf(stubClient()),
+            )
 
-        whenn()
-        val result = fixture.sut().first()
+            whenn()
+            val result = fixture.sut().first()
 
-        then()
-        assertEquals(awaitingSetup(business), result)
-    }
+            then()
+            assertEquals(
+                setupRequired(
+                    business,
+                    isAppointmentsEnabled = true,
+                    hasServiceGroups = true,
+                    hasClients = true,
+                ),
+                result,
+            )
+        }
+
+    @Test
+    fun `emits awaiting setup for a user who can only edit services once groups and services exist`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditServices = true)
+            fixture.stub(
+                business,
+                isAppointmentsEnabled = false,
+                groups = listOf(stubServiceGroup()),
+                services = listOf(stubService()),
+            )
+
+            whenn()
+            val result = fixture.sut().first()
+
+            then()
+            assertEquals(awaitingSetup(business), result)
+        }
+
+    @Test
+    fun `emits setup required for a user who can only edit business while plugin is disabled`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditBusiness = true)
+            fixture.stub(business, isAppointmentsEnabled = false)
+
+            whenn()
+            val result = fixture.sut().first()
+
+            then()
+            assertEquals(setupRequired(business), result)
+        }
+
+    @Test
+    fun `emits awaiting setup for a user who can only edit business once plugin is enabled`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditBusiness = true)
+            fixture.stub(business, isAppointmentsEnabled = true)
+
+            whenn()
+            val result = fixture.sut().first()
+
+            then()
+            assertEquals(awaitingSetup(business), result)
+        }
 
     @Test
     fun `reports missing clients view permission while awaiting setup`() = runUnitTest {
         given()
         val fixture = Fixture()
         val business = businessWith(canViewClients = false)
-        fixture.stub(business, isAppointmentsEnabled = true, groups = listOf(stubServiceGroup()), services = listOf(stubService()))
+        fixture.stub(
+            business,
+            isAppointmentsEnabled = true,
+            groups = listOf(stubServiceGroup()),
+            services = listOf(stubService()),
+        )
 
         whenn()
         val result = fixture.sut().first()
@@ -439,36 +507,47 @@ class ObserveDashboardSetupStatusImplTest {
         val result = fixture.sut().first()
 
         then()
-        assertEquals(awaitingSetup(business, setOf(BusinessResource.SERVICES, BusinessResource.CLIENTS)), result)
+        assertEquals(
+            awaitingSetup(business, setOf(BusinessResource.SERVICES, BusinessResource.CLIENTS)),
+            result,
+        )
     }
 
     @Test
-    fun `reports missing services view permission on the checklist of a user who can edit the business`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditBusiness = true, canViewServices = false)
-        fixture.stub(business, isAppointmentsEnabled = false)
+    fun `reports missing services view permission on the checklist of a user who can edit the business`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditBusiness = true, canViewServices = false)
+            fixture.stub(business, isAppointmentsEnabled = false)
 
-        whenn()
-        val result = fixture.sut().first()
+            whenn()
+            val result = fixture.sut().first()
 
-        then()
-        assertEquals(setupRequired(business, missingViewPermissions = setOf(BusinessResource.SERVICES)), result)
-    }
+            then()
+            assertEquals(
+                setupRequired(business, missingViewPermissions = setOf(BusinessResource.SERVICES)),
+                result,
+            )
+        }
 
     @Test
-    fun `reports missing clients view permission on the checklist of a user who can edit the business`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = businessWith(canEditBusiness = true, canViewClients = false)
-        fixture.stub(business, isAppointmentsEnabled = false)
+    fun `reports missing clients view permission on the checklist of a user who can edit the business`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = businessWith(canEditBusiness = true, canViewClients = false)
+            fixture.stub(business, isAppointmentsEnabled = false)
 
-        whenn()
-        val result = fixture.sut().first()
+            whenn()
+            val result = fixture.sut().first()
 
-        then()
-        assertEquals(setupRequired(business, missingViewPermissions = setOf(BusinessResource.CLIENTS)), result)
-    }
+            then()
+            assertEquals(
+                setupRequired(business, missingViewPermissions = setOf(BusinessResource.CLIENTS)),
+                result,
+            )
+        }
 
     @Test
     fun `does not let a user manage services they cannot view`() = runUnitTest {
@@ -489,7 +568,12 @@ class ObserveDashboardSetupStatusImplTest {
         given()
         val fixture = Fixture()
         val business = businessWith(canEditClients = true, canViewClients = false)
-        fixture.stub(business, isAppointmentsEnabled = true, groups = listOf(stubServiceGroup()), services = listOf(stubService()))
+        fixture.stub(
+            business,
+            isAppointmentsEnabled = true,
+            groups = listOf(stubServiceGroup()),
+            services = listOf(stubService()),
+        )
 
         whenn()
         val result = fixture.sut().first()
@@ -502,7 +586,9 @@ class ObserveDashboardSetupStatusImplTest {
     fun `recomputes when user joins a business`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businesses = MutableSharedFlow<UserBusinessInfo>(replay = 1).apply { tryEmit(UserBusinessInfo(null, emptyList())) }
+        val businesses = MutableSharedFlow<UserBusinessInfo>(replay = 1).apply {
+            tryEmit(UserBusinessInfo(null, emptyList()))
+        }
         val business = businessWith()
         fixture.stub(business, isAppointmentsEnabled = false)
         every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns businesses
@@ -523,7 +609,9 @@ class ObserveDashboardSetupStatusImplTest {
         val fixture = Fixture()
         val existing = stubBusiness()
         val created = ownedBusiness()
-        val businesses = MutableSharedFlow<UserBusinessInfo>(replay = 1).apply { tryEmit(UserBusinessInfo(null, listOf(existing))) }
+        val businesses = MutableSharedFlow<UserBusinessInfo>(replay = 1).apply {
+            tryEmit(UserBusinessInfo(null, listOf(existing)))
+        }
         fixture.stub(created, isAppointmentsEnabled = false)
         every { fixture.businessDataSource.observeUserBusinessInfoInDb() } returns businesses
         val results = mutableListOf<DashboardSetupStatus>()
@@ -534,7 +622,13 @@ class ObserveDashboardSetupStatusImplTest {
 
         then()
         job.cancel()
-        assertEquals(listOf(DashboardSetupStatus.BusinessNotSelected(listOf(existing)), setupRequired(created)), results)
+        assertEquals(
+            listOf(
+                DashboardSetupStatus.BusinessNotSelected(listOf(existing)),
+                setupRequired(created),
+            ),
+            results,
+        )
     }
 
     @Test
@@ -548,7 +642,7 @@ class ObserveDashboardSetupStatusImplTest {
             isAppointmentsEnabled = false,
             groups = listOf(stubServiceGroup()),
             services = listOf(stubService()),
-            clients = listOf(stubClient())
+            clients = listOf(stubClient()),
         )
         every { fixture.isAppointmentsPluginEnabled.flow(business.id) } returns pluginState
         val results = mutableListOf<DashboardSetupStatus>()
@@ -560,8 +654,16 @@ class ObserveDashboardSetupStatusImplTest {
         then()
         job.cancel()
         assertEquals(
-            listOf(setupRequired(business, hasServiceGroups = true, hasServices = true, hasClients = true), DashboardSetupStatus.Ready),
-            results
+            listOf(
+                setupRequired(
+                    business,
+                    hasServiceGroups = true,
+                    hasServices = true,
+                    hasClients = true,
+                ),
+                DashboardSetupStatus.Ready,
+            ),
+            results,
         )
     }
 
@@ -571,7 +673,12 @@ class ObserveDashboardSetupStatusImplTest {
         val fixture = Fixture()
         val business = ownedBusiness()
         val clients = MutableSharedFlow<List<Client>>(replay = 1).apply { tryEmit(emptyList()) }
-        fixture.stub(business, isAppointmentsEnabled = true, groups = listOf(stubServiceGroup()), services = listOf(stubService()))
+        fixture.stub(
+            business,
+            isAppointmentsEnabled = true,
+            groups = listOf(stubServiceGroup()),
+            services = listOf(stubService()),
+        )
         every { fixture.getClientsList.flow() } returns clients
         val results = mutableListOf<DashboardSetupStatus>()
         val job = launch(Dispatchers.Unconfined) { fixture.sut().collect { results.add(it) } }
@@ -582,8 +689,16 @@ class ObserveDashboardSetupStatusImplTest {
         then()
         job.cancel()
         assertEquals(
-            listOf(setupRequired(business, isAppointmentsEnabled = true, hasServiceGroups = true, hasServices = true), DashboardSetupStatus.Ready),
-            results
+            listOf(
+                setupRequired(
+                    business,
+                    isAppointmentsEnabled = true,
+                    hasServiceGroups = true,
+                    hasServices = true,
+                ),
+                DashboardSetupStatus.Ready,
+            ),
+            results,
         )
     }
 }

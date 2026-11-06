@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.clientDetailsScreen(navigation: ClientsNavigation) {
     composable<ClientsDestinations.ClientDetails>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val route: ClientsDestinations.ClientDetails = it.toRoute()
         val viewModel: ClientDetailsViewModel = koinViewModel { parametersOf(route.id) }

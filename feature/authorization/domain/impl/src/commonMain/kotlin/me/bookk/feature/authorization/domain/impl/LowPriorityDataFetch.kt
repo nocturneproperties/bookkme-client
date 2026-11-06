@@ -24,13 +24,14 @@ internal open class LowPriorityDataFetch(
     private val getNotificationSettings: GetNotificationSettings,
     private val getAppointmentEnabled: IsAppointmentsPluginEnabled,
     private val getAppointmentSettings: GetAppointmentSettings,
-    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
 ) {
 
     // 1. Calling this requests sequentially is intentional, to not spam the server
     // 2. Grouping done assuming backend services architecture. Entities stored at the same logical entry (service) will likely fail together
     open operator fun invoke() = applicationScope.launch {
-        val business = observeDashboardBusinessChanges().filterNotNull().firstOrNull() ?: return@launch
+        val business =
+            observeDashboardBusinessChanges().filterNotNull().firstOrNull() ?: return@launch
 
         runCatching {
             getServices.refresh(business.id)
@@ -44,6 +45,5 @@ internal open class LowPriorityDataFetch(
             updateNotificationToken()
             getNotificationSettings.refresh()
         }
-
     }
 }

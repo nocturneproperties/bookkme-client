@@ -32,5 +32,7 @@ flowchart TD
 goes out with whatever token the Ktor bearer cache still holds. If that request fails, the server session
 stays open.
 
-Not cleared: the `notification_prefs`, `device_prefs` and `settings_prefs` buckets. See
+Not cleared: the `notification_prefs`, `device_prefs`, `settings_prefs` and `signup_legal_documents_prefs`
+buckets. The public legal-document snapshot is intentionally retained for signup; user consent is not stored
+in it. See
 [preferences](../../database/preferences.md).

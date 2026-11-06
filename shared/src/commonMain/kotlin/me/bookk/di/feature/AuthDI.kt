@@ -9,6 +9,6 @@ internal fun authDiModule() = module {
     includes(
         authPresentationModule(),
         authDomainModule(),
-        authDataModule()
+        authDataModule(),
     )
 }

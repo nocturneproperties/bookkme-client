@@ -41,4 +41,6 @@
     <string name="dashboard_join_error_empty_code">Enter an invitation code</string>
     <string name="dashboard_join_error_already_processed">This invitation was already used or is no longer valid</string>
     <string name="dashboard_join_error_employee_exists">You are already an employee of this business</string>
+    <string name="create_business_already_exists_error">This business already exists. Refresh your businesses and try again.</string>
+    <string name="create_business_invalid_name_error">Enter a valid business name.</string>
 </resources>

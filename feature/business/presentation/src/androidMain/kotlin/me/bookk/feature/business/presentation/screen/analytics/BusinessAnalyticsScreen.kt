@@ -32,9 +32,7 @@ import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
 
 @Composable
-internal fun BusinessAnalyticsScreen(
-    state: BusinessAnalyticsState
-) {
+internal fun BusinessAnalyticsScreen(state: BusinessAnalyticsState) {
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -47,35 +45,35 @@ internal fun BusinessAnalyticsScreen(
                     .fillMaxSize()
                     .padding(horizontal = 32.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
                     modifier = Modifier
                         .background(
                             LocalColors.current.actionText.copy(alpha = 0.1f),
-                            MaterialTheme.shapes.large
+                            MaterialTheme.shapes.large,
                         )
                         .size(72.dp)
                         .padding(16.dp),
                     imageVector = Icons.Outlined.Insights,
                     contentDescription = null,
-                    tint = LocalColors.current.actionText
+                    tint = LocalColors.current.actionText,
                 )
                 Text(
                     modifier = Modifier.padding(top = 24.dp),
                     text = state.title.localized(),
                     style = MaterialTheme.typography.titleLarge.primary(),
                     fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
                 Text(
                     modifier = Modifier.padding(top = 8.dp),
                     text = state.message.localized(),
                     style = MaterialTheme.typography.bodyMedium.secondary(),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
-        }
+        },
     )
 }
 

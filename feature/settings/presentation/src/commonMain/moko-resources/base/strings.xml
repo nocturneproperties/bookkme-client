@@ -58,4 +58,17 @@
     <string name="settings_notifications_email_label">Email</string>
     <string name="settings_notifications_push_label">Push notifications</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
+    <string name="settings_edit_profile_email_taken_error">This email address is already in use.</string>
+    <string name="settings_passkey_last_error">You cannot delete your last passkey. Add another passkey first to keep access to your account.</string>
+
+    <string name="settings_legal_title">Legal</string>
+    <string name="settings_legal_accepted">Accepted</string>
+    <string name="settings_legal_pending">Needs your review</string>
+    <string name="settings_legal_unknown">Unknown acceptance status</string>
+    <string name="settings_legal_accept">Accept documents</string>
+    <string name="settings_legal_retry">Retry</string>
+    <string name="settings_legal_load_error">Could not load legal documents. Please retry.</string>
+    <string name="settings_legal_changed">Legal documents have changed. Review the current versions and accept again.</string>
+    <string name="settings_legal_consent">By selecting “Accept documents”, you agree to the documents marked for review.</string>
+    <string name="settings_legal_loading">Checking documents…</string>
 </resources>

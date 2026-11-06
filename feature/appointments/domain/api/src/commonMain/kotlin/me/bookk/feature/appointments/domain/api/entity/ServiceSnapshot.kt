@@ -9,7 +9,7 @@ data class ServiceSnapshot(
     val name: String,
     val groupId: Uuid,
     val price: Money,
-    val duration: Duration
+    val duration: Duration,
 ) {
     companion object {
         fun stub() = ServiceSnapshot(
@@ -17,7 +17,7 @@ data class ServiceSnapshot(
             name = "Service Name",
             groupId = Uuid.random(),
             price = Money(100.0, Money.SupportedCurrency.USD),
-            duration = Duration.parse("30m")
+            duration = Duration.parse("30m"),
         )
     }
 }

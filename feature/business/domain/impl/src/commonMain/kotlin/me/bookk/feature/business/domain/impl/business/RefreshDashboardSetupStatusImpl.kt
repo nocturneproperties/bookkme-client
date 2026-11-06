@@ -11,7 +11,7 @@ internal class RefreshDashboardSetupStatusImpl(
     private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
     private val getServiceGroups: GetServiceGroups,
     private val getServices: GetServices,
-    private val getClientsList: GetClientsList
+    private val getClientsList: GetClientsList,
 ) : RefreshDashboardSetupStatus {
 
     override suspend fun invoke(businessId: Uuid) {
@@ -19,7 +19,7 @@ internal class RefreshDashboardSetupStatusImpl(
             runCatching { isAppointmentsPluginEnabled.refresh(businessId) },
             runCatching { getServiceGroups.refresh(businessId) },
             runCatching { getServices.refresh(businessId) },
-            runCatching { getClientsList.refresh(businessId) }
+            runCatching { getClientsList.refresh(businessId) },
         ).firstNotNullOfOrNull { it.exceptionOrNull() }
         failure?.let { throw it }
     }

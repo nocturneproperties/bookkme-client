@@ -11,7 +11,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class AppointmentRemote(
     @ProtoNumber(1) val id: Uuid,
-    @ProtoNumber(2) val userId: Uuid,
+    @ProtoNumber(2) val initiatorUserId: Uuid,
     @ProtoNumber(3) val businessId: Uuid,
     @ProtoNumber(4) val employee: EmployeeSnapshotRemote,
     @ProtoNumber(5) val client: ClientSnapshotRemote,
@@ -21,20 +21,22 @@ data class AppointmentRemote(
     @ProtoNumber(9) val note: String,
     @ProtoNumber(10) val cancellationReason: String,
     @ProtoNumber(11) val completedBy: AppointmentCompletedByRemote? = null,
-    @ProtoNumber(12) val priceAdjustment: PriceAdjustmentRemote? = null
+    @ProtoNumber(12) val priceAdjustment: PriceAdjustmentRemote? = null,
 ) {
-    fun toDomain() = Appointment(
-        id = id,
-        userId = userId,
-        businessId = businessId,
-        employee = employee.toDomain(),
-        client = client.toDomain(),
-        services = services.map { it.toDomain() },
-        status = status.toDomain(),
-        date = date.toLocalDateTime(TimeZone.currentSystemDefault()),
-        note = note,
-        cancellationReason = cancellationReason,
-        completedBy = completedBy?.toDomain(),
-        priceAdjustment = priceAdjustment?.toDomain()
-    )
+    fun toDomain(): Appointment {
+        return Appointment(
+            id = id,
+            userId = initiatorUserId,
+            businessId = businessId,
+            employee = employee.toDomain(),
+            client = client.toDomain(),
+            services = services.map { it.toDomain() },
+            status = status.toDomain(),
+            date = date.toLocalDateTime(TimeZone.currentSystemDefault()),
+            note = note,
+            cancellationReason = cancellationReason,
+            completedBy = completedBy?.toDomain(),
+            priceAdjustment = priceAdjustment?.toDomain(),
+        )
+    }
 }

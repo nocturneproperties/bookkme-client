@@ -20,7 +20,7 @@ fun SettingsTab() {
         enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
         exitTransition = { scaleOut(targetScale = 0.92f) },
         popEnterTransition = { scaleIn(initialScale = 0.92f) },
-        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
+        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) },
     ) {
         settingsGraph(
             navigation = SettingsNavigation(
@@ -39,8 +39,8 @@ fun SettingsTab() {
                 },
                 navigateToNotifications = {
                     settingsController.navigate(SettingsDestination.Notifications)
-                }
-            )
+                },
+            ),
         )
     }
 }

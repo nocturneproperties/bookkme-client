@@ -6,4 +6,3 @@ interface TextState : ViewState {
     var text: StringDesc
     var isHighlighted: Boolean
 }
-

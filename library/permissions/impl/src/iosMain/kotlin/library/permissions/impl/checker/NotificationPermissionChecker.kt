@@ -21,8 +21,8 @@ internal actual class NotificationPermissionChecker : PermissionChecker {
         notificationCenter
             .requestAuthorizationWithOptions(
                 UNAuthorizationOptionAlert or
-                        UNAuthorizationOptionSound or
-                        UNAuthorizationOptionBadge
+                    UNAuthorizationOptionSound or
+                    UNAuthorizationOptionBadge,
             ) { hasPermissions, _ ->
                 if (hasPermissions) {
                     UIApplication.sharedApplication.registerForRemoteNotifications()

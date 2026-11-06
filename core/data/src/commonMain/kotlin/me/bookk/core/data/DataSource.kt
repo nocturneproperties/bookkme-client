@@ -19,7 +19,7 @@ abstract class DataSource {
     suspend fun <T> mapExceptions(
         exceptionMapper: ((Error) -> Throwable)? = null,
         finally: (() -> Unit)? = null,
-        action: suspend () -> T
+        action: suspend () -> T,
     ): T {
         return try {
             action()

@@ -73,8 +73,8 @@ class GetEmployeesImplTest {
             employees = ResourcePermission(),
             clients = ResourcePermission(),
             services = ResourcePermission(),
-            appointments = ResourcePermission()
-        )
+            appointments = ResourcePermission(),
+        ),
     )
 
     @Test
@@ -97,7 +97,8 @@ class GetEmployeesImplTest {
         val business = stubBusiness()
         val employees = listOf(stubEmployee(business.id))
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.dataSource.observeEmployeesDBChanges(business.id) } returns flowOf(employees)
+        every { fixture.dataSource.observeEmployeesDBChanges(business.id) } returns
+            flowOf(employees)
 
         whenn()
         val result = fixture.sut.flow().first()
@@ -117,8 +118,10 @@ class GetEmployeesImplTest {
         val secondEmployees = listOf(stubEmployee(secondBusiness.id))
         businesses.tryEmit(firstBusiness)
         every { fixture.observeDashboardBusinessChanges() } returns businesses
-        every { fixture.dataSource.observeEmployeesDBChanges(firstBusiness.id) } returns flowOf(firstEmployees)
-        every { fixture.dataSource.observeEmployeesDBChanges(secondBusiness.id) } returns flowOf(secondEmployees)
+        every { fixture.dataSource.observeEmployeesDBChanges(firstBusiness.id) } returns
+            flowOf(firstEmployees)
+        every { fixture.dataSource.observeEmployeesDBChanges(secondBusiness.id) } returns
+            flowOf(secondEmployees)
         val results = mutableListOf<List<Employee>>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut.flow().collect { results.add(it) }
@@ -139,7 +142,8 @@ class GetEmployeesImplTest {
         val fixture = Fixture()
         val business = stubBusiness()
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.dataSource.observeEmployeesDBChanges(business.id) } returns flowOf(emptyList())
+        every { fixture.dataSource.observeEmployeesDBChanges(business.id) } returns
+            flowOf(emptyList())
 
         whenn()
         fixture.sut.flow().first()
@@ -155,7 +159,8 @@ class GetEmployeesImplTest {
         val businessId = Uuid.random()
         val employees = listOf(stubEmployee(businessId))
         everySuspend { fixture.dataSource.getEmployees(businessId) } returns employees
-        everySuspend { fixture.dataSource.getEmployeeIdsInDb(businessId) } returns employees.map { it.id }
+        everySuspend { fixture.dataSource.getEmployeeIdsInDb(businessId) } returns
+            employees.map { it.id }
         everySuspend { fixture.dataSource.saveEmployeesInDb(employees) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
@@ -177,7 +182,8 @@ class GetEmployeesImplTest {
         val remote = listOf(stillPresent)
         val staleId = Uuid.random()
         everySuspend { fixture.dataSource.getEmployees(businessId) } returns remote
-        everySuspend { fixture.dataSource.getEmployeeIdsInDb(businessId) } returns listOf(stillPresent.id, staleId)
+        everySuspend { fixture.dataSource.getEmployeeIdsInDb(businessId) } returns
+            listOf(stillPresent.id, staleId)
         everySuspend { fixture.dataSource.deleteEmployeesInDb(listOf(staleId)) } returns Unit
         everySuspend { fixture.dataSource.saveEmployeesInDb(remote) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
@@ -186,7 +192,9 @@ class GetEmployeesImplTest {
         fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteEmployeesInDb(listOf(staleId)) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.deleteEmployeesInDb(listOf(staleId))
+        }
     }
 
     @Test
@@ -196,7 +204,8 @@ class GetEmployeesImplTest {
         val businessId = Uuid.random()
         val employee = stubEmployee(businessId)
         everySuspend { fixture.dataSource.getEmployees(businessId) } returns listOf(employee)
-        everySuspend { fixture.dataSource.getEmployeeIdsInDb(businessId) } returns listOf(employee.id)
+        everySuspend { fixture.dataSource.getEmployeeIdsInDb(businessId) } returns
+            listOf(employee.id)
         everySuspend { fixture.dataSource.saveEmployeesInDb(listOf(employee)) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 

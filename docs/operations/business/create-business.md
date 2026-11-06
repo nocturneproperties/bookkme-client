@@ -28,7 +28,11 @@ flowchart TD
     Net -- 2xx business --> Refresh[RefreshBusinessInfo.refreshAndSelect business.id<br/>list + dashboard_business in one transaction]
     Refresh --> Switch[SwitchDashboardBusiness business.id]
     Switch --> R([return Business])
-    Net -- error --> EX([rethrow])
+    Net -- business error --> Code{errorCode}
+    Code -- 200001 --> Exists([throw Error.BusinessAlreadyExists])
+    Code -- 200002 --> Invalid([throw Error.InvalidName])
+    Code -- 200035 --> Currency([throw Error.InvalidCurrency])
+    Code -- other --> EX([rethrow])
     Refresh -- error --> EX
 ```
 

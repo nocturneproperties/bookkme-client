@@ -15,7 +15,7 @@ internal fun PasskeyRemote.toDomain(): Passkey {
         name = name,
         createdAt = createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
         isBackedUp = isBackedUp,
-        lastUsedAt = lastUsedAt.toLocalDateTime(TimeZone.currentSystemDefault())
+        lastUsedAt = lastUsedAt.toLocalDateTime(TimeZone.currentSystemDefault()),
     )
 }
 
@@ -25,13 +25,13 @@ internal fun RegistrationChallengeResponse.toDomain(): AddPasskeyChallenge {
         displayName = displayName,
         jsonChallengeData = challengeJson,
         challenge = challenge,
-        userHandle = userHandle
+        userHandle = userHandle,
     )
 }
 
 internal fun ClientSignUpResult.toRemote(): AddPasskeyRequest {
     return AddPasskeyRequest(
         requestId = requestId,
-        publicKeyCredentialJson = publicKeyCredentialJson
+        publicKeyCredentialJson = publicKeyCredentialJson,
     )
 }

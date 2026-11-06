@@ -43,11 +43,16 @@ import me.bookk.feature.appointments.presentation.screen.settings.AppointmentSet
 
 internal class FakeAppointmentsStateFactory : AppointmentsStateFactory {
     override fun createAppointmentListState(): AppointmentListState = FakeAppointmentListState()
-    override fun createAppointmentCreateState(): AppointmentCreateState = FakeAppointmentCreateState()
-    override fun createAppointmentDetailsState(): AppointmentDetailsState = FakeAppointmentDetailsState()
-    override fun createAppointmentSettingsState(): AppointmentSettingsState = FakeAppointmentSettingsState()
-    override fun createAppointmentHistoryState(): AppointmentHistoryState = FakeAppointmentHistoryState()
-    override fun createAppointmentRequestState(): AppointmentRequestState = FakeAppointmentRequestState()
+    override fun createAppointmentCreateState(): AppointmentCreateState =
+        FakeAppointmentCreateState()
+    override fun createAppointmentDetailsState(): AppointmentDetailsState =
+        FakeAppointmentDetailsState()
+    override fun createAppointmentSettingsState(): AppointmentSettingsState =
+        FakeAppointmentSettingsState()
+    override fun createAppointmentHistoryState(): AppointmentHistoryState =
+        FakeAppointmentHistoryState()
+    override fun createAppointmentRequestState(): AppointmentRequestState =
+        FakeAppointmentRequestState()
 }
 
 internal class FakeAppointmentListState : AppointmentListState {
@@ -141,7 +146,9 @@ internal class FakeAppointmentRequestState : AppointmentRequestState {
     }
 }
 
-internal class FakeAppointmentRequestItemState : FakeViewState(), AppointmentRequestItemState {
+internal class FakeAppointmentRequestItemState :
+    FakeViewState(),
+    AppointmentRequestItemState {
     override var clientName: String = ""
     override var serviceName: String = ""
     override var scheduledDate: String = ""

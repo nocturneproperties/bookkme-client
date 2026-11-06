@@ -41,13 +41,12 @@ fun <T> Flow<Result<T>>.resultOnError(action: suspend (Throwable) -> Unit): Flow
 }
 
 inline fun <T : Any, R> Flow<T?>.flatMapLatestOrNull(
-    crossinline transform: suspend (T) -> Flow<R>
+    crossinline transform: suspend (T) -> Flow<R>,
 ): Flow<R?> = flatMapLatest { value ->
     if (value != null) transform(value) else flowOf(null)
 }
 
-inline fun <T : Any, R> Flow<T?>.mapOrNull(
-    crossinline transform: suspend (T) -> R
-): Flow<R?> = map { value ->
-    if (value != null) transform(value) else null
-}
+inline fun <T : Any, R> Flow<T?>.mapOrNull(crossinline transform: suspend (T) -> R): Flow<R?> =
+    map { value ->
+        if (value != null) transform(value) else null
+    }

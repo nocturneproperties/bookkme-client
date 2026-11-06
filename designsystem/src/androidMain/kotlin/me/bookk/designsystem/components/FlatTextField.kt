@@ -34,8 +34,9 @@ fun FlatTextField(
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     singleLine: Boolean = false,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = state.inputType.nativeInputType()),
-    focusRequester: FocusRequester? = null
+    keyboardOptions: KeyboardOptions =
+        KeyboardOptions(keyboardType = state.inputType.nativeInputType()),
+    focusRequester: FocusRequester? = null,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         state.startIcon?.let {
@@ -45,7 +46,7 @@ fun FlatTextField(
                 tint = LocalColors.current.secondaryText,
                 modifier = Modifier
                     .padding(end = 8.dp)
-                    .size(20.dp)
+                    .size(20.dp),
             )
         }
         BasicTextField(
@@ -66,12 +67,12 @@ fun FlatTextField(
                         Text(
                             text = state.placeholder.localized(),
                             style = textStyle,
-                            color = LocalColors.current.hintText
+                            color = LocalColors.current.hintText,
                         )
                     }
                     innerTextField()
                 }
-            }
+            },
         )
     }
 }
@@ -83,7 +84,7 @@ private fun Preview() {
         Box(Modifier.padding(16.dp)) {
             FlatTextField(
                 state = AndroidTextFieldState(placeholder = "Placeholder".desc(), text = ""),
-                onValueChange = {}
+                onValueChange = {},
             )
         }
     }
@@ -96,7 +97,7 @@ private fun PreviewLight() {
         Box(Modifier.padding(16.dp)) {
             FlatTextField(
                 state = AndroidTextFieldState(placeholder = "Placeholder".desc(), text = "Value"),
-                onValueChange = {}
+                onValueChange = {},
             )
         }
     }

@@ -17,30 +17,62 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
         enterTransition = {
             scaleIn(
                 initialScale = 0.98f,
-                animationSpec = spring(stiffness = Spring.StiffnessMedium)
+                animationSpec = spring(stiffness = Spring.StiffnessMedium),
             )
-        }
+        },
     ) {
         val viewModel: BusinessDashboardViewModel = koinViewModel()
         val listener = DashboardEventListener(
             onItemClicked = {
                 when (val navItem = it.navigation) {
-                    DashboardNavigationDestination.Analytics -> navigation.toAnalytics()
-                    is DashboardNavigationDestination.AppointmentSettings -> navigation.toAppointmentSettings(navItem.businessId)
-                    DashboardNavigationDestination.Assortment -> navigation.toShopAssortment()
-                    DashboardNavigationDestination.Clients -> navigation.toClients()
-                    DashboardNavigationDestination.Employees -> navigation.toEmployees()
-                    is DashboardNavigationDestination.History -> navigation.toAppointmentHistory(navItem.businessId)
-                    DashboardNavigationDestination.Orders -> navigation.toShopOrders()
-                    DashboardNavigationDestination.Services -> navigation.toBusinessServices()
-                    DashboardNavigationDestination.Settings -> navigation.toBusinessSettings()
-                    is DashboardNavigationDestination.Plugins -> navigation.toBusinessPlugins(navItem.id)
-                    DashboardNavigationDestination.Warehouse -> navigation.toShopWarehouse()
+                    DashboardNavigationDestination.Analytics -> {
+                        navigation.toAnalytics()
+                    }
+
+                    is DashboardNavigationDestination.AppointmentSettings -> {
+                        navigation.toAppointmentSettings(navItem.businessId)
+                    }
+
+                    DashboardNavigationDestination.Assortment -> {
+                        navigation.toShopAssortment()
+                    }
+
+                    DashboardNavigationDestination.Clients -> {
+                        navigation.toClients()
+                    }
+
+                    DashboardNavigationDestination.Employees -> {
+                        navigation.toEmployees()
+                    }
+
+                    is DashboardNavigationDestination.History -> {
+                        navigation.toAppointmentHistory(navItem.businessId)
+                    }
+
+                    DashboardNavigationDestination.Orders -> {
+                        navigation.toShopOrders()
+                    }
+
+                    DashboardNavigationDestination.Services -> {
+                        navigation.toBusinessServices()
+                    }
+
+                    DashboardNavigationDestination.Settings -> {
+                        navigation.toBusinessSettings()
+                    }
+
+                    is DashboardNavigationDestination.Plugins -> {
+                        navigation.toBusinessPlugins(navItem.id)
+                    }
+
+                    DashboardNavigationDestination.Warehouse -> {
+                        navigation.toShopWarehouse()
+                    }
                 }
-            }
+            },
         )
         CompositionLocalProvider(
-            LocalDashboardEventListener provides listener
+            LocalDashboardEventListener provides listener,
         ) {
             ObserveNotifications(viewModel.uiState.notifications)
             SendLifecycleEventsTo(viewModel)

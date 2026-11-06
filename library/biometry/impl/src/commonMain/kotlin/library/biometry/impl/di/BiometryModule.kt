@@ -12,5 +12,6 @@ internal expect fun biometryPlatformModule(): Module
 
 fun biometryModule() = module {
     includes(biometryPlatformModule())
-    singleOf(::CommonBiometryOptManager) binds arrayOf(BiometryOptManager::class, LogOutAction::class)
+    singleOf(::CommonBiometryOptManager) binds
+        arrayOf(BiometryOptManager::class, LogOutAction::class)
 }

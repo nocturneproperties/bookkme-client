@@ -32,6 +32,8 @@ dotindicator = "5.1.0"
 biometry = "1.4.0-alpha02"
 napier = "2.7.1"
 mockery = "3.4.2"
+spotless = "8.11.0"
+ktlint = "1.8.0"
 
 [libraries]
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -99,6 +101,7 @@ buildkonfig-compiler = { module = "com.codingfeline.buildkonfig:buildkonfig-comp
 compose-compiler-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 android-room = { id = "androidx.room", version.ref = "room" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }

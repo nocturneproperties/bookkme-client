@@ -1,5 +1,6 @@
 package me.bookk.feature.business.presentation.screen.settings
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -12,7 +13,8 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
-import dev.icerock.moko.resources.desc.desc
+import dev.mokkery.verifySuspend
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -21,8 +23,8 @@ import library.device.api.DeviceFacade
 import library.money.api.Currency
 import library.money.api.Money
 import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -89,7 +91,7 @@ class BusinessSettingsViewModelTest {
             observeDashboardBusinessChanges = observeDashboardBusinessChanges,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeBusinessStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
 
         fun sutWith(business: Business): BusinessSettingsViewModel {
@@ -98,18 +100,21 @@ class BusinessSettingsViewModelTest {
         }
 
         fun stubUpdateEcho() {
-            everySuspend { updateBusiness(capture(updates)) } calls { (update: Business.Update) ->
-                stubBusiness(id = update.id, name = update.name, schedule = update.schedule)
-            }
+            everySuspend { updateBusiness(capture(updates)) } calls
+                { (update: Business.Update) ->
+                    stubBusiness(id = update.id, name = update.name, schedule = update.schedule)
+                        .copy(clientDataRetentionMonths = update.clientDataRetentionMonths ?: 36)
+                }
         }
     }
 
     private fun socialBusiness() = stubBusiness(
         name = "Salon",
         socials = mapOf(
-            Business.SocialKind.INSTAGRAM to Business.Social(Business.SocialKind.INSTAGRAM, "insta"),
-            Business.SocialKind.PHONE to Business.Social(Business.SocialKind.PHONE, "+380")
-        )
+            Business.SocialKind.INSTAGRAM to
+                Business.Social(Business.SocialKind.INSTAGRAM, "insta"),
+            Business.SocialKind.PHONE to Business.Social(Business.SocialKind.PHONE, "+380"),
+        ),
     )
 
     @Test
@@ -223,7 +228,9 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertFalse(sut.uiState.save.isLoading)
     }
 
@@ -238,7 +245,12 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -252,7 +264,11 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -318,7 +334,13 @@ class BusinessSettingsViewModelTest {
         val fixture = Fixture()
         fixture.stubUpdateEcho()
         val schedule = stubWorkingSchedule().let {
-            it.copy(days = it.days + (DayOfWeek.MONDAY to it.monday.copy(workingTime = emptyList(), isActive = true)))
+            it.copy(
+                days = it.days +
+                    (
+                        DayOfWeek.MONDAY to
+                            it.monday.copy(workingTime = emptyList(), isActive = true)
+                        ),
+            )
         }
         val sut = fixture.sutWith(stubBusiness(schedule = schedule))
         sut.uiState.schedule.monday.addTimeButton.onClick?.invoke()
@@ -330,7 +352,10 @@ class BusinessSettingsViewModelTest {
         sut.onSaveClick()
 
         then()
-        assertEquals(listOf(WorkHour(LocalTime(10, 0), LocalTime(18, 0))), fixture.updates.get().schedule.monday.workingTime)
+        assertEquals(
+            listOf(WorkHour(LocalTime(10, 0), LocalTime(18, 0))),
+            fixture.updates.get().schedule.monday.workingTime,
+        )
     }
 
     @Test
@@ -386,7 +411,9 @@ class BusinessSettingsViewModelTest {
     fun `ignores date range selection without end date`() = runUnitTest {
         given()
         val sut = Fixture().sutWith(stubBusiness())
-        sut.uiState.schedule.dateRange.startDate.datePicker.onDatePicked?.invoke(LocalDate(2030, 1, 10))
+        sut.uiState.schedule.dateRange.startDate.datePicker.onDatePicked?.invoke(
+            LocalDate(2030, 1, 10),
+        )
 
         whenn()
         sut.uiState.schedule.dateRange.onDateRangeSelected()
@@ -399,7 +426,10 @@ class BusinessSettingsViewModelTest {
     fun `removes day off`() = runUnitTest {
         given()
         val dayOff = DayOffRange(LocalDate(2030, 1, 10), LocalDate(2030, 1, 12))
-        val sut = Fixture().sutWith(stubBusiness(schedule = stubWorkingSchedule().copy(dayOffs = listOf(dayOff))))
+        val sut = Fixture()
+            .sutWith(
+                stubBusiness(schedule = stubWorkingSchedule().copy(dayOffs = listOf(dayOff))),
+            )
         val rendered = sut.uiState.schedule.dayOffs.selectedItems.toList()
 
         whenn()
@@ -414,7 +444,8 @@ class BusinessSettingsViewModelTest {
     fun `shows message when active day has no work hours`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateBusiness(any()) } throws UpdateBusiness.Error.ActiveDayWithoutWorkHours()
+        everySuspend { fixture.updateBusiness(any()) } throws
+            UpdateBusiness.Error.ActiveDayWithoutWorkHours()
         val sut = fixture.sutWith(stubBusiness())
 
         whenn()
@@ -429,7 +460,8 @@ class BusinessSettingsViewModelTest {
     fun `shows message when day off range is invalid`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateBusiness(any()) } throws UpdateBusiness.Error.InvalidDayOffRange()
+        everySuspend { fixture.updateBusiness(any()) } throws
+            UpdateBusiness.Error.InvalidDayOffRange()
         val sut = fixture.sutWith(stubBusiness())
 
         whenn()
@@ -505,17 +537,19 @@ class BusinessSettingsViewModelTest {
             telegram.enabled,
             viber.enabled,
             currency.textField.enabled,
+            clientDataRetentionMonths.enabled,
             photo.isEnabled,
-            schedule.isEditable
+            schedule.isEditable,
         )
     }
 
     private fun editableBusiness() = stubBusiness(
-        permissions = stubPermissions(business = ResourcePermission(view = true, update = true))
+        permissions =
+        stubPermissions(business = ResourcePermission(view = true, update = true)),
     )
 
     private fun readOnlyBusiness() = stubBusiness(
-        permissions = stubPermissions(business = ResourcePermission(view = true))
+        permissions = stubPermissions(business = ResourcePermission(view = true)),
     )
 
     @Test
@@ -579,7 +613,11 @@ class BusinessSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertNotNull(sut.uiState.navigation.navigationDestination.singleOrNull { it == BusinessSettingsDestination.Back })
+        assertNotNull(
+            sut.uiState.navigation.navigationDestination.singleOrNull {
+                it == BusinessSettingsDestination.Back
+            },
+        )
     }
 
     @Test
@@ -592,9 +630,16 @@ class BusinessSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(BusinessRes.strings.business_settings_unsaved_changes_title.desc(), confirmation.title)
-        assertEquals(BusinessRes.strings.business_settings_unsaved_changes_message.desc(), confirmation.message)
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            BusinessRes.strings.business_settings_unsaved_changes_title.desc(),
+            confirmation.title,
+        )
+        assertEquals(
+            BusinessRes.strings.business_settings_unsaved_changes_message.desc(),
+            confirmation.message,
+        )
         assertNull(sut.uiState.navigation.navigationDestination.firstOrNull())
     }
 
@@ -618,13 +663,17 @@ class BusinessSettingsViewModelTest {
         val sut = Fixture().sutWith(stubBusiness(name = "Old"))
         sut.onNameChanged("New")
         sut.uiState.appBar.onBackClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
 
         whenn()
         confirmation.tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -633,7 +682,8 @@ class BusinessSettingsViewModelTest {
         val sut = Fixture().sutWith(stubBusiness(name = "Old"))
         sut.onNameChanged("New")
         sut.uiState.appBar.onBackClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
 
         whenn()
         confirmation.tap(ActionType.CANCEL)
@@ -656,8 +706,15 @@ class BusinessSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.Message })
-        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.Message
+            },
+        )
+        assertEquals(
+            listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -669,7 +726,355 @@ class BusinessSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.Message })
-        assertEquals(listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.Message
+            },
+        )
+        assertEquals(
+            listOf<BusinessSettingsDestination>(BusinessSettingsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `explains why currency cannot be changed`() = runUnitTest {
+        listOf(
+            UpdateBusiness.Error.CurrencyLocked() to
+                BusinessRes.strings.business_settings_currency_locked_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateBusiness(any()) } throws error
+            val sut = fixture.sutWith(stubBusiness())
+
+            whenn()
+            sut.onSaveClick()
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps internal business settings errors general`() = runUnitTest {
+        listOf(
+            UpdateBusiness.Error.InvalidCurrency(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateBusiness(any()) } throws error
+            val sut = fixture.sutWith(stubBusiness())
+
+            whenn()
+            sut.onSaveClick()
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
+    }
+
+    @Test
+    fun `renders the stored retention period with its units and explanation`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 48))
+
+        then()
+        val retention = sut.uiState.clientDataRetentionMonths
+        assertEquals("48", retention.text)
+        assertEquals(
+            BusinessRes.strings.business_settings_retention_months.desc(),
+            retention.suffix,
+        )
+        assertEquals(
+            BusinessRes.strings.business_settings_retention_explanation.desc(),
+            retention.supportingTextRes,
+        )
+        assertNotNull(retention.onTextChanged)
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `renders the default retention period without unsaved changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(editableBusiness())
+
+        then()
+        assertEquals("36", sut.uiState.clientDataRetentionMonths.text)
+        assertTrue(sut.uiState.clientDataRetentionMonths.isValid)
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `accepts both retention boundaries and enables saving`() = runUnitTest {
+        listOf("12", "120").forEach { months ->
+            given()
+            val fixture = Fixture()
+            val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+
+            whenn()
+            sut.changeRetention(months)
+
+            then()
+            assertEquals(months, sut.uiState.clientDataRetentionMonths.text)
+            assertTrue(sut.uiState.clientDataRetentionMonths.isValid)
+            assertTrue(sut.uiState.save.isEnabled)
+        }
+    }
+
+    @Test
+    fun `rejects empty noninteger and out of range retention periods`() = runUnitTest {
+        listOf("", "11", "121", "0", "-12", "12.5", "abc", "999999999999", "+12", " 12 ")
+            .forEach { months ->
+                given()
+                val fixture = Fixture()
+                val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+
+                whenn()
+                sut.changeRetention(months)
+
+                then()
+                assertEquals(months, sut.uiState.clientDataRetentionMonths.text)
+                assertFalse(sut.uiState.clientDataRetentionMonths.isValid)
+                assertEquals(
+                    ValidationState.ERROR,
+                    sut.uiState.clientDataRetentionMonths.validationState,
+                )
+                assertEquals(
+                    BusinessRes.strings.business_settings_retention_error.desc(),
+                    sut.uiState.clientDataRetentionMonths.supportingTextRes,
+                )
+                assertFalse(sut.uiState.save.isEnabled)
+            }
+    }
+
+    @Test
+    fun `does not submit invalid retention even if save is invoked directly`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("121")
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.updateBusiness(any()) }
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
+    }
+
+    @Test
+    fun `restores retention guidance after correcting invalid input`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("11")
+
+        whenn()
+        sut.changeRetention("60")
+
+        then()
+        assertTrue(sut.uiState.clientDataRetentionMonths.isValid)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.clientDataRetentionMonths.validationState)
+        assertEquals(
+            BusinessRes.strings.business_settings_retention_explanation.desc(),
+            sut.uiState.clientDataRetentionMonths.supportingTextRes,
+        )
+        assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `disables saving when the original retention period is restored`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("60")
+
+        whenn()
+        sut.changeRetention("36")
+
+        then()
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `submits the selected retention period`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUpdateEcho()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("60")
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        assertEquals(60, fixture.updates.get().clientDataRetentionMonths)
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `keeps default retention when saving unrelated changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUpdateEcho()
+        val sut = fixture.sutWith(editableBusiness())
+        sut.onNameChanged("New name")
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        assertEquals(36, fixture.updates.get().clientDataRetentionMonths)
+    }
+
+    @Test
+    fun `can change the default retention period`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUpdateEcho()
+        val sut = fixture.sutWith(editableBusiness())
+        sut.changeRetention("24")
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        assertEquals(24, fixture.updates.get().clientDataRetentionMonths)
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `asks before discarding a retention change`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("60")
+
+        whenn()
+        sut.uiState.appBar.onBackClick?.invoke()
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `asks before discarding an invalid retention change`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("")
+
+        whenn()
+        sut.uiState.appBar.onBackClick?.invoke()
+
+        then()
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `shows retention rejection inline without a success haptic`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateBusiness(any()) } throws
+            UpdateBusiness.Error.InvalidRetentionPeriod()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("60")
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        assertEquals("60", sut.uiState.clientDataRetentionMonths.text)
+        assertFalse(sut.uiState.clientDataRetentionMonths.isValid)
+        assertEquals(
+            BusinessRes.strings.business_settings_retention_error.desc(),
+            sut.uiState.clientDataRetentionMonths.supportingTextRes,
+        )
+        assertFalse(sut.uiState.save.isEnabled)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
+    }
+
+    @Test
+    fun `plays success haptic when retention is saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUpdateEcho()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("60")
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
+    }
+
+    @Test
+    fun `refreshes retention and clears validation when the business changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("121")
+
+        whenn()
+        fixture.business.value = editableBusiness().copy(clientDataRetentionMonths = 72)
+
+        then()
+        assertEquals("72", sut.uiState.clientDataRetentionMonths.text)
+        assertTrue(sut.uiState.clientDataRetentionMonths.isValid)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.clientDataRetentionMonths.validationState)
+        assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `does not enable save or submit twice while retention is being saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val result = CompletableDeferred<Business>()
+        everySuspend { fixture.updateBusiness(any()) } calls { result.await() }
+        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
+        sut.changeRetention("60")
+        sut.onSaveClick()
+
+        whenn()
+        sut.changeRetention("72")
+        sut.onSaveClick()
+
+        then()
+        assertTrue(sut.uiState.save.isLoading)
+        assertFalse(sut.uiState.save.isEnabled)
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateBusiness(any()) }
+        result.complete(editableBusiness().copy(clientDataRetentionMonths = 60))
+        assertTrue(sut.uiState.save.isEnabled)
+    }
+
+    private fun BusinessSettingsViewModel.changeRetention(text: String) {
+        requireNotNull(uiState.clientDataRetentionMonths.onTextChanged)(text)
     }
 }

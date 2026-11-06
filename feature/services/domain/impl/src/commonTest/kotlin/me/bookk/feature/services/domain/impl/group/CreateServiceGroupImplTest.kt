@@ -48,8 +48,10 @@ class CreateServiceGroupImplTest {
     }
 
     private fun stubGroup(businessId: Uuid = Uuid.random()) = ServiceGroup(
-        id = Uuid.random(), businessId = businessId, name = "Coloring",
-        createdAt = Instant.fromEpochMilliseconds(0)
+        id = Uuid.random(),
+        businessId = businessId,
+        name = "Coloring",
+        createdAt = Instant.fromEpochMilliseconds(0),
     )
 
     @Test
@@ -103,7 +105,10 @@ class CreateServiceGroupImplTest {
         val fixture = Fixture()
         val input = stubGroup()
         everySuspend { fixture.dataSource.createServiceGroup(input) } throws
-            DomainError.BusinessError(ServiceErrorCodes.BUSINESS_SERVICE_GROUP_VALIDATION_ERROR, "msg")
+            DomainError.BusinessError(
+                ServiceErrorCodes.BUSINESS_SERVICE_GROUP_VALIDATION_ERROR,
+                "msg",
+            )
 
         whenn()
         then()

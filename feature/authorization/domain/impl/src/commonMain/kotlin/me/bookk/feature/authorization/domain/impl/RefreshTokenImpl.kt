@@ -5,7 +5,7 @@ import me.bookk.feature.authorization.domain.datasource.authorization.Authorizat
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 
 internal class RefreshTokenImpl(
-    private val authorizationDataSource: AuthorizationDataSource
+    private val authorizationDataSource: AuthorizationDataSource,
 ) : RefreshToken {
     override suspend fun invoke(refreshToken: String): TokenInfo {
         val info = authorizationDataSource.refreshToken(refreshToken)

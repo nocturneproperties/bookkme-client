@@ -16,19 +16,21 @@ import me.bookk.designsystem.uistate.TextState
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
 
 internal class AndroidDashboardState(
-    initData: SettingsState.InitData
+    initData: SettingsState.InitData,
 ) : SettingsState {
     override val appBar: AppBarState = AndroidAppBarState()
     override val appearance: AppearanceSection = AndroidAppearanceSectionState(initData.appearance)
     override val profile: ProfileSection = AndroidProfileSectionState()
     override val account: AccountSection = AndroidAccountSectionState(initData.account)
+    override val legal: LegalDocumentsSection = AndroidLegalDocumentsSectionState()
     override val support: SupportSection = AndroidSupportState(initData.support)
     override val notification: PresentationNotificationState = AndroidNotificationState()
-    override val navigation: NavigationState<SettingsDashboardDestination> = AndroidNavigationState()
+    override val navigation: NavigationState<SettingsDashboardDestination> =
+        AndroidNavigationState()
 }
 
 internal class AndroidAppearanceSectionState(
-    initData: AppearanceSection.InitData
+    initData: AppearanceSection.InitData,
 ) : AppearanceSection {
     override val title: StringDesc = initData.title
     override var colorScheme: UIColorScheme by mutableStateOf(UIColorScheme.SYSTEM)
@@ -41,7 +43,7 @@ internal class AndroidProfileSectionState : ProfileSection {
 }
 
 internal class AndroidAccountSectionState(
-    initData: AccountSection.InitData
+    initData: AccountSection.InitData,
 ) : AccountSection {
     override val title: StringDesc = initData.title
     override val notifications: TextState = AndroidTextState(initData.notificationsLabel)
@@ -51,7 +53,7 @@ internal class AndroidAccountSectionState(
 }
 
 internal class AndroidSupportState(
-    initData: SupportSection.InitData
+    initData: SupportSection.InitData,
 ) : SupportSection {
     override val title: StringDesc = initData.title
     override val contact: TextState = AndroidTextState(initData.contactLabel)

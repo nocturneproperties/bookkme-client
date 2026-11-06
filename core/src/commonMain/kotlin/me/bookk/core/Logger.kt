@@ -10,7 +10,7 @@ interface Logger {
 
         private var logFactory: ((String) -> Logger)? = null
 
-        //Intentionally not thread safe since it's only called once on the main thread
+        // Intentionally not thread safe since it's only called once on the main thread
         fun initFactory(factory: (String) -> Logger) {
             this.logFactory = factory
         }
@@ -33,5 +33,4 @@ private val emptyLogger: Logger = object : Logger {
 
     override fun i(message: String) {
     }
-
 }

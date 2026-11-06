@@ -9,8 +9,9 @@ import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.simple.ErrorState
 
 class AndroidListState<T>(
-    items: List<T> = emptyList()
-) : ListState<T>, AndroidViewState() {
+    items: List<T> = emptyList(),
+) : AndroidViewState(),
+    ListState<T> {
 
     override val items = mutableStateListOf<T>().apply {
         addAll(items)

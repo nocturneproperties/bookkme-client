@@ -68,11 +68,12 @@ class NotificationSettingsViewModelTest {
             updateNotificationSettings = updateNotificationSettings,
             permissionManager = permissionChecker.asManager(),
             settingsStateFactory = FakeSettingsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
 
         fun stubSaveEcho() {
-            everySuspend { updateNotificationSettings(capture(saved)) } calls { (s: NotificationSettings) -> s }
+            everySuspend { updateNotificationSettings(capture(saved)) } calls
+                { (s: NotificationSettings) -> s }
         }
     }
 
@@ -113,7 +114,11 @@ class NotificationSettingsViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.cached.value = NotificationSettings.stub().withToggled(NotificationChannel.TELEGRAM, false).copy(appointmentEnabled = false)
+        fixture.cached.value =
+            NotificationSettings.stub().withToggled(
+                NotificationChannel.TELEGRAM,
+                false,
+            ).copy(appointmentEnabled = false)
 
         then()
         assertFalse(sut.uiState.telegramEnabled.isChecked)
@@ -133,7 +138,11 @@ class NotificationSettingsViewModelTest {
         sut.uiState.emailEnabled.onCheckedChange?.invoke(false)
 
         then()
-        assertFalse(fixture.saved.get().channels.single { it.channel == NotificationChannel.EMAIL }.enabled)
+        assertFalse(
+            fixture.saved.get().channels.single {
+                it.channel == NotificationChannel.EMAIL
+            }.enabled,
+        )
         assertFalse(sut.uiState.emailEnabled.isChecked)
     }
 
@@ -149,7 +158,12 @@ class NotificationSettingsViewModelTest {
         sut.uiState.emailEnabled.onCheckedChange?.invoke(false)
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -165,7 +179,11 @@ class NotificationSettingsViewModelTest {
         sut.uiState.emailEnabled.onCheckedChange?.invoke(false)
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -205,14 +223,20 @@ class NotificationSettingsViewModelTest {
         val fixture = Fixture()
         fixture.stubSaveEcho()
         val sut = fixture.sut()
-        fixture.cached.value = NotificationSettings.stub().withToggled(NotificationChannel.PUSH_NOTIFICATIONS, false)
+        fixture.cached.value =
+            NotificationSettings.stub().withToggled(NotificationChannel.PUSH_NOTIFICATIONS, false)
 
         whenn()
         sut.uiState.pushNotificationsEnabled.onCheckedChange?.invoke(true)
 
         then()
         assertEquals(1, fixture.permissionChecker.requestCount)
-        assertTrue(fixture.saved.get().channels.single { it.channel == NotificationChannel.PUSH_NOTIFICATIONS }.enabled)
+        assertTrue(
+            fixture.saved.get().channels.single {
+                it.channel ==
+                    NotificationChannel.PUSH_NOTIFICATIONS
+            }.enabled,
+        )
     }
 
     @Test
@@ -221,7 +245,8 @@ class NotificationSettingsViewModelTest {
         val fixture = Fixture()
         fixture.permissionChecker.granted = false
         val sut = fixture.sut()
-        fixture.cached.value = NotificationSettings.stub().withToggled(NotificationChannel.PUSH_NOTIFICATIONS, false)
+        fixture.cached.value =
+            NotificationSettings.stub().withToggled(NotificationChannel.PUSH_NOTIFICATIONS, false)
         sut.uiState.pushNotificationsEnabled.isChecked = true
 
         whenn()
@@ -245,7 +270,12 @@ class NotificationSettingsViewModelTest {
 
         then()
         assertEquals(0, fixture.permissionChecker.requestCount)
-        assertFalse(fixture.saved.get().channels.single { it.channel == NotificationChannel.PUSH_NOTIFICATIONS }.enabled)
+        assertFalse(
+            fixture.saved.get().channels.single {
+                it.channel ==
+                    NotificationChannel.PUSH_NOTIFICATIONS
+            }.enabled,
+        )
     }
 
     @Test
@@ -283,6 +313,9 @@ class NotificationSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<NotificationSettingsDestinations>(NotificationSettingsDestinations.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<NotificationSettingsDestinations>(NotificationSettingsDestinations.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

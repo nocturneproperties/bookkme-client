@@ -15,12 +15,12 @@ internal fun NavGraphBuilder.contactUsScreen(navigation: SettingsNavigation) {
         val listener = ContactUsEventListener(
             onSubmitClick = viewModel::onSubmitClick,
             onTextChanged = viewModel::onContactTextChanged,
-            onIncludeUsageLogsCheckedChanged = viewModel::onIncludeLogsStateChanged
+            onIncludeUsageLogsCheckedChanged = viewModel::onIncludeLogsStateChanged,
         )
 
         CompositionLocalProvider(
             LocalNavigation provides navigation,
-            LocalContactUsEventListener provides listener
+            LocalContactUsEventListener provides listener,
         ) {
             SendLifecycleEventsTo(viewModel)
             ContactUsScreen(viewModel.uiState)

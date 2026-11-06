@@ -9,5 +9,6 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 
 internal actual fun authDataPlatformModule(): Module = module {
-    single { AndroidPassKeyManager(get(named("relyingParty")), get()) } binds arrayOf(AndroidActivityAware::class, PassKeyManager::class)
+    single { AndroidPassKeyManager(get(named("relyingParty")), get()) } binds
+        arrayOf(AndroidActivityAware::class, PassKeyManager::class)
 }

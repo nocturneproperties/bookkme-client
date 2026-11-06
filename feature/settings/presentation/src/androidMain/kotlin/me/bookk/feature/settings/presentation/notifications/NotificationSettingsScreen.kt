@@ -30,44 +30,51 @@ internal fun NotificationSettingsScreen(state: NotificationSettingsState) {
         },
         content = { paddings ->
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
                     .padding(paddings)
                     .verticalScroll(rememberScrollState())
                     .padding(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Header(text = SettingsRes.strings.settings_notifications_channels_header.desc().localized())
+                Header(
+                    text = SettingsRes.strings.settings_notifications_channels_header
+                        .desc()
+                        .localized(),
+                )
                 if (state.emailEnabled.isVisible) {
                     StateSwitch(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        state = state.emailEnabled
+                        state = state.emailEnabled,
                     )
                 }
                 if (state.pushNotificationsEnabled.isVisible) {
                     StateSwitch(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        state = state.pushNotificationsEnabled
+                        state = state.pushNotificationsEnabled,
                     )
                 }
                 if (state.telegramEnabled.isVisible) {
                     StateSwitch(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        state = state.telegramEnabled
+                        state = state.telegramEnabled,
                     )
                 }
 
-                Header(text = SettingsRes.strings.settings_notifications_types_header.desc().localized())
+                Header(
+                    text =
+                    SettingsRes.strings.settings_notifications_types_header.desc().localized(),
+                )
                 StateSwitch(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    state = state.appointmentEnabled
+                    state = state.appointmentEnabled,
                 )
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    text = SettingsRes.strings.settings_notifications_types_footer.desc().localized(),
-                    style = MaterialTheme.typography.bodySmall.secondary()
+                    text =
+                    SettingsRes.strings.settings_notifications_types_footer.desc().localized(),
+                    style = MaterialTheme.typography.bodySmall.secondary(),
                 )
             }
-        }
+        },
     )
 }

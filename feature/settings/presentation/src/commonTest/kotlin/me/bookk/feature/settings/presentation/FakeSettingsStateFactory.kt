@@ -16,6 +16,8 @@ import me.bookk.feature.settings.presentation.contactus.ContactUsNavigationDesti
 import me.bookk.feature.settings.presentation.contactus.ContactUsState
 import me.bookk.feature.settings.presentation.dashboard.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection
+import me.bookk.feature.settings.presentation.dashboard.LegalDocumentItem
+import me.bookk.feature.settings.presentation.dashboard.LegalDocumentsSection
 import me.bookk.feature.settings.presentation.dashboard.ProfileSection
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
@@ -27,19 +29,32 @@ import me.bookk.feature.settings.presentation.notifications.NotificationSettings
 import me.bookk.feature.settings.presentation.passkey.PasskeyState
 
 internal class FakeSettingsStateFactory : SettingsStateFactory {
-    override fun createSettingsState(initData: SettingsState.InitData): SettingsState = FakeSettingsState()
-    override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState = FakeEditProfileState()
-    override fun createContactUsState(initData: ContactUsState.InitData): ContactUsState = FakeContactUsState()
-    override fun createDeleteAccountState(initData: DeleteAccountState.InitData): DeleteAccountState = FakeDeleteAccountState()
-    override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState = FakePasskeyState()
-    override fun createNotificationSettingsState(): NotificationSettingsState = FakeNotificationSettingsState()
+    override fun createSettingsState(initData: SettingsState.InitData): SettingsState =
+        FakeSettingsState()
+
+    override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState =
+        FakeEditProfileState()
+
+    override fun createContactUsState(initData: ContactUsState.InitData): ContactUsState =
+        FakeContactUsState()
+
+    override fun createDeleteAccountState(
+        initData: DeleteAccountState.InitData,
+    ): DeleteAccountState = FakeDeleteAccountState()
+
+    override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState =
+        FakePasskeyState()
+
+    override fun createNotificationSettingsState(): NotificationSettingsState =
+        FakeNotificationSettingsState()
 }
 
 internal class FakeSettingsState : SettingsState {
     override val appBar = FakeAppBarState()
     override val appearance = object : AppearanceSection {
         override val title: StringDesc = "".desc()
-        override var colorScheme: AppearanceSection.UIColorScheme = AppearanceSection.UIColorScheme.SYSTEM
+        override var colorScheme: AppearanceSection.UIColorScheme =
+            AppearanceSection.UIColorScheme.SYSTEM
     }
     override val profile = object : ProfileSection {
         override var name: StringDesc = "".desc()
@@ -53,6 +68,7 @@ internal class FakeSettingsState : SettingsState {
         override val logout = FakeTextState()
         override val deleteAccount = FakeTextState()
     }
+    override val legal = FakeLegalDocumentsSectionState()
     override val support = object : SupportSection {
         override val title: StringDesc = "".desc()
         override val contact = FakeTextState()
@@ -114,4 +130,13 @@ internal class FakeNotificationSettingsState : NotificationSettingsState {
     override val telegramEnabled = FakeBooleanState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<NotificationSettingsDestinations>()
+}
+
+internal class FakeLegalDocumentsSectionState : LegalDocumentsSection {
+    override var title: StringDesc = "".desc()
+    override var documents: List<LegalDocumentItem> = emptyList()
+    override var isLoading: Boolean = false
+    override var message: StringDesc? = null
+    override val accept = FakeButtonState()
+    override val retry = FakeButtonState()
 }

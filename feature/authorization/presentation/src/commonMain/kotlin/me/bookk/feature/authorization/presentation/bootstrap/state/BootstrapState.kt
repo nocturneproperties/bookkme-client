@@ -9,15 +9,16 @@ interface BootstrapState {
     var startDestination: BootstrapNavigationDestination?
     val notifications: PresentationNotificationState
 
-    //UI model to prevent need of Settings Domain API module to be exported to objc header
+    // UI model to prevent need of Settings Domain API module to be exported to objc header
     enum class UIColorScheme {
         DARK,
         LIGHT,
-        SYSTEM;
+        SYSTEM,
+        ;
 
         companion object {
             internal fun from(domain: ColorScheme): UIColorScheme {
-                return when(domain) {
+                return when (domain) {
                     ColorScheme.DARK -> DARK
                     ColorScheme.LIGHT -> LIGHT
                     ColorScheme.SYSTEM -> SYSTEM

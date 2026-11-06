@@ -5,13 +5,13 @@ import kotlin.uuid.Uuid
 data class EmployeeSnapshot(
     val id: Uuid,
     val userId: Uuid,
-    val fullName: String
+    val fullName: String,
 ) {
     companion object {
         fun stub() = EmployeeSnapshot(
             id = Uuid.random(),
             userId = Uuid.random(),
-            fullName = "John Doe"
+            fullName = "John Doe",
         )
     }
 }

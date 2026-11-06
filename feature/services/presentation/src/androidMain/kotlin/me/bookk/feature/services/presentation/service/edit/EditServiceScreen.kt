@@ -43,37 +43,45 @@ internal fun EditServiceScreen(state: EditServiceState) {
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 PickerField(
                     state = state.group,
-                    screenPicker = standardScreenPicker()
+                    screenPicker = standardScreenPicker(),
                 )
                 TextField(state.name, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next))
-                TextField(state.duration, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next))
-                TextField(state.price, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done))
+                TextField(
+                    state.duration,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                )
+                TextField(
+                    state.price,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                )
                 CheckBox(state.available)
             }
         },
         bottomBar = {
             Column(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 if (state.submit.isVisible) {
                     ActionButton(
                         modifier = Modifier.fillMaxWidth(),
-                        state = state.submit
+                        state = state.submit,
                     )
                 }
                 if (state.deleteButton.isVisible) {
                     StateTextButton(
                         modifier = Modifier.fillMaxWidth(),
                         state = state.deleteButton,
-                        colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error)
+                        colors = ButtonDefaults.stateButtonColors(
+                            contentColor = LocalColors.current.error,
+                        ),
                     )
                 }
             }
-        }
+        },
     )
 }

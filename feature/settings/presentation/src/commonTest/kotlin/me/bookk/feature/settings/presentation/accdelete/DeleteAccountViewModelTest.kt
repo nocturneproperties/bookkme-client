@@ -5,7 +5,6 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
-import kotlin.test.assertEquals
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -16,12 +15,12 @@ import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
-import me.bookk.designsystem.test.assertSingle
 import me.bookk.feature.settings.domain.api.DeleteAccount
 import me.bookk.feature.settings.presentation.FakeSettingsStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -46,7 +45,7 @@ class DeleteAccountViewModelTest {
         fun sut() = DeleteAccountViewModel(
             deleteAccount = deleteAccount,
             settingsStateFactory = FakeSettingsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -88,7 +87,9 @@ class DeleteAccountViewModelTest {
 
         then()
         verifySuspend { fixture.deleteAccount() }
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertFalse(sut.uiState.deleteButton.isLoading)
     }
 
@@ -103,7 +104,12 @@ class DeleteAccountViewModelTest {
         sut.onDeleteClick()
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -117,7 +123,11 @@ class DeleteAccountViewModelTest {
         sut.onDeleteClick()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test

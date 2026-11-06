@@ -1,10 +1,10 @@
 package me.bookk.feature.clients.data.remote.model
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.decodeFromByteArray
-import me.bookk.core.data.dataSerializer
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.protobuf.ProtoNumber
+import me.bookk.core.data.dataSerializer
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -46,7 +46,7 @@ class ClientImportRemoteContractTest {
         then()
         assertEquals(
             listOf("name" to 1, "lastName" to 2, "phone" to 3, "email" to 4, "description" to 5),
-            fields
+            fields,
         )
     }
 

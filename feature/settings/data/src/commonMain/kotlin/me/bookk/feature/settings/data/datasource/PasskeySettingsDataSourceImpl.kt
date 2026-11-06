@@ -19,8 +19,9 @@ import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSo
 import kotlin.uuid.Uuid
 
 internal class PasskeySettingsDataSourceImpl(
-    private val httpClient: HttpClient
-) : DataSource(), PasskeySettingsDataSource {
+    private val httpClient: HttpClient,
+) : DataSource(),
+    PasskeySettingsDataSource {
     override suspend fun getPasskeys(): List<Passkey> {
         return mapExceptions {
             httpClient.get(AuthRouting.Api.Auth.PassKey())

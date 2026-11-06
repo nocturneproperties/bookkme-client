@@ -19,7 +19,7 @@ internal fun NavGraphBuilder.deleteAccountScreen(navigation: SettingsNavigation)
 
         CompositionLocalProvider(
             LocalNavigation provides navigation,
-            LocalDeleteAccountEventListener provides listener
+            LocalDeleteAccountEventListener provides listener,
         ) {
             SendLifecycleEventsTo(viewModel)
             DeleteAccountScreen(viewModel.uiState)

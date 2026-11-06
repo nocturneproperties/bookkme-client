@@ -16,10 +16,10 @@ import kotlin.uuid.Uuid
             entity = EmployeeEntity::class,
             parentColumns = ["id"],
             childColumns = ["employeeId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("employeeId")]
+    indices = [Index("employeeId")],
 )
 class EmployeeServiceSnapshotEntity(
     val employeeId: Uuid,
@@ -34,5 +34,5 @@ class EmployeeServiceSnapshotEntity(
     val priceCurrency: String,
     val priceValue: Long,
     val isAvailable: Boolean,
-    val createdAt: Instant
+    val createdAt: Instant,
 )

@@ -14,13 +14,13 @@ import kotlin.uuid.Uuid
             entity = AppointmentSettingsEntity::class,
             parentColumns = ["id"],
             childColumns = ["settingsId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("settingsId")]
+    indices = [Index("settingsId")],
 )
 class AppointmentSettingsDayScheduleEntity(
     val settingsId: Uuid,
     val dayOfWeek: String,
-    val isActive: Boolean
+    val isActive: Boolean,
 )

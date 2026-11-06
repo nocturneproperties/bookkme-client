@@ -15,12 +15,12 @@ internal class AndroidTroubleshootState(
     override val appBar: AppBarState,
     override val troubleshootCardStaticData: TroubleshootCardData,
     override val contactSupportButton: ButtonState,
-    override val navigation: NavigationState<TroubleshootNavigationDestination>
+    override val navigation: NavigationState<TroubleshootNavigationDestination>,
 ) : TroubleshootState {
     constructor(initData: TroubleshootState.InitData) : this(
         appBar = AndroidAppBarState(title = initData.title),
         troubleshootCardStaticData = initData.cardData,
         contactSupportButton = AndroidButtonState(text = initData.buttonText),
-        navigation = AndroidNavigationState()
+        navigation = AndroidNavigationState(),
     )
 }

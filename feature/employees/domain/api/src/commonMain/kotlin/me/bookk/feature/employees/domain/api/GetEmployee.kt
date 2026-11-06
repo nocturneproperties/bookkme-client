@@ -7,6 +7,8 @@ interface GetEmployee {
     suspend operator fun invoke(id: Uuid): Employee
 
     sealed interface Error {
-        class NotFound : Error, Throwable()
+        class NotFound :
+            Throwable(),
+            Error
     }
 }

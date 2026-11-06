@@ -9,10 +9,10 @@ data class AppointmentRequestDraft(
     val services: List<RequestedService>,
     val date: Instant,
     val note: String,
-    val offerToken: String
+    val offerToken: String,
 )
 
 data class RequestedService(
     val serviceId: Uuid,
-    val count: Int
+    val count: Int,
 )

@@ -19,6 +19,6 @@ internal fun libraryModule() = module {
         credentialsModule(),
         validationModule(),
         pickerModule(),
-        notificationsModule()
+        notificationsModule(),
     )
 }

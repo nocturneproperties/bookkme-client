@@ -46,54 +46,56 @@ internal fun EditClientScreen(state: EditClientState) {
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 AnimatedVisibility(visible = state.isAttachedInfoVisible) {
                     AppCard(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             modifier = Modifier.padding(16.dp),
                             text = state.attachedInfoText.localized(),
-                            style = MaterialTheme.typography.bodyMedium.secondary()
+                            style = MaterialTheme.typography.bodyMedium.secondary(),
                         )
                     }
                 }
                 TextField(state.name, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next))
                 TextField(
                     state.lastName,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 )
                 TextField(
                     state.phone,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 )
                 TextField(
                     state.email,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 )
                 TextField(
                     state.description,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
-                    minLines = 3
+                    minLines = 3,
                 )
             }
         },
         bottomBar = {
             Column(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 ActionButton(
                     modifier = Modifier.fillMaxWidth(),
-                    state = state.submit
+                    state = state.submit,
                 )
                 if (state.deleteButton.isVisible) {
                     StateTextButton(
                         modifier = Modifier.fillMaxWidth(),
                         state = state.deleteButton,
-                        colors = ButtonDefaults.stateButtonColors(contentColor = LocalColors.current.error)
+                        colors = ButtonDefaults.stateButtonColors(
+                            contentColor = LocalColors.current.error,
+                        ),
                     )
                 }
             }
-        }
+        },
     )
 }

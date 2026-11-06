@@ -5,7 +5,7 @@ import me.bookk.feature.authorization.domain.datasource.authorization.Authorizat
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 
 internal class GetTokenInfoImpl(
-    private val authorizationDataSource: AuthorizationDataSource
+    private val authorizationDataSource: AuthorizationDataSource,
 ) : GetTokenInfo {
     override suspend fun invoke(): TokenInfo? {
         val access = authorizationDataSource.getAccessToken()

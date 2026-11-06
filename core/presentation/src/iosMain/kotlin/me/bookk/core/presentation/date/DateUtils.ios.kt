@@ -53,7 +53,7 @@ fun NSDateFormatter.matchToUserPreferences(pattern: String) {
 
 fun NSDateFormatter.matchToUserPreferences(
     dateStyle: NSDateFormatterStyle = NSDateFormatterNoStyle,
-    timeStyle: NSDateFormatterStyle = NSDateFormatterNoStyle
+    timeStyle: NSDateFormatterStyle = NSDateFormatterNoStyle,
 ) {
     val probe = NSDateFormatter().apply {
         locale = NSLocale.autoupdatingCurrentLocale

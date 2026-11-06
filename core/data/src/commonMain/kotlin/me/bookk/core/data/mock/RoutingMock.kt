@@ -20,12 +20,14 @@ interface RoutingMock {
 
     suspend fun handle(scope: MockRequestHandleScope, request: HttpRequestData): HttpResponseData {
         val key = RoutingKey(request.method, request.url.fullPath)
-        val handler = handlers[key]?.firstOrNull() ?: return scope.respondError(HttpStatusCode.InternalServerError)
+        val handler =
+            handlers[key]?.firstOrNull()
+                ?: return scope.respondError(HttpStatusCode.InternalServerError)
         return handler.handle(scope, request)
     }
 
     data class RoutingKey(
         val method: HttpMethod,
-        val path: String
+        val path: String,
     )
 }

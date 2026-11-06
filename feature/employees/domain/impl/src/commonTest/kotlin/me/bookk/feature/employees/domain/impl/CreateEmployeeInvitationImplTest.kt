@@ -60,32 +60,40 @@ class CreateEmployeeInvitationImplTest {
     }
 
     @Test
-    fun `throws PendingInvitationsLimitReached on BUSINESS_EMPLOYEE_PENDING_INVITATIONS_LIMIT_REACHED`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.createInvitation(businessId) } throws
-            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEE_PENDING_INVITATIONS_LIMIT_REACHED, "msg")
+    fun `throws PendingInvitationsLimitReached on BUSINESS_EMPLOYEE_PENDING_INVITATIONS_LIMIT_REACHED`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            everySuspend { fixture.dataSource.createInvitation(businessId) } throws
+                DomainError.BusinessError(
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_PENDING_INVITATIONS_LIMIT_REACHED,
+                    "msg",
+                )
 
-        whenn()
-        then()
-        assertFailsWith<CreateEmployeeInvitation.Error.PendingInvitationsLimitReached> {
-            fixture.sut(businessId)
+            whenn()
+            then()
+            assertFailsWith<CreateEmployeeInvitation.Error.PendingInvitationsLimitReached> {
+                fixture.sut(businessId)
+            }
         }
-    }
 
     @Test
-    fun `throws DailyInvitationsLimitReached on BUSINESS_EMPLOYEE_DAILY_INVITATIONS_LIMIT_REACHED`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.createInvitation(businessId) } throws
-            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEE_DAILY_INVITATIONS_LIMIT_REACHED, "msg")
+    fun `throws DailyInvitationsLimitReached on BUSINESS_EMPLOYEE_DAILY_INVITATIONS_LIMIT_REACHED`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            everySuspend { fixture.dataSource.createInvitation(businessId) } throws
+                DomainError.BusinessError(
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_DAILY_INVITATIONS_LIMIT_REACHED,
+                    "msg",
+                )
 
-        whenn()
-        then()
-        assertFailsWith<CreateEmployeeInvitation.Error.DailyInvitationsLimitReached> {
-            fixture.sut(businessId)
+            whenn()
+            then()
+            assertFailsWith<CreateEmployeeInvitation.Error.DailyInvitationsLimitReached> {
+                fixture.sut(businessId)
+            }
         }
-    }
 }

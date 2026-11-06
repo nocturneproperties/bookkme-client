@@ -5,13 +5,12 @@ import androidx.room.Relation
 import me.bookk.database.entity.ServiceEntity
 import me.bookk.database.entity.ServiceGroupEntity
 
-
 class ServiceLocal(
     @Embedded
     val entity: ServiceEntity,
     @Relation(
         parentColumn = "groupId",
-        entityColumn = "id"
+        entityColumn = "id",
     )
-    val group: ServiceGroupEntity
+    val group: ServiceGroupEntity,
 )

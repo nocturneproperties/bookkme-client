@@ -51,7 +51,8 @@ class CreateNewPasskeyImplTest {
         val passkeySettingsDataSource = mock<PasskeySettingsDataSource>()
         val passKeyManager = mock<PassKeyManager>()
         val getAvailablePasskeys = mock<GetAvailablePasskeys>()
-        val sut = CreateNewPasskeyImpl(passkeySettingsDataSource, passKeyManager, getAvailablePasskeys)
+        val sut =
+            CreateNewPasskeyImpl(passkeySettingsDataSource, passKeyManager, getAvailablePasskeys)
     }
 
     private fun stubChallenge() = AddPasskeyChallenge(
@@ -59,13 +60,15 @@ class CreateNewPasskeyImplTest {
         displayName = "John Doe",
         jsonChallengeData = "{}",
         challenge = "challenge-bytes",
-        userHandle = "user-handle"
+        userHandle = "user-handle",
     )
 
     private fun stubPasskey() = Passkey(
-        id = Uuid.random(), name = "iPhone", isBackedUp = true,
+        id = Uuid.random(),
+        name = "iPhone",
+        isBackedUp = true,
         createdAt = LocalDateTime(2024, 1, 1, 0, 0),
-        lastUsedAt = LocalDateTime(2024, 6, 1, 0, 0)
+        lastUsedAt = LocalDateTime(2024, 6, 1, 0, 0),
     )
 
     @Test
@@ -75,7 +78,10 @@ class CreateNewPasskeyImplTest {
         val challenge = stubChallenge()
         val payload = PasskeyVerificationPayload("{}")
         val passkeys = listOf(stubPasskey())
-        everySuspend { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns challenge
+        everySuspend {
+            fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+        } returns
+            challenge
         everySuspend { fixture.passKeyManager.create(any()) } returns payload
         everySuspend { fixture.passkeySettingsDataSource.sendVerifiedPasskey(any()) } returns Unit
         everySuspend { fixture.getAvailablePasskeys() } returns passkeys
@@ -93,7 +99,10 @@ class CreateNewPasskeyImplTest {
         val fixture = Fixture()
         val challenge = stubChallenge()
         val payload = PasskeyVerificationPayload("{\"key\":\"value\"}")
-        everySuspend { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns challenge
+        everySuspend {
+            fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+        } returns
+            challenge
         everySuspend { fixture.passKeyManager.create(any()) } returns payload
         everySuspend { fixture.passkeySettingsDataSource.sendVerifiedPasskey(any()) } returns Unit
         everySuspend { fixture.getAvailablePasskeys() } returns emptyList()
@@ -104,7 +113,10 @@ class CreateNewPasskeyImplTest {
         then()
         verifySuspend {
             fixture.passkeySettingsDataSource.sendVerifiedPasskey(
-                matches({ "match" }) { it.requestId == challenge.requestId && it.publicKeyCredentialJson == payload.jsonPayload }
+                matches({ "match" }) {
+                    it.requestId == challenge.requestId &&
+                        it.publicKeyCredentialJson == payload.jsonPayload
+                },
             )
         }
     }
@@ -113,8 +125,12 @@ class CreateNewPasskeyImplTest {
     fun `throws Ignore when PassKeyManager throws UserCancelled`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns stubChallenge()
-        everySuspend { fixture.passKeyManager.create(any()) } throws PassKeyManager.Error.UserCancelled()
+        everySuspend {
+            fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+        } returns
+            stubChallenge()
+        everySuspend { fixture.passKeyManager.create(any()) } throws
+            PassKeyManager.Error.UserCancelled()
 
         whenn()
         then()
@@ -127,13 +143,34 @@ class CreateNewPasskeyImplTest {
     fun `throws AccountCreationFailed when PassKeyManager throws other error`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey() } returns stubChallenge()
-        everySuspend { fixture.passKeyManager.create(any()) } throws PassKeyManager.Error.Unknown(null)
+        everySuspend {
+            fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+        } returns
+            stubChallenge()
+        everySuspend { fixture.passKeyManager.create(any()) } throws
+            PassKeyManager.Error.Unknown(null)
 
         whenn()
         then()
         assertFailsWith<CreateNewPasskey.Error.AccountCreationFailed> {
             fixture.sut()
         }
+    }
+
+    @Test
+    fun `maps backend error 10 to ChallengeCreationFailed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend {
+            fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+        } throws
+            me.bookk.core.domain.entity.Error.BusinessError(10, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<CreateNewPasskey.Error.ChallengeCreationFailed> { result.getOrThrow() }
     }
 }

@@ -6,7 +6,7 @@ import me.bookk.core.presentation.error.ActionType
 
 enum class TopBarSize {
     SMALL,
-    LARGE
+    LARGE,
 }
 
 interface AppBarState : ViewState {
@@ -42,7 +42,7 @@ fun AppBarState.action(
     contentDescription: StringDesc,
     icon: ImageResource? = null,
     type: ActionType = ActionType.POSITIVE,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ): AppBarActionState {
     return createAction().apply {
         this.contentDescription = contentDescription

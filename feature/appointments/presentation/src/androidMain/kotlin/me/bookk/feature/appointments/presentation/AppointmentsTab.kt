@@ -20,15 +20,17 @@ fun AppointmentsTab() {
         enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
         exitTransition = { scaleOut(targetScale = 0.92f) },
         popEnterTransition = { scaleIn(initialScale = 0.92f) },
-        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
+        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) },
     ) {
         appointmentsGraph(
             navigation = AppointmentNavigation(
                 createAppointment = { navController.navigate(AppointmentsDestination.Create(it)) },
                 details = { navController.navigate(AppointmentsDestination.Details(it)) },
-                appointmentSettings = { navController.navigate(AppointmentsDestination.Settings(it)) },
+                appointmentSettings = {
+                    navController.navigate(AppointmentsDestination.Settings(it))
+                },
                 onBack = { navController.popBackStack() },
-            )
+            ),
         )
     }
 }

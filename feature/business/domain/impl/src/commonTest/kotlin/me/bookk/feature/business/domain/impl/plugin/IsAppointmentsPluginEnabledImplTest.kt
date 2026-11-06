@@ -55,7 +55,8 @@ class IsAppointmentsPluginEnabledImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns flowOf(true)
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns
+            flowOf(true)
 
         whenn()
         val result = fixture.sut.flow(businessId).first()
@@ -69,7 +70,8 @@ class IsAppointmentsPluginEnabledImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns flowOf(null)
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns
+            flowOf(null)
 
         whenn()
         val result = fixture.sut.flow(businessId).first()
@@ -84,9 +86,13 @@ class IsAppointmentsPluginEnabledImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val availability = MutableSharedFlow<Boolean?>(replay = 1).apply { tryEmit(false) }
-        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns availability
+        every { fixture.pluginDataSource.observeAppointmentPluginAvailability(businessId) } returns
+            availability
         val results = mutableListOf<Boolean?>()
-        val job = launch(Dispatchers.Unconfined) { fixture.sut.flow(businessId).collect { results.add(it) } }
+        val job =
+            launch(Dispatchers.Unconfined) {
+                fixture.sut.flow(businessId).collect { results.add(it) }
+            }
 
         whenn()
         availability.emit(true)
@@ -101,8 +107,13 @@ class IsAppointmentsPluginEnabledImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns true
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        everySuspend {
+            fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId)
+        } returns
+            true
+        everySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true)
+        } returns Unit
 
         whenn()
         val result = fixture.sut.refresh(businessId)
@@ -116,14 +127,21 @@ class IsAppointmentsPluginEnabledImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } returns false
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, false) } returns Unit
+        everySuspend {
+            fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId)
+        } returns
+            false
+        everySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, false)
+        } returns Unit
 
         whenn()
         fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, false) }
+        verifySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, false)
+        }
     }
 
     @Test
@@ -131,13 +149,18 @@ class IsAppointmentsPluginEnabledImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId) } throws IllegalStateException()
+        everySuspend {
+            fixture.pluginDataSource.isAppointmentPluginAvailableOnRemote(businessId)
+        } throws
+            IllegalStateException()
 
         whenn()
         val error = runCatching { fixture.sut.refresh(businessId) }.exceptionOrNull()
 
         then()
         assertFailsWith<IllegalStateException> { throw error!! }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.pluginDataSource.saveAppointmentPluginAvailability(any(), any()) }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(any(), any())
+        }
     }
 }

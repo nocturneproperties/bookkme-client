@@ -60,18 +60,22 @@ class RevokeEmployeeInvitationImplTest {
     }
 
     @Test
-    fun `throws AlreadyProcessed on BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        val id = Uuid.random()
-        everySuspend { fixture.dataSource.revokeInvitation(businessId, id) } throws
-            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED, "msg")
+    fun `throws AlreadyProcessed on BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            val id = Uuid.random()
+            everySuspend { fixture.dataSource.revokeInvitation(businessId, id) } throws
+                DomainError.BusinessError(
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED,
+                    "msg",
+                )
 
-        whenn()
-        then()
-        assertFailsWith<RevokeEmployeeInvitation.Error.AlreadyProcessed> {
-            fixture.sut(businessId, id)
+            whenn()
+            then()
+            assertFailsWith<RevokeEmployeeInvitation.Error.AlreadyProcessed> {
+                fixture.sut(businessId, id)
+            }
         }
-    }
 }

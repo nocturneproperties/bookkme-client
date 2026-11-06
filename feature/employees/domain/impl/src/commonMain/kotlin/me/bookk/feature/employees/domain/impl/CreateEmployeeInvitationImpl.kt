@@ -9,18 +9,20 @@ import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
 import kotlin.uuid.Uuid
 
 internal class CreateEmployeeInvitationImpl(
-    private val dataSource: EmployeeInvitationDataSource
+    private val dataSource: EmployeeInvitationDataSource,
 ) : CreateEmployeeInvitation {
     override suspend fun invoke(businessId: Uuid): EmployeeInvitation {
         return runCatching {
             dataSource.createInvitation(businessId)
         }.onBusinessError { error ->
             when (error.errorCode) {
-                EmployeeErrorCodes.BUSINESS_EMPLOYEE_PENDING_INVITATIONS_LIMIT_REACHED ->
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_PENDING_INVITATIONS_LIMIT_REACHED -> {
                     throw Error.PendingInvitationsLimitReached(error)
+                }
 
-                EmployeeErrorCodes.BUSINESS_EMPLOYEE_DAILY_INVITATIONS_LIMIT_REACHED ->
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_DAILY_INVITATIONS_LIMIT_REACHED -> {
                     throw Error.DailyInvitationsLimitReached(error)
+                }
             }
         }.getOrThrow()
     }

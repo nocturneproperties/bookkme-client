@@ -1,7 +1,9 @@
 package me.bookk.feature.settings.domain.impl
 
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +19,7 @@ import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSo
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,5 +54,22 @@ class DeletePasskeyImplTest {
 
         then()
         verifySuspend { fixture.dataSource.deletePasskey(id) }
+    }
+
+    @Test
+    fun `maps backend error 9 to LastPasskey`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.deletePasskey(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(9, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(Uuid.random()) }
+
+        then()
+        assertFailsWith<me.bookk.feature.settings.domain.api.DeletePasskey.Error.LastPasskey> {
+            result.getOrThrow()
+        }
     }
 }

@@ -19,6 +19,6 @@ internal fun StatusLabel(status: UIAppointmentStatus, modifier: Modifier = Modif
             .background(color = color.copy(alpha = 0.12f), shape = MaterialTheme.shapes.small)
             .padding(horizontal = 12.dp, vertical = 4.dp),
         style = MaterialTheme.typography.labelLarge,
-        color = color
+        color = color,
     )
 }

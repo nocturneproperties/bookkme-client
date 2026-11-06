@@ -9,13 +9,13 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.protobuf.ProtoBuf
 
-
 val dataSerializer = ProtoBuf {
     encodeDefaults = false
 }
 
 object TimeZoneSerializer : KSerializer<TimeZone> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("TimeZone", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("TimeZone", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: TimeZone) {
         encoder.encodeString(value.id)

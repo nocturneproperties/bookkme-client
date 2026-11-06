@@ -6,8 +6,10 @@ import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.feature.authorization.data.datasource.CommonAuthorizationDataSource
 import me.bookk.feature.authorization.data.datasource.CommonDeviceDataSource
 import me.bookk.feature.authorization.data.datasource.CommonRegistrationDataSource
+import me.bookk.feature.authorization.data.datasource.CommonSignUpLegalDocumentsDataSource
 import me.bookk.feature.authorization.data.datasource.CommonUserProfileDataSource
 import me.bookk.feature.authorization.data.remote.mock.UserRoutingMock
+import me.bookk.feature.authorization.domain.datasource.SignUpLegalDocumentsDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataSource
@@ -27,11 +29,13 @@ fun authDataModule() = module {
         CommonAuthorizationDataSource(
             get(),
             get(named(HttpClientType.NO_AUTH)),
-            get()
+            get(),
         )
     } binds arrayOf(AuthorizationDataSource::class, LogOutAction::class)
     singleOf(::CommonRegistrationDataSource) bind RegistrationDataSource::class
+    singleOf(::CommonSignUpLegalDocumentsDataSource) bind SignUpLegalDocumentsDataSource::class
     singleOf(::CommonDeviceDataSource) bind DeviceDataSource::class
-    singleOf(::CommonUserProfileDataSource) binds arrayOf(UserProfileDataSource::class, LogOutAction::class)
+    singleOf(::CommonUserProfileDataSource) binds
+        arrayOf(UserProfileDataSource::class, LogOutAction::class)
     singleOf(::UserRoutingMock) bind RoutingMock::class
 }

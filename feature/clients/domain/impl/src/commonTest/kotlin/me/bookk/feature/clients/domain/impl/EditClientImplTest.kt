@@ -49,7 +49,7 @@ class EditClientImplTest {
         phone = "+380000000000",
         email = "john@example.com",
         businessId = businessId,
-        description = "VIP client"
+        description = "VIP client",
     )
 
     @Test
@@ -94,7 +94,7 @@ class EditClientImplTest {
             lastName = " Doe\n",
             phone = " +380000000000  ",
             email = "john@example.com ",
-            description = "  VIP client "
+            description = "  VIP client ",
         )
         everySuspend { fixture.dataSource.updateClient(trimmed) } returns trimmed
         everySuspend { fixture.dataSource.saveClientsInDb(listOf(trimmed)) } returns Unit

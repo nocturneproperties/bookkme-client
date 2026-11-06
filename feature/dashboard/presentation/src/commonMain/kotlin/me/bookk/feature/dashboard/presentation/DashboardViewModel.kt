@@ -3,17 +3,16 @@ package me.bookk.feature.dashboard.presentation
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.JoinBusiness
@@ -38,7 +37,7 @@ class DashboardViewModel(
     private val joinBusiness: JoinBusiness,
     private val createBusiness: CreateBusiness,
     stateFactory: DashboardStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: DashboardState = stateFactory.createDashboardState(createInitData()).setup()
@@ -67,7 +66,7 @@ class DashboardViewModel(
             launchIn = DispatcherProvider.io,
             call = { refreshBusinessInfo() },
             onComplete = {},
-            onError = {}
+            onError = {},
         )
     }
 
@@ -85,7 +84,7 @@ class DashboardViewModel(
             launchIn = DispatcherProvider.io,
             call = { refreshDashboardSetupStatus(businessId) },
             onComplete = {},
-            onError = {}
+            onError = {},
         )
     }
 
@@ -100,7 +99,7 @@ class DashboardViewModel(
             },
             onComplete = {},
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.home.onboarding.refresh.isRefreshing = false }
+            onTerminate = { uiState.home.onboarding.refresh.isRefreshing = false },
         )
     }
 
@@ -116,7 +115,7 @@ class DashboardViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { switchDashboardBusiness(item.id) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -133,9 +132,13 @@ class DashboardViewModel(
     }
 
     private fun onAddServiceClick() {
-        currentSetupRequired()?.takeIf { it.hasServiceGroups }?.let {
-            uiState.navigation.push(DashboardHomeNavigationDestination.AddService(it.businessId))
-        }
+        currentSetupRequired()
+            ?.takeIf { it.hasServiceGroups }
+            ?.let {
+                uiState.navigation.push(
+                    DashboardHomeNavigationDestination.AddService(it.businessId),
+                )
+            }
     }
 
     private fun onAddClientClick() {
@@ -160,8 +163,8 @@ class DashboardViewModel(
                 placeholder = DashboardRes.strings.dashboard_create_dialog_placeholder.desc(),
                 cancelText = DesignSystem.strings.action_cancel.desc(),
                 confirmText = DesignSystem.strings.action_create.desc(),
-                onConfirm = weakVMClosure { vm, name -> vm.onBusinessNameSubmit(name) }
-            )
+                onConfirm = weakVMClosure { vm, name -> vm.onBusinessNameSubmit(name) },
+            ),
         )
     }
 
@@ -172,13 +175,35 @@ class DashboardViewModel(
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
-                    is CreateBusiness.Error.EmptyName -> uiState.notifications.add(
-                        PresentationNotification.Message.simple(DashboardRes.strings.dashboard_create_error_empty_name.desc())
-                    )
+                    is CreateBusiness.Error.BusinessAlreadyExists -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                DashboardRes.strings.create_business_already_exists_error.desc(),
+                            ),
+                        )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    is CreateBusiness.Error.InvalidName -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                DashboardRes.strings.create_business_invalid_name_error.desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateBusiness.Error.EmptyName -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                DashboardRes.strings.dashboard_create_error_empty_name.desc(),
+                            ),
+                        )
+                    }
+
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
-            }
+            },
         )
     }
 
@@ -190,8 +215,8 @@ class DashboardViewModel(
                 placeholder = DashboardRes.strings.dashboard_join_dialog_placeholder.desc(),
                 cancelText = DesignSystem.strings.action_cancel.desc(),
                 confirmText = DashboardRes.strings.dashboard_join_dialog_confirm.desc(),
-                onConfirm = weakVMClosure { vm, code -> vm.onJoinSubmit(code) }
-            )
+                onConfirm = weakVMClosure { vm, code -> vm.onJoinSubmit(code) },
+            ),
         )
     }
 
@@ -204,27 +229,41 @@ class DashboardViewModel(
                 uiState.notifications.add(
                     PresentationNotification.GlobalMessage(
                         text = DashboardRes.strings.dashboard_join_success.desc(),
-                        state = PresentationNotification.GlobalMessage.State.SUCCESS
-                    )
+                        state = PresentationNotification.GlobalMessage.State.SUCCESS,
+                    ),
                 )
             },
             onError = {
                 when (it) {
-                    is JoinBusiness.Error.EmptyCode -> uiState.notifications.add(
-                        PresentationNotification.Message.simple(DashboardRes.strings.dashboard_join_error_empty_code.desc())
-                    )
+                    is JoinBusiness.Error.EmptyCode -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                DashboardRes.strings.dashboard_join_error_empty_code.desc(),
+                            ),
+                        )
+                    }
 
-                    is JoinBusiness.Error.AlreadyProcessed -> uiState.notifications.add(
-                        PresentationNotification.Message.simple(DashboardRes.strings.dashboard_join_error_already_processed.desc())
-                    )
+                    is JoinBusiness.Error.AlreadyProcessed -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                DashboardRes.strings.dashboard_join_error_already_processed.desc(),
+                            ),
+                        )
+                    }
 
-                    is JoinBusiness.Error.EmployeeExists -> uiState.notifications.add(
-                        PresentationNotification.Message.simple(DashboardRes.strings.dashboard_join_error_employee_exists.desc())
-                    )
+                    is JoinBusiness.Error.EmployeeExists -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                DashboardRes.strings.dashboard_join_error_employee_exists.desc(),
+                            ),
+                        )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
-            }
+            },
         )
     }
 
@@ -239,20 +278,35 @@ class DashboardViewModel(
         if (isDashboardBusinessLost(status)) {
             uiState.tabItems.selectedItemId = TabItem.Id.HOME
         }
-        uiState.tabItems.items.first { it.id == TabItem.Id.BUSINESS }.isEnabled = status.hasDashboardBusiness()
+        uiState.tabItems.items.first { it.id == TabItem.Id.BUSINESS }.isEnabled =
+            status.hasDashboardBusiness()
     }
 
     private fun renderOnboarding(status: DashboardSetupStatus) {
         when (status) {
-            is DashboardSetupStatus.BusinessNotSelected -> renderSelectableBusinesses(status)
-            is DashboardSetupStatus.SetupRequired -> renderSetupSteps(status)
-            is DashboardSetupStatus.AwaitingSetup -> uiState.home.onboarding.awaitingSetupMessage = status.message()
-            DashboardSetupStatus.NoBusiness, DashboardSetupStatus.Ready -> Unit
+            is DashboardSetupStatus.BusinessNotSelected -> {
+                renderSelectableBusinesses(status)
+            }
+
+            is DashboardSetupStatus.SetupRequired -> {
+                renderSetupSteps(status)
+            }
+
+            is DashboardSetupStatus.AwaitingSetup -> {
+                uiState.home.onboarding.awaitingSetupMessage = status.message()
+            }
+
+            DashboardSetupStatus.NoBusiness,
+            DashboardSetupStatus.Ready,
+            -> {
+                Unit
+            }
         }
     }
 
     private fun renderSelectableBusinesses(status: DashboardSetupStatus.BusinessNotSelected) {
-        uiState.home.onboarding.businesses = status.businesses.map { OnboardingBusinessItem(it.id, it.name) }
+        uiState.home.onboarding.businesses =
+            status.businesses.map { OnboardingBusinessItem(it.id, it.name) }
     }
 
     private fun DashboardSetupStatus.homeContent(): HomeContent {
@@ -274,8 +328,12 @@ class DashboardViewModel(
             isAppointmentsStepEnabled = setup.canEnableAppointments
             isServiceGroupStepEnabled = setup.canManageServices
             isClientStepEnabled = setup.canManageClients
-            serviceGroupStepSubtitle = setup.servicesStepSubtitle(DashboardRes.strings.dashboard_onboarding_group_subtitle.desc())
-            serviceStepSubtitle = setup.servicesStepSubtitle(DashboardRes.strings.dashboard_onboarding_service_subtitle.desc())
+            serviceGroupStepSubtitle = setup.servicesStepSubtitle(
+                DashboardRes.strings.dashboard_onboarding_group_subtitle.desc(),
+            )
+            serviceStepSubtitle = setup.servicesStepSubtitle(
+                DashboardRes.strings.dashboard_onboarding_service_subtitle.desc(),
+            )
             clientStepSubtitle = if (BusinessResource.CLIENTS in setup.missingViewPermissions) {
                 DashboardRes.strings.dashboard_onboarding_step_no_clients_access.desc()
             } else {
@@ -285,7 +343,9 @@ class DashboardViewModel(
         }
     }
 
-    private fun DashboardSetupStatus.SetupRequired.servicesStepSubtitle(regular: StringDesc): StringDesc {
+    private fun DashboardSetupStatus.SetupRequired.servicesStepSubtitle(
+        regular: StringDesc,
+    ): StringDesc {
         return if (BusinessResource.SERVICES in missingViewPermissions) {
             DashboardRes.strings.dashboard_onboarding_step_no_services_access.desc()
         } else {
@@ -297,16 +357,28 @@ class DashboardViewModel(
         val canViewClients = BusinessResource.CLIENTS !in missingViewPermissions
         val canViewServices = BusinessResource.SERVICES !in missingViewPermissions
         val resource = when {
-            canViewClients && canViewServices -> DashboardRes.strings.dashboard_onboarding_awaiting_message
-            canViewServices -> DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_access
-            canViewClients -> DashboardRes.strings.dashboard_onboarding_awaiting_no_services_access
-            else -> DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_services_access
+            canViewClients && canViewServices -> {
+                DashboardRes.strings.dashboard_onboarding_awaiting_message
+            }
+
+            canViewServices -> {
+                DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_access
+            }
+
+            canViewClients -> {
+                DashboardRes.strings.dashboard_onboarding_awaiting_no_services_access
+            }
+
+            else -> {
+                DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_services_access
+            }
         }
         return resource.format(businessName)
     }
 
     private fun DashboardSetupStatus.hasDashboardBusiness(): Boolean {
-        return this !is DashboardSetupStatus.NoBusiness && this !is DashboardSetupStatus.BusinessNotSelected
+        return this !is DashboardSetupStatus.NoBusiness &&
+            this !is DashboardSetupStatus.BusinessNotSelected
     }
 
     private fun DashboardSetupStatus.dashboardBusinessId(): Uuid? {
@@ -327,18 +399,18 @@ class DashboardViewModel(
             tabInitData = listOf(
                 TabItem.InitData(
                     id = TabItem.Id.HOME,
-                    text = DashboardRes.strings.dashboard_item_home.desc()
+                    text = DashboardRes.strings.dashboard_item_home.desc(),
                 ),
                 TabItem.InitData(
                     id = TabItem.Id.BUSINESS,
                     text = DashboardRes.strings.dashboard_item_business.desc(),
-                    isEnabled = false
+                    isEnabled = false,
                 ),
                 TabItem.InitData(
                     id = TabItem.Id.SETTINGS,
-                    text = DashboardRes.strings.dashboard_item_settings.desc()
-                )
-            )
+                    text = DashboardRes.strings.dashboard_item_settings.desc(),
+                ),
+            ),
         )
     }
 }

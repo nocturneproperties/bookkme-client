@@ -35,7 +35,7 @@ internal fun AppearanceSection(state: AppearanceSection) {
             modifier = Modifier.padding(horizontal = 16.dp),
             text = state.title.localized(),
             style = MaterialTheme.typography.titleMedium,
-            color = LocalColors.current.header
+            color = LocalColors.current.header,
         )
         Row(
             modifier = Modifier
@@ -44,14 +44,14 @@ internal fun AppearanceSection(state: AppearanceSection) {
                 .clip(MaterialTheme.shapes.large)
                 .background(LocalColors.current.elevated)
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             val scheme = state.colorScheme
             UIColorScheme.entries.forEach {
                 ThemeItem(
                     scheme = it,
                     currentScheme = scheme,
-                    onSchemeSelected = LocalDashboardEventListener.current.selectScheme
+                    onSchemeSelected = LocalDashboardEventListener.current.selectScheme,
                 )
             }
         }
@@ -62,7 +62,7 @@ internal fun AppearanceSection(state: AppearanceSection) {
 private fun RowScope.ThemeItem(
     scheme: UIColorScheme,
     currentScheme: UIColorScheme,
-    onSchemeSelected: (UIColorScheme) -> Unit
+    onSchemeSelected: (UIColorScheme) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -71,7 +71,7 @@ private fun RowScope.ThemeItem(
             .clickable { onSchemeSelected(scheme) }
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Box(
             modifier = Modifier
@@ -81,10 +81,16 @@ private fun RowScope.ThemeItem(
                 .border(
                     BorderStroke(
                         if (scheme == currentScheme) 4.dp else 1.dp,
-                        if (scheme == currentScheme) LocalColors.current.actionText else LocalColors.current.divider
+                        if (scheme ==
+                            currentScheme
+                        ) {
+                            LocalColors.current.actionText
+                        } else {
+                            LocalColors.current.divider
+                        },
                     ),
-                    MaterialTheme.shapes.large
-                )
+                    MaterialTheme.shapes.large,
+                ),
         )
         Text(text = scheme.title.localized(), style = MaterialTheme.typography.titleSmall)
     }
@@ -94,12 +100,14 @@ private fun RowScope.ThemeItem(
 private fun UIColorScheme.asColor(): Brush {
     return when (this) {
         UIColorScheme.DARK -> SolidColor(AppColors.Black)
+
         UIColorScheme.LIGHT -> SolidColor(AppColors.White)
+
         UIColorScheme.SYSTEM -> Brush.horizontalGradient(
             0f to AppColors.Black,
             0.5f to AppColors.Black,
             0.5f to AppColors.White,
-            1f to AppColors.White
+            1f to AppColors.White,
         )
     }
 }

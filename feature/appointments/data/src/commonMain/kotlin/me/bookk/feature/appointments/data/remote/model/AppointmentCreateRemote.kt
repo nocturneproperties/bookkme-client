@@ -5,4 +5,6 @@ import kotlinx.serialization.protobuf.ProtoNumber
 import kotlin.uuid.Uuid
 
 @Serializable
-data class AppointmentRequestIdRemote(@ProtoNumber(1) val requestId: Uuid)
+data class AppointmentRequestIdRemote(
+    @ProtoNumber(1) val requestId: Uuid,
+)

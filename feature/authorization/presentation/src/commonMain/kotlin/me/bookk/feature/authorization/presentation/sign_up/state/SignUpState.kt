@@ -1,7 +1,7 @@
 package me.bookk.feature.authorization.presentation.sign_up.state
 
-import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
@@ -14,20 +14,13 @@ interface SignUpState {
     val name: TextFieldState
     val lastName: TextFieldState
     val email: TextFieldState
-    val passkeyInfoCardData: PasskeyInfoCardData
+    var passkeyInfoCardData: PasskeyInfoCardData
     val learnMoreButton: ButtonState
     val confirmButton: ButtonState
+    val legalAcceptance: BooleanState
+    var legalDocuments: SignUpLegalDocumentsState?
+    val reloadLegalDocuments: ButtonState
 
     val notification: PresentationNotificationState
     val navigation: NavigationState<SignUpNavigationDestination>
-
-    class InitData(
-        val title: StringDesc,
-        val nameHint: StringDesc,
-        val lastNameHint: StringDesc,
-        val emailHint: StringDesc,
-        val confirmButtonText: StringDesc,
-        val passkeyInfoCardData: PasskeyInfoCardData,
-        val learnMoreButtonText: StringDesc
-    )
 }

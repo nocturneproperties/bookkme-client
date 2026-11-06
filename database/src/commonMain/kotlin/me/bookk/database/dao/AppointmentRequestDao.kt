@@ -40,7 +40,7 @@ abstract class AppointmentRequestDao {
     @Transaction
     open suspend fun upsertWithServices(
         requests: List<AppointmentRequestEntity>,
-        services: List<AppointmentRequestServiceSnapshotEntity>
+        services: List<AppointmentRequestServiceSnapshotEntity>,
     ) {
         upsertRequests(requests)
         deleteServicesForRequests(requests.map { it.id })

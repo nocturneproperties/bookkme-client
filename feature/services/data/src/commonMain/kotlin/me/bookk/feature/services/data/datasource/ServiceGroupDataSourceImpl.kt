@@ -28,8 +28,10 @@ import kotlin.uuid.Uuid
 internal class ServiceGroupDataSourceImpl(
     private val httpClient: HttpClient,
     private val serviceGroupDao: ServiceGroupDao,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), ServiceGroupDataSource, LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    ServiceGroupDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("service_groups_prefs")
 
@@ -82,7 +84,9 @@ internal class ServiceGroupDataSourceImpl(
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
-        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastSyncedAt(businessId))?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastSyncedAt(businessId: Uuid) {

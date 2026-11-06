@@ -19,6 +19,10 @@ suspend inline fun <reified T : Any> Cache.get(key: String): T? {
     return get(key, T::class)
 }
 
-suspend inline fun <reified T : Any> Cache.set(key: String, value: T, ttl: Duration = Duration.INFINITE) {
+suspend inline fun <reified T : Any> Cache.set(
+    key: String,
+    value: T,
+    ttl: Duration = Duration.INFINITE,
+) {
     return set(key, ttl, value, T::class)
 }

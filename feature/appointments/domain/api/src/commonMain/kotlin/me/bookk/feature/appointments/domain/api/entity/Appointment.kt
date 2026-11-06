@@ -1,8 +1,12 @@
 package me.bookk.feature.appointments.domain.api.entity
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import library.money.api.Money
 import me.bookk.core.now
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.uuid.Uuid
 
 data class Appointment(
@@ -17,7 +21,7 @@ data class Appointment(
     val note: String,
     val cancellationReason: String,
     val completedBy: AppointmentCompletedBy? = null,
-    val priceAdjustment: PriceAdjustment? = null
+    val priceAdjustment: PriceAdjustment? = null,
 ) {
 
     val providedServices: List<ServiceSnapshot> by lazy(LazyThreadSafetyMode.NONE) {
@@ -37,20 +41,32 @@ data class Appointment(
     }
 
     fun canBeCompleted(now: LocalDateTime = LocalDateTime.now()): Boolean {
-        return status == AppointmentStatus.SCHEDULED && hasStarted(now)
+        return status == AppointmentStatus.SCHEDULED && hasStarted(now) && isWithinEditWindow(now)
     }
 
     fun canBeMarkedNoShow(now: LocalDateTime = LocalDateTime.now()): Boolean {
-        val markableStatus = status == AppointmentStatus.SCHEDULED || status == AppointmentStatus.COMPLETED
-        return markableStatus && hasStarted(now)
+        val markableStatus =
+            status == AppointmentStatus.SCHEDULED || status == AppointmentStatus.COMPLETED
+        return markableStatus && hasStarted(now) && isWithinEditWindow(now)
     }
 
     fun canBeRescheduled(now: LocalDateTime = LocalDateTime.now()): Boolean {
         return status == AppointmentStatus.SCHEDULED && !hasStarted(now)
     }
 
+    fun canBeCancelled(now: LocalDateTime = LocalDateTime.now()): Boolean {
+        return status == AppointmentStatus.SCHEDULED && isWithinEditWindow(now)
+    }
+
     private fun hasStarted(now: LocalDateTime): Boolean {
         return date <= now
+    }
+
+    private fun isWithinEditWindow(now: LocalDateTime): Boolean {
+        val timeZone = TimeZone.currentSystemDefault()
+        val duration = services.fold(Duration.ZERO) { total, service -> total + service.duration }
+        val deadline = date.toInstant(timeZone) + duration + 7.days
+        return now.toInstant(timeZone) <= deadline
     }
 
     companion object {
@@ -58,7 +74,7 @@ data class Appointment(
             id: Uuid = Uuid.random(),
             userId: Uuid = Uuid.random(),
             businessId: Uuid = Uuid.random(),
-            date: LocalDateTime = LocalDateTime.now()
+            date: LocalDateTime = LocalDateTime.now(),
         ) = Appointment(
             id = id,
             userId = userId,
@@ -69,7 +85,7 @@ data class Appointment(
             status = AppointmentStatus.SCHEDULED,
             date = date,
             note = "Note",
-            cancellationReason = ""
+            cancellationReason = "",
         )
     }
 }

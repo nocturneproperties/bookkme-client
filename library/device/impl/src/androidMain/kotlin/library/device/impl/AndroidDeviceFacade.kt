@@ -15,9 +15,8 @@ import me.bookk.core.Logger
 import java.util.Currency
 import java.util.Locale
 
-
 class AndroidDeviceFacade(
-    private val appContext: Context
+    private val appContext: Context,
 ) : DeviceFacade {
 
     private val logger = Logger.create("DeviceFacade")
@@ -73,7 +72,7 @@ class AndroidDeviceFacade(
     override fun openAppSettings() {
         val intent = Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.fromParts("package", appContext.packageName, null)
+            Uri.fromParts("package", appContext.packageName, null),
         ).addFlags(FLAG_ACTIVITY_NEW_TASK)
         runCatching { appContext.startActivity(intent) }
             .onFailure { logger.e(it) }

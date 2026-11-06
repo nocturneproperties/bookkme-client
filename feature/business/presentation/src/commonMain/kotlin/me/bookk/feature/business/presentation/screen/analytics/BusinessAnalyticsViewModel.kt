@@ -11,7 +11,7 @@ import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalytics
 
 class BusinessAnalyticsViewModel(
     stateFactory: BusinessStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: BusinessAnalyticsState = stateFactory.createBusinessAnalyticsState().setup()

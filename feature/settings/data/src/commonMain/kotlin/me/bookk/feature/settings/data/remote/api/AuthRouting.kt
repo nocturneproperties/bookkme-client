@@ -8,17 +8,28 @@ internal object AuthRouting {
     class Api {
 
         @Resource("/auth")
-        class Auth(val parent: Api = Api()) {
+        class Auth(
+            val parent: Api = Api(),
+        ) {
             @Resource("/passkey")
-            class PassKey(val parent: Auth = Auth()) {
+            class PassKey(
+                val parent: Auth = Auth(),
+            ) {
                 @Resource("/add/challenge")
-                class AddChallenge(val parent: PassKey = PassKey())
+                class AddChallenge(
+                    val parent: PassKey = PassKey(),
+                )
 
                 @Resource("/add/finish")
-                class AddFinish(val parent: PassKey = PassKey())
+                class AddFinish(
+                    val parent: PassKey = PassKey(),
+                )
 
                 @Resource("{id}")
-                class Id(val parent: PassKey = PassKey(), val id: Uuid)
+                class Id(
+                    val parent: PassKey = PassKey(),
+                    val id: Uuid,
+                )
             }
         }
     }

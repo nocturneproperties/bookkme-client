@@ -43,7 +43,9 @@ abstract class CounterPager<R : CounterPager.Request, T>(
         abstract override fun hashCode(): Int
     }
 
-    class CounterPagerException(override val message: String) : Throwable()
+    class CounterPagerException(
+        override val message: String,
+    ) : Throwable()
 
     protected class PageInfo(
         private val countPerPage: Int,

@@ -56,7 +56,8 @@ class GetEmployeeInvitationsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val invitations = listOf(stubEmployeeInvitation(businessId))
-        every { fixture.dataSource.observeInvitationsDBChanges(businessId) } returns flowOf(invitations)
+        every { fixture.dataSource.observeInvitationsDBChanges(businessId) } returns
+            flowOf(invitations)
 
         whenn()
         val result = fixture.sut.flow(businessId).first()
@@ -94,7 +95,8 @@ class GetEmployeeInvitationsImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        every { fixture.dataSource.observeInvitationsDBChanges(businessId) } returns flowOf(emptyList())
+        every { fixture.dataSource.observeInvitationsDBChanges(businessId) } returns
+            flowOf(emptyList())
 
         whenn()
         fixture.sut.flow(businessId).first()
@@ -110,7 +112,8 @@ class GetEmployeeInvitationsImplTest {
         val businessId = Uuid.random()
         val invitations = listOf(stubEmployeeInvitation(businessId))
         everySuspend { fixture.dataSource.getInvitations(businessId) } returns invitations
-        everySuspend { fixture.dataSource.getInvitationIdsInDb(businessId) } returns invitations.map { it.id }
+        everySuspend { fixture.dataSource.getInvitationIdsInDb(businessId) } returns
+            invitations.map { it.id }
         everySuspend { fixture.dataSource.saveInvitationsInDb(invitations) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
@@ -143,7 +146,9 @@ class GetEmployeeInvitationsImplTest {
         fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteInvitationsInDb(listOf(staleId)) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.deleteInvitationsInDb(listOf(staleId))
+        }
     }
 
     @Test
@@ -153,7 +158,8 @@ class GetEmployeeInvitationsImplTest {
         val businessId = Uuid.random()
         val invitation = stubEmployeeInvitation(businessId)
         everySuspend { fixture.dataSource.getInvitations(businessId) } returns listOf(invitation)
-        everySuspend { fixture.dataSource.getInvitationIdsInDb(businessId) } returns listOf(invitation.id)
+        everySuspend { fixture.dataSource.getInvitationIdsInDb(businessId) } returns
+            listOf(invitation.id)
         everySuspend { fixture.dataSource.saveInvitationsInDb(listOf(invitation)) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 

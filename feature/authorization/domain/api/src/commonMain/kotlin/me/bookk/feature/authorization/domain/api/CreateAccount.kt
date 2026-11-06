@@ -1,10 +1,13 @@
 package me.bookk.feature.authorization.domain.api
 
+import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
+
 interface CreateAccount {
     class UserData(
         val firstName: String,
         val lastName: String,
-        val email: String
+        val email: String,
+        val acceptedDocuments: AcceptedLegalDocuments = AcceptedLegalDocuments(),
     )
 
     suspend operator fun invoke(userData: UserData)
@@ -14,5 +17,8 @@ interface CreateAccount {
         class InvalidEmailFormat : Error()
         class PasskeyVerificationFailed : Error()
         class AccountCreationFailed : Error()
+        class ChallengeWindowExpired : Error()
+        class LegalDocumentVersionUnknown : Error()
+        class LegalDocumentsNotAccepted : Error()
     }
 }

@@ -9,6 +9,6 @@ internal fun businessDiModule() = module {
     includes(
         businessPresentationModule(),
         businessDomainModule(),
-        businessDataModule()
+        businessDataModule(),
     )
 }

@@ -9,18 +9,22 @@ interface PassKeyManager {
         val userId: String,
         val userName: String,
         val challengeJson: String,
-        val challenge: String
+        val challenge: String,
     )
 
     data class AuthorizationRequest(
         val challengeJson: String,
-        val challenge: String
+        val challenge: String,
     )
 
-    sealed class Error(override val cause: Throwable? = null) : Exception() {
+    sealed class Error(
+        override val cause: Throwable? = null,
+    ) : Exception() {
         class UserCancelled : Error()
         class CredentialsMissing : Error()
-        data class Unknown(override val cause: Throwable?) : Error(cause)
+        data class Unknown(
+            override val cause: Throwable?,
+        ) : Error(cause)
         class Infrastructure : Error()
     }
 }

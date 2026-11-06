@@ -15,7 +15,7 @@ class BusinessNavigation(
     val toShopOrders: () -> Unit = {},
     val toShopAssortment: () -> Unit = {},
     val toShopWarehouse: () -> Unit = {},
-    val goBack: () -> Unit = {}
+    val goBack: () -> Unit = {},
 )
 
 internal val LocalNavigation = compositionLocalOf {
@@ -31,6 +31,6 @@ internal val LocalNavigation = compositionLocalOf {
         toShopAssortment = {},
         toShopWarehouse = {},
         toBusinessPlugins = {},
-        goBack = {}
+        goBack = {},
     )
 }

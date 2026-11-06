@@ -5,15 +5,15 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import library.device.api.DeviceFacade
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.dashOnBlank
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.feature.clients.domain.api.GetClient
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
@@ -30,7 +30,7 @@ class ClientDetailsViewModel(
     private val getClientsPermissions: GetClientsPermissions,
     private val device: DeviceFacade,
     stateFactory: ClientsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: ClientDetailsState = stateFactory.createClientDetailsState().setup()
@@ -57,18 +57,18 @@ class ClientDetailsViewModel(
                 InfoLine(
                     title = ClientsRes.strings.clients_create_phone,
                     value = client.phone.dashOnBlank(),
-                    onClick = { client.phone?.let { device.dial(it) } }
+                    onClick = { client.phone?.let { device.dial(it) } },
                 ),
                 InfoLine(
                     title = ClientsRes.strings.clients_create_email,
                     value = client.email.dashOnBlank(),
-                    onClick = { client.email?.let { device.mail(it) } }
+                    onClick = { client.email?.let { device.mail(it) } },
                 ),
                 InfoLine(
                     title = ClientsRes.strings.clients_details_description,
-                    value = client.description.dashOnBlank()
-                )
-            )
+                    value = client.description.dashOnBlank(),
+                ),
+            ),
         )
     }
 
@@ -77,8 +77,8 @@ class ClientDetailsViewModel(
             listOf(
                 uiState.appBar.action(
                     contentDescription = DesignSystem.strings.action_edit.desc(),
-                    onClick = weakVMClosure { it.onEditClick() }
-                )
+                    onClick = weakVMClosure { it.onEditClick() },
+                ),
             )
         } else {
             emptyList()

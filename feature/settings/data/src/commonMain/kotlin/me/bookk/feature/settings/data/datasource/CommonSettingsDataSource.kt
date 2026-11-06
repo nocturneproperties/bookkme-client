@@ -18,8 +18,9 @@ import me.bookk.feature.settings.domain.datasource.SettingsDataSource
 
 internal class CommonSettingsDataSource(
     private val httpClient: HttpClient,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), SettingsDataSource {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    SettingsDataSource {
 
     private val preferences = preferenceProvider.get("settings_prefs")
 

@@ -15,13 +15,13 @@ internal class ServiceGroupRemote(
     @ProtoNumber(1) val id: Uuid,
     @ProtoNumber(2) val businessId: Uuid,
     @ProtoNumber(3) val name: String,
-    @ProtoNumber(4) val createdAt: Instant
+    @ProtoNumber(4) val createdAt: Instant,
 ) {
     fun toDomain() = ServiceGroup(
         id = id,
         businessId = businessId,
         name = name,
-        createdAt = createdAt
+        createdAt = createdAt,
     )
 
     companion object {
@@ -29,7 +29,7 @@ internal class ServiceGroupRemote(
             id = group.id,
             businessId = group.businessId,
             name = group.name,
-            createdAt = group.createdAt
+            createdAt = group.createdAt,
         )
     }
 }
@@ -45,7 +45,7 @@ internal class ServiceRemote(
     @Serializable(with = RemoteMoneySerializer::class)
     val price: Money,
     @ProtoNumber(7) val isAvailable: Boolean,
-    @ProtoNumber(8) val createdAt: Instant
+    @ProtoNumber(8) val createdAt: Instant,
 ) {
     fun toDomain() = Service(
         id = id,
@@ -55,7 +55,7 @@ internal class ServiceRemote(
         duration = duration,
         price = price,
         isAvailable = isAvailable,
-        createdAt = createdAt
+        createdAt = createdAt,
     )
 
     companion object {
@@ -67,7 +67,7 @@ internal class ServiceRemote(
             duration = service.duration,
             price = service.price,
             isAvailable = service.isAvailable,
-            createdAt = service.createdAt
+            createdAt = service.createdAt,
         )
     }
 }

@@ -12,7 +12,7 @@ internal class ClientRemote(
     @ProtoNumber(4) val phone: String?,
     @ProtoNumber(5) val email: String?,
     @ProtoNumber(6) val userId: Uuid?,
-    @ProtoNumber(7) val description: String?
+    @ProtoNumber(7) val description: String?,
 )
 
 @Serializable
@@ -22,5 +22,5 @@ internal class ClientUpdateRemote(
     @ProtoNumber(3) val lastName: String?,
     @ProtoNumber(4) val phone: String?,
     @ProtoNumber(5) val email: String?,
-    @ProtoNumber(6) val description: String?
+    @ProtoNumber(6) val description: String?,
 )

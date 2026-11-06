@@ -36,13 +36,13 @@ fun StateSwitch(
     colors: SwitchColors = SwitchDefaults.colors(
         checkedTrackColor = LocalColors.current.actionText,
         checkedThumbColor = Color.White,
-        uncheckedThumbColor = Color.White
+        uncheckedThumbColor = Color.White,
     ),
-    onCheckedChange: (Boolean) -> Unit = { state.onCheckedChange?.invoke(it) }
+    onCheckedChange: (Boolean) -> Unit = { state.onCheckedChange?.invoke(it) },
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Row(
             modifier = Modifier
@@ -54,21 +54,21 @@ fun StateSwitch(
                 }
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             val text = state.text.html()
             if (text.isNotBlank()) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = text,
-                    style = MaterialTheme.typography.titleMedium.primary()
+                    style = MaterialTheme.typography.titleMedium.primary(),
                 )
             }
             Switch(
                 checked = state.isChecked,
                 enabled = state.isEnabled,
                 colors = colors,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
             )
         }
         AnimatedVisibility(state.supportingTextRes != null) {
@@ -88,7 +88,7 @@ private fun PreviewSwitchButton() {
     StateSwitch(
         state = AndroidBooleanState(
             text = "Example text".desc(),
-            isChecked = true
+            isChecked = true,
         ),
     )
 }

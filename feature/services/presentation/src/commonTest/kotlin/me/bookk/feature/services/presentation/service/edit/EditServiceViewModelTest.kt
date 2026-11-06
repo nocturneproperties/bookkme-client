@@ -60,7 +60,9 @@ class EditServiceViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(permissions: ServicesPermissions = ServicesPermissions(canEdit = true, canDelete = true)) {
+    private class Fixture(
+        permissions: ServicesPermissions = ServicesPermissions(canEdit = true, canDelete = true),
+    ) {
         val group = stubGroup("Hair")
         val otherGroup = stubGroup("Nails", group.businessId)
         val service = stubService(group = group)
@@ -86,7 +88,7 @@ class EditServiceViewModelTest {
             getServiceGroups = getServiceGroups,
             getServicesPermissions = getServicesPermissions,
             stateFactory = FakeServicesStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -117,7 +119,10 @@ class EditServiceViewModelTest {
 
         then()
         assertEquals(ServiceGroupOption(fixture.group), sut.uiState.group.selectedItem)
-        assertEquals("Hair".desc(), (sut.uiState.group.textField as FakeTextFieldState).lastUpdatedDesc)
+        assertEquals(
+            "Hair".desc(),
+            (sut.uiState.group.textField as FakeTextFieldState).lastUpdatedDesc,
+        )
         assertEquals("Haircut", sut.uiState.name.text)
         assertEquals("30", sut.uiState.duration.text)
         assertEquals("100.0", sut.uiState.price.text)
@@ -146,7 +151,12 @@ class EditServiceViewModelTest {
 
         then()
         verifySuspend { fixture.getServiceGroups.refresh(fixture.service.businessId) }
-        assertEquals(listOf(fixture.group, fixture.otherGroup), sut.uiState.group.options.map { it.domain })
+        assertEquals(
+            listOf(fixture.group, fixture.otherGroup),
+            sut.uiState.group.options.map {
+                it.domain
+            },
+        )
     }
 
     @Test
@@ -171,9 +181,9 @@ class EditServiceViewModelTest {
                 name = "Color",
                 duration = 45.minutes,
                 price = Money(1250L, Money.SupportedCurrency.UAH),
-                isAvailable = false
+                isAvailable = false,
             ),
-            fixture.edited.get()
+            fixture.edited.get(),
         )
     }
 
@@ -188,7 +198,10 @@ class EditServiceViewModelTest {
         sut.uiState.submit.onClick?.invoke()
 
         then()
-        assertEquals(listOf<EditServiceDestination>(EditServiceDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EditServiceDestination>(EditServiceDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -293,11 +306,16 @@ class EditServiceViewModelTest {
         sut.uiState.deleteButton.onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
         verifySuspend { fixture.deleteService(fixture.service) }
-        assertEquals(listOf<EditServiceDestination>(EditServiceDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EditServiceDestination>(EditServiceDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -309,10 +327,17 @@ class EditServiceViewModelTest {
         sut.uiState.deleteButton.onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -324,10 +349,16 @@ class EditServiceViewModelTest {
         sut.uiState.deleteButton.onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -353,6 +384,60 @@ class EditServiceViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<EditServiceDestination>(EditServiceDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EditServiceDestination>(EditServiceDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `explains service validation failures`() = runUnitTest {
+        listOf(
+            EditService.Error.NameAlreadyExists() to ServicesRes.strings.services_name_exists_error,
+            EditService.Error.InvalidName() to ServicesRes.strings.services_invalid_name_error,
+            EditService.Error.GroupNotFound() to ServicesRes.strings.services_group_not_found_error,
+            EditService.Error.InvalidPricePrecision() to
+                ServicesRes.strings.services_price_precision_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.editService(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.uiState.submit.onClick?.invoke()
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps invalid business currency errors general`() = runUnitTest {
+        listOf(
+            EditService.Error.InvalidBusinessCurrency(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.editService(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.uiState.submit.onClick?.invoke()
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
     }
 }

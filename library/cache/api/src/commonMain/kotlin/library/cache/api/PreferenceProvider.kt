@@ -16,7 +16,9 @@ interface Preferences {
     suspend fun <T : Any> remove(key: Key<T>, cls: KClass<T>)
     suspend fun clear()
 
-    class Key<T>(val name: String)
+    class Key<T>(
+        val name: String,
+    )
 }
 
 suspend inline fun <reified T : Any> Preferences.get(key: Preferences.Key<T>): T? {

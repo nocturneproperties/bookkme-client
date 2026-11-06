@@ -16,10 +16,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 
-private enum class ImeMoveDirection(val value: Int) {
+private enum class ImeMoveDirection(
+    val value: Int,
+) {
     UP(1),
     DOWN(-1),
-    STATIC(0)
+    STATIC(0),
 }
 
 @OptIn(ExperimentalLayoutApi::class)

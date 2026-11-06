@@ -70,7 +70,7 @@ fun Modifier.drawShadow(
                 blurRadius.toPx(),
                 offsetX.toPx(),
                 offsetY.toPx(),
-                shadowColor
+                shadowColor,
             )
 
             canvas.save()
@@ -82,7 +82,7 @@ fun Modifier.drawShadow(
                     spreadScaleX,
                     spreadScaleY,
                     size.width / 2,
-                    size.height / 2
+                    size.height / 2,
                 )
             }
 
@@ -93,7 +93,7 @@ fun Modifier.drawShadow(
                 size.height,
                 borderRadius.toPx(),
                 borderRadius.toPx(),
-                paint
+                paint,
             )
 
             canvas.restore()
@@ -101,9 +101,7 @@ fun Modifier.drawShadow(
     }
 }
 
-fun Modifier.coloredOverlay(
-    brush: Brush
-): Modifier {
+fun Modifier.coloredOverlay(brush: Brush): Modifier {
     return graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
         .drawWithCache {
             onDrawWithContent {
@@ -114,9 +112,7 @@ fun Modifier.coloredOverlay(
 }
 
 @Composable
-fun Modifier.coloredOverlay(
-    brushProvider: (IntSize) -> Brush
-): Modifier {
+fun Modifier.coloredOverlay(brushProvider: (IntSize) -> Brush): Modifier {
     var brush by remember { mutableStateOf<Brush>(SolidColor(Color.Transparent)) }
     return onGloballyPositioned { brush = brushProvider(it.size) }
         .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
@@ -135,52 +131,54 @@ fun Modifier.topShadow(offset: Dp, colorFrom: Color, colorTo: Color = Color.Tran
         Brush.verticalGradient(
             startY = 0f,
             endY = pxOffset,
-            colorStops = arrayOf(0f to colorFrom, 1f to colorTo)
+            colorStops = arrayOf(0f to colorFrom, 1f to colorTo),
         )
     }
 }
 
 @Composable
-fun Modifier.bottomShadow(offset: Dp, colorTo: Color, colorFrom: Color = Color.Transparent): Modifier {
+fun Modifier.bottomShadow(
+    offset: Dp,
+    colorTo: Color,
+    colorFrom: Color = Color.Transparent,
+): Modifier {
     val pxOffset = with(LocalDensity.current) { offset.toPx() }
     return coloredOverlay {
         Brush.verticalGradient(
             startY = (it.height - pxOffset).coerceAtLeast(0f),
             endY = it.height.toFloat(),
-            colorStops = arrayOf(0f to colorFrom, 1f to colorTo)
+            colorStops = arrayOf(0f to colorFrom, 1f to colorTo),
         )
     }
 }
 
-fun Modifier.shimmerBackground(
-    color: Color = Color(0xFFF0F2F4),
-    duration: Int = 800,
-): Modifier = composed {
-    var size by remember {
-        mutableStateOf(IntSize.Zero)
-    }
-    val transition = rememberInfiniteTransition(label = "shimmerEffectTransition")
-    val startOffsetX by transition.animateFloat(
-        initialValue = -2 * size.width.toFloat(),
-        targetValue = 2 * size.width.toFloat(),
-        animationSpec = infiniteRepeatable(
-            animation = tween(duration)
-        ),
-        label = "shimmerEffectOffset"
-    )
-
-    background(
-        brush = Brush.linearGradient(
-            colors = listOf(
-                color,
-                color.copy(alpha = 0.6f),
-                color
+fun Modifier.shimmerBackground(color: Color = Color(0xFFF0F2F4), duration: Int = 800): Modifier =
+    composed {
+        var size by remember {
+            mutableStateOf(IntSize.Zero)
+        }
+        val transition = rememberInfiniteTransition(label = "shimmerEffectTransition")
+        val startOffsetX by transition.animateFloat(
+            initialValue = -2 * size.width.toFloat(),
+            targetValue = 2 * size.width.toFloat(),
+            animationSpec = infiniteRepeatable(
+                animation = tween(duration),
             ),
-            start = Offset(startOffsetX, 0f),
-            end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())
+            label = "shimmerEffectOffset",
         )
-    ).onGloballyPositioned { size = it.size }
-}
+
+        background(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    color,
+                    color.copy(alpha = 0.6f),
+                    color,
+                ),
+                start = Offset(startOffsetX, 0f),
+                end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat()),
+            ),
+        ).onGloballyPositioned { size = it.size }
+    }
 
 @Preview(showBackground = true)
 @Composable
@@ -188,17 +186,17 @@ private fun Preview() {
     AppTheme {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Card(
                 modifier = Modifier.drawShadow(),
                 colors = CardDefaults.cardColors(
-                    containerColor = AppColors.White
-                )
+                    containerColor = AppColors.White,
+                ),
             ) {
                 Text(
                     modifier = Modifier.padding(24.dp),
-                    text = "Card with \"drawShadow\" modifier"
+                    text = "Card with \"drawShadow\" modifier",
                 )
             }
 
@@ -209,20 +207,20 @@ private fun Preview() {
             ) {
                 Text(
                     modifier = Modifier.padding(24.dp),
-                    text = "Card with \"shimmerBackground\" modifier"
+                    text = "Card with \"shimmerBackground\" modifier",
                 )
             }
 
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = AppColors.White
-                )
+                    containerColor = AppColors.White,
+                ),
             ) {
                 Text(
                     modifier = Modifier
                         .padding(24.dp)
                         .coloredOverlay(SolidColor(LocalColors.current.actionText)),
-                    text = "Text with \"coloredOverlay\" modifier"
+                    text = "Text with \"coloredOverlay\" modifier",
                 )
             }
         }

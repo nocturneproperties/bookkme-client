@@ -14,10 +14,10 @@ import kotlin.uuid.Uuid
             entity = NotificationSettingsEntity::class,
             parentColumns = ["id"],
             childColumns = ["settingsId"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
-    indices = [Index("settingsId")]
+    indices = [Index("settingsId")],
 )
 class NotificationSettingsChannelEntity(
     @PrimaryKey
@@ -25,5 +25,5 @@ class NotificationSettingsChannelEntity(
     val settingsId: Uuid,
     val channel: String,
     val enabled: Boolean,
-    @ColumnInfo(defaultValue = "1") val availableToClients: Boolean
+    @ColumnInfo(defaultValue = "1") val availableToClients: Boolean,
 )

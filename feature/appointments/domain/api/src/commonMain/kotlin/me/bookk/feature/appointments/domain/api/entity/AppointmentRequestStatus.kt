@@ -4,5 +4,5 @@ enum class AppointmentRequestStatus {
     PENDING,
     APPROVED,
     DECLINED,
-    CANCELLED
+    CANCELLED,
 }

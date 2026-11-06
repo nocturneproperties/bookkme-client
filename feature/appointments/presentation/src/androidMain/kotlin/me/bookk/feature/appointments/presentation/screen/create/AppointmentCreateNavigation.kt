@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.appointmentCreateScreen(navigation: AppointmentNavigation) {
     composable<AppointmentsDestination.Create>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val route: AppointmentsDestination.Create = it.toRoute()
         val viewModel: AppointmentCreateViewModel = koinViewModel { parametersOf(route.businessId) }

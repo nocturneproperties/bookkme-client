@@ -6,7 +6,7 @@ import platform.Foundation.NSTimeZone
 import platform.Foundation.autoupdatingCurrentLocale
 import platform.Foundation.localTimeZone
 
-class IosDateLocalizer: DateLocalizer {
+class IosDateLocalizer : DateLocalizer {
 
     private fun DateStyle.nativeFormat(): IOSFormatters {
         val dateFormatter = NSDateFormatter().apply {
@@ -39,7 +39,7 @@ class IosDateLocalizer: DateLocalizer {
             dateTime = dateTimeFormatter,
             dateSameYear = sameYearDateFormatter,
             dateTimeSameYear = sameYearDateTimeFormatter,
-            time = timeFormatter
+            time = timeFormatter,
         )
     }
 
@@ -57,6 +57,8 @@ class IosDateLocalizer: DateLocalizer {
                 dateFormat = pattern
             }
         }
-        return IOSDateFormatter(IOSFormatters(formatter, formatter, formatter, formatter, formatter))
+        return IOSDateFormatter(
+            IOSFormatters(formatter, formatter, formatter, formatter, formatter),
+        )
     }
 }

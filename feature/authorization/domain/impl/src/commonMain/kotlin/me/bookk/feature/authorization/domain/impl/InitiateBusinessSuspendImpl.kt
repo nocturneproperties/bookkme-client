@@ -6,7 +6,7 @@ import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 
 internal class InitiateBusinessSuspendImpl(
     private val switchDashboardBusiness: SwitchDashboardBusiness,
-    private val refreshBusinessInfo: RefreshBusinessInfo
+    private val refreshBusinessInfo: RefreshBusinessInfo,
 ) : InitiateBusinessSuspend {
     override suspend fun invoke() {
         switchDashboardBusiness(null)

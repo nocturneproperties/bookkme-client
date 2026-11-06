@@ -14,14 +14,14 @@ fun ClickableIcon(
     modifier: Modifier = Modifier,
     icon: Int,
     tint: Color = LocalColors.current.primaryText,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     IconButton(onClick = onClick) {
         Icon(
             modifier = modifier,
             painter = painterResource(icon),
             contentDescription = null,
-            tint = tint
+            tint = tint,
         )
     }
 }
@@ -31,14 +31,14 @@ fun ClickableIcon(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     tint: Color = LocalColors.current.primaryText,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     IconButton(onClick = onClick) {
         Icon(
             modifier = modifier,
             imageVector = icon,
             contentDescription = null,
-            tint = tint
+            tint = tint,
         )
     }
 }

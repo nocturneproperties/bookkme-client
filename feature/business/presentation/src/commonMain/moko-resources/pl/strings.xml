@@ -83,4 +83,11 @@
     <string name="business_settings_invalid_day_off_range_error">Data rozpoczęcia dnia wolnego musi być wcześniejsza niż data zakończenia</string>
     <string name="business_analytics_coming_soon_title">Analityka już wkrótce</string>
     <string name="business_analytics_coming_soon_message">Przygotowujemy raporty dotyczące Twoich przychodów, wizyt i klientów. Pojawią się tutaj w jednej z przyszłych aktualizacji.</string>
+    <string name="create_business_already_exists_error">Ta firma już istnieje. Odśwież listę firm i spróbuj ponownie.</string>
+    <string name="create_business_invalid_name_error">Wpisz prawidłową nazwę firmy.</string>
+    <string name="business_settings_currency_locked_error">Nie można już zmienić waluty tej firmy.</string>
+    <string name="business_settings_retention_title">Okres przechowywania danych klientów</string>
+    <string name="business_settings_retention_months">mies.</string>
+    <string name="business_settings_retention_explanation">Przechowuj dane klientów w zakończonych wizytach i zgłoszeniach przez 12–120 miesięcy. Po tym okresie dane są anonimizowane lub usuwane.</string>
+    <string name="business_settings_retention_error">Wpisz liczbę całkowitą od 12 do 120 miesięcy.</string>
 </resources>

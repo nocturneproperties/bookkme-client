@@ -20,8 +20,7 @@ internal actual fun platformServicesDiModule(): Module = module {
 }
 
 @UsedInSwift
-fun serviceListVM(): ServiceListViewModel =
-    KoinPlatform.getKoin().get()
+fun serviceListVM(): ServiceListViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun addServiceVM(businessId: Uuid): AddServiceViewModel =
@@ -32,5 +31,4 @@ fun editServiceVM(serviceId: Uuid): EditServiceViewModel =
     KoinPlatform.getKoin().get { parametersOf(serviceId) }
 
 @UsedInSwift
-fun serviceGroupListVM(): ServiceGroupListViewModel =
-    KoinPlatform.getKoin().get()
+fun serviceGroupListVM(): ServiceGroupListViewModel = KoinPlatform.getKoin().get()

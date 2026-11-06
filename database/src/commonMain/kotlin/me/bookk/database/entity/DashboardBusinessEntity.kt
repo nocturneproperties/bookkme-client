@@ -14,15 +14,15 @@ import kotlin.uuid.Uuid
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class DashboardBusinessEntity(
     val businessId: Uuid,
     @PrimaryKey
-    val slot: Int = SINGLE_SLOT
+    val slot: Int = SINGLE_SLOT,
 ) {
     companion object {
         const val SINGLE_SLOT = 0

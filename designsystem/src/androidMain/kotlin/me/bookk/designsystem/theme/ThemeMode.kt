@@ -13,10 +13,11 @@ import me.bookk.designsystem.theme.color.animateColor
 
 enum class ThemeMode {
     LIGHT,
-    DARK;
+    DARK,
+    ;
 
-    val systemBarStyle:SystemBarStyle
-        get() = when(this) {
+    val systemBarStyle: SystemBarStyle
+        get() = when (this) {
             LIGHT -> SystemBarStyle.light(Color.Transparent.toArgb(), Color.Transparent.toArgb())
             DARK -> SystemBarStyle.dark(Color.Transparent.toArgb())
         }
@@ -46,7 +47,7 @@ enum class ThemeMode {
                     onSurface = currentScheme.primaryText,
                     onError = AppColors.White,
                     outline = currentScheme.divider,
-                    outlineVariant = currentScheme.divider
+                    outlineVariant = currentScheme.divider,
                 )
 
                 DARK -> darkColorScheme(
@@ -62,14 +63,14 @@ enum class ThemeMode {
                     onSurface = currentScheme.primaryText,
                     onError = AppColors.Black,
                     outline = currentScheme.divider,
-                    outlineVariant = currentScheme.divider
+                    outlineVariant = currentScheme.divider,
                 )
             }
         }
 }
 
 @Composable
-fun AppColorScheme.animated():AppColorScheme {
+fun AppColorScheme.animated(): AppColorScheme {
     return AppColorScheme(
         background = animateColor(background),
         primaryText = animateColor(primaryText),
@@ -88,7 +89,7 @@ fun AppColorScheme.animated():AppColorScheme {
         buttonActive = animateColor(buttonActive),
         buttonInactive = animateColor(buttonInactive),
         error = animateColor(error),
-        onAction = animateColor(onAction)
+        onAction = animateColor(onAction),
     )
 }
 
@@ -130,6 +131,6 @@ fun ColorScheme.animated(): ColorScheme {
         surfaceContainerHigh = animateColor(surfaceContainerHigh),
         surfaceContainerHighest = animateColor(surfaceContainerHighest),
         surfaceContainerLow = animateColor(surfaceContainerLow),
-        surfaceContainerLowest = animateColor(surfaceContainerLowest)
+        surfaceContainerLowest = animateColor(surfaceContainerLowest),
     )
 }

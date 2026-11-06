@@ -21,6 +21,7 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 	var photo: any ButtonState
 	var address: any TextFieldState
 	var currency: any PickerFieldState
+	let clientDataRetentionMonths: any TextFieldState
 	var description_: any TextFieldState
 	var instagram: any TextFieldState
 	var location: any TextFieldState
@@ -41,6 +42,7 @@ class IOSBusinessSettingsState: @MainActor BusinessSettingsState, NativeStateRep
 		self.photo = IOSButtonState(text: initData.addPhotoText)
 		self.address = IOSTextFieldState(placeholder: initData.addressHint)
 		self.currency = IOSPickerState()
+		self.clientDataRetentionMonths = IOSTextFieldState()
 		self.description_ = IOSTextFieldState(placeholder: initData.descriptionHint)
 		self.instagram = IOSTextFieldState(placeholder: initData.instagramHint, startIcon: initData.instaIcon)
 		self.location = IOSTextFieldState(placeholder: initData.locationHint, readOnly: true)

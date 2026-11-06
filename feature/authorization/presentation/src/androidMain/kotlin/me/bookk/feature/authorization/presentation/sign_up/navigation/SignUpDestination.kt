@@ -19,7 +19,6 @@ internal fun NavGraphBuilder.signUpScreen(navigation: AuthNavigation) {
         CompositionLocalProvider(LocalNavigation provides navigation) {
             SignUpScreen(
                 state = viewModel.uiState,
-                listener = viewModel,
             )
 
             ObserveNavigation(viewModel.uiState.navigation) {

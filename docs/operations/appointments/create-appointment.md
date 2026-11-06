@@ -1,33 +1,53 @@
 [← Operations](../README.md)
 
-# Create appointment (instant)
+# Create appointment with a fresh quote
 
-`CreateAppointment(draft)` → `POST /api/appointments/instant`
-· called from `AppointmentCreateViewModel` and `AppointmentListViewModel`
-
-The draft's note is trimmed. The id is generated on the client with `Uuid.random()`. The **current user is always the assigned employee**:
-`employee.id` is the caller's employee record id in the draft's business, read from the cached `business` row
-(`Business.employeeId`, through `ObserveUserBusinessesChanges`), and `employee.userId` is the profile id. The
-server stores `employee.id` as sent, and the appointment list filters by it. If that business is not cached or
-its `employeeId` is `null` (the caller is not an active employee, or the row predates DB version 19 and was not
-refreshed yet), it throws `Error.NotAnEmployee` without calling the server. The server result is saved with `saveAppointmentInDB` in a separate datasource call, so the list screen
-redraws from the `appointment` table.
+`CreateAppointment(draft)` → quote and validation → `POST /api/appointments/instant`.
+The caller supplies displayed service snapshots and may select `employeeId`; when omitted, the cached
+business's caller employee id is used. No client-generated appointment id or initiator snapshot is sent.
 
 ```mermaid
 flowchart TD
-    Start([invoke draft]) --> Profile[UserProfileCRUD.get<br/>DB first, else GET /api/user/me + upsert]
-    Profile --> Biz[(ObserveUserBusinessesChanges.first<br/>business with id = draft.businessId)]
-    Biz -- missing or employeeId null --> E0([throw Error.NotAnEmployee])
-    Biz -- employeeId --> Build[Appointment id=random, userId=profile.id,<br/>employee id=employeeId, userId=profile.id, name=profile, status=SCHEDULED, note=draft.note.trim]
+    Start([invoke draft]) --> Empty{services empty?}
+    Empty -- yes --> EmptyError([throw Error.EmptyServices])
+    Empty -- no --> Employee{draft.employeeId supplied?}
+    Employee -- yes --> Selected[use selected employeeId]
+    Employee -- no --> Biz[ObserveUserBusinessesChanges.first<br/>find business employeeId]
+    Biz -- missing --> NotEmployee([throw Error.NotAnEmployee])
+    Biz -- employeeId --> Selected
+    Selected --> Quote[CreateQuote businessId, distinct service ids<br/>POST /api/business/businessId/service/quote]
+    Quote -- ServiceNotFound --> Refresh
+    Quote -- result --> Match{service ids, business, availability,<br/>name, group, price, duration match?}
+    Match -- no --> Refresh[GetServices.refresh businessId<br/>GET services and update Room service cache]
+    Refresh --> Changed([throw PriceChanged, DurationChanged,<br/>ServicesChanged or ServiceNotFound])
+    Refresh -- failure --> RefreshError([propagate refresh failure])
+    Match -- yes --> Build[InstantAppointmentDraft<br/>businessId, employeeId, RequestedService ids/counts,<br/>date, trimmed note, fresh offerToken, clientId]
     Build --> Net[AppointmentDataSource.createAppointment<br/>POST /api/appointments/instant]
-    Net -- 2xx result --> Save[(saveAppointmentInDB result<br/>upsertWithServices)]
-    Save --> R([return Appointment from server])
+    Net -- success --> Save[(saveAppointmentInDB returned appointment<br/>upsertWithServices)] --> R([return server appointment])
     Net -- business error --> Code{errorCode}
-    Code -- 300004 APPOINTMENT_EXISTS --> E1([throw Error.AppointmentOverlap])
-    Code -- 300002 TIME_NOT_ALLOWED --> E2([throw Error.TimeIsNotAllowed])
-    Code -- 300003 DATE_NOT_ALLOWED --> E3([throw Error.DateIsNotAllowed])
-    Code -- other --> EX([rethrow])
+    Code -- 300013 / 300017 / 300014 / 200013 --> Refresh
+    Code -- 300004 --> Overlap([throw Error.AppointmentOverlap])
+    Code -- 300002 --> Time([throw Error.TimeIsNotAllowed])
+    Code -- 300003 --> Date([throw Error.DateIsNotAllowed])
+    Code -- 300012 --> Past([throw Error.DateInPast])
+    Code -- 300016 --> Used([throw Error.OfferAlreadyUsed])
+    Code -- 200014 --> EmptyError
+    Code -- 200024 --> EmployeeMissing([throw Error.EmployeeNotFound])
+    Code -- 200006 --> ClientMissing([throw Error.ClientNotFound])
+    Code -- 200033 --> Suspended([throw Error.EmployeeSuspended])
+    Code -- other --> Other([propagate])
 ```
 
-Depends on [User profile CRUD](../authorization/user-profile-crud.md) and [Observe user businesses
-changes](../business/observe-user-businesses-changes.md).
+Duplicate service selections become positive counts; the quote requests each id once. Quote mismatches
+and quote-related booking races refresh backend services before returning the mismatch error. If that
+refresh fails, its error propagates and booking is not retried. A refreshed quote never silently accepts
+changed booking details. A fresh request from the caller is required after reviewing updates.
+
+The creation screen observes the local service cache through `ObserveAppointmentOptions`. Each
+emission replaces selected service snapshots by id, removes selections missing from the options,
+and recalculates the subtotal and Create availability. The client, date, time and note are preserved.
+Option changes keep Create disabled while a booking is pending. Quote rejection explains that the
+employee must review the updated form; the ViewModel never automatically retries the booking.
+
+Composes `CreateQuote`, `GetServices.refresh` on mismatch, and `ObserveUserBusinessesChanges` for the
+default employee. Quote retrieval and cache refresh are use-case orchestration, never combined in a datasource.

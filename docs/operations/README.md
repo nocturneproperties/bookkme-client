@@ -28,6 +28,11 @@ while a refresh is running are dropped.
 Legend: `[(…)]` is a Room or DataStore access, `[…]` with an HTTP verb is a network call, and `([…])` is a
 terminal (return, emit or throw). "local only" means the use case never touches the network.
 
+**Not found.** HTTP 404 responses without a structured business-error body become the shared
+`me.bookk.core.domain.entity.Error.NotFound`, retaining the original cause. Use cases translate that
+type into their own errors where needed (appointment `NotFound`, export-download `NotReady`). A 404
+carrying a structured business-error body retains its `Error.BusinessError` code and message.
+
 - [Authorization](#authorization)
 - [Business](#business)
 - [Clients](#clients)
@@ -42,10 +47,12 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `CreateAccount` | `POST /api/auth/passkey/sign_up/challenge`, `POST /api/auth/sign_up` | [Create account](authorization/create-account.md) |
+| `ConfirmSensitiveAction` | `GET challenge + POST /api/auth/passkey/confirm_action` | [Confirm sensitive action](authorization/confirm-sensitive-action.md) |
+| `GetSignUpLegalDocuments` | `invoke`: persisted cache only; `refresh`: via `GetLegalDocumentVersions`, `GET /api/user/legal` | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) |
+| `CreateAccount` | `POST /api/auth/passkey/sign_up/challenge`, `POST /api/auth/sign_up` with accepted legal-document versions | [Create account](authorization/create-account.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
-| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `GET /api/user/me`, `GET /api/business/mine`, then per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
+| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `timestampProtectedFetch`: `GET /api/user/legal` first; private requests only when authorized; `rawFetch`: profile, business, per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
 | `LogOut` | `DELETE /api/auth/session` | [Log out](authorization/log-out.md) |
 | `RefreshToken` | `POST /api/auth/refresh` | [Refresh token](authorization/refresh-token.md) |
 | `UserProfileCRUD` | `GET` / `PATCH /api/user/me` | [User profile CRUD](authorization/user-profile-crud.md) |
@@ -55,9 +62,12 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `CreateBusiness` | `POST /api/business` | [Create business](business/create-business.md) |
-| `UpdateBusiness` | `PUT /api/business/{id}` | [Update business](business/update-business.md) |
-| `RefreshBusinessInfo` | `GET /api/business/mine` | [Refresh business info](business/refresh-business-info.md) |
+| `DownloadBusinessDataExport` | `GET /api/business/{id}/export/download`; shared `NotFound` → `NotReady` | [Download business data export](business/download-business-data-export.md) |
+| `GetBusinessDataExport` | `GET /api/business/{id}/export` | [Get business data export](business/get-business-data-export.md) |
+| `StartBusinessDataExport` | `POST /api/business/{id}/export` | [Start business data export](business/start-business-data-export.md) |
+| `CreateBusiness` | `POST /api/business`; typed backend errors | [Create business](business/create-business.md) |
+| `UpdateBusiness` | `PUT /api/business/{id}`; Business Settings retention (12–120 months; cache default 36) + inline validation errors | [Update business](business/update-business.md) |
+| `RefreshBusinessInfo` | `GET /api/business/mine`; cache retention defaults to 36 months | [Refresh business info](business/refresh-business-info.md) |
 | `SwitchDashboardBusiness` | `PUT /api/business/{id}/dashboard` (best-effort) | [Switch dashboard business](business/switch-dashboard-business.md) |
 | `JoinBusiness` | via `RedeemEmployeeInvitation` | [Join business](business/join-business.md) |
 | `EnableAppointmentsPlugin` | `POST /api/appointments/enabled/{businessId}` | [Enable appointments plugin](business/enable-appointments-plugin.md) |
@@ -78,9 +88,9 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | `CreateClient` | `POST /api/business/{businessId}/clients` | [Create client](clients/create-client.md) |
 | `ImportClients` | `POST /api/business/{businessId}/clients/import` (one request per 500 entries) | [Import clients](clients/import-clients.md) |
 | `GetDeviceContacts` | local only (device address book) | [Get device contacts](clients/get-device-contacts.md) |
-| `EditClient` | `PATCH /api/business/{businessId}/clients/{id}` | [Edit client](clients/edit-client.md) |
-| `DeleteClient` | `DELETE /api/business/{businessId}/clients/{id}` | [Delete client](clients/delete-client.md) |
-| `GetClientsPermissions` | local only (`business` table via `ObserveUserBusinessesChanges`) | [Get clients permissions](clients/get-clients-permissions.md) |
+| `EditClient` | `PATCH /api/business/{businessId}/clients/{id}`; integrated-client patch | [Edit client](clients/edit-client.md) |
+| `DeleteClient` | passkey confirmation + `DELETE /api/business/{businessId}/clients/{id}` | [Delete client](clients/delete-client.md) |
+| `GetClientsPermissions` | local only (`business` and `user_profile` observers; owner-only integrated deletion) | [Get clients permissions](clients/get-clients-permissions.md) |
 
 ## Services
 
@@ -88,8 +98,8 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 |---|---|---|
 | `GetServices` | `GET /api/business/{businessId}/service` | [Get services](services/get-services.md) |
 | `GetService` | local only | [Get service](services/get-service.md) |
-| `CreateService` | `POST /api/business/{businessId}/service` | [Create service](services/create-service.md) |
-| `EditService` | `PUT /api/business/{businessId}/service/{id}` | [Edit service](services/edit-service.md) |
+| `CreateService` | `POST /api/business/{businessId}/service`; typed validation errors | [Create service](services/create-service.md) |
+| `EditService` | `PUT /api/business/{businessId}/service/{id}`; typed validation errors | [Edit service](services/edit-service.md) |
 | `DeleteService` | `DELETE /api/business/{businessId}/service/{id}` | [Delete service](services/delete-service.md) |
 | `GetServiceGroups` | `GET /api/business/{businessId}/service_group` | [Get service groups](services/get-service-groups.md) |
 | `CreateServiceGroup` | `POST /api/business/{businessId}/service_group` | [Create service group](services/create-service-group.md) |
@@ -118,14 +128,16 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 
 | Use case | Network | Diagram |
 |---|---|---|
+| `GetBusinessAppointmentRequests` | `GET /api/appointments/request/{businessId}` | [Get business appointment requests](appointments/get-business-appointment-requests.md) |
+| `GetBusinessAppointmentsEnabled` | `GET /api/appointments/enabled` | [Get business appointments enabled](appointments/get-business-appointments-enabled.md) |
 | `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=[&employeeId=]` | [Get appointments for business](appointments/get-appointments-for-business.md) |
-| `GetAppointment` | local only | [Get appointment](appointments/get-appointment.md) |
+| `GetAppointment` | local read; `refresh(id)` fetches and caches `GET /api/appointments/{id}`; shared `NotFound` → use-case `NotFound` | [Get appointment](appointments/get-appointment.md) |
 | `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}` (paged) | [Get appointment history](appointments/get-appointment-history.md) |
-| `CreateAppointment` | `POST /api/appointments/instant` | [Create appointment](appointments/create-appointment.md) |
-| `UpdateAppointment` | `PUT /api/appointments/{id}` | [Update appointment](appointments/update-appointment.md) |
-| `CancelAppointment` | `POST /api/appointments/{id}/cancel` | [Cancel appointment](appointments/cancel-appointment.md) |
-| `CompleteAppointment` | `POST /api/appointments/{id}/complete` | [Complete appointment](appointments/complete-appointment.md) |
-| `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show` | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
+| `CreateAppointment` | fresh service quote + `POST /api/appointments/instant`; refresh on mismatch; UI reconciles selected services from cache | [Create appointment](appointments/create-appointment.md) |
+| `UpdateAppointment` | `PUT /api/appointments/{id}`; UI reloads after conflict or closed edit window | [Update appointment](appointments/update-appointment.md) |
+| `CancelAppointment` | `POST /api/appointments/{id}/cancel`; UI reloads after closed edit window | [Cancel appointment](appointments/cancel-appointment.md) |
+| `CompleteAppointment` | `POST /api/appointments/{id}/complete`; UI reloads after closed edit window | [Complete appointment](appointments/complete-appointment.md) |
+| `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show`; UI reloads after closed edit window | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
 | `GetOwnAppointmentRequests` | `GET /api/appointments/request/{businessId}/mine` | [Get own appointment requests](appointments/get-own-appointment-requests.md) |
 | `CreateAppointmentRequest` | `POST /api/appointments/request` | [Create appointment request](appointments/create-appointment-request.md) |
 | `ApproveAppointmentRequest` | `POST /api/appointments` | [Approve appointment request](appointments/approve-appointment-request.md) |
@@ -139,15 +151,21 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 
 | Use case | Network | Diagram |
 |---|---|---|
+| `DownloadPersonalDataExport` | `GET /api/user/export/download`; shared `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
+| `GetPersonalDataExport` | `GET /api/user/export` | [Get personal data export](settings/get-personal-data-export.md) |
+| `StartPersonalDataExport` | `POST /api/user/export` | [Start personal data export](settings/start-personal-data-export.md) |
+| `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings | [Accept legal documents](settings/accept-legal-documents.md) |
+| `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Settings review and post-acceptance refresh | [Get legal document statuses](settings/get-legal-document-statuses.md) |
+| `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |
 | `GetSettings` | local-first | [Get settings](settings/get-settings.md) |
-| `EditProfile` | `PATCH /api/user/me` | [Edit profile](settings/edit-profile.md) |
+| `EditProfile` | `PATCH /api/user/me`; contact-conflict error | [Edit profile](settings/edit-profile.md) |
 | `GetColorScheme`, `UpdateColorScheme` | local only | [Get / update color scheme](settings/get-color-scheme.md) |
 | `GetNotificationSettings` | `GET /api/notifications/settings` | [Get notification settings](settings/get-notification-settings.md) |
 | `UpdateNotificationSettings` | `PUT /api/notifications/settings` | [Update notification settings](settings/update-notification-settings.md) |
 | `UpdateNotificationToken` | `PUT /api/notifications/{deviceUuid}/token` | [Update notification token](settings/update-notification-token.md) |
 | `GetAvailablePasskeys`, `DeletePasskey` | `GET /api/auth/passkey`, `DELETE /api/auth/passkey/{id}` | [Delete passkey / Get available passkeys](settings/delete-passkey.md) |
-| `CreateNewPasskey` | `GET /api/auth/passkey/add/challenge`, `POST /api/auth/passkey/add/finish` | [Create new passkey](settings/create-new-passkey.md) |
-| `DeleteAccount` | `DELETE /api/auth/account` | [Delete account](settings/delete-account.md) |
+| `CreateNewPasskey` | `GET /api/auth/passkey/add/challenge`, `POST /api/auth/passkey/add/finish`; typed backend errors | [Create new passkey](settings/create-new-passkey.md) |
+| `DeleteAccount` | Action confirmation + `DELETE /api/auth/account`; typed backend errors | [Delete account](settings/delete-account.md) |
 | `SendContactForm` | `POST /api/user/contactus` | [Send contact form](settings/send-contact-form.md) |
 
 ## Use cases composed of other use cases
@@ -155,8 +173,9 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | Use case | Calls |
 |---|---|
 | [Create account](authorization/create-account.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
+| [Get signup legal documents](authorization/get-sign-up-legal-documents.md) | `refresh`: `GetLegalDocumentVersions` (cross-feature wrapper); `invoke`: local cache only |
 | [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |
-| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
+| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `timestampProtectedFetch`: `GetSignUpLegalDocuments.refresh` before authorization check; authorized path: `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
 | [Create business](business/create-business.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Join business](business/join-business.md) | `RedeemEmployeeInvitation` (cross-feature wrapper) |
@@ -168,14 +187,18 @@ terminal (return, emit or throw). "local only" means the use case never touches 
 | [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
-| [Create appointment](appointments/create-appointment.md) | `ObserveUserBusinessesChanges` (cross-feature, for the caller's employee id) |
+| [Create appointment](appointments/create-appointment.md) | `CreateQuote`, `GetServices.refresh` on mismatch, `ObserveUserBusinessesChanges` for the default employee |
 | [Can edit employees](employees/can-edit-employees.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
-| [Get clients permissions](clients/get-clients-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
+| [Get clients permissions](clients/get-clients-permissions.md) | `ObserveUserBusinessesChanges`, `UserProfileCRUD.observe` (cross-feature wrapper) |
 | [Get services permissions](services/get-services-permissions.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Update employee](employees/update-employee.md) | `IsBusinessOwner` |
-| [Create appointment](appointments/create-appointment.md), [Is business owner](employees/is-business-owner.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
+| [Is business owner](employees/is-business-owner.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
 | [Create new passkey](settings/create-new-passkey.md) | `GetAvailablePasskeys` |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
+| [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut` |
+| [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |
+| [Start personal data export](settings/start-personal-data-export.md) | `UserProfileCRUD`, `ConfirmSensitiveAction` |
+| [Start business data export](business/start-business-data-export.md) | `ConfirmSensitiveAction` |
 
 ## Known issues found while documenting
 
@@ -186,4 +209,4 @@ These are recorded here and in the linked diagrams and are currently accepted as
 | [Refresh business info](business/refresh-business-info.md) | Deleting a business the user has left does not remove its appointment rows, which reference the business only logically. The `notification_prefs` pending push token also survives logout. |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | A refresh or switch failure after a successful redeem surfaces as an error, even though the user has joined. |
 | [preferences](../database/preferences.md) | `last_synced_at_*` markers are written by every list refresh but never read. |
-| Unused use cases | `CreateQuote`, `EditService`, `IsUserLoggedIn()` (non-flow) and `CreateAppointmentRequest` have no production caller. |
+| Unused use cases | `EditService`, `IsUserLoggedIn()` (non-flow) and `CreateAppointmentRequest` have no production caller. |

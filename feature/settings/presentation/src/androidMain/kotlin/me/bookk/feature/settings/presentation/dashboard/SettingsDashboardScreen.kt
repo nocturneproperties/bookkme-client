@@ -18,6 +18,7 @@ import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.feature.settings.presentation.dashboard.section.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.section.AppearanceSection
+import me.bookk.feature.settings.presentation.dashboard.section.LegalDocumentsSection
 import me.bookk.feature.settings.presentation.dashboard.section.ProfileSection
 import me.bookk.feature.settings.presentation.dashboard.section.SupportSection
 
@@ -35,14 +36,15 @@ internal fun SettingsDashboardScreen(state: SettingsState) {
                     .padding(it)
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 ProfileSection(state.profile)
                 AppearanceSection(state.appearance)
                 AccountSection(state.account)
+                LegalDocumentsSection(state.legal)
                 SupportSection(state.support)
             }
-        }
+        },
     )
 }
 
@@ -51,7 +53,7 @@ internal fun SettingsDashboardScreen(state: SettingsState) {
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         SettingsDashboardScreen(
-            state = AndroidDashboardState(SettingsDashboardViewModel.createInitData())
+            state = AndroidDashboardState(SettingsDashboardViewModel.createInitData()),
         )
     }
 }
@@ -61,7 +63,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         SettingsDashboardScreen(
-            state = AndroidDashboardState(SettingsDashboardViewModel.createInitData())
+            state = AndroidDashboardState(SettingsDashboardViewModel.createInitData()),
         )
     }
 }

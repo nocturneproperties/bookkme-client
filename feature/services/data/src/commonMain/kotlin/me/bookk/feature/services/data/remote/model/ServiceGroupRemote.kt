@@ -11,14 +11,14 @@ internal class ServiceGroupRemote(
     @ProtoNumber(1) val id: Uuid,
     @ProtoNumber(2) val businessId: Uuid,
     @ProtoNumber(3) val name: String,
-    @ProtoNumber(4) val createdAt: Instant
+    @ProtoNumber(4) val createdAt: Instant,
 ) {
     fun toDomain(): ServiceGroup {
         return ServiceGroup(
             id = id,
             businessId = businessId,
             name = name,
-            createdAt = createdAt
+            createdAt = createdAt,
         )
     }
 
@@ -28,7 +28,7 @@ internal class ServiceGroupRemote(
                 id = group.id,
                 businessId = group.businessId,
                 name = group.name,
-                createdAt = group.createdAt
+                createdAt = group.createdAt,
             )
         }
     }

@@ -10,7 +10,7 @@ import me.bookk.core.presentation.error.PresentationNotification
 import kotlin.coroutines.CoroutineContext
 
 expect abstract class ViewModel(
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) {
     protected val viewModelScope: CoroutineScope
     protected val errorMapper: ErrorMapper
@@ -86,5 +86,5 @@ enum class LaunchBehaviour {
      * If job2 will be launched before job1 completes,
      * job1 will be canceled and job2 will be started instead.
      * */
-    DropOldest
+    DropOldest,
 }

@@ -7,5 +7,5 @@ import kotlin.uuid.Uuid
 @Serializable
 data class AppointmentCancellationRemote(
     @ProtoNumber(1) val id: Uuid,
-    @ProtoNumber(3) val reason: String
+    @ProtoNumber(3) val reason: String,
 )

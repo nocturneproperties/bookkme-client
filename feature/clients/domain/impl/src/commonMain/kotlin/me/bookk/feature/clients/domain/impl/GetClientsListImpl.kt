@@ -11,7 +11,7 @@ import kotlin.uuid.Uuid
 
 internal class GetClientsListImpl(
     private val clientsDataSource: ClientsDataSource,
-    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
 ) : GetClientsList {
 
     override fun flow(): Flow<List<Client>> {

@@ -52,7 +52,9 @@ class SetEmployeeSuspensionImplTest {
         given()
         val fixture = Fixture()
         val suspended = stubEmployee().copy(suspendedAt = Instant.fromEpochMilliseconds(1))
-        everySuspend { fixture.dataSource.setEmployeeSuspension(suspended.businessId, suspended.id, true) } returns suspended
+        everySuspend {
+            fixture.dataSource.setEmployeeSuspension(suspended.businessId, suspended.id, true)
+        } returns suspended
         everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
 
         whenn()
@@ -67,14 +69,18 @@ class SetEmployeeSuspensionImplTest {
         given()
         val fixture = Fixture()
         val reinstated = stubEmployee()
-        everySuspend { fixture.dataSource.setEmployeeSuspension(reinstated.businessId, reinstated.id, false) } returns reinstated
+        everySuspend {
+            fixture.dataSource.setEmployeeSuspension(reinstated.businessId, reinstated.id, false)
+        } returns reinstated
         everySuspend { fixture.dataSource.saveEmployeesInDb(any()) } returns Unit
 
         whenn()
         fixture.sut(reinstated.businessId, reinstated.id, false)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveEmployeesInDb(listOf(reinstated)) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveEmployeesInDb(listOf(reinstated))
+        }
     }
 
     @Test
@@ -83,7 +89,10 @@ class SetEmployeeSuspensionImplTest {
         val fixture = Fixture()
         val owner = stubEmployee()
         everySuspend { fixture.dataSource.setEmployeeSuspension(any(), any(), any()) } throws
-            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_OWNER_SUSPENSION_NOT_ALLOWED, "owner")
+            DomainError.BusinessError(
+                EmployeeErrorCodes.BUSINESS_OWNER_SUSPENSION_NOT_ALLOWED,
+                "owner",
+            )
 
         whenn()
         then()

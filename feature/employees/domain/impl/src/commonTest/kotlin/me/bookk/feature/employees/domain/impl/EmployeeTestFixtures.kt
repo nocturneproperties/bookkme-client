@@ -29,13 +29,13 @@ internal fun stubEmployee(businessId: Uuid = Uuid.random(), id: Uuid = Uuid.rand
     schedule = WorkingSchedule(),
     createdAt = Instant.fromEpochMilliseconds(0),
     permissions = stubBusinessPermissions(),
-    suspendedAt = null
+    suspendedAt = null,
 )
 
 internal fun stubBusiness(
     id: Uuid = Uuid.random(),
     ownerId: Uuid? = Uuid.random(),
-    permissions: BusinessPermissions = stubBusinessPermissions()
+    permissions: BusinessPermissions = stubBusinessPermissions(),
 ) = Business(
     id = id,
     name = "Test Business",
@@ -47,7 +47,7 @@ internal fun stubBusiness(
     socials = emptyMap(),
     schedule = WorkingSchedule(),
     permissions = permissions,
-    ownerId = ownerId
+    ownerId = ownerId,
 )
 
 internal fun stubEmployeeInvitation(businessId: Uuid = Uuid.random()) = EmployeeInvitation(
@@ -56,7 +56,7 @@ internal fun stubEmployeeInvitation(businessId: Uuid = Uuid.random()) = Employee
     invitedBy = Uuid.random(),
     code = "ABCD1234",
     status = EmployeeInvitationStatus.PENDING,
-    createdAt = LocalDateTime(2024, 1, 1, 0, 0)
+    createdAt = LocalDateTime(2024, 1, 1, 0, 0),
 )
 
 internal fun stubBusinessPermissions() = BusinessPermissions(
@@ -64,7 +64,7 @@ internal fun stubBusinessPermissions() = BusinessPermissions(
     employees = ResourcePermission(),
     clients = ResourcePermission(),
     services = ResourcePermission(),
-    appointments = ResourcePermission()
+    appointments = ResourcePermission(),
 )
 
 internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
@@ -74,11 +74,11 @@ internal fun stubService(businessId: Uuid = Uuid.random()) = Service(
         id = Uuid.random(),
         businessId = businessId,
         name = "Hair",
-        createdAt = Instant.fromEpochMilliseconds(0)
+        createdAt = Instant.fromEpochMilliseconds(0),
     ),
     name = "Haircut",
     duration = 30.minutes,
     price = Money(value = 2000, currencyType = Money.SupportedCurrency.EUR),
     isAvailable = true,
-    createdAt = Instant.fromEpochMilliseconds(0)
+    createdAt = Instant.fromEpochMilliseconds(0),
 )

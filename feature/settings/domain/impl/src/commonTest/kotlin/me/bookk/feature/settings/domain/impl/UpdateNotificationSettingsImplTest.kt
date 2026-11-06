@@ -68,6 +68,8 @@ class UpdateNotificationSettingsImplTest {
         fixture.sut(settings)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveNotificationSettingsInDB(updated) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveNotificationSettingsInDB(updated)
+        }
     }
 }

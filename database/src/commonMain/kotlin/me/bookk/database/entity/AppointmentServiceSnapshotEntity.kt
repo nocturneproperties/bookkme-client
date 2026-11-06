@@ -16,10 +16,10 @@ import kotlin.uuid.Uuid
             entity = AppointmentEntity::class,
             parentColumns = ["id"],
             childColumns = ["appointmentId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("appointmentId")]
+    indices = [Index("appointmentId")],
 )
 class AppointmentServiceSnapshotEntity(
     val appointmentId: Uuid,
@@ -29,5 +29,5 @@ class AppointmentServiceSnapshotEntity(
     val priceCurrency: String,
     val priceValue: Long,
     val duration: Duration,
-    @ColumnInfo(defaultValue = "1") val count: Int = 1
+    @ColumnInfo(defaultValue = "1") val count: Int = 1,
 )

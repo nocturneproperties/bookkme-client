@@ -7,7 +7,7 @@ import me.bookk.feature.services.domain.api.entity.ServicesPermissions
 import kotlin.uuid.Uuid
 
 internal class GetServicesPermissionsImpl(
-    private val observeUserBusinessesChanges: ObserveUserBusinessesChanges
+    private val observeUserBusinessesChanges: ObserveUserBusinessesChanges,
 ) : GetServicesPermissions {
     override suspend fun invoke(businessId: Uuid): ServicesPermissions {
         val services = observeUserBusinessesChanges().first()
@@ -16,7 +16,7 @@ internal class GetServicesPermissionsImpl(
             ?.services
         return ServicesPermissions(
             canEdit = services?.update == true,
-            canDelete = services?.delete == true
+            canDelete = services?.delete == true,
         )
     }
 }

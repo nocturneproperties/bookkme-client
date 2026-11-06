@@ -16,8 +16,17 @@ flowchart TD
     Net -- business error --> Code{errorCode}
     Code -- 300005 APPOINTMENT_ALREADY_CANCELED --> E1([throw Error.AppointmentAlreadyCancelled])
     Code -- 300018 APPOINTMENT_NOT_STARTED --> E2([throw Error.AppointmentNotStarted])
+    Code -- 300026 --> Added300026([throw Error.EditWindowClosed])
     Code -- other --> EX([rethrow])
 ```
 
-The details screen shows the button only when `Appointment.canBeMarkedNoShow()` is true (`SCHEDULED` or
-`COMPLETED`, and `date <= now`), which mirrors the backend's `requireNoShowMarkable` guard.
+The details screen shows the button only when `Appointment.canBeMarkedNoShow()` is true: `SCHEDULED`
+or `COMPLETED`, `date <= now`, and no more than seven days after the scheduled end. The scheduled end
+is the start plus all booked service durations; the exact edit-window cutoff is inclusive. The
+ViewModel uses its injected clock when rendering action visibility.
+
+`EditWindowClosed` means the appointment ended more than seven days ago.
+
+On this error, the details ViewModel shows a short error global message and calls
+`GetAppointment.refresh(id)` to update the cached appointment and action visibility. No-show marking
+is not retried, and refresh plays no success haptic.

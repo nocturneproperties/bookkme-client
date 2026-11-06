@@ -16,7 +16,8 @@ class AndroidButtonState(
     isVisible: Boolean = true,
     onClick: (() -> Unit)? = null,
     icon: ImageResource? = null,
-) : AndroidViewState(isVisible), ButtonState {
+) : AndroidViewState(isVisible),
+    ButtonState {
     override var icon: ImageResource? by mutableStateOf(icon)
     override var text: StringDesc by mutableStateOf(text)
     override var isLoading: Boolean by mutableStateOf(isLoading)

@@ -5,6 +5,10 @@ import kotlin.uuid.Uuid
 
 sealed class ClientsListDestination : NavigationDestination() {
     data object Back : ClientsListDestination()
-    data class AddClient(val businessId: Uuid) : ClientsListDestination()
-    data class ClientDetails(val clientId: Uuid) : ClientsListDestination()
+    data class AddClient(
+        val businessId: Uuid,
+    ) : ClientsListDestination()
+    data class ClientDetails(
+        val clientId: Uuid,
+    ) : ClientsListDestination()
 }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.core.presentation.error.PresentationNotification.InputMessage
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -38,6 +39,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
@@ -77,7 +79,7 @@ class BusinessDashboardViewModelTest {
             joinBusiness = joinBusiness,
             createBusiness = createBusiness,
             stateFactory = FakeBusinessStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -92,12 +94,12 @@ class BusinessDashboardViewModelTest {
         uiState.notifications.presentationNotification.removeFirstInput().onConfirm(name)
     }
 
-    private fun BusinessDashboardViewModel.inputDialogs(): List<PresentationNotification.InputMessage> {
-        return uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.InputMessage>()
+    private fun BusinessDashboardViewModel.inputDialogs(): List<InputMessage> {
+        return uiState.notifications.presentationNotification.filterIsInstance<InputMessage>()
     }
 
-    private fun List<PresentationNotification>.removeFirstInput(): PresentationNotification.InputMessage {
-        return filterIsInstance<PresentationNotification.InputMessage>().single()
+    private fun List<PresentationNotification>.removeFirstInput(): InputMessage {
+        return filterIsInstance<InputMessage>().single()
     }
 
     @Test
@@ -124,7 +126,11 @@ class BusinessDashboardViewModelTest {
         whenn()
         fixture.overview.value = DashboardOverview(
             business,
-            setOf(DashboardFeature.BUSINESS, DashboardFeature.CLIENTS, DashboardFeature.APPOINTMENTS)
+            setOf(
+                DashboardFeature.BUSINESS,
+                DashboardFeature.CLIENTS,
+                DashboardFeature.APPOINTMENTS,
+            ),
         )
 
         then()
@@ -174,7 +180,7 @@ class BusinessDashboardViewModelTest {
         then()
         assertEquals(
             listOf(BusinessMenuItem(first.id, "First"), BusinessMenuItem(second.id, "Second")),
-            sut.uiState.businessMenu.items
+            sut.uiState.businessMenu.items,
         )
     }
 
@@ -202,7 +208,10 @@ class BusinessDashboardViewModelTest {
         sut.uiState.businessMenu.onCreateClick?.invoke()
 
         then()
-        assertEquals(BusinessRes.strings.create_business_title.desc(), sut.inputDialogs().single().title)
+        assertEquals(
+            BusinessRes.strings.create_business_title.desc(),
+            sut.inputDialogs().single().title,
+        )
     }
 
     @Test
@@ -230,7 +239,12 @@ class BusinessDashboardViewModelTest {
         sut.submitBusinessName("Salon")
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -244,7 +258,11 @@ class BusinessDashboardViewModelTest {
         sut.submitBusinessName("Salon")
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -258,7 +276,12 @@ class BusinessDashboardViewModelTest {
         sut.submitBusinessName("")
 
         then()
-        assertEquals(listOf(BusinessRes.strings.create_business_error_empty_name.desc()), sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().map { it.message })
+        assertEquals(
+            listOf(BusinessRes.strings.create_business_error_empty_name.desc()),
+            sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>()
+                .map { it.message },
+        )
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
@@ -273,7 +296,12 @@ class BusinessDashboardViewModelTest {
         sut.submitJoinCode("")
 
         then()
-        assertEquals(listOf(BusinessRes.strings.business_dashboard_switch_join_error_empty_code.desc()), sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().map { it.message })
+        assertEquals(
+            listOf(BusinessRes.strings.business_dashboard_switch_join_error_empty_code.desc()),
+            sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>()
+                .map { it.message },
+        )
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
@@ -304,7 +332,8 @@ class BusinessDashboardViewModelTest {
         then()
         verifySuspend { fixture.joinBusiness("ABC123") }
         val message = sut.uiState.notifications.presentationNotification
-            .filterIsInstance<PresentationNotification.GlobalMessage>().single()
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertEquals(PresentationNotification.GlobalMessage.State.SUCCESS, message.state)
     }
 
@@ -319,7 +348,12 @@ class BusinessDashboardViewModelTest {
         sut.submitJoinCode("ABC123")
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -333,21 +367,31 @@ class BusinessDashboardViewModelTest {
         sut.submitJoinCode("ABC123")
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `shows already processed message when invitation was used`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.joinBusiness(any()) } throws JoinBusiness.Error.AlreadyProcessed(TestException())
+        everySuspend { fixture.joinBusiness(any()) } throws
+            JoinBusiness.Error.AlreadyProcessed(TestException())
         val sut = fixture.sut()
 
         whenn()
         sut.submitJoinCode("ABC123")
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().size)
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>()
+                .size,
+        )
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
@@ -355,14 +399,20 @@ class BusinessDashboardViewModelTest {
     fun `shows employee exists message when user already works there`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.joinBusiness(any()) } throws JoinBusiness.Error.EmployeeExists(TestException())
+        everySuspend { fixture.joinBusiness(any()) } throws
+            JoinBusiness.Error.EmployeeExists(TestException())
         val sut = fixture.sut()
 
         whenn()
         sut.submitJoinCode("ABC123")
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().size)
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>()
+                .size,
+        )
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
@@ -392,5 +442,55 @@ class BusinessDashboardViewModelTest {
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
         sut.uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+    }
+
+    @Test
+    fun `explains business creation failures`() = runUnitTest {
+        listOf(
+            CreateBusiness.Error.BusinessAlreadyExists() to
+                BusinessRes.strings.create_business_already_exists_error,
+            CreateBusiness.Error.InvalidName() to
+                BusinessRes.strings.create_business_invalid_name_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createBusiness(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.submitBusinessName("My business")
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps invalid business currency errors general`() = runUnitTest {
+        listOf(
+            CreateBusiness.Error.InvalidCurrency(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createBusiness(any()) } throws error
+            val sut = fixture.sut()
+
+            whenn()
+            sut.submitBusinessName("My business")
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
     }
 }

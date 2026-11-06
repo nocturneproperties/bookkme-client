@@ -13,13 +13,15 @@ import me.bookk.feature.services.domain.datasource.QuoteDataSource
 import kotlin.uuid.Uuid
 
 internal class QuoteDataSourceImpl(
-    private val httpClient: HttpClient
-) : DataSource(), QuoteDataSource {
-    override suspend fun createQuote(businessId: Uuid, serviceIds: List<Uuid>): Quote = mapExceptions {
-        httpClient.post(Api.Service.Quote(Api.Service(businessId = businessId))) {
-            setBody(QuoteRequestRemote(serviceIds = serviceIds))
+    private val httpClient: HttpClient,
+) : DataSource(),
+    QuoteDataSource {
+    override suspend fun createQuote(businessId: Uuid, serviceIds: List<Uuid>): Quote =
+        mapExceptions {
+            httpClient.post(Api.Service.Quote(Api.Service(businessId = businessId))) {
+                setBody(QuoteRequestRemote(serviceIds = serviceIds))
+            }
+                .body<QuoteRemote>()
+                .toDomain()
         }
-            .body<QuoteRemote>()
-            .toDomain()
-    }
 }

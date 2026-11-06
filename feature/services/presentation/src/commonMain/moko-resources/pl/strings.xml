@@ -28,4 +28,8 @@
     <string name="services_group_add_name_exists">Grupa o tej nazwie już istnieje</string>
     <string name="services_group_add_name_invalid">Nieprawidłowa nazwa</string>
 
+    <string name="services_name_exists_error">Usługa o tej nazwie już istnieje. Wybierz inną nazwę.</string>
+    <string name="services_invalid_name_error">Wpisz prawidłową nazwę usługi.</string>
+    <string name="services_group_not_found_error">Ta grupa usług nie jest już dostępna. Wybierz inną grupę.</string>
+    <string name="services_price_precision_error">Wpisz cenę z liczbą miejsc po przecinku dozwoloną dla tej waluty.</string>
 </resources>

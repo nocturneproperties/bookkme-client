@@ -14,10 +14,10 @@ import kotlin.uuid.Uuid
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
+            onDelete = CASCADE,
         ),
     ],
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class ClientEntity(
     @PrimaryKey
@@ -28,5 +28,5 @@ class ClientEntity(
     val email: String?,
     val businessId: Uuid,
     val userId: Uuid?,
-    val description: String? = null
+    val description: String? = null,
 )

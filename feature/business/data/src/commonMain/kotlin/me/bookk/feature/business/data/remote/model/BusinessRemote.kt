@@ -25,26 +25,29 @@ class BusinessRemote(
     @ProtoNumber(10) val permissions: BusinessPermissionsRemote,
     @ProtoNumber(11) val ownerId: Uuid,
     @ProtoNumber(12) val employeeId: Uuid?,
-    @ProtoNumber(13) val clientId: Uuid?
+    @ProtoNumber(13) val clientId: Uuid?,
+    @ProtoNumber(14) val clientDataRetentionMonths: Int = 36,
 ) {
     @Serializable
     class Location(
         @ProtoNumber(1) val lat: Double,
-        @ProtoNumber(2) val lng: Double
+        @ProtoNumber(2) val lng: Double,
     )
 
     @Serializable
     class Social(
         @ProtoNumber(1) val kind: SocialKind,
-        @ProtoNumber(2) val value: String?
+        @ProtoNumber(2) val value: String?,
     )
 
-    enum class SocialKind(val domainKind: Business.SocialKind) {
+    enum class SocialKind(
+        val domainKind: Business.SocialKind,
+    ) {
         PHONE(Business.SocialKind.PHONE),
         INSTAGRAM(Business.SocialKind.INSTAGRAM),
         TELEGRAM(Business.SocialKind.TELEGRAM),
         VIBER(Business.SocialKind.VIBER),
-        WHATSAPP(Business.SocialKind.WHATSAPP)
+        WHATSAPP(Business.SocialKind.WHATSAPP),
     }
 }
 
@@ -52,7 +55,7 @@ class BusinessRemote(
 class ResourcePermissionRemote(
     @ProtoNumber(1) val view: Boolean = false,
     @ProtoNumber(2) val update: Boolean = false,
-    @ProtoNumber(3) val delete: Boolean = false
+    @ProtoNumber(3) val delete: Boolean = false,
 ) {
     fun toDomain() = ResourcePermission(view = view, update = update, delete = delete)
 }
@@ -63,13 +66,13 @@ class BusinessPermissionsRemote(
     @ProtoNumber(2) val employees: ResourcePermissionRemote,
     @ProtoNumber(3) val clients: ResourcePermissionRemote,
     @ProtoNumber(4) val services: ResourcePermissionRemote,
-    @ProtoNumber(5) val appointments: ResourcePermissionRemote
+    @ProtoNumber(5) val appointments: ResourcePermissionRemote,
 ) {
     fun toDomain() = BusinessPermissions(
         business = business.toDomain(),
         employees = employees.toDomain(),
         clients = clients.toDomain(),
         services = services.toDomain(),
-        appointments = appointments.toDomain()
+        appointments = appointments.toDomain(),
     )
 }

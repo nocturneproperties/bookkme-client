@@ -21,15 +21,15 @@ fun Project.isIosBuild(): Boolean {
 
 fun Project.getCurrentVariant(): String {
     return run {
-            val tskReqStr = gradle.startParameter.taskNames.toString()
-            val patternStr = when {
-                tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"
-                tskReqStr.contains("bundle") -> "(?<=bundle)\\w*?(?=Aar)"
-                tskReqStr.contains("assemble") -> "(?<=assemble)\\w*"
-                else -> "(?<=check)\\w*?(?=Manifest)"
-            }
-            Regex(patternStr).find(tskReqStr)?.value.orEmpty()
+        val tskReqStr = gradle.startParameter.taskNames.toString()
+        val patternStr = when {
+            tskReqStr.contains("test") -> "(?<=test)\\w*?(?=UnitTest)"
+            tskReqStr.contains("bundle") -> "(?<=bundle)\\w*?(?=Aar)"
+            tskReqStr.contains("assemble") -> "(?<=assemble)\\w*"
+            else -> "(?<=check)\\w*?(?=Manifest)"
         }
+        Regex(patternStr).find(tskReqStr)?.value.orEmpty()
+    }
         .ifBlank { providers.gradleProperty("buildkonfig.flavor").orNull.orEmpty() }
         .replaceFirstChar { it.lowercase(Locale.getDefault()) }
 }

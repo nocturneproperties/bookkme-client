@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 
 fun NavGraphBuilder.pluginsScreen(navigation: BusinessNavigation) {
     composable<BusinessDestination.Plugins>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val entry = it.toRoute<BusinessDestination.Plugins>()
         val viewModel: BusinessPluginsViewModel = koinViewModel { parametersOf(entry.id) }
@@ -33,7 +33,9 @@ fun NavGraphBuilder.pluginsScreen(navigation: BusinessNavigation) {
         ObserveNavigation(viewModel.uiState.navigation) {
             when (it) {
                 BusinessPluginsDestinations.Back -> {
-                    LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher?.onBackPressed()
+                    LocalOnBackPressedDispatcherOwner.current
+                        ?.onBackPressedDispatcher
+                        ?.onBackPressed()
                 }
             }
         }

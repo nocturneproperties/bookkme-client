@@ -30,7 +30,7 @@ jobs:
           google-services: ${{ secrets.ANDROID_GOOGLE_SERVICES_FILE }}
 
       - name: Test & Build
-        run: ./gradlew testAndroidHostTest assembleDevDebug --continue
+        run: ./gradlew spotlessCheck testAndroidHostTest assembleDevDebug --continue
 
       - name: Upload test reports
         if: failure()

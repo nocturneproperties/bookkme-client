@@ -75,22 +75,24 @@ class MainActivity : ComponentActivity() {
             AppTheme(
                 themeMode = when (viewModel.state.colorScheme) {
                     BootstrapState.UIColorScheme.DARK -> ThemeMode.DARK
+
                     BootstrapState.UIColorScheme.LIGHT -> ThemeMode.LIGHT
+
                     BootstrapState.UIColorScheme.SYSTEM -> if (isSystemInDarkTheme()) {
                         ThemeMode.DARK
                     } else {
                         ThemeMode.LIGHT
                     }
-                }
+                },
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     NavigationRoot(
                         state = viewModel.state,
                         onUnauthorized = viewModel::logOut,
-                        onBusinessAccessSuspended = viewModel::onBusinessAccessSuspended
+                        onBusinessAccessSuspended = viewModel::onBusinessAccessSuspended,
                     )
                 }
             }
@@ -103,7 +105,7 @@ class MainActivity : ComponentActivity() {
 private fun NavigationRoot(
     state: BootstrapState,
     onUnauthorized: UnauthorizedHandler,
-    onBusinessAccessSuspended: BusinessAccessSuspendedHandler
+    onBusinessAccessSuspended: BusinessAccessSuspendedHandler,
 ) {
     val controller = rememberNavController()
     val authNavigation = rememberAuthNavigation(controller)
@@ -126,7 +128,7 @@ private fun NavigationRoot(
         CompositionLocalProvider(
             LocalUnauthorizedHandler provides onUnauthorized,
             LocalBusinessAccessSuspendedHandler provides onSuspended,
-            LocalSnackbarProvider provides snackbarProvider
+            LocalSnackbarProvider provides snackbarProvider,
         ) {
             NavHost(
                 modifier = Modifier.fillMaxSize(),
@@ -140,15 +142,17 @@ private fun NavigationRoot(
                     slideOutOfContainer(
                         SlideDirection.Start,
                         tween(400),
-                        targetOffset = { (it * 0.2).toInt() })
+                        targetOffset = { (it * 0.2).toInt() },
+                    )
                 },
                 popEnterTransition = {
                     slideIntoContainer(
                         SlideDirection.End,
                         tween(400),
-                        initialOffset = { (it * 0.2).toInt() })
+                        initialOffset = { (it * 0.2).toInt() },
+                    )
                 },
-                popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
+                popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) },
             ) {
                 authGraph(navigation = authNavigation)
                 clientsGraph(navigation = clientsNavigation)
@@ -173,14 +177,16 @@ private fun NavigationRoot(
                             },
                             showAppointmentHistory = {
                                 controller.navigate(AppointmentsDestination.History(it))
-                            }
+                            },
                         )
                     },
                     settingsTab = { SettingsTab() },
                     onEnablePlugins = { controller.navigate(BusinessDestination.Plugins(it)) },
-                    onAddServiceGroup = { controller.navigate(ServicesDestination.ServiceGroupList) },
+                    onAddServiceGroup = {
+                        controller.navigate(ServicesDestination.ServiceGroupList)
+                    },
                     onAddService = { controller.navigate(ServicesDestination.AddService(it)) },
-                    onAddClient = { controller.navigate(ClientsDestinations.CreateClient(it)) }
+                    onAddClient = { controller.navigate(ClientsDestinations.CreateClient(it)) },
                 )
                 pluginsScreen(navigation = BusinessNavigation())
             }

@@ -6,7 +6,7 @@ import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
 
 internal class ObserveUserBusinessesChangesImpl(
-    private val businessDataSource: BusinessDataSource
+    private val businessDataSource: BusinessDataSource,
 ) : ObserveUserBusinessesChanges {
     override fun invoke(): Flow<List<Business>> {
         return businessDataSource.observeAllBusinessesInDb()

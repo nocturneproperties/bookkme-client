@@ -6,5 +6,5 @@ import kotlin.uuid.Uuid
 data class Quote(
     val id: Uuid,
     val services: List<Service>,
-    val token: String
+    val token: String,
 )

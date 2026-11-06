@@ -39,15 +39,15 @@ data class ServicePickerPresentation(
     override val displayName: StringDesc,
     val duration: StringDesc,
     val price: String,
-    val item: ServiceSnapshot
+    val item: ServiceSnapshot,
 ) : PickerPresentation() {
 
-    constructor(service: ServiceSnapshot): this(
+    constructor(service: ServiceSnapshot) : this(
         pickerItemId = service.id.toString(),
         displayName = service.name.desc(),
         duration = service.duration.toString().desc(),
         price = service.price.toString(),
-        item = service
+        item = service,
     )
     companion object {
         fun stub() = ServicePickerPresentation(
@@ -55,7 +55,7 @@ data class ServicePickerPresentation(
             displayName = "Haircut".desc(),
             duration = "30 min".desc(),
             price = "$20",
-            item = ServiceSnapshot.stub()
+            item = ServiceSnapshot.stub(),
         )
     }
 }
@@ -63,5 +63,5 @@ data class ServicePickerPresentation(
 internal fun ClientSnapshot.pickerItem() = SimplePickerPresentation(
     pickerItemId = id.toString(),
     displayName = fullName.desc(),
-    domain = this
+    domain = this,
 )

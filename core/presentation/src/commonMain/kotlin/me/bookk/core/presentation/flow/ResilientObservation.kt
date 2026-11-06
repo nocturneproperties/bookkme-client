@@ -59,7 +59,7 @@ internal fun <T> Flow<T>.retryingWithBackoff(
                 if (consecutiveFailures == 1) onError(cause)
                 delay(retryPolicy.delayAfter(consecutiveFailures))
                 true
-            }
+            },
     )
 }
 

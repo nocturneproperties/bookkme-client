@@ -32,7 +32,9 @@ internal class FakeBusinessStateFactory : BusinessStateFactory {
         return FakeBusinessDashboardState()
     }
 
-    override fun createBusinessSettingsState(initData: BusinessSettingsState.InitData): BusinessSettingsState {
+    override fun createBusinessSettingsState(
+        initData: BusinessSettingsState.InitData,
+    ): BusinessSettingsState {
         businessSettingsInitData = initData
         return FakeBusinessSettingsState()
     }
@@ -98,6 +100,7 @@ internal class FakeBusinessSettingsState : BusinessSettingsState {
     override val location = FakeTextFieldState()
     override val address = FakeTextFieldState()
     override val currency = FakePickerFieldState<CurrencyUI>()
+    override val clientDataRetentionMonths = FakeTextFieldState()
     override val phone = FakeTextFieldState()
     override val instagram = FakeTextFieldState()
     override val telegram = FakeTextFieldState()

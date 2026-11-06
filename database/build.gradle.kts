@@ -12,6 +12,12 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
+        getByName("androidHostTest").dependencies {
+            runtimeOnly("androidx.sqlite:sqlite-bundled-jvm:${libs.versions.sqlite.get()}")
+        }
     }
 }
 

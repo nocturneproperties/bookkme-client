@@ -31,7 +31,7 @@ class IosLocalNotificationManager : LocalNotificationManager {
         val request = UNNotificationRequest.requestWithIdentifier(
             identifier = notification.id,
             content = content,
-            trigger = null
+            trigger = null,
         )
 
         notificationCenter.addNotificationRequest(request) { error ->

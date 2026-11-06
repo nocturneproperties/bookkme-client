@@ -10,7 +10,7 @@ import kotlin.uuid.Uuid
 
 internal class ApproveAppointmentRequestImpl(
     private val dataSource: AppointmentRequestDataSource,
-    private val appointmentDataSource: AppointmentDataSource
+    private val appointmentDataSource: AppointmentDataSource,
 ) : ApproveAppointmentRequest {
 
     override suspend fun invoke(requestId: Uuid): Appointment {
@@ -19,13 +19,26 @@ internal class ApproveAppointmentRequestImpl(
                 appointmentDataSource.saveAppointmentInDB(it)
                 dataSource.deleteAppointmentRequestsInDb(listOf(requestId))
             }
-        }.onBusinessError {
-            when (it.errorCode) {
-                AppointmentErrorCodes.APPOINTMENT_EXISTS -> throw ApproveAppointmentRequest.Error.AppointmentExists()
-                AppointmentErrorCodes.DATE_NOT_ALLOWED -> throw ApproveAppointmentRequest.Error.DateNotAllowed()
-                AppointmentErrorCodes.TIME_NOT_ALLOWED -> throw ApproveAppointmentRequest.Error.TimeNotAllowed()
-                AppointmentErrorCodes.DATE_IN_PAST -> throw ApproveAppointmentRequest.Error.DateInPast()
+        }
+            .onBusinessError {
+                when (it.errorCode) {
+                    AppointmentErrorCodes.APPOINTMENT_EXISTS -> {
+                        throw ApproveAppointmentRequest.Error.AppointmentExists()
+                    }
+
+                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
+                        throw ApproveAppointmentRequest.Error.DateNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
+                        throw ApproveAppointmentRequest.Error.TimeNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.DATE_IN_PAST -> {
+                        throw ApproveAppointmentRequest.Error.DateInPast()
+                    }
+                }
             }
-        }.getOrThrow()
+            .getOrThrow()
     }
 }

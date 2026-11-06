@@ -11,3 +11,20 @@ interface BooleanState : ViewState {
     var supportingTextRes: StringDesc?
     var onCheckedChange: ((Boolean) -> Unit)?
 }
+
+fun BooleanState.clearError() {
+    supportingTextRes = null
+    isValid = true
+    validationState = ValidationState.DEFAULT
+}
+
+fun BooleanState.showError(error: StringDesc) {
+    supportingTextRes = error
+    isValid = false
+    validationState = ValidationState.ERROR
+}
+
+fun BooleanState.validate(error: StringDesc?): Boolean {
+    if (error == null) clearError() else showError(error)
+    return error == null
+}

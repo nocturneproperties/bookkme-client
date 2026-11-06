@@ -33,8 +33,12 @@ fun <T : PickerPresentation> OptionsMultiPicker(
     state: OptionsMultiPickerState<T>,
     modifier: Modifier = Modifier,
     showDividers: Boolean = false,
-    screenPicker: @Composable (state: OptionsMultiPickerState<T>, onDismiss: () -> Unit, onItemsPicked: (List<T>) -> Unit) -> Unit = { _, _, _ -> },
-    itemContent: @Composable (T, () -> Unit) -> Unit
+    screenPicker: @Composable (
+        state: OptionsMultiPickerState<T>,
+        onDismiss: () -> Unit,
+        onItemsPicked: (List<T>) -> Unit,
+    ) -> Unit = { _, _, _ -> },
+    itemContent: @Composable (T, () -> Unit) -> Unit,
 ) {
     var isDialogVisible by remember { mutableStateOf(false) }
     Column(modifier) {
@@ -50,7 +54,7 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                             .padding(vertical = 16.dp)
                             .padding(top = 4.dp),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium.secondary()
+                        style = MaterialTheme.typography.bodyMedium.secondary(),
                     )
                 }
                 state.selectedItems.forEachIndexed { index, item ->
@@ -67,13 +71,13 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        onClick = { isDialogVisible = true }
+                        onClick = { isDialogVisible = true },
                     ) {
                         Text(
                             state.addItemText.localized(),
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.titleMedium.active()
+                            style = MaterialTheme.typography.titleMedium.active(),
                         )
                     }
                 }
@@ -87,7 +91,7 @@ fun <T : PickerPresentation> OptionsMultiPicker(
             {
                 state.onItemsPicked(it)
                 isDialogVisible = false
-            }
+            },
         )
     } else if (isDialogVisible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -114,7 +118,7 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                 item = item,
                 isSelected = isSelected,
                 stringify = { it.displayName.localized() },
-                onClick = { onClick(item) }
+                onClick = { onClick(item) },
             )
         }
     }

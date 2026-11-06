@@ -7,7 +7,7 @@ class AuthNavigation(
     val navigateToMainScreen: () -> Unit,
     val navigateToSignUp: () -> Unit,
     val navigateToContactSupport: () -> Unit,
-    val navigateToTroubleshoot: () -> Unit
+    val navigateToTroubleshoot: () -> Unit,
 )
 
 internal val LocalNavigation = compositionLocalOf {
@@ -16,6 +16,6 @@ internal val LocalNavigation = compositionLocalOf {
         navigateToMainScreen = {},
         navigateToSignUp = {},
         navigateToContactSupport = {},
-        navigateToTroubleshoot = {}
+        navigateToTroubleshoot = {},
     )
 }

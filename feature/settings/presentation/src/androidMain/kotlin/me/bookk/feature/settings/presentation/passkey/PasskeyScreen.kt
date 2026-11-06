@@ -48,9 +48,9 @@ internal fun PasskeyScreen(state: PasskeyState) {
                 actions = {
                     StateTextButton(
                         state = state.addPasskeyButton,
-                        onClick = LocalPasskeyEventListener.current.onAddPasskeyClick
+                        onClick = LocalPasskeyEventListener.current.onAddPasskeyClick,
                     )
-                }
+                },
             )
         },
         content = { paddings ->
@@ -58,12 +58,12 @@ internal fun PasskeyScreen(state: PasskeyState) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddings)
-                    .padding(16.dp)
+                    .padding(16.dp),
             ) {
                 PullToRefresh(
                     modifier = Modifier.fillMaxSize(),
                     state = state.refresh,
-                    onRefresh = LocalPasskeyEventListener.current.onRefresh
+                    onRefresh = LocalPasskeyEventListener.current.onRefresh,
                 ) {
                     LazyColumn(
                         modifier = Modifier
@@ -71,7 +71,7 @@ internal fun PasskeyScreen(state: PasskeyState) {
                             .padding(top = 8.dp)
                             .bottomShadow(64.dp, LocalColors.current.background),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(bottom = 64.dp)
+                        contentPadding = PaddingValues(bottom = 64.dp),
                     ) {
                         items(state.passkeys, key = { it.id }) {
                             PasskeyItem(modifier = Modifier.animateItem(), it)
@@ -79,7 +79,7 @@ internal fun PasskeyScreen(state: PasskeyState) {
                     }
                 }
             }
-        }
+        },
     )
 }
 
@@ -88,7 +88,7 @@ private fun PasskeyItem(modifier: Modifier, item: PasskeyState.PasskeyItem) {
     AppCard(
         modifier = modifier
             .fillMaxWidth()
-            .animateContentSize()
+            .animateContentSize(),
     ) {
         Row(
             modifier = Modifier
@@ -96,19 +96,19 @@ private fun PasskeyItem(modifier: Modifier, item: PasskeyState.PasskeyItem) {
                 .fillMaxWidth()
                 .animateContentSize(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(Icons.Filled.Key, contentDescription = null)
             Column(Modifier.weight(1f)) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = item.title,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
                     item.addedOn.localized(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = LocalColors.current.secondaryText
+                    color = LocalColors.current.secondaryText,
                 )
             }
             val listener = LocalPasskeyEventListener.current
@@ -117,7 +117,7 @@ private fun PasskeyItem(modifier: Modifier, item: PasskeyState.PasskeyItem) {
                     Icon(
                         Icons.Outlined.DeleteOutline,
                         contentDescription = null,
-                        tint = LocalColors.current.error
+                        tint = LocalColors.current.error,
                     )
                 }
             }
@@ -132,7 +132,7 @@ private fun PreviewDark() {
         PasskeyScreen(
             state = AndroidPasskeyState(PasskeyViewModel.createInitData()).apply {
                 replacePasskeyList(mockPasskeys())
-            }
+            },
         )
     }
 }
@@ -144,7 +144,7 @@ private fun PreviewLight() {
         PasskeyScreen(
             state = AndroidPasskeyState(PasskeyViewModel.createInitData()).apply {
                 replacePasskeyList(mockPasskeys())
-            }
+            },
         )
     }
 }
@@ -157,8 +157,8 @@ private fun mockPasskeys() = buildList {
                 title = "Passkey name",
                 isBackedUp = false,
                 isDeletable = true,
-                addedOn = "Added on Mar 24, 2025".desc()
-            )
+                addedOn = "Added on Mar 24, 2025".desc(),
+            ),
         )
     }
 }

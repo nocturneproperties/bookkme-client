@@ -10,4 +10,7 @@ interface BusinessMenuState {
     var onJoinClick: (() -> Unit)?
 }
 
-data class BusinessMenuItem(val id: Uuid, val name: String)
+data class BusinessMenuItem(
+    val id: Uuid,
+    val name: String,
+)

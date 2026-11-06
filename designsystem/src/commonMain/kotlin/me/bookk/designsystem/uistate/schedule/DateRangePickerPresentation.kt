@@ -9,7 +9,7 @@ import me.bookk.designsystem.uistate.PickerPresentation
 data class DateRangePickerPresentation(
     val dateFrom: LocalDate,
     val dateTo: LocalDate,
-    override val displayName: StringDesc
+    override val displayName: StringDesc,
 ) : PickerPresentation() {
     override val pickerItemId: String = dateFrom.toString() + dateTo.toString()
 
@@ -22,6 +22,6 @@ data class DateRangePickerPresentation(
                 append(" - ")
                 append(formatter.format(dateTo, relative = true))
             }
-        }.desc()
+        }.desc(),
     )
 }

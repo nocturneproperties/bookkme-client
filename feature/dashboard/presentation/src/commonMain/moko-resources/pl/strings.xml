@@ -41,4 +41,6 @@
     <string name="dashboard_join_error_empty_code">Wpisz kod zaproszenia</string>
     <string name="dashboard_join_error_already_processed">To zaproszenie zostało już użyte lub jest nieważne</string>
     <string name="dashboard_join_error_employee_exists">Jesteś już pracownikiem tej firmy</string>
+    <string name="create_business_already_exists_error">Ta firma już istnieje. Odśwież listę firm i spróbuj ponownie.</string>
+    <string name="create_business_invalid_name_error">Wpisz prawidłową nazwę firmy.</string>
 </resources>

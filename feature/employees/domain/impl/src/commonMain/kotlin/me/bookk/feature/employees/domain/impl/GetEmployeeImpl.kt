@@ -6,7 +6,7 @@ import me.bookk.feature.employees.domain.datasource.EmployeeDataSource
 import kotlin.uuid.Uuid
 
 internal class GetEmployeeImpl(
-    private val dataSource: EmployeeDataSource
+    private val dataSource: EmployeeDataSource,
 ) : GetEmployee {
     override suspend fun invoke(id: Uuid): Employee {
         return dataSource.getEmployeeFromDb(id) ?: throw GetEmployee.Error.NotFound()

@@ -83,4 +83,11 @@
     <string name="business_settings_invalid_day_off_range_error">Дата початку вихідних має бути раніше за дату завершення</string>
     <string name="business_analytics_coming_soon_title">Аналітика незабаром зʼявиться</string>
     <string name="business_analytics_coming_soon_message">Ми готуємо звіти щодо вашого доходу, записів і клієнтів. Вони зʼявляться тут в одному з наступних оновлень.</string>
+    <string name="create_business_already_exists_error">Цей бізнес уже існує. Оновіть список бізнесів і спробуйте ще раз.</string>
+    <string name="create_business_invalid_name_error">Введіть коректну назву бізнесу.</string>
+    <string name="business_settings_currency_locked_error">Валюту цього бізнесу більше не можна змінити.</string>
+    <string name="business_settings_retention_title">Строк зберігання даних клієнтів</string>
+    <string name="business_settings_retention_months">міс.</string>
+    <string name="business_settings_retention_explanation">Зберігайте дані клієнтів у завершених записах і заявках від 12 до 120 місяців. Після цього строку дані знеособлюються або видаляються.</string>
+    <string name="business_settings_retention_error">Введіть ціле число від 12 до 120 місяців.</string>
 </resources>

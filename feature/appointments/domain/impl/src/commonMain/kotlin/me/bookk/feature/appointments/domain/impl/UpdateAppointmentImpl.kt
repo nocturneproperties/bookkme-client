@@ -7,7 +7,7 @@ import me.bookk.feature.appointments.domain.api.entity.AppointmentErrorCodes
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 
 internal class UpdateAppointmentImpl(
-    private val appointmentDataSource: AppointmentDataSource
+    private val appointmentDataSource: AppointmentDataSource,
 ) : UpdateAppointment {
 
     override suspend fun invoke(appointment: Appointment): Appointment {
@@ -15,16 +15,57 @@ internal class UpdateAppointmentImpl(
             val result = appointmentDataSource.updateAppointment(appointment)
             appointmentDataSource.saveAppointmentInDB(result)
             result
-        }.onBusinessError {
-            when (it.errorCode) {
-                AppointmentErrorCodes.DATE_NOT_ALLOWED -> throw UpdateAppointment.Error.DateIsNotAllowed()
-                AppointmentErrorCodes.TIME_NOT_ALLOWED -> throw UpdateAppointment.Error.TimeIsNotAllowed()
-                AppointmentErrorCodes.APPOINTMENT_EXISTS -> throw UpdateAppointment.Error.AppointmentOverlap()
-                AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED,
-                AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED,
-                AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW -> throw UpdateAppointment.Error.AppointmentNotScheduled()
-                AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED -> throw UpdateAppointment.Error.EmployeeSuspended()
+        }
+            .onBusinessError {
+                when (it.errorCode) {
+                    AppointmentErrorCodes.DATE_IN_PAST -> {
+                        throw UpdateAppointment.Error.DateInPast()
+                    }
+
+                    AppointmentErrorCodes.SERVICE_SELECTION_INVALID -> {
+                        throw UpdateAppointment.Error.InvalidServiceSelection()
+                    }
+
+                    AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND -> {
+                        throw UpdateAppointment.Error.ServiceNotFound()
+                    }
+
+                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS -> {
+                        throw UpdateAppointment.Error.EmployeeNotFound()
+                    }
+
+                    AppointmentErrorCodes.TRANSACTION_CONFLICT -> {
+                        throw UpdateAppointment.Error.ConcurrentModification()
+                    }
+
+                    AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED -> {
+                        throw UpdateAppointment.Error.EditWindowClosed()
+                    }
+
+                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
+                        throw UpdateAppointment.Error.DateIsNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
+                        throw UpdateAppointment.Error.TimeIsNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.APPOINTMENT_EXISTS -> {
+                        throw UpdateAppointment.Error.AppointmentOverlap()
+                    }
+
+                    AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED,
+                    AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED,
+                    AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW,
+                    -> {
+                        throw UpdateAppointment.Error.AppointmentNotScheduled()
+                    }
+
+                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED -> {
+                        throw UpdateAppointment.Error.EmployeeSuspended()
+                    }
+                }
             }
-        }.getOrThrow()
+            .getOrThrow()
     }
 }

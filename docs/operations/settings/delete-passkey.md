@@ -5,10 +5,11 @@
 `DeletePasskey(id)` → `DELETE /api/auth/passkey/{id}` · `GetAvailablePasskeys()` → `GET /api/auth/passkey`
 · both called from `PasskeyViewModel`. `GetAvailablePasskeys` is also called by [Create new passkey](create-new-passkey.md).
 
-Network only, with no error mapping and no cache.
+Network only, with no cache. Error 9 maps to `LastPasskey`; other failures propagate.
 
 ```mermaid
 flowchart TD
     D([DeletePasskey id]) --> DN[PasskeySettingsDataSource.deletePasskey<br/>DELETE /api/auth/passkey/id] --> DR([Unit])
+    DN -- 9 LAST_PASSKEY --> Last([throw Error.LastPasskey])
     G([GetAvailablePasskeys]) --> GN[PasskeySettingsDataSource.getPasskeys<br/>GET /api/auth/passkey] --> GR([List Passkey])
 ```

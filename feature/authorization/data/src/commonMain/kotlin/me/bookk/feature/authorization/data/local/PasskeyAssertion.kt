@@ -8,14 +8,14 @@ import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVeri
 
 internal data class PasskeyAssertion(
     val credentialId: String,
-    val userHandle: String?
+    val userHandle: String?,
 ) {
     companion object {
         fun from(payload: PasskeyVerificationPayload): PasskeyAssertion {
             val json = Json.parseToJsonElement(payload.jsonPayload).jsonObject
             return PasskeyAssertion(
                 credentialId = json.getValue("id").jsonPrimitive.content,
-                userHandle = json.userHandle()
+                userHandle = json.userHandle(),
             )
         }
 

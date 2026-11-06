@@ -6,8 +6,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -15,7 +17,6 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
@@ -41,7 +42,7 @@ class AppointmentCreateViewModel(
     private val createAppointment: CreateAppointment,
     dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: AppointmentCreateState = stateFactory.createAppointmentCreateState().setup()
@@ -62,15 +63,25 @@ class AppointmentCreateViewModel(
 
     private fun refreshOptions() {
         launch(
+            key = OPTIONS_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             call = { getAppointmentOptions(businessId) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
     private fun renderOptions(options: AppointmentOptions) {
         uiState.clientPicker.replaceOptions(options.clients.map(ClientSnapshot::pickerItem))
-        uiState.servicePicker.replaceOptions(options.services.map(::ServicePickerPresentation))
+        val services = options.services.map(::ServicePickerPresentation)
+        val servicesById = services.associateBy { it.pickerItemId }
+        val selected = uiState.servicePicker.selectedItems.mapNotNull {
+            servicesById[it.pickerItemId]
+        }
+        uiState.servicePicker.replaceOptions(services)
+        uiState.servicePicker.replaceSelected(selected)
+        updateSubtotal()
+        invalidateButton()
     }
 
     private fun onClientSelected(client: SimplePickerPresentation<ClientSnapshot>?) {
@@ -123,12 +134,13 @@ class AppointmentCreateViewModel(
     }
 
     private fun invalidateButton() {
-        uiState.create.isEnabled = uiState.clientPicker.selectedItem != null &&
-                uiState.servicePicker.selectedItems.isNotEmpty() &&
-                uiState.datePicker.datePicker.pickedDate != null &&
-                uiState.timePicker.timePicker.pickedTime != null &&
-                uiState.datePicker.textField.isValid &&
-                uiState.timePicker.textField.isValid
+        uiState.create.isEnabled = !uiState.create.isLoading &&
+            uiState.clientPicker.selectedItem != null &&
+            uiState.servicePicker.selectedItems.isNotEmpty() &&
+            uiState.datePicker.datePicker.pickedDate != null &&
+            uiState.timePicker.timePicker.pickedTime != null &&
+            uiState.datePicker.textField.isValid &&
+            uiState.timePicker.textField.isValid
     }
 
     private fun onCreateClick() {
@@ -142,10 +154,12 @@ class AppointmentCreateViewModel(
             client = client,
             services = services.map { it.item },
             date = LocalDateTime(date, time),
-            note = uiState.note.text
+            note = uiState.note.text,
         )
 
         launch(
+            key = CREATE_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.create.startLoading() },
             call = { createAppointment(draft) },
@@ -158,32 +172,132 @@ class AppointmentCreateViewModel(
                     is CreateAppointment.Error.AppointmentOverlap -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                            AppointmentsRes.strings.appointments_create_overlap_error.desc()
-                            )
+                                AppointmentsRes.strings.appointments_create_overlap_error.desc(),
+                            ),
                         )
                     }
+
                     is CreateAppointment.Error.NotAnEmployee -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                AppointmentsRes.strings.appointments_create_not_employee_error.desc()
-                            )
+                                AppointmentsRes.strings.appointments_create_not_employee_error
+                                    .desc(),
+                            ),
                         )
                     }
+
                     is CreateAppointment.Error.DateIsNotAllowed -> {
-                        uiState.datePicker.textField.showError(AppointmentsRes.strings.appointments_create_date_error.desc())
+                        uiState.datePicker.textField.showError(
+                            AppointmentsRes.strings.appointments_create_date_error.desc(),
+                        )
                         uiState.create.isEnabled = false
                     }
+
+                    is CreateAppointment.Error.PriceChanged -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_create_price_changed_error
+                                    .desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.DurationChanged -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_create_duration_changed_error
+                                    .desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.ServicesChanged -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_create_services_changed_error
+                                    .desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.ServiceNotFound -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings
+                                    .appointments_complete_service_not_found_error
+                                    .desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.EmptyServices -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_create_empty_services_error
+                                    .desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.DateInPast -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_date_in_past_error.desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.OfferAlreadyUsed -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_create_offer_used_error.desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.EmployeeNotFound -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_employee_not_found_error
+                                    .desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.ClientNotFound -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings.appointments_client_not_found_error.desc(),
+                            ),
+                        )
+                    }
+
+                    is CreateAppointment.Error.EmployeeSuspended -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                AppointmentsRes.strings
+                                    .appointments_details_employee_suspended_error
+                                    .desc(),
+                            ),
+                        )
+                    }
+
                     is CreateAppointment.Error.TimeIsNotAllowed -> {
-                        uiState.timePicker.textField.showError(AppointmentsRes.strings.appointments_create_time_error.desc())
+                        uiState.timePicker.textField.showError(
+                            AppointmentsRes.strings.appointments_create_time_error.desc(),
+                        )
                         uiState.create.isEnabled = false
                     }
-                    else -> uiState.notifications.add(it.notification())
+
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
             onTerminate = {
                 uiState.create.stopLoading()
                 invalidateButton()
-            }
+            },
         )
     }
 
@@ -205,7 +319,8 @@ class AppointmentCreateViewModel(
         servicePicker.pickerTitle = AppointmentsRes.strings.appointments_create_services.desc()
         servicePicker.pickerType = PickerFieldState.PickerType.SCREEN
         servicePicker.addItemText = AppointmentsRes.strings.appointments_create_services_add.desc()
-        servicePicker.placeholder = AppointmentsRes.strings.appointments_create_services_empty.desc()
+        servicePicker.placeholder =
+            AppointmentsRes.strings.appointments_create_services_empty.desc()
         servicePicker.onItemsPicked = weakVMClosure { vm, items ->
             vm.onServicesPicked(items)
         }
@@ -220,7 +335,8 @@ class AppointmentCreateViewModel(
         datePicker.datePicker.onDatePicked = weakVMClosure { vm, date -> vm.onDatePicked(date) }
 
         timePicker.textField.label = AppointmentsRes.strings.appointments_create_time.desc()
-        timePicker.textField.placeholder = AppointmentsRes.strings.appointments_create_time_placeholder.desc()
+        timePicker.textField.placeholder =
+            AppointmentsRes.strings.appointments_create_time_placeholder.desc()
         timePicker.timePicker.onTimePicked = weakVMClosure { vm, time -> vm.onTimePicked(time) }
 
         note.placeholder = AppointmentsRes.strings.appointments_create_note.desc()
@@ -228,5 +344,10 @@ class AppointmentCreateViewModel(
         create.text = DesignSystem.strings.action_create.desc()
         create.isEnabled = false
         create.onClick = weakVMClosure { it.onCreateClick() }
+    }
+
+    private companion object {
+        const val OPTIONS_KEY = "appointment-create-options"
+        const val CREATE_KEY = "appointment-create"
     }
 }

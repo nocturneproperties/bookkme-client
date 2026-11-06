@@ -26,7 +26,6 @@ fun initDI(creator: StateFactoryCreator, setup: KoinApplication.() -> Unit) {
     }
 }
 
-
 @Suppress("unused")
 fun initDI(creator: StateFactoryCreator) {
     initDI(creator) { }
@@ -42,5 +41,5 @@ private fun KoinApplication.installModules(creator: StateFactoryCreator) = modul
     dashboardDiModule(),
     employeesDiModule(),
     servicesDiModule(),
-    settingsDiModule()
+    settingsDiModule(),
 )

@@ -58,4 +58,17 @@
     <string name="settings_notifications_email_label">Эл. почта</string>
     <string name="settings_notifications_push_label">Push-уведомления</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
+    <string name="settings_edit_profile_email_taken_error">Этот адрес электронной почты уже используется.</string>
+    <string name="settings_passkey_last_error">Нельзя удалить последний ключ доступа. Сначала добавьте другой ключ, чтобы сохранить доступ к аккаунту.</string>
+
+    <string name="settings_legal_title">Правовая информация</string>
+    <string name="settings_legal_accepted">Принято</string>
+    <string name="settings_legal_pending">Требуется ознакомление</string>
+    <string name="settings_legal_unknown">Статус принятия неизвестен</string>
+    <string name="settings_legal_accept">Принять документы</string>
+    <string name="settings_legal_retry">Повторить</string>
+    <string name="settings_legal_load_error">Не удалось загрузить правовые документы. Повторите попытку.</string>
+    <string name="settings_legal_changed">Правовые документы изменились. Ознакомьтесь с текущими версиями и примите их снова.</string>
+    <string name="settings_legal_consent">Нажимая «Принять документы», вы соглашаетесь с документами, требующими ознакомления.</string>
+    <string name="settings_legal_loading">Проверяем документы…</string>
 </resources>

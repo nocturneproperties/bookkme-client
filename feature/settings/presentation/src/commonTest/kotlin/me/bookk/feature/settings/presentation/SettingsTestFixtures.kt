@@ -8,7 +8,13 @@ import library.validation.api.ValidateName
 
 internal class FakeValidateName : ValidateName {
     override fun invoke(name: String): ValidateName.Result {
-        return if (name.length >= 2) ValidateName.Result.Valid else ValidateName.Result.Invalid.Length
+        return if (name.length >=
+            2
+        ) {
+            ValidateName.Result.Valid
+        } else {
+            ValidateName.Result.Invalid.Length
+        }
     }
 }
 
@@ -20,7 +26,7 @@ internal class FakeValidateEmail : ValidateEmail {
 
 internal class FakePermissionChecker(
     override val type: PermissionType = PermissionType.NOTIFICATIONS,
-    var granted: Boolean = true
+    var granted: Boolean = true,
 ) : PermissionChecker {
     var requestCount = 0
 

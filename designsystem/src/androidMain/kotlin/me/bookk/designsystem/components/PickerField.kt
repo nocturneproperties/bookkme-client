@@ -33,8 +33,12 @@ import me.bookk.designsystem.uistate.PickerPresentation
 fun <T : PickerPresentation> PickerField(
     state: PickerFieldState<T>,
     modifier: Modifier = Modifier,
-    screenPicker: @Composable (state: PickerFieldState<T>, onDismiss: () -> Unit, onItemPicked: (T) -> Unit) -> Unit = { _, _, _ -> },
-    onItemPicked: (T) -> Unit = { state.onItemPicked(it) }
+    screenPicker: @Composable (
+        state: PickerFieldState<T>,
+        onDismiss: () -> Unit,
+        onItemPicked: (T) -> Unit,
+    ) -> Unit = { _, _, _ -> },
+    onItemPicked: (T) -> Unit = { state.onItemPicked(it) },
 ) {
     var isSheetVisible by remember { mutableStateOf(false) }
     when (state.pickerType) {
@@ -50,10 +54,10 @@ fun <T : PickerPresentation> PickerField(
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowDown,
                         tint = LocalColors.current.secondaryText,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 },
-                state = state.textField
+                state = state.textField,
             )
             if (isSheetVisible) {
                 PickerBottomSheet(state, onItemPicked) {
@@ -74,10 +78,10 @@ fun <T : PickerPresentation> PickerField(
                     Icon(
                         imageVector = Icons.Filled.ChevronRight,
                         tint = LocalColors.current.secondaryText,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 },
-                state = state.textField
+                state = state.textField,
             )
             if (isSheetVisible) {
                 screenPicker(
@@ -88,7 +92,7 @@ fun <T : PickerPresentation> PickerField(
                     {
                         state.onItemPicked(it)
                         isSheetVisible = false
-                    }
+                    },
                 )
             }
         }
@@ -100,7 +104,7 @@ fun <T : PickerPresentation> PickerField(
 private fun <T : PickerPresentation> PickerBottomSheet(
     state: PickerFieldState<T>,
     onItemPicked: (T) -> Unit,
-    dismissAction: () -> Unit
+    dismissAction: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -122,13 +126,13 @@ private fun <T : PickerPresentation> PickerBottomSheet(
                 dismissAction()
             }
         },
-        requireConfirmation = false
+        requireConfirmation = false,
     ) { _, item, isSelected, onClick ->
         StandardSelectorItem(
             item = item,
             isSelected = isSelected,
             stringify = { it.displayName.localized() },
-            onClick = { onClick(item) }
+            onClick = { onClick(item) },
         )
     }
 }
@@ -142,17 +146,17 @@ private fun PreviewDark() {
                 items = listOf(
                     MinimalPickerPresentation(
                         "1",
-                        "Test1".desc()
+                        "Test1".desc(),
                     ),
                     MinimalPickerPresentation(
                         "2",
-                        "Test2".desc()
-                    )
+                        "Test2".desc(),
+                    ),
                 ),
-                selectedItem = null
+                selectedItem = null,
             ).apply {
                 textField.placeholder = "Example hint".desc()
-            }
+            },
         )
     }
 }
@@ -167,21 +171,21 @@ private fun PreviewLight() {
                     items = listOf(
                         MinimalPickerPresentation(
                             "1",
-                            "Test1".desc()
+                            "Test1".desc(),
                         ),
                         MinimalPickerPresentation(
                             "2",
-                            "Test2".desc()
-                        )
+                            "Test2".desc(),
+                        ),
                     ),
                     selectedItem = MinimalPickerPresentation(
                         "1",
-                        "Test1".desc()
-                    )
+                        "Test1".desc(),
+                    ),
                 ).apply {
                     textField.placeholder = "Example hint".desc()
                     textField.text = "Test1"
-                }
+                },
             )
         }
     }

@@ -14,15 +14,15 @@ import kotlin.uuid.Uuid
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class BusinessDayScheduleEntity(
     val businessId: Uuid,
     val dayOfWeek: String,
-    val isActive: Boolean
+    val isActive: Boolean,
 )
 
 @Entity(
@@ -33,16 +33,16 @@ class BusinessDayScheduleEntity(
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class BusinessWorkHourEntity(
     val businessId: Uuid,
     val dayOfWeek: String,
     val from: String,
-    val to: String
+    val to: String,
 )
 
 @Entity(
@@ -53,13 +53,13 @@ class BusinessWorkHourEntity(
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class BusinessDayOffEntity(
     val businessId: Uuid,
     val start: String,
-    val end: String
+    val end: String,
 )

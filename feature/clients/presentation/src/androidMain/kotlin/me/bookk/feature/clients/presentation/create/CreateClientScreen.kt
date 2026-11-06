@@ -35,20 +35,20 @@ fun CreateClientScreen(state: CreateClientState) {
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 TextField(state.name, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next))
                 TextField(
                     state.lastName,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 )
                 TextField(
                     state.phone,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 )
                 TextField(
                     state.email,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 )
             }
         },
@@ -57,8 +57,8 @@ fun CreateClientScreen(state: CreateClientState) {
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
-                state = state.submit
+                state = state.submit,
             )
-        }
+        },
     )
 }

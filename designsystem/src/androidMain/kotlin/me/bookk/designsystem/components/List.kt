@@ -45,7 +45,7 @@ fun <T> List(
     overscrollEffect: OverscrollEffect? = rememberOverscrollEffect(),
     header: (@Composable LazyItemScope.() -> Unit)? = null,
     footer: (@Composable LazyItemScope.() -> Unit)? = null,
-    itemContent: @Composable LazyItemScope.(T) -> Unit
+    itemContent: @Composable LazyItemScope.(T) -> Unit,
 ) {
     LazyColumn(
         modifier,
@@ -55,7 +55,7 @@ fun <T> List(
         horizontalAlignment = horizontalAlignment,
         flingBehavior = flingBehavior,
         userScrollEnabled = userScrollEnabled,
-        overscrollEffect = overscrollEffect
+        overscrollEffect = overscrollEffect,
     ) {
         item {
             var lastBannerError by remember { mutableStateOf(state.bannerError) }
@@ -63,7 +63,7 @@ fun <T> List(
             AnimatedVisibility(
                 visible = state.bannerError != null,
                 enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
+                exit = fadeOut() + shrinkVertically(),
             ) {
                 lastBannerError?.let { BannerErrorView(it) }
             }
@@ -77,7 +77,12 @@ fun <T> List(
             }
 
             state.items.isNotEmpty() -> {
-                items(state.items, key = idProvider, itemContent = itemContent, contentType = contentType)
+                items(
+                    state.items,
+                    key = idProvider,
+                    itemContent = itemContent,
+                    contentType = contentType,
+                )
                 state.loadMore?.let { loadMore ->
                     item { loadMore() }
                 }

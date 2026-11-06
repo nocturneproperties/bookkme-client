@@ -48,7 +48,7 @@ class IsBusinessOwnerImplTest {
                 id = currentUserId,
                 firstName = "Jane",
                 lastName = "Doe",
-                email = "jane@bookk.me"
+                email = "jane@bookk.me",
             )
         }
         val sut = IsBusinessOwnerImpl(observeUserBusinessesChanges, userProfileCRUD)
@@ -95,7 +95,7 @@ class IsBusinessOwnerImplTest {
         val businessId = Uuid.random()
         fixture.stubBusinesses(
             stubBusiness(id = Uuid.random(), ownerId = userId),
-            stubBusiness(id = businessId, ownerId = Uuid.random())
+            stubBusiness(id = businessId, ownerId = Uuid.random()),
         )
 
         whenn()

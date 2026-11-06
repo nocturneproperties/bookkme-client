@@ -4,5 +4,5 @@ import kotlin.uuid.Uuid
 
 class UserBusinessInfo(
     val dashboardId: Uuid?,
-    val businesses: List<Business>
+    val businesses: List<Business>,
 )

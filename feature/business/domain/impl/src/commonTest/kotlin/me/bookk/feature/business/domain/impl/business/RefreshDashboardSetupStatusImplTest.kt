@@ -55,7 +55,13 @@ class RefreshDashboardSetupStatusImplTest {
         val getClientsList = mock<GetClientsList> {
             everySuspend { refresh(any()) } returns emptyList()
         }
-        val sut = RefreshDashboardSetupStatusImpl(isAppointmentsPluginEnabled, getServiceGroups, getServices, getClientsList)
+        val sut =
+            RefreshDashboardSetupStatusImpl(
+                isAppointmentsPluginEnabled,
+                getServiceGroups,
+                getServices,
+                getClientsList,
+            )
     }
 
     @Test

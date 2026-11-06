@@ -26,16 +26,16 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertEmpty
 import me.bookk.designsystem.test.assertMappedSingle
-import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.test.failOnceThenSuspend
-import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
+import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
@@ -70,7 +70,13 @@ class AppointmentListViewModelTest {
     private class Fixture {
         val businessId = Uuid.random()
         val employeeId = Uuid.random()
-        val currentBusiness = MutableStateFlow<CurrentBusiness?>(CurrentBusiness(id = businessId, employeeId = employeeId, canViewAppointments = true))
+        val currentBusiness = MutableStateFlow<CurrentBusiness?>(
+            CurrentBusiness(
+                id = businessId,
+                employeeId = employeeId,
+                canViewAppointments = true,
+            ),
+        )
         val appointments = MutableStateFlow<List<Appointment>>(emptyList())
         val requests = MutableStateFlow<List<AppointmentRequest>>(emptyList())
         val observeCurrentBusiness = mock<ObserveCurrentBusiness> {
@@ -92,7 +98,7 @@ class AppointmentListViewModelTest {
             getOwnAppointmentRequests = getOwnAppointmentRequests,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeAppointmentsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -105,7 +111,13 @@ class AppointmentListViewModelTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getAppointmentsForBusiness.refresh(fixture.businessId, LocalDate.today(), fixture.employeeId) }
+        verifySuspend {
+            fixture.getAppointmentsForBusiness.refresh(
+                fixture.businessId,
+                LocalDate.today(),
+                fixture.employeeId,
+            )
+        }
     }
 
     @Test
@@ -121,33 +133,45 @@ class AppointmentListViewModelTest {
     }
 
     @Test
-    fun `does not load appointments when the caller is not an employee of the current business`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = null, canViewAppointments = true)
+    fun `does not load appointments when the caller is not an employee of the current business`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.currentBusiness.value = CurrentBusiness(
+                id = fixture.businessId,
+                employeeId = null,
+                canViewAppointments = true,
+            )
 
-        whenn()
-        fixture.sut()
+            whenn()
+            fixture.sut()
 
-        then()
-        verify(VerifyMode.not) { fixture.getAppointmentsForBusiness.flow(any(), any()) }
-        verifySuspend(VerifyMode.not) { fixture.getAppointmentsForBusiness.refresh(any(), any(), any()) }
-    }
+            then()
+            verify(VerifyMode.not) { fixture.getAppointmentsForBusiness.flow(any(), any()) }
+            verifySuspend(VerifyMode.not) {
+                fixture.getAppointmentsForBusiness.refresh(any(), any(), any())
+            }
+        }
 
     @Test
-    fun `shows an empty list when the caller is not an employee of the current business`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = null, canViewAppointments = true)
+    fun `shows an empty list when the caller is not an employee of the current business`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.currentBusiness.value = CurrentBusiness(
+                id = fixture.businessId,
+                employeeId = null,
+                canViewAppointments = true,
+            )
 
-        whenn()
-        val sut = fixture.sut()
-        advanceUntilIdle()
+            whenn()
+            val sut = fixture.sut()
+            advanceUntilIdle()
 
-        then()
-        assertTrue(sut.uiState.appointments.items.isEmpty())
-        assertFalse(sut.uiState.appointments.isInitialLoading)
-    }
+            then()
+            assertTrue(sut.uiState.appointments.items.isEmpty())
+            assertFalse(sut.uiState.appointments.isInitialLoading)
+        }
 
     @Test
     fun `shows the regular empty state when the caller can view appointments`() = runUnitTest {
@@ -159,7 +183,10 @@ class AppointmentListViewModelTest {
         advanceUntilIdle()
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_list_empty.desc(), sut.uiState.appointments.emptyState?.label)
+        assertEquals(
+            AppointmentsRes.strings.appointments_list_empty.desc(),
+            sut.uiState.appointments.emptyState?.label,
+        )
     }
 
     @Test
@@ -172,7 +199,10 @@ class AppointmentListViewModelTest {
         val sut = fixture.sut()
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_list_empty.desc(), sut.uiState.appointments.emptyState?.label)
+        assertEquals(
+            AppointmentsRes.strings.appointments_list_empty.desc(),
+            sut.uiState.appointments.emptyState?.label,
+        )
     }
 
     private fun AppointmentListViewModel.actionDescriptions(): List<Any> {
@@ -190,8 +220,11 @@ class AppointmentListViewModelTest {
 
         then()
         assertEquals(
-            listOf<Any>(AppointmentsRes.strings.appointments_pick_date.desc(), DesignSystem.strings.action_new.desc()),
-            sut.actionDescriptions()
+            listOf<Any>(
+                AppointmentsRes.strings.appointments_pick_date.desc(),
+                DesignSystem.strings.action_new.desc(),
+            ),
+            sut.actionDescriptions(),
         )
     }
 
@@ -199,47 +232,73 @@ class AppointmentListViewModelTest {
     fun `hides new appointment action without permission to view appointments`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
+        fixture.currentBusiness.value = CurrentBusiness(
+            id = fixture.businessId,
+            employeeId = fixture.employeeId,
+            canViewAppointments = false,
+        )
 
         whenn()
         val sut = fixture.sut()
-        advanceUntilIdle()
-
-        then()
-        assertEquals(listOf<Any>(AppointmentsRes.strings.appointments_pick_date.desc()), sut.actionDescriptions())
-    }
-
-    @Test
-    fun `offers new appointment action again after switching to a business where appointments are visible`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
-        val sut = fixture.sut()
-        advanceUntilIdle()
-
-        whenn()
-        fixture.currentBusiness.value = CurrentBusiness(id = Uuid.random(), employeeId = fixture.employeeId, canViewAppointments = true)
         advanceUntilIdle()
 
         then()
         assertEquals(
-            listOf<Any>(AppointmentsRes.strings.appointments_pick_date.desc(), DesignSystem.strings.action_new.desc()),
-            sut.actionDescriptions()
+            listOf<Any>(AppointmentsRes.strings.appointments_pick_date.desc()),
+            sut.actionDescriptions(),
         )
     }
+
+    @Test
+    fun `restores create action after switching to a business with appointment access`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.currentBusiness.value = CurrentBusiness(
+                id = fixture.businessId,
+                employeeId = fixture.employeeId,
+                canViewAppointments = false,
+            )
+            val sut = fixture.sut()
+            advanceUntilIdle()
+
+            whenn()
+            fixture.currentBusiness.value = CurrentBusiness(
+                id = Uuid.random(),
+                employeeId = fixture.employeeId,
+                canViewAppointments = true,
+            )
+            advanceUntilIdle()
+
+            then()
+            assertEquals(
+                listOf<Any>(
+                    AppointmentsRes.strings.appointments_pick_date.desc(),
+                    DesignSystem.strings.action_new.desc(),
+                ),
+                sut.actionDescriptions(),
+            )
+        }
 
     @Test
     fun `shows no permission message when the caller cannot view appointments`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
+        fixture.currentBusiness.value = CurrentBusiness(
+            id = fixture.businessId,
+            employeeId = fixture.employeeId,
+            canViewAppointments = false,
+        )
 
         whenn()
         val sut = fixture.sut()
         advanceUntilIdle()
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_no_permission.desc(), sut.uiState.appointments.emptyState?.label)
+        assertEquals(
+            AppointmentsRes.strings.appointments_no_permission.desc(),
+            sut.uiState.appointments.emptyState?.label,
+        )
         assertTrue(sut.uiState.appointments.items.isEmpty())
         assertFalse(sut.uiState.appointments.isInitialLoading)
     }
@@ -248,7 +307,11 @@ class AppointmentListViewModelTest {
     fun `does not load appointments without permission to view them`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
+        fixture.currentBusiness.value = CurrentBusiness(
+            id = fixture.businessId,
+            employeeId = fixture.employeeId,
+            canViewAppointments = false,
+        )
 
         whenn()
         fixture.sut()
@@ -256,24 +319,38 @@ class AppointmentListViewModelTest {
 
         then()
         verify(VerifyMode.not) { fixture.getAppointmentsForBusiness.flow(any(), any()) }
-        verifySuspend(VerifyMode.not) { fixture.getAppointmentsForBusiness.refresh(any(), any(), any()) }
+        verifySuspend(VerifyMode.not) {
+            fixture.getAppointmentsForBusiness.refresh(any(), any(), any())
+        }
     }
 
     @Test
-    fun `restores the regular empty state after switching to a business where appointments are visible`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.currentBusiness.value = CurrentBusiness(id = fixture.businessId, employeeId = fixture.employeeId, canViewAppointments = false)
-        val sut = fixture.sut()
-        advanceUntilIdle()
+    fun `restores empty state after switching to a business with appointment access`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.currentBusiness.value = CurrentBusiness(
+                id = fixture.businessId,
+                employeeId = fixture.employeeId,
+                canViewAppointments = false,
+            )
+            val sut = fixture.sut()
+            advanceUntilIdle()
 
-        whenn()
-        fixture.currentBusiness.value = CurrentBusiness(id = Uuid.random(), employeeId = fixture.employeeId, canViewAppointments = true)
-        advanceUntilIdle()
+            whenn()
+            fixture.currentBusiness.value = CurrentBusiness(
+                id = Uuid.random(),
+                employeeId = fixture.employeeId,
+                canViewAppointments = true,
+            )
+            advanceUntilIdle()
 
-        then()
-        assertEquals(AppointmentsRes.strings.appointments_list_empty.desc(), sut.uiState.appointments.emptyState?.label)
-    }
+            then()
+            assertEquals(
+                AppointmentsRes.strings.appointments_list_empty.desc(),
+                sut.uiState.appointments.emptyState?.label,
+            )
+        }
 
     @Test
     fun `loads the new employee's appointments when the current business changes`() = runUnitTest {
@@ -284,10 +361,20 @@ class AppointmentListViewModelTest {
         fixture.sut()
 
         whenn()
-        fixture.currentBusiness.value = CurrentBusiness(id = otherBusinessId, employeeId = otherEmployeeId, canViewAppointments = true)
+        fixture.currentBusiness.value = CurrentBusiness(
+            id = otherBusinessId,
+            employeeId = otherEmployeeId,
+            canViewAppointments = true,
+        )
 
         then()
-        verifySuspend { fixture.getAppointmentsForBusiness.refresh(otherBusinessId, LocalDate.today(), otherEmployeeId) }
+        verifySuspend {
+            fixture.getAppointmentsForBusiness.refresh(
+                otherBusinessId,
+                LocalDate.today(),
+                otherEmployeeId,
+            )
+        }
         verify { fixture.getAppointmentsForBusiness.flow(LocalDate.today(), otherEmployeeId) }
     }
 
@@ -313,7 +400,10 @@ class AppointmentListViewModelTest {
         fixture.requests.value = List(3) { AppointmentRequest.stub() }
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_requests_count.format(3), sut.uiState.requestsButton.text)
+        assertEquals(
+            AppointmentsRes.strings.appointments_requests_count.format(3),
+            sut.uiState.requestsButton.text,
+        )
     }
 
     @Test
@@ -347,36 +437,39 @@ class AppointmentListViewModelTest {
     }
 
     @Test
-    fun `shows booked services and their total for an appointment without adjustment`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val appointment = Appointment.stub().copy(
-            services = listOf(service("Haircut", 100.0), service("Beard", 50.0))
-        )
-        val sut = fixture.sut()
-        advanceUntilIdle()
+    fun `shows booked services and their total for an appointment without adjustment`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val appointment = Appointment.stub()
+                .copy(
+                    services = listOf(service("Haircut", 100.0), service("Beard", 50.0)),
+                )
+            val sut = fixture.sut()
+            advanceUntilIdle()
 
-        whenn()
-        fixture.appointments.value = listOf(appointment)
+            whenn()
+            fixture.appointments.value = listOf(appointment)
 
-        then()
-        val item = sut.uiState.appointments.items.single()
-        assertEquals("Haircut, Beard", item.serviceName)
-        assertEquals(Money(150.0, Money.SupportedCurrency.USD).toString(), item.earnings)
-    }
+            then()
+            val item = sut.uiState.appointments.items.single()
+            assertEquals("Haircut, Beard", item.serviceName)
+            assertEquals(Money(150.0, Money.SupportedCurrency.USD).toString(), item.earnings)
+        }
 
     @Test
     fun `shows adjusted price for an appointment with a price adjustment`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val appointment = Appointment.stub().copy(
-            services = listOf(service("Haircut", 100.0)),
-            priceAdjustment = PriceAdjustment(
-                additionalServices = emptyList(),
-                price = Money(80.0, Money.SupportedCurrency.USD),
-                reason = "Discount"
+        val appointment = Appointment.stub()
+            .copy(
+                services = listOf(service("Haircut", 100.0)),
+                priceAdjustment = PriceAdjustment(
+                    additionalServices = emptyList(),
+                    price = Money(80.0, Money.SupportedCurrency.USD),
+                    reason = "Discount",
+                ),
             )
-        )
         val sut = fixture.sut()
         advanceUntilIdle()
 
@@ -393,14 +486,16 @@ class AppointmentListViewModelTest {
     fun `shows adjusted services instead of booked ones`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val appointment = Appointment.stub().copy(
-            services = listOf(service("Haircut", 100.0)),
-            priceAdjustment = PriceAdjustment(
-                additionalServices = listOf(service("Haircut", 100.0), service("Coloring", 200.0)),
-                price = Money(300.0, Money.SupportedCurrency.USD),
-                reason = null
+        val appointment = Appointment.stub()
+            .copy(
+                services = listOf(service("Haircut", 100.0)),
+                priceAdjustment = PriceAdjustment(
+                    additionalServices =
+                    listOf(service("Haircut", 100.0), service("Coloring", 200.0)),
+                    price = Money(300.0, Money.SupportedCurrency.USD),
+                    reason = null,
+                ),
             )
-        )
         val sut = fixture.sut()
         advanceUntilIdle()
 
@@ -437,8 +532,10 @@ class AppointmentListViewModelTest {
         val appointments = listOf(
             AppointmentStatus.SCHEDULED,
             AppointmentStatus.CANCELLED,
-            AppointmentStatus.NO_SHOW
-        ).map { Appointment.stub().copy(status = it) }
+            AppointmentStatus.NO_SHOW,
+            AppointmentStatus.UNRESOLVED,
+        )
+            .map { Appointment.stub().copy(status = it) }
         val sut = fixture.sut()
         advanceUntilIdle()
 
@@ -449,10 +546,11 @@ class AppointmentListViewModelTest {
         assertTrue(sut.uiState.appointments.items.all { it.completedMark == null })
     }
 
-    private fun service(name: String, price: Double) = ServiceSnapshot.stub().copy(
-        name = name,
-        price = Money(price, Money.SupportedCurrency.USD)
-    )
+    private fun service(name: String, price: Double) = ServiceSnapshot.stub()
+        .copy(
+            name = name,
+            price = Money(price, Money.SupportedCurrency.USD),
+        )
 
     @Test
     fun `loads appointments for newly picked date`() = runUnitTest {
@@ -465,7 +563,13 @@ class AppointmentListViewModelTest {
         sut.uiState.datePicker.onDatePicked?.invoke(tomorrow)
 
         then()
-        verifySuspend { fixture.getAppointmentsForBusiness.refresh(fixture.businessId, tomorrow, fixture.employeeId) }
+        verifySuspend {
+            fixture.getAppointmentsForBusiness.refresh(
+                fixture.businessId,
+                tomorrow,
+                fixture.employeeId,
+            )
+        }
         assertEquals(tomorrow, sut.uiState.datePicker.pickedDate)
         assertEquals(7, sut.uiState.dates.items.size)
         assertTrue(sut.uiState.dates.items.any { it.date == tomorrow })
@@ -481,7 +585,9 @@ class AppointmentListViewModelTest {
         sut.uiState.datePicker.onDatePicked?.invoke(LocalDate.today())
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.getAppointmentsForBusiness.refresh(any(), any(), any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointmentsForBusiness.refresh(any(), any(), any())
+        }
     }
 
     @Test
@@ -506,7 +612,12 @@ class AppointmentListViewModelTest {
         sut.uiState.appBar.actions.items[1].onClick()
 
         then()
-        assertEquals(listOf<AppointmentListDestinations>(AppointmentListDestinations.CreateAppointment(fixture.businessId)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<AppointmentListDestinations>(
+                AppointmentListDestinations.CreateAppointment(fixture.businessId),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -546,14 +657,20 @@ class AppointmentListViewModelTest {
         sut.uiState.appointments.items.single().onItemClick()
 
         then()
-        assertEquals(listOf<AppointmentListDestinations>(AppointmentListDestinations.AppointmentDetails(appointment.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<AppointmentListDestinations>(
+                AppointmentListDestinations.AppointmentDetails(appointment.id),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
     fun `shows mapped error when appointment observation fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        every { fixture.getAppointmentsForBusiness.flow(any(), any()) } returns failOnceThenSuspend()
+        every { fixture.getAppointmentsForBusiness.flow(any(), any()) } returns
+            failOnceThenSuspend()
 
         whenn()
         fixture.sut()

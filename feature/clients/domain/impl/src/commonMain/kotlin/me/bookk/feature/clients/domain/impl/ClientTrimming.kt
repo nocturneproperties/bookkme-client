@@ -10,7 +10,7 @@ internal fun Client.trimmed(): Client {
             lastName = lastName.trim(),
             phone = phone?.trim(),
             email = email?.trim(),
-            description = description?.trim()
+            description = description?.trim(),
         )
 
         is Client.Integrated -> copy(
@@ -18,7 +18,7 @@ internal fun Client.trimmed(): Client {
             lastName = lastName.trim(),
             phone = phone?.trim(),
             email = email?.trim(),
-            description = description?.trim()
+            description = description?.trim(),
         )
     }
 }
@@ -29,6 +29,6 @@ internal fun ClientImportEntry.trimmed(): ClientImportEntry {
         lastName = lastName.trim(),
         phone = phone?.trim(),
         email = email?.trim(),
-        description = description?.trim()
+        description = description?.trim(),
     )
 }

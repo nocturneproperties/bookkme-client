@@ -14,8 +14,8 @@ import me.bookk.designsystem.test.FakeViewState
 import me.bookk.designsystem.uistate.simple.Action
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListDestination
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState
-import me.bookk.feature.services.presentation.service.add.AddServiceDestination
 import me.bookk.feature.services.presentation.service.ServiceGroupOption
+import me.bookk.feature.services.presentation.service.add.AddServiceDestination
 import me.bookk.feature.services.presentation.service.add.AddServiceState
 import me.bookk.feature.services.presentation.service.edit.EditServiceDestination
 import me.bookk.feature.services.presentation.service.edit.EditServiceState
@@ -39,7 +39,9 @@ internal class FakeServiceListState : ServiceListState {
     override val navigation = FakeNavigationState<ServiceListDestination>()
 }
 
-internal class FakeAddServiceState : FakeViewState(), AddServiceState {
+internal class FakeAddServiceState :
+    FakeViewState(),
+    AddServiceState {
     override val appBar = FakeAppBarState()
     override val group = FakePickerFieldState<ServiceGroupOption>()
     override val name = FakeTextFieldState()

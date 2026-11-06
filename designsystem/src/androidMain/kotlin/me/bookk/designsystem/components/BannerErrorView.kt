@@ -29,13 +29,13 @@ fun BannerErrorView(state: BannerErrorState, modifier: Modifier = Modifier) {
             .fillMaxWidth()
             .background(LocalColors.current.error.copy(alpha = 0.12f))
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = Icons.Filled.Warning,
             contentDescription = null,
             modifier = Modifier.size(18.dp),
-            tint = LocalColors.current.error
+            tint = LocalColors.current.error,
         )
         Text(
             state.text.localized(),
@@ -43,7 +43,7 @@ fun BannerErrorView(state: BannerErrorState, modifier: Modifier = Modifier) {
                 .weight(1f)
                 .padding(start = 8.dp),
             style = MaterialTheme.typography.labelMedium,
-            color = LocalColors.current.error
+            color = LocalColors.current.error,
         )
         if (state.isRetrying) {
             CircularProgressIndicator(
@@ -51,7 +51,7 @@ fun BannerErrorView(state: BannerErrorState, modifier: Modifier = Modifier) {
                     .padding(start = 8.dp)
                     .size(16.dp),
                 strokeWidth = 2.dp,
-                color = LocalColors.current.error
+                color = LocalColors.current.error,
             )
         } else {
             Text(
@@ -60,7 +60,7 @@ fun BannerErrorView(state: BannerErrorState, modifier: Modifier = Modifier) {
                     .clickable(onClick = state.onRetryClick)
                     .padding(start = 8.dp),
                 style = MaterialTheme.typography.labelMedium,
-                color = LocalColors.current.error
+                color = LocalColors.current.error,
             )
         }
     }

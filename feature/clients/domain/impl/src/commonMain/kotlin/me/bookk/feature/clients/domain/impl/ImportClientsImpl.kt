@@ -9,10 +9,13 @@ import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 import kotlin.uuid.Uuid
 
 internal class ImportClientsImpl(
-    private val clientsDataSource: ClientsDataSource
+    private val clientsDataSource: ClientsDataSource,
 ) : ImportClients {
 
-    override suspend fun invoke(businessId: Uuid, entries: List<ClientImportEntry>): ClientImportResult {
+    override suspend fun invoke(
+        businessId: Uuid,
+        entries: List<ClientImportEntry>,
+    ): ClientImportResult {
         val results = entries
             .map(ClientImportEntry::trimmed)
             .chunked(MAX_ENTRIES_PER_REQUEST)
@@ -23,11 +26,14 @@ internal class ImportClientsImpl(
             }
         return ClientImportResult(
             created = results.flatMap { it.created },
-            rejected = results.flatMap { it.rejected }
+            rejected = results.flatMap { it.rejected },
         )
     }
 
-    private suspend fun importWithRetry(businessId: Uuid, entries: List<ClientImportEntry>): ClientImportResult {
+    private suspend fun importWithRetry(
+        businessId: Uuid,
+        entries: List<ClientImportEntry>,
+    ): ClientImportResult {
         return runCatching { clientsDataSource.importClients(businessId, entries) }
             .recoverCatching { error ->
                 if (!error.isTakenByConcurrentWrite()) throw error

@@ -10,6 +10,11 @@ kotlin {
         namespace = "${ApplicationConfig.ROOT_PACKAGE}.feature.settings.data"
     }
     sourceSets {
+        commonTest.dependencies {
+            implementation(libs.ktor.client.negotiation)
+            implementation(projects.core.testFixtures)
+            implementation(libs.kotlin.serialization.core)
+        }
         commonMain.dependencies {
             implementation(projects.core)
             implementation(projects.core.domain)

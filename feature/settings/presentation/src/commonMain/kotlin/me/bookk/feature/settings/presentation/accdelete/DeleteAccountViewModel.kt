@@ -14,7 +14,7 @@ import me.bookk.feature.settings.presentation.SettingsStateFactory
 class DeleteAccountViewModel(
     private val deleteAccount: DeleteAccount,
     settingsStateFactory: SettingsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState = settingsStateFactory.createDeleteAccountState(createInitData())
@@ -35,10 +35,14 @@ class DeleteAccountViewModel(
             call = { deleteAccount() },
             onComplete = {
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
-                uiState.notifications.add(GlobalMessage(SettingsRes.strings.settings_delete_account_success_message.desc()))
+                uiState.notifications.add(
+                    GlobalMessage(
+                        SettingsRes.strings.settings_delete_account_success_message.desc(),
+                    ),
+                )
             },
             onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = { uiState.deleteButton.isLoading = false }
+            onTerminate = { uiState.deleteButton.isLoading = false },
         )
     }
 
@@ -46,11 +50,13 @@ class DeleteAccountViewModel(
         fun createInitData(): DeleteAccountState.InitData {
             return DeleteAccountState.InitData(
                 title = SettingsRes.strings.settings_delete_account_title.desc(),
-                confirmationMessage = SettingsRes.strings.settings_delete_account_confirmation.desc(),
-                switchMessage = SettingsRes.strings.settings_delete_account_confirmation_switch.desc(),
-                buttonMessage = SettingsRes.strings.settings_delete_account_confirmation_button.desc()
+                confirmationMessage =
+                SettingsRes.strings.settings_delete_account_confirmation.desc(),
+                switchMessage =
+                SettingsRes.strings.settings_delete_account_confirmation_switch.desc(),
+                buttonMessage =
+                SettingsRes.strings.settings_delete_account_confirmation_button.desc(),
             )
         }
     }
-
 }

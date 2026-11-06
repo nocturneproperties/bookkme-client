@@ -6,7 +6,11 @@ interface DeclineAppointmentRequest {
     suspend operator fun invoke(requestId: Uuid, businessId: Uuid, reason: String)
 
     sealed interface Error {
-        class AlreadyDeclined : Throwable(), Error
-        class AlreadyApproved : Throwable(), Error
+        class AlreadyDeclined :
+            Throwable(),
+            Error
+        class AlreadyApproved :
+            Throwable(),
+            Error
     }
 }

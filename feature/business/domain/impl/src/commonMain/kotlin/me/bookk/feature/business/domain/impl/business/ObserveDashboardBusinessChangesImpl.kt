@@ -8,7 +8,7 @@ import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
 
 internal class ObserveDashboardBusinessChangesImpl(
-    private val businessDataSource: BusinessDataSource
+    private val businessDataSource: BusinessDataSource,
 ) : ObserveDashboardBusinessChanges {
 
     @OptIn(ExperimentalCoroutinesApi::class)

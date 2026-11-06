@@ -47,7 +47,8 @@ class GetAppointmentHistoryImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val firstPage = List(20) { stubAppointment() }
-        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns firstPage
+        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns
+            firstPage
 
         whenn()
         val result = fixture.sut.reload(businessId)
@@ -63,8 +64,10 @@ class GetAppointmentHistoryImplTest {
         val businessId = Uuid.random()
         val firstPage = List(20) { stubAppointment() }
         val secondPage = List(10) { stubAppointment() }
-        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns firstPage
-        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 20L, null) } returns secondPage
+        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns
+            firstPage
+        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 20L, null) } returns
+            secondPage
         fixture.sut.reload(businessId)
 
         whenn()
@@ -80,7 +83,8 @@ class GetAppointmentHistoryImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val partial = List(5) { stubAppointment() }
-        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns partial
+        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, null) } returns
+            partial
         fixture.sut.reload(businessId)
 
         whenn()
@@ -109,7 +113,8 @@ class GetAppointmentHistoryImplTest {
         val businessId = Uuid.random()
         val query = "John"
         val page = listOf(stubAppointment())
-        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, query) } returns page
+        everySuspend { fixture.dataSource.getAppointmentHistory(businessId, 20, 0L, query) } returns
+            page
 
         whenn()
         val result = fixture.sut.reload(businessId, query)

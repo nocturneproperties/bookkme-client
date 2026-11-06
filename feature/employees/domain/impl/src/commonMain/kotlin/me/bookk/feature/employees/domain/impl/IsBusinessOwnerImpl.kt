@@ -8,7 +8,7 @@ import kotlin.uuid.Uuid
 
 internal class IsBusinessOwnerImpl(
     private val observeUserBusinessesChanges: ObserveUserBusinessesChanges,
-    private val userProfileCRUD: UserProfileCRUD
+    private val userProfileCRUD: UserProfileCRUD,
 ) : IsBusinessOwner {
     override suspend fun invoke(userId: Uuid, businessId: Uuid): Boolean {
         val business = observeUserBusinessesChanges().first().firstOrNull { it.id == businessId }

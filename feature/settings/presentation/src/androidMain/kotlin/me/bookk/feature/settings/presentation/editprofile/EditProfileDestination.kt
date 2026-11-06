@@ -19,8 +19,8 @@ internal fun NavGraphBuilder.editProfileScreen(navigation: SettingsNavigation) {
                 onNameChanged = viewModel::onFirstNameTextChanged,
                 onLastNameChanged = viewModel::onLastNameTextChanged,
                 onEmailChanged = viewModel::onEmailTextChanged,
-                onSaveClick = viewModel::onConfirmButtonClick
-            )
+                onSaveClick = viewModel::onConfirmButtonClick,
+            ),
         ) {
             SendLifecycleEventsTo(viewModel)
             EditProfileScreen(viewModel.uiState)

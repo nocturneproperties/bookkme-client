@@ -8,25 +8,26 @@ data class Device(
     val deviceUuid: Uuid,
     val userId: Uuid,
     val notificationToken: String?,
-    val language: DeviceLanguage
+    val language: DeviceLanguage,
 ) {
     companion object {
         fun stub(
             deviceUuid: Uuid = Uuid.random(),
             notificationToken: String? = "token",
-            language: DeviceLanguage = DeviceLanguage.EN
+            language: DeviceLanguage = DeviceLanguage.EN,
         ) = Device(
             id = Uuid.random(),
             authId = Uuid.random(),
             deviceUuid = deviceUuid,
             userId = Uuid.random(),
             notificationToken = notificationToken,
-            language = language
+            language = language,
         )
     }
 }
 
 enum class DeviceLanguage {
     EN,
-    UK
+    UK,
+    PL,
 }

@@ -67,7 +67,11 @@ class ViewModelObserveTest {
                 .observe()
         }
 
-        fun <T> startWithOnError(flow: Flow<T>, onError: suspend (Throwable) -> Unit, action: suspend (T) -> Unit) {
+        fun <T> startWithOnError(
+            flow: Flow<T>,
+            onError: suspend (Throwable) -> Unit,
+            action: suspend (T) -> Unit,
+        ) {
             flow
                 .safeOnEach(action)
                 .onError(onError)
@@ -102,7 +106,9 @@ class ViewModelObserveTest {
         }
 
         whenn()
-        fixture.sut.startWithOnError(upstream, onError = { fixture.reported.add(it) }) { fixture.received.add(it) }
+        fixture.sut.startWithOnError(upstream, onError = {
+            fixture.reported.add(it)
+        }) { fixture.received.add(it) }
         advanceTimeBy(1.seconds)
         runCurrent()
 
@@ -134,7 +140,12 @@ class ViewModelObserveTest {
         val failure = IllegalArgumentException("render")
 
         whenn()
-        fixture.sut.startWithOnError(flow { emit(1) }, onError = { fixture.reported.add(it) }) { throw failure }
+        fixture.sut.startWithOnError(
+            flow {
+                emit(1)
+            },
+            onError = { fixture.reported.add(it) },
+        ) { throw failure }
         runCurrent()
 
         then()

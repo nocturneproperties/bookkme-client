@@ -48,10 +48,12 @@ class CanEditBusinessImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.getBusinessById(businessId) } returns stubBusiness(
-            id = businessId,
-            permissions = stubBusinessPermissions().copy(business = ResourcePermission(view = true, update = true))
-        )
+        everySuspend { fixture.dataSource.getBusinessById(businessId) } returns
+            stubBusiness(
+                id = businessId,
+                permissions = stubBusinessPermissions()
+                    .copy(business = ResourcePermission(view = true, update = true)),
+            )
 
         whenn()
         val result = fixture.sut(businessId)
@@ -65,10 +67,12 @@ class CanEditBusinessImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.getBusinessById(businessId) } returns stubBusiness(
-            id = businessId,
-            permissions = stubBusinessPermissions().copy(business = ResourcePermission(view = true))
-        )
+        everySuspend { fixture.dataSource.getBusinessById(businessId) } returns
+            stubBusiness(
+                id = businessId,
+                permissions =
+                stubBusinessPermissions().copy(business = ResourcePermission(view = true)),
+            )
 
         whenn()
         val result = fixture.sut(businessId)

@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 data class EmployeeSnapshotRemote(
     @ProtoNumber(1) val id: Uuid,
     @ProtoNumber(2) val userId: Uuid,
-    @ProtoNumber(3) val fullName: String
+    @ProtoNumber(3) val fullName: String,
 ) {
     fun toDomain() = EmployeeSnapshot(id = id, userId = userId, fullName = fullName)
 }

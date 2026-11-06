@@ -76,7 +76,8 @@ class SwitchDashboardBusinessImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         everySuspend { fixture.dataSource.saveDashboardBusinessId(businessId) } returns Unit
-        everySuspend { fixture.dataSource.setDashboardBusinessOnRemote(businessId) } throws RuntimeException("network down")
+        everySuspend { fixture.dataSource.setDashboardBusinessOnRemote(businessId) } throws
+            RuntimeException("network down")
 
         whenn()
         fixture.sut(businessId)

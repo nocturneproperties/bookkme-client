@@ -7,8 +7,17 @@ interface CancelAppointment {
     suspend operator fun invoke(appointmentId: Uuid, businessId: Uuid, reason: String): Appointment
 
     sealed interface Error {
-        class AppointmentAlreadyCancelled : Throwable(), Error
-        class AppointmentAlreadyCompleted : Throwable(), Error
-        class AppointmentMarkedNoShow : Throwable(), Error
+        class EditWindowClosed :
+            Throwable(),
+            Error
+        class AppointmentAlreadyCancelled :
+            Throwable(),
+            Error
+        class AppointmentAlreadyCompleted :
+            Throwable(),
+            Error
+        class AppointmentMarkedNoShow :
+            Throwable(),
+            Error
     }
 }

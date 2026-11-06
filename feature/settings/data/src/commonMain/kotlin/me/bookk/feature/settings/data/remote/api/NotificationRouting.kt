@@ -7,12 +7,19 @@ internal object NotificationRouting {
     @Resource("api")
     class Api {
         @Resource("/notifications")
-        class Notifications(val parent: Api = Api()) {
+        class Notifications(
+            val parent: Api = Api(),
+        ) {
             @Resource("/settings")
-            class Settings(val parent: Notifications = Notifications())
+            class Settings(
+                val parent: Notifications = Notifications(),
+            )
 
             @Resource("/{deviceUuid}/token")
-            class Token(val parent: Notifications = Notifications(), val deviceUuid: Uuid)
+            class Token(
+                val parent: Notifications = Notifications(),
+                val deviceUuid: Uuid,
+            )
         }
     }
 }

@@ -34,47 +34,43 @@ internal fun ContactUsScreen(state: ContactUsState) {
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                onNavigationIconClick = LocalNavigation.current.navigateBack
+                onNavigationIconClick = LocalNavigation.current.navigateBack,
             )
         },
         content = {
             Column(
-                modifier = Modifier
-                    .padding(it)
-                    .padding(horizontal = 16.dp)
+                modifier = Modifier.padding(it).padding(horizontal = 16.dp),
             ) {
                 TextField(
-                    modifier = Modifier
-                        .padding(top = 16.dp),
+                    modifier = Modifier.padding(top = 16.dp),
                     state = state.contactField,
                     minLines = 4,
-                    onValueChange = LocalContactUsEventListener.current.onTextChanged
+                    onValueChange = LocalContactUsEventListener.current.onTextChanged,
                 )
 
                 StateSwitch(
                     modifier = Modifier.padding(top = 16.dp),
                     state = state.includeLogsSwitch,
-                    onCheckedChange = LocalContactUsEventListener.current.onIncludeUsageLogsCheckedChanged
+                    onCheckedChange =
+                    LocalContactUsEventListener.current.onIncludeUsageLogsCheckedChanged,
                 )
 
                 Text(
                     modifier = Modifier.padding(top = 8.dp),
                     text = state.logsExplanationText.localized(),
                     style = MaterialTheme.typography.labelMedium,
-                    color = LocalColors.current.secondaryText
+                    color = LocalColors.current.secondaryText,
                 )
             }
         },
         bottomBar = {
             ActionButton(
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
+                modifier =
+                Modifier.padding(bottom = 24.dp).padding(horizontal = 16.dp).fillMaxWidth(),
                 state = state.submitButton,
-                onClick = LocalContactUsEventListener.current.onSubmitClick
+                onClick = LocalContactUsEventListener.current.onSubmitClick,
             )
-        }
+        },
     )
 }
 
@@ -83,7 +79,7 @@ internal fun ContactUsScreen(state: ContactUsState) {
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         ContactUsScreen(
-            state = AndroidContactUsState(ContactUsViewModel.createInitData())
+            state = AndroidContactUsState(ContactUsViewModel.createInitData()),
         )
     }
 }
@@ -93,7 +89,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         ContactUsScreen(
-            state = AndroidContactUsState(ContactUsViewModel.createInitData())
+            state = AndroidContactUsState(ContactUsViewModel.createInitData()),
         )
     }
 }

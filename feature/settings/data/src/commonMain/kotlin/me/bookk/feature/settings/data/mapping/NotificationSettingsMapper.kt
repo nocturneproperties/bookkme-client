@@ -13,14 +13,14 @@ import me.bookk.feature.settings.domain.api.entity.NotificationSettings
 internal fun NotificationSettings.toUpdateRequestRemote() = UpdateNotificationSettingsRequestRemote(
     id = id,
     appointmentEnabled = appointmentEnabled,
-    channels = channels.map { it.toRemote() }
+    channels = channels.map { it.toRemote() },
 )
 
 private fun NotificationChannelSettings.toRemote() = NotificationChannelSettingsRemote(
     id = id,
     channel = channel.toRemote(),
     enabled = enabled,
-    availableToClients = availableToClients
+    availableToClients = availableToClients,
 )
 
 private fun NotificationChannel.toRemote() = when (this) {
@@ -32,7 +32,7 @@ private fun NotificationChannel.toRemote() = when (this) {
 internal fun NotificationSettings.toEntity() = NotificationSettingsEntity(
     id = id,
     userId = userId,
-    appointmentEnabled = appointmentEnabled
+    appointmentEnabled = appointmentEnabled,
 )
 
 internal fun NotificationSettings.toChannelEntities() = channels.map { channel ->
@@ -41,7 +41,7 @@ internal fun NotificationSettings.toChannelEntities() = channels.map { channel -
         settingsId = id,
         channel = channel.channel.name,
         enabled = channel.enabled,
-        availableToClients = channel.availableToClients
+        availableToClients = channel.availableToClients,
     )
 }
 
@@ -54,7 +54,7 @@ internal fun NotificationSettingsLocal.toDomain() = NotificationSettings(
             id = it.id,
             channel = NotificationChannel.valueOf(it.channel),
             enabled = it.enabled,
-            availableToClients = it.availableToClients
+            availableToClients = it.availableToClients,
         )
-    }
+    },
 )

@@ -6,5 +6,5 @@ import kotlin.uuid.Uuid
 data class PriceAdjustmentDraft(
     val additionalServiceIds: List<Uuid>,
     val price: Money,
-    val reason: String?
+    val reason: String?,
 )

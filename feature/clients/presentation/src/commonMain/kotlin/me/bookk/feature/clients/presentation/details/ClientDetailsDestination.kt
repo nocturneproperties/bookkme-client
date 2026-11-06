@@ -5,5 +5,7 @@ import kotlin.uuid.Uuid
 
 sealed class ClientDetailsDestination : NavigationDestination() {
     data object Back : ClientDetailsDestination()
-    data class Edit(val id: Uuid) : ClientDetailsDestination()
+    data class Edit(
+        val id: Uuid,
+    ) : ClientDetailsDestination()
 }

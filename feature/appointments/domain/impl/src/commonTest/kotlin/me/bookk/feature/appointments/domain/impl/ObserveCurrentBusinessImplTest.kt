@@ -50,13 +50,17 @@ class ObserveCurrentBusinessImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val employeeId = Uuid.random()
-        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(stubBusiness(id = businessId, employeeId = employeeId))
+        every { fixture.observeDashboardBusinessChanges.invoke() } returns
+            flowOf(stubBusiness(id = businessId, employeeId = employeeId))
 
         whenn()
         val result = fixture.sut().first()
 
         then()
-        assertEquals(CurrentBusiness(id = businessId, employeeId = employeeId, canViewAppointments = false), result)
+        assertEquals(
+            CurrentBusiness(id = businessId, employeeId = employeeId, canViewAppointments = false),
+            result,
+        )
     }
 
     @Test
@@ -64,13 +68,17 @@ class ObserveCurrentBusinessImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        every { fixture.observeDashboardBusinessChanges.invoke() } returns flowOf(stubBusiness(id = businessId, employeeId = null))
+        every { fixture.observeDashboardBusinessChanges.invoke() } returns
+            flowOf(stubBusiness(id = businessId, employeeId = null))
 
         whenn()
         val result = fixture.sut().first()
 
         then()
-        assertEquals(CurrentBusiness(id = businessId, employeeId = null, canViewAppointments = false), result)
+        assertEquals(
+            CurrentBusiness(id = businessId, employeeId = null, canViewAppointments = false),
+            result,
+        )
     }
 
     @Test

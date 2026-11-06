@@ -17,11 +17,11 @@ interface PasskeyState {
     val notification: PresentationNotificationState
 
     /**
-     * Modification directly from passkeys field (if we change type to MutableList) brings complications
-     * on Swift side because of Kotlin/ObjC interop. Mappings are:
+     * Modification directly from passkeys field (if we change type to MutableList) brings
+     * complications on Swift side because of Kotlin/ObjC interop. Mappings are:
      *
-     * List -> Array (SwiftUI @Publish available on every item change)
-     * MutableList -> NSMutableArray (Unnecessary complicated and not Swift-friendly)
+     * List -> Array (SwiftUI @Publish available on every item change) MutableList -> NSMutableArray
+     * (Unnecessary complicated and not Swift-friendly)
      */
     fun replacePasskeyList(items: List<PasskeyItem>)
 
@@ -30,11 +30,11 @@ interface PasskeyState {
         val title: String,
         val isDeletable: Boolean,
         val isBackedUp: Boolean,
-        val addedOn: StringDesc
+        val addedOn: StringDesc,
     )
 
     class InitData(
         val title: StringDesc,
-        val addButtonText: StringDesc
+        val addButtonText: StringDesc,
     )
 }

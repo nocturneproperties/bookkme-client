@@ -35,8 +35,10 @@ import kotlin.uuid.Uuid
 internal class EmployeeDataSourceImpl(
     private val httpClient: HttpClient,
     private val employeeDao: EmployeeDao,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), EmployeeDataSource, LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    EmployeeDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("employees_prefs")
     override suspend fun getEmployees(businessId: Uuid): List<Employee> = mapExceptions {
@@ -61,7 +63,7 @@ internal class EmployeeDataSourceImpl(
                 daySchedules = employees.flatMap(Employee::toDayScheduleEntities),
                 workHours = employees.flatMap(Employee::toWorkHourEntities),
                 dayOffs = employees.flatMap(Employee::toDayOffEntities),
-                services = employees.flatMap(Employee::toServiceSnapshotEntities)
+                services = employees.flatMap(Employee::toServiceSnapshotEntities),
             )
         }
     }
@@ -77,7 +79,9 @@ internal class EmployeeDataSourceImpl(
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
-        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastSyncedAt(businessId))?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastSyncedAt(businessId: Uuid) {
@@ -94,7 +98,9 @@ internal class EmployeeDataSourceImpl(
     }
 
     override suspend fun updateEmployee(employee: Employee): Employee = mapExceptions {
-        httpClient.put(Api.Employee.Id(Api.Employee(businessId = employee.businessId), employee.id)) {
+        httpClient.put(
+            Api.Employee.Id(Api.Employee(businessId = employee.businessId), employee.id),
+        ) {
             setBody(EmployeeUpdateRequest.fromDomain(employee))
         }
             .body<EmployeeRemote>()
@@ -104,7 +110,7 @@ internal class EmployeeDataSourceImpl(
     override suspend fun updateEmployeePermissions(
         businessId: Uuid,
         id: Uuid,
-        permissions: BusinessPermissions
+        permissions: BusinessPermissions,
     ): Employee = mapExceptions {
         val employeeId = Api.Employee.Id(Api.Employee(businessId = businessId), id)
         httpClient.put(Api.Employee.Id.Permissions(employeeId)) {
@@ -114,7 +120,11 @@ internal class EmployeeDataSourceImpl(
             .toDomain()
     }
 
-    override suspend fun setEmployeeSuspension(businessId: Uuid, id: Uuid, suspended: Boolean): Employee = mapExceptions {
+    override suspend fun setEmployeeSuspension(
+        businessId: Uuid,
+        id: Uuid,
+        suspended: Boolean,
+    ): Employee = mapExceptions {
         val employeeId = Api.Employee.Id(Api.Employee(businessId = businessId), id)
         httpClient.put(Api.Employee.Id.Suspension(employeeId)) {
             setBody(EmployeeSuspensionRequest(suspended = suspended))

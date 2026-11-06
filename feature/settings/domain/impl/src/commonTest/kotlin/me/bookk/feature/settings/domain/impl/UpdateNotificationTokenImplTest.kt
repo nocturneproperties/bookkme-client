@@ -52,7 +52,10 @@ class UpdateNotificationTokenImplTest {
         everySuspend {
             fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, token)
         } returns Device.stub()
-        everySuspend { fixture.notificationSettingsDataSource.savePendingNotificationToken(any()) } returns Unit
+        everySuspend {
+            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
+        } returns
+            Unit
 
         whenn()
         fixture.sut(token)
@@ -71,7 +74,10 @@ class UpdateNotificationTokenImplTest {
         everySuspend {
             fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
         } returns Device.stub()
-        everySuspend { fixture.notificationSettingsDataSource.savePendingNotificationToken(any()) } returns Unit
+        everySuspend {
+            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
+        } returns
+            Unit
 
         whenn()
         fixture.sut("fcm-token")
@@ -89,7 +95,10 @@ class UpdateNotificationTokenImplTest {
         everySuspend {
             fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
         } returns Device.stub()
-        everySuspend { fixture.notificationSettingsDataSource.savePendingNotificationToken(any()) } returns Unit
+        everySuspend {
+            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
+        } returns
+            Unit
 
         whenn()
         fixture.sut(token)
@@ -109,7 +118,10 @@ class UpdateNotificationTokenImplTest {
         everySuspend {
             fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
         } throws IllegalStateException("network unavailable")
-        everySuspend { fixture.notificationSettingsDataSource.savePendingNotificationToken(any()) } returns Unit
+        everySuspend {
+            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
+        } returns
+            Unit
 
         whenn()
         runCatching { fixture.sut(token) }
@@ -124,7 +136,10 @@ class UpdateNotificationTokenImplTest {
     fun `does nothing when there is no pending token`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.notificationSettingsDataSource.getPendingNotificationToken() } returns null
+        everySuspend {
+            fixture.notificationSettingsDataSource.getPendingNotificationToken()
+        } returns
+            null
 
         whenn()
         fixture.sut()
@@ -142,12 +157,18 @@ class UpdateNotificationTokenImplTest {
         val fixture = Fixture()
         val pendingToken = "pending-fcm-token"
         val deviceUuid = "device-uuid"
-        everySuspend { fixture.notificationSettingsDataSource.getPendingNotificationToken() } returns pendingToken
+        everySuspend {
+            fixture.notificationSettingsDataSource.getPendingNotificationToken()
+        } returns
+            pendingToken
         everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns deviceUuid
         everySuspend {
             fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, pendingToken)
         } returns Device.stub()
-        everySuspend { fixture.notificationSettingsDataSource.savePendingNotificationToken(any()) } returns Unit
+        everySuspend {
+            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
+        } returns
+            Unit
 
         whenn()
         fixture.sut()

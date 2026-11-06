@@ -15,7 +15,7 @@ fun permissionsModule() = module {
             checkers = getAll<PermissionChecker>()
                 .groupBy { it.type }
                 .mapValues { it.value.first() },
-            fallbackChecker = AlwaysFalsePermissionChecker()
+            fallbackChecker = AlwaysFalsePermissionChecker(),
         )
     }
 }

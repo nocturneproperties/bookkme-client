@@ -20,7 +20,7 @@ fun BusinessTab(
     showClients: () -> Unit,
     showServices: () -> Unit,
     showAppointmentSettings: (businessId: Uuid) -> Unit,
-    showAppointmentHistory: (businessId: Uuid) -> Unit
+    showAppointmentHistory: (businessId: Uuid) -> Unit,
 ) {
     val businessController = rememberNavController()
     NavHost(
@@ -30,7 +30,7 @@ fun BusinessTab(
         enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
         exitTransition = { scaleOut(targetScale = 0.92f) },
         popEnterTransition = { scaleIn(initialScale = 0.92f) },
-        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
+        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) },
     ) {
         businessGraph(
             navigation = BusinessNavigation(
@@ -41,12 +41,14 @@ fun BusinessTab(
                 toAppointmentSettings = { showAppointmentSettings(it) },
                 toAppointmentHistory = { showAppointmentHistory(it) },
                 toBusinessServices = { showServices() },
-                toBusinessPlugins = { businessController.navigate(BusinessDestination.Plugins(it)) },
+                toBusinessPlugins = {
+                    businessController.navigate(BusinessDestination.Plugins(it))
+                },
                 toShopOrders = {},
                 toShopAssortment = {},
                 toShopWarehouse = {},
-                goBack = { businessController.popBackStack() }
-            )
+                goBack = { businessController.popBackStack() },
+            ),
         )
     }
 }

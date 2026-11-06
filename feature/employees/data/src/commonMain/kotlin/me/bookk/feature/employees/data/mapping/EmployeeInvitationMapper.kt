@@ -14,7 +14,7 @@ internal fun EmployeeInvitation.toDbEntity(): EmployeeInvitationEntity {
         invitedBy = invitedBy,
         code = code,
         status = status.name,
-        createdAt = createdAt.toInstant(TimeZone.currentSystemDefault())
+        createdAt = createdAt.toInstant(TimeZone.currentSystemDefault()),
     )
 }
 
@@ -25,6 +25,6 @@ internal fun EmployeeInvitationEntity.toDomain(): EmployeeInvitation {
         invitedBy = invitedBy,
         code = code,
         status = EmployeeInvitationStatus.valueOf(status),
-        createdAt = createdAt.toLocalDateTime(TimeZone.currentSystemDefault())
+        createdAt = createdAt.toLocalDateTime(TimeZone.currentSystemDefault()),
     )
 }

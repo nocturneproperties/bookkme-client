@@ -12,4 +12,5 @@ fun interface BusinessAccessSuspendedHandler {
     fun onBusinessAccessSuspended()
 }
 
-val LocalBusinessAccessSuspendedHandler = staticCompositionLocalOf { BusinessAccessSuspendedHandler {} }
+val LocalBusinessAccessSuspendedHandler =
+    staticCompositionLocalOf { BusinessAccessSuspendedHandler {} }

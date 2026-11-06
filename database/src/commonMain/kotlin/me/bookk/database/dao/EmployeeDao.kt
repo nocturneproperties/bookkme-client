@@ -67,7 +67,7 @@ abstract class EmployeeDao {
         daySchedules: List<EmployeeDayScheduleEntity>,
         workHours: List<EmployeeWorkHourEntity>,
         dayOffs: List<EmployeeDayOffEntity>,
-        services: List<EmployeeServiceSnapshotEntity>
+        services: List<EmployeeServiceSnapshotEntity>,
     ) {
         upsertEmployees(employees)
         employees.forEach { employee ->

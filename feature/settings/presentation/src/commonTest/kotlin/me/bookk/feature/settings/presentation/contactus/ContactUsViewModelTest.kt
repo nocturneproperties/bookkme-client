@@ -45,7 +45,7 @@ class ContactUsViewModelTest {
         fun sut() = ContactUsViewModel(
             sendContactForm = sendContactForm,
             settingsStateFactory = FakeSettingsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -88,7 +88,10 @@ class ContactUsViewModelTest {
 
         then()
         verifySuspend { fixture.sendContactForm("Hello", true) }
-        assertEquals(listOf<ContactUsNavigationDestination>(ContactUsNavigationDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ContactUsNavigationDestination>(ContactUsNavigationDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
         assertFalse(sut.uiState.submitButton.isLoading)
     }
 

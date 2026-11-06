@@ -13,5 +13,11 @@ flowchart TD
     Trim --> Net[ServiceDataSource.editService<br/>PUT /api/business/businessId/service/id]
     Net -- 2xx updated --> Save[(saveServiceInDB updated)]
     Save --> R([return updated Service])
-    Net -- error --> EX([rethrow])
+    Net -- business error --> Code{errorCode}
+    Code -- 200007 --> E200007([throw Error.NameAlreadyExists])
+    Code -- 200008 --> E200008([throw Error.InvalidName])
+    Code -- 200012 --> E200012([throw Error.GroupNotFound])
+    Code -- 200037 --> E200037([throw Error.InvalidPricePrecision])
+    Code -- 200038 --> E200038([throw Error.InvalidBusinessCurrency])
+    Code -- other --> EX([rethrow])
 ```

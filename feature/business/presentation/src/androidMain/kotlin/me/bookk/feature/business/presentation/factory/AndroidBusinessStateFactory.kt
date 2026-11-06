@@ -17,7 +17,9 @@ class AndroidBusinessStateFactory : BusinessStateFactory {
         return AndroidDashboardState()
     }
 
-    override fun createBusinessSettingsState(initData: BusinessSettingsState.InitData): BusinessSettingsState {
+    override fun createBusinessSettingsState(
+        initData: BusinessSettingsState.InitData,
+    ): BusinessSettingsState {
         return AndroidBusinessSettingsState(initData)
     }
 

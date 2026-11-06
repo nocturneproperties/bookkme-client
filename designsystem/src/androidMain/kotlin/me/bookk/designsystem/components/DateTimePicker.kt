@@ -13,9 +13,7 @@ import me.bookk.designsystem.uistate.AndroidTimePickerState
 import me.bookk.designsystem.uistate.DateTimePickerState
 
 @Composable
-fun DateTimePicker(
-    state: DateTimePickerState
-) {
+fun DateTimePicker(state: DateTimePickerState) {
     val timePickerState = remember {
         AndroidTimePickerState(
             isTimePickerVisible = false,
@@ -24,7 +22,7 @@ fun DateTimePicker(
                 val picked = state.pickedDate?.date?.atTime(it) ?: LocalDate.today().atTime(it)
                 state.onDatePicked?.invoke(picked)
                 state.isDatePickerVisible = false
-            }
+            },
         )
     }
     val datePickerState = remember {
@@ -36,7 +34,7 @@ fun DateTimePicker(
             onDatePicked = {
                 state.pickedDate = it.atTime(state.pickedDate?.time ?: LocalTime.now())
                 timePickerState.isTimePickerVisible = true
-            }
+            },
         )
     }
 
@@ -48,7 +46,8 @@ fun DateTimePicker(
     }
 
     LaunchedEffect(datePickerState.isDatePickerVisible, timePickerState.isTimePickerVisible) {
-        val dismissedWithoutPicking = !timePickerState.isTimePickerVisible && !datePickerState.isDatePickerVisible
+        val dismissedWithoutPicking =
+            !timePickerState.isTimePickerVisible && !datePickerState.isDatePickerVisible
         if (dismissedWithoutPicking) {
             state.isDatePickerVisible = false
         }

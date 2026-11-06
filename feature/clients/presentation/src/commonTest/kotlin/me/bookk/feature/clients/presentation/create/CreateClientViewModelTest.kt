@@ -61,7 +61,7 @@ class CreateClientViewModelTest {
             validateName = FakeValidateName(),
             validateEmail = FakeValidateEmail(),
             stateFactory = FakeClientsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -97,16 +97,17 @@ class CreateClientViewModelTest {
     }
 
     @Test
-    fun `enables submit when name last name and phone are valid and email is empty`() = runUnitTest {
-        given()
-        val sut = Fixture().sut()
+    fun `enables submit when name last name and phone are valid and email is empty`() =
+        runUnitTest {
+            given()
+            val sut = Fixture().sut()
 
-        whenn()
-        sut.fillValidForm()
+            whenn()
+            sut.fillValidForm()
 
-        then()
-        assertTrue(sut.uiState.submit.isEnabled)
-    }
+            then()
+            assertTrue(sut.uiState.submit.isEnabled)
+        }
 
     @Test
     fun `keeps submit disabled with invalid email`() = runUnitTest {
@@ -150,7 +151,8 @@ class CreateClientViewModelTest {
     fun `creates detached client and navigates to its details`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createClient(capture(fixture.created)) } calls { (client: Client) -> client }
+        everySuspend { fixture.createClient(capture(fixture.created)) } calls
+            { (client: Client) -> client }
         val sut = fixture.sut()
         sut.fillValidForm(email = "anna@example.com")
 
@@ -164,7 +166,10 @@ class CreateClientViewModelTest {
         assertEquals("+38050", client.phone)
         assertEquals("anna@example.com", client.email)
         assertEquals(fixture.businessId, client.businessId)
-        assertEquals(listOf<CreateClientDestination>(CreateClientDestination.Details(client.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<CreateClientDestination>(CreateClientDestination.Details(client.id)),
+            sut.uiState.navigation.navigationDestination,
+        )
         assertFalse(sut.uiState.submit.isLoading)
     }
 
@@ -195,7 +200,11 @@ class CreateClientViewModelTest {
         sut.uiState.submit.onClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -224,6 +233,9 @@ class CreateClientViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<CreateClientDestination>(CreateClientDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<CreateClientDestination>(CreateClientDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

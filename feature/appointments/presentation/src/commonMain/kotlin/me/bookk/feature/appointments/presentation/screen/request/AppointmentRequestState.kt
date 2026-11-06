@@ -12,7 +12,7 @@ interface AppointmentRequestState {
     fun createAppointmentRequestItemState(): AppointmentRequestItemState
 }
 
-interface AppointmentRequestItemState: ViewState {
+interface AppointmentRequestItemState : ViewState {
     var clientName: String
     var serviceName: String
     var scheduledDate: String

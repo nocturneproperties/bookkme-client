@@ -31,26 +31,28 @@ import kotlin.uuid.Uuid
 internal class CommonNotificationSettingsDataSource(
     private val httpClient: HttpClient,
     private val notificationSettingsDao: NotificationSettingsDao,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), NotificationSettingsDataSource, LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    NotificationSettingsDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("notification_prefs")
 
-    override suspend fun getNotificationSettings(): NotificationSettings =
-        mapExceptions {
-            httpClient.get(Settings())
-                .body<NotificationSettingsRemote>()
-                .toDomain()
-        }
+    override suspend fun getNotificationSettings(): NotificationSettings = mapExceptions {
+        httpClient.get(Settings())
+            .body<NotificationSettingsRemote>()
+            .toDomain()
+    }
 
-    override suspend fun updateNotificationSettings(settings: NotificationSettings): NotificationSettings =
-        mapExceptions {
-            httpClient.put(Settings()) {
-                setBody(settings.toUpdateRequestRemote())
-            }
-                .body<NotificationSettingsRemote>()
-                .toDomain()
+    override suspend fun updateNotificationSettings(
+        settings: NotificationSettings,
+    ): NotificationSettings = mapExceptions {
+        httpClient.put(Settings()) {
+            setBody(settings.toUpdateRequestRemote())
         }
+            .body<NotificationSettingsRemote>()
+            .toDomain()
+    }
 
     override fun observeNotificationSettingsDBChanges(userId: Uuid): Flow<NotificationSettings?> =
         notificationSettingsDao.observeByUserId(userId)
@@ -61,7 +63,7 @@ internal class CommonNotificationSettingsDataSource(
         mapExceptions {
             notificationSettingsDao.upsertWithChildren(
                 settings = settings.toEntity(),
-                channels = settings.toChannelEntities()
+                channels = settings.toChannelEntities(),
             )
         }
     }

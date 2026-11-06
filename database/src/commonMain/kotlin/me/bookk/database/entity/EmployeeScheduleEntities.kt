@@ -14,15 +14,15 @@ import kotlin.uuid.Uuid
             entity = EmployeeEntity::class,
             parentColumns = ["id"],
             childColumns = ["employeeId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("employeeId")]
+    indices = [Index("employeeId")],
 )
 class EmployeeDayScheduleEntity(
     val employeeId: Uuid,
     val dayOfWeek: String,
-    val isActive: Boolean
+    val isActive: Boolean,
 )
 
 @Entity(
@@ -33,16 +33,16 @@ class EmployeeDayScheduleEntity(
             entity = EmployeeEntity::class,
             parentColumns = ["id"],
             childColumns = ["employeeId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("employeeId")]
+    indices = [Index("employeeId")],
 )
 class EmployeeWorkHourEntity(
     val employeeId: Uuid,
     val dayOfWeek: String,
     val from: String,
-    val to: String
+    val to: String,
 )
 
 @Entity(
@@ -53,13 +53,13 @@ class EmployeeWorkHourEntity(
             entity = EmployeeEntity::class,
             parentColumns = ["id"],
             childColumns = ["employeeId"],
-            onDelete = CASCADE
-        )
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("employeeId")]
+    indices = [Index("employeeId")],
 )
 class EmployeeDayOffEntity(
     val employeeId: Uuid,
     val start: String,
-    val end: String
+    val end: String,
 )

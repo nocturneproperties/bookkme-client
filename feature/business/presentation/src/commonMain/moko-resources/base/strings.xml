@@ -83,4 +83,11 @@
     <string name="business_settings_invalid_day_off_range_error">Day off start date must be before the end date</string>
     <string name="business_analytics_coming_soon_title">Analytics is coming soon</string>
     <string name="business_analytics_coming_soon_message">We\'re building reports on your revenue, appointments and clients. They will appear here in a future update.</string>
+    <string name="create_business_already_exists_error">This business already exists. Refresh your businesses and try again.</string>
+    <string name="create_business_invalid_name_error">Enter a valid business name.</string>
+    <string name="business_settings_currency_locked_error">The currency can no longer be changed for this business.</string>
+    <string name="business_settings_retention_title">Client data retention</string>
+    <string name="business_settings_retention_months">months</string>
+    <string name="business_settings_retention_explanation">Keep client details on ended appointments and requests for 12–120 months. After this period, the details are anonymized or deleted.</string>
+    <string name="business_settings_retention_error">Enter a whole number between 12 and 120 months.</string>
 </resources>

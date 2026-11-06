@@ -14,7 +14,8 @@ class RejectedClientRemoteTest {
     @Test
     fun `maps validation error code to invalid fields`() = runUnitTest {
         given()
-        val remote = RejectedClientRemote(index = 2, errorCode = ClientErrorCodes.CLIENT_VALIDATION_ERROR)
+        val remote =
+            RejectedClientRemote(index = 2, errorCode = ClientErrorCodes.CLIENT_VALIDATION_ERROR)
 
         whenn()
         val rejected = remote.toDomain()
@@ -26,13 +27,20 @@ class RejectedClientRemoteTest {
     @Test
     fun `maps missing contact info error code to missing contact info`() = runUnitTest {
         given()
-        val remote = RejectedClientRemote(index = 0, errorCode = ClientErrorCodes.CLIENT_MISSING_CONTACT_INFO)
+        val remote =
+            RejectedClientRemote(
+                index = 0,
+                errorCode = ClientErrorCodes.CLIENT_MISSING_CONTACT_INFO,
+            )
 
         whenn()
         val rejected = remote.toDomain()
 
         then()
-        assertEquals(RejectedClientImport(0, RejectedClientImport.Reason.MISSING_CONTACT_INFO), rejected)
+        assertEquals(
+            RejectedClientImport(0, RejectedClientImport.Reason.MISSING_CONTACT_INFO),
+            rejected,
+        )
     }
 
     @Test

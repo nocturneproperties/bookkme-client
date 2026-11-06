@@ -9,7 +9,9 @@ import me.bookk.designsystem.uistate.AndroidBooleanState
 import me.bookk.designsystem.uistate.AndroidViewState
 import me.bookk.designsystem.uistate.BooleanState
 
-class AndroidPickOptionItem : AndroidViewState(true), PickOptionItem {
+class AndroidPickOptionItem :
+    AndroidViewState(true),
+    PickOptionItem {
     override var identity: KeyValueData by mutableStateOf(KeyValueData("", ""))
     override var icon: ImageDesc? by mutableStateOf(null)
     override val checkBox: BooleanState = AndroidBooleanState()

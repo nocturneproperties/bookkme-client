@@ -12,7 +12,7 @@ internal fun List<Service>.snapshotServices(): List<ServiceSnapshot> {
             name = it.name,
             groupId = it.group.id,
             price = it.price,
-            duration = it.duration
+            duration = it.duration,
         )
     }
 }
@@ -23,7 +23,7 @@ internal fun List<Client>.snapshotClients(): List<ClientSnapshot> {
             id = it.id,
             fullName = it.fullName,
             phone = it.phone,
-            email = it.email
+            email = it.email,
         )
     }
 }

@@ -8,13 +8,17 @@ import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
 import kotlin.uuid.Uuid
 
 internal class RevokeEmployeeInvitationImpl(
-    private val dataSource: EmployeeInvitationDataSource
+    private val dataSource: EmployeeInvitationDataSource,
 ) : RevokeEmployeeInvitation {
     override suspend fun invoke(businessId: Uuid, id: Uuid) = runCatching {
         dataSource.revokeInvitation(businessId, id)
-    }.onBusinessError { error ->
-        when (error.errorCode) {
-            EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED -> throw Error.AlreadyProcessed(error)
+    }
+        .onBusinessError { error ->
+            when (error.errorCode) {
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED -> {
+                    throw Error.AlreadyProcessed(error)
+                }
+            }
         }
-    }.getOrThrow()
+        .getOrThrow()
 }

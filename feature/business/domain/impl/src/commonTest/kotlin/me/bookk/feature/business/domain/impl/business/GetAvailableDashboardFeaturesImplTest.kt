@@ -50,7 +50,10 @@ class GetAvailableDashboardFeaturesImplTest {
     private class Fixture {
         val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
         val isAppointmentsPluginEnabled = mock<IsAppointmentsPluginEnabled>()
-        val sut = GetAvailableDashboardFeaturesImpl(observeDashboardBusinessChanges, isAppointmentsPluginEnabled)
+        val sut = GetAvailableDashboardFeaturesImpl(
+            observeDashboardBusinessChanges,
+            isAppointmentsPluginEnabled,
+        )
     }
 
     private val noPermissions = BusinessPermissions(
@@ -58,7 +61,7 @@ class GetAvailableDashboardFeaturesImplTest {
         employees = ResourcePermission(),
         clients = ResourcePermission(),
         services = ResourcePermission(),
-        appointments = ResourcePermission()
+        appointments = ResourcePermission(),
     )
 
     private val fullPermissions = BusinessPermissions(
@@ -66,12 +69,13 @@ class GetAvailableDashboardFeaturesImplTest {
         employees = ResourcePermission(view = true),
         clients = ResourcePermission(view = true),
         services = ResourcePermission(view = true),
-        appointments = ResourcePermission(view = true)
+        appointments = ResourcePermission(view = true),
     )
 
     private fun Fixture.stub(business: Business, isAppointmentsEnabled: Boolean?) {
         every { observeDashboardBusinessChanges() } returns flowOf(business)
-        every { isAppointmentsPluginEnabled.flow(business.id) } returns flowOf(isAppointmentsEnabled)
+        every { isAppointmentsPluginEnabled.flow(business.id) } returns
+            flowOf(isAppointmentsEnabled)
     }
 
     private suspend fun Fixture.features(): Set<DashboardFeature> = sut().first()!!.features
@@ -105,19 +109,21 @@ class GetAvailableDashboardFeaturesImplTest {
     }
 
     @Test
-    fun `EMPLOYEES feature included only when employees view permission is granted`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val permissions = noPermissions.copy(employees = noPermissions.employees.copy(view = true))
-        val business = stubBusiness(permissions = permissions)
-        fixture.stub(business, isAppointmentsEnabled = false)
+    fun `EMPLOYEES feature included only when employees view permission is granted`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val permissions =
+                noPermissions.copy(employees = noPermissions.employees.copy(view = true))
+            val business = stubBusiness(permissions = permissions)
+            fixture.stub(business, isAppointmentsEnabled = false)
 
-        whenn()
-        val result = fixture.features()
+            whenn()
+            val result = fixture.features()
 
-        then()
-        assertEquals(setOf(DashboardFeature.EMPLOYEES), result)
-    }
+            then()
+            assertEquals(setOf(DashboardFeature.EMPLOYEES), result)
+        }
 
     @Test
     fun `CLIENTS feature included only when clients view permission is granted`() = runUnitTest {
@@ -150,18 +156,19 @@ class GetAvailableDashboardFeaturesImplTest {
     }
 
     @Test
-    fun `APPOINTMENTS feature included when plugin is enabled and view permission is granted`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = stubBusiness(permissions = fullPermissions)
-        fixture.stub(business, isAppointmentsEnabled = true)
+    fun `APPOINTMENTS feature included when plugin is enabled and view permission is granted`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = stubBusiness(permissions = fullPermissions)
+            fixture.stub(business, isAppointmentsEnabled = true)
 
-        whenn()
-        val result = fixture.features()
+            whenn()
+            val result = fixture.features()
 
-        then()
-        assertTrue(DashboardFeature.APPOINTMENTS in result)
-    }
+            then()
+            assertTrue(DashboardFeature.APPOINTMENTS in result)
+        }
 
     @Test
     fun `APPOINTMENTS feature not included when plugin is disabled`() = runUnitTest {

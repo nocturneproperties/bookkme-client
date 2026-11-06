@@ -21,14 +21,15 @@ import androidx.lifecycle.ViewModel as AndroidViewModel
 import androidx.lifecycle.viewModelScope as frameworkScope
 
 actual abstract class ViewModel actual constructor(
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : AndroidViewModel() {
 
     private val internalLogger = Logger.create("ViewModel")
     private val activeJobs = mutableMapOf<String, Job>()
-    protected actual val viewModelScope: CoroutineScope = frameworkScope + CoroutineExceptionHandler { context, throwable ->
-        viewModelScopeErrorHandler.handleException(context, throwable)
-    }
+    protected actual val viewModelScope: CoroutineScope =
+        frameworkScope + CoroutineExceptionHandler { context, throwable ->
+            viewModelScopeErrorHandler.handleException(context, throwable)
+        }
     protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper
     protected actual open val viewModelScopeErrorHandler =
         CoroutineExceptionHandler { _, throwable ->

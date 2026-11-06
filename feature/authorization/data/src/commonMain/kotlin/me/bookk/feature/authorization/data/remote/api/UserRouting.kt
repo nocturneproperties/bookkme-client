@@ -6,9 +6,13 @@ internal object UserRouting {
     @Resource("api")
     class Api {
         @Resource("/user")
-        class User(val parent: Api = Api()) {
+        class User(
+            val parent: Api = Api(),
+        ) {
             @Resource("/me")
-            class Me(val parent: User = User())
+            class Me(
+                val parent: User = User(),
+            )
         }
     }
 }

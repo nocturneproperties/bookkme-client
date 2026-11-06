@@ -11,7 +11,7 @@ import kotlin.uuid.Uuid
 
 internal class GetEmployeesImpl(
     private val dataSource: EmployeeDataSource,
-    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
 ) : GetEmployees {
 
     override fun flow(): Flow<List<Employee>> {

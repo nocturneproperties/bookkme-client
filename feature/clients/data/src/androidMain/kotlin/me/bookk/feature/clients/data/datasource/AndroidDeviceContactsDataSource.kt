@@ -9,8 +9,9 @@ import android.provider.ContactsContract.Data
 import me.bookk.feature.clients.domain.datasource.DeviceContact
 import me.bookk.feature.clients.domain.datasource.DeviceContactsDataSource
 
-internal class AndroidDeviceContactsDataSource(private val context: Context) :
-    DeviceContactsDataSource {
+internal class AndroidDeviceContactsDataSource(
+    private val context: Context,
+) : DeviceContactsDataSource {
 
     override suspend fun getContacts(): List<DeviceContact> {
         return queryContactRows()
@@ -85,9 +86,16 @@ internal class AndroidDeviceContactsDataSource(private val context: Context) :
     )
 
     private sealed interface ContactDetail {
-        class Name(val given: String?, val family: String?) : ContactDetail
-        class PhoneNumber(val number: String?) : ContactDetail
-        class EmailAddress(val address: String?) : ContactDetail
+        class Name(
+            val given: String?,
+            val family: String?,
+        ) : ContactDetail
+        class PhoneNumber(
+            val number: String?,
+        ) : ContactDetail
+        class EmailAddress(
+            val address: String?,
+        ) : ContactDetail
     }
 
     private companion object {

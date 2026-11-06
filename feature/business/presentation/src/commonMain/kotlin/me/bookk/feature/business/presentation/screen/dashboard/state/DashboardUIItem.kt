@@ -7,9 +7,15 @@ import me.bookk.feature.business.domain.api.entity.DashboardFeature
 import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 import kotlin.uuid.Uuid
 
-abstract class DashboardUIItem(val text: StringDesc, val navigation: DashboardNavigationDestination)
+abstract class DashboardUIItem(
+    val text: StringDesc,
+    val navigation: DashboardNavigationDestination,
+)
 
-sealed class BusinessDashboardSection(val title: StringDesc, val items: List<DashboardUIItem>) {
+sealed class BusinessDashboardSection(
+    val title: StringDesc,
+    val items: List<DashboardUIItem>,
+) {
     class Business(
         id: Uuid,
         features: Set<DashboardFeature>,
@@ -58,11 +64,12 @@ sealed class BusinessDashboardSection(val title: StringDesc, val items: List<Das
             DashboardNavigationDestination.Services,
         )
 
-        data class Plugins(val id: Uuid) :
-            DashboardUIItem(
-                BusinessRes.strings.business_dashboard_plugins.desc(),
-                DashboardNavigationDestination.Plugins(id),
-            )
+        data class Plugins(
+            val id: Uuid,
+        ) : DashboardUIItem(
+            BusinessRes.strings.business_dashboard_plugins.desc(),
+            DashboardNavigationDestination.Plugins(id),
+        )
     }
 
     class Appointments(
@@ -75,17 +82,19 @@ sealed class BusinessDashboardSection(val title: StringDesc, val items: List<Das
         BusinessRes.strings.business_dashboard_appointments.desc(),
         items,
     ) {
-        data class History(val businessId: Uuid) :
-            DashboardUIItem(
-                BusinessRes.strings.business_dashboard_history.desc(),
-                DashboardNavigationDestination.History(businessId),
-            )
+        data class History(
+            val businessId: Uuid,
+        ) : DashboardUIItem(
+            BusinessRes.strings.business_dashboard_history.desc(),
+            DashboardNavigationDestination.History(businessId),
+        )
 
-        data class Settings(val businessId: Uuid) :
-            DashboardUIItem(
-                BusinessRes.strings.business_dashboard_settings.desc(),
-                DashboardNavigationDestination.AppointmentSettings(businessId),
-            )
+        data class Settings(
+            val businessId: Uuid,
+        ) : DashboardUIItem(
+            BusinessRes.strings.business_dashboard_settings.desc(),
+            DashboardNavigationDestination.AppointmentSettings(businessId),
+        )
     }
 
     class Shop(

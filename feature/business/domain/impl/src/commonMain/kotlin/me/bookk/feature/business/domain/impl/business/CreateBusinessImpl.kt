@@ -29,14 +29,17 @@ internal class CreateBusinessImpl(
         }
             .onBusinessError {
                 when (it.errorCode) {
-                    BusinessErrorCodes.BUSINESS_ALREADY_EXIST ->
+                    BusinessErrorCodes.BUSINESS_ALREADY_EXIST -> {
                         throw CreateBusiness.Error.BusinessAlreadyExists()
+                    }
 
-                    BusinessErrorCodes.BUSINESS_NAME_VALIDATION_ERROR ->
+                    BusinessErrorCodes.BUSINESS_NAME_VALIDATION_ERROR -> {
                         throw CreateBusiness.Error.InvalidName()
+                    }
 
-                    BusinessErrorCodes.BUSINESS_INVALID_CURRENCY ->
+                    BusinessErrorCodes.BUSINESS_INVALID_CURRENCY -> {
                         throw CreateBusiness.Error.InvalidCurrency()
+                    }
                 }
             }
             .getOrThrow()

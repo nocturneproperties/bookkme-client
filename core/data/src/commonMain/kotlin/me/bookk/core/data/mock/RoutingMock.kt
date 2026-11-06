@@ -26,5 +26,8 @@ interface RoutingMock {
         return handler.handle(scope, request)
     }
 
-    data class RoutingKey(val method: HttpMethod, val path: String)
+    data class RoutingKey(
+        val method: HttpMethod,
+        val path: String,
+    )
 }

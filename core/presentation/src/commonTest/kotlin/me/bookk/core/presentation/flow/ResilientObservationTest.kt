@@ -19,7 +19,9 @@ import kotlin.time.Duration.Companion.seconds
 
 class ResilientObservationTest {
 
-    private class UpstreamFailure(attempt: Int) : IllegalStateException("attempt $attempt")
+    private class UpstreamFailure(
+        attempt: Int,
+    ) : IllegalStateException("attempt $attempt")
 
     private class Fixture(
         private val scope: TestScope,

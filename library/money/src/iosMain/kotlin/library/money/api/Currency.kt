@@ -7,7 +7,9 @@ import platform.Foundation.NSNumberFormatterCurrencyStyle
 import platform.Foundation.currentLocale
 import platform.Foundation.numberWithDouble
 
-actual class Currency actual constructor(private val code: String) {
+actual class Currency actual constructor(
+    private val code: String,
+) {
     private val formatter = NSNumberFormatter().apply {
         numberStyle = NSNumberFormatterCurrencyStyle
         currencyCode = code

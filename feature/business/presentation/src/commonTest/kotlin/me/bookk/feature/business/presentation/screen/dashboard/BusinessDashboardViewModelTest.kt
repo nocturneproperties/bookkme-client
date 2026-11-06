@@ -493,5 +493,4 @@ class BusinessDashboardViewModelTest {
             fixture.errorMapper.assertMappedSingle(error::class)
         }
     }
-
 }

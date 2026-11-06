@@ -440,5 +440,4 @@ class EditServiceViewModelTest {
             fixture.errorMapper.assertMappedSingle(error::class)
         }
     }
-
 }

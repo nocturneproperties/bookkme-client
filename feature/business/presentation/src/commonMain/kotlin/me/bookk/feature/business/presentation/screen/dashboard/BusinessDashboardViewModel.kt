@@ -116,28 +116,33 @@ class BusinessDashboardViewModel(
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
-                    is CreateBusiness.Error.BusinessAlreadyExists ->
+                    is CreateBusiness.Error.BusinessAlreadyExists -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings.create_business_already_exists_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateBusiness.Error.InvalidName ->
+                    is CreateBusiness.Error.InvalidName -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings.create_business_invalid_name_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateBusiness.Error.EmptyName ->
+                    is CreateBusiness.Error.EmptyName -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings.create_business_error_empty_name.desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
         )
@@ -172,15 +177,16 @@ class BusinessDashboardViewModel(
             },
             onError = {
                 when (it) {
-                    is JoinBusiness.Error.EmptyCode ->
+                    is JoinBusiness.Error.EmptyCode -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings.business_dashboard_switch_join_error_empty_code
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is JoinBusiness.Error.AlreadyProcessed ->
+                    is JoinBusiness.Error.AlreadyProcessed -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings
@@ -188,8 +194,9 @@ class BusinessDashboardViewModel(
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is JoinBusiness.Error.EmployeeExists ->
+                    is JoinBusiness.Error.EmployeeExists -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings
@@ -197,8 +204,11 @@ class BusinessDashboardViewModel(
                                     .desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(errorMapper.mapToNotification(it))
+                    else -> {
+                        uiState.notifications.add(errorMapper.mapToNotification(it))
+                    }
                 }
             },
         )

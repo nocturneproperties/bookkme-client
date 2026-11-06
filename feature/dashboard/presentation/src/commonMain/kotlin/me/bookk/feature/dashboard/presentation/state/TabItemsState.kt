@@ -6,7 +6,10 @@ interface TabItemsState {
     var selectedItemId: TabItem.Id
     val items: List<TabItem>
 
-    class InitData(val selectedItemId: TabItem.Id, val tabInitData: List<TabItem.InitData>)
+    class InitData(
+        val selectedItemId: TabItem.Id,
+        val tabInitData: List<TabItem.InitData>,
+    )
 }
 
 interface TabItem {

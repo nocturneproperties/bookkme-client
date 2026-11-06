@@ -19,31 +19,49 @@ internal class CreateAppointmentRequestImpl(
         }
             .onBusinessError {
                 when (it.errorCode) {
-                    AppointmentErrorCodes.REQUEST_EXISTS -> throw Error.RequestForThisTimeExists()
+                    AppointmentErrorCodes.REQUEST_EXISTS -> {
+                        throw Error.RequestForThisTimeExists()
+                    }
 
-                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> throw Error.TimeIsNotAllowed()
+                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
+                        throw Error.TimeIsNotAllowed()
+                    }
 
-                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> throw Error.DateIsNotAllowed()
+                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
+                        throw Error.DateIsNotAllowed()
+                    }
 
-                    AppointmentErrorCodes.DATE_IN_PAST -> throw Error.DateInPast()
+                    AppointmentErrorCodes.DATE_IN_PAST -> {
+                        throw Error.DateInPast()
+                    }
 
-                    AppointmentErrorCodes.PRICE_CHANGED -> throw Error.PriceChanged()
+                    AppointmentErrorCodes.PRICE_CHANGED -> {
+                        throw Error.PriceChanged()
+                    }
 
-                    AppointmentErrorCodes.DURATION_CHANGED -> throw Error.DurationChanged()
+                    AppointmentErrorCodes.DURATION_CHANGED -> {
+                        throw Error.DurationChanged()
+                    }
 
-                    AppointmentErrorCodes.SERVICES_VALIDATION_FAILED ->
+                    AppointmentErrorCodes.SERVICES_VALIDATION_FAILED -> {
                         throw Error.ServicesDoNotMatchOffer()
+                    }
 
-                    AppointmentErrorCodes.QUOTE_TOKEN_ALREADY_USED -> throw Error.OfferAlreadyUsed()
+                    AppointmentErrorCodes.QUOTE_TOKEN_ALREADY_USED -> {
+                        throw Error.OfferAlreadyUsed()
+                    }
 
-                    AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND ->
+                    AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND -> {
                         throw Error.ServiceNotFound()
+                    }
 
-                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS ->
+                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS -> {
                         throw Error.EmployeeNotFound()
+                    }
 
-                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED ->
+                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED -> {
                         throw Error.EmployeeSuspended()
+                    }
                 }
             }
             .getOrThrow()

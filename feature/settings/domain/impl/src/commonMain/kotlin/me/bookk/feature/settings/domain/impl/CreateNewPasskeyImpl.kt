@@ -23,8 +23,9 @@ internal class CreateNewPasskeyImpl(
         }
             .onBusinessError {
                 when (it.errorCode) {
-                    SettingsErrorCodes.UNABLE_TO_GENERATE_REGISTRATION_CHALLENGE ->
+                    SettingsErrorCodes.UNABLE_TO_GENERATE_REGISTRATION_CHALLENGE -> {
                         throw CreateNewPasskey.Error.ChallengeCreationFailed()
+                    }
                 }
             }
             .getOrThrow()

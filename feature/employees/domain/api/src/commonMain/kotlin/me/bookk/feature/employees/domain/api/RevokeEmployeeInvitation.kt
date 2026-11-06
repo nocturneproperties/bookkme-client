@@ -6,8 +6,9 @@ interface RevokeEmployeeInvitation {
     suspend operator fun invoke(businessId: Uuid, id: Uuid)
 
     sealed interface Error {
-        class AlreadyProcessed(cause: Throwable) :
-            Throwable(cause),
+        class AlreadyProcessed(
+            cause: Throwable,
+        ) : Throwable(cause),
             Error
     }
 }

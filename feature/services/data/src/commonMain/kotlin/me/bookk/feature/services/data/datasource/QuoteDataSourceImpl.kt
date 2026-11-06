@@ -12,8 +12,9 @@ import me.bookk.feature.services.domain.api.quote.entity.Quote
 import me.bookk.feature.services.domain.datasource.QuoteDataSource
 import kotlin.uuid.Uuid
 
-internal class QuoteDataSourceImpl(private val httpClient: HttpClient) :
-    DataSource(),
+internal class QuoteDataSourceImpl(
+    private val httpClient: HttpClient,
+) : DataSource(),
     QuoteDataSource {
     override suspend fun createQuote(businessId: Uuid, serviceIds: List<Uuid>): Quote =
         mapExceptions {

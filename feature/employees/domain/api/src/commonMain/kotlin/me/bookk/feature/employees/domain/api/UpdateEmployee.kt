@@ -6,17 +6,21 @@ interface UpdateEmployee {
     suspend operator fun invoke(employee: Employee): Employee
 
     sealed interface Error {
-        class ValidationError(cause: Throwable) :
-            Throwable(cause),
+        class ValidationError(
+            cause: Throwable,
+        ) : Throwable(cause),
             Error
-        class ActiveDayWithoutWorkHours(cause: Throwable) :
-            Throwable(cause),
+        class ActiveDayWithoutWorkHours(
+            cause: Throwable,
+        ) : Throwable(cause),
             Error
-        class InvalidDayOffRange(cause: Throwable) :
-            Throwable(cause),
+        class InvalidDayOffRange(
+            cause: Throwable,
+        ) : Throwable(cause),
             Error
-        class InsufficientGrant(cause: Throwable) :
-            Throwable(cause),
+        class InsufficientGrant(
+            cause: Throwable,
+        ) : Throwable(cause),
             Error
     }
 }

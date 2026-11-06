@@ -45,4 +45,6 @@ internal enum class EmployeeInvitationStatusRemote {
 }
 
 @Serializable
-internal class EmployeeInvitationRedeemRequest(@ProtoNumber(1) val code: String)
+internal class EmployeeInvitationRedeemRequest(
+    @ProtoNumber(1) val code: String,
+)

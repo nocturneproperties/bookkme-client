@@ -35,4 +35,6 @@ internal class ActionConfirmationRequestRemote(
 )
 
 @Serializable
-internal class ActionConfirmationTokenRemote(@ProtoNumber(1) val token: String)
+internal class ActionConfirmationTokenRemote(
+    @ProtoNumber(1) val token: String,
+)

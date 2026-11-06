@@ -17,5 +17,8 @@ class PickerScreenArgs(
     }
 
     @Serializable
-    data class PickerData(val data: KeyValueData, val iconUrl: String? = null)
+    data class PickerData(
+        val data: KeyValueData,
+        val iconUrl: String? = null,
+    )
 }

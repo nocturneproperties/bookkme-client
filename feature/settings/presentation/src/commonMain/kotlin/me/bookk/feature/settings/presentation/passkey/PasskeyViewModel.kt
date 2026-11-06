@@ -146,14 +146,17 @@ class PasskeyViewModel(
 
     private fun onDeletePasskeyError(error: Throwable) {
         when (error) {
-            is DeletePasskey.Error.LastPasskey ->
+            is DeletePasskey.Error.LastPasskey -> {
                 uiState.notification.add(
                     PresentationNotification.Message.simple(
                         SettingsRes.strings.settings_passkey_last_error.desc(),
                     ),
                 )
+            }
 
-            else -> uiState.notification.add(error.notification())
+            else -> {
+                uiState.notification.add(error.notification())
+            }
         }
     }
 

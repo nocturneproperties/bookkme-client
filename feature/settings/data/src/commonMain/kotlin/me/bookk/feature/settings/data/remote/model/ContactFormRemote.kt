@@ -4,4 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
 
 @Serializable
-class ContactFormRemote(@ProtoNumber(1) val text: String, @ProtoNumber(2) val usageLogs: String?)
+class ContactFormRemote(
+    @ProtoNumber(1) val text: String,
+    @ProtoNumber(2) val usageLogs: String?,
+)

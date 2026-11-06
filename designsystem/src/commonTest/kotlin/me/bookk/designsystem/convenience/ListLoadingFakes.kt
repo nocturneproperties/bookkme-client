@@ -42,7 +42,9 @@ internal class TestListViewModel : ViewModel(VmArgs(FakeErrorMapper())) {
     ) = loadList(listState, notifications, refreshState, onRefresh, call)
 }
 
-internal class FakeListState<T>(initialItems: List<T> = emptyList()) : ListState<T> {
+internal class FakeListState<T>(
+    initialItems: List<T> = emptyList(),
+) : ListState<T> {
     override val items = initialItems.toMutableList()
     override var loadMore: (() -> Unit)? = null
     override var emptyState: EmptyState? = null

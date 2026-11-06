@@ -29,12 +29,20 @@ class BusinessRemote(
     @ProtoNumber(14) val clientDataRetentionMonths: Int = 36,
 ) {
     @Serializable
-    class Location(@ProtoNumber(1) val lat: Double, @ProtoNumber(2) val lng: Double)
+    class Location(
+        @ProtoNumber(1) val lat: Double,
+        @ProtoNumber(2) val lng: Double,
+    )
 
     @Serializable
-    class Social(@ProtoNumber(1) val kind: SocialKind, @ProtoNumber(2) val value: String?)
+    class Social(
+        @ProtoNumber(1) val kind: SocialKind,
+        @ProtoNumber(2) val value: String?,
+    )
 
-    enum class SocialKind(val domainKind: Business.SocialKind) {
+    enum class SocialKind(
+        val domainKind: Business.SocialKind,
+    ) {
         PHONE(Business.SocialKind.PHONE),
         INSTAGRAM(Business.SocialKind.INSTAGRAM),
         TELEGRAM(Business.SocialKind.TELEGRAM),

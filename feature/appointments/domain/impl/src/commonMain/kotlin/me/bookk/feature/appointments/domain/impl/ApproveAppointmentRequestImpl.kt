@@ -22,17 +22,21 @@ internal class ApproveAppointmentRequestImpl(
         }
             .onBusinessError {
                 when (it.errorCode) {
-                    AppointmentErrorCodes.APPOINTMENT_EXISTS ->
+                    AppointmentErrorCodes.APPOINTMENT_EXISTS -> {
                         throw ApproveAppointmentRequest.Error.AppointmentExists()
+                    }
 
-                    AppointmentErrorCodes.DATE_NOT_ALLOWED ->
+                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
                         throw ApproveAppointmentRequest.Error.DateNotAllowed()
+                    }
 
-                    AppointmentErrorCodes.TIME_NOT_ALLOWED ->
+                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
                         throw ApproveAppointmentRequest.Error.TimeNotAllowed()
+                    }
 
-                    AppointmentErrorCodes.DATE_IN_PAST ->
+                    AppointmentErrorCodes.DATE_IN_PAST -> {
                         throw ApproveAppointmentRequest.Error.DateInPast()
+                    }
                 }
             }
             .getOrThrow()

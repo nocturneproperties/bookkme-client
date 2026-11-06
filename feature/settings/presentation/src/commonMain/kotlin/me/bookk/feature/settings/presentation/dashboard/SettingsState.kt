@@ -31,10 +31,14 @@ interface AppearanceSection {
     val title: StringDesc
     var colorScheme: UIColorScheme
 
-    class InitData(val title: StringDesc)
+    class InitData(
+        val title: StringDesc,
+    )
 
     // UI model to prevent need of Settings Domain API module to be exported to objc header
-    enum class UIColorScheme(val title: StringDesc) {
+    enum class UIColorScheme(
+        val title: StringDesc,
+    ) {
         DARK(SettingsRes.strings.settings_theme_mode_dark.desc()),
         LIGHT(SettingsRes.strings.settings_theme_mode_light.desc()),
         SYSTEM(SettingsRes.strings.settings_theme_mode_system.desc()),

@@ -379,5 +379,4 @@ class PasskeyViewModelTest {
         assertEquals(SettingsRes.strings.settings_passkey_last_error.desc(), message.message)
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
-
 }

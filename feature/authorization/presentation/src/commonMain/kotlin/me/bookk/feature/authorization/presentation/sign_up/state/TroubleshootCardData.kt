@@ -8,5 +8,9 @@ class TroubleshootCardData(
     val icon: ImageResource,
     val reasons: List<Reason>,
 ) {
-    class Reason(val id: Int, val title: StringDesc, val description: StringDesc)
+    class Reason(
+        val id: Int,
+        val title: StringDesc,
+        val description: StringDesc,
+    )
 }

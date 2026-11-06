@@ -8,7 +8,10 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
-class SelectableDateRange(val max: LocalDate?, val min: LocalDate?) : SelectableDates {
+class SelectableDateRange(
+    val max: LocalDate?,
+    val min: LocalDate?,
+) : SelectableDates {
 
     init {
         require(min == null || max == null || min <= max) {

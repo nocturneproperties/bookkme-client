@@ -40,12 +40,18 @@ class DayOfWeekScheduleRemote(
 }
 
 @Serializable
-class WorkHourRemote(@ProtoNumber(1) val from: LocalTime, @ProtoNumber(2) val to: LocalTime) {
+class WorkHourRemote(
+    @ProtoNumber(1) val from: LocalTime,
+    @ProtoNumber(2) val to: LocalTime,
+) {
     fun toDomain() = WorkHour(from = from, to = to)
 }
 
 @Serializable
-class DayOffRangeRemote(@ProtoNumber(1) val start: LocalDate, @ProtoNumber(2) val end: LocalDate) {
+class DayOffRangeRemote(
+    @ProtoNumber(1) val start: LocalDate,
+    @ProtoNumber(2) val end: LocalDate,
+) {
     fun toDomain() = DayOffRange(start = start, end = end)
 }
 

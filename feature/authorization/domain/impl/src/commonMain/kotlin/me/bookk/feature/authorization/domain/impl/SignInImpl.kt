@@ -43,14 +43,19 @@ internal class SignInImpl(
         }
             .recoverCatching {
                 throw when (it.businessOrThrow().errorCode) {
-                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> SignIn.Error.NoAccountForThisPasskey()
+                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> {
+                        SignIn.Error.NoAccountForThisPasskey()
+                    }
 
                     AuthErrorCodes.VERIFICATION_FAILED,
                     AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED,
-                    ->
+                    -> {
                         SignIn.Error.PasskeyVerificationFailed()
+                    }
 
-                    else -> it
+                    else -> {
+                        it
+                    }
                 }
             }
             .getOrThrow()
@@ -69,12 +74,17 @@ internal class SignInImpl(
         }
             .recoverCatching {
                 throw when (it) {
-                    is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
+                    is PassKeyManager.Error.UserCancelled -> {
+                        Error.Ignore(it)
+                    }
 
-                    is PassKeyManager.Error.CredentialsMissing ->
+                    is PassKeyManager.Error.CredentialsMissing -> {
                         SignIn.Error.NoCredentialsAvailable()
+                    }
 
-                    else -> SignIn.Error.PasskeyVerificationFailed()
+                    else -> {
+                        SignIn.Error.PasskeyVerificationFailed()
+                    }
                 }
             }
             .getOrThrow()

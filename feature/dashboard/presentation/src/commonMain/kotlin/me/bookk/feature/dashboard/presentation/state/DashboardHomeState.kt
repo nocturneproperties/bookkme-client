@@ -41,4 +41,7 @@ interface OnboardingState {
     val refresh: RefreshState
 }
 
-data class OnboardingBusinessItem(val id: Uuid, val name: String)
+data class OnboardingBusinessItem(
+    val id: Uuid,
+    val name: String,
+)

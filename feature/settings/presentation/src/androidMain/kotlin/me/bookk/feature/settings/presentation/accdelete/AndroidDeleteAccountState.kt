@@ -12,7 +12,9 @@ import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 
-class AndroidDeleteAccountState(initData: DeleteAccountState.InitData) : DeleteAccountState {
+class AndroidDeleteAccountState(
+    initData: DeleteAccountState.InitData,
+) : DeleteAccountState {
     override val appBar: AppBarState = AndroidAppBarState(initData.title)
     override val confirmationMessage: StringDesc = initData.confirmationMessage
     override val confirmation: BooleanState =

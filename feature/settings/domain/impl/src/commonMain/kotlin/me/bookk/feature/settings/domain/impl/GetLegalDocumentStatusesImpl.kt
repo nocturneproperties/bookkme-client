@@ -6,7 +6,7 @@ import me.bookk.feature.settings.domain.api.entity.LegalDocumentStatus
 import me.bookk.feature.settings.domain.datasource.LegalDocumentsDataSource
 
 internal class GetLegalDocumentStatusesImpl(
-    private val dataSource: LegalDocumentsDataSource
+    private val dataSource: LegalDocumentsDataSource,
 ) : GetLegalDocumentStatuses {
     override fun flow(): Flow<List<LegalDocumentStatus>> {
         return dataSource.observeStatuses()

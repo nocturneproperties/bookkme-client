@@ -133,7 +133,9 @@ class AppointmentRequestViewModel(
                         AppointmentsRes.strings.appointments_request_time_error.desc()
                     }
 
-                    null -> null
+                    null -> {
+                        null
+                    }
                 }
                 if (resource != null) {
                     uiState.notifications.add(PresentationNotification.Message.simple(resource))

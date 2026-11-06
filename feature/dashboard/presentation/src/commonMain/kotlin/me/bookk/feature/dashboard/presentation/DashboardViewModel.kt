@@ -175,28 +175,33 @@ class DashboardViewModel(
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
-                    is CreateBusiness.Error.BusinessAlreadyExists ->
+                    is CreateBusiness.Error.BusinessAlreadyExists -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 DashboardRes.strings.create_business_already_exists_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateBusiness.Error.InvalidName ->
+                    is CreateBusiness.Error.InvalidName -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 DashboardRes.strings.create_business_invalid_name_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateBusiness.Error.EmptyName ->
+                    is CreateBusiness.Error.EmptyName -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 DashboardRes.strings.dashboard_create_error_empty_name.desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
         )
@@ -230,28 +235,33 @@ class DashboardViewModel(
             },
             onError = {
                 when (it) {
-                    is JoinBusiness.Error.EmptyCode ->
+                    is JoinBusiness.Error.EmptyCode -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 DashboardRes.strings.dashboard_join_error_empty_code.desc(),
                             ),
                         )
+                    }
 
-                    is JoinBusiness.Error.AlreadyProcessed ->
+                    is JoinBusiness.Error.AlreadyProcessed -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 DashboardRes.strings.dashboard_join_error_already_processed.desc(),
                             ),
                         )
+                    }
 
-                    is JoinBusiness.Error.EmployeeExists ->
+                    is JoinBusiness.Error.EmployeeExists -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 DashboardRes.strings.dashboard_join_error_employee_exists.desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
         )
@@ -274,16 +284,23 @@ class DashboardViewModel(
 
     private fun renderOnboarding(status: DashboardSetupStatus) {
         when (status) {
-            is DashboardSetupStatus.BusinessNotSelected -> renderSelectableBusinesses(status)
+            is DashboardSetupStatus.BusinessNotSelected -> {
+                renderSelectableBusinesses(status)
+            }
 
-            is DashboardSetupStatus.SetupRequired -> renderSetupSteps(status)
+            is DashboardSetupStatus.SetupRequired -> {
+                renderSetupSteps(status)
+            }
 
-            is DashboardSetupStatus.AwaitingSetup ->
+            is DashboardSetupStatus.AwaitingSetup -> {
                 uiState.home.onboarding.awaitingSetupMessage = status.message()
+            }
 
             DashboardSetupStatus.NoBusiness,
             DashboardSetupStatus.Ready,
-            -> Unit
+            -> {
+                Unit
+            }
         }
     }
 
@@ -340,17 +357,21 @@ class DashboardViewModel(
         val canViewClients = BusinessResource.CLIENTS !in missingViewPermissions
         val canViewServices = BusinessResource.SERVICES !in missingViewPermissions
         val resource = when {
-            canViewClients && canViewServices ->
+            canViewClients && canViewServices -> {
                 DashboardRes.strings.dashboard_onboarding_awaiting_message
+            }
 
-            canViewServices ->
+            canViewServices -> {
                 DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_access
+            }
 
-            canViewClients ->
+            canViewClients -> {
                 DashboardRes.strings.dashboard_onboarding_awaiting_no_services_access
+            }
 
-            else ->
+            else -> {
                 DashboardRes.strings.dashboard_onboarding_awaiting_no_clients_services_access
+            }
         }
         return resource.format(businessName)
     }

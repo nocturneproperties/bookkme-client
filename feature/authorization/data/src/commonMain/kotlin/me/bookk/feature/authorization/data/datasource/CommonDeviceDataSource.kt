@@ -8,7 +8,9 @@ import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-internal class CommonDeviceDataSource(preferenceProvider: PreferenceProvider) : DeviceDataSource {
+internal class CommonDeviceDataSource(
+    preferenceProvider: PreferenceProvider,
+) : DeviceDataSource {
 
     private val preferences = preferenceProvider.get("device_prefs")
 

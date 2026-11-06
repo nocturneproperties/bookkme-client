@@ -25,8 +25,7 @@ import me.bookk.feature.settings.domain.datasource.LegalDocumentsDataSource
 internal class CommonLegalDocumentsDataSource(
     private val httpClient: HttpClient,
     private val legalDocumentStatusDao: LegalDocumentStatusDao,
-) :
-    DataSource(),
+) : DataSource(),
     LegalDocumentsDataSource,
     LogOutAction {
     override suspend fun accept(documents: AcceptedLegalDocuments) = mapExceptions {

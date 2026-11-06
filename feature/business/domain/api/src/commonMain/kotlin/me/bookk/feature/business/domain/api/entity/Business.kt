@@ -32,13 +32,19 @@ data class Business(
         val clientDataRetentionMonths: Int? = null,
     )
 
-    data class Location(val lat: Double, val lng: Double) {
+    data class Location(
+        val lat: Double,
+        val lng: Double,
+    ) {
         override fun toString(): String {
             return "$lat, $lng"
         }
     }
 
-    data class Social(val kind: SocialKind, val value: String?)
+    data class Social(
+        val kind: SocialKind,
+        val value: String?,
+    )
 
     enum class SocialKind {
         PHONE,

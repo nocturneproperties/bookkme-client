@@ -4,7 +4,9 @@ import me.bookk.feature.clients.domain.api.EditClient
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 
-internal class EditClientImpl(private val clientsDataSource: ClientsDataSource) : EditClient {
+internal class EditClientImpl(
+    private val clientsDataSource: ClientsDataSource,
+) : EditClient {
     override suspend fun invoke(client: Client): Client {
         return clientsDataSource.updateClient(client.trimmed()).also {
             clientsDataSource.saveClientsInDb(listOf(it))

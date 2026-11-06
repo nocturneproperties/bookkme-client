@@ -5,5 +5,7 @@ import kotlin.uuid.Uuid
 
 sealed class AppointmentHistoryDestinations : NavigationDestination() {
     data object Back : AppointmentHistoryDestinations()
-    data class AppointmentDetails(val appointmentId: Uuid) : AppointmentHistoryDestinations()
+    data class AppointmentDetails(
+        val appointmentId: Uuid,
+    ) : AppointmentHistoryDestinations()
 }

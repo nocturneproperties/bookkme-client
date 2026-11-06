@@ -6,8 +6,9 @@ import me.bookk.feature.settings.domain.datasource.SettingsErrorCodes
 import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSource
 import kotlin.uuid.Uuid
 
-internal class DeletePasskeyImpl(private val passkeySettingsDataSource: PasskeySettingsDataSource) :
-    DeletePasskey {
+internal class DeletePasskeyImpl(
+    private val passkeySettingsDataSource: PasskeySettingsDataSource,
+) : DeletePasskey {
     override suspend fun invoke(id: Uuid) {
         runCatching { passkeySettingsDataSource.deletePasskey(id) }
             .onBusinessError {

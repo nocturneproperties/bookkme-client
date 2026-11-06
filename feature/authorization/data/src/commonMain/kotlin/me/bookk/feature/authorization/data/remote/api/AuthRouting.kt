@@ -7,50 +7,81 @@ internal object AuthRouting {
     class Api {
 
         @Resource("/auth")
-        class Auth(val parent: Api = Api()) {
+        class Auth(
+            val parent: Api = Api(),
+        ) {
 
             @Resource("/sign_in")
-            class SignIn(val parent: Auth = Auth())
+            class SignIn(
+                val parent: Auth = Auth(),
+            )
 
             @Resource("/sign_up")
-            class SignUp(val parent: Auth = Auth())
+            class SignUp(
+                val parent: Auth = Auth(),
+            )
 
             @Resource("/passkey")
-            class PassKey(val parent: Auth = Auth()) {
+            class PassKey(
+                val parent: Auth = Auth(),
+            ) {
                 @Resource("/sign_in/challenge")
-                class SignInChallenge(val parent: PassKey = PassKey())
+                class SignInChallenge(
+                    val parent: PassKey = PassKey(),
+                )
 
                 @Resource("/sign_up/challenge")
-                class SignUpChallenge(val parent: PassKey = PassKey())
+                class SignUpChallenge(
+                    val parent: PassKey = PassKey(),
+                )
 
                 @Resource("/add/challenge")
-                class AddChallenge(val parent: PassKey = PassKey())
+                class AddChallenge(
+                    val parent: PassKey = PassKey(),
+                )
 
                 @Resource("/add/finish")
-                class AddFinish(val parent: PassKey = PassKey())
+                class AddFinish(
+                    val parent: PassKey = PassKey(),
+                )
 
                 @Resource("{id}")
-                class Id(val parent: PassKey = PassKey(), val id: Long)
+                class Id(
+                    val parent: PassKey = PassKey(),
+                    val id: Long,
+                )
             }
 
             @Resource("/passkey/confirm_action")
-            class ConfirmAction(val parent: Auth = Auth())
+            class ConfirmAction(
+                val parent: Auth = Auth(),
+            )
 
             @Resource("/refresh")
-            class Refresh(val parent: Auth = Auth())
+            class Refresh(
+                val parent: Auth = Auth(),
+            )
 
             @Resource("/session")
-            class SignOut(val parent: Auth = Auth())
+            class SignOut(
+                val parent: Auth = Auth(),
+            )
 
             @Resource("/account")
-            class Account(val parent: Auth = Auth())
+            class Account(
+                val parent: Auth = Auth(),
+            )
         }
 
         @Resource("/user")
-        class User(val parent: Api = Api()) {
+        class User(
+            val parent: Api = Api(),
+        ) {
 
             @Resource("/me")
-            class Me(val parent: User = User())
+            class Me(
+                val parent: User = User(),
+            )
         }
     }
 }

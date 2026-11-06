@@ -22,10 +22,13 @@ internal class RedeemEmployeeInvitationImpl(
     }
         .onBusinessError { error ->
             when (error.errorCode) {
-                EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED ->
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED -> {
                     throw Error.AlreadyProcessed(error)
+                }
 
-                EmployeeErrorCodes.BUSINESS_EMPLOYEE_EXISTS -> throw Error.EmployeeExists(error)
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_EXISTS -> {
+                    throw Error.EmployeeExists(error)
+                }
             }
         }
         .getOrThrow()

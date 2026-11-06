@@ -29,10 +29,13 @@ internal class StartPersonalDataExportImpl(
         dataSource.start(token)
     }.onBusinessError {
         when (it.errorCode) {
-            SettingsErrorCodes.USER_ACTION_CONFIRMATION_INVALID ->
+            SettingsErrorCodes.USER_ACTION_CONFIRMATION_INVALID -> {
                 throw Error.ConfirmationRequired()
+            }
 
-            SettingsErrorCodes.DATA_EXPORT_TOO_FREQUENT -> throw Error.TooFrequent()
+            SettingsErrorCodes.DATA_EXPORT_TOO_FREQUENT -> {
+                throw Error.TooFrequent()
+            }
         }
     }.getOrThrow()
 
@@ -45,10 +48,13 @@ internal class StartPersonalDataExportImpl(
     }
         .getOrElse {
             throw when (it) {
-                is ConfirmSensitiveAction.Error ->
+                is ConfirmSensitiveAction.Error -> {
                     Error.ConfirmationFailed()
+                }
 
-                else -> it
+                else -> {
+                    it
+                }
             }
         }
 }

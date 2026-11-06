@@ -7,8 +7,9 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem
 
-class AndroidDateRangePickerState(title: StringDesc = "".desc()) :
-    AndroidViewState(isVisible = true),
+class AndroidDateRangePickerState(
+    title: StringDesc = "".desc(),
+) : AndroidViewState(isVisible = true),
     DateRangePickerState {
     override var title: StringDesc by mutableStateOf(title)
     override val startDate: DatePickerFieldState = AndroidDatePickerFieldState().apply {

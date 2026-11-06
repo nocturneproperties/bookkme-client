@@ -28,7 +28,9 @@ interface ServiceListState {
         val items: List<ServiceUI>,
     )
 
-    class ServiceUI internal constructor(service: Service) {
+    class ServiceUI internal constructor(
+        service: Service,
+    ) {
         val id: String = service.id.toString()
         val title: String = service.name
         internal val domain = service

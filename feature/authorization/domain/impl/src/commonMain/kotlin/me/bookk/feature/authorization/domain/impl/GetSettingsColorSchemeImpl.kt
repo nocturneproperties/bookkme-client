@@ -7,8 +7,9 @@ import me.bookk.feature.settings.domain.api.GetColorScheme
 import me.bookk.feature.authorization.domain.entity.ColorScheme as AuthColorScheme
 import me.bookk.feature.settings.domain.api.entity.ColorScheme as SettingsColorScheme
 
-internal class GetSettingsColorSchemeImpl(private val getColorScheme: GetColorScheme) :
-    GetSettingsColorScheme {
+internal class GetSettingsColorSchemeImpl(
+    private val getColorScheme: GetColorScheme,
+) : GetSettingsColorScheme {
 
     override suspend fun invoke(): AuthColorScheme = getColorScheme().toAuthColorScheme()
 

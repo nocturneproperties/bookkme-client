@@ -279,20 +279,25 @@ class SignUpViewModel(
         when (error) {
             is Error.LegalDocumentVersionUnknown,
             is Error.LegalDocumentsNotAccepted,
-            -> onLegalDocumentsRejected()
+            -> {
+                onLegalDocumentsRejected()
+            }
 
-            is Error.ChallengeWindowExpired ->
+            is Error.ChallengeWindowExpired -> {
                 uiState.notification.add(
                     Message.simple(
                         AuthRes.strings.sign_up_challenge_expired_error.desc(),
                     ),
                 )
+            }
 
-            is Error.EmailAlreadyExist ->
+            is Error.EmailAlreadyExist -> {
                 uiState.email.showError(AuthRes.strings.sign_up_email_exist.desc())
+            }
 
-            is Error.InvalidEmailFormat ->
+            is Error.InvalidEmailFormat -> {
                 uiState.email.showError(AuthRes.strings.sign_up_email_error.desc())
+            }
 
             is Error.PasskeyVerificationFailed -> {
                 uiState.notification.add(
@@ -320,7 +325,9 @@ class SignUpViewModel(
                 )
             }
 
-            else -> uiState.notification.add(errorMapper.mapToNotification(error))
+            else -> {
+                uiState.notification.add(errorMapper.mapToNotification(error))
+            }
         }
     }
 

@@ -21,7 +21,9 @@ import me.bookk.core.presentation.flow.retryingWithBackoff
 import me.bookk.core.presentation.flow.safeOnEach
 import kotlin.coroutines.CoroutineContext
 
-actual abstract class ViewModel actual constructor(vmArgs: VmArgs) {
+actual abstract class ViewModel actual constructor(
+    vmArgs: VmArgs,
+) {
     private val internalLogger = Logger.create("ViewModel")
     private val activeJobs = mutableMapOf<String, Job>()
     protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper

@@ -144,8 +144,13 @@ class SettingsDashboardViewModel(
 
     private fun LegalDocument.title(): StringDesc {
         return when (this) {
-            LegalDocument.PRIVACY_POLICY -> SettingsRes.strings.settings_support_privacy_label.desc()
-            LegalDocument.TERMS_OF_SERVICE -> SettingsRes.strings.settings_support_terms_label.desc()
+            LegalDocument.PRIVACY_POLICY -> {
+                SettingsRes.strings.settings_support_privacy_label.desc()
+            }
+
+            LegalDocument.TERMS_OF_SERVICE -> {
+                SettingsRes.strings.settings_support_terms_label.desc()
+            }
         }
     }
 
@@ -197,7 +202,9 @@ class SettingsDashboardViewModel(
                         loadLegalDocuments()
                     }
 
-                    else -> uiState.notification.add(it.notification())
+                    else -> {
+                        uiState.notification.add(it.notification())
+                    }
                 }
             },
             onTerminate = { uiState.legal.accept.stopLoading() },

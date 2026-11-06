@@ -148,20 +148,26 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
-    fun `keeps document rows in static order when statuses arrive in a different order`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.remoteStatuses.refresh() } returns listOf(terms(), privacy())
-        val sut = fixture.sut()
-        val initialIds = sut.uiState.legal.documents.map { it.id }
+    fun `keeps document rows in static order when statuses arrive in a different order`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.remoteStatuses.refresh() } returns listOf(terms(), privacy())
+            val sut = fixture.sut()
+            val initialIds = sut.uiState.legal.documents.map { it.id }
 
-        whenn()
-        sut.onViewPresented()
+            whenn()
+            sut.onViewPresented()
 
-        then()
-        assertEquals(initialIds, sut.uiState.legal.documents.map { it.id })
-        assertEquals(listOf("privacy-v2", "terms-v3"), sut.uiState.legal.documents.map { it.version })
-    }
+            then()
+            assertEquals(initialIds, sut.uiState.legal.documents.map { it.id })
+            assertEquals(
+                listOf("privacy-v2", "terms-v3"),
+                sut.uiState.legal.documents.map {
+                    it.version
+                },
+            )
+        }
 
     @Test
     fun `keeps an unknown row for a document missing from the loaded statuses`() = runUnitTest {
@@ -196,7 +202,12 @@ class SettingsDashboardViewModelTest {
 
         then()
         verifySuspend(VerifyMode.exactly(1)) { fixture.getLegalDocumentStatuses.refresh() }
-        assertEquals(listOf("privacy-v2", "terms-v3"), sut.uiState.legal.documents.map { it.version })
+        assertEquals(
+            listOf("privacy-v2", "terms-v3"),
+            sut.uiState.legal.documents.map {
+                it.version
+            },
+        )
     }
 
     @Test
@@ -380,7 +391,10 @@ class SettingsDashboardViewModelTest {
         sut.onViewPresented()
 
         then()
-        assertEquals(SettingsRes.strings.settings_legal_load_error.desc(), sut.uiState.legal.message)
+        assertEquals(
+            SettingsRes.strings.settings_legal_load_error.desc(),
+            sut.uiState.legal.message,
+        )
         assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
         assertTrue(!sut.uiState.legal.accept.isVisible)
     }
@@ -867,22 +881,28 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
-    fun `keeps cached pending documents available when post acceptance refresh fails`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.sut()
-        sut.onViewPresented()
+    fun `keeps cached pending documents available when post acceptance refresh fails`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val sut = fixture.sut()
+            sut.onViewPresented()
 
-        whenn()
-        everySuspend { fixture.remoteStatuses.refresh() } throws TestException()
-        sut.uiState.legal.accept.onClick?.invoke()
+            whenn()
+            everySuspend { fixture.remoteStatuses.refresh() } throws TestException()
+            sut.uiState.legal.accept.onClick?.invoke()
 
-        then()
-        assertEquals(listOf("privacy-v2", "terms-v3"), sut.uiState.legal.documents.map { it.version })
-        assertTrue(sut.uiState.legal.retry.isVisible)
-        assertTrue(sut.uiState.legal.accept.isVisible)
-        assertTrue(sut.uiState.legal.accept.isEnabled)
-    }
+            then()
+            assertEquals(
+                listOf("privacy-v2", "terms-v3"),
+                sut.uiState.legal.documents.map {
+                    it.version
+                },
+            )
+            assertTrue(sut.uiState.legal.retry.isVisible)
+            assertTrue(sut.uiState.legal.accept.isVisible)
+            assertTrue(sut.uiState.legal.accept.isEnabled)
+        }
 
     @Test
     fun `explains explicit acceptance beside pending documents`() = runUnitTest {

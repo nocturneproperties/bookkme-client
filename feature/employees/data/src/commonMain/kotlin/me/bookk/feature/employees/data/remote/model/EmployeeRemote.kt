@@ -88,7 +88,9 @@ internal class EmployeePermissionsRequest(
 }
 
 @Serializable
-internal class EmployeeSuspensionRequest(@ProtoNumber(1) val suspended: Boolean)
+internal class EmployeeSuspensionRequest(
+    @ProtoNumber(1) val suspended: Boolean,
+)
 
 @Serializable
 internal class ResourcePermissionRemote(

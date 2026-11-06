@@ -19,7 +19,10 @@ internal fun NavGraphBuilder.serviceGroupListScreen(navigation: ServicesNavigati
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
                     is ServiceGroupListDestination.AddGroup -> {}
-                    ServiceGroupListDestination.Back -> navigation.onBack()
+
+                    ServiceGroupListDestination.Back -> {
+                        navigation.onBack()
+                    }
                 }
             }
         }

@@ -330,30 +330,39 @@ class EditEmployeeViewModel(
 
     private fun Throwable.suspensionErrorNotification(): PresentationNotification {
         return when (this) {
-            is SetEmployeeSuspension.Error.OwnerSuspensionNotAllowed ->
+            is SetEmployeeSuspension.Error.OwnerSuspensionNotAllowed -> {
                 PresentationNotification.Message.simple(
                     EmployeesRes.strings.employees_edit_error_owner_suspension.desc(),
                 )
+            }
 
-            else -> notification()
+            else -> {
+                notification()
+            }
         }
     }
 
     private fun Throwable.saveErrorNotification(): PresentationNotification {
         val message = when (this) {
-            is UpdateEmployee.Error.ValidationError ->
+            is UpdateEmployee.Error.ValidationError -> {
                 EmployeesRes.strings.employees_edit_error_validation
+            }
 
-            is UpdateEmployee.Error.ActiveDayWithoutWorkHours ->
+            is UpdateEmployee.Error.ActiveDayWithoutWorkHours -> {
                 EmployeesRes.strings.employees_edit_error_active_day_without_work_hours
+            }
 
-            is UpdateEmployee.Error.InvalidDayOffRange ->
+            is UpdateEmployee.Error.InvalidDayOffRange -> {
                 EmployeesRes.strings.employees_edit_error_invalid_day_off_range
+            }
 
-            is UpdateEmployee.Error.InsufficientGrant ->
+            is UpdateEmployee.Error.InsufficientGrant -> {
                 EmployeesRes.strings.employees_edit_error_insufficient_grant
+            }
 
-            else -> return notification()
+            else -> {
+                return notification()
+            }
         }
         return PresentationNotification.Message.simple(message.desc())
     }
@@ -408,16 +417,25 @@ class EditEmployeeViewModel(
 
     private fun BusinessResource.title(): StringResource {
         return when (this) {
-            BusinessResource.BUSINESS -> EmployeesRes.strings.employees_edit_permission_business
+            BusinessResource.BUSINESS -> {
+                EmployeesRes.strings.employees_edit_permission_business
+            }
 
-            BusinessResource.EMPLOYEES -> EmployeesRes.strings.employees_edit_permission_employees
+            BusinessResource.EMPLOYEES -> {
+                EmployeesRes.strings.employees_edit_permission_employees
+            }
 
-            BusinessResource.CLIENTS -> EmployeesRes.strings.employees_edit_permission_clients
+            BusinessResource.CLIENTS -> {
+                EmployeesRes.strings.employees_edit_permission_clients
+            }
 
-            BusinessResource.SERVICES -> EmployeesRes.strings.employees_edit_permission_services
+            BusinessResource.SERVICES -> {
+                EmployeesRes.strings.employees_edit_permission_services
+            }
 
-            BusinessResource.APPOINTMENTS ->
+            BusinessResource.APPOINTMENTS -> {
                 EmployeesRes.strings.employees_edit_permission_appointments
+            }
         }
     }
 

@@ -17,7 +17,10 @@ data class InvitationItem(
     val onClick: (() -> Unit)? = null,
 )
 
-class UIInvitationStatus(val label: StringDesc, val color: ColorToken) {
+class UIInvitationStatus(
+    val label: StringDesc,
+    val color: ColorToken,
+) {
     internal constructor(
         status: EmployeeInvitationStatus,
     ) : this(
@@ -27,17 +30,21 @@ class UIInvitationStatus(val label: StringDesc, val color: ColorToken) {
 }
 
 private fun EmployeeInvitationStatus.label(): StringDesc = when (this) {
-    EmployeeInvitationStatus.PENDING ->
+    EmployeeInvitationStatus.PENDING -> {
         EmployeesRes.strings.employees_invite_status_pending.desc()
+    }
 
-    EmployeeInvitationStatus.REDEEMED ->
+    EmployeeInvitationStatus.REDEEMED -> {
         EmployeesRes.strings.employees_invite_status_redeemed.desc()
+    }
 
-    EmployeeInvitationStatus.EXPIRED ->
+    EmployeeInvitationStatus.EXPIRED -> {
         EmployeesRes.strings.employees_invite_status_expired.desc()
+    }
 
-    EmployeeInvitationStatus.REVOKED ->
+    EmployeeInvitationStatus.REVOKED -> {
         EmployeesRes.strings.employees_invite_status_revoked.desc()
+    }
 }
 
 private fun EmployeeInvitationStatus.color(): ColorToken = when (this) {

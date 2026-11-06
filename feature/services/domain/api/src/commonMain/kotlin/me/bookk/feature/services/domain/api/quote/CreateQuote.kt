@@ -7,8 +7,9 @@ interface CreateQuote {
     suspend operator fun invoke(businessId: Uuid, serviceIds: List<Uuid>): Quote
 
     sealed interface Error {
-        class ServiceNotFound(cause: Throwable) :
-            Throwable(cause),
+        class ServiceNotFound(
+            cause: Throwable,
+        ) : Throwable(cause),
             Error
     }
 }

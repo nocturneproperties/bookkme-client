@@ -12,8 +12,9 @@ import platform.LocalAuthentication.LAPolicyDeviceOwnerAuthenticationWithBiometr
 import kotlin.coroutines.resume
 
 @OptIn(ExperimentalForeignApi::class)
-internal class IosBiometry(optManager: CommonBiometryOptManager) :
-    Biometry,
+internal class IosBiometry(
+    optManager: CommonBiometryOptManager,
+) : Biometry,
     BiometryOptManager by optManager {
 
     override fun isBiometryAvailable(): Boolean {

@@ -43,8 +43,9 @@ import me.bookk.designsystem.uistate.simple.ErrorState
 import me.bookk.designsystem.uistate.simple.TextIcon
 import kotlin.uuid.Uuid
 
-class FakeListState<T>(initialItems: List<T> = emptyList()) :
-    FakeViewState(),
+class FakeListState<T>(
+    initialItems: List<T> = emptyList(),
+) : FakeViewState(),
     ListState<T> {
     override val items: MutableList<T> = initialItems.toMutableList()
     override var loadMore: (() -> Unit)? = null

@@ -144,35 +144,41 @@ class EditServiceViewModel(
             },
             onError = {
                 when (it) {
-                    is EditService.Error.NameAlreadyExists ->
+                    is EditService.Error.NameAlreadyExists -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_name_exists_error.desc(),
                             ),
                         )
+                    }
 
-                    is EditService.Error.InvalidName ->
+                    is EditService.Error.InvalidName -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_invalid_name_error.desc(),
                             ),
                         )
+                    }
 
-                    is EditService.Error.GroupNotFound ->
+                    is EditService.Error.GroupNotFound -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_group_not_found_error.desc(),
                             ),
                         )
+                    }
 
-                    is EditService.Error.InvalidPricePrecision ->
+                    is EditService.Error.InvalidPricePrecision -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ServicesRes.strings.services_price_precision_error.desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
             onTerminate = {

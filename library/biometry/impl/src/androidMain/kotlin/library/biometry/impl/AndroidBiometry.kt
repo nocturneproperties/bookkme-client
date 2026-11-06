@@ -12,8 +12,9 @@ import library.biometry.api.BiometryOptManager
 import me.bookk.core.android.AndroidActivityAware
 import kotlin.coroutines.resume
 
-internal class AndroidBiometry(optManager: BiometryOptManager) :
-    AndroidActivityAware(),
+internal class AndroidBiometry(
+    optManager: BiometryOptManager,
+) : AndroidActivityAware(),
     Biometry,
     BiometryOptManager by optManager {
 

@@ -19,4 +19,8 @@ import kotlin.uuid.Uuid
     ],
     indices = [Index("settingsId")],
 )
-class AppointmentSettingsDayOffEntity(val settingsId: Uuid, val start: String, val end: String)
+class AppointmentSettingsDayOffEntity(
+    val settingsId: Uuid,
+    val start: String,
+    val end: String,
+)

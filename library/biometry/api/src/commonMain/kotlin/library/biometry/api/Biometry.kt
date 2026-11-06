@@ -11,8 +11,9 @@ interface Biometry : BiometryOptManager {
         class NotEnrolled :
             Throwable(),
             Error
-        class AuthenticationFailed(message: String) :
-            Throwable(message),
+        class AuthenticationFailed(
+            message: String,
+        ) : Throwable(message),
             Error
         class UserCancelled :
             Throwable(),

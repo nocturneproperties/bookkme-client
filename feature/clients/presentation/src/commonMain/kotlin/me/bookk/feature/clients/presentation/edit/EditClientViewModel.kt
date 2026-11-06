@@ -158,14 +158,17 @@ class EditClientViewModel(
             },
             onError = {
                 when (it) {
-                    is DeleteClient.Error.ConfirmationFailed ->
+                    is DeleteClient.Error.ConfirmationFailed -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 ClientsRes.strings.clients_delete_confirmation_failed_error.desc(),
                             ),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
             onTerminate = { uiState.deleteButton.stopLoading() },

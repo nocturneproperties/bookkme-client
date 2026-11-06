@@ -5,7 +5,9 @@ import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.datasource.SettingsErrorCodes
 
-internal class EditProfileImpl(private val profileCRUD: UserProfileCRUD) : EditProfile {
+internal class EditProfileImpl(
+    private val profileCRUD: UserProfileCRUD,
+) : EditProfile {
     override suspend fun invoke(firstName: String, lastName: String, email: String) {
         runCatching {
             profileCRUD.update(
@@ -20,8 +22,9 @@ internal class EditProfileImpl(private val profileCRUD: UserProfileCRUD) : EditP
         }
             .onBusinessError {
                 when (it.errorCode) {
-                    SettingsErrorCodes.USER_CONTACT_TAKEN ->
+                    SettingsErrorCodes.USER_CONTACT_TAKEN -> {
                         throw EditProfile.Error.ContactAlreadyTaken()
+                    }
                 }
             }
             .getOrThrow()

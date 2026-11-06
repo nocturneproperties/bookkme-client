@@ -47,7 +47,9 @@ class ListLoadingTest {
         Dispatchers.resetMain()
     }
 
-    private class Fixture(initialItems: List<String> = emptyList()) {
+    private class Fixture(
+        initialItems: List<String> = emptyList(),
+    ) {
         val listState = FakeListState(initialItems)
         val refreshState = FakeRefreshState()
         val notifications = FakeNotificationState()

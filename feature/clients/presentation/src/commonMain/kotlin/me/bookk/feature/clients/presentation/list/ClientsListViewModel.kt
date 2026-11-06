@@ -249,17 +249,21 @@ class ClientsListViewModel(
 
     private fun RejectedClientImport.Reason.summaryLine(): StringResource {
         return when (this) {
-            RejectedClientImport.Reason.INVALID_FIELDS ->
+            RejectedClientImport.Reason.INVALID_FIELDS -> {
                 ClientsRes.strings.clients_import_result_reason_invalid
+            }
 
-            RejectedClientImport.Reason.MISSING_CONTACT_INFO ->
+            RejectedClientImport.Reason.MISSING_CONTACT_INFO -> {
                 ClientsRes.strings.clients_import_result_reason_missing_contact
+            }
 
-            RejectedClientImport.Reason.ALREADY_EXISTS ->
+            RejectedClientImport.Reason.ALREADY_EXISTS -> {
                 ClientsRes.strings.clients_import_result_reason_exists
+            }
 
-            RejectedClientImport.Reason.UNKNOWN ->
+            RejectedClientImport.Reason.UNKNOWN -> {
                 ClientsRes.strings.clients_import_result_reason_unknown
+            }
         }
     }
 

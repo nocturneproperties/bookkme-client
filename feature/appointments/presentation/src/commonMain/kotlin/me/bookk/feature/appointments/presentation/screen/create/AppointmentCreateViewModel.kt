@@ -193,31 +193,34 @@ class AppointmentCreateViewModel(
                         uiState.create.isEnabled = false
                     }
 
-                    is CreateAppointment.Error.PriceChanged ->
+                    is CreateAppointment.Error.PriceChanged -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings.appointments_create_price_changed_error
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.DurationChanged ->
+                    is CreateAppointment.Error.DurationChanged -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings.appointments_create_duration_changed_error
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.ServicesChanged ->
+                    is CreateAppointment.Error.ServicesChanged -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings.appointments_create_services_changed_error
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.ServiceNotFound ->
+                    is CreateAppointment.Error.ServiceNotFound -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings
@@ -225,45 +228,51 @@ class AppointmentCreateViewModel(
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.EmptyServices ->
+                    is CreateAppointment.Error.EmptyServices -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings.appointments_create_empty_services_error
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.DateInPast ->
+                    is CreateAppointment.Error.DateInPast -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings.appointments_date_in_past_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.OfferAlreadyUsed ->
+                    is CreateAppointment.Error.OfferAlreadyUsed -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings.appointments_create_offer_used_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.EmployeeNotFound ->
+                    is CreateAppointment.Error.EmployeeNotFound -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings.appointments_employee_not_found_error
                                     .desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.ClientNotFound ->
+                    is CreateAppointment.Error.ClientNotFound -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings.appointments_client_not_found_error.desc(),
                             ),
                         )
+                    }
 
-                    is CreateAppointment.Error.EmployeeSuspended ->
+                    is CreateAppointment.Error.EmployeeSuspended -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
                                 AppointmentsRes.strings
@@ -271,6 +280,7 @@ class AppointmentCreateViewModel(
                                     .desc(),
                             ),
                         )
+                    }
 
                     is CreateAppointment.Error.TimeIsNotAllowed -> {
                         uiState.timePicker.textField.showError(
@@ -279,7 +289,9 @@ class AppointmentCreateViewModel(
                         uiState.create.isEnabled = false
                     }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
             onTerminate = {

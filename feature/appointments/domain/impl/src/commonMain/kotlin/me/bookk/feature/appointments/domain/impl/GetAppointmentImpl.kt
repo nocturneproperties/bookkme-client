@@ -7,8 +7,9 @@ import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
 import me.bookk.core.domain.entity.Error as DomainError
 
-internal class GetAppointmentImpl(private val appointmentDataSource: AppointmentDataSource) :
-    GetAppointment {
+internal class GetAppointmentImpl(
+    private val appointmentDataSource: AppointmentDataSource,
+) : GetAppointment {
     override suspend fun invoke(id: Uuid): Appointment {
         return appointmentDataSource.getAppointment(id)
     }

@@ -8,7 +8,9 @@ import me.bookk.feature.clients.domain.datasource.ClientErrorCodes
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 import kotlin.uuid.Uuid
 
-internal class ImportClientsImpl(private val clientsDataSource: ClientsDataSource) : ImportClients {
+internal class ImportClientsImpl(
+    private val clientsDataSource: ClientsDataSource,
+) : ImportClients {
 
     override suspend fun invoke(
         businessId: Uuid,

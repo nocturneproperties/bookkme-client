@@ -7,8 +7,9 @@ import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.domain.datasource.ServiceErrorCodes
 import me.bookk.feature.services.domain.datasource.ServiceGroupDataSource
 
-internal class CreateServiceGroupImpl(private val dataSource: ServiceGroupDataSource) :
-    CreateServiceGroup {
+internal class CreateServiceGroupImpl(
+    private val dataSource: ServiceGroupDataSource,
+) : CreateServiceGroup {
     override suspend fun invoke(group: ServiceGroup): ServiceGroup = runCatching {
         dataSource.createServiceGroup(group.copy(name = group.name.trim())).also {
             dataSource.saveGroupInDB(it)

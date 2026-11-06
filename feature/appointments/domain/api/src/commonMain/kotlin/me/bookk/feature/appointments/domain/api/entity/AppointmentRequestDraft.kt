@@ -12,4 +12,7 @@ data class AppointmentRequestDraft(
     val offerToken: String,
 )
 
-data class RequestedService(val serviceId: Uuid, val count: Int)
+data class RequestedService(
+    val serviceId: Uuid,
+    val count: Int,
+)

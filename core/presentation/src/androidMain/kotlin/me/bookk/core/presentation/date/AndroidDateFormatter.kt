@@ -12,7 +12,9 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toJavaLocalTime
 import me.bookk.core.capitalizeChar
 
-internal class AndroidDateFormatter(val formatters: AndroidFormatters) : DateLocalizer.Formatter {
+internal class AndroidDateFormatter(
+    val formatters: AndroidFormatters,
+) : DateLocalizer.Formatter {
 
     private val relativeFormatter = RelativeDateTimeFormatter.getInstance()
 

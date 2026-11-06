@@ -10,7 +10,9 @@ import me.bookk.feature.clients.domain.datasource.ClientErrorCodes
 import kotlin.uuid.Uuid
 
 @Serializable
-internal class ClientImportRequest(@ProtoNumber(1) val clients: List<ClientImportEntryRemote>)
+internal class ClientImportRequest(
+    @ProtoNumber(1) val clients: List<ClientImportEntryRemote>,
+)
 
 @Serializable
 internal class ClientImportEntryRemote(
@@ -57,14 +59,21 @@ internal class RejectedClientRemote(
 
     private fun reason(): RejectedClientImport.Reason {
         return when (errorCode) {
-            ClientErrorCodes.CLIENT_VALIDATION_ERROR -> RejectedClientImport.Reason.INVALID_FIELDS
+            ClientErrorCodes.CLIENT_VALIDATION_ERROR -> {
+                RejectedClientImport.Reason.INVALID_FIELDS
+            }
 
-            ClientErrorCodes.CLIENT_MISSING_CONTACT_INFO ->
+            ClientErrorCodes.CLIENT_MISSING_CONTACT_INFO -> {
                 RejectedClientImport.Reason.MISSING_CONTACT_INFO
+            }
 
-            ClientErrorCodes.CLIENT_EXISTS -> RejectedClientImport.Reason.ALREADY_EXISTS
+            ClientErrorCodes.CLIENT_EXISTS -> {
+                RejectedClientImport.Reason.ALREADY_EXISTS
+            }
 
-            else -> RejectedClientImport.Reason.UNKNOWN
+            else -> {
+                RejectedClientImport.Reason.UNKNOWN
+            }
         }
     }
 }

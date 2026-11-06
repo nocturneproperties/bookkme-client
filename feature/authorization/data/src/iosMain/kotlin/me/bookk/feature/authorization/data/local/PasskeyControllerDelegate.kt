@@ -91,14 +91,19 @@ class PasskeyControllerDelegate(
         didCompleteWithError: NSError,
     ) {
         val error = when (didCompleteWithError.code) {
-            ASAuthorizationErrorCanceled -> PassKeyManager.Error.UserCancelled()
+            ASAuthorizationErrorCanceled -> {
+                PassKeyManager.Error.UserCancelled()
+            }
 
             ASAuthorizationErrorFailed,
             ASAuthorizationErrorNotHandled,
-            -> PassKeyManager.Error.Infrastructure()
+            -> {
+                PassKeyManager.Error.Infrastructure()
+            }
 
-            else ->
+            else -> {
                 PassKeyManager.Error.Unknown(Throwable(didCompleteWithError.code.toString()))
+            }
         }
         continuation.cancel(error)
     }

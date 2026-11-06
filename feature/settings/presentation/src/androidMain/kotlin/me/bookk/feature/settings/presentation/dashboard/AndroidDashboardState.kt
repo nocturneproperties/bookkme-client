@@ -15,7 +15,9 @@ import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextState
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
 
-internal class AndroidDashboardState(initData: SettingsState.InitData) : SettingsState {
+internal class AndroidDashboardState(
+    initData: SettingsState.InitData,
+) : SettingsState {
     override val appBar: AppBarState = AndroidAppBarState()
     override val appearance: AppearanceSection = AndroidAppearanceSectionState(initData.appearance)
     override val profile: ProfileSection = AndroidProfileSectionState()
@@ -27,8 +29,9 @@ internal class AndroidDashboardState(initData: SettingsState.InitData) : Setting
         AndroidNavigationState()
 }
 
-internal class AndroidAppearanceSectionState(initData: AppearanceSection.InitData) :
-    AppearanceSection {
+internal class AndroidAppearanceSectionState(
+    initData: AppearanceSection.InitData,
+) : AppearanceSection {
     override val title: StringDesc = initData.title
     override var colorScheme: UIColorScheme by mutableStateOf(UIColorScheme.SYSTEM)
 }
@@ -39,7 +42,9 @@ internal class AndroidProfileSectionState : ProfileSection {
     override var email: StringDesc by mutableStateOf("".desc())
 }
 
-internal class AndroidAccountSectionState(initData: AccountSection.InitData) : AccountSection {
+internal class AndroidAccountSectionState(
+    initData: AccountSection.InitData,
+) : AccountSection {
     override val dataExport = AndroidTextState()
     override val title: StringDesc = initData.title
     override val notifications: TextState = AndroidTextState(initData.notificationsLabel)
@@ -48,7 +53,9 @@ internal class AndroidAccountSectionState(initData: AccountSection.InitData) : A
     override val deleteAccount: TextState = AndroidTextState(initData.deleteAccountLabel)
 }
 
-internal class AndroidSupportState(initData: SupportSection.InitData) : SupportSection {
+internal class AndroidSupportState(
+    initData: SupportSection.InitData,
+) : SupportSection {
     override val title: StringDesc = initData.title
     override val contact: TextState = AndroidTextState(initData.contactLabel)
     override val feature: TextState = AndroidTextState(initData.featureLabel)

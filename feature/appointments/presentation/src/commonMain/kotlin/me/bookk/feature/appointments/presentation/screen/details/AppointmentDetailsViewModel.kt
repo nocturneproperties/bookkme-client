@@ -99,7 +99,9 @@ class AppointmentDetailsViewModel(
                         uiState.navigation.push(AppointmentDetailsDestination.Back)
                     }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
         )
@@ -128,10 +130,11 @@ class AppointmentDetailsViewModel(
             onComplete = ::renderMutatedAppointment,
             onError = {
                 when (it) {
-                    is Error.EditWindowClosed ->
+                    is Error.EditWindowClosed -> {
                         recoverAppointment(
                             AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
                         )
+                    }
 
                     is Error.AppointmentAlreadyCancelled -> {
                         renderAppointment(appointment.copy(status = AppointmentStatus.CANCELLED))
@@ -141,7 +144,9 @@ class AppointmentDetailsViewModel(
                         renderAppointment(appointment.copy(status = AppointmentStatus.COMPLETED))
                     }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
         )
@@ -273,20 +278,23 @@ class AppointmentDetailsViewModel(
 
     private fun onCompletionError(error: Throwable) {
         when (error) {
-            is CompleteAppointment.Error.NegativePrice ->
+            is CompleteAppointment.Error.NegativePrice -> {
                 uiState.completion.price.showError(
                     AppointmentsRes.strings.appointments_complete_price_error.desc(),
                 )
+            }
 
-            is CompleteAppointment.Error.CurrencyMismatch ->
+            is CompleteAppointment.Error.CurrencyMismatch -> {
                 uiState.completion.price.showError(
                     AppointmentsRes.strings.appointments_complete_currency_error.desc(),
                 )
+            }
 
-            is CompleteAppointment.Error.ReasonTooLong ->
+            is CompleteAppointment.Error.ReasonTooLong -> {
                 uiState.completion.note.showError(
                     AppointmentsRes.strings.appointments_complete_note_too_long_error.desc(),
                 )
+            }
 
             else -> {
                 uiState.completion.isSheetVisible = false
@@ -297,21 +305,25 @@ class AppointmentDetailsViewModel(
 
     private fun onCompletionRejected(error: Throwable) {
         when (error) {
-            is CompleteAppointment.Error.EditWindowClosed ->
+            is CompleteAppointment.Error.EditWindowClosed -> {
                 recoverAppointment(
                     AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
                 )
+            }
 
-            is CompleteAppointment.Error.AppointmentAlreadyCancelled ->
+            is CompleteAppointment.Error.AppointmentAlreadyCancelled -> {
                 renderStatus(AppointmentStatus.CANCELLED)
+            }
 
-            is CompleteAppointment.Error.AppointmentMarkedNoShow ->
+            is CompleteAppointment.Error.AppointmentMarkedNoShow -> {
                 renderStatus(AppointmentStatus.NO_SHOW)
+            }
 
-            is CompleteAppointment.Error.AppointmentNotStarted ->
+            is CompleteAppointment.Error.AppointmentNotStarted -> {
                 showMessage(
                     AppointmentsRes.strings.appointments_details_not_started_error.desc(),
                 )
+            }
 
             is CompleteAppointment.Error.ServiceNotFound -> {
                 showMessage(
@@ -320,7 +332,9 @@ class AppointmentDetailsViewModel(
                 refreshServiceOptions()
             }
 
-            else -> uiState.notifications.add(error.notification())
+            else -> {
+                uiState.notifications.add(error.notification())
+            }
         }
     }
 
@@ -355,20 +369,25 @@ class AppointmentDetailsViewModel(
             onTerminate = { uiState.noShowButton.stopLoading() },
             onError = {
                 when (it) {
-                    is MarkAppointmentNoShow.Error.EditWindowClosed ->
+                    is MarkAppointmentNoShow.Error.EditWindowClosed -> {
                         recoverAppointment(
                             AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
                         )
+                    }
 
-                    is MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled ->
+                    is MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled -> {
                         renderStatus(AppointmentStatus.CANCELLED)
+                    }
 
-                    is MarkAppointmentNoShow.Error.AppointmentNotStarted ->
+                    is MarkAppointmentNoShow.Error.AppointmentNotStarted -> {
                         showMessage(
                             AppointmentsRes.strings.appointments_details_not_started_error.desc(),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
         )
@@ -408,38 +427,44 @@ class AppointmentDetailsViewModel(
             onTerminate = { uiState.rescheduleButton.stopLoading() },
             onError = {
                 when (it) {
-                    is UpdateAppointment.Error.EditWindowClosed ->
+                    is UpdateAppointment.Error.EditWindowClosed -> {
                         recoverAppointment(
                             AppointmentsRes.strings.appointments_edit_window_closed_error.desc(),
                         )
+                    }
 
-                    is UpdateAppointment.Error.DateInPast ->
+                    is UpdateAppointment.Error.DateInPast -> {
                         showMessage(
                             AppointmentsRes.strings.appointments_date_in_past_error.desc(),
                         )
+                    }
 
-                    is UpdateAppointment.Error.InvalidServiceSelection ->
+                    is UpdateAppointment.Error.InvalidServiceSelection -> {
                         showMessage(
                             AppointmentsRes.strings.appointments_create_services_changed_error
                                 .desc(),
                         )
+                    }
 
-                    is UpdateAppointment.Error.ServiceNotFound ->
+                    is UpdateAppointment.Error.ServiceNotFound -> {
                         showMessage(
                             AppointmentsRes.strings.appointments_complete_service_not_found_error
                                 .desc(),
                         )
+                    }
 
-                    is UpdateAppointment.Error.EmployeeNotFound ->
+                    is UpdateAppointment.Error.EmployeeNotFound -> {
                         showMessage(
                             AppointmentsRes.strings.appointments_employee_not_found_error.desc(),
                         )
+                    }
 
-                    is UpdateAppointment.Error.ConcurrentModification ->
+                    is UpdateAppointment.Error.ConcurrentModification -> {
                         recoverAppointment(
                             AppointmentsRes.strings.appointments_concurrent_modification_error
                                 .desc(),
                         )
+                    }
 
                     is UpdateAppointment.Error.AppointmentOverlap -> {
                         uiState.notifications.add(
@@ -465,18 +490,22 @@ class AppointmentDetailsViewModel(
                         )
                     }
 
-                    is UpdateAppointment.Error.AppointmentNotScheduled ->
+                    is UpdateAppointment.Error.AppointmentNotScheduled -> {
                         showMessage(
                             AppointmentsRes.strings.appointments_details_not_scheduled_error.desc(),
                         )
+                    }
 
-                    is UpdateAppointment.Error.EmployeeSuspended ->
+                    is UpdateAppointment.Error.EmployeeSuspended -> {
                         showMessage(
                             AppointmentsRes.strings.appointments_details_employee_suspended_error
                                 .desc(),
                         )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
         )

@@ -69,7 +69,8 @@ class CommonLegalDocumentsDataSourceTest {
         }
 
         override suspend fun upsertAll(statuses: List<LegalDocumentStatusEntity>) {
-            this.statuses.value = (this.statuses.value + statuses).associateBy { it.document }.values.toList()
+            this.statuses.value =
+                (this.statuses.value + statuses).associateBy { it.document }.values.toList()
         }
 
         override suspend fun clear() {
@@ -82,7 +83,8 @@ class CommonLegalDocumentsDataSourceTest {
     }
 
     private class Fixture(
-        val client: HttpClient = HttpClient(MockEngine { error("Local operations must not call the network") }),
+        val client: HttpClient =
+            HttpClient(MockEngine { error("Local operations must not call the network") }),
     ) {
         val dao = FakeLegalDocumentStatusDao()
         val sut = CommonLegalDocumentsDataSource(client, dao)
@@ -197,8 +199,18 @@ class CommonLegalDocumentsDataSourceTest {
         fixture.sut.saveStatuses(fixture.statuses)
 
         then()
-        assertEquals(listOf("PRIVACY_POLICY", "TERMS_OF_SERVICE"), fixture.dao.statuses.value.map { it.document })
-        assertEquals(listOf("privacy-v2", "terms-v3"), fixture.dao.statuses.value.map { it.version })
+        assertEquals(
+            listOf("PRIVACY_POLICY", "TERMS_OF_SERVICE"),
+            fixture.dao.statuses.value.map {
+                it.document
+            },
+        )
+        assertEquals(
+            listOf("privacy-v2", "terms-v3"),
+            fixture.dao.statuses.value.map {
+                it.version
+            },
+        )
     }
 
     @Test

@@ -5,8 +5,9 @@ import me.bookk.feature.settings.domain.api.GetColorScheme
 import me.bookk.feature.settings.domain.api.entity.ColorScheme
 import me.bookk.feature.settings.domain.datasource.SettingsDataSource
 
-internal class GetColorSchemeImpl(private val settingsDataSource: SettingsDataSource) :
-    GetColorScheme {
+internal class GetColorSchemeImpl(
+    private val settingsDataSource: SettingsDataSource,
+) : GetColorScheme {
     override suspend fun invoke(): ColorScheme {
         return settingsDataSource.getColorScheme()
     }

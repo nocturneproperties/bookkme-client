@@ -49,8 +49,9 @@ internal class FakeBootstrapState : BootstrapState {
     override val notifications = FakeNotificationState()
 }
 
-internal class FakeSignInState(override val passkeyInfoCardData: PasskeyInfoCardData) :
-    SignInState {
+internal class FakeSignInState(
+    override val passkeyInfoCardData: PasskeyInfoCardData,
+) : SignInState {
     override val appBar = FakeAppBarState()
     override val learnMoreButton = FakeButtonState()
     override val signInButton = FakeButtonState()

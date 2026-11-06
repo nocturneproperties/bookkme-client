@@ -57,45 +57,61 @@ internal class CreateAppointmentImpl(
         }
             .onBusinessError {
                 val error = when (it.errorCode) {
-                    AppointmentErrorCodes.APPOINTMENT_EXISTS ->
+                    AppointmentErrorCodes.APPOINTMENT_EXISTS -> {
                         CreateAppointment.Error.AppointmentOverlap()
+                    }
 
-                    AppointmentErrorCodes.TIME_NOT_ALLOWED ->
+                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
                         CreateAppointment.Error.TimeIsNotAllowed()
+                    }
 
-                    AppointmentErrorCodes.DATE_NOT_ALLOWED ->
+                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
                         CreateAppointment.Error.DateIsNotAllowed()
+                    }
 
-                    AppointmentErrorCodes.DATE_IN_PAST -> CreateAppointment.Error.DateInPast()
+                    AppointmentErrorCodes.DATE_IN_PAST -> {
+                        CreateAppointment.Error.DateInPast()
+                    }
 
-                    AppointmentErrorCodes.PRICE_CHANGED ->
+                    AppointmentErrorCodes.PRICE_CHANGED -> {
                         CreateAppointment.Error.PriceChanged()
+                    }
 
-                    AppointmentErrorCodes.DURATION_CHANGED ->
+                    AppointmentErrorCodes.DURATION_CHANGED -> {
                         CreateAppointment.Error.DurationChanged()
+                    }
 
-                    AppointmentErrorCodes.SERVICES_VALIDATION_FAILED ->
+                    AppointmentErrorCodes.SERVICES_VALIDATION_FAILED -> {
                         CreateAppointment.Error.ServicesChanged()
+                    }
 
-                    AppointmentErrorCodes.QUOTE_TOKEN_ALREADY_USED ->
+                    AppointmentErrorCodes.QUOTE_TOKEN_ALREADY_USED -> {
                         CreateAppointment.Error.OfferAlreadyUsed()
+                    }
 
-                    AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND ->
+                    AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND -> {
                         CreateAppointment.Error.ServiceNotFound()
+                    }
 
-                    AppointmentErrorCodes.BUSINESS_QUOTE_EMPTY_SERVICE_LIST ->
+                    AppointmentErrorCodes.BUSINESS_QUOTE_EMPTY_SERVICE_LIST -> {
                         CreateAppointment.Error.EmptyServices()
+                    }
 
-                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS ->
+                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS -> {
                         CreateAppointment.Error.EmployeeNotFound()
+                    }
 
-                    AppointmentErrorCodes.BUSINESS_CLIENT_NOT_EXISTS ->
+                    AppointmentErrorCodes.BUSINESS_CLIENT_NOT_EXISTS -> {
                         CreateAppointment.Error.ClientNotFound()
+                    }
 
-                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED ->
+                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED -> {
                         CreateAppointment.Error.EmployeeSuspended()
+                    }
 
-                    else -> it
+                    else -> {
+                        it
+                    }
                 }
                 if (
                     error is CreateAppointment.Error.PriceChanged ||

@@ -10,7 +10,8 @@ interface GetSignUpLegalDocuments {
     sealed interface Error {
         class NotCached : Exception("Signup legal documents have not been cached")
 
-        class MissingDocument(val document: SignUpLegalDocument.Document) :
-            Exception("Required signup legal document is missing: $document")
+        class MissingDocument(
+            val document: SignUpLegalDocument.Document,
+        ) : Exception("Required signup legal document is missing: $document")
     }
 }

@@ -1,5 +1,6 @@
 package me.bookk.feature.appointments.domain.impl
 
+import me.bookk.core.domain.entity.onNotFound
 import me.bookk.feature.appointments.domain.api.GetAppointment
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
@@ -16,12 +17,9 @@ internal class GetAppointmentImpl(
     override suspend fun refresh(id: Uuid): Appointment {
         val appointment = runCatching {
             appointmentDataSource.getAppointmentFromRemote(id)
-        }.getOrElse {
-            if (it is DomainError.NotFound) {
-                throw GetAppointment.Error.NotFound()
-            }
-            throw it
-        }
+        }.onNotFound {
+            throw GetAppointment.Error.NotFound()
+        }.getOrThrow()
         appointmentDataSource.saveAppointmentInDB(appointment)
         return appointment
     }

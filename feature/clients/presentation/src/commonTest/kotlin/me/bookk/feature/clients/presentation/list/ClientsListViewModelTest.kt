@@ -92,7 +92,11 @@ class ClientsListViewModelTest {
         val getClientsPermissions = mock<GetClientsPermissions> {
             everySuspend { invoke(any()) } calls
                 { (id: Uuid) ->
-                    ClientsPermissions(canEdit = id in editableBusinessIds, canDelete = false)
+                    ClientsPermissions(
+                        canEdit = id in editableBusinessIds,
+                        canDeleteDetached = false,
+                        canDeleteIntegrated = false,
+                    )
                 }
         }
         val contactsPermission = FakePermissionChecker(PermissionType.CONTACTS)
@@ -291,7 +295,13 @@ class ClientsListViewModelTest {
         fixture.currentBusinessId.value = secondBusinessId
 
         whenn()
-        firstBusinessPermissions.complete(ClientsPermissions(canEdit = true, canDelete = true))
+        firstBusinessPermissions.complete(
+            ClientsPermissions(
+                canEdit = true,
+                canDeleteDetached = true,
+                canDeleteIntegrated = false,
+            ),
+        )
 
         then()
         assertTrue(sut.uiState.appBar.actions.items.isEmpty())

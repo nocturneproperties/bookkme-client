@@ -57,6 +57,7 @@ include(":library:validation:impl")
 include(":library:picker")
 include(":library:notifications:api")
 include(":library:notifications:impl")
+include(":library:crashreporting:api")
 
 // Authorization
 include(":feature:authorization:data")

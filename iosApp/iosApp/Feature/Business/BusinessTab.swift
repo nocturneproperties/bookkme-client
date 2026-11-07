@@ -57,6 +57,8 @@ struct BusinessTab: View {
 						ServiceListScreen()
 					case let type as DashboardNavigationDestination.Plugins:
 						BusinessPluginsScreen(businessId: type.id)
+					case let type as DashboardNavigationDestination.DataExport:
+						BusinessDataExportScreen(businessId: type.businessId)
 					case let type as DashboardNavigationDestination.AppointmentSettings:
 						AppointmentSettingsScreen(businessId: type.businessId)
 					case let type as DashboardNavigationDestination.History:

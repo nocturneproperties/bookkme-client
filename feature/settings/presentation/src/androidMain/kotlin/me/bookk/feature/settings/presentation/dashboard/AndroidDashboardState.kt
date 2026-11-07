@@ -22,7 +22,6 @@ internal class AndroidDashboardState(
     override val appearance: AppearanceSection = AndroidAppearanceSectionState(initData.appearance)
     override val profile: ProfileSection = AndroidProfileSectionState()
     override val account: AccountSection = AndroidAccountSectionState(initData.account)
-    override val legal: LegalDocumentsSection = AndroidLegalDocumentsSectionState()
     override val support: SupportSection = AndroidSupportState(initData.support)
     override val notification: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<SettingsDashboardDestination> =
@@ -45,6 +44,9 @@ internal class AndroidProfileSectionState : ProfileSection {
 internal class AndroidAccountSectionState(
     initData: AccountSection.InitData,
 ) : AccountSection {
+    override val dataExport = AndroidTextState()
+    override val privacy: TextState = AndroidTextState()
+    override var privacyStatus: StringDesc? by mutableStateOf(null)
     override val title: StringDesc = initData.title
     override val notifications: TextState = AndroidTextState(initData.notificationsLabel)
     override val passkey: TextState = AndroidTextState(initData.passkeyLabel)

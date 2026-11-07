@@ -14,7 +14,6 @@ interface SettingsState {
     val appearance: AppearanceSection
     val profile: ProfileSection
     val account: AccountSection
-    val legal: LegalDocumentsSection
     val support: SupportSection
 
     val notification: PresentationNotificationState
@@ -71,6 +70,9 @@ interface ProfileSection {
 }
 
 interface AccountSection {
+    val dataExport: TextState
+    val privacy: TextState
+    var privacyStatus: StringDesc?
     val title: StringDesc
     val notifications: TextState
     val passkey: TextState

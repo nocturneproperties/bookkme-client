@@ -16,5 +16,8 @@ interface StartBusinessDataExport {
         class TooFrequent :
             Exception(),
             Error
+        class NotOwner :
+            Exception(),
+            Error
     }
 }

@@ -61,6 +61,11 @@
     <string name="settings_edit_profile_email_taken_error">Этот адрес электронной почты уже используется.</string>
     <string name="settings_passkey_last_error">Нельзя удалить последний ключ доступа. Сначала добавьте другой ключ, чтобы сохранить доступ к аккаунту.</string>
 
+    <string name="settings_privacy_title">Конфиденциальность</string>
+    <string name="settings_privacy_diagnostics_title">Диагностика</string>
+    <string name="settings_privacy_action_required">Требуется действие</string>
+    <string name="settings_privacy_crash_reports_label">Отправлять отчёты о сбоях</string>
+    <string name="settings_privacy_crash_reports_description">При сбое приложение отправляет в Firebase Crashlytics технические сведения об ошибке и вашем устройстве, чтобы мы могли её исправить. Отчёты не содержат ваше имя, email, данные бизнеса или клиентов.</string>
     <string name="settings_legal_title">Правовая информация</string>
     <string name="settings_legal_accepted">Принято</string>
     <string name="settings_legal_pending">Требуется ознакомление</string>
@@ -71,4 +76,33 @@
     <string name="settings_legal_changed">Правовые документы изменились. Ознакомьтесь с текущими версиями и примите их снова.</string>
     <string name="settings_legal_consent">Нажимая «Принять документы», вы соглашаетесь с документами, требующими ознакомления.</string>
     <string name="settings_legal_loading">Проверяем документы…</string>
+
+    <string name="settings_export_title">Экспорт моих данных</string>
+    <string name="settings_export_loading">Проверяем статус экспорта…</string>
+    <string name="settings_export_request_title">Копия ваших персональных данных</string>
+    <string name="settings_export_description">Запросите копию персональных данных, которые приложение хранит о вас. Они будут подготовлены в файле JSON — структурированном формате, который можно скачать, сохранить, передать или открыть в совместимой программе.</string>
+    <string name="settings_export_request">Запросить экспорт</string>
+    <string name="settings_export_download">Скачать экспорт</string>
+    <string name="settings_export_confirmation">Подтвердите действие ключом доступа.</string>
+    <string name="settings_export_running_title">Готовим ваш экспорт</string>
+    <string name="settings_export_running_message">Ваш файл готовится. Проверьте статус чуть позже.</string>
+    <string name="settings_export_ready_title">Ваш экспорт готов</string>
+    <string name="settings_export_ready_message">Сохраните файл или поделитесь им после скачивания.</string>
+    <string name="settings_export_failed_title">Не удалось подготовить экспорт</string>
+    <string name="settings_export_failed_message">Запросите новый экспорт, когда он станет доступен.</string>
+    <string name="settings_export_expired_title">Срок действия экспорта истёк</string>
+    <string name="settings_export_expired_message">Этот файл больше недоступен. Запросите новый экспорт, когда он станет доступен.</string>
+    <string name="settings_export_expiry_label">Доступен до</string>
+    <string name="settings_export_cooldown">Следующий экспорт можно запросить после %s</string>
+    <string name="settings_export_request_after_expiry">Новый экспорт можно запросить после окончания срока действия текущего.</string>
+    <string name="settings_export_load_error">Не удалось проверить статус экспорта.</string>
+    <string name="settings_export_request_error">Не удалось запросить экспорт. Попробуйте ещё раз.</string>
+    <string name="settings_export_confirmation_error">Подтверждение ключом доступа не удалось или устарело. Запросите экспорт ещё раз для подтверждения.</string>
+    <string name="settings_export_too_frequent">Пока нельзя запросить новый экспорт. Обновите статус, чтобы проверить доступность.</string>
+    <string name="settings_export_unavailable">Этот экспорт больше недоступен. Обновите статус, чтобы узнать о дальнейших действиях.</string>
+    <string name="settings_export_download_error">Не удалось скачать файл или поделиться им. Попробуйте ещё раз.</string>
+    <string name="settings_export_request_footer">Вы можете продолжать пользоваться приложением, пока готовится экспорт.</string>
+    <string name="settings_export_running_footer">Вы можете покинуть этот экран и вернуться позже.</string>
+    <string name="settings_export_file_title">Персональные данные</string>
+    <string name="settings_export_file_type">Файл JSON</string>
 </resources>

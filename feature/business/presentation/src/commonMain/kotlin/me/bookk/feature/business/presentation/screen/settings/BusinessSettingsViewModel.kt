@@ -10,6 +10,7 @@ import library.money.api.Money
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.business.resources.BusinessRes
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -36,6 +37,7 @@ import me.bookk.feature.business.domain.api.business.UpdateBusiness
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.Business.Social
 import me.bookk.feature.business.domain.api.entity.Business.SocialKind
+import me.bookk.feature.business.domain.api.entity.ClientDataRetention
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.DayOffRange
 import me.bookk.feature.business.domain.api.entity.WorkHour
@@ -203,7 +205,6 @@ class BusinessSettingsViewModel(
 
     fun onSaveClick() {
         val reference = referenceBusiness ?: return
-        if (uiState.save.isLoading || !uiState.clientDataRetentionMonths.isValid) return
         val update = Business.Update(
             id = reference.id,
             name = uiState.name.text.trim(),
@@ -222,6 +223,8 @@ class BusinessSettingsViewModel(
             clientDataRetentionMonths = uiState.clientDataRetentionMonths.text.toInt(),
         )
         launch(
+            key = SAVE_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.save.startLoading() },
             call = { updateBusiness(update) },
@@ -311,7 +314,9 @@ class BusinessSettingsViewModel(
     private fun validateRetention() {
         val field = uiState.clientDataRetentionMonths
         val months = field.text.toIntOrNull()
-        field.isValid = months != null && months in 12..120 && field.text.all { it.isDigit() }
+        field.isValid = months != null &&
+            months in ClientDataRetention.ALLOWED_MONTHS &&
+            field.text.all { it.isDigit() }
         field.validationState =
             if (field.isValid) ValidationState.DEFAULT else ValidationState.ERROR
         field.supportingTextRes = if (field.isValid) {
@@ -440,6 +445,8 @@ class BusinessSettingsViewModel(
     }
 
     companion object {
+        private const val SAVE_KEY = "business_settings_save"
+
         internal fun createInitData() = BusinessSettingsState.InitData(
             title = BusinessRes.strings.business_settings_title.desc(),
             testLocationText = BusinessRes.strings.business_settings_location_test.desc(),

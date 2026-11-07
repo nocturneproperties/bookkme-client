@@ -65,6 +65,10 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
                         navigation.toBusinessPlugins(navItem.id)
                     }
 
+                    is DashboardNavigationDestination.DataExport -> {
+                        navigation.toBusinessDataExport(navItem.businessId)
+                    }
+
                     DashboardNavigationDestination.Warehouse -> {
                         navigation.toShopWarehouse()
                     }

@@ -8,6 +8,11 @@ screen treats an unfetched cache and a fetched empty list alike, keeping two unk
 `refresh()` fetches current records and replaces the Room snapshot transactionally. There is no sync
 marker or preferences dependency. This operation adds no domain errors.
 
+Two ViewModels use it. `PrivacySettingsViewModel` (Settings → Account → Privacy) renders the document rows
+and acceptance and refreshes on open with inline retry. `SettingsDashboardViewModel` observes the same flow
+only to show "Action required" on the Account → Privacy row while any document is unaccepted, and refreshes
+on open; its refresh failures are logged, not shown.
+
 ```mermaid
 flowchart TD
     Observe([flow]) --> Local["LegalDocumentsDataSource.observeStatuses<br/>LegalDocumentStatusDao.observeAll<br/>Room legal_document_status"]

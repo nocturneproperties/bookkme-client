@@ -1,7 +1,6 @@
 package library.files.impl
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import library.files.api.FileProvider
 import okio.Path
 import okio.Path.Companion.toPath
 import platform.Foundation.NSCachesDirectory
@@ -10,7 +9,7 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 
-class IosFileProvider : FileProvider {
+class IosFileProvider : CommonFileProvider() {
 
     @OptIn(ExperimentalForeignApi::class)
     override fun touchPrefsFile(fileName: String): Path {

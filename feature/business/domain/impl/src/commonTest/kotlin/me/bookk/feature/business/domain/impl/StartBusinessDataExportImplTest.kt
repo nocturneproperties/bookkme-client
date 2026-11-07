@@ -7,6 +7,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -29,6 +30,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
+import me.bookk.core.domain.entity.Error as DomainError
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StartBusinessDataExportImplTest {
@@ -46,7 +48,11 @@ class StartBusinessDataExportImplTest {
 
     private class Fixture {
         val id = Uuid.parse("00000000-0000-0000-0000-000000000001")
-        val dataSource = mock<DataExportDataSource>()
+        val dataSource = mock<DataExportDataSource> {
+            everySuspend { saveInDb(any(), any()) } returns Unit
+            everySuspend { deleteFromDb(any()) } returns Unit
+            everySuspend { deleteFiles(any()) } returns Unit
+        }
         val confirmation = mock<ConfirmSensitiveAction>()
         val sut = StartBusinessDataExportImpl(dataSource, confirmation)
         init {
@@ -73,17 +79,51 @@ class StartBusinessDataExportImplTest {
     }
 
     @Test
+    fun `saves the started export and drops the previous file of the business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val expected = DataExport(DataExportStatus.RUNNING)
+        everySuspend { fixture.dataSource.start(fixture.id, "confirmed") } returns expected
+
+        whenn()
+        fixture.sut(fixture.id)
+
+        then()
+        verifySuspend(VerifyMode.order) {
+            fixture.dataSource.deleteFiles(fixture.id)
+            fixture.dataSource.saveInDb(fixture.id, expected)
+        }
+    }
+
+    @Test
+    fun `start propagates cache write failures`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.start(fixture.id, "confirmed") } returns
+            DataExport(DataExportStatus.RUNNING)
+        everySuspend { fixture.dataSource.saveInDb(any(), any()) } throws
+            IllegalStateException("disk")
+
+        whenn()
+        val result = runCatching { fixture.sut(fixture.id) }
+
+        then()
+        assertFailsWith<IllegalStateException> { result.getOrThrow() }
+    }
+
+    @Test
     fun `maps export error 200040 to ConfirmationRequired`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.dataSource.start(fixture.id, "confirmed") } throws
-            me.bookk.core.domain.entity.Error.BusinessError(200040, "rejected")
+            DomainError.BusinessError(200040, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(fixture.id) }
 
         then()
         assertFailsWith<StartBusinessDataExport.Error.ConfirmationRequired> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveInDb(any(), any()) }
     }
 
     @Test
@@ -91,13 +131,31 @@ class StartBusinessDataExportImplTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.dataSource.start(fixture.id, "confirmed") } throws
-            me.bookk.core.domain.entity.Error.BusinessError(900002, "rejected")
+            DomainError.BusinessError(900002, "rejected")
 
         whenn()
         val result = runCatching { fixture.sut(fixture.id) }
 
         then()
         assertFailsWith<StartBusinessDataExport.Error.TooFrequent> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveInDb(any(), any()) }
+    }
+
+    @Test
+    fun `maps a missing business to NotOwner and forgets its cached export`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.start(fixture.id, "confirmed") } throws
+            DomainError.NotFound(IllegalStateException("404"))
+
+        whenn()
+        val result = runCatching { fixture.sut(fixture.id) }
+
+        then()
+        assertFailsWith<StartBusinessDataExport.Error.NotOwner> { result.getOrThrow() }
+        verifySuspend { fixture.dataSource.deleteFiles(fixture.id) }
+        verifySuspend { fixture.dataSource.deleteFromDb(fixture.id) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveInDb(any(), any()) }
     }
 
     @Test
@@ -116,6 +174,22 @@ class StartBusinessDataExportImplTest {
     }
 
     @Test
+    fun `cancelled confirmation never writes an export status`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.confirmation(any(), any(), any()) } throws
+            CancellationException("cancelled")
+
+        whenn()
+        val result = runCatching { fixture.sut(fixture.id) }
+
+        then()
+        assertFailsWith<CancellationException> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.start(any(), any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveInDb(any(), any()) }
+    }
+
+    @Test
     fun `propagates unrelated failures`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -127,5 +201,6 @@ class StartBusinessDataExportImplTest {
 
         then()
         assertFailsWith<IllegalStateException> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveInDb(any(), any()) }
     }
 }

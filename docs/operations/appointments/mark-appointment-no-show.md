@@ -20,10 +20,11 @@ flowchart TD
     Code -- other --> EX([rethrow])
 ```
 
-The details screen shows the button only when `Appointment.canBeMarkedNoShow()` is true: `SCHEDULED`
-or `COMPLETED`, `date <= now`, and no more than seven days after the scheduled end. The scheduled end
+The details screen shows the button only when `Appointment.canBeMarkedNoShow(now, timeZone)` is true: `SCHEDULED`
+or `COMPLETED`, `date <= now`, and no more than `Appointment.EDIT_WINDOW` (seven days) after the scheduled end. The scheduled end
 is the start plus all booked service durations; the exact edit-window cutoff is inclusive. The
-ViewModel uses its injected clock when rendering action visibility.
+ViewModel passes its injected clock's instant and the device time zone (the zone appointment dates are
+mapped in) when rendering action visibility.
 
 `EditWindowClosed` means the appointment ended more than seven days ago.
 

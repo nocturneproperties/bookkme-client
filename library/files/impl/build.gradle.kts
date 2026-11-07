@@ -9,9 +9,10 @@ kotlin {
         namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.files.impl"
     }
     sourceSets {
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
         commonMain.dependencies {
-            implementation(projects.core)
-            implementation(projects.core.domain)
             implementation(projects.library.files.api)
         }
     }

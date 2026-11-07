@@ -24,7 +24,7 @@ flowchart TD
 
 `EditWindowClosed` means the appointment ended more than seven days ago.
 
-The details screen uses `Appointment.canBeCancelled(now)` to show Cancel only for `SCHEDULED`
-appointments through seven days after their scheduled end, inclusive. On `EditWindowClosed`, it
+The details screen uses `Appointment.canBeCancelled(now, timeZone)` to show Cancel only for `SCHEDULED`
+appointments through `Appointment.EDIT_WINDOW` (seven days) after their scheduled end, inclusive. On `EditWindowClosed`, it
 shows a short error global message and calls `GetAppointment.refresh(id)` to update the cached
 appointment and action visibility. Cancellation is not retried, and refresh plays no success haptic.

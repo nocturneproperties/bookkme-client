@@ -3,6 +3,7 @@ package me.bookk.feature.business.presentation.di
 import me.bookk.core.UsedInSwift
 import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalyticsViewModel
 import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
+import me.bookk.feature.business.presentation.screen.export.BusinessDataExportViewModel
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginsViewModel
 import me.bookk.feature.business.presentation.screen.settings.BusinessSettingsViewModel
 import org.koin.core.module.Module
@@ -17,6 +18,7 @@ internal actual fun platformBusinessDiModule(): Module = module {
     factoryOf(::BusinessPluginsViewModel)
     factoryOf(::BusinessSettingsViewModel)
     factoryOf(::BusinessAnalyticsViewModel)
+    factoryOf(::BusinessDataExportViewModel)
 }
 
 @UsedInSwift
@@ -30,4 +32,8 @@ fun businessAnalyticsVM(): BusinessAnalyticsViewModel = KoinPlatform.getKoin().g
 
 @UsedInSwift
 fun businessPluginsVM(id: Uuid): BusinessPluginsViewModel =
+    KoinPlatform.getKoin().get(parameters = { parametersOf(id) })
+
+@UsedInSwift
+fun businessDataExportVM(id: Uuid): BusinessDataExportViewModel =
     KoinPlatform.getKoin().get(parameters = { parametersOf(id) })

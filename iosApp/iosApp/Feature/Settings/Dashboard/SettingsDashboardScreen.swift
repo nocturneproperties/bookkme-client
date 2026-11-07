@@ -30,7 +30,6 @@ struct SettingsDashboardScreen: View {
 						settingsVM.onLogOutClick()
 					}
 				}
-				LegalDocumentsView(state: uiState.legal)
 				Section(uiState.support.title.localized()) {
 					SupportView(state: uiState.support)
 				}

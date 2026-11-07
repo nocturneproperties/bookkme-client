@@ -59,7 +59,7 @@ class EditClientViewModel(
             onComplete = { (it, permissions) ->
                 client = it
                 uiState.deleteButton.isVisible = when (it) {
-                    is Client.Detached -> permissions.canDelete
+                    is Client.Detached -> permissions.canDeleteDetached
                     is Client.Integrated -> permissions.canDeleteIntegrated
                 }
                 uiState.isAttachedInfoVisible = it is Client.Integrated

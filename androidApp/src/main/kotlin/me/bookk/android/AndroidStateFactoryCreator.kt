@@ -1,5 +1,6 @@
 package me.bookk.android
 
+import library.crashreporting.api.CrashReporter
 import library.credentials.api.PasskeyCredentialUpdater
 import library.credentials.di.CredentialModuleFactory
 import library.credentials.impl.AndroidCredentialFactory
@@ -47,6 +48,10 @@ class AndroidStateFactoryCreator : StateFactoryCreator {
 
     override fun createDashboardFactory(): DashboardStateFactory {
         return AndroidDashboardStateFactory()
+    }
+
+    override fun createCrashReporter(): CrashReporter {
+        return AndroidCrashReporter()
     }
 
     override fun createEmployeesFactory(): EmployeesStateFactory {

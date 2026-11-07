@@ -6,6 +6,7 @@ import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.core.data.TimeZoneSerializer
 import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ClientDataRetention
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import kotlin.uuid.Uuid
 
@@ -26,7 +27,7 @@ class BusinessRemote(
     @ProtoNumber(11) val ownerId: Uuid,
     @ProtoNumber(12) val employeeId: Uuid?,
     @ProtoNumber(13) val clientId: Uuid?,
-    @ProtoNumber(14) val clientDataRetentionMonths: Int = 36,
+    @ProtoNumber(14) val clientDataRetentionMonths: Int = ClientDataRetention.DEFAULT_MONTHS,
 ) {
     @Serializable
     class Location(

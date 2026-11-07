@@ -15,7 +15,8 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun businessDataModule() = module {
-    singleOf(::CommonDataExportDataSource) bind DataExportDataSource::class
+    singleOf(::CommonDataExportDataSource) binds
+        arrayOf(DataExportDataSource::class, LogOutAction::class)
     singleOf(::CommonBusinessDataSource) binds
         arrayOf(BusinessDataSource::class, LogOutAction::class)
     singleOf(::BusinessRoutingMock) bind RoutingMock::class

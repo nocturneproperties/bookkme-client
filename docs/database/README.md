@@ -11,22 +11,24 @@ entity ↔ domain mapping itself (`feature/<name>/data/src/commonMain/.../mappin
 grouped by the feature whose datasource **writes** the table.
 
 - [Authorization](authorization.md): `user_profile`
-- [Business](business.md): `business`, its schedule tables and `dashboard_business` (the selected business)
+- [Business](business.md): `business`, its schedule tables, `dashboard_business` (the selected business) and `business_data_export`
 - [Clients](clients.md): `client`
 - [Services](services.md): `service`, `service_group`
 - [Employees](employees.md): `employee` and its schedule and service snapshot tables, `employee_invitation`
 - [Appointments](appointments.md): `appointment`, `appointment_request`, `appointment_settings` and their child tables
-- [Settings](settings.md): `notification_settings`, `notification_settings_channel`, `legal_document_status`
+- [Settings](settings.md): `notification_settings`, `notification_settings_channel`, `legal_document_status`, `personal_data_export`
 - [Whole-database overview](overview.md): real foreign keys compared with logical references
 - [Key-value preferences (DataStore)](preferences.md): every `PreferenceProvider` bucket, its keys, and whether logout clears it
 
 ## Conventions
 
-- **Version and migrations.** The schema is at `version = 24`. Every step from 1 to 22 is a Room
+- **Version and migrations.** The schema is at `version = 26`. Every step from 1 to 22 is a Room
   `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The manual 22 → 23 migration (`DefaultBusinessRetention`) makes business retention non-null,
   backfills missing values with 36 months and preserves custom periods and dependent rows.
   The additive 23 → 24 auto-migration adds the `legal_document_status` table.
+  The additive 24 → 25 auto-migration adds the singleton `personal_data_export` table.
+  The additive 25 → 26 auto-migration adds the per-business `business_data_export` table.
   The builder also sets `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
   If a migration is missing, the cache is wiped instead of the app crashing, which is safe only because every
   table can be refetched.
@@ -76,6 +78,8 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `business` (+ 3 schedule tables, `dashboard_business`) | `CommonBusinessDataSource` | ✅ `clearDashboardBusiness()` then `businessDao.clear()` (including retention, default 36 months), which also cascades to any client/employee/service rows still left |
 | `appointment_settings` (+ 3 child tables) | `CommonAppointmentSettingsDataSource` | ✅ `appointmentSettingsDao.clear()` |
 | `legal_document_status` | `CommonLegalDocumentsDataSource` | ✅ `legalDocumentStatusDao.clear()` |
+| `personal_data_export` and cached JSON (`caches/personal_data_exports/`, outside Room) | `CommonDataExportDataSource` | ✅ `personalDataExportDao.clear()` and personal export directory removed through `FileProvider.deleteRecursively()`; the directory is also cleared when a new file is saved, on export start and on refreshes returning a non-downloadable status; other export directories are unaffected |
+| `business_data_export` and cached JSON (`caches/business_data_exports/`, outside Room) | `CommonDataExportDataSource` (business data module) | ✅ `businessDataExportDao.clear()` and the whole business export directory removed through `FileProvider.deleteRecursively()`; a business's directory is also cleared when a new file is saved, on export start, on refreshes returning a non-downloadable status and when the backend reports the caller no longer owns the business (its row is deleted too); personal export files are unaffected |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
 
 Every table is cleared on logout. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)

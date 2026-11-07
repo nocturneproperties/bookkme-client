@@ -30,6 +30,10 @@ class IOSStateFactoryCreator: @MainActor StateFactoryCreator {
 		return IOSCredentialFactory()
 	}
 	
+	func createCrashReporter() -> any CrashReporter {
+		return IOSCrashReporter()
+	}
+
 	func createDashboardFactory() -> any DashboardStateFactory {
 		return IOSDashboardStateFactory()
 	}

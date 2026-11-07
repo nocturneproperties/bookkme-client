@@ -14,4 +14,12 @@ data class DataExport(
     val requestedAt: Instant? = null,
     val expiresAt: Instant? = null,
     val availableAgainAt: Instant? = null,
-)
+) {
+    fun isExpiredAt(now: Instant): Boolean {
+        return expiresAt?.let { it <= now } == true
+    }
+
+    fun isDownloadableAt(now: Instant): Boolean {
+        return status == DataExportStatus.READY && !isExpiredAt(now)
+    }
+}

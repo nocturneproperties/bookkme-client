@@ -17,7 +17,8 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun settingsDataModule() = module {
-    singleOf(::CommonDataExportDataSource) bind DataExportDataSource::class
+    singleOf(::CommonDataExportDataSource) binds
+        arrayOf(DataExportDataSource::class, LogOutAction::class)
     singleOf(::CommonLegalDocumentsDataSource) binds
         arrayOf(LegalDocumentsDataSource::class, LogOutAction::class)
     singleOf(::CommonSettingsDataSource) bind SettingsDataSource::class

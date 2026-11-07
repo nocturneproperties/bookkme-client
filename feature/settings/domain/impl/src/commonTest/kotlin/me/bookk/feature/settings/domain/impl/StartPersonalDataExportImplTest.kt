@@ -57,6 +57,8 @@ class StartPersonalDataExportImplTest {
                 ActionConfirmation("confirmed", "assertion")
             everySuspend { profile.get() } returns
                 UserProfile(id, "John", "Doe", "john@example.com")
+            everySuspend { dataSource.saveInDb(any()) } returns Unit
+            everySuspend { dataSource.deleteFiles() } returns Unit
         }
     }
 
@@ -72,6 +74,8 @@ class StartPersonalDataExportImplTest {
 
         then()
         assertEquals(expected, result)
+        verifySuspend { fixture.dataSource.saveInDb(expected) }
+        verifySuspend { fixture.dataSource.deleteFiles() }
         verifySuspend {
             fixture.confirmation(
                 SensitiveAction.EXPORT_PERSONAL_DATA,
@@ -122,6 +126,7 @@ class StartPersonalDataExportImplTest {
         then()
         assertFailsWith<StartPersonalDataExport.Error.ConfirmationFailed> { result.getOrThrow() }
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.start(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveInDb(any()) }
     }
 
     @Test
@@ -136,5 +141,38 @@ class StartPersonalDataExportImplTest {
 
         then()
         assertFailsWith<IllegalStateException> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveInDb(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteFiles() }
+    }
+
+    @Test
+    fun `start propagates cache write failures`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.start("confirmed") } returns
+            DataExport(DataExportStatus.RUNNING)
+        everySuspend { fixture.dataSource.saveInDb(any()) } throws IllegalStateException("disk")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<IllegalStateException> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `cancelled confirmation never writes an export status`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.confirmation(any(), any(), any()) } throws
+            me.bookk.core.domain.entity.Error.Ignore(IllegalStateException("cancelled"))
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<me.bookk.core.domain.entity.Error.Ignore> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.start(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveInDb(any()) }
     }
 }

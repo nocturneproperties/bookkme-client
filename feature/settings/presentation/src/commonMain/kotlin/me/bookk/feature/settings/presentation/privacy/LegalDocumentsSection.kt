@@ -1,4 +1,4 @@
-package me.bookk.feature.settings.presentation.dashboard
+package me.bookk.feature.settings.presentation.privacy
 
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.resources.color.ColorToken

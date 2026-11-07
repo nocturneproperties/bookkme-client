@@ -34,6 +34,9 @@ sealed class BusinessDashboardSection(
                 add(Settings)
                 add(Plugins(id))
             }
+            if (features.contains(DashboardFeature.DATA_EXPORT)) {
+                add(DataExport(id))
+            }
         },
     ) : BusinessDashboardSection(
         BusinessRes.strings.business_dashboard_business.desc(),
@@ -69,6 +72,13 @@ sealed class BusinessDashboardSection(
         ) : DashboardUIItem(
             BusinessRes.strings.business_dashboard_plugins.desc(),
             DashboardNavigationDestination.Plugins(id),
+        )
+
+        data class DataExport(
+            val id: Uuid,
+        ) : DashboardUIItem(
+            BusinessRes.strings.business_dashboard_data_export.desc(),
+            DashboardNavigationDestination.DataExport(id),
         )
     }
 

@@ -11,10 +11,8 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.biometry)
-            implementation(libs.androidx.activity)
         }
         commonMain.dependencies {
-            implementation(libs.koin.core)
             implementation(libs.kmm.resources)
             implementation(projects.core)
             implementation(projects.core.domain)

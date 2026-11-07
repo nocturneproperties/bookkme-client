@@ -1,6 +1,5 @@
 package library.biometry.impl
 
-
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
@@ -14,16 +13,20 @@ import me.bookk.core.android.AndroidActivityAware
 import kotlin.coroutines.resume
 
 internal class AndroidBiometry(
-    optManager: BiometryOptManager
-) : AndroidActivityAware(), Biometry, BiometryOptManager by optManager {
+    optManager: BiometryOptManager,
+) : AndroidActivityAware(),
+    Biometry,
+    BiometryOptManager by optManager {
 
     override fun isBiometryAvailable(): Boolean {
         val biometricManager = BiometricManager.from(requireActivity())
         return when (biometricManager.canAuthenticate(BIOMETRIC_STRONG)) {
             BiometricManager.BIOMETRIC_SUCCESS -> true
+
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE,
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> false
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED,
+            -> false
 
             else -> false
         }
@@ -43,7 +46,9 @@ internal class AndroidBiometry(
                 requireActivity() as FragmentActivity,
                 executor,
                 object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    override fun onAuthenticationSucceeded(
+                        result: BiometricPrompt.AuthenticationResult,
+                    ) {
                         continuation.resume(result)
                     }
 
@@ -56,9 +61,9 @@ internal class AndroidBiometry(
                     }
 
                     override fun onAuthenticationFailed() {
-                        //This is not terminal operation, just shows that one of attempts was failed
+                        // This is not terminal operation, just shows that one of attempts was failed
                     }
-                }
+                },
             )
             prompt.authenticate(promptInfo)
         }

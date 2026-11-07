@@ -1,21 +1,19 @@
 package me.bookk.feature.authorization.presentation.bootstrap
 
+import dev.icerock.moko.resources.desc.desc
+import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
-import dev.mokkery.answering.calls
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
-import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.test.assertNothingMapped
-import me.bookk.designsystem.test.assertSingle
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -23,11 +21,13 @@ import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
+import me.bookk.designsystem.test.assertNothingMapped
+import me.bookk.designsystem.test.assertSingle
 import me.bookk.feature.authorization.domain.api.GetSettingsColorScheme
 import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
+import me.bookk.feature.authorization.domain.api.InitiateBusinessSuspend
 import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
 import me.bookk.feature.authorization.domain.api.LogOut
-import me.bookk.feature.authorization.domain.api.InitiateBusinessSuspend
 import me.bookk.feature.authorization.domain.entity.ColorScheme
 import me.bookk.feature.authorization.presentation.FakeAuthStateFactory
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
@@ -76,7 +76,7 @@ class BootstrapViewModelTest {
             initialAppDataFetch = initialAppDataFetch,
             initiateBusinessSuspend = initiateBusinessSuspend,
             stateFactory = FakeAuthStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -134,7 +134,8 @@ class BootstrapViewModelTest {
     fun `ignores initial data fetch failure`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.initialAppDataFetch.timestampProtectedFetch() } throws TestException()
+        everySuspend { fixture.initialAppDataFetch.timestampProtectedFetch() } throws
+            TestException()
 
         whenn()
         val sut = fixture.sut()

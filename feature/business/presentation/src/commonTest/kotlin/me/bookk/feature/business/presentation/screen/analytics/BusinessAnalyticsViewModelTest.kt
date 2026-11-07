@@ -32,7 +32,7 @@ class BusinessAnalyticsViewModelTest {
     private class Fixture {
         fun sut() = BusinessAnalyticsViewModel(
             stateFactory = FakeBusinessStateFactory(),
-            vmArgs = VmArgs(FakeErrorMapper())
+            vmArgs = VmArgs(FakeErrorMapper()),
         )
     }
 
@@ -45,7 +45,10 @@ class BusinessAnalyticsViewModelTest {
         val sut = fixture.sut()
 
         then()
-        assertEquals(BusinessRes.strings.business_dashboard_analytics.desc(), sut.uiState.appBar.title)
+        assertEquals(
+            BusinessRes.strings.business_dashboard_analytics.desc(),
+            sut.uiState.appBar.title,
+        )
     }
 
     @Test
@@ -57,8 +60,14 @@ class BusinessAnalyticsViewModelTest {
         val sut = fixture.sut()
 
         then()
-        assertEquals(BusinessRes.strings.business_analytics_coming_soon_title.desc(), sut.uiState.title)
-        assertEquals(BusinessRes.strings.business_analytics_coming_soon_message.desc(), sut.uiState.message)
+        assertEquals(
+            BusinessRes.strings.business_analytics_coming_soon_title.desc(),
+            sut.uiState.title,
+        )
+        assertEquals(
+            BusinessRes.strings.business_analytics_coming_soon_message.desc(),
+            sut.uiState.message,
+        )
     }
 
     @Test
@@ -72,7 +81,7 @@ class BusinessAnalyticsViewModelTest {
         then()
         assertEquals(
             listOf<BusinessAnalyticsDestinations>(BusinessAnalyticsDestinations.Back),
-            sut.uiState.navigation.navigationDestination
+            sut.uiState.navigation.navigationDestination,
         )
     }
 }

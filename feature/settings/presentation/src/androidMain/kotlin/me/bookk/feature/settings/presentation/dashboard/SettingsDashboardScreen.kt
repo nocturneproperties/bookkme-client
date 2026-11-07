@@ -35,14 +35,14 @@ internal fun SettingsDashboardScreen(state: SettingsState) {
                     .padding(it)
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 ProfileSection(state.profile)
                 AppearanceSection(state.appearance)
                 AccountSection(state.account)
                 SupportSection(state.support)
             }
-        }
+        },
     )
 }
 
@@ -51,7 +51,7 @@ internal fun SettingsDashboardScreen(state: SettingsState) {
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         SettingsDashboardScreen(
-            state = AndroidDashboardState(SettingsDashboardViewModel.createInitData())
+            state = AndroidDashboardState(SettingsDashboardViewModel.createInitData()),
         )
     }
 }
@@ -61,7 +61,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         SettingsDashboardScreen(
-            state = AndroidDashboardState(SettingsDashboardViewModel.createInitData())
+            state = AndroidDashboardState(SettingsDashboardViewModel.createInitData()),
         )
     }
 }

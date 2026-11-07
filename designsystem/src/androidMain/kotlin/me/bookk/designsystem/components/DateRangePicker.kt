@@ -24,8 +24,9 @@ import me.bookk.designsystem.uistate.DateRangePickerState
 fun DateRangePicker(
     state: DateRangePickerState,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-    confirmButton: ButtonState = remember { AndroidButtonState(DesignSystem.strings.action_select.desc()) },
-    onDismiss: () -> Unit
+    confirmButton: ButtonState =
+        remember { AndroidButtonState(DesignSystem.strings.action_select.desc()) },
+    onDismiss: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -37,19 +38,19 @@ fun DateRangePicker(
                 sheetState.hide()
                 onDismiss()
             }
-        }
+        },
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             DatePickerField(
                 state = state.startDate,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             DatePickerField(
                 state = state.endDate,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
         ActionButton(
@@ -61,7 +62,7 @@ fun DateRangePicker(
                     state.onDateRangeSelected()
                     onDismiss()
                 }
-            }
+            },
         )
     }
 }

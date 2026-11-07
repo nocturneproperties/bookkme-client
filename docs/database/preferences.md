@@ -9,6 +9,7 @@ Small scalar state lives in Jetpack DataStore rather than Room. `PreferenceProvi
 | Bucket | Owner | Keys | Purpose | Cleared on logout |
 |---|---|---|---|---|
 | `authorization_prefs` | `CommonAuthorizationDataSource` | `access_token`, `refresh_token` (String), `authorized` (Boolean), `last_initial_data_fetch_at` (epoch ms) | Bearer tokens for Ktor's `BearerAuthProvider`. `authorized` drives `IsUserLoggedIn.asFlow()`, which the root navigation observes. `last_initial_data_fetch_at` throttles [initial app data fetch](../operations/authorization/initial-app-data-fetch.md) to once per 30 min. | ✅ `clear()`, then `DELETE /api/auth/session` |
+| `signup_legal_documents_prefs` | `CommonSignUpLegalDocumentsDataSource` | `documents` (JSON String: privacyPolicyVersion, privacyPolicyUrl, termsOfServiceVersion, termsOfServiceUrl) | Complete public legal-document snapshot preloaded during initial fetch and read locally by signup; survives app restarts | ❌ intentionally retained across logout: public document metadata, not user consent |
 | `device_prefs` | `CommonDeviceDataSource` | `device_uuid` (String) | Stable per-install device id sent on sign-in/sign-up and used for push token registration | ❌ intentionally kept, since it identifies the install and not the user |
 | `plugin_prefs` | `CommonPluginDataSource` | `appointment_plugin_available_<businessId>` (Boolean) | Whether the appointments plugin is enabled. It is nullable, so "unknown" and "disabled" are different values. | ✅ |
 | `clients_prefs` | `CommonClientsDataSource` | `last_synced_at_<businessId>` (epoch ms) | List sync marker | ✅ |
@@ -28,3 +29,8 @@ reads them**. `getLastSyncedAt(...)` is still on every list datasource interface
 tests. Every `refresh()` still writes them with `saveLastSyncedAt(...)`, so today they are write-only state.
 They can be used again or removed; the empty-state behaviour itself now comes from the presentation layer's
 list-loading mechanism.
+
+Personal export status and its timestamps use the singleton `personal_data_export` Room table,
+not a preferences bucket or serialized JSON. Row absence distinguishes an unknown status from a
+confirmed `NONE` result. Logout clears the table. See [Settings](settings.md). Business export
+statuses follow the same rule in the per-business `business_data_export` table; see [Business](business.md).

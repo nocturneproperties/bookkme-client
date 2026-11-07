@@ -1,5 +1,6 @@
 package me.bookk.feature.clients.presentation.edit
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -11,6 +12,7 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -29,8 +31,8 @@ import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.EditClient
 import me.bookk.feature.clients.domain.api.GetClient
 import me.bookk.feature.clients.domain.api.GetClientsPermissions
-import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
 import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
 import me.bookk.feature.clients.presentation.FakeValidateEmail
 import me.bookk.feature.clients.presentation.FakeValidateName
@@ -59,11 +61,19 @@ class EditClientViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(canDelete: Boolean = true) {
+    private class Fixture(
+        canDeleteDetached: Boolean = true,
+        canDeleteIntegrated: Boolean = false,
+    ) {
         val id = Uuid.random()
         val getClient = mock<GetClient>()
         val getClientsPermissions = mock<GetClientsPermissions> {
-            everySuspend { invoke(any()) } returns ClientsPermissions(canEdit = true, canDelete = canDelete)
+            everySuspend { invoke(any()) } returns
+                ClientsPermissions(
+                    canEdit = true,
+                    canDeleteDetached = canDeleteDetached,
+                    canDeleteIntegrated = canDeleteIntegrated,
+                )
         }
         val editClient = mock<EditClient>()
         val deleteClient = mock<DeleteClient>()
@@ -79,7 +89,7 @@ class EditClientViewModelTest {
             validateName = FakeValidateName(),
             validateEmail = FakeValidateEmail(),
             stateFactory = FakeClientsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
 
         fun sutWith(client: Client): EditClientViewModel {
@@ -136,7 +146,10 @@ class EditClientViewModelTest {
     fun `saves edited detached client and goes back`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.editClient(capture(fixture.edited)) } calls { (client: Client) -> client }
+        everySuspend { fixture.editClient(capture(fixture.edited)) } calls
+            { (client: Client) ->
+                client
+            }
         val sut = fixture.sutWith(stubDetachedClient(name = "Anna"))
         (sut.uiState.name as FakeTextFieldState).type("Maria")
         (sut.uiState.description as FakeTextFieldState).type("Prefers mornings")
@@ -148,14 +161,20 @@ class EditClientViewModelTest {
         val saved = assertIs<Client.Detached>(fixture.edited.get())
         assertEquals("Maria", saved.name)
         assertEquals("Prefers mornings", saved.description)
-        assertEquals(listOf<EditClientDestination>(EditClientDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EditClientDestination>(EditClientDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
     fun `plays success haptic when client is saved`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.editClient(capture(fixture.edited)) } calls { (client: Client) -> client }
+        everySuspend { fixture.editClient(capture(fixture.edited)) } calls
+            { (client: Client) ->
+                client
+            }
         val sut = fixture.sutWith(stubDetachedClient(name = "Anna"))
         (sut.uiState.name as FakeTextFieldState).type("Maria")
         (sut.uiState.description as FakeTextFieldState).type("Prefers mornings")
@@ -164,7 +183,12 @@ class EditClientViewModelTest {
         sut.uiState.submit.onClick?.invoke()
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -178,7 +202,11 @@ class EditClientViewModelTest {
         sut.uiState.submit.onClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -186,7 +214,10 @@ class EditClientViewModelTest {
         given()
         val fixture = Fixture()
         val original = stubIntegratedClient(name = "Olga")
-        everySuspend { fixture.editClient(capture(fixture.edited)) } calls { (client: Client) -> client }
+        everySuspend { fixture.editClient(capture(fixture.edited)) } calls
+            { (client: Client) ->
+                client
+            }
         val sut = fixture.sutWith(original)
         (sut.uiState.name as FakeTextFieldState).type("Changed")
         (sut.uiState.description as FakeTextFieldState).type("Note")
@@ -217,7 +248,7 @@ class EditClientViewModelTest {
     @Test
     fun `shows delete for a user who can delete clients`() = runUnitTest {
         given()
-        val fixture = Fixture(canDelete = true)
+        val fixture = Fixture(canDeleteDetached = true)
 
         whenn()
         val sut = fixture.sutWith(stubDetachedClient())
@@ -229,7 +260,43 @@ class EditClientViewModelTest {
     @Test
     fun `hides delete for a user who cannot delete clients`() = runUnitTest {
         given()
-        val fixture = Fixture(canDelete = false)
+        val fixture = Fixture(canDeleteDetached = false)
+
+        whenn()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        then()
+        assertFalse(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `hides integrated client deletion for an employee with delete permission`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDeleteDetached = true, canDeleteIntegrated = false)
+
+        whenn()
+        val sut = fixture.sutWith(stubIntegratedClient())
+
+        then()
+        assertFalse(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `shows integrated client deletion for the business owner`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDeleteDetached = false, canDeleteIntegrated = true)
+
+        whenn()
+        val sut = fixture.sutWith(stubIntegratedClient())
+
+        then()
+        assertTrue(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `keeps detached client deletion governed by its normal permission`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDeleteDetached = false, canDeleteIntegrated = true)
 
         whenn()
         val sut = fixture.sutWith(stubDetachedClient())
@@ -279,6 +346,65 @@ class EditClientViewModelTest {
     }
 
     @Test
+    fun `warns about appointment data erasure and passkey verification`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        whenn()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        then()
+        assertEquals(
+            ClientsRes.strings.clients_delete_data_warning.desc(),
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>().message,
+        )
+        verifySuspend(VerifyMode.not) { fixture.deleteClient(any()) }
+    }
+
+    @Test
+    fun `cancelling the deletion dialog leaves the client unchanged`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(stubDetachedClient())
+        sut.uiState.deleteButton.onClick?.invoke()
+        val confirmation = sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+        sut.uiState.notifications.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.CANCEL)
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.deleteClient(any()) }
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
+        assertFalse(sut.uiState.deleteButton.isLoading)
+    }
+
+    @Test
+    fun `deletes the integrated client after the owner confirms`() = runUnitTest {
+        given()
+        val fixture = Fixture(canDeleteIntegrated = true)
+        val client = stubIntegratedClient()
+        everySuspend { fixture.deleteClient(any()) } returns Unit
+        val sut = fixture.sutWith(client)
+        sut.uiState.deleteButton.onClick?.invoke()
+        val confirmation = sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        verifySuspend { fixture.deleteClient(client) }
+        assertEquals(
+            listOf<EditClientDestination>(EditClientDestination.Deleted),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
     fun `deletes client after confirmation`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -288,11 +414,16 @@ class EditClientViewModelTest {
         sut.uiState.deleteButton.onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+            .tap(ActionType.NEGATIVE)
 
         then()
         verifySuspend { fixture.deleteClient(client) }
-        assertEquals(listOf<EditClientDestination>(EditClientDestination.Deleted), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EditClientDestination>(EditClientDestination.Deleted),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -305,10 +436,17 @@ class EditClientViewModelTest {
         sut.uiState.deleteButton.onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+            .tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -320,10 +458,17 @@ class EditClientViewModelTest {
         sut.uiState.deleteButton.onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.Message>()
+            .single()
+            .tap(ActionType.NEGATIVE)
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -335,7 +480,10 @@ class EditClientViewModelTest {
         sut.uiState.deleteButton.onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.Message>()
+            .single()
+            .tap(ActionType.NEGATIVE)
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
@@ -353,5 +501,61 @@ class EditClientViewModelTest {
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
+    }
+
+    @Test
+    fun `explains failed client deletion verification`() = runUnitTest {
+        listOf(
+            DeleteClient.Error.ConfirmationFailed() to
+                ClientsRes.strings.clients_delete_confirmation_failed_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.deleteClient(any()) } throws error
+            val sut = fixture.sutWith(stubDetachedClient())
+            sut.uiState.deleteButton.onClick?.invoke()
+            val confirmation = sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>().single()
+            sut.uiState.notifications.removeFirst()
+
+            whenn()
+            confirmation.tap(ActionType.NEGATIVE)
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `keeps missing deletion confirmation errors general`() = runUnitTest {
+        listOf(
+            DeleteClient.Error.ConfirmationRequired(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.deleteClient(any()) } throws error
+            val sut = fixture.sutWith(stubDetachedClient())
+            sut.uiState.deleteButton.onClick?.invoke()
+            val confirmation = sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>().single()
+            sut.uiState.notifications.removeFirst()
+
+            whenn()
+            confirmation.tap(ActionType.NEGATIVE)
+
+            then()
+            fixture.errorMapper.assertMappedSingle(error::class)
+        }
     }
 }

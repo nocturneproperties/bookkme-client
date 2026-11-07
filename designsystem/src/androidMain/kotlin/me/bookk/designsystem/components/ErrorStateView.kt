@@ -29,33 +29,33 @@ fun LazyItemScope.ErrorStateView(state: ErrorState, modifier: Modifier = Modifie
     Column(
         modifier.fillParentMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector = Icons.Filled.Warning,
             contentDescription = null,
             modifier = Modifier.size(48.dp),
-            tint = LocalColors.current.error
+            tint = LocalColors.current.error,
         )
         Text(
             state.title.localized(),
             modifier = Modifier.padding(top = 24.dp),
-            style = MaterialTheme.typography.titleMedium.primary()
+            style = MaterialTheme.typography.titleMedium.primary(),
         )
         Text(
             state.subtitle.localized(),
             modifier = Modifier.padding(top = 4.dp),
-            style = MaterialTheme.typography.bodyMedium.secondary()
+            style = MaterialTheme.typography.bodyMedium.secondary(),
         )
         val retryButtonState = remember(state) {
             AndroidButtonState(
                 text = DesignSystem.strings.action_retry.desc(),
-                onClick = state.onRetryClick
+                onClick = state.onRetryClick,
             )
         }
         StateTextButton(
             state = retryButtonState,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier.padding(top = 8.dp),
         )
     }
 }

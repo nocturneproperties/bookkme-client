@@ -20,8 +20,7 @@ internal actual fun platformClientsDiModule(): Module = module {
 }
 
 @UsedInSwift
-fun clientsListVM(): ClientsListViewModel =
-    KoinPlatform.getKoin().get()
+fun clientsListVM(): ClientsListViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun createClientVM(businessId: Uuid): CreateClientViewModel =

@@ -20,12 +20,12 @@ internal fun RemoteMessage.asLocalNotification(resources: Resources): LocalNotif
         id = messageId ?: Uuid.random().toString(),
         title = title,
         body = body,
-        data = data
+        data = data,
     )
 }
 
 private fun Resources.resolveResource(key: String, args: Array<String>): String? {
-    return when(key) {
+    return when (key) {
         else -> null
     }
 }

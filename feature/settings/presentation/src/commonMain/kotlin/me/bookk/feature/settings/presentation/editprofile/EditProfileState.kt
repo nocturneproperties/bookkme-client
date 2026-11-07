@@ -22,6 +22,6 @@ interface EditProfileState {
         val nameHint: StringDesc,
         val lastNameHint: StringDesc,
         val emailHint: StringDesc,
-        val confirmButtonText: StringDesc
+        val confirmButtonText: StringDesc,
     )
 }

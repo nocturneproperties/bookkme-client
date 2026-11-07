@@ -68,7 +68,7 @@ internal fun DashboardScreen(
     state: DashboardState,
     homeScreen: @Composable () -> Unit,
     businessScreen: @Composable () -> Unit,
-    settingsScreen: @Composable () -> Unit
+    settingsScreen: @Composable () -> Unit,
 ) {
     val navController = rememberNavController()
     Scaffold(
@@ -85,18 +85,29 @@ internal fun DashboardScreen(
                 enterTransition = {
                     scaleIn(
                         initialScale = 0.98f,
-                        animationSpec = spring(stiffness = Spring.StiffnessHigh)
+                        animationSpec = spring(stiffness = Spring.StiffnessHigh),
                     )
                 },
-                exitTransition = { ExitTransition.None }
+                exitTransition = { ExitTransition.None },
             ) {
                 composable<BottomNavDestination.Home> {
                     when (state.home.content) {
                         HomeContent.NoBusiness -> DashboardOnboardingScreen(state.home.onboarding)
-                        HomeContent.BusinessNotSelected -> DashboardBusinessSelectionScreen(state.home.onboarding)
-                        HomeContent.SetupRequired -> DashboardSetupRequiredScreen(state.home.onboarding)
-                        HomeContent.AwaitingSetup -> DashboardAwaitingSetupScreen(state.home.onboarding)
+
+                        HomeContent.BusinessNotSelected -> DashboardBusinessSelectionScreen(
+                            state.home.onboarding,
+                        )
+
+                        HomeContent.SetupRequired -> DashboardSetupRequiredScreen(
+                            state.home.onboarding,
+                        )
+
+                        HomeContent.AwaitingSetup -> DashboardAwaitingSetupScreen(
+                            state.home.onboarding,
+                        )
+
                         HomeContent.ActivePlugin -> homeScreen()
+
                         null -> Unit
                     }
                 }
@@ -127,7 +138,7 @@ internal fun DashboardScreen(
                     HorizontalDivider(color = LocalColors.current.divider)
                     NavigationBar(
                         modifier = Modifier,
-                        containerColor = LocalColors.current.background
+                        containerColor = LocalColors.current.background,
                     ) {
                         state.tabItems.items.forEach { item ->
                             NavigationBarItem(
@@ -141,14 +152,14 @@ internal fun DashboardScreen(
                                     selectedIconColor = LocalColors.current.actionText,
                                     unselectedIconColor = LocalColors.current.inactive,
                                     selectedTextColor = LocalColors.current.actionText,
-                                    unselectedTextColor = LocalColors.current.inactive
-                                )
+                                    unselectedTextColor = LocalColors.current.inactive,
+                                ),
                             )
                         }
                     }
                 }
             }
-        }
+        },
     )
 }
 
@@ -173,7 +184,7 @@ private fun PreviewDark() {
             state = AndroidDashboardState(DashboardViewModel.createInitData()),
             homeScreen = {},
             businessScreen = {},
-            settingsScreen = {}
+            settingsScreen = {},
         )
     }
 }
@@ -186,7 +197,7 @@ private fun PreviewLight() {
             state = AndroidDashboardState(DashboardViewModel.createInitData()),
             homeScreen = {},
             businessScreen = {},
-            settingsScreen = {}
+            settingsScreen = {},
         )
     }
 }

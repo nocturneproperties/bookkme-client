@@ -23,7 +23,7 @@ data class AppColorScheme(
     val buttonActive: Color,
     val buttonInactive: Color,
     val error: Color,
-    val onAction: Color
+    val onAction: Color,
 )
 
 val LocalColors = staticCompositionLocalOf {
@@ -45,6 +45,6 @@ val LocalColors = staticCompositionLocalOf {
         buttonActive = Color.Unspecified,
         buttonInactive = Color.Unspecified,
         error = Color.Unspecified,
-        onAction = Color.Unspecified
+        onAction = Color.Unspecified,
     )
 }

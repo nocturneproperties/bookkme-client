@@ -22,24 +22,34 @@ abstract class AppointmentDao {
     abstract suspend fun getById(id: Uuid): AppointmentLocal
 
     @Transaction
-    @Query("SELECT * FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay")
-    abstract suspend fun getForDate(businessId: Uuid, startOfDay: Instant, endOfDay: Instant): List<AppointmentLocal>
+    @Query(
+        "SELECT * FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay",
+    )
+    abstract suspend fun getForDate(
+        businessId: Uuid,
+        startOfDay: Instant,
+        endOfDay: Instant,
+    ): List<AppointmentLocal>
 
     @Transaction
-    @Query("SELECT * FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay AND (:employeeId IS NULL OR employeeId = :employeeId)")
+    @Query(
+        "SELECT * FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay AND (:employeeId IS NULL OR employeeId = :employeeId)",
+    )
     abstract fun observeForDate(
         businessId: Uuid,
         startOfDay: Instant,
         endOfDay: Instant,
-        employeeId: Uuid?
+        employeeId: Uuid?,
     ): Flow<List<AppointmentLocal>>
 
-    @Query("SELECT id FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay AND (:employeeId IS NULL OR employeeId = :employeeId)")
+    @Query(
+        "SELECT id FROM appointment WHERE businessId = :businessId AND date >= :startOfDay AND date < :endOfDay AND (:employeeId IS NULL OR employeeId = :employeeId)",
+    )
     abstract suspend fun getIdsForDate(
         businessId: Uuid,
         startOfDay: Instant,
         endOfDay: Instant,
-        employeeId: Uuid?
+        employeeId: Uuid?,
     ): List<Uuid>
 
     @Query("DELETE FROM appointment WHERE id IN (:ids)")
@@ -61,13 +71,15 @@ abstract class AppointmentDao {
     abstract suspend fun deleteAdjustmentServicesForAppointments(appointmentIds: List<Uuid>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertAdjustmentServices(services: List<AppointmentAdjustmentServiceEntity>)
+    abstract suspend fun insertAdjustmentServices(
+        services: List<AppointmentAdjustmentServiceEntity>,
+    )
 
     @Transaction
     open suspend fun upsertWithServices(
         appointments: List<AppointmentEntity>,
         services: List<AppointmentServiceSnapshotEntity>,
-        adjustmentServices: List<AppointmentAdjustmentServiceEntity>
+        adjustmentServices: List<AppointmentAdjustmentServiceEntity>,
     ) {
         val appointmentIds = appointments.map { it.id }
         upsertAppointments(appointments)

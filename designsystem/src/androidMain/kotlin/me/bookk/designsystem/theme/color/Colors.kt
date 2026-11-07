@@ -9,7 +9,6 @@ import dev.icerock.moko.resources.ColorResource
 import dev.icerock.moko.resources.compose.colorResource
 import me.bookk.android.designsystem.resources.DesignSystem
 
-
 object AppColors {
 
     val White: Color
@@ -18,7 +17,6 @@ object AppColors {
     val Black: Color
         @Composable
         get() = colorResource(resource = DesignSystem.colors.black)
-
 
     val LightScheme: AppColorScheme
         @Composable
@@ -30,9 +28,13 @@ object AppColors {
             elevated = colorResource(resource = DesignSystem.colors.lightElevated),
             divider = colorResource(resource = DesignSystem.colors.lightDivider),
             actionText = colorResource(resource = DesignSystem.colors.lightActionText),
-            actionTextDisabled = colorResource(resource = DesignSystem.colors.lightActionTextDisabled),
+            actionTextDisabled = colorResource(
+                resource = DesignSystem.colors.lightActionTextDisabled,
+            ),
             inactive = colorResource(resource = DesignSystem.colors.lightInactive),
-            blurredBackground = colorResource(resource = DesignSystem.colors.lightBlurredBackground),
+            blurredBackground = colorResource(
+                resource = DesignSystem.colors.lightBlurredBackground,
+            ),
             header = colorResource(resource = DesignSystem.colors.lightHeader),
             success = colorResource(resource = DesignSystem.colors.lightSuccess),
             inactiveToggle = colorResource(resource = DesignSystem.colors.lightInactiveToggle),
@@ -40,7 +42,7 @@ object AppColors {
             buttonActive = colorResource(resource = DesignSystem.colors.lightButtonActive),
             buttonInactive = colorResource(resource = DesignSystem.colors.lightButtonInactive),
             error = colorResource(resource = DesignSystem.colors.error),
-            onAction = colorResource(resource = DesignSystem.colors.lightOnAction)
+            onAction = colorResource(resource = DesignSystem.colors.lightOnAction),
         )
 
     val DarkScheme: AppColorScheme
@@ -53,7 +55,9 @@ object AppColors {
             elevated = colorResource(resource = DesignSystem.colors.darkElevated),
             divider = colorResource(resource = DesignSystem.colors.darkDivider),
             actionText = colorResource(resource = DesignSystem.colors.darkActionText),
-            actionTextDisabled = colorResource(resource = DesignSystem.colors.darkActionTextDisabled),
+            actionTextDisabled = colorResource(
+                resource = DesignSystem.colors.darkActionTextDisabled,
+            ),
             inactive = colorResource(resource = DesignSystem.colors.darkInactive),
             blurredBackground = colorResource(resource = DesignSystem.colors.darkBlurredBackground),
             header = colorResource(resource = DesignSystem.colors.darkHeader),
@@ -63,7 +67,7 @@ object AppColors {
             buttonActive = colorResource(resource = DesignSystem.colors.darkButtonActive),
             buttonInactive = colorResource(resource = DesignSystem.colors.darkButtonInactive),
             error = colorResource(resource = DesignSystem.colors.error),
-            onAction = colorResource(resource = DesignSystem.colors.darkOnAction)
+            onAction = colorResource(resource = DesignSystem.colors.darkOnAction),
         )
 }
 

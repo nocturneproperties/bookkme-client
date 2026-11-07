@@ -17,29 +17,35 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.icerock.moko.resources.compose.localized
+import dev.icerock.moko.resources.desc.desc
+import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.CheckBox
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.feature.authorization.presentation.navigation.LocalNavigation
-import me.bookk.feature.authorization.presentation.sign_up.state.SignUpEventListener
+import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 
 @Composable
-fun SignUpScreen(
-    state: SignUpState,
-    listener: SignUpEventListener
-) {
+fun SignUpScreen(state: SignUpState) {
     ObserveNotifications(state = state.notification)
     Scaffold(
         modifier = Modifier
@@ -48,7 +54,6 @@ fun SignUpScreen(
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                onNavigationIconClick = LocalNavigation.current.navigateBack
             )
         },
         content = { paddings ->
@@ -58,57 +63,94 @@ fun SignUpScreen(
                     .padding(paddings)
                     .padding(all = 16.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 TextField(
                     state = state.name,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Text
+                        keyboardType = KeyboardType.Text,
                     ),
-                    onValueChange = { listener.onFirstNameTextChanged(it) }
                 )
                 TextField(
                     state = state.lastName,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Text
+                        keyboardType = KeyboardType.Text,
                     ),
-                    onValueChange = { listener.onLastNameTextChanged(it) }
                 )
                 TextField(
                     state = state.email,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Email
+                        keyboardType = KeyboardType.Email,
                     ),
-                    onValueChange = { listener.onEmailTextChanged(it) }
                 )
                 Spacer(Modifier.height(24.dp))
-                PasskeyInfoCard(state, listener::onLearnMoreClick)
+                CheckBox(
+                    state.legalAcceptance,
+                    text = legalAcceptanceText(state),
+                    textColor = LocalColors.current.secondaryText,
+                    textSize = 12.sp,
+                    textLineHeight = 16.sp,
+                )
+                if (state.reloadLegalDocuments.isVisible) {
+                    StateTextButton(state.reloadLegalDocuments)
+                }
+                PasskeyInfoCard(state)
             }
         },
         bottomBar = {
             Box(
                 modifier = Modifier
                     .padding(16.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             ) {
                 ActionButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.confirmButton,
-                    onClick = listener::onConfirmButtonClick
                 )
             }
-        }
+        },
     )
 }
 
 @Composable
-private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
+private fun legalAcceptanceText(state: SignUpState): AnnotatedString {
+    val text = state.legalAcceptance.text.localized()
+    val documents = state.legalDocuments
+    val links = listOfNotNull(documents?.privacyPolicy, documents?.termsOfService)
+        .map { it to it.linkText.localized() }
+    val linkColor = LocalColors.current.actionText
+    return buildAnnotatedString {
+        append(text)
+        links.forEach { (document, linkText) ->
+            val linkStart = text.indexOf(linkText)
+            if (linkStart >= 0 && linkText.isNotEmpty()) {
+                addLink(
+                    LinkAnnotation.Url(
+                        url = document.linkUrl,
+                        styles = TextLinkStyles(
+                            style = SpanStyle(
+                                color = linkColor,
+                                textDecoration = TextDecoration.Underline,
+                            ),
+                        ),
+                        linkInteractionListener = { document.onLinkClick?.invoke() },
+                    ),
+                    start = linkStart,
+                    end = linkStart + linkText.length,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PasskeyInfoCard(state: SignUpState) {
     AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
     ) {
         Column {
             Text(
@@ -116,21 +158,20 @@ private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
                     start = 24.dp,
                     top = 24.dp,
                     end = 24.dp,
-                    bottom = 16.dp
+                    bottom = 16.dp,
                 ),
                 style = MaterialTheme.typography.titleMedium,
-                text = state.passkeyInfoCardData.title.localized()
+                text = state.passkeyInfoCardData.title.localized(),
             )
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 style = MaterialTheme.typography.bodySmall,
                 text = state.passkeyInfoCardData.description.localized(),
-                color = LocalColors.current.secondaryText
+                color = LocalColors.current.secondaryText,
             )
             StateTextButton(
                 modifier = Modifier.padding(start = 8.dp),
                 state = state.learnMoreButton,
-                onClick = onButtonClick
             )
         }
     }
@@ -141,8 +182,7 @@ private fun PasskeyInfoCard(state: SignUpState, onButtonClick: () -> Unit) {
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         SignUpScreen(
-            state = AndroidSignUpState(SignUpViewModel.createInitData()),
-            listener = mockListener()
+            state = AndroidSignUpState(),
         )
     }
 }
@@ -152,25 +192,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         SignUpScreen(
-            state = AndroidSignUpState(SignUpViewModel.createInitData()),
-            listener = mockListener()
+            state = AndroidSignUpState(),
         )
-    }
-}
-
-private fun mockListener() = object : SignUpEventListener {
-    override fun onFirstNameTextChanged(text: String) {
-    }
-
-    override fun onLastNameTextChanged(text: String) {
-    }
-
-    override fun onEmailTextChanged(text: String) {
-    }
-
-    override fun onConfirmButtonClick() {
-    }
-
-    override fun onLearnMoreClick() {
     }
 }

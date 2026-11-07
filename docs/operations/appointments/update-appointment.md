@@ -26,5 +26,18 @@ flowchart TD
     Code -- 300004 APPOINTMENT_EXISTS --> E3([throw Error.AppointmentOverlap])
     Code -- 300005 / 300006 / 300019 --> E4([throw Error.AppointmentNotScheduled])
     Code -- 200033 BUSINESS_EMPLOYEE_SUSPENDED --> E5([throw Error.EmployeeSuspended])
+    Code -- 300012 --> Added300012([throw Error.DateInPast])
+    Code -- 300024 --> Added300024([throw Error.InvalidServiceSelection])
+    Code -- 200013 --> Added200013([throw Error.ServiceNotFound])
+    Code -- 200024 --> Added200024([throw Error.EmployeeNotFound])
+    Code -- 900001 --> Added900001([throw Error.ConcurrentModification])
+    Code -- 300026 --> Added300026([throw Error.EditWindowClosed])
     Code -- other --> EX([rethrow])
 ```
+
+A transaction conflict is reported as `ConcurrentModification`. For it and `EditWindowClosed`, the
+details ViewModel shows a short error global message and calls `GetAppointment.refresh(id)`. The fresh
+appointment is cached and rendered, including a changed date or status. The rejected update is not
+automatically retried, and reloading does not play a success haptic.
+
+`EditWindowClosed` means the appointment ended more than seven days ago.

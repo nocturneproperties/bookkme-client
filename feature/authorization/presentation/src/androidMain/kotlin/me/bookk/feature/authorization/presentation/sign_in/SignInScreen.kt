@@ -26,10 +26,7 @@ import me.bookk.feature.authorization.presentation.sign_in.state.SignInEventList
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
 
 @Composable
-fun SignInScreen(
-    state: SignInState,
-    listener: SignInEventListener
-) {
+fun SignInScreen(state: SignInState, listener: SignInEventListener) {
     Scaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -42,11 +39,11 @@ fun SignInScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(paddings)
-                    .padding(all = 16.dp)
+                    .padding(all = 16.dp),
             ) {
                 PasskeyInfoCard(
                     state = state,
-                    onButtonClick = listener::onLearnMoreClick
+                    onButtonClick = listener::onLearnMoreClick,
                 )
             }
         },
@@ -55,25 +52,25 @@ fun SignInScreen(
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 ActionButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.signInButton,
-                    onClick = listener::onSignInClick
+                    onClick = listener::onSignInClick,
                 )
                 StateTextButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.signUpButton,
-                    onClick = LocalNavigation.current.navigateToSignUp
+                    onClick = LocalNavigation.current.navigateToSignUp,
                 )
                 StateTextButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = state.troubleshootButton,
-                    onClick = LocalNavigation.current.navigateToTroubleshoot
+                    onClick = LocalNavigation.current.navigateToTroubleshoot,
                 )
             }
-        }
+        },
     )
 }
 
@@ -81,7 +78,7 @@ fun SignInScreen(
 private fun PasskeyInfoCard(state: SignInState, onButtonClick: () -> Unit) {
     AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large
+        shape = MaterialTheme.shapes.large,
     ) {
         Column {
             Text(
@@ -89,21 +86,21 @@ private fun PasskeyInfoCard(state: SignInState, onButtonClick: () -> Unit) {
                     start = 24.dp,
                     top = 24.dp,
                     end = 24.dp,
-                    bottom = 16.dp
+                    bottom = 16.dp,
                 ),
                 style = MaterialTheme.typography.titleMedium,
-                text = state.passkeyInfoCardData.title.localized()
+                text = state.passkeyInfoCardData.title.localized(),
             )
             Text(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 style = MaterialTheme.typography.bodySmall,
                 text = state.passkeyInfoCardData.description.localized(),
-                color = LocalColors.current.secondaryText
+                color = LocalColors.current.secondaryText,
             )
             StateTextButton(
                 modifier = Modifier.padding(start = 8.dp),
                 state = state.learnMoreButton,
-                onClick = onButtonClick
+                onClick = onButtonClick,
             )
         }
     }
@@ -115,7 +112,7 @@ private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         SignInScreen(
             state = AndroidSignInState(SignInViewModel.createInitData()),
-            listener = mockListener()
+            listener = mockListener(),
         )
     }
 }
@@ -126,7 +123,7 @@ private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         SignInScreen(
             state = AndroidSignInState(SignInViewModel.createInitData()),
-            listener = mockListener()
+            listener = mockListener(),
         )
     }
 }

@@ -47,10 +47,10 @@ fun ActionButton(
         containerColor = LocalColors.current.buttonActive,
         contentColor = AppColors.White,
         disabledContainerColor = LocalColors.current.buttonInactive,
-        disabledContentColor = LocalColors.current.actionTextDisabled
+        disabledContentColor = LocalColors.current.actionTextDisabled,
     ),
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    onClick: () -> Unit = state.onClick ?: {}
+    onClick: () -> Unit = state.onClick ?: {},
 ) {
     Button(
         modifier = modifier.heightIn(min = 48.dp),
@@ -58,7 +58,7 @@ fun ActionButton(
         shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         enabled = state.isEnabled,
-        onClick = onClick
+        onClick = onClick,
     ) {
         if (state.isLoading) {
             CircularProgressIndicator(
@@ -67,7 +67,7 @@ fun ActionButton(
                 color = colors.contentColor,
                 modifier = Modifier
                     .height(24.dp)
-                    .width(24.dp)
+                    .width(24.dp),
             )
         } else {
             startContent?.invoke()
@@ -90,7 +90,7 @@ fun ButtonDefaults.stateButtonColors(
     containerColor = Color.Transparent,
     contentColor = contentColor,
     disabledContainerColor = Color.Transparent,
-    disabledContentColor = LocalColors.current.actionTextDisabled
+    disabledContentColor = LocalColors.current.actionTextDisabled,
 )
 
 @Composable
@@ -104,7 +104,7 @@ fun StateTextButton(
     colors: ButtonColors = ButtonDefaults.stateButtonColors(),
     textAlign: TextAlign = TextAlign.Center,
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
-    onClick: () -> Unit = { state.onClick?.invoke() }
+    onClick: () -> Unit = { state.onClick?.invoke() },
 ) {
     Button(
         modifier = modifier.heightIn(min = 48.dp),
@@ -134,7 +134,7 @@ fun StateTextButton(
                 modifier = Modifier
                     .alpha(1f - contentAlpha)
                     .height(24.dp)
-                    .width(24.dp)
+                    .width(24.dp),
             )
         }
     }
@@ -152,10 +152,10 @@ fun AlignStartTextButton(
         containerColor = Color.Transparent,
         contentColor = LocalColors.current.buttonActive,
         disabledContainerColor = Color.Transparent,
-        disabledContentColor = LocalColors.current.actionTextDisabled
+        disabledContentColor = LocalColors.current.actionTextDisabled,
     ),
     textStyle: TextStyle = MaterialTheme.typography.titleMedium,
-    onClick: () -> Unit = { state.onClick?.invoke() }
+    onClick: () -> Unit = { state.onClick?.invoke() },
 ) {
     Button(
         modifier = modifier.heightIn(min = 48.dp),
@@ -172,7 +172,7 @@ fun AlignStartTextButton(
                 color = colors.contentColor,
                 modifier = Modifier
                     .height(24.dp)
-                    .width(24.dp)
+                    .width(24.dp),
             )
         } else {
             startContent?.invoke()
@@ -194,7 +194,7 @@ private fun ButtonIcon(id: Int, contentDescription: String? = null) {
     Icon(
         modifier = Modifier.padding(end = 8.dp),
         painter = painterResource(id = id),
-        contentDescription = contentDescription
+        contentDescription = contentDescription,
     )
 }
 
@@ -217,14 +217,14 @@ private fun PreviewDisabled() {
             ActionButton(
                 state = AndroidButtonState(
                     text = "Text Example".desc(),
-                    isEnabled = false
-                )
+                    isEnabled = false,
+                ),
             ) {}
             StateTextButton(
                 state = AndroidButtonState(
                     text = "Text Example".desc(),
-                    isEnabled = false
-                )
+                    isEnabled = false,
+                ),
             ) {}
         }
     }
@@ -238,14 +238,14 @@ private fun PreviewLoading() {
             ActionButton(
                 state = AndroidButtonState(
                     text = "Text Example".desc(),
-                    isLoading = true
-                )
+                    isLoading = true,
+                ),
             ) {}
             StateTextButton(
                 state = AndroidButtonState(
                     text = "Text Example".desc(),
-                    isLoading = true
-                )
+                    isLoading = true,
+                ),
             ) {}
         }
     }

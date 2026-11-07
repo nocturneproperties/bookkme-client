@@ -45,7 +45,7 @@ internal fun Employee.toEntity(): EmployeeEntity {
         servicesPermissionDelete = permissions.services.delete,
         appointmentsPermissionView = permissions.appointments.view,
         appointmentsPermissionUpdate = permissions.appointments.update,
-        appointmentsPermissionDelete = permissions.appointments.delete
+        appointmentsPermissionDelete = permissions.appointments.delete,
     )
 }
 
@@ -53,7 +53,7 @@ internal fun Employee.toDayScheduleEntities() = schedule.days.map { (dayOfWeek, 
     EmployeeDayScheduleEntity(
         employeeId = id,
         dayOfWeek = dayOfWeek.name,
-        isActive = daySchedule.isActive
+        isActive = daySchedule.isActive,
     )
 }
 
@@ -63,7 +63,7 @@ internal fun Employee.toWorkHourEntities() = schedule.days.flatMap { (dayOfWeek,
             employeeId = id,
             dayOfWeek = dayOfWeek.name,
             from = workHour.from.toString(),
-            to = workHour.to.toString()
+            to = workHour.to.toString(),
         )
     }
 }
@@ -72,7 +72,7 @@ internal fun Employee.toDayOffEntities() = schedule.dayOffs.map { dayOff ->
     EmployeeDayOffEntity(
         employeeId = id,
         start = dayOff.start.toString(),
-        end = dayOff.end.toString()
+        end = dayOff.end.toString(),
     )
 }
 
@@ -90,7 +90,7 @@ internal fun Employee.toServiceSnapshotEntities() = services.map { service ->
         priceCurrency = service.price.currencyType.code,
         priceValue = service.price.value,
         isAvailable = service.isAvailable,
-        createdAt = service.createdAt
+        createdAt = service.createdAt,
     )
 }
 
@@ -112,30 +112,46 @@ internal fun EmployeeLocal.toDomain(): Employee {
                     workingTime = workHours.filter { it.dayOfWeek == daySchedule.dayOfWeek }.map {
                         WorkHour(from = LocalTime.parse(it.from), to = LocalTime.parse(it.to))
                     },
-                    isActive = daySchedule.isActive
+                    isActive = daySchedule.isActive,
                 )
             },
             dayOffs = dayOffs.map {
                 DayOffRange(start = LocalDate.parse(it.start), end = LocalDate.parse(it.end))
-            }
+            },
         ),
         createdAt = entity.createdAt,
         permissions = entity.toPermissions(),
-        suspendedAt = entity.suspendedAt
+        suspendedAt = entity.suspendedAt,
     )
 }
 
 private fun EmployeeEntity.toPermissions(): BusinessPermissions {
     return BusinessPermissions(
-        business = ResourcePermission(businessPermissionView, businessPermissionUpdate, businessPermissionDelete),
-        employees = ResourcePermission(employeesPermissionView, employeesPermissionUpdate, employeesPermissionDelete),
-        clients = ResourcePermission(clientsPermissionView, clientsPermissionUpdate, clientsPermissionDelete),
-        services = ResourcePermission(servicesPermissionView, servicesPermissionUpdate, servicesPermissionDelete),
+        business = ResourcePermission(
+            businessPermissionView,
+            businessPermissionUpdate,
+            businessPermissionDelete,
+        ),
+        employees = ResourcePermission(
+            employeesPermissionView,
+            employeesPermissionUpdate,
+            employeesPermissionDelete,
+        ),
+        clients = ResourcePermission(
+            clientsPermissionView,
+            clientsPermissionUpdate,
+            clientsPermissionDelete,
+        ),
+        services = ResourcePermission(
+            servicesPermissionView,
+            servicesPermissionUpdate,
+            servicesPermissionDelete,
+        ),
         appointments = ResourcePermission(
             appointmentsPermissionView,
             appointmentsPermissionUpdate,
-            appointmentsPermissionDelete
-        )
+            appointmentsPermissionDelete,
+        ),
     )
 }
 
@@ -147,12 +163,15 @@ private fun EmployeeServiceSnapshotEntity.toDomain(): Service {
             id = groupId,
             businessId = groupBusinessId,
             name = groupName,
-            createdAt = groupCreatedAt
+            createdAt = groupCreatedAt,
         ),
         name = name,
         duration = duration,
-        price = Money(value = priceValue, currencyType = Money.SupportedCurrency.fromCode(priceCurrency)),
+        price = Money(
+            value = priceValue,
+            currencyType = Money.SupportedCurrency.fromCode(priceCurrency),
+        ),
         isAvailable = isAvailable,
-        createdAt = createdAt
+        createdAt = createdAt,
     )
 }

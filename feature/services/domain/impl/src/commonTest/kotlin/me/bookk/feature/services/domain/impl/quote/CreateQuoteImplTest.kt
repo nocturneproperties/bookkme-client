@@ -49,7 +49,7 @@ class CreateQuoteImplTest {
     private fun stubQuote(businessId: Uuid = Uuid.random()) = Quote(
         id = Uuid.random(),
         services = listOf(stubService(businessId)),
-        token = "signed-token"
+        token = "signed-token",
     )
 
     @Test

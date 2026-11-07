@@ -9,7 +9,7 @@ import kotlinx.coroutines.test.setMain
 import me.bookk.core.coroutine.DispatcherProvider
 
 class ViewModelTestDispatchers(
-    val dispatcher: TestDispatcher = UnconfinedTestDispatcher()
+    val dispatcher: TestDispatcher = UnconfinedTestDispatcher(),
 ) {
     private var originalMain: CoroutineDispatcher? = null
     private var originalIo: CoroutineDispatcher? = null

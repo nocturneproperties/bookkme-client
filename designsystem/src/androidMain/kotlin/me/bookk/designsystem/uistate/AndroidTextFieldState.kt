@@ -27,8 +27,9 @@ class AndroidTextFieldState(
     isValid: Boolean = false,
     isVisible: Boolean = true,
     inputType: InputType = InputType.TEXT,
-    onTextChanged: ((String) -> Unit)? = null
-) : AndroidViewState(isVisible), TextFieldState {
+    onTextChanged: ((String) -> Unit)? = null,
+) : AndroidViewState(isVisible),
+    TextFieldState {
     override var placeholder: StringDesc by mutableStateOf(placeholder)
     override var label: StringDesc by mutableStateOf(label)
     override var text: String by mutableStateOf(text)

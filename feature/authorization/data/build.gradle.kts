@@ -20,7 +20,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.compat)
-            implementation(libs.androidx.lifecycle.viewmodel)
         }
         commonMain.dependencies {
             implementation(projects.core)
@@ -36,6 +35,7 @@ kotlin {
             implementation(projects.library.credentials.api)
         }
         commonTest.dependencies {
+            implementation(libs.ktor.client.negotiation)
             implementation(projects.core.testFixtures)
         }
     }

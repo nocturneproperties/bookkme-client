@@ -11,7 +11,6 @@ import java.time.temporal.TemporalAdjusters
 import java.time.temporal.WeekFields
 import java.util.Locale
 
-
 actual fun LocalDate.startOfWeek(): LocalDate {
     val firstDayOfWeek = WeekFields.of(Locale.getDefault()).firstDayOfWeek
     return toJavaLocalDate()
@@ -29,7 +28,7 @@ fun FormatStyle.getDatePattern(): String {
         this,
         null,
         Chronology.ofLocale(Locale.getDefault()),
-        Locale.getDefault()
+        Locale.getDefault(),
     )
 }
 
@@ -38,7 +37,7 @@ fun FormatStyle.getDateTimePattern(timeOverride: FormatStyle? = null): String {
         this,
         timeOverride ?: this,
         Chronology.ofLocale(Locale.getDefault()),
-        Locale.getDefault()
+        Locale.getDefault(),
     )
 }
 
@@ -47,6 +46,6 @@ fun FormatStyle.getTimePattern(): String {
         null,
         this,
         Chronology.ofLocale(Locale.getDefault()),
-        Locale.getDefault()
+        Locale.getDefault(),
     )
 }

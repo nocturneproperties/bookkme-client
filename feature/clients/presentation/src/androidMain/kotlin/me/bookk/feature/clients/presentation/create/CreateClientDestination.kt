@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.createClientScreen(navigation: ClientsNavigation) {
     composable<ClientsDestinations.CreateClient>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val route: ClientsDestinations.CreateClient = it.toRoute()
         val viewModel: CreateClientViewModel = koinViewModel { parametersOf(route.businessId) }
@@ -25,7 +25,10 @@ internal fun NavGraphBuilder.createClientScreen(navigation: ClientsNavigation) {
             ObserveNotifications(viewModel.uiState.notifications)
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
-                    CreateClientDestination.Back -> navigation.onBack()
+                    CreateClientDestination.Back -> {
+                        navigation.onBack()
+                    }
+
                     is CreateClientDestination.Details -> {
                         navigation.onBack()
                         navigation.toClientDetails(it.id)

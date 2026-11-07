@@ -27,8 +27,10 @@ struct StateSwitch: View {
 		Toggle(state.text.localized(), isOn: Binding(
 			get: { state.isChecked },
 			set: { newValue in
-				state.isChecked = newValue
-				onToggledChanged(newValue)
+				withAnimation {
+					state.isChecked = newValue
+					onToggledChanged(newValue)
+				}
 			}
 		))
 		.disabled(!state.isEnabled)

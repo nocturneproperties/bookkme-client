@@ -22,8 +22,9 @@ import org.json.JSONObject
 
 class AndroidPassKeyManager(
     private val relyingParty: String,
-    private val credentialUpdater: PasskeyCredentialUpdater
-) : AndroidActivityAware(), PassKeyManager {
+    private val credentialUpdater: PasskeyCredentialUpdater,
+) : AndroidActivityAware(),
+    PassKeyManager {
 
     override suspend fun create(challenge: CreationRequest): PasskeyVerificationPayload {
         return runCatching {
@@ -32,7 +33,7 @@ class AndroidPassKeyManager(
             val omittedPublicKeyObject =
                 JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
             val createPublicKeyCredentialRequest = CreatePublicKeyCredentialRequest(
-                requestJson = omittedPublicKeyObject
+                requestJson = omittedPublicKeyObject,
             )
             val response = credentialManager.createCredential(
                 context = context,
@@ -43,37 +44,43 @@ class AndroidPassKeyManager(
                     PasskeyVerificationPayload(response.registrationResponseJson)
                 }
 
-                else -> throw PassKeyManager.Error.Unknown(null)
+                else -> {
+                    throw PassKeyManager.Error.Unknown(null)
+                }
             }
         }.recoverCatching {
             throw when (it) {
                 is CreateCredentialCancellationException -> PassKeyManager.Error.UserCancelled()
+
                 is CreatePublicKeyCredentialDomException -> when (it.domError) {
                     is NotAllowedError -> PassKeyManager.Error.UserCancelled()
                     else -> PassKeyManager.Error.Infrastructure()
                 }
 
                 is CreateCredentialInterruptedException,
-                is CreateCredentialProviderConfigurationException -> PassKeyManager.Error.Infrastructure()
+                is CreateCredentialProviderConfigurationException,
+                -> PassKeyManager.Error.Infrastructure()
 
                 else -> PassKeyManager.Error.Unknown(it)
             }
         }.getOrThrow()
     }
 
-    override suspend fun authorize(challenge: PassKeyManager.AuthorizationRequest): PasskeyVerificationPayload {
+    override suspend fun authorize(
+        challenge: PassKeyManager.AuthorizationRequest,
+    ): PasskeyVerificationPayload {
         return runCatching {
             val context = awaitActivity()
             val credentialManager = CredentialManager.create(context)
             val publicKeyObject =
                 JSONObject(challenge.challengeJson).getJSONObject("publicKey").toString()
             val getPublicKeyCredentialOption = GetPublicKeyCredentialOption(
-                requestJson = publicKeyObject
+                requestJson = publicKeyObject,
             )
             val request = GetCredentialRequest(listOf(getPublicKeyCredentialOption))
             val result = credentialManager.getCredential(
                 context = context,
-                request = request
+                request = request,
             )
             when (val credential = result.credential) {
                 is PublicKeyCredential -> {
@@ -81,7 +88,9 @@ class AndroidPassKeyManager(
                     PasskeyVerificationPayload(responseJson)
                 }
 
-                else -> throw PassKeyManager.Error.Unknown(null)
+                else -> {
+                    throw PassKeyManager.Error.Unknown(null)
+                }
             }
         }.recoverCatching {
             throw when (it) {

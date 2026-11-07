@@ -24,14 +24,16 @@ fun AppTimePicker(
     state: AppTimePickerState,
     timePickerColors: TimePickerColors = TimePickerDefaults.colors(
         containerColor = LocalColors.current.elevated,
-        timeSelectorSelectedContainerColor = LocalColors.current.actionText
+        timeSelectorSelectedContainerColor = LocalColors.current.actionText,
     ),
-    confirmButton: ButtonState = remember { AndroidButtonState(DesignSystem.strings.action_select.desc()) },
-    dismissButton: ButtonState? = remember { AndroidButtonState(DesignSystem.strings.action_cancel.desc()) },
+    confirmButton: ButtonState =
+        remember { AndroidButtonState(DesignSystem.strings.action_select.desc()) },
+    dismissButton: ButtonState? =
+        remember { AndroidButtonState(DesignSystem.strings.action_cancel.desc()) },
 ) {
     val timePickerState: TimePickerState = rememberTimePickerState(
         initialHour = state.pickedTime?.hour ?: 0,
-        initialMinute = state.pickedTime?.minute ?: 0
+        initialMinute = state.pickedTime?.minute ?: 0,
     )
     TimePickerDialog(
         title = {},
@@ -49,11 +51,13 @@ fun AppTimePicker(
                 modifier = Modifier.padding(end = 8.dp),
                 state = confirmButton,
                 onClick = {
-                    state.onTimePicked?.invoke(LocalTime(timePickerState.hour, timePickerState.minute))
+                    state.onTimePicked?.invoke(
+                        LocalTime(timePickerState.hour, timePickerState.minute),
+                    )
                     state.isTimePickerVisible = false
-                }
+                },
             )
-        }
+        },
     ) {
         TimePicker(state = timePickerState, colors = timePickerColors)
     }

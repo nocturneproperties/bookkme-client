@@ -36,6 +36,7 @@
     <string name="appointments_status_completed">Zakończona</string>
     <string name="appointments_status_cancelled">Anulowana</string>
     <string name="appointments_status_no_show">Nieobecność</string>
+    <string name="appointments_status_unresolved">Nierozstrzygnięta</string>
     <string name="appointments_details_complete">Zakończ</string>
     <string name="appointments_details_no_show">Nieobecność</string>
     <string name="appointments_details_no_show_confirm">Oznaczyć tę wizytę jako nieobecność?</string>
@@ -81,4 +82,15 @@
     <string name="appointments_request_in_past">Termin wizyty już minął. Ta prośba wkrótce zostanie automatycznie anulowana, możesz też odrzucić ją ręcznie</string>
     <string name="appointments_request_date_error">Wizyty w tym dniu są zablokowane w ustawieniach — ten dzień może być oznaczony jako wolny.</string>
     <string name="appointments_request_time_error">Wizyty o tej godzinie są zablokowane w ustawieniach</string>
+    <string name="appointments_create_price_changed_error">Ceny usług uległy zmianie. Sprawdź zaktualizowaną sumę i spróbuj ponownie.</string>
+    <string name="appointments_create_duration_changed_error">Czas trwania usług uległ zmianie. Sprawdź usługi i godzinę wizyty.</string>
+    <string name="appointments_create_services_changed_error">Wybrane usługi uległy zmianie. Sprawdź wybór i spróbuj ponownie.</string>
+    <string name="appointments_create_empty_services_error">Wybierz co najmniej jedną usługę.</string>
+    <string name="appointments_date_in_past_error">Termin wizyty jest w przeszłości. Wybierz przyszłą datę i godzinę.</string>
+    <string name="appointments_create_offer_used_error">Ta oferta rezerwacji została już wykorzystana. Sprawdź listę wizyt przed kolejną próbą.</string>
+    <string name="appointments_employee_not_found_error">Ten pracownik nie jest już dostępny. Odśwież wizyty i spróbuj ponownie.</string>
+    <string name="appointments_client_not_found_error">Ten klient nie jest już dostępny. Wybierz innego klienta.</string>
+    <string name="appointments_edit_window_closed_error">Tej wizyty nie można już zmienić.</string>
+    <string name="appointments_concurrent_modification_error">Wizyta uległa zmianie. Spróbuj ponownie.</string>
+    <string name="appointments_unavailable_error">Wizyta nie jest już dostępna.</string>
 </resources>

@@ -34,7 +34,7 @@ abstract class NotificationSettingsDao {
     @Transaction
     open suspend fun upsertWithChildren(
         settings: NotificationSettingsEntity,
-        channels: List<NotificationSettingsChannelEntity>
+        channels: List<NotificationSettingsChannelEntity>,
     ) {
         upsertSettings(settings)
         deleteChannels(settings.id)

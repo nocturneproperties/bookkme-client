@@ -8,7 +8,7 @@ import me.bookk.android.designsystem.resources.DesignSystem
 class TextImageAction(
     val image: ImageResource,
     val title: StringDesc,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 ) {
     constructor(image: ImageResource, title: StringDesc) : this(image, title, {})
     constructor() : this(DesignSystem.images.error, "Undefined".desc())

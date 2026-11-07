@@ -10,12 +10,12 @@ class AppointmentLocal(
     @Embedded val entity: AppointmentEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "appointmentId"
+        entityColumn = "appointmentId",
     )
     val services: List<AppointmentServiceSnapshotEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "appointmentId"
+        entityColumn = "appointmentId",
     )
-    val adjustmentServices: List<AppointmentAdjustmentServiceEntity>
+    val adjustmentServices: List<AppointmentAdjustmentServiceEntity>,
 )

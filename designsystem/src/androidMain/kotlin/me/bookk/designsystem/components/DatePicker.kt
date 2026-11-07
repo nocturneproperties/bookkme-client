@@ -14,8 +14,8 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
-import me.bookk.core.presentation.date.SelectableDateRange
 import me.bookk.android.designsystem.resources.DesignSystem
+import me.bookk.core.presentation.date.SelectableDateRange
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.ButtonState
@@ -29,14 +29,16 @@ fun AppDatePicker(
         containerColor = LocalColors.current.elevated,
         selectedDayContentColor = LocalColors.current.primaryText,
         selectedDayContainerColor = LocalColors.current.actionText,
-        todayDateBorderColor = LocalColors.current.actionText
+        todayDateBorderColor = LocalColors.current.actionText,
     ),
-    confirmButton: ButtonState = remember { AndroidButtonState(DesignSystem.strings.action_select.desc()) },
-    dismissButton: ButtonState? = remember { AndroidButtonState(DesignSystem.strings.action_cancel.desc()) },
+    confirmButton: ButtonState =
+        remember { AndroidButtonState(DesignSystem.strings.action_select.desc()) },
+    dismissButton: ButtonState? =
+        remember { AndroidButtonState(DesignSystem.strings.action_cancel.desc()) },
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDate = state.pickedDate?.toJavaLocalDate(),
-        selectableDates = SelectableDateRange(state.maxDate, state.minDate)
+        selectableDates = SelectableDateRange(state.maxDate, state.minDate),
     )
     DatePickerDialog(
         colors = datePickerColors,
@@ -60,9 +62,9 @@ fun AppDatePicker(
                         state.onDatePicked?.invoke(date)
                     }
                     state.isDatePickerVisible = false
-                }
+                },
             )
-        }
+        },
     ) {
         DatePicker(state = datePickerState, colors = datePickerColors)
     }

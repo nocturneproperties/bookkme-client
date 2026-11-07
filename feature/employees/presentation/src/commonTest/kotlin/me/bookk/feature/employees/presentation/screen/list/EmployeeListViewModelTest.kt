@@ -48,7 +48,9 @@ class EmployeeListViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(canEdit: Boolean = true) {
+    private class Fixture(
+        canEdit: Boolean = true,
+    ) {
         val businessId = Uuid.random()
         val editableBusinessIds = if (canEdit) mutableSetOf(businessId) else mutableSetOf()
         val employees = MutableStateFlow<List<Employee>>(emptyList())
@@ -70,7 +72,7 @@ class EmployeeListViewModelTest {
             observeCurrentBusinessId = observeCurrentBusinessId,
             canEditEmployees = canEditEmployees,
             stateFactory = FakeEmployeesStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -94,7 +96,8 @@ class EmployeeListViewModelTest {
         advanceUntilIdle()
 
         whenn()
-        fixture.employees.value = listOf(stubEmployee("bob"), stubEmployee("Anna", "Zed"), stubEmployee("Anna", "Abe"))
+        fixture.employees.value =
+            listOf(stubEmployee("bob"), stubEmployee("Anna", "Zed"), stubEmployee("Anna", "Abe"))
 
         then()
         val sections = sut.uiState.employeesList.items
@@ -122,13 +125,17 @@ class EmployeeListViewModelTest {
         val fixture = Fixture()
         val sut = fixture.sut()
         advanceUntilIdle()
-        fixture.employees.value = listOf(stubEmployee("Anna", "Smith"), stubEmployee("Bob", "Stone"))
+        fixture.employees.value =
+            listOf(stubEmployee("Anna", "Smith"), stubEmployee("Bob", "Stone"))
 
         whenn()
         (sut.uiState.searchField as FakeTextFieldState).type("stone")
 
         then()
-        assertEquals(listOf("Bob"), sut.uiState.employeesList.items.flatMap { it.items }.map { it.name })
+        assertEquals(
+            listOf("Bob"),
+            sut.uiState.employeesList.items.flatMap { it.items }.map { it.name },
+        )
     }
 
     @Test
@@ -172,32 +179,34 @@ class EmployeeListViewModelTest {
     }
 
     @Test
-    fun `hides the add action after switching to a business where the user cannot edit employees`() = runUnitTest {
-        given()
-        val fixture = Fixture(canEdit = true)
-        val sut = fixture.sut()
+    fun `hides the add action after switching to a business where the user cannot edit employees`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture(canEdit = true)
+            val sut = fixture.sut()
 
-        whenn()
-        fixture.currentBusinessId.value = Uuid.random()
+            whenn()
+            fixture.currentBusinessId.value = Uuid.random()
 
-        then()
-        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
-    }
+            then()
+            assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+        }
 
     @Test
-    fun `shows the add action after switching to a business where the user can edit employees`() = runUnitTest {
-        given()
-        val fixture = Fixture(canEdit = false)
-        val sut = fixture.sut()
-        val editableBusinessId = Uuid.random()
-        fixture.editableBusinessIds += editableBusinessId
+    fun `shows the add action after switching to a business where the user can edit employees`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture(canEdit = false)
+            val sut = fixture.sut()
+            val editableBusinessId = Uuid.random()
+            fixture.editableBusinessIds += editableBusinessId
 
-        whenn()
-        fixture.currentBusinessId.value = editableBusinessId
+            whenn()
+            fixture.currentBusinessId.value = editableBusinessId
 
-        then()
-        assertEquals(1, sut.uiState.appBar.actions.items.size)
-    }
+            then()
+            assertEquals(1, sut.uiState.appBar.actions.items.size)
+        }
 
     @Test
     fun `ignores a stale edit access result after the business changes`() = runUnitTest {
@@ -205,7 +214,10 @@ class EmployeeListViewModelTest {
         val fixture = Fixture()
         val firstBusinessAccess = CompletableDeferred<Boolean>()
         val secondBusinessId = Uuid.random()
-        everySuspend { fixture.canEditEmployees(fixture.businessId) } calls { firstBusinessAccess.await() }
+        everySuspend { fixture.canEditEmployees(fixture.businessId) } calls
+            {
+                firstBusinessAccess.await()
+            }
         everySuspend { fixture.canEditEmployees(secondBusinessId) } returns false
         val sut = fixture.sut()
         fixture.currentBusinessId.value = secondBusinessId
@@ -227,7 +239,12 @@ class EmployeeListViewModelTest {
         sut.uiState.appBar.actions.items.single().onClick()
 
         then()
-        assertEquals(listOf<EmployeeListDestinations>(EmployeeListDestinations.AddEmployee(fixture.businessId)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EmployeeListDestinations>(
+                EmployeeListDestinations.AddEmployee(fixture.businessId),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -244,7 +261,10 @@ class EmployeeListViewModelTest {
         section.onItemClick(employee)
 
         then()
-        assertEquals(listOf<EmployeeListDestinations>(EmployeeListDestinations.EditEmployee(employee.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EmployeeListDestinations>(EmployeeListDestinations.EditEmployee(employee.id)),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -283,6 +303,9 @@ class EmployeeListViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<EmployeeListDestinations>(EmployeeListDestinations.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EmployeeListDestinations>(EmployeeListDestinations.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

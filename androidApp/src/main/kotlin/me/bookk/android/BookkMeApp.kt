@@ -12,12 +12,12 @@ class BookkMeApp : Application() {
         StrictMode.setThreadPolicy(
             StrictMode.ThreadPolicy.Builder()
                 .detectAll()
-                .build()
+                .build(),
         )
         StrictMode.setVmPolicy(
             StrictMode.VmPolicy.Builder()
                 .detectAll()
-                .build()
+                .build(),
         )
         initDI(AndroidStateFactoryCreator()) {
             androidLogger()

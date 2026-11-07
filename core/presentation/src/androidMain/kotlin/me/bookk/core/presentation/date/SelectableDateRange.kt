@@ -22,12 +22,12 @@ class SelectableDateRange(
     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
         val selectedDate = Instant.fromEpochMilliseconds(utcTimeMillis)
             .toLocalDateTime(TimeZone.currentSystemDefault())
-        return min?.let { selectedDate.date >= it } ?: true
-                && max?.let { selectedDate.date <= it } ?: true
+        return min?.let { selectedDate.date >= it } ?: true &&
+            max?.let { selectedDate.date <= it } ?: true
     }
 
     override fun isSelectableYear(year: Int): Boolean {
-        return min?.let { year >= it.year } ?: true
-                && max?.let { year <= it.year } ?: true
+        return min?.let { year >= it.year } ?: true &&
+            max?.let { year <= it.year } ?: true
     }
 }

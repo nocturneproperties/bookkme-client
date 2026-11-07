@@ -4,7 +4,7 @@ import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.employees.domain.api.RedeemEmployeeInvitation
 
 internal class JoinBusinessImpl(
-    private val redeemEmployeeInvitation: RedeemEmployeeInvitation
+    private val redeemEmployeeInvitation: RedeemEmployeeInvitation,
 ) : JoinBusiness {
     override suspend fun invoke(code: String) {
         val trimmedCode = code.trim()

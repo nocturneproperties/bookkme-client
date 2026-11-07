@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 
 internal class GetAppointmentsForBusinessImpl(
     private val dataSource: AppointmentDataSource,
-    private val observeCurrentBusinessId: ObserveCurrentBusinessId
+    private val observeCurrentBusinessId: ObserveCurrentBusinessId,
 ) : GetAppointmentsForBusiness {
 
     override fun flow(date: LocalDate, employeeId: Uuid?): Flow<List<Appointment>> {
@@ -23,7 +23,11 @@ internal class GetAppointmentsForBusinessImpl(
             .map { it.orEmpty() }
     }
 
-    override suspend fun refresh(businessId: Uuid, date: LocalDate, employeeId: Uuid?): List<Appointment> {
+    override suspend fun refresh(
+        businessId: Uuid,
+        date: LocalDate,
+        employeeId: Uuid?,
+    ): List<Appointment> {
         val appointments = dataSource.getAppointmentsForDate(businessId, date, employeeId)
         val freshIds = appointments.map { it.id }.toSet()
         val staleIds = dataSource.getAppointmentIdsForDateInDb(businessId, date, employeeId)

@@ -9,6 +9,6 @@ internal fun servicesDiModule() = module {
     includes(
         servicesPresentationModule(),
         servicesDataModule(),
-        servicesDomainModule()
+        servicesDomainModule(),
     )
 }

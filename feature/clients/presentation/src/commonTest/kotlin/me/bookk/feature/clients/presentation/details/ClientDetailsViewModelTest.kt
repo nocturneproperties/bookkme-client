@@ -47,14 +47,21 @@ class ClientDetailsViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(canEdit: Boolean = true) {
+    private class Fixture(
+        canEdit: Boolean = true,
+    ) {
         val id = Uuid.random()
         val client = MutableStateFlow<Client?>(null)
         val getClient = mock<GetClient> {
             every { flow(id) } returns client
         }
         val getClientsPermissions = mock<GetClientsPermissions> {
-            everySuspend { invoke(any()) } returns ClientsPermissions(canEdit = canEdit, canDelete = false)
+            everySuspend { invoke(any()) } returns
+                ClientsPermissions(
+                    canEdit = canEdit,
+                    canDeleteDetached = false,
+                    canDeleteIntegrated = false,
+                )
         }
         val device = mock<DeviceFacade> {
             every { dial(any()) } returns Unit
@@ -68,7 +75,7 @@ class ClientDetailsViewModelTest {
             getClientsPermissions = getClientsPermissions,
             device = device,
             stateFactory = FakeClientsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -76,7 +83,8 @@ class ClientDetailsViewModelTest {
     fun `renders client name and contact lines`() = runUnitTest {
         given()
         val fixture = Fixture()
-        fixture.client.value = stubDetachedClient(id = fixture.id, name = "Anna", lastName = "Smith")
+        fixture.client.value =
+            stubDetachedClient(id = fixture.id, name = "Anna", lastName = "Smith")
 
         whenn()
         val sut = fixture.sut()
@@ -204,7 +212,10 @@ class ClientDetailsViewModelTest {
         sut.uiState.appBar.actions.items.single().onClick()
 
         then()
-        assertEquals(listOf<ClientDetailsDestination>(ClientDetailsDestination.Edit(fixture.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ClientDetailsDestination>(ClientDetailsDestination.Edit(fixture.id)),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -218,6 +229,9 @@ class ClientDetailsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<ClientDetailsDestination>(ClientDetailsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ClientDetailsDestination>(ClientDetailsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

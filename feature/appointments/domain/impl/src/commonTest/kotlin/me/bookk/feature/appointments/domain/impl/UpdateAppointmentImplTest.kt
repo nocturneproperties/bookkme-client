@@ -3,6 +3,7 @@ package me.bookk.feature.appointments.domain.impl
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
@@ -180,5 +181,89 @@ class UpdateAppointmentImplTest {
         assertFailsWith<UpdateAppointment.Error.EmployeeSuspended> {
             fixture.sut(appointment)
         }
+    }
+
+    @Test
+    fun `maps backend error 300012 to DateInPast`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(300012, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubAppointment()) }
+
+        then()
+        assertFailsWith<UpdateAppointment.Error.DateInPast> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 300024 to InvalidServiceSelection`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(300024, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubAppointment()) }
+
+        then()
+        assertFailsWith<UpdateAppointment.Error.InvalidServiceSelection> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200013 to ServiceNotFound`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(200013, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubAppointment()) }
+
+        then()
+        assertFailsWith<UpdateAppointment.Error.ServiceNotFound> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 200024 to EmployeeNotFound`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(200024, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubAppointment()) }
+
+        then()
+        assertFailsWith<UpdateAppointment.Error.EmployeeNotFound> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 900001 to ConcurrentModification`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(900001, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubAppointment()) }
+
+        then()
+        assertFailsWith<UpdateAppointment.Error.ConcurrentModification> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 300026 to EditWindowClosed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateAppointment(any()) } throws
+            DomainError.BusinessError(300026, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubAppointment()) }
+
+        then()
+        assertFailsWith<UpdateAppointment.Error.EditWindowClosed> { result.getOrThrow() }
     }
 }

@@ -22,15 +22,16 @@ import me.bookk.core.presentation.flow.safeOnEach
 import kotlin.coroutines.CoroutineContext
 
 actual abstract class ViewModel actual constructor(
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) {
     private val internalLogger = Logger.create("ViewModel")
     private val activeJobs = mutableMapOf<String, Job>()
     protected actual val errorMapper: ErrorMapper = vmArgs.errorMapper
     protected actual val viewModelScope = CoroutineScope(
-        SupervisorJob() + DispatcherProvider.main + CoroutineExceptionHandler { context, throwable ->
-            viewModelScopeErrorHandler.handleException(context, throwable)
-        }
+        SupervisorJob() + DispatcherProvider.main +
+            CoroutineExceptionHandler { context, throwable ->
+                viewModelScopeErrorHandler.handleException(context, throwable)
+            },
     )
     protected actual open val viewModelScopeErrorHandler =
         CoroutineExceptionHandler { _, throwable ->

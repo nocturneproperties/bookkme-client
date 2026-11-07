@@ -14,18 +14,19 @@ internal fun Client.toRemote(): ClientRemote {
         phone = phone,
         email = email,
         userId = (this as? Client.Integrated)?.userId,
-        description = description
+        description = description,
     )
 }
 
 internal fun Client.toUpdateRemote(): ClientUpdateRemote {
+    val detached = this as? Client.Detached
     return ClientUpdateRemote(
         id = id,
-        name = name,
-        lastName = lastName,
-        phone = phone,
-        email = email,
-        description = description
+        name = detached?.name,
+        lastName = detached?.lastName,
+        phone = detached?.phone,
+        email = detached?.email,
+        description = description,
     )
 }
 
@@ -38,7 +39,7 @@ internal fun ClientRemote.toDomain(businessId: Uuid): Client {
             phone = phone,
             email = email,
             businessId = businessId,
-            description = description
+            description = description,
         )
 
         else -> Client.Integrated(
@@ -49,7 +50,7 @@ internal fun ClientRemote.toDomain(businessId: Uuid): Client {
             email = email,
             businessId = businessId,
             userId = userId,
-            description = description
+            description = description,
         )
     }
 }
@@ -63,7 +64,7 @@ internal fun Client.toDbEntity(): ClientEntity {
         email = email,
         businessId = businessId,
         userId = (this as? Client.Integrated)?.userId,
-        description = description
+        description = description,
     )
 }
 
@@ -76,7 +77,7 @@ internal fun ClientEntity.toDomain(): Client {
             phone = phone,
             email = email,
             businessId = businessId,
-            description = description
+            description = description,
         )
 
         else -> Client.Integrated(
@@ -87,7 +88,7 @@ internal fun ClientEntity.toDomain(): Client {
             email = email,
             businessId = businessId,
             userId = userId,
-            description = description
+            description = description,
         )
     }
 }

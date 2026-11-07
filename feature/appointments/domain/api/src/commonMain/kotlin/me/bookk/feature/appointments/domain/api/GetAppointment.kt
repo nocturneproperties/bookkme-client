@@ -5,4 +5,10 @@ import kotlin.uuid.Uuid
 
 interface GetAppointment {
     suspend operator fun invoke(id: Uuid): Appointment
+
+    suspend fun refresh(id: Uuid): Appointment
+
+    sealed interface Error {
+        class NotFound : Exception()
+    }
 }

@@ -3,15 +3,21 @@ package me.bookk.core.presentation.date
 import me.bookk.core.android.AndroidActivityAware
 import java.time.format.DateTimeFormatter
 
-internal class AndroidDateLocalizer : AndroidActivityAware(), DateLocalizer {
+internal class AndroidDateLocalizer :
+    AndroidActivityAware(),
+    DateLocalizer {
 
     private fun DateStyle.nativeFormat(): AndroidFormatters {
         return AndroidFormatters(
             dateTime = DateTimeFormatter.ofPattern(dateTimePattern.matchToUserPreferences()),
-            dateTimeSameYear = DateTimeFormatter.ofPattern(sameYearDateTimePattern.matchToUserPreferences()),
+            dateTimeSameYear = DateTimeFormatter.ofPattern(
+                sameYearDateTimePattern.matchToUserPreferences(),
+            ),
             date = DateTimeFormatter.ofPattern(datePattern.matchToUserPreferences()),
-            dateSameYear = DateTimeFormatter.ofPattern(sameYearDatePattern.matchToUserPreferences()),
-            time = DateTimeFormatter.ofPattern(timePattern.matchToUserPreferences())
+            dateSameYear = DateTimeFormatter.ofPattern(
+                sameYearDatePattern.matchToUserPreferences(),
+            ),
+            time = DateTimeFormatter.ofPattern(timePattern.matchToUserPreferences()),
         )
     }
 
@@ -28,8 +34,8 @@ internal class AndroidDateLocalizer : AndroidActivityAware(), DateLocalizer {
                 dateTimeSameYear = formatter,
                 date = formatter,
                 dateSameYear = formatter,
-                time = formatter
-            )
+                time = formatter,
+            ),
         )
     }
 }

@@ -29,6 +29,6 @@ internal val LocalBusinessSettingsEventListener = compositionLocalOf {
         onCurrencySelected = {},
         onInstagramChanged = {},
         onSaveClick = {},
-        onTestLocationClick = {}
+        onTestLocationClick = {},
     )
 }

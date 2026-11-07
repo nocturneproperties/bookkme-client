@@ -65,7 +65,7 @@ class BusinessPluginsViewModelTest {
             enableAppointmentsPlugin = enableAppointmentsPlugin,
             canEditBusiness = canEditBusiness,
             stateFactory = FakeBusinessStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -120,7 +120,12 @@ class BusinessPluginsViewModelTest {
         sut.uiState.appointmentPlugin.enable.onClick?.invoke()
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -134,14 +139,19 @@ class BusinessPluginsViewModelTest {
         sut.uiState.appointmentPlugin.enable.onClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `treats already enabled error as enabled without notification`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.enableAppointmentsPlugin(any()) } throws EnableAppointmentsPlugin.Error.AlreadyEnabled()
+        everySuspend { fixture.enableAppointmentsPlugin(any()) } throws
+            EnableAppointmentsPlugin.Error.AlreadyEnabled()
         val sut = fixture.sut()
 
         whenn()
@@ -217,6 +227,9 @@ class BusinessPluginsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<BusinessPluginsDestinations>(BusinessPluginsDestinations.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<BusinessPluginsDestinations>(BusinessPluginsDestinations.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

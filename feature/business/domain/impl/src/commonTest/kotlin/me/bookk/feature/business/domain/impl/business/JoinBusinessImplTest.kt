@@ -45,9 +45,9 @@ private fun stubEmployee() = Employee(
         employees = ResourcePermission(),
         clients = ResourcePermission(),
         services = ResourcePermission(),
-        appointments = ResourcePermission()
+        appointments = ResourcePermission(),
     ),
-    suspendedAt = null
+    suspendedAt = null,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)

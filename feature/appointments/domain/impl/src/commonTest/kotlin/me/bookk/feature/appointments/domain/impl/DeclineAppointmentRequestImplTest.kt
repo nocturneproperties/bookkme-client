@@ -54,13 +54,18 @@ class DeclineAppointmentRequestImplTest {
         val requestId = Uuid.random()
         val businessId = Uuid.random()
         val reason = "Not available"
-        everySuspend { fixture.dataSource.declineAppointmentRequest(requestId, businessId, reason) } returns Unit
+        everySuspend {
+            fixture.dataSource.declineAppointmentRequest(requestId, businessId, reason)
+        } returns
+            Unit
 
         whenn()
         fixture.sut(requestId, businessId, reason)
 
         then()
-        verifySuspend { fixture.dataSource.declineAppointmentRequest(requestId, businessId, reason) }
+        verifySuspend {
+            fixture.dataSource.declineAppointmentRequest(requestId, businessId, reason)
+        }
     }
 
     @Test
@@ -69,7 +74,9 @@ class DeclineAppointmentRequestImplTest {
         val fixture = Fixture()
         val requestId = Uuid.random()
         val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.declineAppointmentRequest(requestId, businessId, "reason") } returns Unit
+        everySuspend {
+            fixture.dataSource.declineAppointmentRequest(requestId, businessId, "reason")
+        } returns Unit
 
         whenn()
         fixture.sut(requestId, businessId, "reason")
@@ -84,7 +91,9 @@ class DeclineAppointmentRequestImplTest {
         val fixture = Fixture()
         val requestId = Uuid.random()
         val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.declineAppointmentRequest(requestId, businessId, "reason") } throws
+        everySuspend {
+            fixture.dataSource.declineAppointmentRequest(requestId, businessId, "reason")
+        } throws
             DomainError.BusinessError(AppointmentErrorCodes.REQUEST_ALREADY_DECLINED, "msg")
 
         whenn()
@@ -100,7 +109,9 @@ class DeclineAppointmentRequestImplTest {
         val fixture = Fixture()
         val requestId = Uuid.random()
         val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.declineAppointmentRequest(requestId, businessId, "reason") } throws
+        everySuspend {
+            fixture.dataSource.declineAppointmentRequest(requestId, businessId, "reason")
+        } throws
             DomainError.BusinessError(AppointmentErrorCodes.REQUEST_ALREADY_APPROVED, "msg")
 
         whenn()

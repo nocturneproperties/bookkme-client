@@ -11,17 +11,17 @@ class AppointmentSettingsLocal(
     @Embedded val entity: AppointmentSettingsEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "settingsId"
+        entityColumn = "settingsId",
     )
     val daySchedules: List<AppointmentSettingsDayScheduleEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "settingsId"
+        entityColumn = "settingsId",
     )
     val workHours: List<AppointmentSettingsWorkHourEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "settingsId"
+        entityColumn = "settingsId",
     )
-    val dayOffs: List<AppointmentSettingsDayOffEntity>
+    val dayOffs: List<AppointmentSettingsDayOffEntity>,
 )

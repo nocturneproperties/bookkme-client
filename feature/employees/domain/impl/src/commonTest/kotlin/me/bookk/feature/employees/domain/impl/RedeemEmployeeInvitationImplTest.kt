@@ -48,7 +48,8 @@ class RedeemEmployeeInvitationImplTest {
         val dataSource = mock<EmployeeInvitationDataSource>()
         val refreshBusinessInfo = mock<RefreshBusinessInfo>()
         val switchDashboardBusiness = mock<SwitchDashboardBusiness>()
-        val sut = RedeemEmployeeInvitationImpl(dataSource, refreshBusinessInfo, switchDashboardBusiness)
+        val sut =
+            RedeemEmployeeInvitationImpl(dataSource, refreshBusinessInfo, switchDashboardBusiness)
     }
 
     @Test
@@ -69,38 +70,42 @@ class RedeemEmployeeInvitationImplTest {
     }
 
     @Test
-    fun `refreshes businesses selecting the joined business after a successful redeem`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val code = "ABCD1234"
-        val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.redeemInvitation(code) } returns stubEmployee(businessId = businessId)
-        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
-        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
+    fun `refreshes businesses selecting the joined business after a successful redeem`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val code = "ABCD1234"
+            val businessId = Uuid.random()
+            everySuspend { fixture.dataSource.redeemInvitation(code) } returns
+                stubEmployee(businessId = businessId)
+            everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
+            everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
-        whenn()
-        fixture.sut(code)
+            whenn()
+            fixture.sut(code)
 
-        then()
-        verifySuspend { fixture.refreshBusinessInfo.refreshAndSelect(businessId) }
-    }
+            then()
+            verifySuspend { fixture.refreshBusinessInfo.refreshAndSelect(businessId) }
+        }
 
     @Test
-    fun `switches dashboard business to the joined business after a successful redeem`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val code = "ABCD1234"
-        val businessId = Uuid.random()
-        everySuspend { fixture.dataSource.redeemInvitation(code) } returns stubEmployee(businessId = businessId)
-        everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
-        everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
+    fun `switches dashboard business to the joined business after a successful redeem`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val code = "ABCD1234"
+            val businessId = Uuid.random()
+            everySuspend { fixture.dataSource.redeemInvitation(code) } returns
+                stubEmployee(businessId = businessId)
+            everySuspend { fixture.refreshBusinessInfo.refreshAndSelect(any()) } returns Unit
+            everySuspend { fixture.switchDashboardBusiness(any()) } returns Unit
 
-        whenn()
-        fixture.sut(code)
+            whenn()
+            fixture.sut(code)
 
-        then()
-        verifySuspend { fixture.switchDashboardBusiness(businessId) }
-    }
+            then()
+            verifySuspend { fixture.switchDashboardBusiness(businessId) }
+        }
 
     @Test
     fun `does not refresh or switch business when redeem fails`() = runUnitTest {
@@ -120,19 +125,23 @@ class RedeemEmployeeInvitationImplTest {
     }
 
     @Test
-    fun `throws AlreadyProcessed on BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val code = "ABCD1234"
-        everySuspend { fixture.dataSource.redeemInvitation(code) } throws
-            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED, "msg")
+    fun `throws AlreadyProcessed on BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val code = "ABCD1234"
+            everySuspend { fixture.dataSource.redeemInvitation(code) } throws
+                DomainError.BusinessError(
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED,
+                    "msg",
+                )
 
-        whenn()
-        then()
-        assertFailsWith<RedeemEmployeeInvitation.Error.AlreadyProcessed> {
-            fixture.sut(code)
+            whenn()
+            then()
+            assertFailsWith<RedeemEmployeeInvitation.Error.AlreadyProcessed> {
+                fixture.sut(code)
+            }
         }
-    }
 
     @Test
     fun `throws EmployeeExists on BUSINESS_EMPLOYEE_EXISTS`() = runUnitTest {

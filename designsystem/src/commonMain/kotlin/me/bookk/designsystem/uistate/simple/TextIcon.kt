@@ -5,5 +5,5 @@ import dev.icerock.moko.resources.desc.image.ImageDesc
 
 class TextIcon(
     val text: StringDesc,
-    val icon: ImageDesc
+    val icon: ImageDesc,
 )

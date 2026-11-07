@@ -1,11 +1,12 @@
 package library.files.impl
 
 import android.content.Context
-import library.files.api.FileProvider
 import okio.Path
 import okio.Path.Companion.toPath
 
-class AndroidFileProvider(private val context: Context) : FileProvider {
+class AndroidFileProvider(
+    private val context: Context,
+) : CommonFileProvider() {
     override fun touchPrefsFile(fileName: String): Path {
         return context.filesDir.resolve(fileName).absolutePath.toPath()
     }

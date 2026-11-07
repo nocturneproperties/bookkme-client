@@ -19,7 +19,9 @@ class IosDeviceFacade : DeviceFacade {
     }
 
     override fun getLocaleId(): String {
-        return NSLocale.canonicalLanguageIdentifierFromString(NSLocale.currentLocale.localeIdentifier)
+        return NSLocale.canonicalLanguageIdentifierFromString(
+            NSLocale.currentLocale.localeIdentifier,
+        )
     }
 
     override fun getCurrencyCode(): String? {
@@ -35,7 +37,7 @@ class IosDeviceFacade : DeviceFacade {
             UIApplication.sharedApplication.openURL(
                 url = it,
                 options = emptyMap<Any?, Any>(),
-                completionHandler = null
+                completionHandler = null,
             )
         }
     }

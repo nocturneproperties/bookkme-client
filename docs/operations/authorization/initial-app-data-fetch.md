@@ -6,17 +6,32 @@
 · `rawFetch` is called from [Sign in](sign-in.md) and [Create account](create-account.md).
 `timestampProtectedFetch` is called from `BootstrapViewModel` on every app start.
 
-It warms the cache so the first screens can render from Room. The two variants differ in one respect:
+It warms the cache so the first screens can render locally. The variants differ as follows:
 `rawFetch` always runs and **adopts the server's dashboard business selection**.
-`timestampProtectedFetch` runs only when at least 30 minutes have passed since
-`authorization_prefs.last_initial_data_fetch_at`, and it keeps the local selection.
+`timestampProtectedFetch` first calls
+[`DeleteExpiredPersonalDataExportFile`](../settings/delete-expired-personal-data-export-file.md) and
+[`DeleteExpiredBusinessDataExportFiles`](../business/delete-expired-business-data-export-files.md), each inside
+its own `runCatching`, on every call, before the throttle and authorization check. The fetch itself runs only
+when at least 30 minutes have passed since
+`authorization_prefs.last_initial_data_fetch_at`, and it keeps the local selection. When due, it first
+calls `GetSignUpLegalDocuments.refresh()` to fetch and persist both public legal documents. It then reads
+`AuthorizationDataSource.getIsAuthorizedFlow().first()`. If unauthorized, it returns immediately: no profile,
+business or low-priority fetch is started, and no initial-data timestamp is saved. `rawFetch()` retains its
+existing authenticated flow and does not preload legal documents.
 
 ```mermaid
 flowchart TD
     A([rawFetch]) --> P
-    B([timestampProtectedFetch]) --> Due{now - last_initial_data_fetch_at >= 30 min<br/>or never fetched?}
+    B([timestampProtectedFetch]) --> Cleanup[runCatching DeleteExpiredPersonalDataExportFile<br/>local: delete personal_data_exports unless READY and unexpired]
+    Cleanup --> BizCleanup[runCatching DeleteExpiredBusinessDataExportFiles<br/>local: delete business_data_exports/businessId unless READY and unexpired]
+    BizCleanup --> Due{now - last_initial_data_fetch_at >= 30 min<br/>or never fetched?}
     Due -- no --> Skip([return])
-    Due -- yes --> P2
+    Due -- yes --> Legal[GetSignUpLegalDocuments.refresh<br/>GET /api/user/legal then persist signup_legal_documents_prefs.documents]
+    Legal --> Auth[AuthorizationDataSource.getIsAuthorizedFlow.first]
+    Auth --> Authorized{Authorized?}
+    Authorized -- no --> PublicOnly([return after public documents only])
+    Authorized -- yes --> P2
+    Legal -- error --> EX
     P[UserProfileCRUD.updateFromRemote<br/>GET /api/user/me → upsert user_profile] --> BizA[runCatching RefreshBusinessInfo<br/>applyDashboardIdFromRemote = true]
     P2[UserProfileCRUD.updateFromRemote] --> BizB[runCatching RefreshBusinessInfo<br/>applyDashboardIdFromRemote = false]
     BizA --> Low
@@ -27,8 +42,9 @@ flowchart TD
     P2 -- error --> EX
 ```
 
-The profile fetch is the only step that is **not** wrapped in `runCatching`. If it fails, the whole fetch fails
-and the timestamp is not written.
+Legal preloading and the profile fetch are not wrapped in `runCatching`. A failure propagates and the
+initial-data timestamp is not written. Failed legal preloading prevents the private fetches from starting;
+it does not overwrite an older complete legal-document snapshot.
 
 ## Low-priority data fetch
 

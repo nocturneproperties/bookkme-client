@@ -12,22 +12,22 @@ class EmployeeLocal(
     @Embedded val entity: EmployeeEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "employeeId"
+        entityColumn = "employeeId",
     )
     val daySchedules: List<EmployeeDayScheduleEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "employeeId"
+        entityColumn = "employeeId",
     )
     val workHours: List<EmployeeWorkHourEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "employeeId"
+        entityColumn = "employeeId",
     )
     val dayOffs: List<EmployeeDayOffEntity>,
     @Relation(
         parentColumn = "id",
-        entityColumn = "employeeId"
+        entityColumn = "employeeId",
     )
-    val services: List<EmployeeServiceSnapshotEntity>
+    val services: List<EmployeeServiceSnapshotEntity>,
 )

@@ -44,7 +44,6 @@ import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.TopBarSize
 
-
 private const val DISABLED_ACTION_ALPHA = 0.38f
 
 @Composable
@@ -62,7 +61,9 @@ fun AppTopBar(
                     Icon(
                         painter = icon.painter(),
                         contentDescription = it.contentDescription.localized(),
-                        tint = colors.actionIconContentColor.copy(alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA)
+                        tint = colors.actionIconContentColor.copy(
+                            alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA,
+                        ),
                     )
                 }
             } else {
@@ -73,11 +74,12 @@ fun AppTopBar(
                             color = when (it.type) {
                                 ActionType.CANCEL,
                                 ActionType.CONFIRM,
-                                ActionType.POSITIVE -> LocalColors.current.actionText
+                                ActionType.POSITIVE,
+                                -> LocalColors.current.actionText
 
                                 ActionType.NEGATIVE -> LocalColors.current.error
-                            }.copy(alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA)
-                        )
+                            }.copy(alpha = if (it.isEnabled) 1f else DISABLED_ACTION_ALPHA),
+                        ),
                     )
                 }
             }
@@ -90,10 +92,10 @@ fun AppTopBar(
             ClickableIcon(
                 icon = Icons.AutoMirrored.Filled.ArrowBack,
                 onClick = it,
-                tint = colors.navigationIconContentColor
+                tint = colors.navigationIconContentColor,
             )
         }
-    }
+    },
 ) {
     when (state.size) {
         TopBarSize.SMALL -> {
@@ -106,10 +108,10 @@ fun AppTopBar(
                         state.title.localized(),
                         state.size,
                         colors.titleContentColor,
-                        behavior
+                        behavior,
                     )
                 },
-                navigationIcon = navigationIcon
+                navigationIcon = navigationIcon,
             )
         }
 
@@ -124,17 +126,17 @@ fun AppTopBar(
                             state.title.localized(),
                             state.size,
                             colors.titleContentColor,
-                            behavior
+                            behavior,
                         )
                     },
                     navigationIcon = navigationIcon,
-                    scrollBehavior = behavior
+                    scrollBehavior = behavior,
                 )
                 state.subtitle?.let {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         text = it.html(),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
                     )
                 }
             }
@@ -148,7 +150,7 @@ private fun AppBarActionLoader() {
         CircularProgressIndicator(
             modifier = Modifier.size(20.dp),
             strokeWidth = 2.dp,
-            color = LocalColors.current.actionText
+            color = LocalColors.current.actionText,
         )
     }
 }
@@ -158,7 +160,7 @@ private fun AppBarTitle(
     text: String,
     size: TopBarSize,
     color: Color,
-    behavior: TopAppBarScrollBehavior?
+    behavior: TopAppBarScrollBehavior?,
 ) {
     val style = when (size) {
         TopBarSize.SMALL -> MaterialTheme.typography.titleMedium
@@ -170,7 +172,13 @@ private fun AppBarTitle(
     }
     val interpolator = remember { AccelerateInterpolator(1.6f) }
     val fraction =
-        if (behavior != null) interpolator.getInterpolation(1f - behavior.state.collapsedFraction) else 1f
+        if (behavior !=
+            null
+        ) {
+            interpolator.getInterpolation(1f - behavior.state.collapsedFraction)
+        } else {
+            1f
+        }
     Text(
         modifier = Modifier.alpha(fraction),
         text = text,
@@ -178,7 +186,7 @@ private fun AppBarTitle(
         fontWeight = weight,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
-        color = color
+        color = color,
     )
 }
 
@@ -196,7 +204,7 @@ fun topBarDefaultColors(
     navigationIconContentColor,
     titleContentColor,
     actionIconContentColor,
-    subtitleContentColor
+    subtitleContentColor,
 )
 
 @Preview(showBackground = true, backgroundColor = BLACK.toLong())
@@ -209,7 +217,7 @@ private fun PreviewDark() {
                     title = "Title".desc(),
                     size = TopBarSize.SMALL,
                 ),
-                onNavigationIconClick = {}
+                onNavigationIconClick = {},
             )
             AppTopBar(
                 state = AndroidAppBarState(
@@ -217,7 +225,7 @@ private fun PreviewDark() {
                     subtitle = "Subtitle example".desc(),
                     size = TopBarSize.LARGE,
                 ),
-                onNavigationIconClick = {}
+                onNavigationIconClick = {},
             )
             AppTopBar(
                 state = AndroidAppBarState(
@@ -225,7 +233,7 @@ private fun PreviewDark() {
                     subtitle = "Subtitle example".desc(),
                     size = TopBarSize.LARGE,
                 ),
-                onNavigationIconClick = {}
+                onNavigationIconClick = {},
             )
         }
     }
@@ -242,7 +250,7 @@ private fun PreviewLight() {
                     subtitle = null,
                     size = TopBarSize.SMALL,
                 ),
-                onNavigationIconClick = {}
+                onNavigationIconClick = {},
             )
             AppTopBar(
                 state = AndroidAppBarState(
@@ -250,7 +258,7 @@ private fun PreviewLight() {
                     subtitle = "Subtitle example".desc(),
                     size = TopBarSize.LARGE,
                 ),
-                onNavigationIconClick = {}
+                onNavigationIconClick = {},
             )
         }
     }

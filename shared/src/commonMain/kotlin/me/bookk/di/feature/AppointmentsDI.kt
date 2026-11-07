@@ -9,6 +9,6 @@ internal fun appointmentsDiModule() = module {
     includes(
         appointmentsPresentationModule(),
         appointmentsDataModule(),
-        appointmentsDomainModule()
+        appointmentsDomainModule(),
     )
 }

@@ -57,7 +57,7 @@ class ObserveDashboardBusinessChangesImplTest {
         timeZone = TimeZone.UTC,
         socials = emptyMap(),
         schedule = WorkingSchedule(),
-        permissions = stubBusinessPermissions()
+        permissions = stubBusinessPermissions(),
     )
 
     @Test

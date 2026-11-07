@@ -1,8 +1,7 @@
 package me.bookk.feature.appointments.presentation.screen.details
 
-import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.StringResource
-import dev.icerock.moko.resources.format
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -17,6 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.LocalDateTime
 import library.device.api.DeviceFacade
 import library.money.api.Money
+import me.bookk.android.designsystem.resources.DesignSystem
+import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -24,24 +25,22 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.test.FakeTextFieldState
-import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
+import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.tap
-import me.bookk.android.feature.appointments.resources.AppointmentsRes
+import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.appointments.domain.api.CancelAppointment
 import me.bookk.feature.appointments.domain.api.CompleteAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
-import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.MarkAppointmentNoShow
+import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.UpdateAppointment
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCompletedBy
@@ -59,7 +58,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class AppointmentDetailsViewModelTest {
@@ -77,6 +78,11 @@ class AppointmentDetailsViewModelTest {
     }
 
     private class Fixture {
+        val clock = object : Clock {
+            override fun now(): Instant {
+                return Instant.parse("2020-01-02T10:00:00Z")
+            }
+        }
         val appointmentId = Uuid.random()
         val businessId = Uuid.random()
         val getAppointment = mock<GetAppointment>()
@@ -84,9 +90,23 @@ class AppointmentDetailsViewModelTest {
         val updateAppointment = mock<UpdateAppointment>()
         val completeAppointment = mock<CompleteAppointment>()
         val markAppointmentNoShow = mock<MarkAppointmentNoShow>()
-        val polish = ServiceSnapshot(Uuid.random(), "Polish", Uuid.random(), Money(2550L, Money.SupportedCurrency.USD), 30.minutes)
-        val massage = ServiceSnapshot(Uuid.random(), "Massage", Uuid.random(), Money(1000L, Money.SupportedCurrency.USD), 15.minutes)
-        val options = MutableStateFlow(AppointmentOptions(clients = emptyList(), services = listOf(polish, massage)))
+        val polish = ServiceSnapshot(
+            Uuid.random(),
+            "Polish",
+            Uuid.random(),
+            Money(2550L, Money.SupportedCurrency.USD),
+            30.minutes,
+        )
+        val massage = ServiceSnapshot(
+            Uuid.random(),
+            "Massage",
+            Uuid.random(),
+            Money(1000L, Money.SupportedCurrency.USD),
+            15.minutes,
+        )
+        val options = MutableStateFlow(
+            AppointmentOptions(clients = emptyList(), services = listOf(polish, massage)),
+        )
         val observeAppointmentOptions = mock<ObserveAppointmentOptions> {
             every { invoke() } returns options
         }
@@ -102,7 +122,7 @@ class AppointmentDetailsViewModelTest {
         fun appointment(
             status: AppointmentStatus = AppointmentStatus.SCHEDULED,
             client: ClientSnapshot = ClientSnapshot.stub(),
-            date: LocalDateTime = LocalDateTime(2030, 1, 1, 10, 0)
+            date: LocalDateTime = LocalDateTime(2030, 1, 1, 10, 0),
         ) = Appointment.stub(id = appointmentId, businessId = businessId, date = date)
             .copy(status = status, client = client)
 
@@ -120,8 +140,9 @@ class AppointmentDetailsViewModelTest {
             observeAppointmentOptions = observeAppointmentOptions,
             dateLocalizer = FakeDateLocalizer(),
             device = device,
+            clock = clock,
             stateFactory = FakeAppointmentsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
 
         fun sutWith(appointment: Appointment): AppointmentDetailsViewModel {
@@ -133,7 +154,8 @@ class AppointmentDetailsViewModelTest {
     private fun AppointmentDetailsViewModel.action(description: StringResource) =
         uiState.appBar.actions.items.single { it.contentDescription == description.desc() }
 
-    private fun AppointmentDetailsViewModel.cancelAction() = action(DesignSystem.strings.action_cancel)
+    private fun AppointmentDetailsViewModel.cancelAction() =
+        action(DesignSystem.strings.action_cancel)
 
     private fun AppointmentDetailsViewModel.actionDescriptions() =
         uiState.appBar.actions.items.map { it.contentDescription }
@@ -157,7 +179,9 @@ class AppointmentDetailsViewModelTest {
 
     private fun AppointmentDetailsViewModel.removeServices(vararg services: ServiceSnapshot) {
         val picker = uiState.completion.servicePicker
-        picker.onItemsRemoveRequested(picker.selectedItems.filter { option -> services.any { it == option.item } })
+        picker.onItemsRemoveRequested(
+            picker.selectedItems.filter { option -> services.any { it == option.item } },
+        )
     }
 
     private fun AppointmentDetailsViewModel.typePrice(text: String) {
@@ -168,10 +192,12 @@ class AppointmentDetailsViewModelTest {
         (uiState.completion.note as FakeTextFieldState).type(text)
     }
 
-    private fun AppointmentDetailsViewModel.infoTitles() = uiState.infoSections.items.map { it.title }
+    private fun AppointmentDetailsViewModel.infoTitles() =
+        uiState.infoSections.items.map { it.title }
 
-    private fun AppointmentDetailsViewModel.infoValue(title: dev.icerock.moko.resources.StringResource) =
-        uiState.infoSections.items.single { it.title == title.desc() }.value
+    private fun AppointmentDetailsViewModel.infoValue(
+        title: dev.icerock.moko.resources.StringResource,
+    ) = uiState.infoSections.items.single { it.title == title.desc() }.value
 
     @Test
     fun `renders upcoming scheduled appointment with cancel action and reschedule`() = runUnitTest {
@@ -249,14 +275,17 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.appointment()
-        everySuspend { fixture.cancelAppointment(any(), any(), any()) } returns appointment.copy(status = AppointmentStatus.CANCELLED)
+        everySuspend { fixture.cancelAppointment(any(), any(), any()) } returns
+            appointment.copy(status = AppointmentStatus.CANCELLED)
         val sut = fixture.sutWith(appointment)
 
         whenn()
         sut.confirmCancellation("Client asked")
 
         then()
-        verifySuspend { fixture.cancelAppointment(fixture.appointmentId, fixture.businessId, "Client asked") }
+        verifySuspend {
+            fixture.cancelAppointment(fixture.appointmentId, fixture.businessId, "Client asked")
+        }
         assertEquals(ColorToken.Error, sut.uiState.status.color)
         assertTrue(sut.uiState.appBar.actions.items.isEmpty())
         assertFalse(sut.uiState.rescheduleButton.isVisible)
@@ -267,14 +296,20 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.appointment()
-        everySuspend { fixture.cancelAppointment(any(), any(), any()) } returns appointment.copy(status = AppointmentStatus.CANCELLED)
+        everySuspend { fixture.cancelAppointment(any(), any(), any()) } returns
+            appointment.copy(status = AppointmentStatus.CANCELLED)
         val sut = fixture.sutWith(appointment)
 
         whenn()
         sut.confirmCancellation("Client asked")
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -288,14 +323,19 @@ class AppointmentDetailsViewModelTest {
         sut.confirmCancellation("reason")
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `renders cancelled when appointment was already cancelled`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.cancelAppointment(any(), any(), any()) } throws CancelAppointment.Error.AppointmentAlreadyCancelled()
+        everySuspend { fixture.cancelAppointment(any(), any(), any()) } throws
+            CancelAppointment.Error.AppointmentAlreadyCancelled()
         val sut = fixture.sutWith(fixture.appointment())
 
         whenn()
@@ -309,7 +349,8 @@ class AppointmentDetailsViewModelTest {
     fun `renders completed when appointment was already completed`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.cancelAppointment(any(), any(), any()) } throws CancelAppointment.Error.AppointmentAlreadyCompleted()
+        everySuspend { fixture.cancelAppointment(any(), any(), any()) } throws
+            CancelAppointment.Error.AppointmentAlreadyCompleted()
         val sut = fixture.sutWith(fixture.appointment())
 
         whenn()
@@ -353,7 +394,10 @@ class AppointmentDetailsViewModelTest {
         val fixture = Fixture()
         val newDate = LocalDateTime(2030, 2, 1, 12, 0)
         val appointment = fixture.appointment()
-        everySuspend { fixture.updateAppointment(any()) } calls { (updated: Appointment) -> updated }
+        everySuspend { fixture.updateAppointment(any()) } calls
+            { (updated: Appointment) ->
+                updated
+            }
         val sut = fixture.sutWith(appointment)
 
         whenn()
@@ -371,28 +415,41 @@ class AppointmentDetailsViewModelTest {
         val fixture = Fixture()
         val newDate = LocalDateTime(2030, 2, 1, 12, 0)
         val appointment = fixture.appointment()
-        everySuspend { fixture.updateAppointment(any()) } calls { (updated: Appointment) -> updated }
+        everySuspend { fixture.updateAppointment(any()) } calls
+            { (updated: Appointment) ->
+                updated
+            }
         val sut = fixture.sutWith(appointment)
 
         whenn()
         sut.uiState.dateTimePicker.onDatePicked?.invoke(newDate)
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `does not play success haptic when rescheduling fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointment(any()) } throws UpdateAppointment.Error.AppointmentOverlap()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.AppointmentOverlap()
         val sut = fixture.sutWith(fixture.appointment())
 
         whenn()
         sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -402,10 +459,11 @@ class AppointmentDetailsViewModelTest {
         val appointment = fixture.appointment()
         lateinit var sut: AppointmentDetailsViewModel
         var isLoadingDuringUpdate: Boolean? = null
-        everySuspend { fixture.updateAppointment(any()) } calls { (updated: Appointment) ->
-            isLoadingDuringUpdate = sut.uiState.rescheduleButton.isLoading
-            updated
-        }
+        everySuspend { fixture.updateAppointment(any()) } calls
+            { (updated: Appointment) ->
+                isLoadingDuringUpdate = sut.uiState.rescheduleButton.isLoading
+                updated
+            }
         sut = fixture.sutWith(appointment)
 
         whenn()
@@ -419,7 +477,8 @@ class AppointmentDetailsViewModelTest {
     fun `shows message when rescheduled slot overlaps`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointment(any()) } throws UpdateAppointment.Error.AppointmentOverlap()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.AppointmentOverlap()
         val sut = fixture.sutWith(fixture.appointment())
 
         whenn()
@@ -433,7 +492,8 @@ class AppointmentDetailsViewModelTest {
     fun `shows message when rescheduled date is not allowed`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointment(any()) } throws UpdateAppointment.Error.DateIsNotAllowed()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.DateIsNotAllowed()
         val sut = fixture.sutWith(fixture.appointment())
 
         whenn()
@@ -447,7 +507,8 @@ class AppointmentDetailsViewModelTest {
     fun `shows message when rescheduled time is not allowed`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointment(any()) } throws UpdateAppointment.Error.TimeIsNotAllowed()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.TimeIsNotAllowed()
         val sut = fixture.sutWith(fixture.appointment())
 
         whenn()
@@ -480,7 +541,10 @@ class AppointmentDetailsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<AppointmentDetailsDestination>(AppointmentDetailsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<AppointmentDetailsDestination>(AppointmentDetailsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -523,14 +587,79 @@ class AppointmentDetailsViewModelTest {
     }
 
     @Test
+    fun `hides scheduled appointment actions after edit window closes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment(date = LocalDateTime(2019, 12, 20, 10, 0))
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        assertFalse(sut.uiState.completeButton.isVisible)
+        assertFalse(sut.uiState.noShowButton.isVisible)
+        assertFalse(sut.uiState.rescheduleButton.isVisible)
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
+    fun `hides no-show after a completed appointment edit window closes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.appointment(
+            status = AppointmentStatus.COMPLETED,
+            date = LocalDateTime(2019, 12, 20, 10, 0),
+        )
+
+        whenn()
+        val sut = fixture.sutWith(appointment)
+
+        then()
+        assertFalse(sut.uiState.noShowButton.isVisible)
+    }
+
+    @Test
+    fun `shows unresolved status with a neutral color`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(fixture.startedAppointment(AppointmentStatus.UNRESOLVED))
+
+        then()
+        assertEquals(
+            AppointmentsRes.strings.appointments_status_unresolved.desc(),
+            sut.uiState.status.label,
+        )
+        assertEquals(ColorToken.SecondaryText, sut.uiState.status.color)
+        assertNull(sut.uiState.statusNote)
+    }
+
+    @Test
+    fun `hides mutation actions for unresolved appointments`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(fixture.startedAppointment(AppointmentStatus.UNRESOLVED))
+
+        then()
+        assertFalse(sut.uiState.completeButton.isVisible)
+        assertFalse(sut.uiState.noShowButton.isVisible)
+        assertFalse(sut.uiState.rescheduleButton.isVisible)
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+    }
+
+    @Test
     fun `completes appointment and hides scheduled-only actions`() = runUnitTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(
-            status = AppointmentStatus.COMPLETED,
-            completedBy = AppointmentCompletedBy.USER
-        )
+        everySuspend { fixture.completeAppointment(any(), any()) } returns
+            appointment.copy(
+                status = AppointmentStatus.COMPLETED,
+                completedBy = AppointmentCompletedBy.USER,
+            )
         val sut = fixture.sutWith(appointment)
 
         whenn()
@@ -550,17 +679,23 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(
-            status = AppointmentStatus.COMPLETED,
-            completedBy = AppointmentCompletedBy.USER
-        )
+        everySuspend { fixture.completeAppointment(any(), any()) } returns
+            appointment.copy(
+                status = AppointmentStatus.COMPLETED,
+                completedBy = AppointmentCompletedBy.USER,
+            )
         val sut = fixture.sutWith(appointment)
 
         whenn()
         sut.confirmCompletion()
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -574,7 +709,11 @@ class AppointmentDetailsViewModelTest {
         sut.confirmCompletion()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -592,18 +731,22 @@ class AppointmentDetailsViewModelTest {
     }
 
     @Test
-    fun `offers business services as the final services list in the completion sheet`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.sutWith(fixture.startedAppointment())
+    fun `offers business services as the final services list in the completion sheet`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val sut = fixture.sutWith(fixture.startedAppointment())
 
-        whenn()
-        sut.uiState.completeButton.onClick?.invoke()
+            whenn()
+            sut.uiState.completeButton.onClick?.invoke()
 
-        then()
-        assertEquals(listOf(fixture.polish, fixture.massage), sut.uiState.completion.servicePicker.options.map { it.item })
-        assertTrue(sut.uiState.completion.servicePicker.selectedItems.isEmpty())
-    }
+            then()
+            assertEquals(
+                listOf(fixture.polish, fixture.massage),
+                sut.uiState.completion.servicePicker.options.map { it.item },
+            )
+            assertTrue(sut.uiState.completion.servicePicker.selectedItems.isEmpty())
+        }
 
     @Test
     fun `explains that picked services replace the booked ones`() = runUnitTest {
@@ -614,24 +757,33 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(fixture.startedAppointment())
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_create_services.desc(), sut.uiState.completion.servicePicker.pickerTitle)
-        assertEquals(AppointmentsRes.strings.appointments_complete_services_hint.desc(), sut.uiState.completion.servicesHint)
+        assertEquals(
+            AppointmentsRes.strings.appointments_create_services.desc(),
+            sut.uiState.completion.servicePicker.pickerTitle,
+        )
+        assertEquals(
+            AppointmentsRes.strings.appointments_complete_services_hint.desc(),
+            sut.uiState.completion.servicesHint,
+        )
     }
 
     @Test
-    fun `refreshes service options only on the first opening of the completion sheet`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.sutWith(fixture.startedAppointment())
-        sut.uiState.completeButton.onClick?.invoke()
-        sut.uiState.completion.isSheetVisible = false
+    fun `refreshes service options only on the first opening of the completion sheet`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val sut = fixture.sutWith(fixture.startedAppointment())
+            sut.uiState.completeButton.onClick?.invoke()
+            sut.uiState.completion.isSheetVisible = false
 
-        whenn()
-        sut.uiState.completeButton.onClick?.invoke()
+            whenn()
+            sut.uiState.completeButton.onClick?.invoke()
 
-        then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.getAppointmentOptions(fixture.businessId) }
-    }
+            then()
+            verifySuspend(VerifyMode.exactly(1)) {
+                fixture.getAppointmentOptions(fixture.businessId)
+            }
+        }
 
     @Test
     fun `does not load service options until completion is requested`() = runUnitTest {
@@ -651,7 +803,8 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(status = AppointmentStatus.COMPLETED)
+        everySuspend { fixture.completeAppointment(any(), any()) } returns
+            appointment.copy(status = AppointmentStatus.COMPLETED)
         val sut = fixture.sutWith(appointment)
 
         whenn()
@@ -662,36 +815,44 @@ class AppointmentDetailsViewModelTest {
     }
 
     @Test
-    fun `completes without price adjustment when sheet fields contain only whitespace`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val appointment = fixture.startedAppointment()
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(status = AppointmentStatus.COMPLETED)
-        val sut = fixture.sutWith(appointment)
-        sut.uiState.completeButton.onClick?.invoke()
-        sut.typePrice("  ")
-        sut.typeNote("   ")
+    fun `completes without price adjustment when sheet fields contain only whitespace`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val appointment = fixture.startedAppointment()
+            everySuspend { fixture.completeAppointment(any(), any()) } returns
+                appointment.copy(status = AppointmentStatus.COMPLETED)
+            val sut = fixture.sutWith(appointment)
+            sut.uiState.completeButton.onClick?.invoke()
+            sut.typePrice("  ")
+            sut.typeNote("   ")
 
-        whenn()
-        sut.uiState.completion.confirmButton.onClick?.invoke()
+            whenn()
+            sut.uiState.completion.confirmButton.onClick?.invoke()
 
-        then()
-        verifySuspend { fixture.completeAppointment(fixture.appointmentId, null) }
-    }
+            then()
+            verifySuspend { fixture.completeAppointment(fixture.appointmentId, null) }
+        }
 
     @Test
-    fun `shows booked price without currency as price placeholder and currency as suffix`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val appointment = fixture.startedAppointment().copy(services = listOf(ServiceSnapshot.stub(), fixture.polish))
+    fun `shows booked price without currency as price placeholder and currency as suffix`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val appointment = fixture
+                .startedAppointment()
+                .copy(services = listOf(ServiceSnapshot.stub(), fixture.polish))
 
-        whenn()
-        val sut = fixture.sutWith(appointment)
+            whenn()
+            val sut = fixture.sutWith(appointment)
 
-        then()
-        assertEquals("125.50".desc(), sut.uiState.completion.price.placeholder)
-        assertEquals(appointment.services.first().price.currency.symbol().desc(), sut.uiState.completion.price.suffix)
-    }
+            then()
+            assertEquals("125.50".desc(), sut.uiState.completion.price.placeholder)
+            assertEquals(
+                appointment.services.first().price.currency.symbol().desc(),
+                sut.uiState.completion.price.suffix,
+            )
+        }
 
     @Test
     fun `fills price with total of picked services`() = runUnitTest {
@@ -705,7 +866,10 @@ class AppointmentDetailsViewModelTest {
 
         then()
         assertEquals("35.50", sut.uiState.completion.price.text)
-        assertEquals(listOf(fixture.polish, fixture.massage), sut.uiState.completion.servicePicker.selectedItems.map { it.item })
+        assertEquals(
+            listOf(fixture.polish, fixture.massage),
+            sut.uiState.completion.servicePicker.selectedItems.map { it.item },
+        )
     }
 
     @Test
@@ -759,7 +923,8 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(status = AppointmentStatus.COMPLETED)
+        everySuspend { fixture.completeAppointment(any(), any()) } returns
+            appointment.copy(status = AppointmentStatus.COMPLETED)
         val sut = fixture.sutWith(appointment)
         sut.uiState.completeButton.onClick?.invoke()
         sut.pickServices(fixture.polish)
@@ -772,7 +937,7 @@ class AppointmentDetailsViewModelTest {
         val draft = PriceAdjustmentDraft(
             additionalServiceIds = listOf(fixture.polish.id),
             price = Money(2550L, Money.SupportedCurrency.USD),
-            reason = "Extra polish"
+            reason = "Extra polish",
         )
         verifySuspend { fixture.completeAppointment(fixture.appointmentId, draft) }
     }
@@ -782,7 +947,8 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(status = AppointmentStatus.COMPLETED)
+        everySuspend { fixture.completeAppointment(any(), any()) } returns
+            appointment.copy(status = AppointmentStatus.COMPLETED)
         val sut = fixture.sutWith(appointment)
         sut.uiState.completeButton.onClick?.invoke()
         sut.pickServices(fixture.polish)
@@ -795,7 +961,7 @@ class AppointmentDetailsViewModelTest {
         val draft = PriceAdjustmentDraft(
             additionalServiceIds = listOf(fixture.polish.id),
             price = Money(9050L, Money.SupportedCurrency.USD),
-            reason = null
+            reason = null,
         )
         verifySuspend { fixture.completeAppointment(fixture.appointmentId, draft) }
     }
@@ -805,7 +971,8 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(status = AppointmentStatus.COMPLETED)
+        everySuspend { fixture.completeAppointment(any(), any()) } returns
+            appointment.copy(status = AppointmentStatus.COMPLETED)
         val sut = fixture.sutWith(appointment)
         sut.uiState.completeButton.onClick?.invoke()
         sut.typeNote("Client was late")
@@ -817,7 +984,7 @@ class AppointmentDetailsViewModelTest {
         val draft = PriceAdjustmentDraft(
             additionalServiceIds = emptyList(),
             price = appointment.services.first().price,
-            reason = "Client was late"
+            reason = "Client was late",
         )
         verifySuspend { fixture.completeAppointment(fixture.appointmentId, draft) }
     }
@@ -877,10 +1044,11 @@ class AppointmentDetailsViewModelTest {
         val appointment = fixture.startedAppointment()
         lateinit var sut: AppointmentDetailsViewModel
         var isLoadingDuringCompletion: Boolean? = null
-        everySuspend { fixture.completeAppointment(any(), any()) } calls {
-            isLoadingDuringCompletion = sut.uiState.completion.confirmButton.isLoading
-            appointment.copy(status = AppointmentStatus.COMPLETED)
-        }
+        everySuspend { fixture.completeAppointment(any(), any()) } calls
+            {
+                isLoadingDuringCompletion = sut.uiState.completion.confirmButton.isLoading
+                appointment.copy(status = AppointmentStatus.COMPLETED)
+            }
         sut = fixture.sutWith(appointment)
 
         whenn()
@@ -891,29 +1059,32 @@ class AppointmentDetailsViewModelTest {
     }
 
     @Test
-    fun `shows price error and keeps sheet open when backend rejects a negative price`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.completeAppointment(any(), any()) } throws CompleteAppointment.Error.NegativePrice()
-        val sut = fixture.sutWith(fixture.startedAppointment())
+    fun `shows price error and keeps sheet open when backend rejects a negative price`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.completeAppointment(any(), any()) } throws
+                CompleteAppointment.Error.NegativePrice()
+            val sut = fixture.sutWith(fixture.startedAppointment())
 
-        whenn()
-        sut.confirmCompletion()
+            whenn()
+            sut.confirmCompletion()
 
-        then()
-        assertTrue(sut.uiState.completion.isSheetVisible)
-        assertEquals(
-            AppointmentsRes.strings.appointments_complete_price_error.desc(),
-            sut.uiState.completion.price.supportingTextRes
-        )
-        assertFalse(sut.uiState.completion.confirmButton.isEnabled)
-    }
+            then()
+            assertTrue(sut.uiState.completion.isSheetVisible)
+            assertEquals(
+                AppointmentsRes.strings.appointments_complete_price_error.desc(),
+                sut.uiState.completion.price.supportingTextRes,
+            )
+            assertFalse(sut.uiState.completion.confirmButton.isEnabled)
+        }
 
     @Test
     fun `shows note error and keeps sheet open when the note is too long`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.completeAppointment(any(), any()) } throws CompleteAppointment.Error.ReasonTooLong()
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.ReasonTooLong()
         val sut = fixture.sutWith(fixture.startedAppointment())
 
         whenn()
@@ -923,7 +1094,7 @@ class AppointmentDetailsViewModelTest {
         assertTrue(sut.uiState.completion.isSheetVisible)
         assertEquals(
             AppointmentsRes.strings.appointments_complete_note_too_long_error.desc(),
-            sut.uiState.completion.note.supportingTextRes
+            sut.uiState.completion.note.supportingTextRes,
         )
     }
 
@@ -931,7 +1102,8 @@ class AppointmentDetailsViewModelTest {
     fun `clears note error once the note is edited`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.completeAppointment(any(), any()) } throws CompleteAppointment.Error.ReasonTooLong()
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.ReasonTooLong()
         val sut = fixture.sutWith(fixture.startedAppointment())
         sut.confirmCompletion()
 
@@ -946,7 +1118,8 @@ class AppointmentDetailsViewModelTest {
     fun `closes sheet and shows message when a picked service no longer exists`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.completeAppointment(any(), any()) } throws CompleteAppointment.Error.ServiceNotFound()
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.ServiceNotFound()
         val sut = fixture.sutWith(fixture.startedAppointment())
 
         whenn()
@@ -955,7 +1128,10 @@ class AppointmentDetailsViewModelTest {
         then()
         assertFalse(sut.uiState.completion.isSheetVisible)
         val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(AppointmentsRes.strings.appointments_complete_service_not_found_error.desc(), message.message)
+        assertEquals(
+            AppointmentsRes.strings.appointments_complete_service_not_found_error.desc(),
+            message.message,
+        )
     }
 
     @Test
@@ -972,7 +1148,10 @@ class AppointmentDetailsViewModelTest {
         sut.uiState.completeButton.onClick?.invoke()
 
         then()
-        assertEquals(listOf(fixture.polish), sut.uiState.completion.servicePicker.selectedItems.map { it.item })
+        assertEquals(
+            listOf(fixture.polish),
+            sut.uiState.completion.servicePicker.selectedItems.map { it.item },
+        )
         assertEquals("25.50", sut.uiState.completion.price.text)
     }
 
@@ -980,7 +1159,8 @@ class AppointmentDetailsViewModelTest {
     fun `renders no-show when completion finds appointment marked as no-show`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.completeAppointment(any(), any()) } throws CompleteAppointment.Error.AppointmentMarkedNoShow()
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.AppointmentMarkedNoShow()
         val sut = fixture.sutWith(fixture.startedAppointment())
 
         whenn()
@@ -996,7 +1176,8 @@ class AppointmentDetailsViewModelTest {
     fun `renders cancelled when completion finds appointment already cancelled`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.completeAppointment(any(), any()) } throws CompleteAppointment.Error.AppointmentAlreadyCancelled()
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.AppointmentAlreadyCancelled()
         val sut = fixture.sutWith(fixture.startedAppointment())
 
         whenn()
@@ -1011,7 +1192,8 @@ class AppointmentDetailsViewModelTest {
     fun `shows message when completing an appointment that has not started`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.completeAppointment(any(), any()) } throws CompleteAppointment.Error.AppointmentNotStarted()
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.AppointmentNotStarted()
         val sut = fixture.sutWith(fixture.startedAppointment())
 
         whenn()
@@ -1019,7 +1201,10 @@ class AppointmentDetailsViewModelTest {
 
         then()
         val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(AppointmentsRes.strings.appointments_details_not_started_error.desc(), message.message)
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_not_started_error.desc(),
+            message.message,
+        )
         assertFalse(sut.uiState.completion.isSheetVisible)
     }
 
@@ -1044,10 +1229,12 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.markAppointmentNoShow(any()) } returns appointment.copy(status = AppointmentStatus.NO_SHOW)
+        everySuspend { fixture.markAppointmentNoShow(any()) } returns
+            appointment.copy(status = AppointmentStatus.NO_SHOW)
         val sut = fixture.sutWith(appointment)
         sut.uiState.noShowButton.onClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
         sut.uiState.notifications.removeFirst()
 
         whenn()
@@ -1056,7 +1243,10 @@ class AppointmentDetailsViewModelTest {
         then()
         verifySuspend { fixture.markAppointmentNoShow(fixture.appointmentId) }
         assertEquals(ColorToken.SecondaryText, sut.uiState.status.color)
-        assertEquals(AppointmentsRes.strings.appointments_status_no_show.desc(), sut.uiState.status.label)
+        assertEquals(
+            AppointmentsRes.strings.appointments_status_no_show.desc(),
+            sut.uiState.status.label,
+        )
         assertFalse(sut.uiState.noShowButton.isVisible)
         assertTrue(sut.uiState.appBar.actions.items.isEmpty())
     }
@@ -1066,34 +1256,47 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.markAppointmentNoShow(any()) } returns appointment.copy(status = AppointmentStatus.NO_SHOW)
+        everySuspend { fixture.markAppointmentNoShow(any()) } returns
+            appointment.copy(status = AppointmentStatus.NO_SHOW)
         val sut = fixture.sutWith(appointment)
         sut.uiState.noShowButton.onClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
         sut.uiState.notifications.removeFirst()
 
         whenn()
         confirmation.tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `does not play success haptic when marking no-show fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.markAppointmentNoShow(any()) } throws MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled()
+        everySuspend { fixture.markAppointmentNoShow(any()) } throws
+            MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled()
         val sut = fixture.sutWith(fixture.startedAppointment())
         sut.uiState.noShowButton.onClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
         sut.uiState.notifications.removeFirst()
 
         whenn()
         confirmation.tap(ActionType.NEGATIVE)
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -1102,7 +1305,8 @@ class AppointmentDetailsViewModelTest {
         val fixture = Fixture()
         val sut = fixture.sutWith(fixture.startedAppointment())
         sut.uiState.noShowButton.onClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
 
         whenn()
         confirmation.tap(ActionType.CANCEL)
@@ -1115,10 +1319,12 @@ class AppointmentDetailsViewModelTest {
     fun `renders cancelled when no-show finds appointment already cancelled`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.markAppointmentNoShow(any()) } throws MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled()
+        everySuspend { fixture.markAppointmentNoShow(any()) } throws
+            MarkAppointmentNoShow.Error.AppointmentAlreadyCancelled()
         val sut = fixture.sutWith(fixture.startedAppointment())
         sut.uiState.noShowButton.onClick?.invoke()
-        val confirmation = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
         sut.uiState.notifications.removeFirst()
 
         whenn()
@@ -1132,21 +1338,26 @@ class AppointmentDetailsViewModelTest {
     fun `notes manual completion next to the status`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val appointment = fixture.startedAppointment(status = AppointmentStatus.COMPLETED)
+        val appointment = fixture
+            .startedAppointment(status = AppointmentStatus.COMPLETED)
             .copy(completedBy = AppointmentCompletedBy.USER)
 
         whenn()
         val sut = fixture.sutWith(appointment)
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_details_marked_manually.desc(), sut.uiState.statusNote)
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_marked_manually.desc(),
+            sut.uiState.statusNote,
+        )
     }
 
     @Test
     fun `omits status note when appointment was completed automatically`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val appointment = fixture.startedAppointment(status = AppointmentStatus.COMPLETED)
+        val appointment = fixture
+            .startedAppointment(status = AppointmentStatus.COMPLETED)
             .copy(completedBy = AppointmentCompletedBy.SYSTEM)
 
         whenn()
@@ -1161,10 +1372,11 @@ class AppointmentDetailsViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = fixture.startedAppointment()
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(
-            status = AppointmentStatus.COMPLETED,
-            completedBy = AppointmentCompletedBy.USER
-        )
+        everySuspend { fixture.completeAppointment(any(), any()) } returns
+            appointment.copy(
+                status = AppointmentStatus.COMPLETED,
+                completedBy = AppointmentCompletedBy.USER,
+            )
         val sut = fixture.sutWith(appointment)
         val titlesBeforeCompletion = sut.infoTitles()
 
@@ -1172,17 +1384,21 @@ class AppointmentDetailsViewModelTest {
         sut.confirmCompletion()
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_details_marked_manually.desc(), sut.uiState.statusNote)
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_marked_manually.desc(),
+            sut.uiState.statusNote,
+        )
         assertEquals(titlesBeforeCompletion, sut.infoTitles())
     }
 
     private fun Fixture.adjustedAppointment(
         services: List<ServiceSnapshot> = listOf(polish),
         price: Money = Money(12000L, Money.SupportedCurrency.USD),
-        reason: String? = null
-    ) = startedAppointment(status = AppointmentStatus.COMPLETED).copy(
-        priceAdjustment = PriceAdjustment(services, price, reason)
-    )
+        reason: String? = null,
+    ) = startedAppointment(status = AppointmentStatus.COMPLETED)
+        .copy(
+            priceAdjustment = PriceAdjustment(services, price, reason),
+        )
 
     @Test
     fun `titles booked services as initial services when price was adjusted`() = runUnitTest {
@@ -1193,7 +1409,10 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(fixture.adjustedAppointment())
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_details_initial_services.desc(), sut.uiState.servicePicker.pickerTitle)
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_initial_services.desc(),
+            sut.uiState.servicePicker.pickerTitle,
+        )
     }
 
     @Test
@@ -1205,7 +1424,10 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(fixture.adjustedAppointment(services = emptyList()))
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_create_services.desc(), sut.uiState.servicePicker.pickerTitle)
+        assertEquals(
+            AppointmentsRes.strings.appointments_create_services.desc(),
+            sut.uiState.servicePicker.pickerTitle,
+        )
     }
 
     @Test
@@ -1217,7 +1439,10 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(fixture.startedAppointment(status = AppointmentStatus.COMPLETED))
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_create_services.desc(), sut.uiState.servicePicker.pickerTitle)
+        assertEquals(
+            AppointmentsRes.strings.appointments_create_services.desc(),
+            sut.uiState.servicePicker.pickerTitle,
+        )
     }
 
     @Test
@@ -1230,7 +1455,10 @@ class AppointmentDetailsViewModelTest {
 
         then()
         assertTrue(sut.uiState.priceAdjustment.isVisible)
-        assertEquals(AppointmentsRes.strings.appointments_details_adjusted_services.desc(), sut.uiState.priceAdjustment.servicePicker.pickerTitle)
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_adjusted_services.desc(),
+            sut.uiState.priceAdjustment.servicePicker.pickerTitle,
+        )
     }
 
     @Test
@@ -1242,7 +1470,10 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(fixture.adjustedAppointment(reason = "Extra polish"))
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_details_price_adjustment_reason.desc(), sut.uiState.priceAdjustment.reasonTitle)
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_price_adjustment_reason.desc(),
+            sut.uiState.priceAdjustment.reasonTitle,
+        )
         assertEquals("Extra polish".desc(), sut.uiState.priceAdjustment.reason)
     }
 
@@ -1259,31 +1490,46 @@ class AppointmentDetailsViewModelTest {
     }
 
     @Test
-    fun `shows provided services in a read-only picker of the price adjustment section`() = runUnitTest {
-        given()
-        val fixture = Fixture()
+    fun `shows provided services in a read-only picker of the price adjustment section`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
 
-        whenn()
-        val sut = fixture.sutWith(fixture.adjustedAppointment(services = listOf(fixture.polish, fixture.massage)))
+            whenn()
+            val sut = fixture.sutWith(
+                fixture.adjustedAppointment(services = listOf(fixture.polish, fixture.massage)),
+            )
 
-        then()
-        val picker = sut.uiState.priceAdjustment.servicePicker
-        assertTrue(picker.isVisible)
-        assertFalse(picker.isEditable)
-        assertEquals(listOf(fixture.polish, fixture.massage), picker.selectedItems.map { it.item })
-    }
+            then()
+            val picker = sut.uiState.priceAdjustment.servicePicker
+            assertTrue(picker.isVisible)
+            assertFalse(picker.isEditable)
+            assertEquals(
+                listOf(fixture.polish, fixture.massage),
+                picker.selectedItems.map { it.item },
+            )
+        }
 
     @Test
-    fun `gives every provided service its own picker id when a service is provided twice`() = runUnitTest {
-        given()
-        val fixture = Fixture()
+    fun `gives every provided service its own picker id when a service is provided twice`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
 
-        whenn()
-        val sut = fixture.sutWith(fixture.adjustedAppointment(services = listOf(fixture.polish, fixture.polish)))
+            whenn()
+            val sut = fixture.sutWith(
+                fixture.adjustedAppointment(services = listOf(fixture.polish, fixture.polish)),
+            )
 
-        then()
-        assertEquals(2, sut.uiState.priceAdjustment.servicePicker.selectedItems.map { it.pickerItemId }.toSet().size)
-    }
+            then()
+            assertEquals(
+                2,
+                sut.uiState.priceAdjustment.servicePicker.selectedItems
+                    .map { it.pickerItemId }
+                    .toSet()
+                    .size,
+            )
+        }
 
     @Test
     fun `shows adjusted price as total with booked total as original price`() = runUnitTest {
@@ -1304,7 +1550,11 @@ class AppointmentDetailsViewModelTest {
     fun `omits original price when adjusted price equals booked total`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val bookedTotal = fixture.startedAppointment().services.map { it.price }.reduce { acc, money -> acc + money }
+        val bookedTotal = fixture
+            .startedAppointment()
+            .services
+            .map { it.price }
+            .reduce { acc, money -> acc + money }
 
         whenn()
         val sut = fixture.sutWith(fixture.adjustedAppointment(price = bookedTotal))
@@ -1333,7 +1583,9 @@ class AppointmentDetailsViewModelTest {
         val fixture = Fixture()
 
         whenn()
-        val sut = fixture.sutWith(fixture.adjustedAppointment(services = emptyList(), reason = "Extra polish"))
+        val sut = fixture.sutWith(
+            fixture.adjustedAppointment(services = emptyList(), reason = "Extra polish"),
+        )
 
         then()
         assertEquals("Extra polish".desc(), sut.uiState.priceAdjustment.reason)
@@ -1348,30 +1600,40 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(fixture.adjustedAppointment(reason = "Extra polish"))
 
         then()
-        assertFalse(AppointmentsRes.strings.appointments_details_final_price.desc() in sut.infoTitles())
-        assertFalse(AppointmentsRes.strings.appointments_details_price_adjustment_reason.desc() in sut.infoTitles())
+        assertFalse(
+            AppointmentsRes.strings.appointments_details_final_price.desc() in sut.infoTitles(),
+        )
+        assertFalse(
+            AppointmentsRes.strings.appointments_details_price_adjustment_reason.desc() in
+                sut.infoTitles(),
+        )
     }
 
     @Test
-    fun `shows price adjustment section once the appointment is completed with an adjustment`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val appointment = fixture.startedAppointment()
-        val price = Money(2550L, Money.SupportedCurrency.USD)
-        everySuspend { fixture.completeAppointment(any(), any()) } returns appointment.copy(
-            status = AppointmentStatus.COMPLETED,
-            priceAdjustment = PriceAdjustment(listOf(fixture.polish), price, null)
-        )
-        val sut = fixture.sutWith(appointment)
+    fun `shows price adjustment section once the appointment is completed with an adjustment`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val appointment = fixture.startedAppointment()
+            val price = Money(2550L, Money.SupportedCurrency.USD)
+            everySuspend { fixture.completeAppointment(any(), any()) } returns
+                appointment.copy(
+                    status = AppointmentStatus.COMPLETED,
+                    priceAdjustment = PriceAdjustment(listOf(fixture.polish), price, null),
+                )
+            val sut = fixture.sutWith(appointment)
 
-        whenn()
-        sut.confirmCompletion()
+            whenn()
+            sut.confirmCompletion()
 
-        then()
-        assertTrue(sut.uiState.priceAdjustment.isVisible)
-        assertEquals(AppointmentsRes.strings.appointments_details_initial_services.desc(), sut.uiState.servicePicker.pickerTitle)
-        assertEquals(price.toString(), sut.uiState.totalPrice)
-    }
+            then()
+            assertTrue(sut.uiState.priceAdjustment.isVisible)
+            assertEquals(
+                AppointmentsRes.strings.appointments_details_initial_services.desc(),
+                sut.uiState.servicePicker.pickerTitle,
+            )
+            assertEquals(price.toString(), sut.uiState.totalPrice)
+        }
 
     @Test
     fun `omits price adjustment without an adjustment`() = runUnitTest {
@@ -1386,25 +1648,31 @@ class AppointmentDetailsViewModelTest {
     }
 
     @Test
-    fun `shows message when rescheduling an appointment that is no longer scheduled`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.updateAppointment(any()) } throws UpdateAppointment.Error.AppointmentNotScheduled()
-        val sut = fixture.sutWith(fixture.appointment())
+    fun `shows message when rescheduling an appointment that is no longer scheduled`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateAppointment(any()) } throws
+                UpdateAppointment.Error.AppointmentNotScheduled()
+            val sut = fixture.sutWith(fixture.appointment())
 
-        whenn()
-        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+            whenn()
+            sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
 
-        then()
-        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(AppointmentsRes.strings.appointments_details_not_scheduled_error.desc(), message.message)
-    }
+            then()
+            val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(
+                AppointmentsRes.strings.appointments_details_not_scheduled_error.desc(),
+                message.message,
+            )
+        }
 
     @Test
     fun `shows message when rescheduling to a suspended employee`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointment(any()) } throws UpdateAppointment.Error.EmployeeSuspended()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.EmployeeSuspended()
         val sut = fixture.sutWith(fixture.appointment())
 
         whenn()
@@ -1412,7 +1680,10 @@ class AppointmentDetailsViewModelTest {
 
         then()
         val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(AppointmentsRes.strings.appointments_details_employee_suspended_error.desc(), message.message)
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_employee_suspended_error.desc(),
+            message.message,
+        )
     }
 
     @Test
@@ -1427,36 +1698,45 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(appointment)
 
         then()
-        assertEquals(listOf(haircut, beard), sut.uiState.servicePicker.selectedItems.map { it.item })
+        assertEquals(
+            listOf(haircut, beard),
+            sut.uiState.servicePicker.selectedItems.map { it.item },
+        )
         assertFalse(sut.uiState.servicePicker.isEditable)
     }
 
     @Test
-    fun `gives every booked service its own picker id when a service is booked twice`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val haircut = ServiceSnapshot.stub()
-        val appointment = fixture.appointment().copy(services = listOf(haircut, haircut))
+    fun `gives every booked service its own picker id when a service is booked twice`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val haircut = ServiceSnapshot.stub()
+            val appointment = fixture.appointment().copy(services = listOf(haircut, haircut))
 
-        whenn()
-        val sut = fixture.sutWith(appointment)
+            whenn()
+            val sut = fixture.sutWith(appointment)
 
-        then()
-        val ids = sut.uiState.servicePicker.selectedItems.map { it.pickerItemId }
-        assertEquals(2, ids.toSet().size)
-    }
+            then()
+            val ids = sut.uiState.servicePicker.selectedItems.map { it.pickerItemId }
+            assertEquals(2, ids.toSet().size)
+        }
 
     @Test
     fun `shows booked total without original price when price was not adjusted`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val appointment = fixture.appointment().copy(services = listOf(ServiceSnapshot.stub(), ServiceSnapshot.stub()))
+        val appointment = fixture
+            .appointment()
+            .copy(services = listOf(ServiceSnapshot.stub(), ServiceSnapshot.stub()))
 
         whenn()
         val sut = fixture.sutWith(appointment)
 
         then()
-        assertEquals(AppointmentsRes.strings.appointments_details_total.desc(), sut.uiState.totalLabel)
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_total.desc(),
+            sut.uiState.totalLabel,
+        )
         assertEquals(appointment.total, sut.uiState.totalPrice)
         assertNull(sut.uiState.originalPrice)
     }
@@ -1485,7 +1765,10 @@ class AppointmentDetailsViewModelTest {
         val sut = fixture.sutWith(appointment)
 
         then()
-        assertEquals(appointment.date.toString().desc(), sut.infoValue(AppointmentsRes.strings.appointments_create_date))
+        assertEquals(
+            appointment.date.toString().desc(),
+            sut.infoValue(AppointmentsRes.strings.appointments_create_date),
+        )
     }
 
     @Test
@@ -1501,7 +1784,10 @@ class AppointmentDetailsViewModelTest {
         sut.uiState.dateTimePicker.onDatePicked?.invoke(newDate)
 
         then()
-        assertEquals(newDate.toString().desc(), sut.infoValue(AppointmentsRes.strings.appointments_create_date))
+        assertEquals(
+            newDate.toString().desc(),
+            sut.infoValue(AppointmentsRes.strings.appointments_create_date),
+        )
     }
 
     @Test
@@ -1527,5 +1813,231 @@ class AppointmentDetailsViewModelTest {
 
         then()
         assertTrue(sut.uiState.servicePicker.isVisible)
+    }
+
+    private fun AppointmentDetailsViewModel.assertRecoveryMessage(expected: StringResource) {
+        val message = uiState.notifications.assertSingle<PresentationNotification.GlobalMessage>()
+        assertEquals(expected.desc(), message.text)
+        assertEquals(PresentationNotification.GlobalMessage.State.ERROR, message.state)
+        assertEquals(PresentationNotification.GlobalMessage.Duration.SHORT, message.duration)
+    }
+
+    @Test
+    fun `reloads after edit window rejects cancellation without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.startedAppointment(AppointmentStatus.UNRESOLVED)
+        everySuspend { fixture.cancelAppointment(any(), any(), any()) } throws
+            CancelAppointment.Error.EditWindowClosed()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.confirmCancellation("reason")
+
+        then()
+        sut.assertRecoveryMessage(AppointmentsRes.strings.appointments_edit_window_closed_error)
+        assertEquals(
+            AppointmentsRes.strings.appointments_status_unresolved.desc(),
+            sut.uiState.status.label,
+        )
+        assertTrue(sut.uiState.appBar.actions.items.isEmpty())
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.cancelAppointment(any(), any(), any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `reloads after edit window rejects completion without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.startedAppointment(AppointmentStatus.UNRESOLVED)
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.EditWindowClosed()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.startedAppointment())
+
+        whenn()
+        sut.confirmCompletion()
+
+        then()
+        sut.assertRecoveryMessage(AppointmentsRes.strings.appointments_edit_window_closed_error)
+        assertFalse(sut.uiState.completion.isSheetVisible)
+        assertFalse(sut.uiState.completeButton.isVisible)
+        assertFalse(sut.uiState.noShowButton.isVisible)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.completeAppointment(any(), any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `reloads after edit window rejects no-show without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.startedAppointment(AppointmentStatus.UNRESOLVED)
+        everySuspend { fixture.markAppointmentNoShow(any()) } throws
+            MarkAppointmentNoShow.Error.EditWindowClosed()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.startedAppointment())
+        sut.uiState.noShowButton.onClick?.invoke()
+        val confirmation =
+            sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notifications.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        sut.assertRecoveryMessage(AppointmentsRes.strings.appointments_edit_window_closed_error)
+        assertFalse(sut.uiState.noShowButton.isVisible)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.markAppointmentNoShow(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `reloads after edit window rejects rescheduling without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.startedAppointment(AppointmentStatus.UNRESOLVED)
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.EditWindowClosed()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        sut.assertRecoveryMessage(AppointmentsRes.strings.appointments_edit_window_closed_error)
+        assertFalse(sut.uiState.rescheduleButton.isVisible)
+        assertEquals(latest.date, sut.uiState.dateTimePicker.pickedDate)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateAppointment(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `reloads the latest date after a concurrent modification without retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val latest = fixture.appointment(date = LocalDateTime(2030, 2, 2, 15, 0))
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.ConcurrentModification()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } returns latest
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        sut.assertRecoveryMessage(
+            AppointmentsRes.strings.appointments_concurrent_modification_error,
+        )
+        assertEquals(latest.date, sut.uiState.dateTimePicker.pickedDate)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateAppointment(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `reports reload failure without retrying the rejected mutation`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val original = fixture.appointment()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.ConcurrentModification()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } throws
+            TestException()
+        val sut = fixture.sutWith(original)
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+        assertEquals(original.date, sut.uiState.dateTimePicker.pickedDate)
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateAppointment(any()) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAppointment.refresh(fixture.appointmentId)
+        }
+    }
+
+    @Test
+    fun `closes details when the refreshed appointment is no longer accessible`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateAppointment(any()) } throws
+            UpdateAppointment.Error.ConcurrentModification()
+        everySuspend { fixture.getAppointment.refresh(fixture.appointmentId) } throws
+            GetAppointment.Error.NotFound()
+        val sut = fixture.sutWith(fixture.appointment())
+
+        whenn()
+        sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+        then()
+        assertEquals(
+            listOf<AppointmentDetailsDestination>(AppointmentDetailsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        val messages = sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+        assertEquals(2, messages.size)
+        assertTrue(messages.all { it.state == PresentationNotification.GlobalMessage.State.ERROR })
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateAppointment(any()) }
+    }
+
+    @Test
+    fun `explains rescheduling failures`() = runUnitTest {
+        listOf(
+            UpdateAppointment.Error.DateInPast() to
+                AppointmentsRes.strings.appointments_date_in_past_error,
+            UpdateAppointment.Error.InvalidServiceSelection() to
+                AppointmentsRes.strings.appointments_create_services_changed_error,
+            UpdateAppointment.Error.ServiceNotFound() to
+                AppointmentsRes.strings.appointments_complete_service_not_found_error,
+            UpdateAppointment.Error.EmployeeNotFound() to
+                AppointmentsRes.strings.appointments_employee_not_found_error,
+        ).forEach { (error, expected) ->
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateAppointment(any()) } throws error
+            val sut = fixture.sutWith(fixture.appointment())
+
+            whenn()
+            sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+            then()
+            assertEquals(
+                listOf(expected.desc()),
+                sut.uiState.notifications.presentationNotification
+                    .filterIsInstance<PresentationNotification.Message>()
+                    .map { it.message },
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertTrue(
+                sut.uiState.notifications.presentationNotification.none {
+                    it is PresentationNotification.SuccessHaptic
+                },
+            )
+        }
     }
 }

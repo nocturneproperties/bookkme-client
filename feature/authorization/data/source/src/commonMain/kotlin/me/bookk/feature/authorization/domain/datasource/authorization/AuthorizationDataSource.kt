@@ -5,6 +5,7 @@ import me.bookk.feature.authorization.domain.entity.TokenInfo
 import kotlin.time.Instant
 
 interface AuthorizationDataSource {
+    suspend fun confirmAction(confirmation: ActionConfirmationRequest): String
     suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?)
     suspend fun getAccessToken(): String?
     fun getIsAuthorizedFlow(): Flow<Boolean>

@@ -59,7 +59,8 @@ class GetServicesImplTest {
         val serviceDataSource = mock<ServiceDataSource>()
         val groupDataSource = mock<ServiceGroupDataSource>()
         val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
-        val sut = GetServicesImpl(serviceDataSource, groupDataSource, observeDashboardBusinessChanges)
+        val sut =
+            GetServicesImpl(serviceDataSource, groupDataSource, observeDashboardBusinessChanges)
     }
 
     private fun stubBusiness(id: Uuid = Uuid.random()) = Business(
@@ -77,16 +78,21 @@ class GetServicesImplTest {
             employees = ResourcePermission(),
             clients = ResourcePermission(),
             services = ResourcePermission(),
-            appointments = ResourcePermission()
-        )
+            appointments = ResourcePermission(),
+        ),
     )
 
     private fun stubTimedService(businessId: Uuid, createdAtMs: Long) =
         stubService(businessId).let { s ->
             Service(
-                id = s.id, businessId = s.businessId, group = s.group, name = s.name,
-                duration = s.duration, price = s.price, isAvailable = s.isAvailable,
-                createdAt = Instant.fromEpochMilliseconds(createdAtMs)
+                id = s.id,
+                businessId = s.businessId,
+                group = s.group,
+                name = s.name,
+                duration = s.duration,
+                price = s.price,
+                isAvailable = s.isAvailable,
+                createdAt = Instant.fromEpochMilliseconds(createdAtMs),
             )
         }
 
@@ -104,21 +110,23 @@ class GetServicesImplTest {
     }
 
     @Test
-    fun `flow emits the db services sorted by createdAt for the current dashboard business`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = stubBusiness()
-        val older = stubTimedService(business.id, 1000L)
-        val newer = stubTimedService(business.id, 2000L)
-        every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.serviceDataSource.observeServicesDBChanges(business.id) } returns flowOf(listOf(newer, older))
+    fun `flow emits the db services sorted by createdAt for the current dashboard business`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = stubBusiness()
+            val older = stubTimedService(business.id, 1000L)
+            val newer = stubTimedService(business.id, 2000L)
+            every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
+            every { fixture.serviceDataSource.observeServicesDBChanges(business.id) } returns
+                flowOf(listOf(newer, older))
 
-        whenn()
-        val result = fixture.sut.flow().first()
+            whenn()
+            val result = fixture.sut.flow().first()
 
-        then()
-        assertEquals(listOf(older, newer), result)
-    }
+            then()
+            assertEquals(listOf(older, newer), result)
+        }
 
     @Test
     fun `flow re-resolves the db observation when the dashboard business changes`() = runUnitTest {
@@ -131,8 +139,10 @@ class GetServicesImplTest {
         val secondServices = listOf(stubService(secondBusiness.id))
         businesses.tryEmit(firstBusiness)
         every { fixture.observeDashboardBusinessChanges() } returns businesses
-        every { fixture.serviceDataSource.observeServicesDBChanges(firstBusiness.id) } returns flowOf(firstServices)
-        every { fixture.serviceDataSource.observeServicesDBChanges(secondBusiness.id) } returns flowOf(secondServices)
+        every { fixture.serviceDataSource.observeServicesDBChanges(firstBusiness.id) } returns
+            flowOf(firstServices)
+        every { fixture.serviceDataSource.observeServicesDBChanges(secondBusiness.id) } returns
+            flowOf(secondServices)
         val results = mutableListOf<List<Service>>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut.flow().collect { results.add(it) }
@@ -153,7 +163,8 @@ class GetServicesImplTest {
         val fixture = Fixture()
         val business = stubBusiness()
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.serviceDataSource.observeServicesDBChanges(business.id) } returns flowOf(emptyList())
+        every { fixture.serviceDataSource.observeServicesDBChanges(business.id) } returns
+            flowOf(emptyList())
 
         whenn()
         fixture.sut.flow().first()
@@ -170,8 +181,10 @@ class GetServicesImplTest {
             val businessId = Uuid.random()
             val older = stubTimedService(businessId, 1000L)
             val newer = stubTimedService(businessId, 2000L)
-            everySuspend { fixture.serviceDataSource.getServices(businessId) } returns listOf(newer, older)
-            everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns listOf(older.id, newer.id)
+            everySuspend { fixture.serviceDataSource.getServices(businessId) } returns
+                listOf(newer, older)
+            everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns
+                listOf(older.id, newer.id)
             everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
             everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
             everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
@@ -195,7 +208,8 @@ class GetServicesImplTest {
         val remote = listOf(stillPresent)
         val staleId = Uuid.random()
         everySuspend { fixture.serviceDataSource.getServices(businessId) } returns remote
-        everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns listOf(stillPresent.id, staleId)
+        everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns
+            listOf(stillPresent.id, staleId)
         everySuspend { fixture.serviceDataSource.deleteServicesInDb(listOf(staleId)) } returns Unit
         everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
         everySuspend { fixture.serviceDataSource.saveServicesInDB(remote) } returns Unit
@@ -205,7 +219,9 @@ class GetServicesImplTest {
         fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.serviceDataSource.deleteServicesInDb(listOf(staleId)) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.serviceDataSource.deleteServicesInDb(listOf(staleId))
+        }
     }
 
     @Test
@@ -215,7 +231,8 @@ class GetServicesImplTest {
         val businessId = Uuid.random()
         val service = stubService(businessId)
         everySuspend { fixture.serviceDataSource.getServices(businessId) } returns listOf(service)
-        everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns listOf(service.id)
+        everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns
+            listOf(service.id)
         everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
         everySuspend { fixture.serviceDataSource.saveServicesInDB(listOf(service)) } returns Unit
         everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit

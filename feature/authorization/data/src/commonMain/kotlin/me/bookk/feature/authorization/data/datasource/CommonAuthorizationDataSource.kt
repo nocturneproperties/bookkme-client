@@ -22,8 +22,12 @@ import me.bookk.feature.authorization.data.BuildKonfig
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting.Api.Auth
+import me.bookk.feature.authorization.data.remote.model.ActionConfirmationRequestRemote
+import me.bookk.feature.authorization.data.remote.model.ActionConfirmationTokenRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
+import me.bookk.feature.authorization.data.remote.model.SensitiveActionRemote
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
+import me.bookk.feature.authorization.domain.datasource.authorization.ActionConfirmationRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
@@ -35,10 +39,27 @@ import kotlin.time.Instant
 class CommonAuthorizationDataSource(
     private val httpClient: HttpClient,
     private val noAuthHttpClient: HttpClient,
-    preferenceProvider: PreferenceProvider
-) : AuthorizationDataSource, DataSource(), LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    AuthorizationDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("authorization_prefs")
+
+    override suspend fun confirmAction(confirmation: ActionConfirmationRequest): String =
+        mapExceptions {
+            httpClient.post(Auth.ConfirmAction()) {
+                setBody(
+                    ActionConfirmationRequestRemote(
+                        requestId = confirmation.requestId,
+                        publicKeyCredentialJson = confirmation.publicKeyCredentialJson,
+                        action = SensitiveActionRemote.fromDomain(confirmation.action),
+                        businessId = confirmation.businessId,
+                        targetId = confirmation.targetId,
+                    ),
+                )
+            }.body<ActionConfirmationTokenRemote>().token
+        }
 
     override suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?) {
         preferences.set(Key.accessToken, tokenInfo?.accessToken)
@@ -107,7 +128,9 @@ class CommonAuthorizationDataSource(
     }
 
     override suspend fun getLastInitialDataFetchAt(): Instant? {
-        return preferences.get(Key.lastInitialDataFetchAt)?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastInitialDataFetchAt)?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastInitialDataFetchAt() {

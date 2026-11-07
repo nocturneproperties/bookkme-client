@@ -41,9 +41,9 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 class InviteEmployeeViewModelTest {
@@ -82,11 +82,13 @@ class InviteEmployeeViewModelTest {
             device = device,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeEmployeesStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
-    private suspend fun kotlinx.coroutines.test.TestScope.loadedSut(fixture: Fixture): InviteEmployeeViewModel {
+    private suspend fun kotlinx.coroutines.test.TestScope.loadedSut(
+        fixture: Fixture,
+    ): InviteEmployeeViewModel {
         val sut = fixture.sut()
         advanceUntilIdle()
         return sut
@@ -127,7 +129,8 @@ class InviteEmployeeViewModelTest {
         val sut = loadedSut(fixture)
 
         whenn()
-        fixture.invitations.value = listOf(stubInvitation(status = EmployeeInvitationStatus.REDEEMED))
+        fixture.invitations.value =
+            listOf(stubInvitation(status = EmployeeInvitationStatus.REDEEMED))
 
         then()
         assertEquals(ColorToken.Success, sut.uiState.invitationsList.items.single().status.color)
@@ -141,8 +144,11 @@ class InviteEmployeeViewModelTest {
 
         whenn()
         fixture.invitations.value = listOf(
-            stubInvitation(status = EmployeeInvitationStatus.PENDING, createdAt = LocalDateTime(2024, 2, 1, 0, 0)),
-            stubInvitation(status = EmployeeInvitationStatus.REVOKED)
+            stubInvitation(
+                status = EmployeeInvitationStatus.PENDING,
+                createdAt = LocalDateTime(2024, 2, 1, 0, 0),
+            ),
+            stubInvitation(status = EmployeeInvitationStatus.REVOKED),
         )
 
         then()
@@ -155,7 +161,8 @@ class InviteEmployeeViewModelTest {
     fun `copies new code to clipboard and reloads invitations`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createEmployeeInvitation(any()) } returns stubInvitation(code = "ABCD1234")
+        everySuspend { fixture.createEmployeeInvitation(any()) } returns
+            stubInvitation(code = "ABCD1234")
         val sut = loadedSut(fixture)
 
         whenn()
@@ -163,8 +170,12 @@ class InviteEmployeeViewModelTest {
 
         then()
         verify { fixture.device.copyToClipboard("ABCD1234") }
-        verifySuspend(VerifyMode.exactly(2)) { fixture.getEmployeeInvitations.refresh(fixture.businessId) }
-        val message = sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
+        verifySuspend(VerifyMode.exactly(2)) {
+            fixture.getEmployeeInvitations.refresh(fixture.businessId)
+        }
+        val message = sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertEquals(PresentationNotification.GlobalMessage.State.SUCCESS, message.state)
         assertFalse(sut.uiState.generateCodeButton.isLoading)
     }
@@ -194,7 +205,11 @@ class InviteEmployeeViewModelTest {
         sut.uiState.generateCodeButton.onClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -215,7 +230,8 @@ class InviteEmployeeViewModelTest {
     fun `shows message when pending invitation limit is reached`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createEmployeeInvitation(any()) } throws CreateEmployeeInvitation.Error.PendingInvitationsLimitReached(TestException())
+        everySuspend { fixture.createEmployeeInvitation(any()) } throws
+            CreateEmployeeInvitation.Error.PendingInvitationsLimitReached(TestException())
         val sut = loadedSut(fixture)
 
         whenn()
@@ -229,7 +245,8 @@ class InviteEmployeeViewModelTest {
     fun `shows message when daily invitation limit is reached`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createEmployeeInvitation(any()) } throws CreateEmployeeInvitation.Error.DailyInvitationsLimitReached(TestException())
+        everySuspend { fixture.createEmployeeInvitation(any()) } throws
+            CreateEmployeeInvitation.Error.DailyInvitationsLimitReached(TestException())
         val sut = loadedSut(fixture)
 
         whenn()
@@ -264,11 +281,15 @@ class InviteEmployeeViewModelTest {
         sut.uiState.invitationsList.items.single().onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+            .tap(ActionType.NEGATIVE)
 
         then()
         verifySuspend { fixture.revokeEmployeeInvitation(fixture.businessId, invitation.id) }
-        verifySuspend(VerifyMode.exactly(2)) { fixture.getEmployeeInvitations.refresh(fixture.businessId) }
+        verifySuspend(VerifyMode.exactly(2)) {
+            fixture.getEmployeeInvitations.refresh(fixture.businessId)
+        }
     }
 
     @Test
@@ -282,17 +303,25 @@ class InviteEmployeeViewModelTest {
         sut.uiState.invitationsList.items.single().onClick?.invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+            .tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `does not play success haptic when revoking fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.revokeEmployeeInvitation(any(), any()) } throws RevokeEmployeeInvitation.Error.AlreadyProcessed(TestException())
+        everySuspend { fixture.revokeEmployeeInvitation(any(), any()) } throws
+            RevokeEmployeeInvitation.Error.AlreadyProcessed(TestException())
         val sut = loadedSut(fixture)
         fixture.invitations.value = listOf(stubInvitation())
         sut.uiState.invitationsList.items.single().onClick?.invoke()
@@ -303,14 +332,19 @@ class InviteEmployeeViewModelTest {
         dialog.tap(ActionType.NEGATIVE)
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `shows message when invitation was already processed`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.revokeEmployeeInvitation(any(), any()) } throws RevokeEmployeeInvitation.Error.AlreadyProcessed(TestException())
+        everySuspend { fixture.revokeEmployeeInvitation(any(), any()) } throws
+            RevokeEmployeeInvitation.Error.AlreadyProcessed(TestException())
         val sut = loadedSut(fixture)
         fixture.invitations.value = listOf(stubInvitation())
         sut.uiState.invitationsList.items.single().onClick?.invoke()
@@ -346,6 +380,9 @@ class InviteEmployeeViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<InviteEmployeeDestinations>(InviteEmployeeDestinations.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<InviteEmployeeDestinations>(InviteEmployeeDestinations.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

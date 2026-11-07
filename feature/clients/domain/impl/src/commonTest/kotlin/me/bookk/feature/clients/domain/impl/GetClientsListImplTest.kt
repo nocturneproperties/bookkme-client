@@ -73,8 +73,8 @@ class GetClientsListImplTest {
             employees = ResourcePermission(),
             clients = ResourcePermission(),
             services = ResourcePermission(),
-            appointments = ResourcePermission()
-        )
+            appointments = ResourcePermission(),
+        ),
     )
 
     private fun stubClient(businessId: Uuid) = Client.Detached(
@@ -83,7 +83,7 @@ class GetClientsListImplTest {
         lastName = "Doe",
         phone = "123",
         email = "j@e.com",
-        businessId = businessId
+        businessId = businessId,
     )
 
     @Test
@@ -126,8 +126,10 @@ class GetClientsListImplTest {
         val secondClients = listOf(stubClient(secondBusiness.id))
         businesses.tryEmit(firstBusiness)
         every { fixture.observeDashboardBusinessChanges() } returns businesses
-        every { fixture.dataSource.observeClientsDBChanges(firstBusiness.id) } returns flowOf(firstClients)
-        every { fixture.dataSource.observeClientsDBChanges(secondBusiness.id) } returns flowOf(secondClients)
+        every { fixture.dataSource.observeClientsDBChanges(firstBusiness.id) } returns
+            flowOf(firstClients)
+        every { fixture.dataSource.observeClientsDBChanges(secondBusiness.id) } returns
+            flowOf(secondClients)
         val results = mutableListOf<List<Client>>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut.flow().collect { results.add(it) }
@@ -148,7 +150,8 @@ class GetClientsListImplTest {
         val fixture = Fixture()
         val business = stubBusiness()
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.dataSource.observeClientsDBChanges(business.id) } returns flowOf(emptyList())
+        every { fixture.dataSource.observeClientsDBChanges(business.id) } returns
+            flowOf(emptyList())
 
         whenn()
         fixture.sut.flow().first()
@@ -164,7 +167,8 @@ class GetClientsListImplTest {
         val businessId = Uuid.random()
         val clients = listOf(stubClient(businessId))
         everySuspend { fixture.dataSource.getClients(businessId) } returns clients
-        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns clients.map { it.id }
+        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns
+            clients.map { it.id }
         everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
@@ -186,7 +190,8 @@ class GetClientsListImplTest {
         val remote = listOf(stillPresent)
         val staleId = Uuid.random()
         everySuspend { fixture.dataSource.getClients(businessId) } returns remote
-        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns listOf(stillPresent.id, staleId)
+        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns
+            listOf(stillPresent.id, staleId)
         everySuspend { fixture.dataSource.deleteClientsInDb(listOf(staleId)) } returns Unit
         everySuspend { fixture.dataSource.saveClientsInDb(remote) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
@@ -195,7 +200,9 @@ class GetClientsListImplTest {
         fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteClientsInDb(listOf(staleId)) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.deleteClientsInDb(listOf(staleId))
+        }
     }
 
     @Test

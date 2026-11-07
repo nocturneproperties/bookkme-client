@@ -1,5 +1,9 @@
 package me.bookk.feature.business.domain.impl.di
 
+import me.bookk.feature.business.domain.api.DeleteExpiredBusinessDataExportFiles
+import me.bookk.feature.business.domain.api.DownloadBusinessDataExport
+import me.bookk.feature.business.domain.api.GetBusinessDataExport
+import me.bookk.feature.business.domain.api.StartBusinessDataExport
 import me.bookk.feature.business.domain.api.business.CanEditBusiness
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
@@ -14,6 +18,10 @@ import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
+import me.bookk.feature.business.domain.impl.DeleteExpiredBusinessDataExportFilesImpl
+import me.bookk.feature.business.domain.impl.DownloadBusinessDataExportImpl
+import me.bookk.feature.business.domain.impl.GetBusinessDataExportImpl
+import me.bookk.feature.business.domain.impl.StartBusinessDataExportImpl
 import me.bookk.feature.business.domain.impl.business.CanEditBusinessImpl
 import me.bookk.feature.business.domain.impl.business.CreateBusinessImpl
 import me.bookk.feature.business.domain.impl.business.GetAvailableDashboardFeaturesImpl
@@ -33,6 +41,11 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun businessDomainModule() = module {
+    factoryOf(::DeleteExpiredBusinessDataExportFilesImpl) bind
+        DeleteExpiredBusinessDataExportFiles::class
+    factoryOf(::DownloadBusinessDataExportImpl) bind DownloadBusinessDataExport::class
+    factoryOf(::GetBusinessDataExportImpl) bind GetBusinessDataExport::class
+    factoryOf(::StartBusinessDataExportImpl) bind StartBusinessDataExport::class
     factoryOf(::CreateBusinessImpl) bind CreateBusiness::class
     factoryOf(::RefreshBusinessInfoImpl) bind RefreshBusinessInfo::class
     factoryOf(::ObserveDashboardBusinessChangesImpl) bind ObserveDashboardBusinessChanges::class

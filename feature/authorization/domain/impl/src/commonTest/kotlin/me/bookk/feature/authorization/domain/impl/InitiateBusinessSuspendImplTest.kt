@@ -67,7 +67,8 @@ class InitiateBusinessSuspendImplTest {
     fun `keeps the dashboard business cleared when the refresh fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.refreshBusinessInfo(false) } throws DomainError.NoConnectionError(Exception())
+        everySuspend { fixture.refreshBusinessInfo(false) } throws
+            DomainError.NoConnectionError(Exception())
 
         whenn()
         then()

@@ -7,5 +7,5 @@ data class LocalNotification(
     val subtitle: String? = null,
     val group: String? = null,
     val badgeCount: Int? = null,
-    val data: Map<String, String> = emptyMap()
+    val data: Map<String, String> = emptyMap(),
 )

@@ -56,19 +56,17 @@ class UpdateBusinessImplTest {
         val sut = UpdateBusinessImpl(dataSource)
     }
 
-    private fun stubUpdate(
-        id: Uuid,
-        schedule: WorkingSchedule = stubWorkingSchedule()
-    ) = Business.Update(
-        id = id,
-        name = "New Name",
-        description = "New Desc",
-        address = "New Address",
-        location = null,
-        currency = Currency("USD"),
-        socials = emptyMap(),
-        schedule = schedule
-    )
+    private fun stubUpdate(id: Uuid, schedule: WorkingSchedule = stubWorkingSchedule()) =
+        Business.Update(
+            id = id,
+            name = "New Name",
+            description = "New Desc",
+            address = "New Address",
+            location = null,
+            currency = Currency("USD"),
+            socials = emptyMap(),
+            schedule = schedule,
+        )
 
     @Test
     fun `returns updated business with new fields`() = runUnitTest {
@@ -96,7 +94,7 @@ class UpdateBusinessImplTest {
         val id = Uuid.random()
         val newSchedule = stubWorkingSchedule(
             days = mapOf(DayOfWeek.MONDAY to stubDaySchedule(isActive = false)),
-            dayOffs = listOf(stubDayOff())
+            dayOffs = listOf(stubDayOff()),
         )
         val update = stubUpdate(id, schedule = newSchedule)
         everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
@@ -126,9 +124,11 @@ class UpdateBusinessImplTest {
 
         then()
         verifySuspend {
-            fixture.dataSource.updateBusiness(matches({ "business with updated schedule" }) {
-                it.schedule == newSchedule
-            })
+            fixture.dataSource.updateBusiness(
+                matches({ "business with updated schedule" }) {
+                    it.schedule == newSchedule
+                },
+            )
         }
     }
 
@@ -157,7 +157,10 @@ class UpdateBusinessImplTest {
         val id = Uuid.random()
         everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
         everySuspend { fixture.dataSource.updateBusiness(any()) } throws
-            DomainError.BusinessError(BusinessErrorCodes.BUSINESS_ACTIVE_DAY_WITHOUT_WORK_HOURS, "msg")
+            DomainError.BusinessError(
+                BusinessErrorCodes.BUSINESS_ACTIVE_DAY_WITHOUT_WORK_HOURS,
+                "msg",
+            )
 
         whenn()
         then()
@@ -195,7 +198,9 @@ class UpdateBusinessImplTest {
         runCatching { fixture.sut(stubUpdate(id)) }
 
         then()
-        verifySuspend(dev.mokkery.verify.VerifyMode.not) { fixture.dataSource.saveBusinessInDB(any()) }
+        verifySuspend(dev.mokkery.verify.VerifyMode.not) {
+            fixture.dataSource.saveBusinessInDB(any())
+        }
     }
 
     @Test
@@ -210,5 +215,107 @@ class UpdateBusinessImplTest {
 
         then()
         assertNotNull(thrown)
+    }
+
+    @Test
+    fun `preserves cached retention when the update omits it`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness().copy(clientDataRetentionMonths = 36)
+        everySuspend { fixture.dataSource.getBusinessById(business.id) } returns business
+        everySuspend { fixture.dataSource.updateBusiness(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessInDB(any()) } returns Unit
+
+        whenn()
+        val result = fixture.sut(stubUpdate(business.id).copy(clientDataRetentionMonths = null))
+
+        then()
+        assertEquals(36, result.clientDataRetentionMonths)
+        verifySuspend {
+            fixture.dataSource.saveBusinessInDB(
+                matches({ "retention" }) { it.clientDataRetentionMonths == 36 },
+            )
+        }
+    }
+
+    @Test
+    fun `updates retention when explicitly supplied`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness().copy(clientDataRetentionMonths = 36)
+        everySuspend { fixture.dataSource.getBusinessById(business.id) } returns business
+        everySuspend { fixture.dataSource.updateBusiness(any()) } returns Unit
+        everySuspend { fixture.dataSource.saveBusinessInDB(any()) } returns Unit
+
+        whenn()
+        val result = fixture.sut(stubUpdate(business.id).copy(clientDataRetentionMonths = 60))
+
+        then()
+        assertEquals(60, result.clientDataRetentionMonths)
+        verifySuspend {
+            fixture.dataSource.saveBusinessInDB(
+                matches({ "retention" }) { it.clientDataRetentionMonths == 60 },
+            )
+        }
+    }
+
+    @Test
+    fun `maps backend error 200035 to InvalidCurrency`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
+        everySuspend { fixture.dataSource.updateBusiness(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200035, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUpdate(id)) }
+
+        then()
+        assertFailsWith<
+            me.bookk.feature.business.domain.api.business.UpdateBusiness.Error.InvalidCurrency,
+            > {
+            result.getOrThrow()
+        }
+    }
+
+    @Test
+    fun `maps backend error 200036 to CurrencyLocked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
+        everySuspend { fixture.dataSource.updateBusiness(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200036, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUpdate(id)) }
+
+        then()
+        assertFailsWith<
+            me.bookk.feature.business.domain.api.business.UpdateBusiness.Error.CurrencyLocked,
+            > {
+            result.getOrThrow()
+        }
+    }
+
+    @Test
+    fun `maps backend error 200041 to InvalidRetentionPeriod`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
+        everySuspend { fixture.dataSource.updateBusiness(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200041, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubUpdate(id)) }
+
+        then()
+        assertFailsWith<
+            UpdateBusiness.Error.InvalidRetentionPeriod,
+            > {
+            result.getOrThrow()
+        }
     }
 }

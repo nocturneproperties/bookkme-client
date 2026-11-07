@@ -23,7 +23,7 @@ internal class CreateAccountImpl(
     private val authorizationDataSource: AuthorizationDataSource,
     private val deviceFacade: DeviceFacade,
     private val passKeyManager: PassKeyManager,
-    private val initialAppDataFetch: InitialAppDataFetch
+    private val initialAppDataFetch: InitialAppDataFetch,
 ) : CreateAccount {
 
     private val logger = Logger.create("CreateAccountImpl")
@@ -44,11 +44,37 @@ internal class CreateAccountImpl(
         return runCatching { registrationDataSource.finishRegistration(data) }
             .getOrElse {
                 throw when (it.businessOrThrow().errorCode) {
-                    AuthErrorCodes.USER_ALREADY_EXIST -> CreateAccount.Error.EmailAlreadyExist()
-                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> CreateAccount.Error.InvalidEmailFormat()
-                    AuthErrorCodes.VERIFICATION_FAILED -> CreateAccount.Error.PasskeyVerificationFailed()
-                    AuthErrorCodes.ACCOUNT_CREATION_FAILED -> CreateAccount.Error.AccountCreationFailed()
-                    else -> it
+                    AuthErrorCodes.USER_ALREADY_EXIST -> {
+                        CreateAccount.Error.EmailAlreadyExist()
+                    }
+
+                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> {
+                        CreateAccount.Error.InvalidEmailFormat()
+                    }
+
+                    AuthErrorCodes.VERIFICATION_FAILED -> {
+                        CreateAccount.Error.PasskeyVerificationFailed()
+                    }
+
+                    AuthErrorCodes.ACCOUNT_CREATION_FAILED -> {
+                        CreateAccount.Error.AccountCreationFailed()
+                    }
+
+                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> {
+                        CreateAccount.Error.ChallengeWindowExpired()
+                    }
+
+                    AuthErrorCodes.LEGAL_DOCUMENT_VERSION_UNKNOWN -> {
+                        CreateAccount.Error.LegalDocumentVersionUnknown()
+                    }
+
+                    AuthErrorCodes.LEGAL_DOCUMENTS_NOT_ACCEPTED -> {
+                        CreateAccount.Error.LegalDocumentsNotAccepted()
+                    }
+
+                    else -> {
+                        it
+                    }
                 }
             }
     }
@@ -57,7 +83,8 @@ internal class CreateAccountImpl(
         return UserData(
             firstName = firstName.trim(),
             lastName = lastName.trim(),
-            email = email.trim()
+            email = email.trim(),
+            acceptedDocuments = acceptedDocuments,
         )
     }
 
@@ -72,42 +99,46 @@ internal class CreateAccountImpl(
             }
     }
 
-    private suspend fun createPasskeyFrom(challenge: ServerSignUpChallenge): PasskeyVerificationPayload {
+    private suspend fun createPasskeyFrom(
+        challenge: ServerSignUpChallenge,
+    ): PasskeyVerificationPayload {
         return runCatching {
             passKeyManager.create(
                 PassKeyManager.CreationRequest(
                     userId = challenge.userHandle,
                     userName = challenge.displayName,
                     challengeJson = challenge.jsonChallengeData,
-                    challenge = challenge.challenge
-                )
+                    challenge = challenge.challenge,
+                ),
             )
-        }.getOrElse {
-            logger.e(it)
-            throw when (it) {
-                is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                else -> CreateAccount.Error.AccountCreationFailed()
-            }
         }
+            .getOrElse {
+                logger.e(it)
+                throw when (it) {
+                    is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
+                    else -> CreateAccount.Error.AccountCreationFailed()
+                }
+            }
     }
 
     private suspend fun createRegistrationData(
         userData: UserData,
         payload: PasskeyVerificationPayload,
-        requestId: String
+        requestId: String,
     ): RegistrationData {
         return RegistrationData(
             requestId = requestId,
             deviceInfo = RegistrationData.DeviceInfo(
                 deviceUUID = deviceDataSource.getOrCreateDeviceUUID(),
-                deviceName = deviceFacade.getDeviceName()
+                deviceName = deviceFacade.getDeviceName(),
             ),
             userInfo = RegistrationData.UserInfo(
                 name = userData.firstName,
                 lastName = userData.lastName,
-                email = userData.email
+                email = userData.email,
             ),
-            publicKeyCredentialJson = payload.jsonPayload
+            publicKeyCredentialJson = payload.jsonPayload,
+            acceptedDocuments = userData.acceptedDocuments,
         )
     }
 }

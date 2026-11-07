@@ -14,24 +14,37 @@ data class InvitationItem(
     val code: StringDesc,
     val createdOn: StringDesc,
     val status: UIInvitationStatus,
-    val onClick: (() -> Unit)? = null
+    val onClick: (() -> Unit)? = null,
 )
 
 class UIInvitationStatus(
     val label: StringDesc,
-    val color: ColorToken
+    val color: ColorToken,
 ) {
-    internal constructor(status: EmployeeInvitationStatus) : this(
+    internal constructor(
+        status: EmployeeInvitationStatus,
+    ) : this(
         label = status.label(),
-        color = status.color()
+        color = status.color(),
     )
 }
 
 private fun EmployeeInvitationStatus.label(): StringDesc = when (this) {
-    EmployeeInvitationStatus.PENDING -> EmployeesRes.strings.employees_invite_status_pending.desc()
-    EmployeeInvitationStatus.REDEEMED -> EmployeesRes.strings.employees_invite_status_redeemed.desc()
-    EmployeeInvitationStatus.EXPIRED -> EmployeesRes.strings.employees_invite_status_expired.desc()
-    EmployeeInvitationStatus.REVOKED -> EmployeesRes.strings.employees_invite_status_revoked.desc()
+    EmployeeInvitationStatus.PENDING -> {
+        EmployeesRes.strings.employees_invite_status_pending.desc()
+    }
+
+    EmployeeInvitationStatus.REDEEMED -> {
+        EmployeesRes.strings.employees_invite_status_redeemed.desc()
+    }
+
+    EmployeeInvitationStatus.EXPIRED -> {
+        EmployeesRes.strings.employees_invite_status_expired.desc()
+    }
+
+    EmployeeInvitationStatus.REVOKED -> {
+        EmployeesRes.strings.employees_invite_status_revoked.desc()
+    }
 }
 
 private fun EmployeeInvitationStatus.color(): ColorToken = when (this) {

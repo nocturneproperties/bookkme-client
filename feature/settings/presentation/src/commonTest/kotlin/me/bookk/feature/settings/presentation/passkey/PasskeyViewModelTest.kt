@@ -9,6 +9,7 @@ import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.datetime.LocalDateTime
+import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -64,7 +65,7 @@ class PasskeyViewModelTest {
             getAvailablePasskeys = getAvailablePasskeys,
             dateLocalizer = FakeDateLocalizer(),
             settingsStateFactory = FakeSettingsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -73,7 +74,7 @@ class PasskeyViewModelTest {
         name = name,
         isBackedUp = true,
         createdAt = LocalDateTime(2024, 1, 1, 0, 0),
-        lastUsedAt = LocalDateTime(2024, 1, 2, 0, 0)
+        lastUsedAt = LocalDateTime(2024, 1, 2, 0, 0),
     )
 
     @Test
@@ -163,7 +164,11 @@ class PasskeyViewModelTest {
         sut.onAddPasskeyClick()
 
         then()
-        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notification.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -191,7 +196,9 @@ class PasskeyViewModelTest {
         sut.onDeletePasskeyClick(PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc()))
 
         whenn()
-        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
         verifySuspend { fixture.deletePasskey(key.id) }
@@ -207,10 +214,17 @@ class PasskeyViewModelTest {
         sut.onDeletePasskeyClick(PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc()))
 
         whenn()
-        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
-        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notification.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -223,10 +237,16 @@ class PasskeyViewModelTest {
         sut.onDeletePasskeyClick(PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc()))
 
         whenn()
-        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
-        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notification.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -236,10 +256,16 @@ class PasskeyViewModelTest {
         val ids = listOf(Uuid.random(), Uuid.random())
         everySuspend { fixture.deletePasskey(any()) } returns Unit
         val sut = fixture.sut()
-        sut.onDeletePasskeyList(ids.map { PasskeyState.PasskeyItem(it, "key", true, true, "".desc()) })
+        sut.onDeletePasskeyList(
+            ids.map {
+                PasskeyState.PasskeyItem(it, "key", true, true, "".desc())
+            },
+        )
 
         whenn()
-        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
         verifySuspend(VerifyMode.exactly(2)) { fixture.deletePasskey(any()) }
@@ -252,13 +278,24 @@ class PasskeyViewModelTest {
         val ids = listOf(Uuid.random(), Uuid.random())
         everySuspend { fixture.deletePasskey(any()) } returns Unit
         val sut = fixture.sut()
-        sut.onDeletePasskeyList(ids.map { PasskeyState.PasskeyItem(it, "key", true, true, "".desc()) })
+        sut.onDeletePasskeyList(
+            ids.map {
+                PasskeyState.PasskeyItem(it, "key", true, true, "".desc())
+            },
+        )
 
         whenn()
-        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
-        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notification.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -268,13 +305,23 @@ class PasskeyViewModelTest {
         val ids = listOf(Uuid.random(), Uuid.random())
         everySuspend { fixture.deletePasskey(any()) } throws TestException()
         val sut = fixture.sut()
-        sut.onDeletePasskeyList(ids.map { PasskeyState.PasskeyItem(it, "key", true, true, "".desc()) })
+        sut.onDeletePasskeyList(
+            ids.map {
+                PasskeyState.PasskeyItem(it, "key", true, true, "".desc())
+            },
+        )
 
         whenn()
-        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notification.assertSingle<PresentationNotification.Message>().tap(
+            ActionType.NEGATIVE,
+        )
 
         then()
-        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notification.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -289,5 +336,47 @@ class PasskeyViewModelTest {
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
         assertFalse(sut.uiState.refresh.isRefreshing)
+    }
+
+    @Test
+    fun `explains last passkey protection for single deletion`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deletePasskey(any()) } throws DeletePasskey.Error.LastPasskey()
+        val sut = fixture.sut()
+        val key = passkey()
+        val item = PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc())
+        sut.onDeletePasskeyClick(item)
+        val confirmation = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notification.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        val message = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        assertEquals(SettingsRes.strings.settings_passkey_last_error.desc(), message.message)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
+    fun `explains last passkey protection for batch deletion`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deletePasskey(any()) } throws DeletePasskey.Error.LastPasskey()
+        val sut = fixture.sut()
+        val key = passkey()
+        val item = PasskeyState.PasskeyItem(key.id, key.name, true, true, "".desc())
+        sut.onDeletePasskeyList(listOf(item))
+        val confirmation = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        sut.uiState.notification.removeFirst()
+
+        whenn()
+        confirmation.tap(ActionType.NEGATIVE)
+
+        then()
+        val message = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        assertEquals(SettingsRes.strings.settings_passkey_last_error.desc(), message.message)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 }

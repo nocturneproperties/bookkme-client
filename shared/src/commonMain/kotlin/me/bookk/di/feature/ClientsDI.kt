@@ -9,6 +9,6 @@ internal fun clientsDiModule() = module {
     includes(
         clientsPresentationModule(),
         clientsDataModule(),
-        clientsDomainModule()
+        clientsDomainModule(),
     )
 }

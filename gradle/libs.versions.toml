@@ -28,17 +28,17 @@ okio = "3.17.0"
 build-konfig = "0.22.0"
 json-serialization = "1.11.0"
 money = "2.0.3"
-dotindicator = "5.1.0"
 biometry = "1.4.0-alpha02"
 napier = "2.7.1"
 mockery = "3.4.2"
+spotless = "8.11.0"
+ktlint = "1.8.0"
 
 [libraries]
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "preferences" }
@@ -59,7 +59,6 @@ compose-bom = { module = "androidx.compose:compose-bom", version = "2026.06.00" 
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
 compose-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
@@ -69,7 +68,6 @@ compose-coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref 
 compose-coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-push = { group = "com.google.firebase", name = "firebase-messaging" }
 firebase-crashlytics-gradlePlugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "crashlytics" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -82,7 +80,6 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-protobuf = { module = "io.ktor:ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
 ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
@@ -99,6 +96,7 @@ buildkonfig-compiler = { module = "com.codingfeline.buildkonfig:buildkonfig-comp
 compose-compiler-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 android-room = { id = "androidx.room", version.ref = "room" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
@@ -109,7 +107,6 @@ convention-kmm-library-kotlin = { id = "convention.kmm.library", version.ref = "
 convention-kmm-library-compose = { id = "convention.kmm.library.compose", version.ref = "local-plugin-version" }
 convention-kmm-database = { id = "convention.kmm.library.database", version.ref = "local-plugin-version" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 kmm-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "kmm-resources" }
 firebase-appDistribution = { id = "com.google.firebase.appdistribution", version.ref = "appDistribution" }

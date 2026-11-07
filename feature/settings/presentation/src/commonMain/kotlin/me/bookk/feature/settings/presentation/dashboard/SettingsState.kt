@@ -22,7 +22,7 @@ interface SettingsState {
     class InitData(
         val appearance: AppearanceSection.InitData,
         val account: AccountSection.InitData,
-        val support: SupportSection.InitData
+        val support: SupportSection.InitData,
     )
 }
 
@@ -31,14 +31,17 @@ interface AppearanceSection {
     var colorScheme: UIColorScheme
 
     class InitData(
-        val title: StringDesc
+        val title: StringDesc,
     )
 
-    //UI model to prevent need of Settings Domain API module to be exported to objc header
-    enum class UIColorScheme(val title: StringDesc) {
+    // UI model to prevent need of Settings Domain API module to be exported to objc header
+    enum class UIColorScheme(
+        val title: StringDesc,
+    ) {
         DARK(SettingsRes.strings.settings_theme_mode_dark.desc()),
         LIGHT(SettingsRes.strings.settings_theme_mode_light.desc()),
-        SYSTEM(SettingsRes.strings.settings_theme_mode_system.desc());
+        SYSTEM(SettingsRes.strings.settings_theme_mode_system.desc()),
+        ;
 
         internal fun toDomain(): ColorScheme {
             return when (this) {
@@ -64,10 +67,12 @@ interface ProfileSection {
     var name: StringDesc
     var lastName: StringDesc
     var email: StringDesc
-
 }
 
 interface AccountSection {
+    val dataExport: TextState
+    val privacy: TextState
+    var privacyStatus: StringDesc?
     val title: StringDesc
     val notifications: TextState
     val passkey: TextState
@@ -79,7 +84,7 @@ interface AccountSection {
         val notificationsLabel: StringDesc,
         val passkeyLabel: StringDesc,
         val logoutLabel: StringDesc,
-        val deleteAccountLabel: StringDesc
+        val deleteAccountLabel: StringDesc,
     )
 }
 
@@ -97,6 +102,6 @@ interface SupportSection {
         val featureLabel: StringDesc,
         val termsLabel: StringDesc,
         val policyLabel: StringDesc,
-        val reportErrorLabel: StringDesc
+        val reportErrorLabel: StringDesc,
     )
 }

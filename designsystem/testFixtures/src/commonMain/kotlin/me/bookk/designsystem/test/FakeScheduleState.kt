@@ -22,7 +22,9 @@ class FakeScheduleState : ScheduleState {
     override var isEditable: Boolean = true
 }
 
-class FakeDaySettingsState : FakeViewState(), DaySettingsState {
+class FakeDaySettingsState :
+    FakeViewState(),
+    DaySettingsState {
     override var isActive: BooleanState = FakeBooleanState()
     override var dayIndicator: StringDesc = "".desc()
     override var title: StringDesc = "".desc()
@@ -40,7 +42,9 @@ class FakeDaySettingsState : FakeViewState(), DaySettingsState {
     }
 }
 
-class FakeTimeSettingState : FakeViewState(), TimeSettingState {
+class FakeTimeSettingState :
+    FakeViewState(),
+    TimeSettingState {
     override val timeFromPicker = FakeTimePickerFieldState()
     override val timeToPicker = FakeTimePickerFieldState()
 }

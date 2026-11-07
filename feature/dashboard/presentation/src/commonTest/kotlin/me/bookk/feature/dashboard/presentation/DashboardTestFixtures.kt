@@ -12,14 +12,14 @@ import kotlin.uuid.Uuid
 
 internal fun stubWorkingSchedule() = WorkingSchedule(
     days = DayOfWeek.entries.associateWith { DayOfWeekSchedule.default(it) },
-    dayOffs = emptyList()
+    dayOffs = emptyList(),
 )
 
 internal fun stubBusiness(
     id: Uuid = Uuid.random(),
     name: String = "Test Business",
     schedule: WorkingSchedule = stubWorkingSchedule(),
-    socials: Map<Business.SocialKind, Business.Social> = emptyMap()
+    socials: Map<Business.SocialKind, Business.Social> = emptyMap(),
 ) = Business(
     id = id,
     name = name,
@@ -35,6 +35,6 @@ internal fun stubBusiness(
         employees = ResourcePermission(),
         clients = ResourcePermission(),
         services = ResourcePermission(),
-        appointments = ResourcePermission()
-    )
+        appointments = ResourcePermission(),
+    ),
 )

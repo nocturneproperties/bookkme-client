@@ -25,7 +25,7 @@ data class AppointmentRequest(
             id: Uuid = Uuid.random(),
             userId: Uuid = Uuid.random(),
             businessId: Uuid = Uuid.random(),
-            date: Instant = Instant.fromEpochMilliseconds(0)
+            date: Instant = Instant.fromEpochMilliseconds(0),
         ) = AppointmentRequest(
             id = id,
             userId = userId,
@@ -36,7 +36,7 @@ data class AppointmentRequest(
             status = AppointmentRequestStatus.PENDING,
             date = date,
             note = "Note",
-            declineReason = ""
+            declineReason = "",
         )
     }
 }

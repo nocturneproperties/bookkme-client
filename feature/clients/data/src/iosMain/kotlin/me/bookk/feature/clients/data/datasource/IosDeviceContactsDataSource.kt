@@ -34,7 +34,7 @@ internal class IosDeviceContactsDataSource : DeviceContactsDataSource {
             val error = alloc<ObjCObjectVar<NSError?>>()
             val isFetched = CNContactStore().enumerateContactsWithFetchRequest(
                 CNContactFetchRequest(keysToFetch = KEYS_TO_FETCH),
-                error.ptr
+                error.ptr,
             ) { contact, _ -> contact?.let(contacts::add) }
             check(isFetched) { error.value?.localizedDescription.orEmpty() }
         }
@@ -46,7 +46,7 @@ internal class IosDeviceContactsDataSource : DeviceContactsDataSource {
             name = givenName.ifBlank { organizationName },
             lastName = familyName,
             phones = phoneNumbers.labeledValues<CNPhoneNumber>().map { it.stringValue },
-            emails = emailAddresses.labeledValues<String>()
+            emails = emailAddresses.labeledValues<String>(),
         )
     }
 
@@ -60,7 +60,7 @@ internal class IosDeviceContactsDataSource : DeviceContactsDataSource {
             CNContactFamilyNameKey,
             CNContactOrganizationNameKey,
             CNContactPhoneNumbersKey,
-            CNContactEmailAddressesKey
+            CNContactEmailAddressesKey,
         )
     }
 }

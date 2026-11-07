@@ -91,7 +91,7 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
             }
             exponentialDelay(
                 baseDelayMs = 500,
-                maxDelayMs = 5000
+                maxDelayMs = 5000,
             )
         }
         install(UserAgent) {
@@ -110,16 +110,25 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
                     refreshTokens {
                         val tokenAccessor = get<GetTokenInfo>()
                         val currentToken = tokenAccessor() ?: return@refreshTokens null
-                        refreshLogger.d("Start refreshing from: ${response.request.url}, token: $currentToken")
+                        refreshLogger.d(
+                            "Start refreshing from: ${response.request.url}, token: $currentToken",
+                        )
                         refreshMutex.withLock {
                             refreshLogger.d("Entered lock from: ${response.request.url}")
                             val tokensAfterLock = tokenAccessor()
                             if (currentToken != tokensAfterLock && tokensAfterLock != null) {
-                                refreshLogger.d("Tokens already refreshed: ${response.request.url}, token: $tokensAfterLock")
-                                BearerTokens(tokensAfterLock.accessToken, tokensAfterLock.refreshToken)
+                                refreshLogger.d(
+                                    "Tokens already refreshed: ${response.request.url}, token: $tokensAfterLock",
+                                )
+                                BearerTokens(
+                                    tokensAfterLock.accessToken,
+                                    tokensAfterLock.refreshToken,
+                                )
                             } else {
                                 runCatching {
-                                    val refresh = get<RefreshToken>().invoke(currentToken.refreshToken)
+                                    val refresh = get<RefreshToken>().invoke(
+                                        currentToken.refreshToken,
+                                    )
                                     refreshLogger.d("Token refresh success")
                                     BearerTokens(refresh.accessToken, refresh.refreshToken)
                                 }.onFailure {

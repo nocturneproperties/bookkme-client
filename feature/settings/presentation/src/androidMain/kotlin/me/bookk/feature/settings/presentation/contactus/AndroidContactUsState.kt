@@ -17,14 +17,18 @@ import me.bookk.designsystem.uistate.TextFieldState
 
 @Immutable
 internal class AndroidContactUsState(
-    initData: ContactUsState.InitData
+    initData: ContactUsState.InitData,
 ) : ContactUsState {
     override val appBar: AppBarState = AndroidAppBarState(title = initData.title)
-    override val contactField: TextFieldState = AndroidTextFieldState(placeholder = initData.contactHint)
-    override val includeLogsSwitch: BooleanState = AndroidBooleanState(text = initData.usageLogsText, isChecked = false)
+    override val contactField: TextFieldState =
+        AndroidTextFieldState(placeholder = initData.contactHint)
+    override val includeLogsSwitch: BooleanState =
+        AndroidBooleanState(text = initData.usageLogsText, isChecked = false)
     override val logsExplanationText: StringDesc = initData.includeLogsExplanation
-    override val submitButton: ButtonState = AndroidButtonState(text = initData.submitButtonText, isEnabled = false)
+    override val submitButton: ButtonState =
+        AndroidButtonState(text = initData.submitButtonText, isEnabled = false)
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()
-    override val navigation: NavigationState<ContactUsNavigationDestination> = AndroidNavigationState()
+    override val navigation: NavigationState<ContactUsNavigationDestination> =
+        AndroidNavigationState()
 }

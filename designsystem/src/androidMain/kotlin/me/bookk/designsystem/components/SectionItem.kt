@@ -1,6 +1,7 @@
 package me.bookk.designsystem.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +25,8 @@ fun SectionItem(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    color: Color = LocalColors.current.primaryText
+    color: Color = LocalColors.current.primaryText,
+    trailingText: String? = null,
 ) {
     Row(
         modifier = modifier
@@ -33,19 +35,27 @@ fun SectionItem(
             .clip(MaterialTheme.shapes.large)
             .clickable { onClick() }
             .padding(horizontal = 24.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             modifier = Modifier.weight(1f),
             text = text,
             style = MaterialTheme.typography.titleMedium,
-            color = color
+            color = color,
         )
+        trailingText?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodyMedium,
+                color = LocalColors.current.actionText,
+            )
+        }
         Icon(
             modifier = Modifier.size(16.dp),
             imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
             tint = color,
-            contentDescription = null
+            contentDescription = null,
         )
     }
 }

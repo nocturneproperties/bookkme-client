@@ -24,12 +24,12 @@ data class Money(
 
     constructor(
         value: Double,
-        currency: SupportedCurrency
+        currency: SupportedCurrency,
     ) : this(value.asPreciseLong(), currency)
 
     constructor(
         value: Float,
-        currency: SupportedCurrency
+        currency: SupportedCurrency,
     ) : this(value.asPreciseLong(), currency)
 
     operator fun plus(other: Money): Money {
@@ -82,13 +82,16 @@ data class Money(
         return (value / 100.0).toString()
     }
 
-    enum class SupportedCurrency(val code: String) {
+    enum class SupportedCurrency(
+        val code: String,
+    ) {
         UAH("UAH"),
         USD("USD"),
         EUR("EUR"),
         PLN("PLN"),
         CZK("CZK"),
-        GBP("GBP");
+        GBP("GBP"),
+        ;
 
         companion object {
             fun fromCode(code: String): SupportedCurrency {

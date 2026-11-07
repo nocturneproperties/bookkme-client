@@ -27,7 +27,7 @@ internal fun EditProfileScreen(state: EditProfileState) {
         topBar = {
             AppTopBar(
                 state = state.appBar,
-                onNavigationIconClick = LocalNavigation.current.navigateBack
+                onNavigationIconClick = LocalNavigation.current.navigateBack,
             )
         },
         content = {
@@ -36,19 +36,19 @@ internal fun EditProfileScreen(state: EditProfileState) {
                     .padding(it)
                     .padding(16.dp)
                     .padding(top = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 TextField(
                     state = state.name,
-                    onValueChange = LocalEditProfileEventListener.current.onNameChanged
+                    onValueChange = LocalEditProfileEventListener.current.onNameChanged,
                 )
                 TextField(
                     state = state.lastName,
-                    onValueChange = LocalEditProfileEventListener.current.onLastNameChanged
+                    onValueChange = LocalEditProfileEventListener.current.onLastNameChanged,
                 )
                 TextField(
                     state = state.email,
-                    onValueChange = LocalEditProfileEventListener.current.onEmailChanged
+                    onValueChange = LocalEditProfileEventListener.current.onEmailChanged,
                 )
             }
         },
@@ -58,9 +58,9 @@ internal fun EditProfileScreen(state: EditProfileState) {
                     .fillMaxWidth()
                     .padding(16.dp),
                 state = state.confirmButton,
-                onClick = LocalEditProfileEventListener.current.onSaveClick
+                onClick = LocalEditProfileEventListener.current.onSaveClick,
             )
-        }
+        },
     )
 }
 
@@ -78,7 +78,7 @@ private fun HandleNavigation(navigation: NavigationState<EditProfileNavigationDe
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         EditProfileScreen(
-            state = AndroidEditProfileState(EditProfileViewModel.createInitData())
+            state = AndroidEditProfileState(EditProfileViewModel.createInitData()),
         )
     }
 }
@@ -88,7 +88,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         EditProfileScreen(
-            state = AndroidEditProfileState(EditProfileViewModel.createInitData())
+            state = AndroidEditProfileState(EditProfileViewModel.createInitData()),
         )
     }
 }

@@ -10,8 +10,12 @@ Name, last name, phone, email and description are trimmed first (`Client.trimmed
 ```mermaid
 flowchart TD
     Start([invoke client]) --> Trim[client = client.trimmed<br/>name, lastName, phone, email, description]
-    Trim --> Net[ClientsDataSource.updateClient<br/>PATCH /api/business/businessId/clients/id]
+    Trim --> Patch[Client.toUpdateRemote<br/>integrated: id and description only<br/>detached: personal fields and description]
+    Patch --> Net[ClientsDataSource.updateClient<br/>PATCH /api/business/businessId/clients/id]
     Net -- 2xx updated --> Save[(saveClientsInDb listOf updated)]
     Save --> R([return updated Client])
     Net -- error --> EX([rethrow])
 ```
+
+Integrated clients never send name, last name, phone or email in the PATCH body, even if those values
+are present in the domain snapshot. Those fields are owned by the linked user profile.

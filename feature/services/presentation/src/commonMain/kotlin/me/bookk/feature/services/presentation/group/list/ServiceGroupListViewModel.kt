@@ -3,6 +3,7 @@ package me.bookk.feature.services.presentation.group.list
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -12,7 +13,6 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.deleteConfirmation
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -34,7 +34,7 @@ class ServiceGroupListViewModel(
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
     private val getServicesPermissions: GetServicesPermissions,
     stateFactory: ServicesStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: ServiceGroupListState = stateFactory.createServiceGroupListState().setup()
@@ -49,7 +49,8 @@ class ServiceGroupListViewModel(
     }
 
     private fun observeGroups() {
-        getServiceGroups.flow()
+        getServiceGroups
+            .flow()
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderGroups(it) }
             .onError { uiState.notifications.add(it.notification()) }
@@ -63,7 +64,8 @@ class ServiceGroupListViewModel(
         groups = serviceGroups.map { group ->
             group.ui(
                 onItemClick = weakVMClosure { it.onGroupClicked(group) },
-                onDeleteClick = if (canDelete) weakVMClosure { it.onDeleteClicked(group) } else null
+                onDeleteClick =
+                if (canDelete) weakVMClosure { it.onDeleteClicked(group) } else null,
             )
         }
         uiState.groups.replace(groups)
@@ -89,7 +91,7 @@ class ServiceGroupListViewModel(
             launchIn = DispatcherProvider.io,
             call = { getServicesPermissions(businessId) },
             onComplete = { renderPermissions(it) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -99,8 +101,8 @@ class ServiceGroupListViewModel(
             listOf(
                 uiState.appBar.action(
                     contentDescription = DesignSystem.strings.action_add.desc(),
-                    onClick = weakVMClosure { it.onAddGroupClicked() }
-                )
+                    onClick = weakVMClosure { it.onAddGroupClicked() },
+                ),
             )
         } else {
             emptyList()
@@ -114,7 +116,7 @@ class ServiceGroupListViewModel(
             listState = uiState.groups,
             notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = { getServiceGroups.refresh(businessId) }
+            call = { getServiceGroups.refresh(businessId) },
         )
     }
 
@@ -126,8 +128,8 @@ class ServiceGroupListViewModel(
                 placeholder = ServicesRes.strings.services_create_name.desc(),
                 cancelText = DesignSystem.strings.action_cancel.desc(),
                 confirmText = DesignSystem.strings.action_create.desc(),
-                onConfirm = weakVMClosure { vm, name -> vm.createGroup(name) }
-            )
+                onConfirm = weakVMClosure { vm, name -> vm.createGroup(name) },
+            ),
         )
     }
 
@@ -142,38 +144,47 @@ class ServiceGroupListViewModel(
                         id = Uuid.random(),
                         businessId = businessId,
                         name = name,
-                        createdAt = Clock.System.now()
-                    )
+                        createdAt = Clock.System.now(),
+                    ),
                 )
             },
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
-                    is CreateServiceGroup.Error.InvalidName -> uiState.notifications.add(
-                        PresentationNotification.Message.simple(ServicesRes.strings.services_group_add_name_invalid.desc())
-                    )
+                    is CreateServiceGroup.Error.InvalidName -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_group_add_name_invalid.desc(),
+                            ),
+                        )
+                    }
 
-                    is CreateServiceGroup.Error.NameExists -> uiState.notifications.add(
-                        PresentationNotification.Message.simple(ServicesRes.strings.services_group_add_name_exists.desc())
-                    )
+                    is CreateServiceGroup.Error.NameExists -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_group_add_name_exists.desc(),
+                            ),
+                        )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
-            onTerminate = { uiState.refreshState.isRefreshing = false }
+            onTerminate = { uiState.refreshState.isRefreshing = false },
         )
     }
 
-    private fun onGroupClicked(group: ServiceGroup) {
-    }
+    private fun onGroupClicked(group: ServiceGroup) {}
 
     private fun onDeleteClicked(group: ServiceGroup) {
         uiState.notifications.add(
             PresentationNotification.Message.deleteConfirmation(
                 onConfirmed = {
                     deleteGroup(group)
-                }
-            )
+                },
+            ),
         )
     }
 
@@ -184,7 +195,7 @@ class ServiceGroupListViewModel(
             onStart = { uiState.refreshState.isRefreshing = true },
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = { uiState.refreshState.isRefreshing = false }
+            onTerminate = { uiState.refreshState.isRefreshing = false },
         )
     }
 
@@ -194,8 +205,7 @@ class ServiceGroupListViewModel(
             uiState.groups.replace(groups)
             return
         }
-        val filtered = groups
-            .filter { it.name.contains(query, ignoreCase = true) }
+        val filtered = groups.filter { it.name.contains(query, ignoreCase = true) }
         uiState.groups.replace(filtered)
     }
 
@@ -210,7 +220,7 @@ class ServiceGroupListViewModel(
 
         groups.emptyState = EmptyState(
             image = DesignSystem.images.empty,
-            label = ServicesRes.strings.service_group_empty.desc()
+            label = ServicesRes.strings.service_group_empty.desc(),
         )
     }
 

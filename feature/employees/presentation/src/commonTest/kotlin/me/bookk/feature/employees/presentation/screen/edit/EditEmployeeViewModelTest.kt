@@ -15,6 +15,8 @@ import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalTime
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.presentation.VmArgs
@@ -31,7 +33,11 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.tap
+import me.bookk.designsystem.uistate.schedule.DaySettingsState
+import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
+import me.bookk.feature.business.domain.api.entity.WorkHour
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.GetAssignableServices
 import me.bookk.feature.employees.domain.api.GetEmployee
@@ -71,7 +77,7 @@ class EditEmployeeViewModelTest {
         val employee: Employee = stubEmployee(),
         isOwner: Boolean = false,
         canEdit: Boolean = true,
-        isCurrentUserOwner: Boolean = true
+        isCurrentUserOwner: Boolean = true,
     ) {
         val services = MutableStateFlow<List<Service>>(emptyList())
         val getEmployee = mock<GetEmployee> {
@@ -108,15 +114,19 @@ class EditEmployeeViewModelTest {
             device = device,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeEmployeesStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
 
         fun stubUpdateEcho() {
-            everySuspend { updateEmployee(capture(updates)) } calls { (updated: Employee) -> updated }
+            everySuspend { updateEmployee(capture(updates)) } calls
+                { (updated: Employee) ->
+                    updated
+                }
         }
 
         fun stubSuspensionResult(suspendedAt: Instant?) {
-            everySuspend { setEmployeeSuspension(any(), any(), any()) } returns employee.copy(suspendedAt = suspendedAt)
+            everySuspend { setEmployeeSuspension(any(), any(), any()) } returns
+                employee.copy(suspendedAt = suspendedAt)
         }
     }
 
@@ -154,7 +164,7 @@ class EditEmployeeViewModelTest {
         then()
         assertEquals(
             listOf(fixture.employee.phone!!.desc(), fixture.employee.email!!.desc()),
-            sut.uiState.contacts.items.map { it.value }
+            sut.uiState.contacts.items.map { it.value },
         )
     }
 
@@ -193,7 +203,10 @@ class EditEmployeeViewModelTest {
         val sut = fixture.sut()
 
         then()
-        assertEquals(EmployeesRes.strings.employees_edit_services_empty.desc(), sut.uiState.services.placeholder)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_services_empty.desc(),
+            sut.uiState.services.placeholder,
+        )
     }
 
     @Test
@@ -226,7 +239,10 @@ class EditEmployeeViewModelTest {
     fun `renders a permission row per business resource with current grants`() = runUnitTest {
         given()
         val fixture = Fixture(
-            stubEmployee(permissions = stubPermissions(clients = ResourcePermission(view = true, update = true)))
+            stubEmployee(
+                permissions =
+                stubPermissions(clients = ResourcePermission(view = true, update = true)),
+            ),
         )
 
         whenn()
@@ -235,7 +251,14 @@ class EditEmployeeViewModelTest {
         then()
         assertEquals(5, sut.uiState.permissions.items.size)
         val clients = sut.permissionRow(2)
-        assertEquals(listOf(true, true, false), listOf(clients.canView.isChecked, clients.canUpdate.isChecked, clients.canDelete.isChecked))
+        assertEquals(
+            listOf(true, true, false),
+            listOf(
+                clients.canView.isChecked,
+                clients.canUpdate.isChecked,
+                clients.canDelete.isChecked,
+            ),
+        )
     }
 
     @Test
@@ -261,7 +284,10 @@ class EditEmployeeViewModelTest {
 
         then()
         assertFalse(sut.uiState.isPermissionsVisible)
-        assertEquals(EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(), sut.uiState.permissionsHint)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(),
+            sut.uiState.permissionsHint,
+        )
     }
 
     @Test
@@ -274,7 +300,10 @@ class EditEmployeeViewModelTest {
 
         then()
         assertFalse(sut.uiState.isPermissionsVisible)
-        assertEquals(EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(), sut.uiState.permissionsHint)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(),
+            sut.uiState.permissionsHint,
+        )
     }
 
     @Test
@@ -287,7 +316,10 @@ class EditEmployeeViewModelTest {
 
         then()
         assertFalse(sut.uiState.isPermissionsVisible)
-        assertEquals(EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(), sut.uiState.permissionsHint)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(),
+            sut.uiState.permissionsHint,
+        )
     }
 
     @Test
@@ -343,22 +375,27 @@ class EditEmployeeViewModelTest {
     }
 
     @Test
-    fun `makes services and schedule read-only for a user who cannot edit employees`() = runUnitTest {
-        given()
-        val fixture = Fixture(canEdit = false)
+    fun `makes services and schedule read-only for a user who cannot edit employees`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture(canEdit = false)
 
-        whenn()
-        val sut = fixture.sut()
+            whenn()
+            val sut = fixture.sut()
 
-        then()
-        val monday = sut.uiState.schedule.monday
-        assertFalse(sut.uiState.services.isEditable)
-        assertFalse(sut.uiState.schedule.isEditable)
-        assertFalse(sut.uiState.schedule.dayOffs.isEditable)
-        assertFalse(monday.isActive.isEnabled)
-        assertTrue(monday.intervals.isNotEmpty())
-        assertTrue(monday.intervals.none { it.timeFromPicker.textField.enabled || it.timeToPicker.textField.enabled })
-    }
+            then()
+            val monday = sut.uiState.schedule.monday
+            assertFalse(sut.uiState.services.isEditable)
+            assertFalse(sut.uiState.schedule.isEditable)
+            assertFalse(sut.uiState.schedule.dayOffs.isEditable)
+            assertFalse(monday.isActive.isEnabled)
+            assertTrue(monday.intervals.isNotEmpty())
+            assertTrue(
+                monday.intervals.none {
+                    it.timeFromPicker.textField.enabled || it.timeToPicker.textField.enabled
+                },
+            )
+        }
 
     @Test
     fun `hides permissions and explains why for the business owner`() = runUnitTest {
@@ -370,7 +407,10 @@ class EditEmployeeViewModelTest {
 
         then()
         assertFalse(sut.uiState.isPermissionsVisible)
-        assertEquals(EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(), sut.uiState.permissionsHint)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_permissions_owner_hint.desc(),
+            sut.uiState.permissionsHint,
+        )
     }
 
     @Test
@@ -410,7 +450,10 @@ class EditEmployeeViewModelTest {
     @Test
     fun `turns off edit and delete when view is turned off`() = runUnitTest {
         given()
-        val sut = employeeWithEmployeesPermission(ResourcePermission(view = true, update = true, delete = true)).sut()
+        val sut = employeeWithEmployeesPermission(
+            ResourcePermission(view = true, update = true, delete = true),
+        )
+            .sut()
 
         whenn()
         sut.permissionRow(1).canView.onCheckedChange?.invoke(false)
@@ -446,7 +489,10 @@ class EditEmployeeViewModelTest {
     @Test
     fun `turns off delete when edit is turned off`() = runUnitTest {
         given()
-        val sut = employeeWithEmployeesPermission(ResourcePermission(view = true, update = true, delete = true)).sut()
+        val sut = employeeWithEmployeesPermission(
+            ResourcePermission(view = true, update = true, delete = true),
+        )
+            .sut()
 
         whenn()
         sut.permissionRow(1).canUpdate.onCheckedChange?.invoke(false)
@@ -470,7 +516,10 @@ class EditEmployeeViewModelTest {
     @Test
     fun `keeps view and edit on when delete is turned off`() = runUnitTest {
         given()
-        val sut = employeeWithEmployeesPermission(ResourcePermission(view = true, update = true, delete = true)).sut()
+        val sut = employeeWithEmployeesPermission(
+            ResourcePermission(view = true, update = true, delete = true),
+        )
+            .sut()
 
         whenn()
         sut.permissionRow(1).canDelete.onCheckedChange?.invoke(false)
@@ -546,6 +595,73 @@ class EditEmployeeViewModelTest {
     }
 
     @Test
+    fun `adds a nine to five interval when a day without hours is enabled`() = runUnitTest {
+        given()
+        val employee = stubEmployee(
+            schedule = scheduleWithMonday(DayOfWeekSchedule.disabled(DayOfWeek.MONDAY)),
+        )
+        val sut = Fixture(employee = employee).sut()
+        val monday = sut.uiState.schedule.monday
+
+        whenn()
+        monday.isActive.onCheckedChange?.invoke(true)
+
+        then()
+        assertEquals(listOf(LocalTime(9, 0) to LocalTime(17, 0)), monday.pickedIntervals())
+    }
+
+    @Test
+    fun `keeps existing hours when a day with hours is enabled`() = runUnitTest {
+        given()
+        val hours = WorkHour(LocalTime(10, 0), LocalTime(14, 0))
+        val employee = stubEmployee(
+            schedule = scheduleWithMonday(
+                DayOfWeekSchedule(DayOfWeek.MONDAY, listOf(hours), isActive = false),
+            ),
+        )
+        val sut = Fixture(employee = employee).sut()
+        val monday = sut.uiState.schedule.monday
+
+        whenn()
+        monday.isActive.onCheckedChange?.invoke(true)
+
+        then()
+        assertEquals(listOf(hours.from to hours.to), monday.pickedIntervals())
+    }
+
+    @Test
+    fun `saves nine to five for a day enabled without hours`() = runUnitTest {
+        given()
+        val fixture = Fixture(
+            employee = stubEmployee(
+                schedule = scheduleWithMonday(DayOfWeekSchedule.disabled(DayOfWeek.MONDAY)),
+            ),
+        )
+        fixture.stubUpdateEcho()
+        val sut = fixture.sut()
+        sut.uiState.schedule.monday.isActive.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        val saved = fixture.updates.get().schedule.monday
+        assertTrue(saved.isActive)
+        assertEquals(listOf(WorkHour(LocalTime(9, 0), LocalTime(17, 0))), saved.workingTime)
+    }
+
+    private fun scheduleWithMonday(monday: DayOfWeekSchedule): WorkingSchedule {
+        val schedule = WorkingSchedule()
+        return schedule.copy(days = schedule.days + (DayOfWeek.MONDAY to monday))
+    }
+
+    private fun DaySettingsState.pickedIntervals(): List<Pair<LocalTime?, LocalTime?>> {
+        return intervals.map {
+            it.timeFromPicker.timePicker.pickedTime to it.timeToPicker.timePicker.pickedTime
+        }
+    }
+
+    @Test
     fun `saves edited services, schedule and permissions`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -579,7 +695,9 @@ class EditEmployeeViewModelTest {
         sut.uiState.save.onClick?.invoke()
 
         then()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertFalse(sut.uiState.save.isEnabled)
         assertFalse(sut.uiState.save.isLoading)
     }
@@ -596,7 +714,12 @@ class EditEmployeeViewModelTest {
         sut.uiState.save.onClick?.invoke()
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -611,14 +734,19 @@ class EditEmployeeViewModelTest {
         sut.uiState.save.onClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `shows message when a permission cannot be granted`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateEmployee(any()) } throws UpdateEmployee.Error.InsufficientGrant(TestException())
+        everySuspend { fixture.updateEmployee(any()) } throws
+            UpdateEmployee.Error.InsufficientGrant(TestException())
         val sut = fixture.sut()
         sut.permissionRow(0).canDelete.onCheckedChange?.invoke(true)
 
@@ -635,7 +763,8 @@ class EditEmployeeViewModelTest {
     fun `shows message when an active day has no work hours`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateEmployee(any()) } throws UpdateEmployee.Error.ActiveDayWithoutWorkHours(TestException())
+        everySuspend { fixture.updateEmployee(any()) } throws
+            UpdateEmployee.Error.ActiveDayWithoutWorkHours(TestException())
         val sut = fixture.sut()
         sut.permissionRow(0).canView.onCheckedChange?.invoke(true)
 
@@ -666,7 +795,8 @@ class EditEmployeeViewModelTest {
     fun `shows mapped error when the employee cannot be loaded`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getEmployee(fixture.employee.id) } throws GetEmployee.Error.NotFound()
+        everySuspend { fixture.getEmployee(fixture.employee.id) } throws
+            GetEmployee.Error.NotFound()
 
         whenn()
         fixture.sut()
@@ -684,7 +814,10 @@ class EditEmployeeViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<EditEmployeeDestinations>(EditEmployeeDestinations.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<EditEmployeeDestinations>(EditEmployeeDestinations.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -697,7 +830,10 @@ class EditEmployeeViewModelTest {
 
         then()
         assertTrue(sut.uiState.suspension.isVisible)
-        assertEquals(EmployeesRes.strings.employees_edit_suspend.desc(), sut.uiState.suspension.text)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_suspend.desc(),
+            sut.uiState.suspension.text,
+        )
     }
 
     @Test
@@ -710,7 +846,10 @@ class EditEmployeeViewModelTest {
 
         then()
         assertTrue(sut.uiState.suspension.isVisible)
-        assertEquals(EmployeesRes.strings.employees_edit_reinstate.desc(), sut.uiState.suspension.text)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_reinstate.desc(),
+            sut.uiState.suspension.text,
+        )
     }
 
     @Test
@@ -776,7 +915,10 @@ class EditEmployeeViewModelTest {
 
         then()
         val dialog = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(EmployeesRes.strings.employees_edit_reinstate_dialog_title.desc(), dialog.title)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_reinstate_dialog_title.desc(),
+            dialog.title,
+        )
     }
 
     @Test
@@ -803,7 +945,9 @@ class EditEmployeeViewModelTest {
         sut.confirmSuspensionDialog(ActionType.NEGATIVE)
 
         then()
-        verifySuspend { fixture.setEmployeeSuspension(fixture.employee.businessId, fixture.employee.id, true) }
+        verifySuspend {
+            fixture.setEmployeeSuspension(fixture.employee.businessId, fixture.employee.id, true)
+        }
     }
 
     @Test
@@ -817,7 +961,12 @@ class EditEmployeeViewModelTest {
         sut.confirmSuspensionDialog(ActionType.NEGATIVE)
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -831,7 +980,11 @@ class EditEmployeeViewModelTest {
         sut.confirmSuspensionDialog(ActionType.NEGATIVE)
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -845,7 +998,9 @@ class EditEmployeeViewModelTest {
         sut.confirmSuspensionDialog(ActionType.POSITIVE)
 
         then()
-        verifySuspend { fixture.setEmployeeSuspension(fixture.employee.businessId, fixture.employee.id, false) }
+        verifySuspend {
+            fixture.setEmployeeSuspension(fixture.employee.businessId, fixture.employee.id, false)
+        }
     }
 
     @Test
@@ -859,8 +1014,13 @@ class EditEmployeeViewModelTest {
         sut.confirmSuspensionDialog(ActionType.NEGATIVE)
 
         then()
-        assertEquals(EmployeesRes.strings.employees_edit_reinstate.desc(), sut.uiState.suspension.text)
-        val message = sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
+        assertEquals(
+            EmployeesRes.strings.employees_edit_reinstate.desc(),
+            sut.uiState.suspension.text,
+        )
+        val message = sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertEquals(EmployeesRes.strings.employees_edit_suspended.desc(), message.text)
         assertFalse(sut.uiState.suspension.isLoading)
     }
@@ -876,8 +1036,13 @@ class EditEmployeeViewModelTest {
         sut.confirmSuspensionDialog(ActionType.POSITIVE)
 
         then()
-        assertEquals(EmployeesRes.strings.employees_edit_suspend.desc(), sut.uiState.suspension.text)
-        val message = sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
+        assertEquals(
+            EmployeesRes.strings.employees_edit_suspend.desc(),
+            sut.uiState.suspension.text,
+        )
+        val message = sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertEquals(EmployeesRes.strings.employees_edit_reinstated.desc(), message.text)
     }
 
@@ -910,9 +1075,15 @@ class EditEmployeeViewModelTest {
 
         then()
         val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
-        assertEquals(EmployeesRes.strings.employees_edit_error_owner_suspension.desc(), message.message)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_error_owner_suspension.desc(),
+            message.message,
+        )
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
-        assertEquals(EmployeesRes.strings.employees_edit_suspend.desc(), sut.uiState.suspension.text)
+        assertEquals(
+            EmployeesRes.strings.employees_edit_suspend.desc(),
+            sut.uiState.suspension.text,
+        )
     }
 
     @Test

@@ -51,7 +51,9 @@ class EnableAppointmentsPluginImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } returns Unit
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        everySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true)
+        } returns Unit
 
         whenn()
         fixture.sut(businessId)
@@ -66,13 +68,17 @@ class EnableAppointmentsPluginImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } returns Unit
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        everySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true)
+        } returns Unit
 
         whenn()
         fixture.sut(businessId)
 
         then()
-        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
+        verifySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true)
+        }
     }
 
     @Test
@@ -82,7 +88,9 @@ class EnableAppointmentsPluginImplTest {
         val businessId = Uuid.random()
         everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } throws
             DomainError.BusinessError(AppointmentsErrorCodes.PLUGIN_ALREADY_ENABLED, "msg")
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        everySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true)
+        } returns Unit
 
         whenn()
         then()
@@ -98,13 +106,17 @@ class EnableAppointmentsPluginImplTest {
         val businessId = Uuid.random()
         everySuspend { fixture.pluginDataSource.enableAppointmentsPlugin(businessId) } throws
             DomainError.BusinessError(AppointmentsErrorCodes.PLUGIN_ALREADY_ENABLED, "msg")
-        everySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) } returns Unit
+        everySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true)
+        } returns Unit
 
         whenn()
         runCatching { fixture.sut(businessId) }
 
         then()
-        verifySuspend { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
+        verifySuspend {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true)
+        }
     }
 
     @Test
@@ -120,7 +132,9 @@ class EnableAppointmentsPluginImplTest {
         assertFailsWith<DomainError.BusinessError> {
             fixture.sut(businessId)
         }
-        verifySuspend(VerifyMode.not) { fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true) }
+        verifySuspend(VerifyMode.not) {
+            fixture.pluginDataSource.saveAppointmentPluginAvailability(businessId, true)
+        }
     }
 
     private companion object {

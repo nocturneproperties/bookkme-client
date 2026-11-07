@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "user_profile"
+    tableName = "user_profile",
 )
 class UserProfileEntity(
     @PrimaryKey
@@ -13,5 +13,5 @@ class UserProfileEntity(
     val firstName: String,
     val lastName: String,
     val email: String,
-    val phone: String? = null
+    val phone: String? = null,
 )

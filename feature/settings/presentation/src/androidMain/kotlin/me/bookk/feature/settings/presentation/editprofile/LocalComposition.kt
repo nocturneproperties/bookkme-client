@@ -6,7 +6,7 @@ internal class EditProfileEventListener(
     val onNameChanged: (String) -> Unit,
     val onLastNameChanged: (String) -> Unit,
     val onEmailChanged: (String) -> Unit,
-    val onSaveClick: () -> Unit
+    val onSaveClick: () -> Unit,
 )
 
 internal val LocalEditProfileEventListener = compositionLocalOf {
@@ -14,6 +14,6 @@ internal val LocalEditProfileEventListener = compositionLocalOf {
         onNameChanged = {},
         onLastNameChanged = {},
         onEmailChanged = {},
-        onSaveClick = {}
+        onSaveClick = {},
     )
 }

@@ -38,6 +38,6 @@ fun CollapsingAppBarScaffold(
         containerColor,
         contentColor,
         contentWindowInsets,
-        content
+        content,
     )
 }

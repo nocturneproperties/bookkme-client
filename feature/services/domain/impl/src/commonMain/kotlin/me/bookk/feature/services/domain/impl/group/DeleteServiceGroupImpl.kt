@@ -5,7 +5,7 @@ import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.domain.datasource.ServiceGroupDataSource
 
 internal class DeleteServiceGroupImpl(
-    private val dataSource: ServiceGroupDataSource
+    private val dataSource: ServiceGroupDataSource,
 ) : DeleteServiceGroup {
     override suspend fun invoke(group: ServiceGroup) {
         dataSource.deleteServiceGroup(group.businessId, group.id)

@@ -100,7 +100,8 @@ class GetOwnAppointmentRequestsImplTest {
         val first = listOf(stubAppointmentRequest(businessId = businessId))
         val second = listOf(stubAppointmentRequest(businessId = businessId))
         emissions.tryEmit(first)
-        every { fixture.dataSource.observeAppointmentRequestsDBChanges(businessId) } returns emissions
+        every { fixture.dataSource.observeAppointmentRequestsDBChanges(businessId) } returns
+            emissions
         val results = mutableListOf<List<AppointmentRequest>>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut.flow(businessId).collect { results.add(it) }
@@ -120,7 +121,8 @@ class GetOwnAppointmentRequestsImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        every { fixture.dataSource.observeAppointmentRequestsDBChanges(businessId) } returns flowOf(emptyList())
+        every { fixture.dataSource.observeAppointmentRequestsDBChanges(businessId) } returns
+            flowOf(emptyList())
 
         whenn()
         fixture.sut.flow(businessId).first()
@@ -147,36 +149,41 @@ class GetOwnAppointmentRequestsImplTest {
 
         then()
         assertEquals(requests, result)
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentRequestsInDB(requests) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveAppointmentRequestsInDB(requests)
+        }
         verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveLastSyncedAt(businessId) }
     }
 
     @Test
-    fun `refresh saves every fetched request but returns only pending ones sorted by date`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        val earlier = stubAppointmentRequest(businessId = businessId)
-            .copy(date = Instant.fromEpochMilliseconds(0))
-        val later = stubAppointmentRequest(businessId = businessId)
-            .copy(date = Instant.fromEpochMilliseconds(1000))
-        val approved = stubAppointmentRequest(businessId = businessId)
-            .copy(status = AppointmentRequestStatus.APPROVED)
-        val remote = listOf(later, approved, earlier)
-        everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } returns remote
-        everySuspend {
-            fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
-        } returns remote.map { it.id }
-        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(remote) } returns Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+    fun `refresh saves every fetched request but returns only pending ones sorted by date`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            val earlier = stubAppointmentRequest(businessId = businessId)
+                .copy(date = Instant.fromEpochMilliseconds(0))
+            val later = stubAppointmentRequest(businessId = businessId)
+                .copy(date = Instant.fromEpochMilliseconds(1000))
+            val approved = stubAppointmentRequest(businessId = businessId)
+                .copy(status = AppointmentRequestStatus.APPROVED)
+            val remote = listOf(later, approved, earlier)
+            everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } returns remote
+            everySuspend {
+                fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
+            } returns remote.map { it.id }
+            everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(remote) } returns Unit
+            everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
-        whenn()
-        val result = fixture.sut.refresh(businessId)
+            whenn()
+            val result = fixture.sut.refresh(businessId)
 
-        then()
-        assertEquals(listOf(earlier, later), result)
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveAppointmentRequestsInDB(remote) }
-    }
+            then()
+            assertEquals(listOf(earlier, later), result)
+            verifySuspend(VerifyMode.exactly(1)) {
+                fixture.dataSource.saveAppointmentRequestsInDB(remote)
+            }
+        }
 
     @Test
     fun `refresh deletes local requests that are no longer present remotely`() = runUnitTest {
@@ -190,7 +197,8 @@ class GetOwnAppointmentRequestsImplTest {
         everySuspend {
             fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
         } returns listOf(stillPresent.id, staleId)
-        everySuspend { fixture.dataSource.deleteAppointmentRequestsInDb(listOf(staleId)) } returns Unit
+        everySuspend { fixture.dataSource.deleteAppointmentRequestsInDb(listOf(staleId)) } returns
+            Unit
         everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(remote) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
@@ -198,7 +206,9 @@ class GetOwnAppointmentRequestsImplTest {
         fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteAppointmentRequestsInDb(listOf(staleId)) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.deleteAppointmentRequestsInDb(listOf(staleId))
+        }
     }
 
     @Test
@@ -207,18 +217,22 @@ class GetOwnAppointmentRequestsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val request = stubAppointmentRequest(businessId = businessId)
-        everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } returns listOf(request)
+        everySuspend { fixture.dataSource.getOwnAppointmentRequests(businessId) } returns
+            listOf(request)
         everySuspend {
             fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
         } returns listOf(request.id)
-        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(listOf(request)) } returns Unit
+        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(listOf(request)) } returns
+            Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
         whenn()
         fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteAppointmentRequestsInDb(any()) }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.dataSource.deleteAppointmentRequestsInDb(any())
+        }
     }
 
     @Test
@@ -234,7 +248,11 @@ class GetOwnAppointmentRequestsImplTest {
 
         then()
         assertEquals(error, thrown)
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getAppointmentRequestIdsInDb(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveAppointmentRequestsInDB(any()) }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.dataSource.getAppointmentRequestIdsInDb(any())
+        }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.dataSource.saveAppointmentRequestsInDB(any())
+        }
     }
 }

@@ -35,6 +35,9 @@ class IOSSettingsState: @MainActor SettingsState {
 @MainActor
 @Observable
 class IOSAccountSection: @MainActor AccountSection {
+	let dataExport: any TextState = IOSTextState(text: RawStringDesc(string: ""))
+	let privacy: any TextState = IOSTextState(text: RawStringDesc(string: ""))
+	var privacyStatus: (any StringDesc)? = nil
 	
 	var title: any StringDesc
 	var deleteAccount: any TextState

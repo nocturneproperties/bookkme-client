@@ -3,7 +3,8 @@ package me.bookk.designsystem.uistate
 enum class ValidationState {
     ERROR,
     WARNING,
-    DEFAULT;
+    DEFAULT,
+    ;
 
     fun isAtLeastWarning() = this != DEFAULT
 }

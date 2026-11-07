@@ -22,7 +22,7 @@ fun <T : PickerPresentation> MultiPicker(
     state: MultiPickerState<T>,
     modifier: Modifier = Modifier,
     pickerContent: @Composable () -> Unit,
-    itemContent: @Composable (T, onItemRemove: () -> Unit) -> Unit
+    itemContent: @Composable (T, onItemRemove: () -> Unit) -> Unit,
 ) {
     Column(modifier.fillMaxWidth()) {
         Header(state.pickerTitle.localized())
@@ -37,7 +37,7 @@ fun <T : PickerPresentation> MultiPicker(
                             .padding(vertical = 16.dp)
                             .padding(top = 4.dp),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyMedium.secondary()
+                        style = MaterialTheme.typography.bodyMedium.secondary(),
                     )
                 }
                 state.selectedItems.forEach {
@@ -49,7 +49,7 @@ fun <T : PickerPresentation> MultiPicker(
                     HorizontalDivider(color = LocalColors.current.divider)
                     StateTextButton(
                         state.addItemButton,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         state.isPickerVisible = true
                     }

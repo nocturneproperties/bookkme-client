@@ -31,7 +31,7 @@ fun ObserveNotifications(state: PresentationNotificationState) {
                 val fieldState = remember(notification) {
                     AndroidTextFieldState(
                         text = notification.initialText,
-                        placeholder = notification.placeholder ?: "".desc()
+                        placeholder = notification.placeholder ?: "".desc(),
                     ).apply {
                         onTextChanged = { text = it }
                     }
@@ -40,13 +40,13 @@ fun ObserveNotifications(state: PresentationNotificationState) {
                     listOf(
                         ButtonDescriptor(
                             text = notification.cancelText,
-                            onClick = notification.onCancel
+                            onClick = notification.onCancel,
                         ),
                         ButtonDescriptor(
                             text = notification.confirmText,
                             actionType = notification.confirmActionType,
-                            onClick = { notification.onConfirm(fieldState.text) }
-                        )
+                            onClick = { notification.onConfirm(fieldState.text) },
+                        ),
                     )
                 }
                 AppDialog(
@@ -68,12 +68,13 @@ fun ObserveNotifications(state: PresentationNotificationState) {
                         actionLabel = label,
                         state = notification.state,
                         duration = notification.duration,
-                        onActionClick = notification.onActionClick
+                        onActionClick = notification.onActionClick,
                     )
                     state.removeFirst()
                 }
                 return
             }
+
             PresentationNotification.Unauthorized -> {
                 LocalUnauthorizedHandler.current.onUnauthorized()
                 state.removeFirst()

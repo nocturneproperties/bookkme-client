@@ -59,7 +59,7 @@ class AppointmentHistoryViewModelTest {
             getAppointmentHistory = getAppointmentHistory,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeAppointmentsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -68,7 +68,8 @@ class AppointmentHistoryViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = Appointment.stub()
-        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns listOf(appointment)
+        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns
+            listOf(appointment)
 
         whenn()
         val sut = fixture.sut()
@@ -161,10 +162,11 @@ class AppointmentHistoryViewModelTest {
             priceAdjustment = PriceAdjustment(
                 additionalServices = listOf(ServiceSnapshot.stub().copy(name = "Coloring")),
                 price = Money(250.0, Money.SupportedCurrency.USD),
-                reason = null
-            )
+                reason = null,
+            ),
         )
-        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns listOf(appointment)
+        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns
+            listOf(appointment)
 
         whenn()
         val sut = fixture.sut()
@@ -180,14 +182,20 @@ class AppointmentHistoryViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = Appointment.stub()
-        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns listOf(appointment)
+        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns
+            listOf(appointment)
         val sut = fixture.sut()
 
         whenn()
         sut.uiState.appointments.items.single().onItemClick()
 
         then()
-        assertEquals(listOf<AppointmentHistoryDestinations>(AppointmentHistoryDestinations.AppointmentDetails(appointment.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<AppointmentHistoryDestinations>(
+                AppointmentHistoryDestinations.AppointmentDetails(appointment.id),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -213,6 +221,9 @@ class AppointmentHistoryViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<AppointmentHistoryDestinations>(AppointmentHistoryDestinations.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<AppointmentHistoryDestinations>(AppointmentHistoryDestinations.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

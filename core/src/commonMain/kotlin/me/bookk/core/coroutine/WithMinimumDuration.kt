@@ -7,7 +7,7 @@ import kotlin.time.measureTimedValue
 
 suspend fun <T> withMinimumDuration(
     minimumMillis: Duration = 0.milliseconds,
-    block: suspend () -> T
+    block: suspend () -> T,
 ): T {
     val (result, duration) = measureTimedValue { block() }
     val remaining = minimumMillis.inWholeMilliseconds - duration.inWholeMilliseconds

@@ -33,9 +33,7 @@ import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.ButtonState
 
 @Composable
-fun PickOptionScreen(
-    state: PickOptionState,
-) {
+fun PickOptionScreen(state: PickOptionState) {
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
@@ -45,14 +43,14 @@ fun PickOptionScreen(
                     state = state.appBar,
                     onNavigationIconClick = {
                         backPress?.onBackPressedDispatcher?.onBackPressed()
-                    }
+                    },
                 )
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .padding(top = 16.dp),
-                    state = state.queryField
+                    state = state.queryField,
                 )
             }
         },
@@ -64,7 +62,7 @@ fun PickOptionScreen(
                     .topShadow(24.dp, LocalColors.current.background)
                     .bottomShadow(24.dp, LocalColors.current.background),
                 contentPadding = PaddingValues(top = 24.dp, bottom = 24.dp),
-                state = state.filteredOptions
+                state = state.filteredOptions,
             ) {
                 Column(Modifier.animateItem()) {
                     PickOptionItemView(item = it)
@@ -84,10 +82,11 @@ fun PickOptionScreen(
                         .fillMaxWidth()
                         .navigationBarsPadding()
                         .padding(16.dp),
-                    state = state.selectButton
+                    state = state.selectButton,
                 )
             }
-        })
+        },
+    )
 }
 
 @Composable
@@ -95,7 +94,7 @@ private fun SelectAllButton(state: ButtonState) {
     ExtendedFloatingActionButton(
         onClick = { state.onClick?.invoke() },
         containerColor = LocalColors.current.elevated,
-        contentColor = LocalColors.current.actionText
+        contentColor = LocalColors.current.actionText,
     ) {
         Text(state.text.localized(), style = MaterialTheme.typography.titleSmall)
     }
@@ -107,6 +106,6 @@ private fun PickOptionItemView(modifier: Modifier = Modifier, item: PickOptionIt
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        state = item.checkBox
+        state = item.checkBox,
     )
 }

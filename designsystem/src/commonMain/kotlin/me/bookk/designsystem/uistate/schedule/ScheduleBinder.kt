@@ -5,18 +5,18 @@ import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.isoDayNumber
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.date.atNextWeekDay
 import me.bookk.core.presentation.date.startOfWeek
 import me.bookk.core.presentation.date.today
 import me.bookk.core.presentation.memory.weakSelfClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 
 class ScheduleBinder(
     private val state: ScheduleState,
     dateLocalizer: DateLocalizer,
-    private val onChanged: () -> Unit
+    private val onChanged: () -> Unit,
 ) {
     private val shortWeekdayFormat = dateLocalizer.forStyle(DateStyle.NARROW_WEEKDAY)
     private val fullWeekdayFormat = dateLocalizer.forStyle(DateStyle.FULL_WEEKDAY)
@@ -34,15 +34,20 @@ class ScheduleBinder(
 
     fun render(schedule: WeekSchedule) {
         state.dayOffs.replaceSelected(
-            schedule.dayOffs.map { DateRangePickerPresentation(it.start, it.end, fullDateFormat) }
+            schedule.dayOffs.map { DateRangePickerPresentation(it.start, it.end, fullDateFormat) },
         )
         state.dayOffs.onItemsRemoveRequested = weakSelfClosure { binder, items ->
-            binder.state.dayOffs.replaceSelected(binder.state.dayOffs.selectedItems.minus(items.toSet()))
+            binder.state.dayOffs.replaceSelected(
+                binder.state.dayOffs.selectedItems.minus(items.toSet()),
+            )
             binder.onChanged()
         }
         val byDay = schedule.days.associateBy { it.dayOfWeek }
         DayOfWeek.entries.forEach { dayOfWeek ->
-            renderDay(state.dayOf(dayOfWeek), byDay[dayOfWeek] ?: WeekdaySchedule(dayOfWeek, false, emptyList()))
+            renderDay(
+                state.dayOf(dayOfWeek),
+                byDay[dayOfWeek] ?: WeekdaySchedule(dayOfWeek, false, emptyList()),
+            )
         }
         state.list.replace(weekOrderedDays())
         applyEditable()
@@ -66,7 +71,7 @@ class ScheduleBinder(
     fun snapshot(): WeekSchedule {
         return WeekSchedule(
             days = DayOfWeek.entries.map { state.dayOf(it).toWeekdaySchedule(it) },
-            dayOffs = state.dayOffs.selectedItems.map { DayOffPeriod(it.dateFrom, it.dateTo) }
+            dayOffs = state.dayOffs.selectedItems.map { DayOffPeriod(it.dateFrom, it.dateTo) },
         )
     }
 
@@ -84,7 +89,7 @@ class ScheduleBinder(
                 val from = interval.timeFromPicker.timePicker.pickedTime
                 val to = interval.timeToPicker.timePicker.pickedTime
                 if (from != null && to != null) WorkingHours(from, to) else null
-            }
+            },
         )
     }
 
@@ -93,7 +98,18 @@ class ScheduleBinder(
         day.id = dayOfWeek.hashCode().toString()
         day.isActive.isChecked = daySchedule.isActive
         day.isActive.onCheckedChange = weakSelfClosure { binder, isChecked: Boolean ->
-            binder.state.dayOf(dayOfWeek).isActive.isChecked = isChecked
+            val current = binder.state.dayOf(dayOfWeek)
+            current.isActive.isChecked = isChecked
+            if (isChecked && current.intervals.isEmpty()) {
+                current.replaceIntervals(
+                    listOf(
+                        binder.renderInterval(
+                            current.createTimeSettingState(),
+                            DEFAULT_WORKING_HOURS,
+                        ),
+                    ),
+                )
+            }
             binder.onChanged()
         }
         val weekday = LocalDate.atNextWeekDay(dayOfWeek)
@@ -103,7 +119,9 @@ class ScheduleBinder(
         day.addTimeButton.text = DesignSystem.strings.schedule_add_working_time.desc()
         day.addTimeButton.onClick = weakSelfClosure { binder ->
             val current = binder.state.dayOf(dayOfWeek)
-            current.replaceIntervals(current.intervals + binder.renderInterval(current.createTimeSettingState(), null))
+            current.replaceIntervals(
+                current.intervals + binder.renderInterval(current.createTimeSettingState(), null),
+            )
             binder.onChanged()
         }
         day.onDeleteInterval = weakSelfClosure { binder, interval: TimeSettingState ->
@@ -111,14 +129,20 @@ class ScheduleBinder(
             current.replaceIntervals(current.intervals - interval)
             binder.onChanged()
         }
-        day.replaceIntervals(daySchedule.workingHours.map { renderInterval(day.createTimeSettingState(), it) })
+        day.replaceIntervals(
+            daySchedule.workingHours.map {
+                renderInterval(day.createTimeSettingState(), it)
+            },
+        )
     }
 
     private fun renderInterval(interval: TimeSettingState, hours: WorkingHours?): TimeSettingState {
         interval.timeFromPicker.textField.placeholder = DesignSystem.strings.common_from.desc()
         interval.timeToPicker.textField.placeholder = DesignSystem.strings.common_to.desc()
-        interval.timeFromPicker.textField.text = hours?.let { fullWeekdayFormat.format(it.from) }.orEmpty()
-        interval.timeToPicker.textField.text = hours?.let { fullWeekdayFormat.format(it.to) }.orEmpty()
+        interval.timeFromPicker.textField.text =
+            hours?.let { fullWeekdayFormat.format(it.from) }.orEmpty()
+        interval.timeToPicker.textField.text =
+            hours?.let { fullWeekdayFormat.format(it.to) }.orEmpty()
         interval.timeFromPicker.timePicker.pickedTime = hours?.from
         interval.timeToPicker.timePicker.pickedTime = hours?.to
 
@@ -175,7 +199,8 @@ class ScheduleBinder(
         val startDate = range.startDate.datePicker.pickedDate ?: return
         val endDate = range.endDate.datePicker.pickedDate ?: return
         state.dayOffs.replaceSelected(
-            state.dayOffs.selectedItems + DateRangePickerPresentation(startDate, endDate, fullDateFormat)
+            state.dayOffs.selectedItems +
+                DateRangePickerPresentation(startDate, endDate, fullDateFormat),
         )
         range.startDate.datePicker.pickedDate = null
         range.startDate.textField.text = ""
@@ -196,5 +221,9 @@ class ScheduleBinder(
             DayOfWeek.SATURDAY -> saturday
             DayOfWeek.SUNDAY -> sunday
         }
+    }
+
+    private companion object {
+        val DEFAULT_WORKING_HOURS = WorkingHours(LocalTime(9, 0), LocalTime(17, 0))
     }
 }

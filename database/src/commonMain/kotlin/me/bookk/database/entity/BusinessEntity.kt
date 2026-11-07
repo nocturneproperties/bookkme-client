@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "business"
+    tableName = "business",
 )
 class BusinessEntity(
     @PrimaryKey
@@ -40,5 +40,9 @@ class BusinessEntity(
     @ColumnInfo(defaultValue = "0") val appointmentsPermissionDelete: Boolean = false,
     val ownerId: Uuid? = null,
     val employeeId: Uuid? = null,
-    val clientId: Uuid? = null
+    val clientId: Uuid? = null,
+    @ColumnInfo(defaultValue = "$DEFAULT_CLIENT_DATA_RETENTION_MONTHS")
+    val clientDataRetentionMonths: Int = DEFAULT_CLIENT_DATA_RETENTION_MONTHS,
 )
+
+const val DEFAULT_CLIENT_DATA_RETENTION_MONTHS = 36

@@ -2,6 +2,7 @@ package me.bookk.feature.business.presentation
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.test.FakeAppBarState
 import me.bookk.designsystem.test.FakeBusinessMenuState
 import me.bookk.designsystem.test.FakeButtonState
@@ -18,6 +19,9 @@ import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalytics
 import me.bookk.feature.business.presentation.screen.dashboard.DashboardNavigationDestination
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardSection
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
+import me.bookk.feature.business.presentation.screen.export.BusinessDataExportDestinations
+import me.bookk.feature.business.presentation.screen.export.BusinessDataExportState
+import me.bookk.feature.business.presentation.screen.export.UIBusinessExportStatus
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginListState
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginState
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginsDestinations
@@ -32,7 +36,9 @@ internal class FakeBusinessStateFactory : BusinessStateFactory {
         return FakeBusinessDashboardState()
     }
 
-    override fun createBusinessSettingsState(initData: BusinessSettingsState.InitData): BusinessSettingsState {
+    override fun createBusinessSettingsState(
+        initData: BusinessSettingsState.InitData,
+    ): BusinessSettingsState {
         businessSettingsInitData = initData
         return FakeBusinessSettingsState()
     }
@@ -47,6 +53,10 @@ internal class FakeBusinessStateFactory : BusinessStateFactory {
 
     override fun createBusinessAnalyticsState(): BusinessAnalyticsState {
         return FakeBusinessAnalyticsState()
+    }
+
+    override fun createBusinessDataExportState(): BusinessDataExportState {
+        return FakeBusinessDataExportState()
     }
 }
 
@@ -98,6 +108,7 @@ internal class FakeBusinessSettingsState : BusinessSettingsState {
     override val location = FakeTextFieldState()
     override val address = FakeTextFieldState()
     override val currency = FakePickerFieldState<CurrencyUI>()
+    override val clientDataRetentionMonths = FakeTextFieldState()
     override val phone = FakeTextFieldState()
     override val instagram = FakeTextFieldState()
     override val telegram = FakeTextFieldState()
@@ -107,4 +118,25 @@ internal class FakeBusinessSettingsState : BusinessSettingsState {
     override val save = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<BusinessSettingsDestination>()
+}
+
+internal class FakeBusinessDataExportState : BusinessDataExportState {
+    override val appBar = FakeAppBarState()
+    override var status = UIBusinessExportStatus(
+        title = "".desc(),
+        message = null,
+        footer = null,
+        icon = null,
+        color = ColorToken.ActionText,
+        isInProgress = false,
+        showsFile = false,
+    )
+    override var expiry: StringDesc? = null
+    override var requestAvailability: StringDesc? = null
+    override var error: StringDesc? = null
+    override val request = FakeButtonState()
+    override val download = FakeButtonState()
+    override val retry = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<BusinessDataExportDestinations>()
 }

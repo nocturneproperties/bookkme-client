@@ -6,6 +6,17 @@ interface CreateBusiness {
     suspend operator fun invoke(name: String): Business
 
     sealed interface Error {
-        class EmptyName : Error, Throwable()
+        class BusinessAlreadyExists :
+            Exception(),
+            Error
+        class InvalidName :
+            Exception(),
+            Error
+        class InvalidCurrency :
+            Exception(),
+            Error
+        class EmptyName :
+            Throwable(),
+            Error
     }
 }

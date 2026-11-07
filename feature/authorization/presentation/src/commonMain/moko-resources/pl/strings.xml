@@ -34,4 +34,15 @@
     <string name="troubleshoot_passkey_missing_description">Jeśli masz klucze dostępu na koncie, ale podczas logowania nie jest proponowany żaden klucz, upewnij się, że na urządzeniu z kluczem włączona jest blokada ekranu. Jeśli blokada ekranu jest wyłączona, nie będzie można użyć klucza dostępu na tym urządzeniu, dopóki ponownie jej nie włączysz. \nKlucz dostępu możesz odzyskać u swojego dostawcy danych logowania, np. Google lub Apple.</string>
     <string name="troubleshoot_contact_support_button">Skontaktuj się z pomocą techniczną</string>
 
+    <string name="sign_up_challenge_expired_error">Czas weryfikacji upłynął. Spróbuj ponownie utworzyć konto.</string>
+    <string name="sign_up_accept_legal_documents">Potwierdzam zapoznanie się z dokumentami, wyrażam zgodę i akceptuję\nPolitykę prywatności oraz Warunki korzystania</string>
+    <string name="sign_up_accept_privacy_policy">Akceptuję Politykę prywatności</string>
+    <string name="sign_up_accept_terms_of_service">Akceptuję Warunki korzystania</string>
+    <string name="sign_up_privacy_policy_link">Politykę prywatności</string>
+    <string name="sign_up_terms_of_service_link">Warunki korzystania</string>
+    <string name="sign_up_legal_loading">Ładowanie dokumentów prawnych…</string>
+    <string name="sign_up_legal_load_error">Nie udało się załadować dokumentów prawnych. Spróbuj ponownie przed utworzeniem konta.</string>
+    <string name="sign_up_legal_retry">Spróbuj ponownie</string>
+    <string name="sign_up_legal_documents_changed">Dokumenty prawne uległy zmianie. Zapoznaj się z aktualnymi dokumentami i zaakceptuj je przed ponowną próbą.</string>
+    <string name="sign_up_legal_acceptance_error">Zaakceptuj Politykę prywatności i Warunki korzystania, aby utworzyć konto.</string>
 </resources>

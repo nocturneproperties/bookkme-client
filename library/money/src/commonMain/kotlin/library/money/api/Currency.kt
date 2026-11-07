@@ -1,6 +1,8 @@
 package library.money.api
 
-expect class Currency(code: String) {
+expect class Currency(
+    code: String,
+) {
     fun format(value: Long): String
     fun code(): String
     fun symbol(): String

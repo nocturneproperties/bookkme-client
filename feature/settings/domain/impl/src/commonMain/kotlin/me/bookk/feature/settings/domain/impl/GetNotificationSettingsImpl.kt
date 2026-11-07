@@ -10,7 +10,7 @@ import me.bookk.feature.settings.domain.datasource.NotificationSettingsDataSourc
 
 internal class GetNotificationSettingsImpl(
     private val notificationSettingsDataSource: NotificationSettingsDataSource,
-    private val userProfileCRUD: UserProfileCRUD
+    private val userProfileCRUD: UserProfileCRUD,
 ) : GetNotificationSettings {
 
     @OptIn(ExperimentalCoroutinesApi::class)

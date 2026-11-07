@@ -24,18 +24,18 @@ fun LazyItemScope.EmptyStateView(state: EmptyState, modifier: Modifier = Modifie
     Column(
         modifier.fillParentMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector = Icons.Outlined.Inbox,
             contentDescription = null,
             modifier = Modifier.size(48.dp),
-            tint = LocalColors.current.secondaryText
+            tint = LocalColors.current.secondaryText,
         )
         Text(
             state.label.localized(),
             modifier = Modifier.padding(top = 24.dp),
-            style = MaterialTheme.typography.bodyMedium.secondary()
+            style = MaterialTheme.typography.bodyMedium.secondary(),
         )
     }
 }
@@ -45,18 +45,18 @@ fun EmptyStateView(state: EmptyState, modifier: Modifier = Modifier) {
     Column(
         modifier,
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector = Icons.Outlined.Inbox,
             contentDescription = null,
             modifier = Modifier.size(48.dp),
-            tint = LocalColors.current.secondaryText
+            tint = LocalColors.current.secondaryText,
         )
         Text(
             state.label.localized(),
             modifier = Modifier.padding(top = 24.dp),
-            style = MaterialTheme.typography.bodyMedium.secondary()
+            style = MaterialTheme.typography.bodyMedium.secondary(),
         )
     }
 }

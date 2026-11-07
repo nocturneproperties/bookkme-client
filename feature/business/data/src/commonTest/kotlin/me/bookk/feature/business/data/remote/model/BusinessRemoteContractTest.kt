@@ -8,6 +8,8 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * The API speaks `application/x-protobuf`. Every remote model pins its wire numbers explicitly
@@ -47,9 +49,28 @@ class BusinessRemoteContractTest {
                 "permissions" to 10,
                 "ownerId" to 11,
                 "employeeId" to 12,
-                "clientId" to 13
+                "clientId" to 13,
+                "clientDataRetentionMonths" to 14,
             ),
-            fields
+            fields,
+        )
+    }
+
+    @Test
+    fun `business retention is nonnull and supports the backend default`() = runUnitTest {
+        given()
+        val descriptor = BusinessRemote.serializer().descriptor
+        val index = descriptor.getElementIndex("clientDataRetentionMonths")
+
+        whenn()
+        val retention = descriptor.getElementDescriptor(index)
+
+        then()
+        assertFalse(retention.isNullable)
+        assertTrue(descriptor.isElementOptional(index))
+        assertEquals(
+            14,
+            descriptor.getElementAnnotations(index).filterIsInstance<ProtoNumber>().single().number,
         )
     }
 
@@ -75,8 +96,14 @@ class BusinessRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("business" to 1, "employees" to 2, "clients" to 3, "services" to 4, "appointments" to 5),
-            fields
+            listOf(
+                "business" to 1,
+                "employees" to 2,
+                "clients" to 3,
+                "services" to 4,
+                "appointments" to 5,
+            ),
+            fields,
         )
     }
 
@@ -99,9 +126,10 @@ class BusinessRemoteContractTest {
                 "currencyCode" to 6,
                 "timeZone" to 7,
                 "socials" to 8,
-                "schedule" to 9
+                "schedule" to 9,
+                "clientDataRetentionMonths" to 10,
             ),
-            fields
+            fields,
         )
     }
 

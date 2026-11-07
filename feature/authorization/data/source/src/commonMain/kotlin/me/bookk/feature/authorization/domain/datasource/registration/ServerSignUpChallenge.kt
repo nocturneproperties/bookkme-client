@@ -5,5 +5,5 @@ class ServerSignUpChallenge(
     val displayName: String,
     val jsonChallengeData: String,
     val challenge: String,
-    val userHandle: String
+    val userHandle: String,
 )

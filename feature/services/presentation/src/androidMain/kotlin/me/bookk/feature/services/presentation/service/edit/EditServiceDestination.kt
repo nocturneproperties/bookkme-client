@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.editServiceScreen(navigation: ServicesNavigation) {
     composable<ServicesDestination.EditService>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val route: ServicesDestination.EditService = it.toRoute()
         val viewModel: EditServiceViewModel = koinViewModel { parametersOf(route.serviceId) }

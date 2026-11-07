@@ -42,7 +42,7 @@ fun ClientsListScreen(state: ClientsListState) {
                     state.searchField,
                     Modifier
                         .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp)
+                        .padding(top = 16.dp),
                 )
             }
         },
@@ -50,7 +50,7 @@ fun ClientsListScreen(state: ClientsListState) {
             Column(
                 modifier = Modifier
                     .padding(pv)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 PullToRefresh(state.refreshState) {
                     List(state.clientsList, idProvider = ClientSection::id) {
@@ -58,7 +58,7 @@ fun ClientsListScreen(state: ClientsListState) {
                     }
                 }
             }
-        }
+        },
     )
     if (state.isContactsPickerVisible) {
         ContactsPicker(state)
@@ -70,7 +70,7 @@ private fun ContactsPicker(state: ClientsListState) {
     standardOptionsScreenPicker<SimplePickerPresentation<ClientImportEntry>>()(
         state.contactsPicker,
         { state.isContactsPickerVisible = false },
-        state.contactsPicker.onItemsPicked
+        state.contactsPicker.onItemsPicked,
     )
 }
 
@@ -87,7 +87,7 @@ private fun ClientSectionItem(modifier: Modifier, section: ClientSection) {
                     .height(48.dp)
                     .fillMaxWidth(),
                 onClick = { section.onItemClick(it) },
-                shape = RectangleShape
+                shape = RectangleShape,
             ) {
                 Text(
                     modifier = Modifier
@@ -95,7 +95,7 @@ private fun ClientSectionItem(modifier: Modifier, section: ClientSection) {
                         .fillMaxWidth(),
                     text = it.fullName,
                     style = MaterialTheme.typography.bodyLarge.primary(),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
                 )
             }
             HorizontalDivider(color = LocalColors.current.divider.copy(alpha = 0.5f))

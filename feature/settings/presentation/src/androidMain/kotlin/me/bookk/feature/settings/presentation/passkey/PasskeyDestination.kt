@@ -18,8 +18,8 @@ internal fun NavGraphBuilder.passkeyScreen(navigation: SettingsNavigation) {
             LocalPasskeyEventListener provides PasskeyEventListener(
                 onDeletePasskeyClick = viewModel::onDeletePasskeyClick,
                 onAddPasskeyClick = viewModel::onAddPasskeyClick,
-                onRefresh = viewModel::getPasskeyList
-            )
+                onRefresh = viewModel::getPasskeyList,
+            ),
         ) {
             SendLifecycleEventsTo(viewModel)
             PasskeyScreen(viewModel.uiState)

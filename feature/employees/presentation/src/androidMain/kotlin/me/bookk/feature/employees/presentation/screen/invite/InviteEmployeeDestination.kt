@@ -16,7 +16,7 @@ import kotlin.uuid.Uuid
 
 internal fun NavGraphBuilder.inviteEmployeeScreen(navigation: EmployeesNavigation) {
     composable<EmployeesDestinations.InviteEmployee>(
-        typeMap = mapOf(serializableNavTypeEntry<Uuid>())
+        typeMap = mapOf(serializableNavTypeEntry<Uuid>()),
     ) {
         val route: EmployeesDestinations.InviteEmployee = it.toRoute()
         val viewModel: InviteEmployeeViewModel = koinViewModel { parametersOf(route.businessId) }

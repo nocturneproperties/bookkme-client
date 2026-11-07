@@ -43,5 +43,5 @@ interface OnboardingState {
 
 data class OnboardingBusinessItem(
     val id: Uuid,
-    val name: String
+    val name: String,
 )

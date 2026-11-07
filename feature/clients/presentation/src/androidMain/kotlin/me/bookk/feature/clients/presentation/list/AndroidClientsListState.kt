@@ -25,7 +25,8 @@ internal class AndroidClientsListState : ClientsListState {
     override val searchField: TextFieldState = AndroidTextFieldState()
     override val clientsList: ListState<ClientSection> = AndroidListState()
     override val refreshState: RefreshState = AndroidRefreshState()
-    override val contactsPicker: OptionsMultiPickerState<SimplePickerPresentation<ClientImportEntry>> =
+    override val contactsPicker:
+        OptionsMultiPickerState<SimplePickerPresentation<ClientImportEntry>> =
         AndroidOptionsMultiPickerState()
     override var isContactsPickerVisible: Boolean by mutableStateOf(false)
     override val notifications: PresentationNotificationState = AndroidNotificationState()

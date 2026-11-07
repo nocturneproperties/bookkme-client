@@ -113,7 +113,11 @@ struct IconButton: View {
 	}
 	
 	var body: some View {
-		Button(action: onClick) {
+		Button(action: {
+			withAnimation {
+				onClick()
+			}
+		}) {
 			if (state.isLoading) {
 				ProgressView()
 			} else {

@@ -1,55 +1,51 @@
-//
-//  IOSSignUpState.swift
-//  iosApp
-//
-//  Created by Antiufieiev Michael on 26.12.2024.
-//  Copyright © 2024 BookkMe. All rights reserved.
-//
-
 import shared
+import SwiftUI
 
 @MainActor
 @Observable
-class IOSSignUpState: @MainActor SignUpState {
-    
-    var appBar: any AppBarState
-    
-    var email: any TextFieldState
-    
-    var lastName: any TextFieldState
-    
-    var name: any TextFieldState
-    
-    var confirmButton: any ButtonState
-    
-    var learnMoreButton: any ButtonState
-    
+class IOSSignUpState: @MainActor SignUpState, NativeStateRepresentation {
+    typealias SwiftType = IOSSignUpState
+    typealias KotlinType = SignUpState
+
+    let appBar: any AppBarState
+    let email: any TextFieldState
+    let lastName: any TextFieldState
+    let name: any TextFieldState
+    let confirmButton: any ButtonState
+    let learnMoreButton: any ButtonState
     var passkeyInfoCardData: PasskeyInfoCardData
-    
-    var notification: any PresentationNotificationState
-    
-    var navigation: any NavigationState
-    
-    init(initData: SignUpStateInitData) {
-        appBar = IOSAppBarState(
-            title: initData.title
+    let legalAcceptance: any BooleanState
+    var legalDocuments: SignUpLegalDocumentsState? = nil
+    let reloadLegalDocuments: any ButtonState
+    let notification: any PresentationNotificationState
+    let navigation: any NavigationState
+
+    init() {
+        appBar = IOSAppBarState()
+        name = IOSTextFieldState()
+        lastName = IOSTextFieldState()
+        email = IOSTextFieldState()
+        confirmButton = IOSButtonState(isEnabled: false)
+        learnMoreButton = IOSButtonState()
+        passkeyInfoCardData = PasskeyInfoCardData(
+            title: RawStringDesc(string: ""),
+            description: RawStringDesc(string: "")
         )
-        name = IOSTextFieldState(
-            label: initData.nameHint
-        )
-        lastName = IOSTextFieldState(
-			label: initData.lastNameHint
-        )
-        email = IOSTextFieldState(
-			label: initData.emailHint
-        )
-        confirmButton = IOSButtonState(
-            text: initData.confirmButtonText,
-            isEnabled: false
-        )
-        passkeyInfoCardData = initData.passkeyInfoCardData
-        learnMoreButton = IOSButtonState(text: initData.learnMoreButtonText)
-		notification = IOSNotificationState()
+        legalAcceptance = IOSBooleanState()
+        reloadLegalDocuments = IOSButtonState()
+        notification = IOSNotificationState()
         navigation = IOSNavigationState()
     }
+}
+
+@MainActor
+@Observable
+class IOSSignUpLegalDocumentState: @MainActor SignUpLegalDocumentState, NativeStateRepresentation {
+    typealias SwiftType = IOSSignUpLegalDocumentState
+    typealias KotlinType = SignUpLegalDocumentState
+
+    var document: ApiSignUpLegalDocument? = nil
+    var linkText: any StringDesc = RawStringDesc(string: "")
+    var linkUrl = ""
+    var onLinkClick: (() -> Void)? = nil
 }

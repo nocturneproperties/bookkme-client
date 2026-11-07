@@ -4,5 +4,5 @@ import dev.icerock.moko.resources.ImageResource
 
 class ImageAction(
     val image: ImageResource,
-    val onClick: () -> Unit
+    val onClick: () -> Unit,
 )

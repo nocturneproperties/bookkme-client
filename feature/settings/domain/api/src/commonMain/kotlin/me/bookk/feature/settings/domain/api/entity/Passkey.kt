@@ -8,5 +8,5 @@ data class Passkey(
     val name: String,
     val isBackedUp: Boolean,
     val createdAt: LocalDateTime,
-    val lastUsedAt: LocalDateTime
+    val lastUsedAt: LocalDateTime,
 )

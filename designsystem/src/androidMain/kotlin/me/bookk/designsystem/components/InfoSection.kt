@@ -28,16 +28,16 @@ fun InfoSection(line: InfoLine, modifier: Modifier = Modifier) {
                     .padding(horizontal = 16.dp)
                     .padding(top = 8.dp),
                 text = line.title.localized(),
-                style = MaterialTheme.typography.bodyLarge.secondary()
+                style = MaterialTheme.typography.bodyLarge.secondary(),
             )
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 text = line.value.localized(),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
             )
             HorizontalDivider(
                 Modifier.padding(top = 4.dp),
-                color = LocalColors.current.divider
+                color = LocalColors.current.divider,
             )
         }
     }
@@ -47,14 +47,14 @@ fun InfoSection(line: InfoLine, modifier: Modifier = Modifier) {
             modifier = modifier,
             content = content,
             shape = RectangleShape,
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         )
     } else {
         Card(
             modifier = modifier,
             content = content,
             shape = RectangleShape,
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         )
     }
 }

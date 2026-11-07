@@ -16,73 +16,73 @@ import kotlin.io.encoding.Base64
 
 class IosPassKeyManager(
     val relyingParty: String,
-    private val credentialUpdater: PasskeyCredentialUpdater
+    private val credentialUpdater: PasskeyCredentialUpdater,
 ) : PassKeyManager {
 
     private var delegate: PasskeyControllerDelegate? = null
 
     @OptIn(BetaInteropApi::class)
-    override suspend fun create(challenge: PassKeyManager.CreationRequest): PasskeyVerificationPayload =
-        suspendCancellableCoroutine {
-            delegate = PasskeyControllerDelegate(it)
-            val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
-                relyingPartyIdentifier = relyingParty
+    override suspend fun create(
+        challenge: PassKeyManager.CreationRequest,
+    ): PasskeyVerificationPayload = suspendCancellableCoroutine {
+        delegate = PasskeyControllerDelegate(it)
+        val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
+            relyingPartyIdentifier = relyingParty,
+        )
+        val nsChallenge = Base64.UrlSafe
+            .withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
+            .decode(challenge.challenge)
+            .toNSData()
+        val nsUserId = Base64.UrlSafe
+            .withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
+            .decode(challenge.userId)
+            .toNSData()
+        val platformKeyRequest =
+            platformProvider.createCredentialRegistrationRequestWithChallenge(
+                challenge = nsChallenge,
+                name = challenge.userName,
+                userID = nsUserId,
             )
-            val nsChallenge = Base64.UrlSafe
-                .withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
-                .decode(challenge.challenge)
-                .toNSData()
-            val nsUserId = Base64.UrlSafe
-                .withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
-                .decode(challenge.userId)
-                .toNSData()
-            val platformKeyRequest =
-                platformProvider.createCredentialRegistrationRequestWithChallenge(
-                    challenge = nsChallenge,
-                    name = challenge.userName,
-                    userID = nsUserId
-                )
-            val authController = ASAuthorizationController(listOf(platformKeyRequest))
-            authController.delegate = delegate
-            authController.presentationContextProvider =
-                object : ASAuthorizationControllerPresentationContextProvidingProtocol, NSObject() {
-                    override fun presentationAnchorForAuthorizationController(
-                        controller: ASAuthorizationController
-                    ): ASPresentationAnchor =
-                        requireNotNull(UIApplication.sharedApplication.keyWindow)
-                }
-            authController.performRequests()
-        }.also {
-            delegate = null
-        }
+        val authController = ASAuthorizationController(listOf(platformKeyRequest))
+        authController.delegate = delegate
+        authController.presentationContextProvider =
+            object : ASAuthorizationControllerPresentationContextProvidingProtocol, NSObject() {
+                override fun presentationAnchorForAuthorizationController(
+                    controller: ASAuthorizationController,
+                ): ASPresentationAnchor = requireNotNull(UIApplication.sharedApplication.keyWindow)
+            }
+        authController.performRequests()
+    }.also {
+        delegate = null
+    }
 
-    override suspend fun authorize(challenge: PassKeyManager.AuthorizationRequest): PasskeyVerificationPayload =
-        suspendCancellableCoroutine {
-            delegate = PasskeyControllerDelegate(it)
-            val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
-                relyingPartyIdentifier = relyingParty
-            )
-            val nsChallenge = Base64.UrlSafe
-                .withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
-                .decode(challenge.challenge)
-                .toNSData()
+    override suspend fun authorize(
+        challenge: PassKeyManager.AuthorizationRequest,
+    ): PasskeyVerificationPayload = suspendCancellableCoroutine {
+        delegate = PasskeyControllerDelegate(it)
+        val platformProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(
+            relyingPartyIdentifier = relyingParty,
+        )
+        val nsChallenge = Base64.UrlSafe
+            .withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
+            .decode(challenge.challenge)
+            .toNSData()
 
-            val platformKeyRequest = platformProvider.createCredentialAssertionRequestWithChallenge(
-                challenge = nsChallenge
-            )
-            val authController = ASAuthorizationController(listOf(platformKeyRequest))
-            authController.delegate = delegate
-            authController.presentationContextProvider =
-                object : ASAuthorizationControllerPresentationContextProvidingProtocol, NSObject() {
-                    override fun presentationAnchorForAuthorizationController(
-                        controller: ASAuthorizationController
-                    ): ASPresentationAnchor =
-                        requireNotNull(UIApplication.sharedApplication.keyWindow)
-                }
-            authController.performRequests()
-        }.also {
-            delegate = null
-        }
+        val platformKeyRequest = platformProvider.createCredentialAssertionRequestWithChallenge(
+            challenge = nsChallenge,
+        )
+        val authController = ASAuthorizationController(listOf(platformKeyRequest))
+        authController.delegate = delegate
+        authController.presentationContextProvider =
+            object : ASAuthorizationControllerPresentationContextProvidingProtocol, NSObject() {
+                override fun presentationAnchorForAuthorizationController(
+                    controller: ASAuthorizationController,
+                ): ASPresentationAnchor = requireNotNull(UIApplication.sharedApplication.keyWindow)
+            }
+        authController.performRequests()
+    }.also {
+        delegate = null
+    }
 
     override suspend fun signalAccountDeleted(assertion: PasskeyVerificationPayload) {
         val passkey = PasskeyAssertion.from(assertion)

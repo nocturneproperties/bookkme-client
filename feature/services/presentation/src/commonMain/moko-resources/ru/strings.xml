@@ -11,7 +11,7 @@
     <string name="services_create_name">Название</string>
     <string name="services_create_name_placeholder">Название услуги</string>
     <string name="services_create_duration">Длительность</string>
-    <string name="services_create_duration_placeholder">Длительность в минутах</string>
+    <string name="services_create_duration_placeholder">в минутах</string>
     <string name="services_create_price">Цена</string>
     <string name="services_create_price_placeholder">Сумма оплаты</string>
     <string name="services_create_visible">Видна клиентам</string>
@@ -28,4 +28,8 @@
     <string name="services_group_add_name_exists">Группа с таким названием уже существует</string>
     <string name="services_group_add_name_invalid">Некорректное название</string>
 
+    <string name="services_name_exists_error">Услуга с таким названием уже существует. Выберите другое название.</string>
+    <string name="services_invalid_name_error">Введите корректное название услуги.</string>
+    <string name="services_group_not_found_error">Эта группа услуг больше недоступна. Выберите другую группу.</string>
+    <string name="services_price_precision_error">Введите цену с допустимым для этой валюты количеством знаков после запятой.</string>
 </resources>

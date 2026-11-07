@@ -6,7 +6,7 @@ import me.bookk.feature.services.domain.datasource.ServiceDataSource
 import kotlin.uuid.Uuid
 
 internal class GetServiceImpl(
-    private val dataSource: ServiceDataSource
+    private val dataSource: ServiceDataSource,
 ) : GetService {
     override suspend fun invoke(id: Uuid): Service {
         return dataSource.getServiceFromDb(id) ?: throw GetService.Error.NotFound()

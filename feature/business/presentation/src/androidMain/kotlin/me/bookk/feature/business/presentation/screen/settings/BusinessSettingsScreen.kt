@@ -58,41 +58,53 @@ internal fun BusinessSettingsScreen(state: BusinessSettingsState) {
                     if (state.save.isVisible) {
                         StateTextButton(
                             state = state.save,
-                            onClick = LocalBusinessSettingsEventListener.current.onSaveClick
+                            onClick = LocalBusinessSettingsEventListener.current.onSaveClick,
                         )
                     }
-                }
+                },
             )
         },
         content = {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .bottomShadow(32.dp, LocalColors.current.background)
+                modifier =
+                Modifier.fillMaxSize().bottomShadow(32.dp, LocalColors.current.background),
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(it)
+                    modifier = Modifier.padding(it)
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp)
                         .padding(bottom = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     BusinessProfileCard(state)
                     ScheduleSection(state.schedule)
                     BusinessLocationSection(state)
                     BusinessAddressSection(state)
                     Column {
-                        Header(BusinessRes.strings.business_settings_currency_title.desc().localized())
+                        Header(
+                            BusinessRes.strings.business_settings_currency_title.desc().localized(),
+                        )
                         PickerField(
                             state = state.currency,
-                            onItemPicked = LocalBusinessSettingsEventListener.current.onCurrencySelected
+                            onItemPicked =
+                            LocalBusinessSettingsEventListener.current.onCurrencySelected,
                         )
                     }
                     BusinessSocialsCard(state)
+                    Column {
+                        Header(
+                            BusinessRes.strings.business_settings_retention_title
+                                .desc().localized(),
+                        )
+                        TextField(
+                            state = state.clientDataRetentionMonths,
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                        )
+                    }
                 }
             }
-        }
+        },
     )
 }
 
@@ -105,40 +117,39 @@ private fun BusinessProfileCard(state: BusinessSettingsState) {
                 PhotoBadge(
                     onClick = listener.onAddPhotoClick,
                     contentDescription = state.photo.text,
-                    isEnabled = state.photo.isEnabled
+                    isEnabled = state.photo.isEnabled,
                 )
                 Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 12.dp)
+                    modifier = Modifier.weight(1f).padding(start = 12.dp),
                 ) {
                     Text(
                         text = BusinessRes.strings.business_settings_name_title.desc().localized(),
                         style = MaterialTheme.typography.bodySmall,
-                        color = LocalColors.current.secondaryText
+                        color = LocalColors.current.secondaryText,
                     )
                     FlatTextField(
                         state = state.name,
                         onValueChange = listener.onNameChanged,
                         textStyle = MaterialTheme.typography.titleMedium,
-                        singleLine = true
+                        singleLine = true,
                     )
                 }
             }
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 12.dp),
-                color = LocalColors.current.divider
+                color = LocalColors.current.divider,
             )
             Column {
                 Text(
-                    text = BusinessRes.strings.business_settings_description_title.desc().localized(),
+                    text =
+                    BusinessRes.strings.business_settings_description_title.desc().localized(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = LocalColors.current.secondaryText
+                    color = LocalColors.current.secondaryText,
                 )
                 FlatTextField(
                     state = state.description,
                     onValueChange = listener.onDescriptionChanged,
-                    textStyle = MaterialTheme.typography.bodyLarge
+                    textStyle = MaterialTheme.typography.bodyLarge,
                 )
             }
         }
@@ -148,18 +159,17 @@ private fun BusinessProfileCard(state: BusinessSettingsState) {
 @Composable
 private fun PhotoBadge(onClick: () -> Unit, contentDescription: StringDesc, isEnabled: Boolean) {
     Box(
-        modifier = Modifier
-            .size(56.dp)
+        modifier = Modifier.size(56.dp)
             .clip(RoundedCornerShape(14.dp))
             .background(LocalColors.current.buttonPrimary)
             .clickable(enabled = isEnabled, onClick = onClick),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = Icons.Filled.AddAPhoto,
             contentDescription = contentDescription.localized(),
             tint = LocalColors.current.onAction,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
     }
 }
@@ -173,11 +183,11 @@ private fun BusinessLocationSection(state: BusinessSettingsState) {
             state = state.location,
             onValueChange = {},
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
         )
         AlignStartTextButton(
             state = state.testLocation,
-            onClick = listener.onTestLocationClick
+            onClick = listener.onTestLocationClick,
         )
     }
 }
@@ -191,7 +201,7 @@ private fun BusinessAddressSection(state: BusinessSettingsState) {
             state = state.address,
             onValueChange = listener.onAddressChanged,
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
         )
     }
 }
@@ -206,35 +216,35 @@ private fun BusinessSocialsCard(state: BusinessSettingsState) {
                 FlatTextField(
                     state = state.phone,
                     onValueChange = listener.onPhoneChanged,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    color = LocalColors.current.divider
+                    color = LocalColors.current.divider,
                 )
                 FlatTextField(
                     state = state.telegram,
-                    onValueChange = listener.onTelegramChanged
+                    onValueChange = listener.onTelegramChanged,
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    color = LocalColors.current.divider
+                    color = LocalColors.current.divider,
                 )
                 FlatTextField(
                     state = state.instagram,
-                    onValueChange = listener.onInstagramChanged
+                    onValueChange = listener.onInstagramChanged,
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    color = LocalColors.current.divider
+                    color = LocalColors.current.divider,
                 )
                 FlatTextField(
                     state = state.viber,
                     onValueChange = listener.onViberChanged,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Text
-                    )
+                        keyboardType = KeyboardType.Text,
+                    ),
                 )
             }
         }
@@ -246,7 +256,7 @@ private fun BusinessSocialsCard(state: BusinessSettingsState) {
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         BusinessSettingsScreen(
-            state = AndroidBusinessSettingsState(BusinessSettingsViewModel.createInitData())
+            state = AndroidBusinessSettingsState(BusinessSettingsViewModel.createInitData()),
         )
     }
 }
@@ -256,7 +266,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         BusinessSettingsScreen(
-            state = AndroidBusinessSettingsState(BusinessSettingsViewModel.createInitData())
+            state = AndroidBusinessSettingsState(BusinessSettingsViewModel.createInitData()),
         )
     }
 }

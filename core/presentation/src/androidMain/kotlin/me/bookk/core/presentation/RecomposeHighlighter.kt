@@ -38,6 +38,7 @@ import kotlin.math.min
  */
 @Stable
 fun Modifier.recomposeHighlighter(): Modifier = this.then(recomposeModifier)
+
 // Use a single instance + @Stable to ensure that recompositions can enable skipping optimizations
 // Modifier.composed will still remember unique data per call site.
 private val recomposeModifier =
@@ -71,16 +72,22 @@ private val recomposeModifier =
                     when (numCompositionsSinceTimeout) {
                         // We need at least one composition to draw, so draw the smallest border
                         // color in blue.
-                        1L -> Color.Blue to 1f
+                        1L -> {
+                            Color.Blue to 1f
+                        }
+
                         // 2 compositions is _probably_ okay.
-                        2L -> Color.Green to 2.dp.toPx()
+                        2L -> {
+                            Color.Green to 2.dp.toPx()
+                        }
+
                         // 3 or more compositions before timeout may indicate an issue. lerp the
                         // color from yellow to red, and continually increase the border size.
                         else -> {
                             lerp(
                                 Color.Yellow.copy(alpha = 0.8f),
                                 Color.Red.copy(alpha = 0.5f),
-                                min(1f, (numCompositionsSinceTimeout - 1).toFloat() / 100f)
+                                min(1f, (numCompositionsSinceTimeout - 1).toFloat() / 100f),
                             ) to numCompositionsSinceTimeout.toInt().dp.toPx()
                         }
                     }
@@ -95,7 +102,7 @@ private val recomposeModifier =
                     brush = SolidColor(color),
                     topLeft = rectTopLeft,
                     size = size,
-                    style = style
+                    style = style,
                 )
             }
         }

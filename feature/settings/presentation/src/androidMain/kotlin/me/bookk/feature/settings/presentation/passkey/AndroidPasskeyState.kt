@@ -11,7 +11,7 @@ import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.RefreshState
 
 class AndroidPasskeyState(
-    initData: PasskeyState.InitData
+    initData: PasskeyState.InitData,
 ) : PasskeyState {
     override val appBar: AppBarState = AndroidAppBarState(initData.title)
     override val addPasskeyButton: ButtonState = AndroidButtonState(initData.addButtonText)

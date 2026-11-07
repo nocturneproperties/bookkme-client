@@ -14,5 +14,12 @@ sealed class BusinessDestination {
     data object Settings : BusinessDestination()
 
     @Serializable
-    data class Plugins(val id: Uuid) : BusinessDestination()
+    data class Plugins(
+        val id: Uuid,
+    ) : BusinessDestination()
+
+    @Serializable
+    data class DataExport(
+        val id: Uuid,
+    ) : BusinessDestination()
 }

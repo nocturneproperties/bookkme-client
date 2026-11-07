@@ -55,7 +55,7 @@ class GetClientImplTest {
             lastName = "Doe",
             phone = "123",
             email = "john@example.com",
-            businessId = Uuid.random()
+            businessId = Uuid.random(),
         )
         everySuspend { fixture.dataSource.getClient(id) } returns expected
 
@@ -77,7 +77,7 @@ class GetClientImplTest {
             lastName = "Doe",
             phone = "123",
             email = "john@example.com",
-            businessId = Uuid.random()
+            businessId = Uuid.random(),
         )
         every { fixture.dataSource.observeClientDBChanges(id) } returns flowOf(stored)
 

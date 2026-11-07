@@ -1,6 +1,7 @@
 package me.bookk.feature.settings.domain.impl
 
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.matcher.matches
@@ -20,6 +21,7 @@ import me.bookk.feature.authorization.domain.entity.UserProfile
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,7 +48,12 @@ class EditProfileImplTest {
     fun `calls update with merged profile fields`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val existing = UserProfile(id = Uuid.random(), firstName = "Old", lastName = "Name", email = "old@example.com")
+        val existing = UserProfile(
+            id = Uuid.random(),
+            firstName = "Old",
+            lastName = "Name",
+            email = "old@example.com",
+        )
         everySuspend { fixture.profileCRUD.get() } returns existing
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
@@ -56,7 +63,11 @@ class EditProfileImplTest {
         then()
         verifySuspend {
             fixture.profileCRUD.update(
-                matches({ "match" }) { it.firstName == "New" && it.lastName == "Lastname" && it.email == "new@example.com" }
+                matches({ "match" }) {
+                    it.firstName == "New" &&
+                        it.lastName == "Lastname" &&
+                        it.email == "new@example.com"
+                },
             )
         }
     }
@@ -66,7 +77,8 @@ class EditProfileImplTest {
         given()
         val fixture = Fixture()
         val id = Uuid.random()
-        val existing = UserProfile(id = id, firstName = "Old", lastName = "Name", email = "old@e.com")
+        val existing =
+            UserProfile(id = id, firstName = "Old", lastName = "Name", email = "old@e.com")
         everySuspend { fixture.profileCRUD.get() } returns existing
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
@@ -81,7 +93,12 @@ class EditProfileImplTest {
     fun `saves trimmed profile fields`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val existing = UserProfile(id = Uuid.random(), firstName = "Old", lastName = "Name", email = "old@example.com")
+        val existing = UserProfile(
+            id = Uuid.random(),
+            firstName = "Old",
+            lastName = "Name",
+            email = "old@example.com",
+        )
         everySuspend { fixture.profileCRUD.get() } returns existing
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
@@ -91,8 +108,32 @@ class EditProfileImplTest {
         then()
         verifySuspend {
             fixture.profileCRUD.update(
-                matches({ "trimmed" }) { it.firstName == "New" && it.lastName == "Lastname" && it.email == "new@example.com" }
+                matches({ "trimmed" }) {
+                    it.firstName == "New" &&
+                        it.lastName == "Lastname" &&
+                        it.email == "new@example.com"
+                },
             )
+        }
+    }
+
+    @Test
+    fun `maps backend error 100002 to ContactAlreadyTaken`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.profileCRUD.get() } returns
+            UserProfile(Uuid.random(), "John", "Doe", "old@example.com")
+        everySuspend { fixture.profileCRUD.update(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(100002, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut("John", "Doe", "john@example.com") }
+
+        then()
+        assertFailsWith<
+            me.bookk.feature.settings.domain.api.EditProfile.Error.ContactAlreadyTaken,
+            > {
+            result.getOrThrow()
         }
     }
 }

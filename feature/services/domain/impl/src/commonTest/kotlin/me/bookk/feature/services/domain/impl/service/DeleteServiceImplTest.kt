@@ -45,7 +45,8 @@ class DeleteServiceImplTest {
         given()
         val fixture = Fixture()
         val service = stubService()
-        everySuspend { fixture.dataSource.deleteService(service.businessId, service.id) } returns Unit
+        everySuspend { fixture.dataSource.deleteService(service.businessId, service.id) } returns
+            Unit
         everySuspend { fixture.dataSource.deleteServiceFromDB(service) } returns Unit
 
         whenn()

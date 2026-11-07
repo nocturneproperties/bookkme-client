@@ -21,7 +21,7 @@ internal class AndroidSignInState private constructor(
     override val signUpButton: ButtonState,
     override val troubleshootButton: ButtonState,
     override val notification: PresentationNotificationState,
-    override val navigation: NavigationState<SignInNavigationDestination>
+    override val navigation: NavigationState<SignInNavigationDestination>,
 ) : SignInState {
 
     constructor(initData: SignInState.InitData) : this(
@@ -32,6 +32,6 @@ internal class AndroidSignInState private constructor(
         signUpButton = AndroidButtonState(text = initData.signUpButtonText),
         troubleshootButton = AndroidButtonState(text = initData.troubleshootButtonText),
         notification = AndroidNotificationState(),
-        navigation = AndroidNavigationState<SignInNavigationDestination>()
+        navigation = AndroidNavigationState<SignInNavigationDestination>(),
     )
 }

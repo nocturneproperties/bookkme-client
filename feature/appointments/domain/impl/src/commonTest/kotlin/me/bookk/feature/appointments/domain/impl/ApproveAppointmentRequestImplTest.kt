@@ -87,7 +87,8 @@ class ApproveAppointmentRequestImplTest {
         given()
         val fixture = Fixture()
         val requestId = Uuid.random()
-        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } returns stubAppointment()
+        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } returns
+            stubAppointment()
 
         whenn()
         fixture.sut(requestId)

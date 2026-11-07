@@ -7,8 +7,14 @@ import kotlin.uuid.Uuid
 sealed class EmployeesDestinations : NavigationDestination() {
     @Serializable
     data object EmployeeList : EmployeesDestinations()
+
     @Serializable
-    data class InviteEmployee(val businessId: Uuid) : EmployeesDestinations()
+    data class InviteEmployee(
+        val businessId: Uuid,
+    ) : EmployeesDestinations()
+
     @Serializable
-    data class EditEmployee(val id: Uuid) : EmployeesDestinations()
+    data class EditEmployee(
+        val id: Uuid,
+    ) : EmployeesDestinations()
 }

@@ -17,7 +17,8 @@ class AndroidListStateTest {
     private class Fixture {
         var retries = 0
         val sut = AndroidListState<String>().apply {
-            errorState = ErrorState(title = "title".desc(), subtitle = "subtitle".desc()) { retries++ }
+            errorState =
+                ErrorState(title = "title".desc(), subtitle = "subtitle".desc()) { retries++ }
         }
     }
 
@@ -34,17 +35,18 @@ class AndroidListStateTest {
     }
 
     @Test
-    fun `replacing with items turns the full screen error into a banner that retries`() = runUnitTest {
-        given()
-        val fixture = Fixture()
+    fun `replacing with items turns the full screen error into a banner that retries`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
 
-        whenn()
-        fixture.sut.replace(listOf("a"))
+            whenn()
+            fixture.sut.replace(listOf("a"))
 
-        then()
-        assertNotNull(fixture.sut.bannerError).onRetryClick()
-        assertEquals(1, fixture.retries)
-    }
+            then()
+            assertNotNull(fixture.sut.bannerError).onRetryClick()
+            assertEquals(1, fixture.retries)
+        }
 
     @Test
     fun `appending items turns the full screen error into a banner`() = runUnitTest {

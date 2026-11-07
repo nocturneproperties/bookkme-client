@@ -56,7 +56,7 @@ class CreateAppointmentRequestImplTest {
                 services = services,
                 date = Instant.fromEpochMilliseconds(1_800_000_000_000),
                 note = "Window seat",
-                offerToken = "signed-offer"
+                offerToken = "signed-offer",
             )
 
         fun stubSuccess() {
@@ -64,7 +64,8 @@ class CreateAppointmentRequestImplTest {
         }
 
         fun stubBusinessError(code: Int) {
-            everySuspend { dataSource.createAppointmentRequest(any()) } throws DomainError.BusinessError(code, "msg")
+            everySuspend { dataSource.createAppointmentRequest(any()) } throws
+                DomainError.BusinessError(code, "msg")
         }
     }
 
@@ -89,7 +90,11 @@ class CreateAppointmentRequestImplTest {
         val haircut = Uuid.random()
         val beard = Uuid.random()
         val draft = fixture.draft(
-            services = listOf(RequestedService(haircut, 1), RequestedService(beard, 1), RequestedService(haircut, 2))
+            services = listOf(
+                RequestedService(haircut, 1),
+                RequestedService(beard, 1),
+                RequestedService(haircut, 2),
+            ),
         )
         fixture.stubSuccess()
 
@@ -99,7 +104,9 @@ class CreateAppointmentRequestImplTest {
         then()
         verifySuspend {
             fixture.dataSource.createAppointmentRequest(
-                draft.copy(services = listOf(RequestedService(haircut, 3), RequestedService(beard, 1)))
+                draft.copy(
+                    services = listOf(RequestedService(haircut, 3), RequestedService(beard, 1)),
+                ),
             )
         }
     }
@@ -136,7 +143,10 @@ class CreateAppointmentRequestImplTest {
 
     @Test
     fun `throws ServicesDoNotMatchOffer on SERVICES_VALIDATION_FAILED`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.SERVICES_VALIDATION_FAILED, Error.ServicesDoNotMatchOffer::class)
+        assertMapped(
+            AppointmentErrorCodes.SERVICES_VALIDATION_FAILED,
+            Error.ServicesDoNotMatchOffer::class,
+        )
     }
 
     @Test
@@ -146,17 +156,26 @@ class CreateAppointmentRequestImplTest {
 
     @Test
     fun `throws ServiceNotFound on BUSINESS_QUOTE_SERVICE_NOT_FOUND`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND, Error.ServiceNotFound::class)
+        assertMapped(
+            AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND,
+            Error.ServiceNotFound::class,
+        )
     }
 
     @Test
     fun `throws EmployeeNotFound on BUSINESS_EMPLOYEE_NOT_EXISTS`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS, Error.EmployeeNotFound::class)
+        assertMapped(
+            AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS,
+            Error.EmployeeNotFound::class,
+        )
     }
 
     @Test
     fun `throws EmployeeSuspended on BUSINESS_EMPLOYEE_SUSPENDED`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED, Error.EmployeeSuspended::class)
+        assertMapped(
+            AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED,
+            Error.EmployeeSuspended::class,
+        )
     }
 
     @Test

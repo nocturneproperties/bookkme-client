@@ -13,7 +13,13 @@ flowchart TD
     Trim --> Net[ServiceDataSource.createService<br/>POST /api/business/businessId/service]
     Net -- 2xx created --> Save[(saveServiceInDB created, upsert)]
     Save --> R([return created Service])
-    Net -- error --> EX([rethrow, no domain mapping])
+    Net -- business error --> Code{errorCode}
+    Code -- 200007 --> E200007([throw Error.NameAlreadyExists])
+    Code -- 200008 --> E200008([throw Error.InvalidName])
+    Code -- 200012 --> E200012([throw Error.GroupNotFound])
+    Code -- 200037 --> E200037([throw Error.InvalidPricePrecision])
+    Code -- 200038 --> E200038([throw Error.InvalidBusinessCurrency])
+    Code -- other --> EX([rethrow])
 ```
 
 The local upsert assumes the service's group is already in `service_group`. If it is not, the

@@ -21,11 +21,5 @@ struct SupportView: View {
 		NavigationLink(value: SettingsDestination.ContactUs()) {
 			Text(state.contact.text.localized())
 		}
-		NavigationLink(value: SettingsDestination.ContactUs()) {
-			Text(state.terms.text.localized())
-		}
-		NavigationLink(value: SettingsDestination.ContactUs()) {
-			Text(state.policy.text.localized())
-		}
 	}
 }

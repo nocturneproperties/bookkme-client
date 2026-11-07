@@ -16,13 +16,13 @@ data class ServiceSnapshotRemote(
     @ProtoNumber(4)
     @Serializable(with = RemoteMoneySerializer::class)
     val price: Money,
-    @ProtoNumber(5) val duration: Duration
+    @ProtoNumber(5) val duration: Duration,
 ) {
     fun toDomain() = ServiceSnapshot(
         id = id,
         name = name,
         groupId = groupId,
         price = price,
-        duration = duration
+        duration = duration,
     )
 }

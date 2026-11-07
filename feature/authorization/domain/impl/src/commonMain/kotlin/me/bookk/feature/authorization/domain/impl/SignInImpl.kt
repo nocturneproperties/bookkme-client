@@ -19,7 +19,7 @@ internal class SignInImpl(
     private val authorizationDataSource: AuthorizationDataSource,
     private val deviceFacade: DeviceFacade,
     private val passKeyManager: PassKeyManager,
-    private val initialAppDataFetch: InitialAppDataFetch
+    private val initialAppDataFetch: InitialAppDataFetch,
 ) : SignIn {
 
     override suspend fun invoke() {
@@ -34,32 +34,60 @@ internal class SignInImpl(
 
     private suspend fun SignInImpl.verifyAuthorization(
         challenge: ServerAuthenticationChallenge,
-        payload: PasskeyVerificationPayload
+        payload: PasskeyVerificationPayload,
     ): TokenInfo {
         return runCatching {
             authorizationDataSource.verifyAuthorization(
-                createSignInData(challenge.requestId, payload.jsonPayload)
+                createSignInData(challenge.requestId, payload.jsonPayload),
             )
-        }.recoverCatching {
-            throw when (it.businessOrThrow().errorCode) {
-                AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> SignIn.Error.NoAccountForThisPasskey()
-                AuthErrorCodes.VERIFICATION_FAILED,
-                AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> SignIn.Error.PasskeyVerificationFailed()
+        }
+            .recoverCatching {
+                throw when (it.businessOrThrow().errorCode) {
+                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> {
+                        SignIn.Error.NoAccountForThisPasskey()
+                    }
 
-                else -> it
+                    AuthErrorCodes.VERIFICATION_FAILED,
+                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED,
+                    -> {
+                        SignIn.Error.PasskeyVerificationFailed()
+                    }
+
+                    else -> {
+                        it
+                    }
+                }
             }
-        }.getOrThrow()
+            .getOrThrow()
     }
 
-    private suspend fun authorizeWithPasskey(challenge: ServerAuthenticationChallenge): PasskeyVerificationPayload {
-        return runCatching { passKeyManager.authorize(PassKeyManager.AuthorizationRequest(challenge.challengeJson, challenge.challenge)) }
+    private suspend fun authorizeWithPasskey(
+        challenge: ServerAuthenticationChallenge,
+    ): PasskeyVerificationPayload {
+        return runCatching {
+            passKeyManager.authorize(
+                PassKeyManager.AuthorizationRequest(
+                    challenge.challengeJson,
+                    challenge.challenge,
+                ),
+            )
+        }
             .recoverCatching {
                 throw when (it) {
-                    is PassKeyManager.Error.UserCancelled -> Error.Ignore(it)
-                    is PassKeyManager.Error.CredentialsMissing -> SignIn.Error.NoCredentialsAvailable()
-                    else -> SignIn.Error.PasskeyVerificationFailed()
+                    is PassKeyManager.Error.UserCancelled -> {
+                        Error.Ignore(it)
+                    }
+
+                    is PassKeyManager.Error.CredentialsMissing -> {
+                        SignIn.Error.NoCredentialsAvailable()
+                    }
+
+                    else -> {
+                        SignIn.Error.PasskeyVerificationFailed()
+                    }
                 }
-            }.getOrThrow()
+            }
+            .getOrThrow()
     }
 
     private suspend fun createSignInData(requestId: String, publicCredJson: String): SignInData {
@@ -67,9 +95,9 @@ internal class SignInImpl(
             requestId = requestId,
             deviceInfo = SignInData.DeviceInfo(
                 deviceUUID = deviceDataSource.getOrCreateDeviceUUID(),
-                deviceName = deviceFacade.getDeviceName()
+                deviceName = deviceFacade.getDeviceName(),
             ),
-            publicKeyCredentialJson = publicCredJson
+            publicKeyCredentialJson = publicCredJson,
         )
     }
 }

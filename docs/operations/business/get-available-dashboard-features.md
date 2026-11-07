@@ -5,20 +5,24 @@
 `GetAvailableDashboardFeatures()` → `Flow<DashboardOverview?>`, **local only**
 · called from `BusinessDashboardViewModel`
 
-Derives the set of dashboard tiles from the selected business's permission columns and the cached plugin
-flag. It re-emits whenever the dashboard id, the business row, or the plugin preference changes.
-`APPOINTMENTS` needs the plugin flag to be exactly `true`. `null` ("not fetched yet") hides the tile.
+Derives the set of dashboard tiles from the selected business's permission columns, the cached plugin
+flag and the signed-in profile. It re-emits whenever the dashboard id, the business row, the plugin
+preference or the cached profile changes. `APPOINTMENTS` needs the plugin flag to be exactly `true`.
+`null` ("not fetched yet") hides the tile. `DATA_EXPORT` (the owner-only business data export) needs
+a known `business.ownerId` equal to the cached `user_profile` id; an unknown owner or profile hides it.
 
 ```mermaid
 flowchart TD
     Start([invoke]) --> Biz[ObserveDashboardBusinessChanges]
     Biz -- null --> N([emit null])
     Biz -- business --> Plug[IsAppointmentsPluginEnabled.flow business.id<br/>plugin_prefs]
-    Plug --> Build[features = empty set]
+    Biz -- business --> Profile[UserProfileCRUD.observe<br/>user_profile]
+    Plug & Profile --> Build[combine: features = empty set]
     Build --> P1{permissions.business.view} -- yes --> F1[+ BUSINESS]
     Build --> P2{permissions.employees.view} -- yes --> F2[+ EMPLOYEES]
     Build --> P3{permissions.clients.view} -- yes --> F3[+ CLIENTS]
     Build --> P4{permissions.services.view} -- yes --> F4[+ SERVICES]
     Build --> P5{plugin == true AND permissions.appointments.view} -- yes --> F5[+ APPOINTMENTS]
-    F1 & F2 & F3 & F4 & F5 --> R([emit DashboardOverview business, features])
+    Build --> P6{business.ownerId != null AND == profile.id} -- yes --> F6[+ DATA_EXPORT]
+    F1 & F2 & F3 & F4 & F5 & F6 --> R([emit DashboardOverview business, features])
 ```

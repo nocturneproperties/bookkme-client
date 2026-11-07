@@ -13,6 +13,7 @@ flowchart TD
     Get --> Copy[profile.copy firstName, lastName, email, each trimmed]
     Copy --> Upd[UserProfileCRUD.update<br/>PATCH, GET, upsert user_profile]
     Upd --> R([Unit])
+    Upd -- 100002 USER_CONTACT_TAKEN --> Taken([throw Error.ContactAlreadyTaken])
 ```
 
 See [User profile CRUD](../authorization/user-profile-crud.md) for the update steps.

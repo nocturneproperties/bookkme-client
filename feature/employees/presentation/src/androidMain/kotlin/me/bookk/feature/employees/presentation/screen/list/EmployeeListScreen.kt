@@ -40,7 +40,7 @@ fun EmployeeListScreen(state: EmployeeListState) {
                     state.searchField,
                     Modifier
                         .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp)
+                        .padding(top = 16.dp),
                 )
             }
         },
@@ -48,7 +48,7 @@ fun EmployeeListScreen(state: EmployeeListState) {
             Column(
                 modifier = Modifier
                     .padding(pv)
-                    .fillMaxSize()
+                    .fillMaxSize(),
             ) {
                 PullToRefresh(state.refreshState) {
                     List(state.employeesList, idProvider = EmployeeSection::id) {
@@ -56,7 +56,7 @@ fun EmployeeListScreen(state: EmployeeListState) {
                     }
                 }
             }
-        }
+        },
     )
 }
 
@@ -73,7 +73,7 @@ private fun EmployeeSectionItem(modifier: Modifier, section: EmployeeSection) {
                     .fillMaxWidth()
                     .clickable { section.onItemClick(it) }
                     .height(48.dp),
-                contentAlignment = Alignment.CenterStart
+                contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
                     modifier = Modifier
@@ -81,7 +81,7 @@ private fun EmployeeSectionItem(modifier: Modifier, section: EmployeeSection) {
                         .padding(horizontal = 16.dp),
                     text = it.fullName,
                     style = MaterialTheme.typography.bodyLarge.primary(),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
                 )
             }
             HorizontalDivider(color = LocalColors.current.divider.copy(alpha = 0.5f))

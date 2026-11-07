@@ -26,19 +26,17 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.CollapsingAppBarScaffold
 import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.TextField
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.services.presentation.group.list.ServiceGroupListState.ServiceGroupUI
 
 @Composable
-internal fun ServiceGroupListScreen(
-    state: ServiceGroupListState
-) {
+internal fun ServiceGroupListScreen(state: ServiceGroupListState) {
     CollapsingAppBarScaffold(
         modifier = Modifier
             .systemBarsPadding()
@@ -50,15 +48,15 @@ internal fun ServiceGroupListScreen(
                     state.search,
                     Modifier
                         .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp)
+                        .padding(top = 16.dp),
                 )
             }
-        }
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
             PullToRefresh(state.refreshState) {
                 List(
@@ -66,7 +64,7 @@ internal fun ServiceGroupListScreen(
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .animateContentSize(),
-                    idProvider = ServiceGroupUI::id
+                    idProvider = ServiceGroupUI::id,
                 ) {
                     ServiceGroupItem(Modifier.animateItem(), it)
                     HorizontalDivider(color = LocalColors.current.divider)
@@ -90,11 +88,11 @@ private fun ServiceGroupItem(modifier: Modifier, item: ServiceGroupUI) {
                         menuExpanded = true
                     }
                 },
-                onClick = { item.onItemClick() }
+                onClick = { item.onItemClick() },
             )
             .height(48.dp)
             .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.CenterStart
+        contentAlignment = Alignment.CenterStart,
     ) {
         Text(item.name)
     }
@@ -102,16 +100,16 @@ private fun ServiceGroupItem(modifier: Modifier, item: ServiceGroupUI) {
         DropdownMenu(
             expanded = menuExpanded,
             containerColor = LocalColors.current.elevated,
-            onDismissRequest = { menuExpanded = false }
+            onDismissRequest = { menuExpanded = false },
         ) {
             DropdownMenuItem(
                 text = {
                     Text(
                         DesignSystem.strings.action_delete.desc().localized(),
-                        color = LocalColors.current.error
+                        color = LocalColors.current.error,
                     )
                 },
-                onClick = { onDeleteClick() }
+                onClick = { onDeleteClick() },
             )
         }
     }

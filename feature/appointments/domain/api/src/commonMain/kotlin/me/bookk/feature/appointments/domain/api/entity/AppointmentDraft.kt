@@ -8,5 +8,6 @@ data class AppointmentDraft(
     val client: ClientSnapshot,
     val services: List<ServiceSnapshot>,
     val date: LocalDateTime,
-    val note: String
+    val note: String,
+    val employeeId: Uuid? = null,
 )

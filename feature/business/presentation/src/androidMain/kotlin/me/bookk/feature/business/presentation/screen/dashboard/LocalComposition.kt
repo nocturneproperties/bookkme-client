@@ -9,6 +9,6 @@ internal class DashboardEventListener(
 
 internal val LocalDashboardEventListener = compositionLocalOf {
     DashboardEventListener(
-        onItemClicked = {}
+        onItemClicked = {},
     )
 }

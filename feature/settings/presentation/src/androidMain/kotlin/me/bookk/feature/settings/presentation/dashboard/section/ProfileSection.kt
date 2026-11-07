@@ -19,16 +19,16 @@ internal fun ProfileSection(state: ProfileSection) {
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = state.name.localized() + " " + state.lastName.localized(),
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
         )
         Text(
             text = state.email.localized(),
             style = MaterialTheme.typography.labelLarge,
-            color = LocalColors.current.secondaryText
+            color = LocalColors.current.secondaryText,
         )
     }
 }

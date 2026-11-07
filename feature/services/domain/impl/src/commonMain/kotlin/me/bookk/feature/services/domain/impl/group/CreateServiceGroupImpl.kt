@@ -8,7 +8,7 @@ import me.bookk.feature.services.domain.datasource.ServiceErrorCodes
 import me.bookk.feature.services.domain.datasource.ServiceGroupDataSource
 
 internal class CreateServiceGroupImpl(
-    private val dataSource: ServiceGroupDataSource
+    private val dataSource: ServiceGroupDataSource,
 ) : CreateServiceGroup {
     override suspend fun invoke(group: ServiceGroup): ServiceGroup = runCatching {
         dataSource.createServiceGroup(group.copy(name = group.name.trim())).also {
@@ -17,7 +17,10 @@ internal class CreateServiceGroupImpl(
     }.onBusinessError { error ->
         when (error.errorCode) {
             ServiceErrorCodes.BUSINESS_SERVICE_GROUP_EXISTS -> throw Error.NameExists(error)
-            ServiceErrorCodes.BUSINESS_SERVICE_GROUP_VALIDATION_ERROR -> throw Error.InvalidName(error)
+
+            ServiceErrorCodes.BUSINESS_SERVICE_GROUP_VALIDATION_ERROR -> throw Error.InvalidName(
+                error,
+            )
         }
     }.getOrThrow()
 }

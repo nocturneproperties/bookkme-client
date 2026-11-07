@@ -18,6 +18,6 @@ fun Header(text: String, modifier: Modifier = Modifier, textAlign: TextAlign? = 
         textAlign = textAlign,
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        color = LocalColors.current.header
+        color = LocalColors.current.header,
     )
 }

@@ -19,7 +19,8 @@ internal fun stubEmployee(
     lastName: String = "Doe",
     services: List<Service> = emptyList(),
     permissions: BusinessPermissions = stubPermissions(),
-    suspendedAt: Instant? = null
+    suspendedAt: Instant? = null,
+    schedule: WorkingSchedule = WorkingSchedule(),
 ) = Employee(
     id = Uuid.random(),
     businessId = Uuid.random(),
@@ -29,10 +30,10 @@ internal fun stubEmployee(
     email = "jane@example.com",
     userId = Uuid.random(),
     services = services,
-    schedule = WorkingSchedule(),
+    schedule = schedule,
     createdAt = Instant.fromEpochMilliseconds(0),
     permissions = permissions,
-    suspendedAt = suspendedAt
+    suspendedAt = suspendedAt,
 )
 
 internal fun stubPermissions(
@@ -40,13 +41,13 @@ internal fun stubPermissions(
     employees: ResourcePermission = ResourcePermission(),
     clients: ResourcePermission = ResourcePermission(),
     services: ResourcePermission = ResourcePermission(),
-    appointments: ResourcePermission = ResourcePermission()
+    appointments: ResourcePermission = ResourcePermission(),
 ) = BusinessPermissions(
     business = business,
     employees = employees,
     clients = clients,
     services = services,
-    appointments = appointments
+    appointments = appointments,
 )
 
 internal fun stubService(name: String = "Haircut") = Service(
@@ -56,24 +57,24 @@ internal fun stubService(name: String = "Haircut") = Service(
         id = Uuid.random(),
         businessId = Uuid.random(),
         name = "Hair",
-        createdAt = Instant.fromEpochMilliseconds(0)
+        createdAt = Instant.fromEpochMilliseconds(0),
     ),
     name = name,
     duration = 30.minutes,
     price = Money(value = 2000, currencyType = Money.SupportedCurrency.EUR),
     isAvailable = true,
-    createdAt = Instant.fromEpochMilliseconds(0)
+    createdAt = Instant.fromEpochMilliseconds(0),
 )
 
 internal fun stubInvitation(
     status: EmployeeInvitationStatus = EmployeeInvitationStatus.PENDING,
     createdAt: LocalDateTime = LocalDateTime(2024, 1, 1, 0, 0),
-    code: String? = null
+    code: String? = null,
 ) = EmployeeInvitation(
     id = Uuid.random(),
     businessId = Uuid.random(),
     invitedBy = Uuid.random(),
     code = code,
     status = status,
-    createdAt = createdAt
+    createdAt = createdAt,
 )

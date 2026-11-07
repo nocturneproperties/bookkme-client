@@ -2,6 +2,7 @@ package me.bookk.feature.settings.presentation.passkey
 
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.UsedInSwift
 import me.bookk.core.coroutine.DispatcherProvider
@@ -12,7 +13,7 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.android.designsystem.resources.DesignSystem
+import me.bookk.designsystem.simple
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.DeletePasskey
 import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
@@ -27,7 +28,7 @@ class PasskeyViewModel(
     private val getAvailablePasskeys: GetAvailablePasskeys,
     private val dateLocalizer: DateLocalizer,
     settingsStateFactory: SettingsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState = settingsStateFactory.createPasskeyState(createInitData())
@@ -57,7 +58,7 @@ class PasskeyViewModel(
             },
             onError = {
                 uiState.notification.add(errorMapper.mapToNotification(it))
-            }
+            },
         )
     }
 
@@ -66,20 +67,20 @@ class PasskeyViewModel(
             PresentationNotification.Message(
                 title = SettingsRes.strings.settings_passkey_delete_dialog_title.desc(),
                 message = SettingsRes.strings.settings_passkey_delete_dialog_message.format(
-                    passkeyItem.title
+                    passkeyItem.title,
                 ),
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.CANCEL
+                        actionType = ActionType.CANCEL,
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
                         actionType = ActionType.NEGATIVE,
-                        onClick = { deletePasskeyById(passkeyItem.id) }
-                    )
-                )
-            )
+                        onClick = { deletePasskeyById(passkeyItem.id) },
+                    ),
+                ),
+            ),
         )
     }
 
@@ -89,20 +90,20 @@ class PasskeyViewModel(
             PresentationNotification.Message(
                 title = SettingsRes.strings.settings_passkey_delete_dialog_title.desc(),
                 message = SettingsRes.strings.settings_passkey_delete_dialog_message.format(
-                    itemList.joinToString { it.title }
+                    itemList.joinToString { it.title },
                 ),
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.CANCEL
+                        actionType = ActionType.CANCEL,
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
                         actionType = ActionType.NEGATIVE,
-                        onClick = { deletePasskeyByIdList(itemList.map { it.id }) }
-                    )
-                )
-            )
+                        onClick = { deletePasskeyByIdList(itemList.map { it.id }) },
+                    ),
+                ),
+            ),
         )
     }
 
@@ -125,7 +126,7 @@ class PasskeyViewModel(
                 getAvailablePasskeys()
             },
             onComplete = ::onPasskeysDeleted,
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
+            onError = ::onDeletePasskeyError,
         )
     }
 
@@ -139,8 +140,24 @@ class PasskeyViewModel(
                 getAvailablePasskeys()
             },
             onComplete = ::onPasskeysDeleted,
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) }
+            onError = ::onDeletePasskeyError,
         )
+    }
+
+    private fun onDeletePasskeyError(error: Throwable) {
+        when (error) {
+            is DeletePasskey.Error.LastPasskey -> {
+                uiState.notification.add(
+                    PresentationNotification.Message.simple(
+                        SettingsRes.strings.settings_passkey_last_error.desc(),
+                    ),
+                )
+            }
+
+            else -> {
+                uiState.notification.add(error.notification())
+            }
+        }
     }
 
     private fun onPasskeysDeleted(passkeys: List<Passkey>) {
@@ -153,15 +170,18 @@ class PasskeyViewModel(
         uiState.replacePasskeyList(passkeys.map { it.toViewItem(localized, passkeys.size) })
     }
 
-    private fun Passkey.toViewItem(formatter: DateLocalizer.Formatter, totalItemCount: Int): PasskeyItem {
+    private fun Passkey.toViewItem(
+        formatter: DateLocalizer.Formatter,
+        totalItemCount: Int,
+    ): PasskeyItem {
         return PasskeyItem(
             id = id,
             title = name,
             isBackedUp = isBackedUp,
             isDeletable = totalItemCount > 1,
             addedOn = SettingsRes.strings.settings_passkey_added_on_format.format(
-                formatter.format(createdAt.date)
-            )
+                formatter.format(createdAt.date),
+            ),
         )
     }
 

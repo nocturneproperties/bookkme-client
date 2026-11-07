@@ -7,7 +7,8 @@ import androidx.core.content.ContextCompat
 import library.permissions.api.PermissionChecker
 import library.permissions.api.PermissionType
 
-internal actual class NotificationPermissionChecker : AndroidPermissionChecker(),
+internal actual class NotificationPermissionChecker :
+    AndroidPermissionChecker(),
     PermissionChecker {
 
     actual override val type: PermissionType = PermissionType.NOTIFICATIONS
@@ -24,7 +25,7 @@ internal actual class NotificationPermissionChecker : AndroidPermissionChecker()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
                 awaitActivity(),
-                Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.POST_NOTIFICATIONS,
             ) == PackageManager.PERMISSION_GRANTED
         } else {
             true

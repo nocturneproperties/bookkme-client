@@ -6,7 +6,7 @@ import kotlinx.datetime.LocalTime
 
 data class WorkingSchedule(
     val days: Map<DayOfWeek, DayOfWeekSchedule>,
-    val dayOffs: List<DayOffRange>
+    val dayOffs: List<DayOffRange>,
 ) {
 
     val monday = days[DayOfWeek.MONDAY] ?: DayOfWeekSchedule.disabled(DayOfWeek.MONDAY)
@@ -19,21 +19,21 @@ data class WorkingSchedule(
 
     constructor() : this(
         days = DayOfWeek.entries.associateWith { DayOfWeekSchedule.default(it) },
-        dayOffs = listOf()
+        dayOffs = listOf(),
     )
 }
 
 data class DayOfWeekSchedule(
     val dayOfWeek: DayOfWeek,
     val workingTime: List<WorkHour>,
-    val isActive: Boolean
+    val isActive: Boolean,
 ) {
     companion object {
         fun default(dayOfWeek: DayOfWeek): DayOfWeekSchedule {
             return DayOfWeekSchedule(
                 dayOfWeek = dayOfWeek,
                 workingTime = listOf(dayOfWeek.nineToFive()),
-                isActive = dayOfWeek < DayOfWeek.SATURDAY
+                isActive = dayOfWeek < DayOfWeek.SATURDAY,
             )
         }
 
@@ -41,7 +41,7 @@ data class DayOfWeekSchedule(
             return DayOfWeekSchedule(
                 dayOfWeek = dayOfWeek,
                 workingTime = listOf(),
-                isActive = false
+                isActive = false,
             )
         }
     }
@@ -49,15 +49,15 @@ data class DayOfWeekSchedule(
 
 data class WorkHour(
     val from: LocalTime,
-    val to: LocalTime
+    val to: LocalTime,
 )
 
 data class DayOffRange(
     val start: LocalDate,
-    val end: LocalDate
+    val end: LocalDate,
 )
 
 fun DayOfWeek.nineToFive() = WorkHour(
     from = LocalTime(9, 0),
-    to = LocalTime(17, 0)
+    to = LocalTime(17, 0),
 )

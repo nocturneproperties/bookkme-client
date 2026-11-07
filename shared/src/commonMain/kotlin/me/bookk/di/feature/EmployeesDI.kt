@@ -9,6 +9,6 @@ internal fun employeesDiModule() = module {
     includes(
         employeesPresentationModule(),
         employeesDomainModule(),
-        employeesDataModule()
+        employeesDataModule(),
     )
 }

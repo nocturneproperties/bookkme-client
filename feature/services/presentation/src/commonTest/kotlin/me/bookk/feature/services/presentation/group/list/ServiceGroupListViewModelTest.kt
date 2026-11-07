@@ -1,9 +1,5 @@
 package me.bookk.feature.services.presentation.group.list
 
-import kotlin.test.assertNull
-import kotlin.test.assertNotNull
-import me.bookk.feature.services.domain.api.entity.ServicesPermissions
-import me.bookk.feature.services.domain.api.GetServicesPermissions
 import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
@@ -18,6 +14,7 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
+import me.bookk.android.feature.services.resources.ServicesRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -33,8 +30,9 @@ import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.test.tap
+import me.bookk.feature.services.domain.api.GetServicesPermissions
 import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
-import me.bookk.android.feature.services.resources.ServicesRes
+import me.bookk.feature.services.domain.api.entity.ServicesPermissions
 import me.bookk.feature.services.domain.api.group.CreateServiceGroup
 import me.bookk.feature.services.domain.api.group.DeleteServiceGroup
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
@@ -46,6 +44,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
@@ -63,7 +63,9 @@ class ServiceGroupListViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(permissions: ServicesPermissions = ServicesPermissions(canEdit = true, canDelete = true)) {
+    private class Fixture(
+        permissions: ServicesPermissions = ServicesPermissions(canEdit = true, canDelete = true),
+    ) {
         val businessId = Uuid.random()
         val groups = MutableStateFlow<List<ServiceGroup>>(emptyList())
         val getServiceGroups = mock<GetServiceGroups> {
@@ -88,7 +90,7 @@ class ServiceGroupListViewModelTest {
             observeCurrentBusinessId = observeCurrentBusinessId,
             getServicesPermissions = getServicesPermissions,
             stateFactory = FakeServicesStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -225,7 +227,10 @@ class ServiceGroupListViewModelTest {
     fun `creates group for current business when dialog is confirmed`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createServiceGroup(capture(fixture.created)) } calls { (group: ServiceGroup) -> group }
+        everySuspend { fixture.createServiceGroup(capture(fixture.created)) } calls
+            { (group: ServiceGroup) ->
+                group
+            }
         val sut = fixture.sut()
 
         whenn()
@@ -254,7 +259,8 @@ class ServiceGroupListViewModelTest {
     fun `shows name exists message when group name is taken`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createServiceGroup(any()) } throws CreateServiceGroup.Error.NameExists(TestException())
+        everySuspend { fixture.createServiceGroup(any()) } throws
+            CreateServiceGroup.Error.NameExists(TestException())
         val sut = fixture.sut()
 
         whenn()
@@ -269,7 +275,8 @@ class ServiceGroupListViewModelTest {
     fun `shows invalid name message when group name is rejected`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.createServiceGroup(any()) } throws CreateServiceGroup.Error.InvalidName(TestException())
+        everySuspend { fixture.createServiceGroup(any()) } throws
+            CreateServiceGroup.Error.InvalidName(TestException())
         val sut = fixture.sut()
 
         whenn()
@@ -306,7 +313,9 @@ class ServiceGroupListViewModelTest {
         assertNotNull(sut.uiState.groups.items.single().onDeleteClick).invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+            .tap(ActionType.NEGATIVE)
 
         then()
         verifySuspend { fixture.deleteServiceGroup(group) }
@@ -325,10 +334,17 @@ class ServiceGroupListViewModelTest {
         assertNotNull(sut.uiState.groups.items.single().onDeleteClick).invoke()
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+            .tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -342,10 +358,17 @@ class ServiceGroupListViewModelTest {
         assertNotNull(sut.uiState.groups.items.single().onDeleteClick).invoke()
 
         whenn()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.Message>()
+            .single()
+            .tap(ActionType.NEGATIVE)
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -359,7 +382,10 @@ class ServiceGroupListViewModelTest {
         assertNotNull(sut.uiState.groups.items.single().onDeleteClick).invoke()
 
         whenn()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.Message>()
+            .single()
+            .tap(ActionType.NEGATIVE)
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
@@ -387,6 +413,9 @@ class ServiceGroupListViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<ServiceGroupListDestination>(ServiceGroupListDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ServiceGroupListDestination>(ServiceGroupListDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

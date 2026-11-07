@@ -20,7 +20,7 @@ fun SettingsTab() {
         enterTransition = { slideIntoContainer(SlideDirection.Start, tween(400)) },
         exitTransition = { scaleOut(targetScale = 0.92f) },
         popEnterTransition = { scaleIn(initialScale = 0.92f) },
-        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) }
+        popExitTransition = { slideOutOfContainer(SlideDirection.End, tween(400)) },
     ) {
         settingsGraph(
             navigation = SettingsNavigation(
@@ -37,10 +37,16 @@ fun SettingsTab() {
                 navigateToDeleteAccount = {
                     settingsController.navigate(SettingsDestination.DeleteAccount)
                 },
+                navigateToPersonalDataExport = {
+                    settingsController.navigate(SettingsDestination.PersonalDataExport)
+                },
+                navigateToPrivacy = {
+                    settingsController.navigate(SettingsDestination.Privacy)
+                },
                 navigateToNotifications = {
                     settingsController.navigate(SettingsDestination.Notifications)
-                }
-            )
+                },
+            ),
         )
     }
 }

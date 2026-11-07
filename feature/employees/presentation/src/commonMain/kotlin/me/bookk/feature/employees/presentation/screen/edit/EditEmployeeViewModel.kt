@@ -5,6 +5,7 @@ import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
 import library.device.api.DeviceFacade
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.dashOnBlank
@@ -16,7 +17,6 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.schedule.DayOffPeriod
 import me.bookk.designsystem.uistate.schedule.ScheduleBinder
@@ -55,12 +55,14 @@ class EditEmployeeViewModel(
     private val device: DeviceFacade,
     private val stateFactory: EmployeesStateFactory,
     dateLocalizer: DateLocalizer,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: EditEmployeeState = stateFactory.createEditEmployeeState().setup()
-    private val scheduleBinder = ScheduleBinder(uiState.schedule, dateLocalizer, weakVMClosure { it.invalidateSaveState() })
-    private val permissionStates: Map<BusinessResource, ResourcePermissionState> = createPermissionStates()
+    private val scheduleBinder =
+        ScheduleBinder(uiState.schedule, dateLocalizer, weakVMClosure { it.invalidateSaveState() })
+    private val permissionStates: Map<BusinessResource, ResourcePermissionState> =
+        createPermissionStates()
     private var referenceEmployee: Employee? = null
 
     init {
@@ -70,7 +72,9 @@ class EditEmployeeViewModel(
     }
 
     private fun EditEmployeeState.setup() = apply {
-        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(EditEmployeeDestinations.Back) }
+        appBar.onBackClick = weakVMClosure {
+            it.uiState.navigation.push(EditEmployeeDestinations.Back)
+        }
         save.text = DesignSystem.strings.action_save.desc()
         save.isEnabled = false
         save.isVisible = false
@@ -92,17 +96,26 @@ class EditEmployeeViewModel(
                 canView.text = EmployeesRes.strings.employees_edit_permission_view.desc()
                 canUpdate.text = EmployeesRes.strings.employees_edit_permission_update.desc()
                 canDelete.text = EmployeesRes.strings.employees_edit_permission_delete.desc()
-                canView.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.setView(isChecked) } }
-                canUpdate.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.setUpdate(isChecked) } }
-                canDelete.onCheckedChange = weakVMClosure { vm, isChecked -> vm.onPermissionChanged(resource) { it.setDelete(isChecked) } }
+                canView.onCheckedChange = weakVMClosure { vm, isChecked ->
+                    vm.onPermissionChanged(resource) { it.setView(isChecked) }
+                }
+                canUpdate.onCheckedChange = weakVMClosure { vm, isChecked ->
+                    vm.onPermissionChanged(resource) { it.setUpdate(isChecked) }
+                }
+                canDelete.onCheckedChange = weakVMClosure { vm, isChecked ->
+                    vm.onPermissionChanged(resource) { it.setDelete(isChecked) }
+                }
             }
         }
     }
 
     private fun observeServices() {
-        getAssignableServices.flow()
+        getAssignableServices
+            .flow()
             .flowOn(DispatcherProvider.io)
-            .safeOnEach { services -> uiState.services.replaceOptions(services.map(::EmployeeServicePresentation)) }
+            .safeOnEach { services ->
+                uiState.services.replaceOptions(services.map(::EmployeeServicePresentation))
+            }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
     }
@@ -116,7 +129,7 @@ class EditEmployeeViewModel(
                     employee = employee,
                     isOwner = isBusinessOwner(employee.userId, employee.businessId),
                     canEdit = canEditEmployees(employee.businessId),
-                    canManagePermissions = isBusinessOwner(employee.businessId)
+                    canManagePermissions = isBusinessOwner(employee.businessId),
                 )
             },
             onComplete = { access ->
@@ -124,7 +137,7 @@ class EditEmployeeViewModel(
                 renderEmployee(access.employee)
                 refreshServices(access.employee.businessId)
             },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -132,14 +145,14 @@ class EditEmployeeViewModel(
         val employee: Employee,
         val isOwner: Boolean,
         val canEdit: Boolean,
-        val canManagePermissions: Boolean
+        val canManagePermissions: Boolean,
     )
 
     private fun refreshServices(businessId: Uuid) {
         launch(
             launchIn = DispatcherProvider.io,
             call = { getAssignableServices.refresh(businessId) },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -165,18 +178,20 @@ class EditEmployeeViewModel(
                 InfoLine(
                     title = EmployeesRes.strings.employees_edit_phone,
                     value = employee.phone.dashOnBlank(),
-                    onClick = weakVMClosure { vm -> employee.phone?.let { vm.device.dial(it) } }
+                    onClick = weakVMClosure { vm -> employee.phone?.let { vm.device.dial(it) } },
                 ),
                 InfoLine(
                     title = EmployeesRes.strings.employees_edit_email,
                     value = employee.email.dashOnBlank(),
-                    onClick = weakVMClosure { vm -> employee.email?.let { vm.device.mail(it) } }
-                )
-            )
+                    onClick = weakVMClosure { vm -> employee.email?.let { vm.device.mail(it) } },
+                ),
+            ),
         )
         uiState.services.replaceSelected(employee.services.map(::EmployeeServicePresentation))
         scheduleBinder.render(employee.schedule.toWeekSchedule())
-        permissionStates.forEach { (resource, state) -> state.render(employee.permissions.of(resource)) }
+        permissionStates.forEach { (resource, state) ->
+            state.render(employee.permissions.of(resource))
+        }
         renderSuspension(employee)
         invalidateSaveState()
     }
@@ -197,17 +212,24 @@ class EditEmployeeViewModel(
 
     private fun onServicesPicked(items: List<EmployeeServicePresentation>) {
         val selectedIds = uiState.services.selectedItems.map { it.pickerItemId }.toSet()
-        uiState.services.replaceSelected(uiState.services.selectedItems + items.filterNot { it.pickerItemId in selectedIds })
+        uiState.services.replaceSelected(
+            uiState.services.selectedItems + items.filterNot { it.pickerItemId in selectedIds },
+        )
         invalidateSaveState()
     }
 
     private fun onServicesRemoved(items: List<EmployeeServicePresentation>) {
         val removedIds = items.map { it.pickerItemId }.toSet()
-        uiState.services.replaceSelected(uiState.services.selectedItems.filterNot { it.pickerItemId in removedIds })
+        uiState.services.replaceSelected(
+            uiState.services.selectedItems.filterNot { it.pickerItemId in removedIds },
+        )
         invalidateSaveState()
     }
 
-    private fun onPermissionChanged(resource: BusinessResource, change: (ResourcePermissionState) -> Unit) {
+    private fun onPermissionChanged(
+        resource: BusinessResource,
+        change: (ResourcePermissionState) -> Unit,
+    ) {
         change(permissionStates.getValue(resource))
         invalidateSaveState()
     }
@@ -236,13 +258,15 @@ class EditEmployeeViewModel(
             onComplete = {
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 renderEmployee(it)
-                uiState.notifications.add(GlobalMessage(EmployeesRes.strings.employees_edit_updated.desc()))
+                uiState.notifications.add(
+                    GlobalMessage(EmployeesRes.strings.employees_edit_updated.desc()),
+                )
             },
             onError = { uiState.notifications.add(it.saveErrorNotification()) },
             onTerminate = {
                 uiState.save.stopLoading()
                 invalidateSaveState()
-            }
+            },
         )
     }
 
@@ -257,22 +281,26 @@ class EditEmployeeViewModel(
                     EmployeesRes.strings.employees_edit_reinstate_dialog_title.desc()
                 },
                 message = if (suspend) {
-                    EmployeesRes.strings.employees_edit_suspend_dialog_message.format(employee.fullName)
+                    EmployeesRes.strings.employees_edit_suspend_dialog_message.format(
+                        employee.fullName,
+                    )
                 } else {
-                    EmployeesRes.strings.employees_edit_reinstate_dialog_message.format(employee.fullName)
+                    EmployeesRes.strings.employees_edit_reinstate_dialog_message.format(
+                        employee.fullName,
+                    )
                 },
                 buttons = listOf(
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_cancel.desc(),
-                        actionType = ActionType.CANCEL
+                        actionType = ActionType.CANCEL,
                     ),
                     ButtonDescriptor(
                         text = DesignSystem.strings.action_confirm.desc(),
                         actionType = if (suspend) ActionType.NEGATIVE else ActionType.POSITIVE,
-                        onClick = weakVMClosure { it.setSuspension(employee, suspend) }
-                    )
-                )
-            )
+                        onClick = weakVMClosure { it.setSuspension(employee, suspend) },
+                    ),
+                ),
+            ),
         )
     }
 
@@ -288,7 +316,7 @@ class EditEmployeeViewModel(
                 uiState.notifications.add(GlobalMessage(updated.suspensionChangedMessage().desc()))
             },
             onError = { uiState.notifications.add(it.suspensionErrorNotification()) },
-            onTerminate = { uiState.suspension.stopLoading() }
+            onTerminate = { uiState.suspension.stopLoading() },
         )
     }
 
@@ -302,19 +330,39 @@ class EditEmployeeViewModel(
 
     private fun Throwable.suspensionErrorNotification(): PresentationNotification {
         return when (this) {
-            is SetEmployeeSuspension.Error.OwnerSuspensionNotAllowed ->
-                PresentationNotification.Message.simple(EmployeesRes.strings.employees_edit_error_owner_suspension.desc())
-            else -> notification()
+            is SetEmployeeSuspension.Error.OwnerSuspensionNotAllowed -> {
+                PresentationNotification.Message.simple(
+                    EmployeesRes.strings.employees_edit_error_owner_suspension.desc(),
+                )
+            }
+
+            else -> {
+                notification()
+            }
         }
     }
 
     private fun Throwable.saveErrorNotification(): PresentationNotification {
         val message = when (this) {
-            is UpdateEmployee.Error.ValidationError -> EmployeesRes.strings.employees_edit_error_validation
-            is UpdateEmployee.Error.ActiveDayWithoutWorkHours -> EmployeesRes.strings.employees_edit_error_active_day_without_work_hours
-            is UpdateEmployee.Error.InvalidDayOffRange -> EmployeesRes.strings.employees_edit_error_invalid_day_off_range
-            is UpdateEmployee.Error.InsufficientGrant -> EmployeesRes.strings.employees_edit_error_insufficient_grant
-            else -> return notification()
+            is UpdateEmployee.Error.ValidationError -> {
+                EmployeesRes.strings.employees_edit_error_validation
+            }
+
+            is UpdateEmployee.Error.ActiveDayWithoutWorkHours -> {
+                EmployeesRes.strings.employees_edit_error_active_day_without_work_hours
+            }
+
+            is UpdateEmployee.Error.InvalidDayOffRange -> {
+                EmployeesRes.strings.employees_edit_error_invalid_day_off_range
+            }
+
+            is UpdateEmployee.Error.InsufficientGrant -> {
+                EmployeesRes.strings.employees_edit_error_insufficient_grant
+            }
+
+            else -> {
+                return notification()
+            }
         }
         return PresentationNotification.Message.simple(message.desc())
     }
@@ -323,7 +371,7 @@ class EditEmployeeViewModel(
         return referenceEmployee?.copy(
             services = uiState.services.selectedItems.map { it.service },
             schedule = scheduleBinder.snapshot().toWorkingSchedule(),
-            permissions = snapshotPermissions()
+            permissions = snapshotPermissions(),
         )
     }
 
@@ -333,12 +381,16 @@ class EditEmployeeViewModel(
             employees = permissionStates.getValue(BusinessResource.EMPLOYEES).toDomain(),
             clients = permissionStates.getValue(BusinessResource.CLIENTS).toDomain(),
             services = permissionStates.getValue(BusinessResource.SERVICES).toDomain(),
-            appointments = permissionStates.getValue(BusinessResource.APPOINTMENTS).toDomain()
+            appointments = permissionStates.getValue(BusinessResource.APPOINTMENTS).toDomain(),
         )
     }
 
     private fun ResourcePermissionState.toDomain(): ResourcePermission {
-        return ResourcePermission(view = canView.isChecked, update = canUpdate.isChecked, delete = canDelete.isChecked)
+        return ResourcePermission(
+            view = canView.isChecked,
+            update = canUpdate.isChecked,
+            delete = canDelete.isChecked,
+        )
     }
 
     private fun invalidateSaveState() {
@@ -347,7 +399,8 @@ class EditEmployeeViewModel(
     }
 
     private fun isChanged(reference: Employee): Boolean {
-        return uiState.services.selectedItems.map { it.service.id }.toSet() != reference.services.map { it.id }.toSet() ||
+        return uiState.services.selectedItems.map { it.service.id }.toSet() !=
+            reference.services.map { it.id }.toSet() ||
             scheduleBinder.snapshot() != reference.schedule.toWeekSchedule() ||
             snapshotPermissions() != reference.permissions
     }
@@ -364,37 +417,53 @@ class EditEmployeeViewModel(
 
     private fun BusinessResource.title(): StringResource {
         return when (this) {
-            BusinessResource.BUSINESS -> EmployeesRes.strings.employees_edit_permission_business
-            BusinessResource.EMPLOYEES -> EmployeesRes.strings.employees_edit_permission_employees
-            BusinessResource.CLIENTS -> EmployeesRes.strings.employees_edit_permission_clients
-            BusinessResource.SERVICES -> EmployeesRes.strings.employees_edit_permission_services
-            BusinessResource.APPOINTMENTS -> EmployeesRes.strings.employees_edit_permission_appointments
+            BusinessResource.BUSINESS -> {
+                EmployeesRes.strings.employees_edit_permission_business
+            }
+
+            BusinessResource.EMPLOYEES -> {
+                EmployeesRes.strings.employees_edit_permission_employees
+            }
+
+            BusinessResource.CLIENTS -> {
+                EmployeesRes.strings.employees_edit_permission_clients
+            }
+
+            BusinessResource.SERVICES -> {
+                EmployeesRes.strings.employees_edit_permission_services
+            }
+
+            BusinessResource.APPOINTMENTS -> {
+                EmployeesRes.strings.employees_edit_permission_appointments
+            }
         }
     }
 
     private fun WorkingSchedule.toWeekSchedule(): WeekSchedule {
         return WeekSchedule(
-            days = listOf(monday, tuesday, wednesday, thursday, friday, saturday, sunday).map { day ->
+            days =
+            listOf(monday, tuesday, wednesday, thursday, friday, saturday, sunday).map { day ->
                 WeekdaySchedule(
                     dayOfWeek = day.dayOfWeek,
                     isActive = day.isActive,
-                    workingHours = day.workingTime.map { WorkingHours(it.from, it.to) }
+                    workingHours = day.workingTime.map { WorkingHours(it.from, it.to) },
                 )
             },
-            dayOffs = dayOffs.map { DayOffPeriod(it.start, it.end) }
+            dayOffs = dayOffs.map { DayOffPeriod(it.start, it.end) },
         )
     }
 
     private fun WeekSchedule.toWorkingSchedule(): WorkingSchedule {
         return WorkingSchedule(
             days = days.associate { day ->
-                day.dayOfWeek to DayOfWeekSchedule(
-                    dayOfWeek = day.dayOfWeek,
-                    workingTime = day.workingHours.map { WorkHour(it.from, it.to) },
-                    isActive = day.isActive
-                )
+                day.dayOfWeek to
+                    DayOfWeekSchedule(
+                        dayOfWeek = day.dayOfWeek,
+                        workingTime = day.workingHours.map { WorkHour(it.from, it.to) },
+                        isActive = day.isActive,
+                    )
             },
-            dayOffs = dayOffs.map { DayOffRange(it.start, it.end) }
+            dayOffs = dayOffs.map { DayOffRange(it.start, it.end) },
         )
     }
 }

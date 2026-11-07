@@ -14,14 +14,17 @@ class PasskeyAssertionTest {
     fun `reads credential id and user handle from the assertion`() = runUnitTest {
         given()
         val payload = PasskeyVerificationPayload(
-            """{"id":"Y3JlZC1pZA","rawId":"Y3JlZC1pZA","type":"public-key","response":{"userHandle":"dXNlci1pZA","signature":"c2ln"}}"""
+            """{"id":"Y3JlZC1pZA","rawId":"Y3JlZC1pZA","type":"public-key","response":{"userHandle":"dXNlci1pZA","signature":"c2ln"}}""",
         )
 
         whenn()
         val result = PasskeyAssertion.from(payload)
 
         then()
-        assertEquals(PasskeyAssertion(credentialId = "Y3JlZC1pZA", userHandle = "dXNlci1pZA"), result)
+        assertEquals(
+            PasskeyAssertion(credentialId = "Y3JlZC1pZA", userHandle = "dXNlci1pZA"),
+            result,
+        )
     }
 
     @Test
@@ -39,7 +42,8 @@ class PasskeyAssertionTest {
     @Test
     fun `has no user handle when the assertion carries an empty one`() = runUnitTest {
         given()
-        val payload = PasskeyVerificationPayload("""{"id":"Y3JlZC1pZA","response":{"userHandle":""}}""")
+        val payload =
+            PasskeyVerificationPayload("""{"id":"Y3JlZC1pZA","response":{"userHandle":""}}""")
 
         whenn()
         val result = PasskeyAssertion.from(payload)

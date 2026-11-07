@@ -30,24 +30,24 @@ internal fun AppointmentCompletionSheet(state: AppointmentCompletionState) {
     DesignSystemBottomSheet(
         sheetState = sheetState,
         title = state.title.localized(),
-        onDismiss = { state.isSheetVisible = false }
+        onDismiss = { state.isSheetVisible = false },
     ) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OptionsMultiPicker(
                     state.servicePicker,
                     showDividers = true,
-                    screenPicker = standardOptionsScreenPicker()
+                    screenPicker = standardOptionsScreenPicker(),
                 ) { item, onItemRemove ->
                     ServiceItem(item, onItemRemove)
                 }
                 Text(
                     text = state.servicesHint.localized(),
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    style = MaterialTheme.typography.bodySmall.secondary()
+                    style = MaterialTheme.typography.bodySmall.secondary(),
                 )
             }
             TextField(state.price, singleLine = true)

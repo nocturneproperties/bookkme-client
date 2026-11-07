@@ -35,7 +35,8 @@ internal class FakeClientsListState : ClientsListState {
     override val searchField = FakeTextFieldState()
     override val clientsList = FakeListState<ClientSection>()
     override val refreshState = FakeRefreshState()
-    override val contactsPicker = FakeOptionsMultiPickerState<SimplePickerPresentation<ClientImportEntry>>()
+    override val contactsPicker =
+        FakeOptionsMultiPickerState<SimplePickerPresentation<ClientImportEntry>>()
     override var isContactsPickerVisible: Boolean = false
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<ClientsListDestination>()

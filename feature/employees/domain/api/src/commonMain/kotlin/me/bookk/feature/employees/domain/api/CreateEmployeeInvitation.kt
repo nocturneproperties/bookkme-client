@@ -7,7 +7,13 @@ interface CreateEmployeeInvitation {
     suspend operator fun invoke(businessId: Uuid): EmployeeInvitation
 
     sealed interface Error {
-        class PendingInvitationsLimitReached(cause: Throwable) : Error, Throwable(cause)
-        class DailyInvitationsLimitReached(cause: Throwable) : Error, Throwable(cause)
+        class PendingInvitationsLimitReached(
+            cause: Throwable,
+        ) : Throwable(cause),
+            Error
+        class DailyInvitationsLimitReached(
+            cause: Throwable,
+        ) : Throwable(cause),
+            Error
     }
 }

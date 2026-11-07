@@ -44,7 +44,10 @@ class GetSettingsImplTest {
     }
 
     private fun stubProfile() = UserProfile(
-        id = Uuid.random(), firstName = "John", lastName = "Doe", email = "john@example.com"
+        id = Uuid.random(),
+        firstName = "John",
+        lastName = "Doe",
+        email = "john@example.com",
     )
 
     @Test

@@ -18,7 +18,7 @@ fun PullToRefresh(
     modifier: Modifier = Modifier,
     onRefresh: () -> Unit = state.onRefresh,
     contentAlignment: Alignment = Alignment.TopStart,
-    content: @Composable BoxScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit,
 ) {
     val refreshState = rememberPullToRefreshState()
     PullToRefreshBox(
@@ -33,9 +33,9 @@ fun PullToRefresh(
                 isRefreshing = state.isRefreshing,
                 state = refreshState,
                 containerColor = LocalColors.current.background,
-                color = LocalColors.current.primaryText
+                color = LocalColors.current.primaryText,
             )
         },
-        content = content
+        content = content,
     )
 }

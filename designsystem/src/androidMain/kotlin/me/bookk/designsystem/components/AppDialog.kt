@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.AndroidButtonState
@@ -57,7 +57,7 @@ fun AppDialog(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 buttonDescriptors.forEach {
                     StateTextButton(
@@ -74,7 +74,7 @@ fun AppDialog(
                                 ActionType.CANCEL -> LocalColors.current.actionText
                                 ActionType.CONFIRM -> LocalColors.current.actionText
                             },
-                        )
+                        ),
                     )
                 }
             }
@@ -82,24 +82,20 @@ fun AppDialog(
     }
 }
 
-
 @Composable
-fun AppDialogScreenContainer(
-    onDismiss: () -> Unit,
-    content: @Composable () -> Unit,
-) {
+fun AppDialogScreenContainer(onDismiss: () -> Unit, content: @Composable () -> Unit) {
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Card(
             shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
-                containerColor = LocalColors.current.elevated
+                containerColor = LocalColors.current.elevated,
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
             content()
         }
@@ -116,18 +112,18 @@ private fun Preview() {
             buttonDescriptors = listOf(
                 ButtonDescriptor(
                     text = DesignSystem.strings.action_cancel.desc(),
-                    actionType = ActionType.NEGATIVE
+                    actionType = ActionType.NEGATIVE,
                 ),
                 ButtonDescriptor(
                     text = DesignSystem.strings.action_confirm.desc(),
-                    actionType = ActionType.POSITIVE
+                    actionType = ActionType.POSITIVE,
                 ),
                 ButtonDescriptor(
                     text = DesignSystem.strings.action_cancel.desc(),
-                    actionType = ActionType.CANCEL
-                )
+                    actionType = ActionType.CANCEL,
+                ),
             ),
-            onDismiss = {}
+            onDismiss = {},
         )
     }
 }

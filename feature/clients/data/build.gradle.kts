@@ -11,7 +11,6 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core)
             implementation(projects.core.domain)
             implementation(projects.core.data)
             implementation(projects.feature.clients.domain.api)
@@ -21,8 +20,8 @@ kotlin {
             implementation(libs.ktor.client.resources)
         }
         commonTest.dependencies {
+            implementation(libs.ktor.client.negotiation)
             implementation(projects.core.testFixtures)
-            implementation(libs.kotlin.serialization.core)
         }
     }
 }

@@ -4,5 +4,5 @@ data class DeviceContact(
     val name: String,
     val lastName: String,
     val phones: List<String>,
-    val emails: List<String>
+    val emails: List<String>,
 )

@@ -51,13 +51,18 @@ fun <T> SelectorBottomSheet(
     requireConfirmation: Boolean = true,
     onDismiss: () -> Unit = {},
     onItemPicked: (T) -> Unit = {},
-    itemContent: @Composable (index: Int, item: T, isSelected: Boolean, onClick: (T) -> Unit) -> Unit
+    itemContent: @Composable (
+        index: Int,
+        item: T,
+        isSelected: Boolean,
+        onClick: (T) -> Unit,
+    ) -> Unit,
 ) {
     if (data.isNotEmpty()) {
         DesignSystemBottomSheet(
             sheetState = sheetState,
             title = title.localized(),
-            onDismiss = onDismiss
+            onDismiss = onDismiss,
         ) {
             var selectedItem: T? by remember { mutableStateOf(preselectItem) }
             Column(Modifier.verticalScroll(rememberScrollState())) {
@@ -74,13 +79,13 @@ fun <T> SelectorBottomSheet(
                 val buttonState = remember(selectedItem) {
                     AndroidButtonState(
                         text = DesignSystem.strings.action_continue.desc(),
-                        isEnabled = selectedItem != null
+                        isEnabled = selectedItem != null,
                     )
                 }
                 ActionButton(
                     modifier = Modifier.fillMaxWidth(),
                     state = buttonState,
-                    onClick = { selectedItem?.let { onItemPicked(it) } }
+                    onClick = { selectedItem?.let { onItemPicked(it) } },
                 )
             }
         }
@@ -94,7 +99,7 @@ fun <T> StandardSelectorItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     stringify: @Composable (T) -> String = { it.toString() },
-    icon: @Composable (Modifier) -> Unit = {}
+    icon: @Composable (Modifier) -> Unit = {},
 ) {
     Card(
         modifier = modifier
@@ -103,14 +108,14 @@ fun <T> StandardSelectorItem(
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = LocalColors.current.elevated
+            containerColor = LocalColors.current.elevated,
         ),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Row(
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             icon(Modifier.size(40.dp))
             val text = stringify(item)
@@ -123,7 +128,7 @@ fun <T> StandardSelectorItem(
                 Icon(
                     imageVector = Icons.Filled.Check,
                     tint = LocalColors.current.actionText,
-                    contentDescription = "Selected icon"
+                    contentDescription = "Selected icon",
                 )
             }
         }
@@ -137,7 +142,7 @@ fun <T> StandardElevatedSelectorItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     stringify: @Composable (T) -> String = { it.toString() },
-    icon: @Composable (Modifier) -> Unit = {}
+    icon: @Composable (Modifier) -> Unit = {},
 ) {
     ElevatedCard(
         modifier = modifier
@@ -146,16 +151,16 @@ fun <T> StandardElevatedSelectorItem(
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = LocalColors.current.elevated
+            containerColor = LocalColors.current.elevated,
         ),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             icon(Modifier.size(40.dp))
             val text = stringify(item)
@@ -168,7 +173,7 @@ fun <T> StandardElevatedSelectorItem(
                 Icon(
                     imageVector = Icons.Filled.Check,
                     tint = LocalColors.current.actionText,
-                    contentDescription = "Selected icon"
+                    contentDescription = "Selected icon",
                 )
             }
         }
@@ -189,10 +194,10 @@ private fun Preview() {
                 StandardSelectorItem(
                     item = item,
                     isSelected = isSelected,
-                    onClick = { onClick(item) }
+                    onClick = { onClick(item) },
                 )
             },
-            requireConfirmation = true
+            requireConfirmation = true,
         )
     }
 }
@@ -211,10 +216,10 @@ private fun PreviewDark() {
                 StandardElevatedSelectorItem(
                     item = item,
                     isSelected = isSelected,
-                    onClick = { onClick(item) }
+                    onClick = { onClick(item) },
                 )
             },
-            requireConfirmation = false
+            requireConfirmation = false,
         )
     }
 }

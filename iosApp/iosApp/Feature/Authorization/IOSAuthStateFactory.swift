@@ -18,8 +18,12 @@ class IOSAuthStateFactory: @MainActor AuthStateFactory {
         return IOSSignInState(initData: initData)
     }
     
-    func createSignUpState(initData: SignUpStateInitData) -> any SignUpState {
-        return IOSSignUpState(initData: initData)
+    func createSignUpState() -> any SignUpState {
+        return IOSSignUpState()
+    }
+
+    func createSignUpLegalDocumentState() -> any SignUpLegalDocumentState {
+        return IOSSignUpLegalDocumentState()
     }
     
     func createTroubleshootState(initData: TroubleshootStateInitData) -> any TroubleshootState {

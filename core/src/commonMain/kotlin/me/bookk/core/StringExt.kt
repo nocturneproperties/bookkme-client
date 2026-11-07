@@ -2,7 +2,6 @@ package me.bookk.core
 
 import kotlin.uuid.Uuid
 
-
 fun String.makeUnique(): String {
     return "${this}_${Uuid.random()}"
 }

@@ -7,17 +7,23 @@ import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSou
 import kotlin.uuid.Uuid
 
 internal class DeclineAppointmentRequestImpl(
-    private val dataSource: AppointmentRequestDataSource
+    private val dataSource: AppointmentRequestDataSource,
 ) : DeclineAppointmentRequest {
 
-    override suspend fun invoke(requestId: Uuid, businessId: Uuid, reason: String) =
-        runCatching {
-            dataSource.declineAppointmentRequest(requestId, businessId, reason)
-            dataSource.deleteAppointmentRequestsInDb(listOf(requestId))
-        }.onBusinessError {
+    override suspend fun invoke(requestId: Uuid, businessId: Uuid, reason: String) = runCatching {
+        dataSource.declineAppointmentRequest(requestId, businessId, reason)
+        dataSource.deleteAppointmentRequestsInDb(listOf(requestId))
+    }
+        .onBusinessError {
             when (it.errorCode) {
-                AppointmentErrorCodes.REQUEST_ALREADY_DECLINED -> throw DeclineAppointmentRequest.Error.AlreadyDeclined()
-                AppointmentErrorCodes.REQUEST_ALREADY_APPROVED -> throw DeclineAppointmentRequest.Error.AlreadyApproved()
+                AppointmentErrorCodes.REQUEST_ALREADY_DECLINED -> {
+                    throw DeclineAppointmentRequest.Error.AlreadyDeclined()
+                }
+
+                AppointmentErrorCodes.REQUEST_ALREADY_APPROVED -> {
+                    throw DeclineAppointmentRequest.Error.AlreadyApproved()
+                }
             }
-        }.getOrThrow()
+        }
+        .getOrThrow()
 }

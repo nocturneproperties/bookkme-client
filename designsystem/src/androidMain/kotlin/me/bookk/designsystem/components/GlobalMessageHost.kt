@@ -40,10 +40,7 @@ import me.bookk.designsystem.resources.color.themed
 import me.bookk.designsystem.theme.color.LocalColors
 
 @Composable
-fun GlobalMessageHost(
-    hostState: SnackbarHostState,
-    modifier: Modifier = Modifier
-) {
+fun GlobalMessageHost(hostState: SnackbarHostState, modifier: Modifier = Modifier) {
     val currentData = hostState.currentSnackbarData
     LaunchedEffect(currentData) {
         val data = currentData ?: return@LaunchedEffect
@@ -58,7 +55,7 @@ fun GlobalMessageHost(
         transitionSpec = {
             slideInVertically { -it } togetherWith slideOutVertically { -it }
         },
-        label = "GlobalMessage"
+        label = "GlobalMessage",
     ) { data ->
         if (data != null) {
             Box(
@@ -66,7 +63,7 @@ fun GlobalMessageHost(
                     .fillMaxWidth()
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                contentAlignment = Alignment.TopCenter
+                contentAlignment = Alignment.TopCenter,
             ) {
                 GlobalMessagePill(data)
             }
@@ -86,20 +83,20 @@ private fun GlobalMessagePill(data: SnackbarData) {
             .clickable { data.dismiss() }
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Icon(
             imageVector = state.icon(),
             contentDescription = null,
             tint = contentColor,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
         )
         Text(
             text = data.visuals.message,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
             color = contentColor,
-            modifier = Modifier.weight(1f, fill = false)
+            modifier = Modifier.weight(1f, fill = false),
         )
         data.visuals.actionLabel?.let { label ->
             Text(
@@ -107,7 +104,7 @@ private fun GlobalMessagePill(data: SnackbarData) {
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = contentColor,
-                modifier = Modifier.clickable { data.performAction() }
+                modifier = Modifier.clickable { data.performAction() },
             )
         }
     }

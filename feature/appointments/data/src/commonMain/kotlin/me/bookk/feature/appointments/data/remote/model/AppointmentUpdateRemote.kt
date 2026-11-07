@@ -11,11 +11,11 @@ data class AppointmentUpdateRemote(
     @ProtoNumber(8) val date: Instant,
     @ProtoNumber(9) val note: String,
     @ProtoNumber(13) val employeeId: Uuid,
-    @ProtoNumber(14) val services: List<RequestedServiceRemote>
+    @ProtoNumber(14) val services: List<RequestedServiceRemote>,
 )
 
 @Serializable
 data class RequestedServiceRemote(
     @ProtoNumber(1) val serviceId: Uuid,
-    @ProtoNumber(2) val count: Int
+    @ProtoNumber(2) val count: Int,
 )

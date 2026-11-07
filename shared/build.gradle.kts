@@ -27,20 +27,20 @@ buildkonfig {
             BOOLEAN,
             "DEBUG",
             getCurrentVariant().contains("debug", ignoreCase = true).toString(),
-            const = true
+            const = true,
         )
         buildConfigField(
             STRING,
             "VERSION_NAME",
             ApplicationConfig.VERSION_NAME,
-            const = true
+            const = true,
         )
         buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
         buildConfigField(
             STRING,
             "PROXY_URL",
             if (getCurrentVariant().contains("debug", ignoreCase = true)) proxyUrl else "",
-            const = true
+            const = true,
         )
     }
     defaultConfigs(ProductFlavour.DEV.title + "Debug") {
@@ -48,7 +48,7 @@ buildkonfig {
             STRING,
             "BASE_URL",
             "https://local.bookkme.app/api",
-            const = true
+            const = true,
         )
     }
     defaultConfigs(ProductFlavour.DEV.title + "Release") {
@@ -56,7 +56,7 @@ buildkonfig {
             STRING,
             "BASE_URL",
             "https://local.bookkme.app/api",
-            const = true
+            const = true,
         )
     }
     defaultConfigs(ProductFlavour.PROD.title + "Release") {
@@ -64,7 +64,7 @@ buildkonfig {
             STRING,
             "BASE_URL",
             "https://bookkme.app/api",
-            const = true
+            const = true,
         )
     }
 }
@@ -73,32 +73,24 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.kotlinx.coroutines.android)
-            implementation(project.dependencies.platform(libs.firebase.bom))
-            implementation(libs.firebase.crashlytics)
         }
         commonMain.dependencies {
-            //Core
+            // Core
             implementation(projects.database)
             implementation(projects.core.data)
-            implementation(projects.environment.api)
-            implementation(projects.environment.impl)
             api(projects.core)
             api(projects.core.domain)
             api(projects.core.presentation)
             api(projects.designsystem)
-            //Library
+            // Library
             implementation(projects.library.device.api)
             implementation(projects.library.device.impl)
-            implementation(projects.library.cache.api)
             implementation(projects.library.cache.impl)
-            implementation(projects.library.permissions.api)
             implementation(projects.library.permissions.impl)
-            implementation(projects.library.files.api)
             implementation(projects.library.files.impl)
-            implementation(projects.library.validation.api)
             implementation(projects.library.validation.impl)
             api(projects.library.notifications.api)
+            api(projects.library.crashreporting.api)
             implementation(projects.library.notifications.impl)
             api(projects.library.credentials.api)
             implementation(projects.library.credentials.impl)
@@ -106,45 +98,38 @@ kotlin {
             api(projects.library.biometry.api)
             api(projects.library.picker)
             implementation(projects.library.biometry.impl)
-            //Auth
+            // Auth
             implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.authorization.domain.impl)
             implementation(projects.feature.authorization.data)
             api(projects.feature.authorization.presentation)
-            //Dashboard
+            // Dashboard
             api(projects.feature.dashboard.presentation)
-            //Settings
-            implementation(projects.feature.settings.domain.api)
+            // Settings
             implementation(projects.feature.settings.domain.impl)
             implementation(projects.feature.settings.data)
             api(projects.feature.settings.presentation)
-            //Business
-            implementation(projects.feature.business.domain.api)
+            // Business
             implementation(projects.feature.business.domain.impl)
             implementation(projects.feature.business.data)
             api(projects.feature.business.presentation)
-            //Clients
-            implementation(projects.feature.clients.domain.api)
+            // Clients
             implementation(projects.feature.clients.domain.impl)
             implementation(projects.feature.clients.data)
             api(projects.feature.clients.presentation)
-            //Clients
-            implementation(projects.feature.services.domain.api)
+            // Clients
             implementation(projects.feature.services.domain.impl)
             implementation(projects.feature.services.data)
             api(projects.feature.services.presentation)
-            //Employees
-            implementation(projects.feature.employees.domain.api)
+            // Employees
             implementation(projects.feature.employees.domain.impl)
             implementation(projects.feature.employees.data)
             api(projects.feature.employees.presentation)
-            //Appointments
-            implementation(projects.feature.appointments.domain.api)
+            // Appointments
             implementation(projects.feature.appointments.domain.impl)
             implementation(projects.feature.appointments.data)
             api(projects.feature.appointments.presentation)
             // Libs
-            implementation(libs.koin.core)
             implementation(libs.ktor.client.mock)
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.client.protobuf)
@@ -165,7 +150,7 @@ kotlin {
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach {
         it.binaries.framework {
             baseName = project.name
@@ -189,6 +174,7 @@ kotlin {
             export(projects.library.credentials.api)
             export(projects.library.biometry.api)
             export(projects.library.notifications.api)
+            export(projects.library.crashreporting.api)
             export(projects.library.picker)
         }
     }

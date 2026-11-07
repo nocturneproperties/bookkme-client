@@ -74,13 +74,15 @@ class GetServiceGroupsImplTest {
             employees = ResourcePermission(),
             clients = ResourcePermission(),
             services = ResourcePermission(),
-            appointments = ResourcePermission()
-        )
+            appointments = ResourcePermission(),
+        ),
     )
 
     private fun stubGroup(businessId: Uuid, createdAtMs: Long = 0L) = ServiceGroup(
-        id = Uuid.random(), businessId = businessId, name = "Group $createdAtMs",
-        createdAt = Instant.fromEpochMilliseconds(createdAtMs)
+        id = Uuid.random(),
+        businessId = businessId,
+        name = "Group $createdAtMs",
+        createdAt = Instant.fromEpochMilliseconds(createdAtMs),
     )
 
     @Test
@@ -97,21 +99,23 @@ class GetServiceGroupsImplTest {
     }
 
     @Test
-    fun `flow emits the db groups sorted by createdAt for the current dashboard business`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = stubBusiness()
-        val older = stubGroup(business.id, 1000L)
-        val newer = stubGroup(business.id, 2000L)
-        every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.dataSource.observeServiceGroupsDBChanges(business.id) } returns flowOf(listOf(newer, older))
+    fun `flow emits the db groups sorted by createdAt for the current dashboard business`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = stubBusiness()
+            val older = stubGroup(business.id, 1000L)
+            val newer = stubGroup(business.id, 2000L)
+            every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
+            every { fixture.dataSource.observeServiceGroupsDBChanges(business.id) } returns
+                flowOf(listOf(newer, older))
 
-        whenn()
-        val result = fixture.sut.flow().first()
+            whenn()
+            val result = fixture.sut.flow().first()
 
-        then()
-        assertEquals(listOf(older, newer), result)
-    }
+            then()
+            assertEquals(listOf(older, newer), result)
+        }
 
     @Test
     fun `flow re-resolves the db observation when the dashboard business changes`() = runUnitTest {
@@ -124,8 +128,10 @@ class GetServiceGroupsImplTest {
         val secondGroups = listOf(stubGroup(secondBusiness.id))
         businesses.tryEmit(firstBusiness)
         every { fixture.observeDashboardBusinessChanges() } returns businesses
-        every { fixture.dataSource.observeServiceGroupsDBChanges(firstBusiness.id) } returns flowOf(firstGroups)
-        every { fixture.dataSource.observeServiceGroupsDBChanges(secondBusiness.id) } returns flowOf(secondGroups)
+        every { fixture.dataSource.observeServiceGroupsDBChanges(firstBusiness.id) } returns
+            flowOf(firstGroups)
+        every { fixture.dataSource.observeServiceGroupsDBChanges(secondBusiness.id) } returns
+            flowOf(secondGroups)
         val results = mutableListOf<List<ServiceGroup>>()
         val job = launch(Dispatchers.Unconfined) {
             fixture.sut.flow().collect { results.add(it) }
@@ -146,7 +152,8 @@ class GetServiceGroupsImplTest {
         val fixture = Fixture()
         val business = stubBusiness()
         every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.dataSource.observeServiceGroupsDBChanges(business.id) } returns flowOf(emptyList())
+        every { fixture.dataSource.observeServiceGroupsDBChanges(business.id) } returns
+            flowOf(emptyList())
 
         whenn()
         fixture.sut.flow().first()
@@ -156,25 +163,30 @@ class GetServiceGroupsImplTest {
     }
 
     @Test
-    fun `refresh fetches groups from remote, saves them, and returns them sorted by createdAt`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        val older = stubGroup(businessId, 1000L)
-        val newer = stubGroup(businessId, 2000L)
-        everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns listOf(newer, older)
-        everySuspend { fixture.dataSource.getServiceGroupIdsInDb(businessId) } returns listOf(older.id, newer.id)
-        everySuspend { fixture.dataSource.saveGroupsInDB(any()) } returns Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+    fun `refresh fetches groups from remote, saves them, and returns them sorted by createdAt`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            val older = stubGroup(businessId, 1000L)
+            val newer = stubGroup(businessId, 2000L)
+            everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns
+                listOf(newer, older)
+            everySuspend { fixture.dataSource.getServiceGroupIdsInDb(businessId) } returns
+                listOf(older.id, newer.id)
+            everySuspend { fixture.dataSource.saveGroupsInDB(any()) } returns Unit
+            everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 
-        whenn()
-        val result = fixture.sut.refresh(businessId)
+            whenn()
+            val result = fixture.sut.refresh(businessId)
 
-        then()
-        assertEquals(listOf(older, newer), result)
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveGroupsInDB(listOf(newer, older)) }
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveLastSyncedAt(businessId) }
-    }
+            then()
+            assertEquals(listOf(older, newer), result)
+            verifySuspend(VerifyMode.exactly(1)) {
+                fixture.dataSource.saveGroupsInDB(listOf(newer, older))
+            }
+            verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveLastSyncedAt(businessId) }
+        }
 
     @Test
     fun `refresh deletes local groups that are no longer present remotely`() = runUnitTest {
@@ -185,7 +197,8 @@ class GetServiceGroupsImplTest {
         val remote = listOf(stillPresent)
         val staleId = Uuid.random()
         everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns remote
-        everySuspend { fixture.dataSource.getServiceGroupIdsInDb(businessId) } returns listOf(stillPresent.id, staleId)
+        everySuspend { fixture.dataSource.getServiceGroupIdsInDb(businessId) } returns
+            listOf(stillPresent.id, staleId)
         everySuspend { fixture.dataSource.deleteGroupsInDB(listOf(staleId)) } returns Unit
         everySuspend { fixture.dataSource.saveGroupsInDB(remote) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
@@ -194,7 +207,9 @@ class GetServiceGroupsImplTest {
         fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteGroupsInDB(listOf(staleId)) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.deleteGroupsInDB(listOf(staleId))
+        }
     }
 
     @Test
@@ -204,7 +219,8 @@ class GetServiceGroupsImplTest {
         val businessId = Uuid.random()
         val group = stubGroup(businessId)
         everySuspend { fixture.dataSource.getServiceGroups(businessId) } returns listOf(group)
-        everySuspend { fixture.dataSource.getServiceGroupIdsInDb(businessId) } returns listOf(group.id)
+        everySuspend { fixture.dataSource.getServiceGroupIdsInDb(businessId) } returns
+            listOf(group.id)
         everySuspend { fixture.dataSource.saveGroupsInDB(listOf(group)) } returns Unit
         everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
 

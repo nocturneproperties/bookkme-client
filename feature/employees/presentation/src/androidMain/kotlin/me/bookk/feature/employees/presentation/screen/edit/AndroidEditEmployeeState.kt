@@ -28,7 +28,8 @@ internal class AndroidEditEmployeeState : EditEmployeeState {
     override val appBar: AppBarState = AndroidAppBarState()
     override val save: ButtonState = AndroidButtonState()
     override val contacts: ListState<InfoLine> = AndroidListState()
-    override val services: OptionsMultiPickerState<EmployeeServicePresentation> = AndroidOptionsMultiPickerState()
+    override val services: OptionsMultiPickerState<EmployeeServicePresentation> =
+        AndroidOptionsMultiPickerState()
     override val schedule: ScheduleState = AndroidScheduleState()
     override val suspension: ButtonState = AndroidButtonState(isVisible = false)
     override val permissions: ListState<ResourcePermissionState> = AndroidListState()
@@ -38,7 +39,9 @@ internal class AndroidEditEmployeeState : EditEmployeeState {
     override val navigation: NavigationState<EditEmployeeDestinations> = AndroidNavigationState()
 }
 
-internal class AndroidResourcePermissionState : AndroidViewState(), ResourcePermissionState {
+internal class AndroidResourcePermissionState :
+    AndroidViewState(),
+    ResourcePermissionState {
     override var title: StringDesc by mutableStateOf("".desc())
     override val canView: BooleanState = AndroidBooleanState()
     override val canUpdate: BooleanState = AndroidBooleanState()

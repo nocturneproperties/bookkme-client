@@ -15,15 +15,15 @@ import kotlin.uuid.Uuid
             entity = BusinessEntity::class,
             parentColumns = ["id"],
             childColumns = ["businessId"],
-            onDelete = CASCADE
+            onDelete = CASCADE,
         ),
     ],
-    indices = [Index("businessId")]
+    indices = [Index("businessId")],
 )
 class ServiceGroupEntity(
     @PrimaryKey
     val id: Uuid,
     val businessId: Uuid,
     val name: String,
-    val createdAt: Instant
+    val createdAt: Instant,
 )

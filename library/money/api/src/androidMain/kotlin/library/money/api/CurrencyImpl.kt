@@ -5,7 +5,7 @@ import android.icu.text.NumberFormat
 import org.joda.money.CurrencyUnit
 
 internal actual class CurrencyImpl actual constructor(
-    code: String
+    code: String,
 ) : Currency {
     private val currencyUnit: CurrencyUnit = CurrencyUnit.of(code)
     private val formatter = NumberFormat.getCurrencyInstance().apply {

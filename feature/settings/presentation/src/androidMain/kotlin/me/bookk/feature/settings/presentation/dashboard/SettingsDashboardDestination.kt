@@ -14,15 +14,13 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: SettingsNavigation) {
     composable<SettingsDestination.Dashboard> {
         val viewModel: SettingsDashboardViewModel = koinViewModel()
         val listener = DashboardEventListener(
-            showTerms = viewModel::showTerms,
-            showPolicy = viewModel::showPolicy,
             selectScheme = viewModel::onSchemeSelected,
-            performLogout = viewModel::onLogOutClick
+            performLogout = viewModel::onLogOutClick,
         )
 
         CompositionLocalProvider(
             LocalNavigation provides navigation,
-            LocalDashboardEventListener provides listener
+            LocalDashboardEventListener provides listener,
         ) {
             SendLifecycleEventsTo(viewModel)
             SettingsDashboardScreen(viewModel.uiState)

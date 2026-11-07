@@ -13,6 +13,7 @@ kotlin {
             implementation(projects.core)
             implementation(projects.core.domain)
             implementation(projects.feature.business.domain.api)
+            implementation(projects.feature.authorization.domain.api)
             implementation(projects.feature.business.data.source)
             implementation(projects.feature.employees.domain.api)
             implementation(projects.feature.clients.domain.api)

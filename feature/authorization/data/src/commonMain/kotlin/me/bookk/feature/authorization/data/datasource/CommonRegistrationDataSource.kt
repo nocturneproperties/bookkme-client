@@ -17,8 +17,9 @@ import me.bookk.feature.authorization.domain.datasource.registration.ServerSignU
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 
 internal class CommonRegistrationDataSource(
-    private val client: HttpClient
-) : DataSource(), RegistrationDataSource {
+    private val client: HttpClient,
+) : DataSource(),
+    RegistrationDataSource {
     override suspend fun getSignUpPasskeyChallenge(userData: UserData): ServerSignUpChallenge {
         return mapExceptions {
             val response = client.post(Auth.PassKey.SignUpChallenge()) {

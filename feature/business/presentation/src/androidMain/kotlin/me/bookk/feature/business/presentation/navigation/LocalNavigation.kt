@@ -10,12 +10,13 @@ class BusinessNavigation(
     val toBusinessSettings: () -> Unit = {},
     val toBusinessServices: () -> Unit = {},
     val toBusinessPlugins: (Uuid) -> Unit = {},
+    val toBusinessDataExport: (Uuid) -> Unit = {},
     val toAppointmentSettings: (Uuid) -> Unit = {},
     val toAppointmentHistory: (Uuid) -> Unit = {},
     val toShopOrders: () -> Unit = {},
     val toShopAssortment: () -> Unit = {},
     val toShopWarehouse: () -> Unit = {},
-    val goBack: () -> Unit = {}
+    val goBack: () -> Unit = {},
 )
 
 internal val LocalNavigation = compositionLocalOf {
@@ -31,6 +32,7 @@ internal val LocalNavigation = compositionLocalOf {
         toShopAssortment = {},
         toShopWarehouse = {},
         toBusinessPlugins = {},
-        goBack = {}
+        toBusinessDataExport = {},
+        goBack = {},
     )
 }

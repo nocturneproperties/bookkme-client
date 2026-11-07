@@ -14,13 +14,18 @@ internal actual class ContactsPermissionChecker : PermissionChecker {
     actual override val type: PermissionType = PermissionType.CONTACTS
 
     actual override suspend fun requestPermission(): Boolean = suspendCancellableCoroutine {
-        CNContactStore().requestAccessForEntityType(CNEntityType.CNEntityTypeContacts) { granted, _ ->
+        CNContactStore().requestAccessForEntityType(CNEntityType.CNEntityTypeContacts) {
+                granted,
+                _,
+            ->
             it.resume(granted)
         }
     }
 
     actual override suspend fun hasPermission(): Boolean {
-        val status = CNContactStore.authorizationStatusForEntityType(CNEntityType.CNEntityTypeContacts)
+        val status = CNContactStore.authorizationStatusForEntityType(
+            CNEntityType.CNEntityTypeContacts,
+        )
         return status == CNAuthorizationStatusAuthorized || status == CNAuthorizationStatusLimited
     }
 }

@@ -7,7 +7,7 @@ actual enum class DateStyle(
     val dateTimePattern: String,
     val sameYearDateTimePattern: String,
     val sameYearDatePattern: String,
-    val timePattern: String
+    val timePattern: String,
 ) {
     SHORT(
         FormatStyle.SHORT.getDatePattern(),
@@ -35,20 +35,20 @@ actual enum class DateStyle(
         dateTimePattern = "d MMM yyyy HH:mm",
         sameYearDatePattern = "d MMM",
         sameYearDateTimePattern = "d MMM yyyy HH:mm",
-        timePattern = "HH:mm"
+        timePattern = "HH:mm",
     ),
     NARROW_WEEKDAY(
         datePattern = "EEEEE",
         dateTimePattern = "EEEEE",
         sameYearDatePattern = "EEEEE",
         sameYearDateTimePattern = "EEEEE HH:mm",
-        timePattern = "HH:mm"
+        timePattern = "HH:mm",
     ),
     FULL_WEEKDAY(
         datePattern = "EEEE",
         dateTimePattern = "EEEE",
         sameYearDatePattern = "EEEE",
         sameYearDateTimePattern = "EEEE HH:mm",
-        timePattern = "HH:mm"
-    )
+        timePattern = "HH:mm",
+    ),
 }

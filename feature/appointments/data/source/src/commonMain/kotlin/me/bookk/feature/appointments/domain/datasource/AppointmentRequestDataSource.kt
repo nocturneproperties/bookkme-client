@@ -8,6 +8,8 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 interface AppointmentRequestDataSource {
+    suspend fun getBusinessAppointmentRequests(businessId: Uuid): List<AppointmentRequest>
+
     suspend fun createAppointmentRequest(draft: AppointmentRequestDraft)
 
     suspend fun createAppointmentFromRequest(requestId: Uuid): Appointment

@@ -30,8 +30,8 @@ internal fun ApplicationExtension.applyConvention(project: Project) {
             proguardFiles.addAll(
                 arrayOf(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
-                    File(project.projectDir,"proguard-rules.pro")
-                )
+                    File(project.projectDir, "proguard-rules.pro"),
+                ),
             )
         }
     }

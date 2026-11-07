@@ -9,6 +9,8 @@ internal class IosTextCollator : TextCollator {
 
     @OptIn(BetaInteropApi::class)
     override fun comparator(): Comparator<String> {
-        return Comparator { first, second -> NSString.create(string = first).localizedStandardCompare(second).toInt() }
+        return Comparator { first, second ->
+            NSString.create(string = first).localizedStandardCompare(second).toInt()
+        }
     }
 }

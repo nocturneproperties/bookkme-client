@@ -7,10 +7,10 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import dev.mokkery.verify
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
-import kotlin.test.assertTrue
-import library.device.api.DeviceFacade
+import kotlinx.coroutines.flow.MutableStateFlow
+import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -24,17 +24,23 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.tap
+import me.bookk.feature.settings.domain.api.GetLegalDocumentStatuses
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.domain.api.entity.ColorScheme
+import me.bookk.feature.settings.domain.api.entity.LegalDocumentStatus
 import me.bookk.feature.settings.domain.api.entity.Settings
 import me.bookk.feature.settings.domain.api.entity.SettingsProfile
 import me.bookk.feature.settings.presentation.FakeSettingsStateFactory
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
+import me.bookk.feature.settings.presentation.privacyPolicyStatus
+import me.bookk.feature.settings.presentation.termsStatus
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SettingsDashboardViewModelTest {
 
@@ -52,20 +58,40 @@ class SettingsDashboardViewModelTest {
 
     private class Fixture {
         val getSettings = mock<GetSettings> {
-            everySuspend { invoke() } returns Settings(ColorScheme.DARK, SettingsProfile("Anna", "Smith", "anna@example.com"))
+            everySuspend { invoke() } returns
+                Settings(ColorScheme.DARK, SettingsProfile("Anna", "Smith", "anna@example.com"))
         }
         val updateColorScheme = mock<UpdateColorScheme>()
-        val deviceFacade = mock<DeviceFacade> {
-            every { openUrlPreview(any()) } returns Unit
+        val statuses = MutableStateFlow<List<LegalDocumentStatus>>(emptyList())
+        val getLegalDocumentStatuses = mock<GetLegalDocumentStatuses> {
+            every { flow() } returns statuses
+            everySuspend { refresh() } returns emptyList()
         }
         val errorMapper = FakeErrorMapper()
 
-        fun sut() = SettingsDashboardViewModel(
-            getSettings = getSettings,
-            updateColorScheme = updateColorScheme,
-            deviceFacade = deviceFacade,
-            settingsStateFactory = FakeSettingsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+        fun sut(): SettingsDashboardViewModel {
+            return SettingsDashboardViewModel(
+                getSettings = getSettings,
+                getLegalDocumentStatuses = getLegalDocumentStatuses,
+                updateColorScheme = updateColorScheme,
+                settingsStateFactory = FakeSettingsStateFactory(),
+                vmArgs = VmArgs(errorMapper),
+            )
+        }
+    }
+
+    @Test
+    fun `sets the personal data export account label`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_export_title.desc(),
+            sut.uiState.account.dataExport.text,
         )
     }
 
@@ -124,7 +150,12 @@ class SettingsDashboardViewModelTest {
         sut.onSchemeSelected(UIColorScheme.LIGHT)
 
         then()
-        assertEquals(1, sut.uiState.notification.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notification.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -138,7 +169,11 @@ class SettingsDashboardViewModelTest {
         sut.onSchemeSelected(UIColorScheme.LIGHT)
 
         then()
-        assertTrue(sut.uiState.notification.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notification.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -180,21 +215,10 @@ class SettingsDashboardViewModelTest {
         dialog.tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(listOf<PresentationNotification>(PresentationNotification.Unauthorized), sut.uiState.notification.presentationNotification)
-    }
-
-    @Test
-    fun `opens terms and policy links`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.sut()
-
-        whenn()
-        sut.showTerms()
-        sut.showPolicy()
-
-        then()
-        verify(dev.mokkery.verify.VerifyMode.exactly(2)) { fixture.deviceFacade.openUrlPreview(any()) }
+        assertEquals(
+            listOf<PresentationNotification>(PresentationNotification.Unauthorized),
+            sut.uiState.notification.presentationNotification,
+        )
     }
 
     @Test
@@ -206,6 +230,87 @@ class SettingsDashboardViewModelTest {
         sut.uiState.appBar.actions.items.single().onClick()
 
         then()
-        assertEquals(listOf<SettingsDashboardDestination>(SettingsDashboardDestination.EditProfile), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<SettingsDashboardDestination>(SettingsDashboardDestination.EditProfile),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
+
+    @Test
+    fun `labels the privacy account row`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_privacy_title.desc(),
+            sut.uiState.account.privacy.text,
+        )
+    }
+
+    @Test
+    fun `marks the privacy row when a legal document awaits acceptance`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.statuses.value = listOf(privacyPolicyStatus(), termsStatus())
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_privacy_action_required.desc(),
+            sut.uiState.account.privacyStatus,
+        )
+    }
+
+    @Test
+    fun `clears the privacy row status once every document is accepted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.statuses.value = listOf(privacyPolicyStatus(), termsStatus())
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.statuses.value = listOf(privacyPolicyStatus(accepted = true), termsStatus())
+
+        then()
+        assertNull(sut.uiState.account.privacyStatus)
+    }
+
+    @Test
+    fun `refreshes legal document statuses when presented`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.getLegalDocumentStatuses.refresh() }
+    }
+
+    @Test
+    fun `keeps the cached privacy status without a notification when refreshing fails`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.statuses.value = listOf(privacyPolicyStatus(), termsStatus())
+            everySuspend { fixture.getLegalDocumentStatuses.refresh() } throws TestException()
+            val sut = fixture.sut()
+
+            whenn()
+            sut.onViewPresented()
+
+            then()
+            assertEquals(
+                SettingsRes.strings.settings_privacy_action_required.desc(),
+                sut.uiState.account.privacyStatus,
+            )
+            assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
+        }
 }

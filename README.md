@@ -143,6 +143,21 @@ Open `iosApp/iosApp.xcodeproj` in Xcode and run the app. The shared Kotlin frame
 | Compile shared for iOS | `./gradlew :shared:compileKotlinIosArm64` |
 | Run tests (common + Android) | `./gradlew test` |
 | Lint | `./gradlew detekt` |
+| Check Kotlin formatting | `./gradlew spotlessCheck` |
+| Apply Kotlin formatting | `./gradlew spotlessApply` |
+
+Spotless formats Kotlin sources and Gradle Kotlin scripts across the repository, including
+`build-src`, using ktlint's `intellij_idea` style, based on Kotlin's official coding conventions.
+Generated sources, build outputs, and scaffold templates are excluded. Formatter versions are
+pinned in `gradle/libs.versions.toml`. The root `check` task and Android pull request verification
+run `spotlessCheck`.
+
+The `.editorconfig` and `kotlin.code.style=official` property configure the IDE's Kotlin style.
+Expression bodies stay on the function signature's line when the first line fits within
+100 characters. Multiline constructor arguments do not force a break after `=`.
+Block-bodied functions and Compose function names are preserved. Existing file names,
+package names, and package-only files are exempt from structural lint checks.
+Run `./gradlew spotlessApply` before committing.
 
 ### Adding a new screen
 

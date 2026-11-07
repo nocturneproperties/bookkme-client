@@ -9,4 +9,3 @@ fun String.asPhone(): String {
         c.isDigit() || (c == '+' && index == 0)
     }
 }
-

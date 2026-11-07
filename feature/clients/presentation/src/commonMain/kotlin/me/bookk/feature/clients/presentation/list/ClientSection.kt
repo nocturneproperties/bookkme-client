@@ -6,5 +6,5 @@ data class ClientSection(
     val id: String,
     val header: String,
     val items: List<Client>,
-    val onItemClick: (Client) -> Unit
+    val onItemClick: (Client) -> Unit,
 )

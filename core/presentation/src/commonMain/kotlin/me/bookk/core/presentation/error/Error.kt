@@ -11,7 +11,7 @@ sealed interface PresentationNotification {
     data object BusinessAccessSuspended : PresentationNotification
     data object SuccessHaptic : PresentationNotification
 
-    //Message that displayed on top of everything even if you navigate between screens
+    // Message that displayed on top of everything even if you navigate between screens
     data class GlobalMessage(
         val text: StringDesc,
         val state: State = State.SUCCESS,
@@ -25,20 +25,20 @@ sealed interface PresentationNotification {
         enum class State {
             ERROR,
             SUCCESS,
-            INFO
+            INFO,
         }
 
         enum class Duration {
             SHORT,
             LONG,
-            INDEFINITE
+            INDEFINITE,
         }
     }
 
     data class Message(
         val title: StringDesc? = null,
         val message: StringDesc,
-        val buttons: List<ButtonDescriptor>
+        val buttons: List<ButtonDescriptor>,
     ) : PresentationNotification {
         val id: String = Uuid.random().toHexString()
         companion object
@@ -53,7 +53,7 @@ sealed interface PresentationNotification {
         val confirmText: StringDesc,
         val confirmActionType: ActionType = ActionType.POSITIVE,
         val onConfirm: (String) -> Unit,
-        val onCancel: () -> Unit = {}
+        val onCancel: () -> Unit = {},
     ) : PresentationNotification {
         val id: String = Uuid.random().toHexString()
         companion object
@@ -63,7 +63,7 @@ sealed interface PresentationNotification {
 class ButtonDescriptor(
     val text: StringDesc,
     val actionType: ActionType = ActionType.POSITIVE,
-    val onClick: () -> Unit = {}
+    val onClick: () -> Unit = {},
 ) {
     @OptIn(ExperimentalUuidApi::class)
     @UsedInSwift
@@ -74,5 +74,5 @@ enum class ActionType {
     POSITIVE,
     NEGATIVE,
     CANCEL,
-    CONFIRM
+    CONFIRM,
 }

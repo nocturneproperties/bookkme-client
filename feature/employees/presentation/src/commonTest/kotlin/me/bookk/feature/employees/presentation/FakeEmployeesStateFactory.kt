@@ -29,7 +29,8 @@ internal class FakeEmployeesStateFactory : EmployeesStateFactory {
     override fun createEmployeeListState(): EmployeeListState = FakeEmployeeListState()
     override fun createInviteEmployeeState(): InviteEmployeeState = FakeInviteEmployeeState()
     override fun createEditEmployeeState(): EditEmployeeState = FakeEditEmployeeState()
-    override fun createResourcePermissionState(): ResourcePermissionState = FakeResourcePermissionState()
+    override fun createResourcePermissionState(): ResourcePermissionState =
+        FakeResourcePermissionState()
 }
 
 internal class FakeEmployeeListState : EmployeeListState {
@@ -66,7 +67,9 @@ internal class FakeEditEmployeeState : EditEmployeeState {
     override val navigation = FakeNavigationState<EditEmployeeDestinations>()
 }
 
-internal class FakeResourcePermissionState : FakeViewState(), ResourcePermissionState {
+internal class FakeResourcePermissionState :
+    FakeViewState(),
+    ResourcePermissionState {
     override var title: StringDesc = "".desc()
     override val canView = FakeBooleanState()
     override val canUpdate = FakeBooleanState()

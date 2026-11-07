@@ -5,6 +5,7 @@ import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
 import library.device.api.DeviceFacade
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -16,7 +17,6 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
@@ -38,7 +38,7 @@ class InviteEmployeeViewModel(
     private val device: DeviceFacade,
     private val dateLocalizer: DateLocalizer,
     stateFactory: EmployeesStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     val uiState: InviteEmployeeState = stateFactory.createInviteEmployeeState().setup()
@@ -49,7 +49,8 @@ class InviteEmployeeViewModel(
     }
 
     private fun observeInvitations() {
-        getEmployeeInvitations.flow(businessId)
+        getEmployeeInvitations
+            .flow(businessId)
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderInvitations(it) }
             .onError { uiState.notifications.add(it.notification()) }
@@ -58,9 +59,8 @@ class InviteEmployeeViewModel(
 
     private fun renderInvitations(invitations: List<EmployeeInvitation>) {
         if (invitations.isEmpty() && uiState.invitationsList.isInitialLoading) return
-        val items = invitations
-            .sortedByDescending(EmployeeInvitation::createdAt)
-            .map { it.toItem() }
+        val items =
+            invitations.sortedByDescending(EmployeeInvitation::createdAt).map { it.toItem() }
         uiState.invitationsList.replace(items)
     }
 
@@ -69,7 +69,7 @@ class InviteEmployeeViewModel(
             listState = uiState.invitationsList,
             notifications = uiState.notifications,
             refreshState = uiState.refreshState,
-            call = { getEmployeeInvitations.refresh(businessId) }
+            call = { getEmployeeInvitations.refresh(businessId) },
         )
     }
 
@@ -85,16 +85,25 @@ class InviteEmployeeViewModel(
             },
             onError = {
                 when (it) {
-                    is CreateEmployeeInvitation.Error.PendingInvitationsLimitReached ->
-                        showSimpleMessage(EmployeesRes.strings.employees_invite_generate_error_pending_limit.desc())
+                    is CreateEmployeeInvitation.Error.PendingInvitationsLimitReached -> {
+                        showSimpleMessage(
+                            EmployeesRes.strings.employees_invite_generate_error_pending_limit
+                                .desc(),
+                        )
+                    }
 
-                    is CreateEmployeeInvitation.Error.DailyInvitationsLimitReached ->
-                        showSimpleMessage(EmployeesRes.strings.employees_invite_generate_error_daily_limit.desc())
+                    is CreateEmployeeInvitation.Error.DailyInvitationsLimitReached -> {
+                        showSimpleMessage(
+                            EmployeesRes.strings.employees_invite_generate_error_daily_limit.desc(),
+                        )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
             },
-            onTerminate = { uiState.generateCodeButton.stopLoading() }
+            onTerminate = { uiState.generateCodeButton.stopLoading() },
         )
     }
 
@@ -103,8 +112,8 @@ class InviteEmployeeViewModel(
         uiState.notifications.add(
             PresentationNotification.GlobalMessage(
                 text = EmployeesRes.strings.employees_invite_code_copied.desc(),
-                state = PresentationNotification.GlobalMessage.State.SUCCESS
-            )
+                state = PresentationNotification.GlobalMessage.State.SUCCESS,
+            ),
         )
     }
 
@@ -114,14 +123,17 @@ class InviteEmployeeViewModel(
                 title = EmployeesRes.strings.employees_invite_revoke_dialog_title.desc(),
                 message = EmployeesRes.strings.employees_invite_revoke_dialog_message.desc(),
                 buttons = listOf(
-                    ButtonDescriptor(text = DesignSystem.strings.action_cancel.desc(), actionType = ActionType.CANCEL),
+                    ButtonDescriptor(
+                        text = DesignSystem.strings.action_cancel.desc(),
+                        actionType = ActionType.CANCEL,
+                    ),
                     ButtonDescriptor(
                         text = EmployeesRes.strings.employees_invite_revoke_action.desc(),
                         actionType = ActionType.NEGATIVE,
-                        onClick = { revokeInvitation(id) }
-                    )
-                )
-            )
+                        onClick = { revokeInvitation(id) },
+                    ),
+                ),
+            ),
         )
     }
 
@@ -135,12 +147,18 @@ class InviteEmployeeViewModel(
             },
             onError = {
                 when (it) {
-                    is RevokeEmployeeInvitation.Error.AlreadyProcessed ->
-                        showSimpleMessage(EmployeesRes.strings.employees_invite_revoke_error_already_processed.desc())
+                    is RevokeEmployeeInvitation.Error.AlreadyProcessed -> {
+                        showSimpleMessage(
+                            EmployeesRes.strings.employees_invite_revoke_error_already_processed
+                                .desc(),
+                        )
+                    }
 
-                    else -> uiState.notifications.add(it.notification())
+                    else -> {
+                        uiState.notifications.add(it.notification())
+                    }
                 }
-            }
+            },
         )
     }
 
@@ -154,20 +172,22 @@ class InviteEmployeeViewModel(
             id = id,
             code = MaskedInvitationCode,
             createdOn = EmployeesRes.strings.employees_invite_created_on.format(
-                formatter.format(createdAt.date, relative = true)
+                formatter.format(createdAt.date, relative = true),
             ),
             status = UIInvitationStatus(status),
             onClick = if (status == EmployeeInvitationStatus.PENDING) {
                 weakVMClosure { it.onRevokeInvitationClick(id) }
             } else {
                 null
-            }
+            },
         )
     }
 
     private fun InviteEmployeeState.setup() = apply {
         appBar.title = EmployeesRes.strings.employees_invite_title.desc()
-        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(InviteEmployeeDestinations.Back) }
+        appBar.onBackClick = weakVMClosure {
+            it.uiState.navigation.push(InviteEmployeeDestinations.Back)
+        }
 
         descriptionText = EmployeesRes.strings.employees_invite_description.desc()
 
@@ -178,7 +198,7 @@ class InviteEmployeeViewModel(
         invitationsHeader = EmployeesRes.strings.employees_invite_invitations_header.desc()
         invitationsList.emptyState = EmptyState(
             image = DesignSystem.images.empty,
-            label = EmployeesRes.strings.employees_invite_invitations_empty.desc()
+            label = EmployeesRes.strings.employees_invite_invitations_empty.desc(),
         )
     }
 }

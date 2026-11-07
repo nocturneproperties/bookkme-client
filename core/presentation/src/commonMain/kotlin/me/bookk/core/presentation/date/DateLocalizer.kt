@@ -22,5 +22,5 @@ expect enum class DateStyle {
     LONG,
     D_MMM_YYYY_RELATIVE,
     NARROW_WEEKDAY,
-    FULL_WEEKDAY
+    FULL_WEEKDAY,
 }

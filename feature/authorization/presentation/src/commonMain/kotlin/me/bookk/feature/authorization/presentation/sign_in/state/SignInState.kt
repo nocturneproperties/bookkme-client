@@ -25,6 +25,6 @@ interface SignInState {
         val signInButtonText: StringDesc,
         val signUpButtonText: StringDesc,
         val troubleshootButtonText: StringDesc,
-        val passkeyInfoCardData: PasskeyInfoCardData
+        val passkeyInfoCardData: PasskeyInfoCardData,
     )
 }

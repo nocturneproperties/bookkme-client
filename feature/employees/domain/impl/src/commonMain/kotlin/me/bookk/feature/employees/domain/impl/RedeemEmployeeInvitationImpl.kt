@@ -12,17 +12,24 @@ import me.bookk.feature.employees.domain.datasource.EmployeeInvitationDataSource
 internal class RedeemEmployeeInvitationImpl(
     private val dataSource: EmployeeInvitationDataSource,
     private val refreshBusinessInfo: RefreshBusinessInfo,
-    private val switchDashboardBusiness: SwitchDashboardBusiness
+    private val switchDashboardBusiness: SwitchDashboardBusiness,
 ) : RedeemEmployeeInvitation {
     override suspend fun invoke(code: String): Employee = runCatching {
         val employee = dataSource.redeemInvitation(code)
         refreshBusinessInfo.refreshAndSelect(employee.businessId)
         switchDashboardBusiness(employee.businessId)
         employee
-    }.onBusinessError { error ->
-        when (error.errorCode) {
-            EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED -> throw Error.AlreadyProcessed(error)
-            EmployeeErrorCodes.BUSINESS_EMPLOYEE_EXISTS -> throw Error.EmployeeExists(error)
+    }
+        .onBusinessError { error ->
+            when (error.errorCode) {
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVITATION_ALREADY_PROCESSED -> {
+                    throw Error.AlreadyProcessed(error)
+                }
+
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_EXISTS -> {
+                    throw Error.EmployeeExists(error)
+                }
+            }
         }
-    }.getOrThrow()
+        .getOrThrow()
 }

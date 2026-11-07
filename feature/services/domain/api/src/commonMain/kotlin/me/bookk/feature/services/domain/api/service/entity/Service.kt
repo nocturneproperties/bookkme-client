@@ -14,5 +14,5 @@ data class Service(
     val duration: Duration,
     val price: Money,
     val isAvailable: Boolean,
-    val createdAt: Instant
+    val createdAt: Instant,
 )

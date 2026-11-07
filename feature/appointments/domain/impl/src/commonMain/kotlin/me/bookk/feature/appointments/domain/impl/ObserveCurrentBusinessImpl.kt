@@ -7,10 +7,18 @@ import me.bookk.feature.appointments.domain.api.entity.CurrentBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 
 internal class ObserveCurrentBusinessImpl(
-    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
 ) : ObserveCurrentBusiness {
     override fun invoke(): Flow<CurrentBusiness?> {
         return observeDashboardBusinessChanges()
-            .map { business -> business?.let { CurrentBusiness(id = it.id, employeeId = it.employeeId, canViewAppointments = it.permissions.appointments.view) } }
+            .map { business ->
+                business?.let {
+                    CurrentBusiness(
+                        id = it.id,
+                        employeeId = it.employeeId,
+                        canViewAppointments = it.permissions.appointments.view,
+                    )
+                }
+            }
     }
 }

@@ -5,6 +5,8 @@ import me.bookk.feature.business.presentation.screen.analytics.AndroidBusinessAn
 import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalyticsState
 import me.bookk.feature.business.presentation.screen.dashboard.AndroidDashboardState
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
+import me.bookk.feature.business.presentation.screen.export.AndroidBusinessDataExportState
+import me.bookk.feature.business.presentation.screen.export.BusinessDataExportState
 import me.bookk.feature.business.presentation.screen.plugins.AndroidBusinessPluginListState
 import me.bookk.feature.business.presentation.screen.plugins.AndroidBusinessPluginState
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginListState
@@ -17,7 +19,9 @@ class AndroidBusinessStateFactory : BusinessStateFactory {
         return AndroidDashboardState()
     }
 
-    override fun createBusinessSettingsState(initData: BusinessSettingsState.InitData): BusinessSettingsState {
+    override fun createBusinessSettingsState(
+        initData: BusinessSettingsState.InitData,
+    ): BusinessSettingsState {
         return AndroidBusinessSettingsState(initData)
     }
 
@@ -31,5 +35,9 @@ class AndroidBusinessStateFactory : BusinessStateFactory {
 
     override fun createBusinessAnalyticsState(): BusinessAnalyticsState {
         return AndroidBusinessAnalyticsState()
+    }
+
+    override fun createBusinessDataExportState(): BusinessDataExportState {
+        return AndroidBusinessDataExportState()
     }
 }

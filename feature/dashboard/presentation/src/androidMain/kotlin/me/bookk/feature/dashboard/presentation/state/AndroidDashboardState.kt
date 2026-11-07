@@ -17,30 +17,32 @@ class AndroidDashboardState(
     override val tabItems: TabItemsState,
     override val navigation: NavigationState<DashboardHomeNavigationDestination>,
     override val home: DashboardHomeState,
-    override val notifications: PresentationNotificationState
+    override val notifications: PresentationNotificationState,
 ) : DashboardState {
     constructor(initData: TabItemsState.InitData) : this(
         tabItems = AndroidTabItemState(initData),
         navigation = AndroidNavigationState(),
         home = AndroidDashboardHomeState(),
-        notifications = AndroidNotificationState()
+        notifications = AndroidNotificationState(),
     )
 }
 
 class AndroidTabItemState(
     selectedItemId: TabItem.Id,
-    override val items: List<TabItem>
+    override val items: List<TabItem>,
 ) : TabItemsState {
 
     override var selectedItemId: TabItem.Id by mutableStateOf(selectedItemId)
 
     constructor(initData: TabItemsState.InitData) : this(
         selectedItemId = initData.selectedItemId,
-        items = initData.tabInitData.map { AndroidTabItem(it) }
+        items = initData.tabInitData.map { AndroidTabItem(it) },
     )
 }
 
-class AndroidTabItem(data: TabItem.InitData) : TabItem {
+class AndroidTabItem(
+    data: TabItem.InitData,
+) : TabItem {
     override val id: TabItem.Id = data.id
     override val text: StringDesc = data.text
     override var badgeText: StringDesc? by mutableStateOf(data.badgeText)

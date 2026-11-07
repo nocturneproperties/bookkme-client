@@ -12,7 +12,8 @@ class AndroidTextState(
     text: StringDesc = "".desc(),
     isVisible: Boolean = true,
     isHighlighted: Boolean = false,
-) : AndroidViewState(isVisible), TextState {
+) : AndroidViewState(isVisible),
+    TextState {
     override var text: StringDesc by mutableStateOf(text)
     override var isHighlighted: Boolean by mutableStateOf(isHighlighted)
 }

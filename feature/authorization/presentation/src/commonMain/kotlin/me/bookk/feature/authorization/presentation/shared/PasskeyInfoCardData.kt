@@ -4,5 +4,5 @@ import dev.icerock.moko.resources.desc.StringDesc
 
 data class PasskeyInfoCardData(
     val title: StringDesc,
-    val description: StringDesc
+    val description: StringDesc,
 )

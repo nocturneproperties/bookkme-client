@@ -56,9 +56,9 @@ internal fun EditEmployeeScreen(state: EditEmployeeState) {
                     if (state.save.isVisible) {
                         StateTextButton(state = state.save)
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -67,7 +67,7 @@ internal fun EditEmployeeScreen(state: EditEmployeeState) {
                 .topShadow(24.dp, colorFrom = LocalColors.current.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             AppCard(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(bottom = 8.dp)) {
@@ -100,7 +100,7 @@ private fun PermissionsHint(text: String) {
     Text(
         text = text,
         modifier = Modifier.padding(horizontal = 16.dp),
-        style = MaterialTheme.typography.bodySmall.secondary()
+        style = MaterialTheme.typography.bodySmall.secondary(),
     )
 }
 
@@ -119,10 +119,7 @@ private fun ResourcePermissionCard(state: ResourcePermissionState) {
 }
 
 @Composable
-private fun ServiceItem(
-    service: EmployeeServicePresentation,
-    onItemRemove: (() -> Unit)?
-) {
+private fun ServiceItem(service: EmployeeServicePresentation, onItemRemove: (() -> Unit)?) {
     Row(
         modifier = Modifier
             .padding(vertical = 16.dp)
@@ -132,11 +129,11 @@ private fun ServiceItem(
         Column(Modifier.padding(start = 16.dp)) {
             Text(
                 service.displayName.localized(),
-                style = MaterialTheme.typography.titleMedium.primary()
+                style = MaterialTheme.typography.titleMedium.primary(),
             )
             Text(
                 service.duration.localized(),
-                style = MaterialTheme.typography.labelMedium.secondary()
+                style = MaterialTheme.typography.labelMedium.secondary(),
             )
         }
         Spacer(Modifier.weight(1f))
@@ -147,13 +144,13 @@ private fun ServiceItem(
                     modifier = Modifier
                         .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
                         .size(28.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         "-",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleMedium.secondary()
+                        style = MaterialTheme.typography.titleMedium.secondary(),
                     )
                 }
             }

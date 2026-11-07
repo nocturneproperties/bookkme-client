@@ -5,7 +5,8 @@
 `UserProfileCRUD` → `GET /api/user/me` / `PATCH /api/user/me`
 · used by [Initial app data fetch](initial-app-data-fetch.md), [Create appointment](../appointments/create-appointment.md),
 [Get settings](../settings/get-settings.md), [Edit profile](../settings/edit-profile.md) and
-[Get notification settings](../settings/get-notification-settings.md)
+[Get notification settings](../settings/get-notification-settings.md) and
+[Get clients permissions](../clients/get-clients-permissions.md) (local observer only)
 
 ```mermaid
 flowchart TD

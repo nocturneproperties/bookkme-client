@@ -18,5 +18,6 @@ internal class BusinessUpdateRemote(
     @Serializable(with = TimeZoneSerializer::class)
     val timeZone: TimeZone,
     @ProtoNumber(8) val socials: List<BusinessRemote.Social>,
-    @ProtoNumber(9) val schedule: ScheduleRemote
+    @ProtoNumber(9) val schedule: ScheduleRemote,
+    @ProtoNumber(10) val clientDataRetentionMonths: Int? = null,
 )

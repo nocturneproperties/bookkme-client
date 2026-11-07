@@ -6,5 +6,6 @@ enum class DashboardFeature {
     CLIENTS,
     SERVICES,
     APPOINTMENTS,
-    SHOP
+    SHOP,
+    DATA_EXPORT,
 }

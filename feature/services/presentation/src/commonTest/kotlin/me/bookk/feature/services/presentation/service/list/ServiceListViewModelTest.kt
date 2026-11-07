@@ -1,11 +1,5 @@
 package me.bookk.feature.services.presentation.service.list
 
-import kotlin.test.assertTrue
-import kotlin.test.assertNull
-import kotlin.test.assertNotNull
-import me.bookk.feature.services.domain.api.entity.ServicesPermissions
-import me.bookk.feature.services.domain.api.GetServicesPermissions
-import kotlinx.coroutines.CompletableDeferred
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -14,6 +8,7 @@ import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import me.bookk.core.presentation.VmArgs
@@ -31,7 +26,9 @@ import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.test.tap
+import me.bookk.feature.services.domain.api.GetServicesPermissions
 import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
+import me.bookk.feature.services.domain.api.entity.ServicesPermissions
 import me.bookk.feature.services.domain.api.service.DeleteService
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.domain.api.service.entity.Service
@@ -43,6 +40,9 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 class ServiceListViewModelTest {
@@ -59,7 +59,9 @@ class ServiceListViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(permissions: ServicesPermissions = ServicesPermissions(canEdit = true, canDelete = true)) {
+    private class Fixture(
+        permissions: ServicesPermissions = ServicesPermissions(canEdit = true, canDelete = true),
+    ) {
         val businessId = Uuid.random()
         val services = MutableStateFlow<List<Service>>(emptyList())
         val currentBusinessId = MutableStateFlow<Uuid?>(businessId)
@@ -82,7 +84,7 @@ class ServiceListViewModelTest {
             observeCurrentBusinessId = observeCurrentBusinessId,
             getServicesPermissions = getServicesPermissions,
             stateFactory = FakeServicesStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -111,7 +113,7 @@ class ServiceListViewModelTest {
         fixture.services.value = listOf(
             stubService("Cut", hair),
             stubService("Manicure", nails),
-            stubService("Color", hair)
+            stubService("Color", hair),
         )
 
         then()
@@ -126,7 +128,10 @@ class ServiceListViewModelTest {
         val fixture = Fixture()
         val sut = fixture.sut()
         advanceUntilIdle()
-        fixture.services.value = listOf(stubService("Cut", stubGroup("Hair")), stubService("Manicure", stubGroup("Nails")))
+        fixture.services.value = listOf(
+            stubService("Cut", stubGroup("Hair")),
+            stubService("Manicure", stubGroup("Nails")),
+        )
 
         whenn()
         (sut.uiState.searchField as FakeTextFieldState).type("mani")
@@ -149,7 +154,10 @@ class ServiceListViewModelTest {
         section.onItemClick(section.items.single())
 
         then()
-        assertEquals(listOf<ServiceListDestination>(ServiceListDestination.EditService(service.id)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ServiceListDestination>(ServiceListDestination.EditService(service.id)),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -199,7 +207,9 @@ class ServiceListViewModelTest {
         assertNotNull(section.onItemDeleteClick).invoke(section.items.single())
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+            .tap(ActionType.NEGATIVE)
 
         then()
         verifySuspend { fixture.deleteService(service) }
@@ -219,10 +229,17 @@ class ServiceListViewModelTest {
         assertNotNull(section.onItemDeleteClick).invoke(section.items.single())
 
         whenn()
-        sut.uiState.notifications.assertSingle<PresentationNotification.Message>().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications
+            .assertSingle<PresentationNotification.Message>()
+            .tap(ActionType.NEGATIVE)
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -237,10 +254,17 @@ class ServiceListViewModelTest {
         assertNotNull(section.onItemDeleteClick).invoke(section.items.single())
 
         whenn()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.Message>()
+            .single()
+            .tap(ActionType.NEGATIVE)
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -255,7 +279,10 @@ class ServiceListViewModelTest {
         assertNotNull(section.onItemDeleteClick).invoke(section.items.single())
 
         whenn()
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.Message>().single().tap(ActionType.NEGATIVE)
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.Message>()
+            .single()
+            .tap(ActionType.NEGATIVE)
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
@@ -336,8 +363,12 @@ class ServiceListViewModelTest {
         val fixture = Fixture()
         val firstBusinessPermissions = CompletableDeferred<ServicesPermissions>()
         val secondBusinessId = Uuid.random()
-        everySuspend { fixture.getServicesPermissions(fixture.businessId) } calls { firstBusinessPermissions.await() }
-        everySuspend { fixture.getServicesPermissions(secondBusinessId) } returns ServicesPermissions(canEdit = false, canDelete = false)
+        everySuspend { fixture.getServicesPermissions(fixture.businessId) } calls
+            {
+                firstBusinessPermissions.await()
+            }
+        everySuspend { fixture.getServicesPermissions(secondBusinessId) } returns
+            ServicesPermissions(canEdit = false, canDelete = false)
         val sut = fixture.sut()
         fixture.currentBusinessId.value = secondBusinessId
 
@@ -358,7 +389,10 @@ class ServiceListViewModelTest {
         sut.uiState.appBar.actions.items.single().onClick()
 
         then()
-        assertEquals(listOf<ServiceListDestination>(ServiceListDestination.AddService(fixture.businessId)), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ServiceListDestination>(ServiceListDestination.AddService(fixture.businessId)),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -370,7 +404,10 @@ class ServiceListViewModelTest {
         sut.uiState.groupsSection.onClick()
 
         then()
-        assertEquals(listOf<ServiceListDestination>(ServiceListDestination.ServiceGroups), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ServiceListDestination>(ServiceListDestination.ServiceGroups),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -409,6 +446,9 @@ class ServiceListViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<ServiceListDestination>(ServiceListDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<ServiceListDestination>(ServiceListDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 }

@@ -20,7 +20,7 @@ internal object MockedBackend : KoinComponent {
         }
         respondError(
             HttpStatusCode.InternalServerError,
-            "Mock isn't provided for given request:${request.url}"
+            "Mock isn't provided for given request:${request.url}",
         )
     }
 }

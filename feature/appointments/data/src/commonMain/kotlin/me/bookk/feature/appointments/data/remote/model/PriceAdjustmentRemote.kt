@@ -13,13 +13,13 @@ data class PriceAdjustmentRemote(
     @ProtoNumber(2)
     @Serializable(with = RemoteMoneySerializer::class)
     val price: Money,
-    @ProtoNumber(3) val reason: String? = null
+    @ProtoNumber(3) val reason: String? = null,
 ) {
     fun toDomain(): PriceAdjustment {
         return PriceAdjustment(
             additionalServices = additionalServices.map { it.toDomain() },
             price = price,
-            reason = reason
+            reason = reason,
         )
     }
 }
@@ -30,10 +30,10 @@ data class PriceAdjustmentDraftRemote(
     @ProtoNumber(2)
     @Serializable(with = RemoteMoneySerializer::class)
     val price: Money,
-    @ProtoNumber(3) val reason: String?
+    @ProtoNumber(3) val reason: String?,
 )
 
 @Serializable
 data class CompleteAppointmentRequestRemote(
-    @ProtoNumber(1) val priceAdjustment: PriceAdjustmentDraftRemote?
+    @ProtoNumber(1) val priceAdjustment: PriceAdjustmentDraftRemote?,
 )

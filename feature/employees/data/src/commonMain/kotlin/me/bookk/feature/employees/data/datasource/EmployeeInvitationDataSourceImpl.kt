@@ -30,8 +30,10 @@ import kotlin.uuid.Uuid
 internal class EmployeeInvitationDataSourceImpl(
     private val httpClient: HttpClient,
     private val employeeInvitationDao: EmployeeInvitationDao,
-    preferenceProvider: PreferenceProvider
-) : DataSource(), EmployeeInvitationDataSource, LogOutAction {
+    preferenceProvider: PreferenceProvider,
+) : DataSource(),
+    EmployeeInvitationDataSource,
+    LogOutAction {
 
     private val preferences = preferenceProvider.get("employee_invitations_prefs")
     override suspend fun createInvitation(businessId: Uuid): EmployeeInvitation = mapExceptions {
@@ -40,11 +42,12 @@ internal class EmployeeInvitationDataSourceImpl(
             .toDomain()
     }
 
-    override suspend fun getInvitations(businessId: Uuid): List<EmployeeInvitation> = mapExceptions {
-        httpClient.get(Api.EmployeeInvitation(businessId = businessId))
-            .body<List<EmployeeInvitationRemote>>()
-            .map { it.toDomain() }
-    }
+    override suspend fun getInvitations(businessId: Uuid): List<EmployeeInvitation> =
+        mapExceptions {
+            httpClient.get(Api.EmployeeInvitation(businessId = businessId))
+                .body<List<EmployeeInvitationRemote>>()
+                .map { it.toDomain() }
+        }
 
     override fun observeInvitationsDBChanges(businessId: Uuid): Flow<List<EmployeeInvitation>> =
         employeeInvitationDao.observeInvitations(businessId)
@@ -52,7 +55,9 @@ internal class EmployeeInvitationDataSourceImpl(
             .mapErrors()
 
     override suspend fun saveInvitationsInDb(invitations: List<EmployeeInvitation>) {
-        mapExceptions { employeeInvitationDao.upsert(invitations.map(EmployeeInvitation::toDbEntity)) }
+        mapExceptions {
+            employeeInvitationDao.upsert(invitations.map(EmployeeInvitation::toDbEntity))
+        }
     }
 
     override suspend fun getInvitationIdsInDb(businessId: Uuid): List<Uuid> = mapExceptions {
@@ -61,12 +66,16 @@ internal class EmployeeInvitationDataSourceImpl(
 
     override suspend fun deleteInvitationsInDb(ids: List<Uuid>) {
         mapExceptions {
-            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk -> employeeInvitationDao.deleteByIds(chunk) }
+            ids.chunked(DELETE_CHUNK_SIZE).forEach { chunk ->
+                employeeInvitationDao.deleteByIds(chunk)
+            }
         }
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {
-        return preferences.get(Key.lastSyncedAt(businessId))?.let { Instant.fromEpochMilliseconds(it) }
+        return preferences.get(Key.lastSyncedAt(businessId))?.let {
+            Instant.fromEpochMilliseconds(it)
+        }
     }
 
     override suspend fun saveLastSyncedAt(businessId: Uuid) {
@@ -84,7 +93,9 @@ internal class EmployeeInvitationDataSourceImpl(
 
     override suspend fun revokeInvitation(businessId: Uuid, id: Uuid) {
         mapExceptions {
-            httpClient.post(Api.EmployeeInvitation.Revoke(Api.EmployeeInvitation(businessId = businessId), id))
+            httpClient.post(
+                Api.EmployeeInvitation.Revoke(Api.EmployeeInvitation(businessId = businessId), id),
+            )
         }
     }
 

@@ -23,7 +23,6 @@ import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
-import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.UpdateAppointmentSettings
@@ -67,7 +66,7 @@ class AppointmentSettingsViewModelTest {
             getAppointmentSettings = getAppointmentSettings,
             updateAppointmentSettings = updateAppointmentSettings,
             stateFactory = FakeAppointmentsStateFactory(),
-            vmArgs = VmArgs(errorMapper)
+            vmArgs = VmArgs(errorMapper),
         )
     }
 
@@ -90,11 +89,12 @@ class AppointmentSettingsViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(
-            automaticApproval = true,
-            inBetweenBreakInMinutes = 15,
-            appointmentNote = "Bring ID"
-        )
+        fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
+            .copy(
+                automaticApproval = true,
+                inBetweenBreakInMinutes = 15,
+                appointmentNote = "Bring ID",
+            )
 
         then()
         assertTrue(sut.uiState.automaticApproval.isChecked)
@@ -118,7 +118,10 @@ class AppointmentSettingsViewModelTest {
     fun `saves edited settings over the loaded ones`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls { (s: AppointmentSettings) -> s }
+        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls
+            { (s: AppointmentSettings) ->
+                s
+            }
         val loaded = AppointmentSettings.stub(fixture.businessId)
         val sut = fixture.sut()
         fixture.cached.value = loaded
@@ -131,10 +134,16 @@ class AppointmentSettingsViewModelTest {
 
         then()
         assertEquals(
-            loaded.copy(automaticApproval = true, inBetweenBreakInMinutes = 20, appointmentNote = "Bring ID"),
-            fixture.updates.get()
+            loaded.copy(
+                automaticApproval = true,
+                inBetweenBreakInMinutes = 20,
+                appointmentNote = "Bring ID",
+            ),
+            fixture.updates.get(),
         )
-        sut.uiState.notifications.presentationNotification.filterIsInstance<PresentationNotification.GlobalMessage>().single()
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.GlobalMessage>()
+            .single()
         assertFalse(sut.uiState.save.isLoading)
     }
 
@@ -142,7 +151,10 @@ class AppointmentSettingsViewModelTest {
     fun `plays success haptic when appointment settings are saved`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls { (s: AppointmentSettings) -> s }
+        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls
+            { (s: AppointmentSettings) ->
+                s
+            }
         val loaded = AppointmentSettings.stub(fixture.businessId)
         val sut = fixture.sut()
         fixture.cached.value = loaded
@@ -154,7 +166,12 @@ class AppointmentSettingsViewModelTest {
         sut.uiState.save.onClick?.invoke()
 
         then()
-        assertEquals(1, sut.uiState.notifications.presentationNotification.count { it is PresentationNotification.SuccessHaptic })
+        assertEquals(
+            1,
+            sut.uiState.notifications.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
@@ -168,14 +185,21 @@ class AppointmentSettingsViewModelTest {
         sut.uiState.save.onClick?.invoke()
 
         then()
-        assertTrue(sut.uiState.notifications.presentationNotification.none { it is PresentationNotification.SuccessHaptic })
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.SuccessHaptic
+            },
+        )
     }
 
     @Test
     fun `falls back to ten minute break when break is empty`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls { (s: AppointmentSettings) -> s }
+        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls
+            { (s: AppointmentSettings) ->
+                s
+            }
         val sut = fixture.sut()
         (sut.uiState.minimalBreak as FakeTextFieldState).type("")
 
@@ -236,7 +260,10 @@ class AppointmentSettingsViewModelTest {
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
-        assertEquals(listOf<AppointmentSettingsDestination>(AppointmentSettingsDestination.Back), sut.uiState.navigation.navigationDestination)
+        assertEquals(
+            listOf<AppointmentSettingsDestination>(AppointmentSettingsDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
     }
 
     @Test
@@ -246,7 +273,8 @@ class AppointmentSettingsViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(automaticCompletion = false)
+        fixture.cached.value =
+            AppointmentSettings.stub(fixture.businessId).copy(automaticCompletion = false)
 
         then()
         assertFalse(sut.uiState.automaticCompletion.isChecked)
@@ -259,7 +287,8 @@ class AppointmentSettingsViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(appointmentNote = "Bring ID")
+        fixture.cached.value =
+            AppointmentSettings.stub(fixture.businessId).copy(appointmentNote = "Bring ID")
 
         then()
         assertFalse(sut.uiState.save.isEnabled)
@@ -340,7 +369,10 @@ class AppointmentSettingsViewModelTest {
     fun `disables save after settings are saved`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointmentSettings(any()) } calls { (s: AppointmentSettings) -> s }
+        everySuspend { fixture.updateAppointmentSettings(any()) } calls
+            { (s: AppointmentSettings) ->
+                s
+            }
         val sut = fixture.sut()
         fixture.cached.value = AppointmentSettings.stub(fixture.businessId)
         sut.uiState.automaticApproval.onCheckedChange?.invoke(true)
@@ -372,9 +404,13 @@ class AppointmentSettingsViewModelTest {
     fun `saves toggled automatic completion`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls { (s: AppointmentSettings) -> s }
+        everySuspend { fixture.updateAppointmentSettings(capture(fixture.updates)) } calls
+            { (s: AppointmentSettings) ->
+                s
+            }
         val sut = fixture.sut()
-        fixture.cached.value = AppointmentSettings.stub(fixture.businessId).copy(automaticCompletion = true)
+        fixture.cached.value =
+            AppointmentSettings.stub(fixture.businessId).copy(automaticCompletion = true)
         sut.uiState.automaticCompletion.onCheckedChange?.invoke(false)
 
         whenn()

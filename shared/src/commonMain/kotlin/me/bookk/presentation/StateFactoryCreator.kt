@@ -1,5 +1,6 @@
 package me.bookk.presentation
 
+import library.crashreporting.api.CrashReporter
 import library.credentials.api.PasskeyCredentialUpdater
 import library.credentials.di.CredentialModuleFactory
 import library.picker.PickOptionStateFactory
@@ -17,6 +18,7 @@ interface StateFactoryCreator {
     fun createAuthFactory(): AuthStateFactory
     fun createBusinessFactory(): BusinessStateFactory
     fun createClientsFactory(): ClientsStateFactory
+    fun createCrashReporter(): CrashReporter
     fun createCredentialModuleFactory(): CredentialModuleFactory
     fun createDashboardFactory(): DashboardStateFactory
     fun createEmployeesFactory(): EmployeesStateFactory

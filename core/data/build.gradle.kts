@@ -22,6 +22,7 @@ kotlin {
             api(libs.ktor.client.mock)
             api(libs.ktor.client.protobuf)
             api(projects.core.domain)
+            implementation(projects.core)
         }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)
@@ -37,7 +38,7 @@ buildkonfig {
             BOOLEAN,
             "DEBUG",
             getCurrentVariant().contains("debug", ignoreCase = true).toString(),
-            const = true
+            const = true,
         )
     }
 }

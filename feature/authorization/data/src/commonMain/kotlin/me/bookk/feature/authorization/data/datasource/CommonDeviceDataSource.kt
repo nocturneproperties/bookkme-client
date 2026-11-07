@@ -9,7 +9,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 internal class CommonDeviceDataSource(
-    preferenceProvider: PreferenceProvider
+    preferenceProvider: PreferenceProvider,
 ) : DeviceDataSource {
 
     private val preferences = preferenceProvider.get("device_prefs")

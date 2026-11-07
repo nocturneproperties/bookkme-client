@@ -8,11 +8,7 @@ import android.widget.Toast
 import androidx.compose.ui.platform.UriHandler
 import dev.icerock.moko.resources.desc.StringDesc
 
-fun UriHandler.mailTo(
-    email: String,
-    subject: String? = null,
-    body: String? = null
-) {
+fun UriHandler.mailTo(email: String, subject: String? = null, body: String? = null) {
     val uri = Uri.Builder().apply {
         scheme("mailto:$email")
         if (subject != null) {
@@ -34,9 +30,6 @@ fun Context.openNotificationsSettings() {
     startActivity(intent)
 }
 
-fun Context.showToast(
-    message: StringDesc,
-    length: Int = Toast.LENGTH_SHORT
-) {
+fun Context.showToast(message: StringDesc, length: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message.toString(this), length).show()
 }

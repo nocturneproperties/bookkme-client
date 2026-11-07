@@ -10,7 +10,7 @@ class AndroidTimePickerState(
     pickedTime: LocalTime? = null,
     maxTime: LocalTime? = null,
     minTime: LocalTime? = null,
-    onTimePicked: ((LocalTime) -> Unit)? = null
+    onTimePicked: ((LocalTime) -> Unit)? = null,
 ) : TimePickerState {
     override var isTimePickerVisible: Boolean by mutableStateOf(isTimePickerVisible)
     override var maxTime: LocalTime? by mutableStateOf(maxTime)

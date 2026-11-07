@@ -19,7 +19,11 @@ internal fun NavGraphBuilder.employeeListScreen(navigation: EmployeesNavigation)
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
                     EmployeeListDestinations.Back -> navigation.onBack()
-                    is EmployeeListDestinations.AddEmployee -> navigation.toInviteEmployee(it.businessId)
+
+                    is EmployeeListDestinations.AddEmployee -> navigation.toInviteEmployee(
+                        it.businessId,
+                    )
+
                     is EmployeeListDestinations.EditEmployee -> navigation.toEditEmployee(it.id)
                 }
             }

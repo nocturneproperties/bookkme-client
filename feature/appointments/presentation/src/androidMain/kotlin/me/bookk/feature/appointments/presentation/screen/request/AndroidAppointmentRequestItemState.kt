@@ -7,7 +7,9 @@ import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidViewState
 import me.bookk.designsystem.uistate.ButtonState
 
-internal class AndroidAppointmentRequestItemState : AndroidViewState(), AppointmentRequestItemState {
+internal class AndroidAppointmentRequestItemState :
+    AndroidViewState(),
+    AppointmentRequestItemState {
     override var clientName: String by mutableStateOf("")
     override var serviceName: String by mutableStateOf("")
     override var scheduledDate: String by mutableStateOf("")

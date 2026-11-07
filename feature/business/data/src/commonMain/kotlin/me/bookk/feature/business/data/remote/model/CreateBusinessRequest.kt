@@ -11,5 +11,5 @@ internal class CreateBusinessRequest(
     @ProtoNumber(2) val currencyCode: String,
     @ProtoNumber(3)
     @Serializable(with = TimeZoneSerializer::class)
-    val timeZone: TimeZone
+    val timeZone: TimeZone,
 )

@@ -7,7 +7,7 @@ import me.bookk.feature.services.domain.api.service.entity.Service
 import kotlin.uuid.Uuid
 
 internal class GetAssignableServicesImpl(
-    private val getServices: GetServices
+    private val getServices: GetServices,
 ) : GetAssignableServices {
     override fun flow(): Flow<List<Service>> {
         return getServices.flow()

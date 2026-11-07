@@ -7,7 +7,7 @@ import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 import kotlin.uuid.Uuid
 
 internal class GetClientImpl(
-    private val clientsDataSource: ClientsDataSource
+    private val clientsDataSource: ClientsDataSource,
 ) : GetClient {
     override fun flow(id: Uuid): Flow<Client?> {
         return clientsDataSource.observeClientDBChanges(id)

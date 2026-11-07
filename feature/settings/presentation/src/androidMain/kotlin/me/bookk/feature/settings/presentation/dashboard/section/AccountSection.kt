@@ -24,40 +24,51 @@ internal fun AccountSection(state: AccountSection) {
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = state.title.localized(),
             style = MaterialTheme.typography.titleMedium,
-            color = LocalColors.current.header
+            color = LocalColors.current.header,
         )
 
         Column(
             modifier = Modifier.background(
                 LocalColors.current.elevated,
-                shape = MaterialTheme.shapes.large
-            )
+                shape = MaterialTheme.shapes.large,
+            ),
         ) {
             SectionItem(
                 text = state.notifications.text.localized(),
-                onClick = LocalNavigation.current.navigateToNotifications
+                onClick = LocalNavigation.current.navigateToNotifications,
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
                 text = state.passkey.text.localized(),
-                onClick = LocalNavigation.current.navigateToPasskey
+                onClick = LocalNavigation.current.navigateToPasskey,
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            SectionItem(
+                text = state.privacy.text.localized(),
+                trailingText = state.privacyStatus?.localized(),
+                onClick = LocalNavigation.current.navigateToPrivacy,
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            SectionItem(
+                text = state.dataExport.text.localized(),
+                onClick = LocalNavigation.current.navigateToPersonalDataExport,
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
                 text = state.logout.text.localized(),
-                onClick = LocalDashboardEventListener.current.performLogout
+                onClick = LocalDashboardEventListener.current.performLogout,
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
                 text = state.deleteAccount.text.localized(),
                 color = LocalColors.current.error,
-                onClick = LocalNavigation.current.navigateToDeleteAccount
+                onClick = LocalNavigation.current.navigateToDeleteAccount,
             )
         }
     }

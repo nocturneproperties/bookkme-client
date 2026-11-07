@@ -6,5 +6,5 @@ data class EmployeeSection(
     val id: String,
     val header: String,
     val items: List<Employee>,
-    val onItemClick: (Employee) -> Unit
+    val onItemClick: (Employee) -> Unit,
 )

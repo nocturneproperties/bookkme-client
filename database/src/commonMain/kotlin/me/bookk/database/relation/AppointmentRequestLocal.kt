@@ -9,7 +9,7 @@ class AppointmentRequestLocal(
     @Embedded val entity: AppointmentRequestEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "requestId"
+        entityColumn = "requestId",
     )
-    val services: List<AppointmentRequestServiceSnapshotEntity>
+    val services: List<AppointmentRequestServiceSnapshotEntity>,
 )

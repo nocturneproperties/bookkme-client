@@ -11,7 +11,7 @@
     <string name="services_create_name">Name</string>
     <string name="services_create_name_placeholder">Service name</string>
     <string name="services_create_duration">Duration</string>
-    <string name="services_create_duration_placeholder">Duration in minutes</string>
+    <string name="services_create_duration_placeholder">in minutes</string>
     <string name="services_create_price">Price</string>
     <string name="services_create_price_placeholder">Payment amount</string>
     <string name="services_create_visible">Visible to clients</string>
@@ -28,4 +28,8 @@
     <string name="services_group_add_name_exists">Group with this name already exists</string>
     <string name="services_group_add_name_invalid">Invalid name</string>
 
+    <string name="services_name_exists_error">A service with this name already exists. Choose another name.</string>
+    <string name="services_invalid_name_error">Enter a valid service name.</string>
+    <string name="services_group_not_found_error">This service group is no longer available. Select another group.</string>
+    <string name="services_price_precision_error">Enter a price with a valid number of decimal places for this currency.</string>
 </resources>

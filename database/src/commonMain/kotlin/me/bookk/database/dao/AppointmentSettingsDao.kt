@@ -31,7 +31,9 @@ abstract class AppointmentSettingsDao {
     abstract suspend fun deleteDaySchedules(settingsId: Uuid)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract suspend fun insertDaySchedules(daySchedules: List<AppointmentSettingsDayScheduleEntity>)
+    abstract suspend fun insertDaySchedules(
+        daySchedules: List<AppointmentSettingsDayScheduleEntity>,
+    )
 
     @Query("DELETE FROM appointment_settings_working_time WHERE settingsId = :settingsId")
     abstract suspend fun deleteWorkHours(settingsId: Uuid)
@@ -50,7 +52,7 @@ abstract class AppointmentSettingsDao {
         settings: AppointmentSettingsEntity,
         daySchedules: List<AppointmentSettingsDayScheduleEntity>,
         workHours: List<AppointmentSettingsWorkHourEntity>,
-        dayOffs: List<AppointmentSettingsDayOffEntity>
+        dayOffs: List<AppointmentSettingsDayOffEntity>,
     ) {
         upsertSettings(settings)
         deleteDaySchedules(settings.id)

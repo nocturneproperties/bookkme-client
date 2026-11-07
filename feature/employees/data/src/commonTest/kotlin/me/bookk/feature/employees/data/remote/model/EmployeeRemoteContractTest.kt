@@ -49,9 +49,9 @@ class EmployeeRemoteContractTest {
                 "schedule" to 9,
                 "createdAt" to 10,
                 "permissions" to 11,
-                "suspendedAt" to 12
+                "suspendedAt" to 12,
             ),
-            fields
+            fields,
         )
     }
 
@@ -72,10 +72,10 @@ class EmployeeRemoteContractTest {
                 "lastName" to 4,
                 "phone" to 5,
                 "email" to 6,
-                "services" to 7,
-                "schedule" to 8
+                "services" to 8,
+                "schedule" to 9,
             ),
-            fields
+            fields,
         )
     }
 
@@ -89,26 +89,41 @@ class EmployeeRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("business" to 1, "employees" to 2, "clients" to 3, "services" to 4, "appointments" to 5),
-            fields
+            listOf(
+                "business" to 1,
+                "employees" to 2,
+                "clients" to 3,
+                "services" to 4,
+                "appointments" to 5,
+            ),
+            fields,
         )
     }
 
     @Test
-    fun `permissions request writes every resource even when all its flags are revoked`() = runUnitTest {
-        given()
-        val revoked = ResourcePermission()
-        val request = EmployeePermissionsRequest.fromDomain(
-            BusinessPermissions(revoked, revoked, revoked, revoked, revoked)
-        )
-        val revokedResource = listOf<Byte>(6, 8, 0, 16, 0, 24, 0)
+    fun `permissions request writes every resource even when all its flags are revoked`() =
+        runUnitTest {
+            given()
+            val revoked = ResourcePermission()
+            val request = EmployeePermissionsRequest.fromDomain(
+                BusinessPermissions(revoked, revoked, revoked, revoked, revoked),
+            )
+            val revokedResource = listOf<Byte>(6, 8, 0, 16, 0, 24, 0)
 
-        whenn()
-        val bytes = dataSerializer.encodeToByteArray(EmployeePermissionsRequest.serializer(), request)
+            whenn()
+            val bytes = dataSerializer.encodeToByteArray(
+                EmployeePermissionsRequest.serializer(),
+                request,
+            )
 
-        then()
-        assertEquals((1..5).flatMap { listOf((it shl 3 or 2).toByte()) + revokedResource }, bytes.toList())
-    }
+            then()
+            assertEquals(
+                (1..5).flatMap {
+                    listOf((it shl 3 or 2).toByte()) + revokedResource
+                },
+                bytes.toList(),
+            )
+        }
 
     @Test
     fun `EmployeeSuspensionRequest field order matches the backend schema`() = runUnitTest {
@@ -128,7 +143,10 @@ class EmployeeRemoteContractTest {
         val request = EmployeeSuspensionRequest(suspended = false)
 
         whenn()
-        val bytes = dataSerializer.encodeToByteArray(EmployeeSuspensionRequest.serializer(), request)
+        val bytes = dataSerializer.encodeToByteArray(
+            EmployeeSuspensionRequest.serializer(),
+            request,
+        )
 
         then()
         assertEquals(listOf<Byte>(8, 0), bytes.toList())
@@ -140,7 +158,10 @@ class EmployeeRemoteContractTest {
         val permission = ResourcePermissionRemote(view = false, update = false, delete = false)
 
         whenn()
-        val bytes = dataSerializer.encodeToByteArray(ResourcePermissionRemote.serializer(), permission)
+        val bytes = dataSerializer.encodeToByteArray(
+            ResourcePermissionRemote.serializer(),
+            permission,
+        )
 
         then()
         assertEquals(listOf<Byte>(8, 0, 16, 0, 24, 0), bytes.toList())
@@ -156,8 +177,15 @@ class EmployeeRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("id" to 1, "businessId" to 2, "invitedBy" to 3, "code" to 4, "status" to 5, "createdAt" to 6),
-            fields
+            listOf(
+                "id" to 1,
+                "businessId" to 2,
+                "invitedBy" to 3,
+                "code" to 4,
+                "status" to 5,
+                "createdAt" to 6,
+            ),
+            fields,
         )
     }
 
@@ -195,8 +223,14 @@ class EmployeeRemoteContractTest {
 
         then()
         assertEquals(
-            listOf("business" to 1, "employees" to 2, "clients" to 3, "services" to 4, "appointments" to 5),
-            fields
+            listOf(
+                "business" to 1,
+                "employees" to 2,
+                "clients" to 3,
+                "services" to 4,
+                "appointments" to 5,
+            ),
+            fields,
         )
     }
 }

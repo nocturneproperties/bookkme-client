@@ -11,12 +11,14 @@ import kotlin.uuid.Uuid
 
 internal class GetServiceGroupsImpl(
     private val dataSource: ServiceGroupDataSource,
-    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges
+    private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
 ) : GetServiceGroups {
 
     override fun flow(): Flow<List<ServiceGroup>> {
         return observeDashboardBusinessChanges()
-            .flatMapLatestOrNull { business -> dataSource.observeServiceGroupsDBChanges(business.id) }
+            .flatMapLatestOrNull { business ->
+                dataSource.observeServiceGroupsDBChanges(business.id)
+            }
             .map { it.orEmpty().sortedBy { group -> group.createdAt } }
     }
 

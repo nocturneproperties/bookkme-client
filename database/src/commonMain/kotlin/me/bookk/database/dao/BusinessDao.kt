@@ -32,8 +32,9 @@ abstract class BusinessDao {
 
     @Transaction
     @Query(
-        "select business.*, exists(select 1 from dashboard_business where dashboard_business.businessId = business.id) as isDashboard " +
-            "from business"
+        "select business.*, exists(select 1 from dashboard_business " +
+            "where dashboard_business.businessId = business.id) as isDashboard " +
+            "from business",
     )
     abstract fun observeAllBusinessesWithDashboardFlag(): Flow<List<DashboardFlaggedBusinessLocal>>
 
@@ -87,7 +88,7 @@ abstract class BusinessDao {
         business: BusinessEntity,
         daySchedules: List<BusinessDayScheduleEntity>,
         workHours: List<BusinessWorkHourEntity>,
-        dayOffs: List<BusinessDayOffEntity>
+        dayOffs: List<BusinessDayOffEntity>,
     ) {
         upsertBusiness(business)
         deleteDaySchedules(business.id)
@@ -103,7 +104,7 @@ abstract class BusinessDao {
         businesses: List<BusinessEntity>,
         daySchedules: List<BusinessDayScheduleEntity>,
         workHours: List<BusinessWorkHourEntity>,
-        dayOffs: List<BusinessDayOffEntity>
+        dayOffs: List<BusinessDayOffEntity>,
     ) {
         upsertBusiness(businesses)
         businesses.forEach { business ->
@@ -131,7 +132,7 @@ abstract class BusinessDao {
         daySchedules: List<BusinessDayScheduleEntity>,
         workHours: List<BusinessWorkHourEntity>,
         dayOffs: List<BusinessDayOffEntity>,
-        dashboardBusinessId: Uuid?
+        dashboardBusinessId: Uuid?,
     ) {
         upsertAllWithChildren(businesses, daySchedules, workHours, dayOffs)
         setDashboardBusiness(dashboardBusinessId)

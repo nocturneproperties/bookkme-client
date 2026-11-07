@@ -24,7 +24,7 @@ class NotificationSettingsViewModel(
     private val updateNotificationSettings: UpdateNotificationSettings,
     private val permissionManager: PermissionManager,
     settingsStateFactory: SettingsStateFactory,
-    vmArgs: VmArgs
+    vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
     private var loadedSettings = NotificationSettings.stub()
@@ -53,7 +53,7 @@ class NotificationSettingsViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             call = { getNotificationSettings.refresh() },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -83,7 +83,7 @@ class NotificationSettingsViewModel(
                     renderSettings(loadedSettings)
                 }
             },
-            onError = { uiState.notifications.add(it.notification()) }
+            onError = { uiState.notifications.add(it.notification()) },
         )
     }
 
@@ -96,14 +96,15 @@ class NotificationSettingsViewModel(
                 loadedSettings = it
                 renderSettings(it)
             },
-            onError = { renderSettings(loadedSettings) }
+            onError = { renderSettings(loadedSettings) },
         )
     }
 
     private fun renderSettings(settings: NotificationSettings) = with(uiState) {
         appointmentEnabled.isChecked = settings.appointmentEnabled
         emailEnabled.isVisible = settings.channels.any { it.channel == EMAIL }
-        pushNotificationsEnabled.isVisible = settings.channels.any { it.channel == PUSH_NOTIFICATIONS }
+        pushNotificationsEnabled.isVisible =
+            settings.channels.any { it.channel == PUSH_NOTIFICATIONS }
         telegramEnabled.isVisible = settings.channels.any { it.channel == TELEGRAM }
         settings.channels.forEach { channel ->
             when (channel.channel) {

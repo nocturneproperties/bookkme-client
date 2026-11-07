@@ -43,7 +43,7 @@ fun InfoCardLine(line: InfoLine, isFirst: Boolean, isLast: Boolean, modifier: Mo
             .fillMaxWidth()
             .clip(infoCardLineShape(isFirst, isLast))
             .background(LocalColors.current.elevated)
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
     ) {
         Row(
             modifier = Modifier
@@ -51,23 +51,23 @@ fun InfoCardLine(line: InfoLine, isFirst: Boolean, isLast: Boolean, modifier: Mo
                 .heightIn(min = 48.dp)
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
                 text = line.title.localized(),
-                style = MaterialTheme.typography.bodyLarge.primary()
+                style = MaterialTheme.typography.bodyLarge.primary(),
             )
             Text(
                 modifier = Modifier.weight(1f),
                 text = line.value.localized(),
                 textAlign = TextAlign.End,
-                style = MaterialTheme.typography.bodyLarge.secondary()
+                style = MaterialTheme.typography.bodyLarge.secondary(),
             )
         }
         if (!isLast) {
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                color = LocalColors.current.divider
+                color = LocalColors.current.divider,
             )
         }
     }

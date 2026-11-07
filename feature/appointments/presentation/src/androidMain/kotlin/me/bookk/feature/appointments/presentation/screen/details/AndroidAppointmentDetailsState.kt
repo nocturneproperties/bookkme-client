@@ -25,7 +25,9 @@ import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPre
 internal class AndroidAppointmentDetailsState : AppointmentDetailsState {
     override val appBar: AppBarState = AndroidAppBarState()
 
-    override var status: UIAppointmentStatus by mutableStateOf(UIAppointmentStatus(AppointmentStatus.SCHEDULED))
+    override var status: UIAppointmentStatus by mutableStateOf(
+        UIAppointmentStatus(AppointmentStatus.SCHEDULED),
+    )
     override var statusNote: StringDesc? by mutableStateOf(null)
     override val dateTimePicker: DateTimePickerState = AndroidDateTimePickerState()
     override val rescheduleButton: ButtonState = AndroidButtonState()
@@ -40,5 +42,6 @@ internal class AndroidAppointmentDetailsState : AppointmentDetailsState {
     override val priceAdjustment: PriceAdjustmentSectionState = AndroidPriceAdjustmentSectionState()
 
     override val notifications: PresentationNotificationState = AndroidNotificationState()
-    override val navigation: NavigationState<AppointmentDetailsDestination> = AndroidNavigationState()
+    override val navigation: NavigationState<AppointmentDetailsDestination> =
+        AndroidNavigationState()
 }

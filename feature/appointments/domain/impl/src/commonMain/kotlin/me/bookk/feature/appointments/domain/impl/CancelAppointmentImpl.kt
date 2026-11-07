@@ -9,29 +9,43 @@ import me.bookk.feature.appointments.domain.datasource.AppointmentDataSource
 import kotlin.uuid.Uuid
 
 internal class CancelAppointmentImpl(
-    private val appointmentDataSource: AppointmentDataSource
+    private val appointmentDataSource: AppointmentDataSource,
 ) : CancelAppointment {
 
     override suspend fun invoke(
         appointmentId: Uuid,
         businessId: Uuid,
-        reason: String
+        reason: String,
     ): Appointment {
         val cancellation = AppointmentCancellation(
             id = appointmentId,
             businessId = businessId,
-            reason = reason
+            reason = reason,
         )
         return runCatching {
             appointmentDataSource.cancelAppointment(cancellation).also {
                 appointmentDataSource.saveAppointmentInDB(it)
             }
-        }.onBusinessError {
-            when (it.errorCode) {
-                AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED -> throw CancelAppointment.Error.AppointmentAlreadyCancelled()
-                AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED -> throw CancelAppointment.Error.AppointmentAlreadyCompleted()
-                AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW -> throw CancelAppointment.Error.AppointmentMarkedNoShow()
+        }
+            .onBusinessError {
+                when (it.errorCode) {
+                    AppointmentErrorCodes.APPOINTMENT_EDIT_WINDOW_CLOSED -> {
+                        throw CancelAppointment.Error.EditWindowClosed()
+                    }
+
+                    AppointmentErrorCodes.APPOINTMENT_ALREADY_CANCELED -> {
+                        throw CancelAppointment.Error.AppointmentAlreadyCancelled()
+                    }
+
+                    AppointmentErrorCodes.APPOINTMENT_ALREADY_COMPLETED -> {
+                        throw CancelAppointment.Error.AppointmentAlreadyCompleted()
+                    }
+
+                    AppointmentErrorCodes.APPOINTMENT_MARKED_NO_SHOW -> {
+                        throw CancelAppointment.Error.AppointmentMarkedNoShow()
+                    }
+                }
             }
-        }.getOrThrow()
+            .getOrThrow()
     }
 }

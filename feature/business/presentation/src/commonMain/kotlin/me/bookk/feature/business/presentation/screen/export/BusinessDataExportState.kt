@@ -20,7 +20,7 @@ interface BusinessDataExportState {
     var error: StringDesc?
     val request: ButtonState
     val download: ButtonState
-    val refresh: ButtonState
+    val retry: ButtonState
     val notifications: PresentationNotificationState
     val navigation: NavigationState<BusinessDataExportDestinations>
 }

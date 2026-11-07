@@ -22,7 +22,7 @@ class IOSBusinessDataExportState: @MainActor BusinessDataExportState, NativeStat
     var error: (any StringDesc)?
     let request: any ButtonState = IOSButtonState()
     let download: any ButtonState = IOSButtonState()
-    let refresh: any ButtonState = IOSButtonState()
+    let retry: any ButtonState = IOSButtonState()
     let notifications: any PresentationNotificationState = IOSNotificationState()
     let navigation: any NavigationState = IOSNavigationState()
 }

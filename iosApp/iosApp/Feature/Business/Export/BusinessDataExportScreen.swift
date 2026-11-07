@@ -68,8 +68,8 @@ struct BusinessDataExportContent: View {
 						.listRowInsets(EdgeInsets())
 						.listRowBackground(Color.clear)
                 }
-                if state.refresh.isVisible {
-					StateButton(state.refresh)
+                if state.retry.isVisible {
+					StateButton(state.retry)
 						.listRowInsets(EdgeInsets())
 						.listRowBackground(Color.clear)
                 }

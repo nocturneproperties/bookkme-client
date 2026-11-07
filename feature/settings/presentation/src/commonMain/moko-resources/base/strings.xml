@@ -83,7 +83,6 @@
     <string name="settings_export_description">Request a copy of the personal data the app holds about you. It will be prepared as a JSON file, a structured format you can download, save or share and open with compatible software.</string>
     <string name="settings_export_request">Request export</string>
     <string name="settings_export_download">Download export</string>
-    <string name="settings_export_refresh">Refresh status</string>
     <string name="settings_export_confirmation">Confirm with your passkey.</string>
     <string name="settings_export_running_title">Preparing your export</string>
     <string name="settings_export_running_message">Your file is being prepared. Check back shortly.</string>
@@ -96,7 +95,7 @@
     <string name="settings_export_expiry_label">Available until</string>
     <string name="settings_export_cooldown">You can request another export after %s</string>
     <string name="settings_export_request_after_expiry">You can request a new export after the current one expires.</string>
-    <string name="settings_export_load_error">Could not check export status. Refresh to try again.</string>
+    <string name="settings_export_load_error">Could not check export status.</string>
     <string name="settings_export_request_error">Could not request your export. Please try again.</string>
     <string name="settings_export_confirmation_error">Passkey confirmation failed or expired. Request the export again to confirm.</string>
     <string name="settings_export_too_frequent">Another export cannot be requested yet. Refresh the status to check availability.</string>

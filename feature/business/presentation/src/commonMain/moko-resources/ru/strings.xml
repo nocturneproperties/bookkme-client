@@ -96,7 +96,6 @@
     <string name="business_export_description">Запросите копию всех данных, которые приложение хранит для этого бизнеса: профиль, услуги, сотрудники, ожидающие приглашения, клиенты, настройки записей, записи и ожидающие запросы. Они будут подготовлены в файле JSON — структурированном формате, который можно скачать, сохранить, передать или открыть в совместимой программе.</string>
     <string name="business_export_request">Запросить экспорт</string>
     <string name="business_export_download">Скачать экспорт</string>
-    <string name="business_export_refresh">Обновить статус</string>
     <string name="business_export_confirmation">Подтвердите действие ключом доступа.</string>
     <string name="business_export_running_title">Готовим ваш экспорт</string>
     <string name="business_export_running_message">Ваш файл готовится. Проверьте статус чуть позже.</string>
@@ -107,7 +106,7 @@
     <string name="business_export_expiry_label">Доступен до</string>
     <string name="business_export_cooldown">Следующий экспорт можно запросить после %s</string>
     <string name="business_export_request_after_expiry">Новый экспорт можно запросить после окончания срока действия текущего.</string>
-    <string name="business_export_load_error">Не удалось проверить статус экспорта. Обновите статус, чтобы повторить попытку.</string>
+    <string name="business_export_load_error">Не удалось проверить статус экспорта.</string>
     <string name="business_export_request_error">Не удалось запросить экспорт. Попробуйте ещё раз.</string>
     <string name="business_export_confirmation_error">Подтверждение ключом доступа не удалось или устарело. Запросите экспорт ещё раз для подтверждения.</string>
     <string name="business_export_too_frequent">Пока нельзя запросить новый экспорт. Обновите статус, чтобы проверить доступность.</string>

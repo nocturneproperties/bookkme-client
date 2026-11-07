@@ -8,6 +8,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -50,22 +52,29 @@ class PersonalDataExportViewModel(
     val uiState = stateFactory.createPersonalDataExportState().setup()
     private var exportStatus = DataExportStatus.NONE
     private var hasCheckedOpeningStatus = false
+    private val isViewPresented = MutableStateFlow(false)
 
     init {
         observeExport()
     }
 
+    override fun onViewPresented() {
+        isViewPresented.value = true
+    }
+
+    override fun onViewHidden() {
+        isViewPresented.value = false
+    }
+
     private fun observeExport() {
         getExport.flow()
             .flowOn(DispatcherProvider.io)
+            .reemitWhenCooldownEnds()
             .safeOnEach {
                 render(it)
                 refreshUnknownOpeningStatus(it)
             }
-            .onError {
-                uiState.refresh.isVisible = true
-                showError(it, SettingsRes.strings.settings_export_load_error)
-            }
+            .onError { showLoadError(it) }
             .pollWhileRunning()
             .safeOnEach { refreshStatus() }
             .observe()
@@ -79,15 +88,25 @@ class PersonalDataExportViewModel(
         }
     }
 
+    private fun Flow<DataExport?>.reemitWhenCooldownEnds(): Flow<DataExport?> {
+        return transformLatest { export ->
+            emit(export)
+            val cooldownLeft = export?.availableAgainAt?.minus(clock.now())
+            if (cooldownLeft != null && cooldownLeft.isPositive()) {
+                delay(cooldownLeft)
+                emit(export)
+            }
+        }
+    }
+
     private fun Flow<DataExport?>.pollWhileRunning(): Flow<Unit> {
         return map { it?.status == DataExportStatus.RUNNING }
+            .combine(isViewPresented) { isRunning, isPresented -> isRunning && isPresented }
             .distinctUntilChanged()
-            .transformLatest { isRunning ->
-                if (isRunning) {
-                    repeat(MAX_STATUS_POLLS) {
-                        delay(STATUS_POLL_INTERVAL)
-                        emit(Unit)
-                    }
+            .transformLatest { shouldPoll ->
+                while (shouldPoll) {
+                    delay(STATUS_POLL_INTERVAL)
+                    emit(Unit)
                 }
             }
     }
@@ -105,8 +124,9 @@ class PersonalDataExportViewModel(
         download.icon = DesignSystem.images.download
         download.isVisible = false
         download.onClick = weakVMClosure { it.downloadFile() }
-        refresh.text = SettingsRes.strings.settings_export_refresh.desc()
-        refresh.onClick = weakVMClosure { it.refreshStatus() }
+        retry.text = DesignSystem.strings.action_retry.desc()
+        retry.isVisible = false
+        retry.onClick = weakVMClosure { it.refreshStatus() }
     }
 
     private fun refreshStatus() {
@@ -115,19 +135,14 @@ class PersonalDataExportViewModel(
             launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = {
-                uiState.error = null
                 uiState.request.isEnabled = false
                 uiState.download.isEnabled = false
-                uiState.refresh.startLoading()
-                uiState.refresh.isVisible = true
+                uiState.retry.startLoading()
             },
             call = { getExport.refresh() },
-            onError = {
-                uiState.refresh.isVisible = true
-                showError(it, SettingsRes.strings.settings_export_load_error)
-            },
+            onError = { showLoadError(it) },
             onTerminate = {
-                uiState.refresh.stopLoading()
+                uiState.retry.stopLoading()
                 uiState.request.isEnabled = true
                 uiState.download.isEnabled = true
             },
@@ -140,6 +155,7 @@ class PersonalDataExportViewModel(
         uiState.expiry = export?.expiresAt?.let { formatDate(it).desc() }
         uiState.requestAvailability = requestAvailability(exportStatus, cooldownEnd)
         uiState.error = null
+        uiState.retry.isVisible = false
         renderStatus(exportStatus, canRequest = cooldownEnd == null)
     }
 
@@ -163,7 +179,16 @@ class PersonalDataExportViewModel(
         uiState.status = UIExportStatus(status, canRequest)
         uiState.download.isVisible = isReady
         uiState.request.isVisible = isRequestable
-        uiState.refresh.isVisible = !isReady && !isRequestable
+    }
+
+    private fun showLoadError(error: Throwable) {
+        uiState.retry.isVisible = exportStatus != DataExportStatus.RUNNING
+        showError(error, SettingsRes.strings.settings_export_load_error)
+    }
+
+    private fun showRetryableError(message: StringDesc) {
+        uiState.retry.isVisible = true
+        uiState.error = message
     }
 
     private fun formatDate(instant: Instant): String {
@@ -200,7 +225,7 @@ class PersonalDataExportViewModel(
 
             is StartPersonalDataExport.Error.TooFrequent -> {
                 renderStatus(exportStatus, canRequest = false)
-                uiState.error = SettingsRes.strings.settings_export_too_frequent.desc()
+                showRetryableError(SettingsRes.strings.settings_export_too_frequent.desc())
             }
 
             else -> {
@@ -225,7 +250,7 @@ class PersonalDataExportViewModel(
             onError = {
                 if (it is DownloadPersonalDataExport.Error.NotReady) {
                     renderStatus(DataExportStatus.NONE, canRequest = false)
-                    uiState.error = SettingsRes.strings.settings_export_unavailable.desc()
+                    showRetryableError(SettingsRes.strings.settings_export_unavailable.desc())
                 } else {
                     showError(it, SettingsRes.strings.settings_export_download_error)
                 }
@@ -248,7 +273,6 @@ class PersonalDataExportViewModel(
 
     companion object {
         private const val OPERATION_KEY = "personalDataExportOperation"
-        private const val MAX_STATUS_POLLS = 30
         private val STATUS_POLL_INTERVAL = 10.seconds
     }
 }

@@ -1,7 +1,5 @@
 package me.bookk.feature.settings.presentation.export
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +29,6 @@ import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
-import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.painter
 import me.bookk.designsystem.resources.color.themed
 import me.bookk.designsystem.theme.color.LocalColors
@@ -70,17 +67,8 @@ internal fun PersonalDataExportScreen(state: PersonalDataExportState) {
             if (state.download.isVisible) {
                 ActionButton(state.download, modifier = Modifier.fillMaxWidth())
             }
-            if (state.refresh.isVisible) {
-                StateTextButton(
-                    state.refresh,
-                    modifier = Modifier.fillMaxWidth().border(
-                        BorderStroke(1.dp, LocalColors.current.actionText),
-                        MaterialTheme.shapes.large,
-                    ),
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                    ),
-                )
+            if (state.retry.isVisible) {
+                ActionButton(state.retry, modifier = Modifier.fillMaxWidth())
             }
             state.status.footer?.let {
                 Text(

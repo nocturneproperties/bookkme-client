@@ -29,7 +29,7 @@ internal class AndroidPersonalDataExportState : PersonalDataExportState {
     override var error: StringDesc? by mutableStateOf(null)
     override val request = AndroidButtonState()
     override val download = AndroidButtonState()
-    override val refresh = AndroidButtonState()
+    override val retry = AndroidButtonState()
     override val notifications = AndroidNotificationState()
     override val navigation = AndroidNavigationState<PersonalDataExportDestinations>()
 }

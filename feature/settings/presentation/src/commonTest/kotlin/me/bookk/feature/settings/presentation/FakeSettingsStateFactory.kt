@@ -183,7 +183,7 @@ internal class FakePersonalDataExportState : PersonalDataExportState {
     override var error: StringDesc? = null
     override val request = FakeButtonState()
     override val download = FakeButtonState()
-    override val refresh = FakeButtonState()
+    override val retry = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<PersonalDataExportDestinations>()
 }

@@ -40,6 +40,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -59,7 +60,7 @@ class BusinessDataExportViewModelTest {
     }
 
     private class Fixture {
-        val now = Instant.parse("2026-11-05T12:00:00Z")
+        var now = Instant.parse("2026-11-05T12:00:00Z")
         val cache = FakeExportCache()
         val getExport = FakeGetBusinessDataExport(cache)
         val startExport = FakeStartBusinessDataExport(cache)
@@ -218,17 +219,14 @@ class BusinessDataExportViewModelTest {
         whenn()
         val sut = fixture.sut()
         val showedPreparing = sut.uiState.status.isInProgress
-        val showedLoading = sut.uiState.refresh.isLoading
         response.complete(fixture.ready())
 
         then()
         assertTrue(showedPreparing)
-        assertTrue(showedLoading)
         assertTrue(sut.uiState.download.isVisible)
         assertTrue(sut.uiState.download.isEnabled)
         assertTrue(sut.uiState.request.isEnabled)
-        assertFalse(sut.uiState.refresh.isLoading)
-        assertFalse(sut.uiState.refresh.isVisible)
+        assertFalse(sut.uiState.retry.isVisible)
         assertEquals(1, fixture.getExport.refreshCalls)
     }
 
@@ -237,7 +235,8 @@ class BusinessDataExportViewModelTest {
         given()
         val fixture = Fixture()
         fixture.cache.value = DataExport(DataExportStatus.RUNNING)
-        fixture.sut()
+        val sut = fixture.sut()
+        sut.onViewPresented()
 
         whenn()
         advanceTimeBy(10.seconds)
@@ -245,6 +244,7 @@ class BusinessDataExportViewModelTest {
 
         then()
         assertEquals(2, fixture.getExport.refreshCalls)
+        sut.onViewHidden()
     }
 
     @Test
@@ -252,7 +252,8 @@ class BusinessDataExportViewModelTest {
         given()
         val fixture = Fixture()
         fixture.cache.value = DataExport(DataExportStatus.RUNNING)
-        fixture.sut()
+        val sut = fixture.sut()
+        sut.onViewPresented()
 
         whenn()
         advanceTimeBy(9.seconds)
@@ -260,6 +261,7 @@ class BusinessDataExportViewModelTest {
 
         then()
         assertEquals(1, fixture.getExport.refreshCalls)
+        sut.onViewHidden()
     }
 
     @Test
@@ -267,7 +269,8 @@ class BusinessDataExportViewModelTest {
         given()
         val fixture = Fixture()
         fixture.cache.value = DataExport(DataExportStatus.RUNNING)
-        fixture.sut()
+        val sut = fixture.sut()
+        sut.onViewPresented()
         fixture.getExport.server = { fixture.ready() }
         advanceTimeBy(10.seconds)
         runCurrent()
@@ -281,7 +284,24 @@ class BusinessDataExportViewModelTest {
     }
 
     @Test
-    fun `stops polling a running export after thirty attempts`() = runUnitTest {
+    fun `keeps polling a running export without an attempt limit`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.cache.value = DataExport(DataExportStatus.RUNNING)
+        val sut = fixture.sut()
+        sut.onViewPresented()
+
+        whenn()
+        advanceTimeBy(10.minutes)
+        runCurrent()
+
+        then()
+        assertEquals(61, fixture.getExport.refreshCalls)
+        sut.onViewHidden()
+    }
+
+    @Test
+    fun `does not poll a running export while the screen is not presented`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.cache.value = DataExport(DataExportStatus.RUNNING)
@@ -292,7 +312,43 @@ class BusinessDataExportViewModelTest {
         runCurrent()
 
         then()
-        assertEquals(31, fixture.getExport.refreshCalls)
+        assertEquals(1, fixture.getExport.refreshCalls)
+    }
+
+    @Test
+    fun `stops polling when the screen is hidden`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.cache.value = DataExport(DataExportStatus.RUNNING)
+        val sut = fixture.sut()
+        sut.onViewPresented()
+
+        whenn()
+        sut.onViewHidden()
+        advanceTimeBy(10.minutes)
+        runCurrent()
+
+        then()
+        assertEquals(1, fixture.getExport.refreshCalls)
+    }
+
+    @Test
+    fun `resumes polling when the screen is presented again`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.cache.value = DataExport(DataExportStatus.RUNNING)
+        val sut = fixture.sut()
+        sut.onViewPresented()
+        sut.onViewHidden()
+
+        whenn()
+        sut.onViewPresented()
+        advanceTimeBy(10.seconds)
+        runCurrent()
+
+        then()
+        assertEquals(2, fixture.getExport.refreshCalls)
+        sut.onViewHidden()
     }
 
     @Test
@@ -301,6 +357,7 @@ class BusinessDataExportViewModelTest {
         val fixture = Fixture()
         fixture.cache.value = DataExport(DataExportStatus.NONE)
         val sut = fixture.sut()
+        sut.onViewPresented()
         fixture.cache.value = DataExport(DataExportStatus.RUNNING)
         fixture.getExport.server = { fixture.ready() }
 
@@ -338,10 +395,9 @@ class BusinessDataExportViewModelTest {
         fixture.cache.value = DataExport(DataExportStatus.RUNNING)
         fixture.getExport.cachesServerResponse = false
         fixture.getExport.server = { fixture.ready() }
-        val sut = fixture.sut()
 
         whenn()
-        sut.uiState.refresh.onClick?.invoke()
+        val sut = fixture.sut()
 
         then()
         assertTrue(sut.uiState.status.isInProgress)
@@ -397,8 +453,8 @@ class BusinessDataExportViewModelTest {
         assertTrue(sut.uiState.request.isVisible)
         assertTrue(sut.uiState.request.isEnabled)
         assertFalse(sut.uiState.download.isVisible)
-        assertFalse(sut.uiState.refresh.isVisible)
-        assertFalse(sut.uiState.refresh.isLoading)
+        assertFalse(sut.uiState.retry.isVisible)
+        assertFalse(sut.uiState.retry.isLoading)
         assertEquals(
             BusinessRes.strings.business_export_request_title.desc(),
             sut.uiState.status.title,
@@ -422,7 +478,7 @@ class BusinessDataExportViewModelTest {
 
         then()
         assertTrue(sut.uiState.request.isVisible)
-        assertFalse(sut.uiState.refresh.isVisible)
+        assertFalse(sut.uiState.retry.isVisible)
         assertEquals(
             BusinessRes.strings.business_export_description.desc(),
             sut.uiState.status.message,
@@ -467,7 +523,7 @@ class BusinessDataExportViewModelTest {
     }
 
     @Test
-    fun `running export offers only the status refresh`() = runUnitTest {
+    fun `running export offers no action while it is polled`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.cache.value = DataExport(DataExportStatus.RUNNING)
@@ -479,8 +535,7 @@ class BusinessDataExportViewModelTest {
         assertTrue(sut.uiState.status.isInProgress)
         assertFalse(sut.uiState.request.isVisible)
         assertFalse(sut.uiState.download.isVisible)
-        assertTrue(sut.uiState.refresh.isVisible)
-        assertTrue(sut.uiState.refresh.isEnabled)
+        assertFalse(sut.uiState.retry.isVisible)
     }
 
     @Test
@@ -504,7 +559,7 @@ class BusinessDataExportViewModelTest {
             sut.uiState.status.footer,
         )
         assertTrue(sut.uiState.download.isVisible)
-        assertFalse(sut.uiState.refresh.isVisible)
+        assertFalse(sut.uiState.retry.isVisible)
     }
 
     @Test
@@ -522,8 +577,8 @@ class BusinessDataExportViewModelTest {
         then()
         assertTrue(sut.uiState.download.isVisible)
         assertTrue(sut.uiState.download.isEnabled)
-        assertFalse(sut.uiState.refresh.isVisible)
-        assertFalse(sut.uiState.refresh.isLoading)
+        assertFalse(sut.uiState.retry.isVisible)
+        assertFalse(sut.uiState.retry.isLoading)
         assertEquals(0, fixture.getExport.refreshCalls)
     }
 
@@ -602,8 +657,43 @@ class BusinessDataExportViewModelTest {
             ),
             sut.uiState.requestAvailability,
         )
-        assertTrue(sut.uiState.refresh.isVisible)
-        assertTrue(sut.uiState.refresh.isEnabled)
+        assertFalse(sut.uiState.retry.isVisible)
+    }
+
+    @Test
+    fun `offers a new request once the cooldown ends`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val availableAgainAt = fixture.now + 1.hours
+        fixture.cache.value = DataExport(DataExportStatus.NONE, availableAgainAt = availableAgainAt)
+        val sut = fixture.sut()
+        fixture.now = availableAgainAt
+
+        whenn()
+        advanceTimeBy(1.hours)
+        runCurrent()
+
+        then()
+        assertTrue(sut.uiState.request.isVisible)
+        assertNull(sut.uiState.requestAvailability)
+        assertEquals(0, fixture.getExport.refreshCalls)
+    }
+
+    @Test
+    fun `keeps the request blocked until the cooldown ends`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val availableAgainAt = fixture.now + 1.hours
+        fixture.cache.value = DataExport(DataExportStatus.NONE, availableAgainAt = availableAgainAt)
+        val sut = fixture.sut()
+        fixture.now = availableAgainAt
+
+        whenn()
+        advanceTimeBy(1.hours - 1.seconds)
+        runCurrent()
+
+        then()
+        assertFalse(sut.uiState.request.isVisible)
     }
 
     @Test
@@ -637,7 +727,7 @@ class BusinessDataExportViewModelTest {
         then()
         assertFalse(sut.uiState.download.isVisible)
         assertTrue(sut.uiState.request.isVisible)
-        assertFalse(sut.uiState.refresh.isVisible)
+        assertFalse(sut.uiState.retry.isVisible)
         assertNull(sut.uiState.expiry)
         assertNull(sut.uiState.requestAvailability)
         assertEquals(
@@ -648,24 +738,7 @@ class BusinessDataExportViewModelTest {
     }
 
     @Test
-    fun `refresh action turns a running export into a ready download`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.cache.value = DataExport(DataExportStatus.RUNNING)
-        val sut = fixture.sut()
-        fixture.getExport.server = { fixture.ready() }
-
-        whenn()
-        sut.uiState.refresh.onClick?.invoke()
-
-        then()
-        assertTrue(sut.uiState.download.isVisible)
-        assertFalse(sut.uiState.status.isInProgress)
-        assertEquals(0, fixture.downloadExport.calls)
-    }
-
-    @Test
-    fun `failed status refresh keeps the cached status and offers an inline retry`() = runUnitTest {
+    fun `failed poll keeps the running status and shows the error without a retry`() = runUnitTest {
         given()
         val fixture = Fixture()
         val response = fixture.runningWithPendingRefresh()
@@ -685,27 +758,75 @@ class BusinessDataExportViewModelTest {
         )
         assertFalse(sut.uiState.request.isVisible)
         assertFalse(sut.uiState.download.isVisible)
-        assertTrue(sut.uiState.refresh.isVisible)
-        assertTrue(sut.uiState.refresh.isEnabled)
+        assertFalse(sut.uiState.retry.isVisible)
         assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
+    }
+
+    @Test
+    fun `keeps the poll error until a later poll succeeds`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val response = fixture.runningWithPendingRefresh()
+        val sut = fixture.sut()
+        sut.onViewPresented()
+        response.completeExceptionally(TestException())
+        val nextResponse = CompletableDeferred<DataExport>()
+        fixture.getExport.server = { nextResponse.await() }
+
+        whenn()
+        advanceTimeBy(10.seconds)
+        runCurrent()
+        val errorWhilePolling = sut.uiState.error
+        nextResponse.complete(DataExport(DataExportStatus.RUNNING))
+
+        then()
+        assertEquals(BusinessRes.strings.business_export_load_error.desc(), errorWhilePolling)
+        assertNull(sut.uiState.error)
+        sut.onViewHidden()
+    }
+
+    @Test
+    fun `failed opening refresh offers a retry when the export is not running`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.getExport.server = { throw TestException() }
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(BusinessRes.strings.business_export_load_error.desc(), sut.uiState.error)
+        assertTrue(sut.uiState.retry.isVisible)
+        assertTrue(sut.uiState.retry.isEnabled)
+    }
+
+    @Test
+    fun `labels the status retry with the shared retry action`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(DesignSystem.strings.action_retry.desc(), sut.uiState.retry.text)
     }
 
     @Test
     fun `clears the inline error after a successful retry`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val response = fixture.runningWithPendingRefresh()
+        fixture.getExport.server = { throw TestException() }
         val sut = fixture.sut()
-        response.completeExceptionally(TestException())
         fixture.getExport.server = { DataExport(DataExportStatus.NONE) }
 
         whenn()
-        sut.uiState.refresh.onClick?.invoke()
-        testScheduler.advanceUntilIdle()
+        sut.uiState.retry.onClick?.invoke()
 
         then()
         assertNull(sut.uiState.error)
         assertTrue(sut.uiState.request.isVisible)
+        assertFalse(sut.uiState.retry.isVisible)
     }
 
     @Test
@@ -719,7 +840,7 @@ class BusinessDataExportViewModelTest {
 
         then()
         assertEquals(BusinessRes.strings.business_export_load_error.desc(), sut.uiState.error)
-        assertTrue(sut.uiState.refresh.isVisible)
+        assertTrue(sut.uiState.retry.isVisible)
         assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
     }
 
@@ -843,8 +964,8 @@ class BusinessDataExportViewModelTest {
             sut.uiState.status.title,
         )
         assertEquals(BusinessRes.strings.business_export_too_frequent.desc(), sut.uiState.error)
-        assertTrue(sut.uiState.refresh.isVisible)
-        assertTrue(sut.uiState.refresh.isEnabled)
+        assertTrue(sut.uiState.retry.isVisible)
+        assertTrue(sut.uiState.retry.isEnabled)
     }
 
     @Test
@@ -858,11 +979,11 @@ class BusinessDataExportViewModelTest {
             sut.uiState.request.onClick?.invoke()
 
             whenn()
-            sut.uiState.refresh.onClick?.invoke()
+            sut.uiState.retry.onClick?.invoke()
 
             then()
             assertTrue(sut.uiState.request.isVisible)
-            assertFalse(sut.uiState.refresh.isVisible)
+            assertFalse(sut.uiState.retry.isVisible)
             assertNull(sut.uiState.error)
         }
 
@@ -886,6 +1007,7 @@ class BusinessDataExportViewModelTest {
             assertEquals(1, fixture.startExport.calls)
             assertEquals(1, fixture.getExport.refreshCalls)
             assertTrue(sut.uiState.status.isInProgress)
+            sut.onViewHidden()
         }
 
     @Test
@@ -1004,8 +1126,8 @@ class BusinessDataExportViewModelTest {
             assertFalse(sut.uiState.download.isVisible)
             assertFalse(sut.uiState.request.isVisible)
             assertEquals(BusinessRes.strings.business_export_unavailable.desc(), sut.uiState.error)
-            assertTrue(sut.uiState.refresh.isVisible)
-            assertTrue(sut.uiState.refresh.isEnabled)
+            assertTrue(sut.uiState.retry.isVisible)
+            assertTrue(sut.uiState.retry.isEnabled)
             assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
         }
 
@@ -1020,7 +1142,7 @@ class BusinessDataExportViewModelTest {
         fixture.getExport.server = { DataExport(DataExportStatus.NONE) }
 
         whenn()
-        sut.uiState.refresh.onClick?.invoke()
+        sut.uiState.retry.onClick?.invoke()
 
         then()
         assertEquals(1, fixture.getExport.refreshCalls)
@@ -1183,7 +1305,7 @@ class BusinessDataExportViewModelTest {
             fixture.cache.value = null
             throw GetBusinessDataExport.Error.NotOwner()
         }
-        fixture.sut()
+        fixture.sut().onViewPresented()
 
         whenn()
         advanceTimeBy(10.minutes)
@@ -1197,7 +1319,7 @@ class BusinessDataExportViewModelTest {
         assertEquals(BusinessRes.strings.business_export_not_owner.desc(), sut.uiState.error)
         assertFalse(sut.uiState.request.isVisible)
         assertFalse(sut.uiState.download.isVisible)
-        assertFalse(sut.uiState.refresh.isVisible)
+        assertFalse(sut.uiState.retry.isVisible)
         assertFalse(sut.uiState.status.showsFile)
         assertFalse(sut.uiState.status.isInProgress)
         assertNull(sut.uiState.status.footer)

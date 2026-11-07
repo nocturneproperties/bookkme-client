@@ -13,10 +13,8 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.ktor.client.negotiation)
             implementation(projects.core.testFixtures)
-            implementation(libs.kotlin.serialization.core)
         }
         commonMain.dependencies {
-            implementation(projects.core)
             implementation(projects.core.domain)
             implementation(projects.core.data)
             implementation(projects.feature.settings.domain.api)

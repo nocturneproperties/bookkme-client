@@ -9,13 +9,7 @@ kotlin {
         namespace = "${ApplicationConfig.ROOT_PACKAGE}.library.validation.impl"
     }
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.androidx.activity)
-        }
         commonMain.dependencies {
-            implementation(libs.koin.core)
-            implementation(projects.core)
-            implementation(projects.core.domain)
             implementation(projects.library.validation.api)
         }
         commonTest.dependencies {

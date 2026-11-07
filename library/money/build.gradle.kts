@@ -15,8 +15,6 @@ kotlin {
             implementation(libs.joda.money)
         }
         commonMain.dependencies {
-            implementation(projects.core)
-            implementation(projects.core.domain)
             implementation(libs.kotlin.serialization.core)
         }
     }

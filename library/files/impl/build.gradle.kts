@@ -13,8 +13,6 @@ kotlin {
             implementation(projects.core.testFixtures)
         }
         commonMain.dependencies {
-            implementation(projects.core)
-            implementation(projects.core.domain)
             implementation(projects.library.files.api)
         }
     }

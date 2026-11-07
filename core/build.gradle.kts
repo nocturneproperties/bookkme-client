@@ -13,8 +13,7 @@ kotlin {
     }
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.androidx.core)
-            implementation(libs.androidx.activity)
+            api(libs.androidx.activity)
         }
     }
 }

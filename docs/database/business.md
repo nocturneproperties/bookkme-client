@@ -76,6 +76,14 @@ erDiagram
         int slot PK "always 0; at most one row"
         uuid businessId FK "indexed"
     }
+
+    BUSINESS_DATA_EXPORT {
+        uuid businessId PK "logical reference to business.id; no FK"
+        string status "DataExportStatus.name"
+        int requestedAt "nullable epoch milliseconds"
+        int expiresAt "nullable epoch milliseconds"
+        int availableAgainAt "nullable epoch milliseconds"
+    }
 ```
 
 - Written by: [Refresh business info](../operations/business/refresh-business-info.md) (`upsertAllWithChildren`
@@ -113,8 +121,40 @@ Version 22 added nullable `business.clientDataRetentionMonths` via auto-migratio
 Version 23 makes the column `NOT NULL DEFAULT 36`. The manual `DefaultBusinessRetention` migration
 22 → 23 copies each existing period into a temporary non-null column, substitutes 36 for null,
 then drops the old column and renames the replacement. It keeps the business table and its dependent
-rows intact. Both `BusinessEntity` and the domain `Business` use non-null retention with a Kotlin
-default of 36. `BusinessRemote` also carries non-null retention with a default of 36;
+rows intact. The database default lives in one constant, `DEFAULT_CLIENT_DATA_RETENTION_MONTHS`
+(`BusinessEntity.kt`), used by the column default, the entity's Kotlin default and the migration SQL.
+The domain `Business` and `BusinessRemote` default to `ClientDataRetention.DEFAULT_MONTHS`; the
+database module cannot see the domain, so `BusinessRetentionTest` pins both constants to the same value;
 remote-to-domain and domain-to-local mapping copy the value directly. Existing custom periods are preserved. The mobile database is
 the source of truth for this setting, so saving it with other business fields is intentional.
 `CommonBusinessDataSource.doOnLogOut` clears the entire business row including this field.
+
+## Business data export
+
+The owner-only business data export status lives in `business_data_export`, one row per business,
+owned by `CommonDataExportDataSource` in the business data module. Schema 26 adds the table with
+`AutoMigration(25, 26)`; existing tables and rows are preserved. The row has no foreign key to `business`:
+the export cache must not depend on the order in which businesses are refreshed, and it is removed
+explicitly instead (lost ownership and logout).
+
+- `BusinessDataExportDao.observe(businessId)` emits the nullable row of one business.
+  [Get business data export](../operations/business/get-business-data-export.md) maps a record whose known
+  expiry is at or before now to null without writing. A missing row also emits null.
+- `refresh(businessId)` and successful [Start business data export](../operations/business/start-business-data-export.md)
+  calls fetch from the network, then upsert the business's row through the separate `saveInDb()` call. The
+  observer alone renders status. Network failures preserve the cached row.
+- A 404 from the status or start endpoint means the caller does not own the business; the use case deletes
+  the row (`BusinessDataExportDao.delete`) and the business's file before throwing `NotOwner`.
+- [Delete expired business data export files](../operations/business/delete-expired-business-data-export-files.md)
+  reads all rows (`getAll`) on app start and deletes the files of exports that are no longer downloadable.
+- Cleared on logout: yes (`businessDataExportDao.clear()` and the whole `business_data_exports/` directory).
+
+The JSON export payload is stored as one UTF-8 file per business at
+`business_data_exports/<businessId>/<requestedAt>-<expiresAt>/bookk-business-data.json` in the app cache
+(epoch milliseconds), not in Room or preferences. [Download business data
+export](../operations/business/download-business-data-export.md) reuses the file matching the current READY
+export or downloads and saves it; `saveFile()` clears that business's directory first, so one file per
+business is kept and other businesses are unaffected. New export requests and refreshes returning a status
+that is not READY or already expired clear the business's directory. All filesystem access goes through
+`FileProvider`. Android shares the file through the business presentation module's non-exported
+`BusinessDataExportFileProvider`, which exposes only `cache/business_data_exports/`.

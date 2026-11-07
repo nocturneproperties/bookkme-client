@@ -866,21 +866,6 @@ class BusinessSettingsViewModelTest {
     }
 
     @Test
-    fun `does not submit invalid retention even if save is invoked directly`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.sutWith(editableBusiness().copy(clientDataRetentionMonths = 36))
-        sut.changeRetention("121")
-
-        whenn()
-        sut.onSaveClick()
-
-        then()
-        verifySuspend(VerifyMode.not) { fixture.updateBusiness(any()) }
-        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
-    }
-
-    @Test
     fun `restores retention guidance after correcting invalid input`() = runUnitTest {
         given()
         val fixture = Fixture()

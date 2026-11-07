@@ -1,6 +1,6 @@
 # Mobile API integration and UI plan
 
-Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Steps 4–5 are deferred until the simpler steps are complete. Step 7 is skipped for now at the user's request. Step 8 is excluded from the mobile app's scope. Step 9 is complete. Step 10 is implemented and validated, awaiting user review.
+Status: Steps 1–3 reviewed and pushed. Step 6 is implemented and validated, awaiting user review. Step 4 is implemented and validated, awaiting user review. Step 5 remains pending. Step 7 is skipped for now at the user's request. Step 8 is excluded from the mobile app's scope. Step 9 is complete. Step 10 is approved. Step 4 awaits review before Step 5 starts.
 
 Execution order updated at the user's request: proceed with Step 6 before the export UI in Steps 4–5.
 
@@ -291,12 +291,252 @@ expiry display; and platform save/share of the downloaded JSON. Handle download 
 
 Review output: complete Android/iOS export flow and state/use-case tests.
 
+#### Step 4 review output
+
+Status: Implemented and validated, awaiting user review.
+
+Implemented:
+
+- Settings → Account → Export my data opens one new screen on Android and iOS. The screen uses
+  parameterless state creation, shared callbacks with weak ViewModel references, existing buttons,
+  app bars and notification handlers. Navigation, factories and DI are wired on both platforms.
+- The screen observes the nullable `personal_data_export` Room row through `GetPersonalDataExport.flow()`.
+  The read-only flow maps expired records to null; other records pass through unchanged. The
+  ViewModel refreshes on open only when the first observed value is null (missing or expired: logout,
+  reinstall, another device) or RUNNING; cached READY, NONE and FAILED are trusted, so a valid export
+  opens offline without a network call. While the observed status is RUNNING it polls
+  every 10 seconds, at most 30 times; repeated RUNNING writes do not restart or shorten the interval.
+  Overlapping refreshes are dropped through the shared operation key, and request/download are
+  disabled while a status refresh runs.
+  `refresh()` always fetches and saves the exact server response through separate datasource methods,
+  clearing the export file first unless the response is READY and unexpired.
+  The observer alone supplies screen data; refresh return values are not rendered directly.
+- Request, preparing, ready and failed states use the observed domain status. Expired exports emit null
+  and show the default screen, with no synthetic NONE record or retained cooldown. While an export is
+  RUNNING or READY the screen says a new export can be requested after the current one expires (the
+  backend allows one start per day, but a ready file lives 72 hours and Request stays hidden until it
+  expires); for NONE/FAILED a future `availableAgainAt` is shown as a localized date. Missing timestamps
+  remain absent. RUNNING
+  observations are polled at a fixed interval; export requests require a user action. Flow failures use
+  resilient observation and inline retry.
+- Request taps use the existing passkey-confirmed start operation, which saves its status to Room.
+  Success plays a haptic; cancellation stays silent. Confirmation failures and rate limits are inline, with
+  explicit retry or refresh. One stable launch key excludes overlapping reads, confirmations and
+  downloads; presentation flags are not used as concurrency guards.
+- The download use case caches successful JSON as one file,
+  `personal_data_exports/<requestedAt>-<expiresAt>/bookk-personal-data.json`, and returns its path.
+  Further presses reuse the file, including after screen recreation. New export requests, refreshes
+  returning a non-downloadable status and logout clear the directory; saving a new file replaces the
+  previous one. Other export directories are unaffected. Failed downloads remain retryable through the
+  backend. JSON is not stored in Room, preferences, UI state or navigation.
+  The ViewModel pushes `PersonalDataExportDestinations.Share(filePath)`. Android opens an
+  `ACTION_SEND` chooser through a non-exported FileProvider scoped to `cache/personal_data_exports/`;
+  iOS presents `UIActivityViewController` in a sheet, including Save to Files. No temporary copies are
+  made.
+- Unavailable downloads hide stale actions and offer status refresh. Other status/request/download/
+  sharing errors have one inline presentation and an explicit recovery action. Shared authentication
+  and access handling is preserved. The failed initial read regression also prevents a stuck
+  “Checking export status” title after loading has ended.
+- All 28 new strings are translated into English, Russian, Ukrainian and Polish. The request description
+  now explains JSON and how the downloaded file can be used; its footer refers to the app, not its brand.
+  Operation/cache documentation and the API audit are updated. Database version 25 adds the singleton
+  `personal_data_export` table through `AutoMigration(24, 25)` and preserves all 27 existing tables.
+  Status uses explicit columns and is cleared on logout through the datasource's added binding.
+  No preferences bucket, endpoint or payload changes. The saved Step 9 schema was used per the user's
+  instruction; no fresh server documentation fetch or authenticated export was needed.
+
+Validation:
+
+- Red: the new export tests initially failed to compile against missing state/ViewModel/file-sharing
+  APIs. The Settings entry-point test failed against the missing action and destination. A recovery
+  assertion then failed on the stale loading title (1 failure in 26 export tests) before its fix.
+- Three download-reuse regressions initially failed because repeat presses, sharing retries and status
+  updates still triggered another backend download; they pass with the private per-export JSON cache.
+- Red cache coverage failed against the missing local-flow, persistence and migration APIs. Two
+  same-status recovery tests failed before the observation fix; an additional datasource regression
+  reproduced the equality filter dropping the persisted snapshot needed to reset retry controls.
+- Green: all 275 affected tests pass: 149 Settings presentation, 91 domain, 26 data and 9 database.
+  The export ViewModel now has 50 behavior tests. Added cache/use-case/migration regressions cover
+  unknown versus confirmed NONE records, conditional entry refresh, database-only rendering, failure
+  preservation, same-status recovery and logout cleanup.
+- Android assembly (`:androidApp:assembleDevDebug`), shared iOS compilation
+  (`:shared:compileKotlinIosArm64`) and the full Xcode dev simulator build pass.
+- New export code and other changed Kotlin files pass scoped Spotless. The two legacy dashboard
+  ViewModel/test files retain their pre-existing long-line lint violations; the new lines meet the
+  formatting rules. `git diff --check` passes.
+- All four locale files have matching keys, placeholders and newline markers. The five cache-related
+  Mermaid diagrams parse, including status/start/logout operations and both schema diagrams. Validation uses shared-state tests and builds; no UI-test tooling, live
+  export request, download or passkey confirmation was used.
+
+Design review correction:
+
+- The initial UI drifted from the approved concept. The screens restore neutral headings, shared
+  document/success icons, the separate passkey confirmation, the ready file row and split expiry row.
+  Request and ready states hide the unnecessary refresh control; error/cooldown recovery retains it.
+  Per the subsequent iOS clarification, iOS uses standard inset-grouped `List`/`Section` containers,
+  native row separators and section footers, and the original shared button components. Custom button
+  borders, shapes, corner radii and the shared button modification have been removed. Android retains
+  the concept's card layout and outlined refresh action.
+- Three state regressions were red on the missing icon/footer API before implementation. Manual
+  simulator previews render the production content with sample state, without authenticated calls
+  or UI-test tooling. The [approved concept and rendered states](../design/personal-data-export/README.md)
+  are saved for review.
+
+Added tests in `PersonalDataExportViewModelTest`:
+
+| Test | Protection |
+|---|---|
+| `keeps a cached ready export available without refreshing` | A valid READY cache stays downloadable during cooldown with no network call. |
+| `refreshes on open when nothing usable is cached` | A missing or expired record is reconciled with the server. |
+| `trusts cached settled statuses on open` | Cached NONE and FAILED open without a network call. |
+| `refreshes on open when the cached export is running` | RUNNING is checked immediately instead of waiting for the first poll. |
+| `refreshes only once on open when the refreshed export still maps to nothing` | An already-expired server response cannot cause a refresh loop. |
+| `server status replaces an empty cache after opening` | An empty cache cannot hide an export that already exists on the server. |
+| `disables request and download while the status refreshes` | Actions cannot be tapped while the shared operation key would drop them. |
+| `polls a running export after the polling interval` | RUNNING exports are re-checked every 10 seconds. |
+| `does not poll before the polling interval elapses` | Polling never runs back-to-back. |
+| `stops polling once the export is no longer running` | Polling ends when the status leaves RUNNING. |
+| `stops polling a running export after thirty attempts` | A stuck export cannot poll forever; also guards against a refresh loop. |
+| `shows the default screen when the server has no export` | NONE from the server renders the request screen. |
+| `allows explicit refresh when a ready download becomes unavailable` | Recovery still refreshes even if the previous cached expiry was in the future. |
+| `shows the default screen for a never requested export` | Cached NONE renders the request screen. |
+| `renders a cached running export while its opening refresh is pending` | Preparing remains visible while the ViewModel refreshes; actions are disabled until loading ends. |
+| `polls a later running observation after the polling interval` | A later RUNNING update starts polling and READY restores the download action. |
+| `subscribes once and refreshes on open only for running records` | One database subscription; among cached rows, only RUNNING triggers the opening refresh. |
+| `renders database changes without starting another refresh` | Local observations alone update the visible screen. |
+| `refresh return values are not rendered before the database changes` | Refresh results cannot bypass the observer. |
+| `start return values are not rendered before the database changes` | Start results cannot bypass the observer. |
+| `failed opening refresh preserves cached data and offers retry` | A failed read retains the saved export and one inline error. |
+| `database observation failures offer one inline retry` | Local read failures use resilient observation and one visible error. |
+| `same cached status restores the default screen after rate limit recovery` | Re-saving NONE resets transient failure controls. |
+| `ready status removes the loading refresh control after opening` | A ready observation replaces preparing and hides refresh. |
+| `request presentation matches the approved document and passkey design` | Request uses its document icon and footer with no extra refresh control. |
+| `preparing presentation separates the status message and footer` | Preparing keeps its return-later note below the refresh action. |
+| `ready presentation shows the file with success and download icons` | Ready uses a file summary, success/download icons and a separate footer. |
+| `missing cached status shows the request screen once the server has no export` | Null plus a NONE server status renders an enabled request action. |
+| `shows preparing status without offering another request or download` | Running exports expose refresh only. |
+| `shows ready download and backend expiry during the request cooldown` | Cooldown never blocks an existing ready file. |
+| `does not fabricate missing expiry or cooldown timestamps` | Absent timestamps stay absent. |
+| `null observation after expiry restores the default request screen` | Null restores the request screen without a synthetic status or an extra server call. |
+| `ready export explains that a new request opens after it expires` | READY explains why Request is hidden, without the misleading one-day cooldown date. |
+| `running export explains that a new request opens after it expires` | RUNNING shows the same expiry-based note even when the server reports a cooldown. |
+| `blocks a new request during cooldown without hiding its availability date` | For NONE/FAILED the backend availability date explains the hidden action. |
+| `offers a new request at the exact cooldown boundary` | Requests recover when the limit ends. |
+| `refreshes running status into a ready download` | Refresh does not automatically download. |
+| `shows an inline retry after a status failure` | Failed reads end loading and use one error presentation. |
+| `clears the inline error after a successful retry` | Explicit refresh restores the request state. |
+| `requests an export only after the user taps the action` | Starts use the existing confirmation operation. |
+| `plays success haptic when an export request succeeds` | Haptic follows confirmed creation only. |
+| `does not play success haptic when an export request fails` | Failure restores the action without success feedback. |
+| `passkey cancellation leaves the request available without an error` | Cancellation stays silent. |
+| `explains confirmation failures without automatically retrying` | Both confirmation errors require explicit recovery. |
+| `rate limit rejection removes the request footer` | The whole status presentation switches to the blocked look, not just the buttons. |
+| `rate limit rejection asks for status refresh before another request` | No repeated requests after a limit rejection. |
+| `reuses downloaded JSON on subsequent download presses` | Two save/share actions use one backend download. |
+| `failed downloads are requested again on retry` | Failed network reads cannot poison the file cache. |
+| `new export timestamps discard the previously downloaded JSON` | A replacement export gets its own download. |
+| `status and cooldown updates keep the download action available` | Local observations and cooldown changes leave download available; a successful refresh clears files. |
+| `cleared or non ready status drops the downloaded file` | Clearing status or leaving READY releases the payload, including logout. |
+| `shares the downloaded export file` | The returned file path reaches the `Share` navigation destination. |
+| `unavailable download hides stale actions and offers status refresh` | No `Share` destination after the download becomes unavailable. |
+| `unavailable download no longer presents the export as ready` | Title, icon, colour, footer and file row stop showing READY once the backend reports it unavailable. |
+| `failed download can be retried without requesting another export` | A transport failure does not create another export. |
+| `drops duplicate requests and lifecycle refreshes during confirmation` | Confirmation and status work cannot race. |
+| `drops duplicate downloads while a download is active` | One download and share per active operation. |
+| `drops repeated running observations while a status refresh is active` | Repeated RUNNING observations do not duplicate an active read. |
+| `authentication failures use the shared notification handler` | Session handling is not replaced with an inline-only error. |
+| `back action returns to Settings` | Back uses the shared navigation state. |
+
+Updated `SettingsDashboardViewModelTest`: `sets the personal data export account label`
+verifies the translated TextState label. The account row uses a standard SwiftUI NavigationLink and
+the Android feature navigation action, matching notifications and passkeys; no ViewModel callback
+or dashboard navigation destination is needed for this link.
+
+The status flow is read-only and stays local, including for RUNNING records; expired records emit
+null. `refresh()` always contacts the server, clears the export file when the response is not
+downloadable, and caches its exact response. Domain tests cover expiry boundaries, unchanged
+nonexpired emissions, file retention for downloadable responses, cleanup on non-downloadable
+responses and failure propagation. ViewModel tests cover the opening
+refresh, bounded RUNNING polling, loading state, duplicate refresh exclusion, inline retry and explicit
+refresh actions.
+
+Cache regressions in `CommonPersonalDataExportCacheTest`:
+
+| Test | Protection |
+|---|---|
+| `missing cache emits null without using the network` | Unknown local data never causes a hidden network read. |
+| `saved never requested status is distinct from a missing row` | NONE is persisted as a real record. |
+| `restores status and all timestamps after datasource recreation` | Cache data survives datasource recreation. |
+| `saving replaces the singleton status and notifies active observers` | A new snapshot replaces key 0 and reaches the screen. |
+| `publishes an unchanged saved status so screen recovery can complete` | Equal cache writes remain observable for retry recovery. |
+| `logout clears the saved status and notifies active observers` | The next account cannot inherit the previous status. |
+
+Updated `GetPersonalDataExportImplTest` covers `observes a missing cache without fetching from the network`,
+`observes a saved never requested status without fetching`, `refresh saves and returns the backend status`,
+`failed refresh leaves the cached export intact` and `refresh propagates cache write failures`.
+`StartPersonalDataExportImplTest` now verifies cache persistence on success and absence of cache writes on
+failures; its new `start propagates cache write failures` and `cancelled confirmation never writes an export
+status` cases cover the new write boundary and cancellation. Existing confirmation errors remain covered.
+
+`PersonalDataExportMigrationTest` adds `adds an empty export cache while preserving existing user data`
+and `stores a confirmed never requested status with nullable timestamps`. The generated version 25 schema
+also compares equal to version 24 for every pre-existing entity; only the new export table is added.
+
 ### 5. Add owner-only business data export UI
 
 Reuse the export interaction where practical, bind it to the selected business and restrict entry to
 the owner. Handle business changes, lost access, confirmation, cooldown, expiry and save/share.
 
 Review output: complete Android/iOS business-export flow and permission/state tests.
+
+#### Step 5 review output
+
+Implemented:
+
+- The business export follows the personal export design: a Room cache observed through
+  `GetBusinessDataExport.flow(businessId)` with `refresh(businessId)`, a downloaded JSON file reused per
+  export, bounded RUNNING polling, inline errors and the same request/preparing/ready presentation.
+  Everything is keyed by business: schema 26 adds `business_data_export` (one row per business, no FK) and
+  files live under `business_data_exports/<businessId>/`, so switching business never shows or reuses
+  another business's export.
+- Owner-only entry: `GetAvailableDashboardFeatures` adds `DATA_EXPORT` only when the business's
+  `ownerId` equals the cached profile id; the dashboard's Business section then lists "Data export" and
+  opens the screen for that business on Android and iOS.
+- Lost access: the backend answers 404 for non-owners. Status refresh and start map it to `NotOwner`,
+  forget that business's cached status and file, and the screen shows an owner-only message with every
+  action hidden; later cache emissions cannot bring the request button back. Download keeps the
+  documented `NotReady` mapping and offers a refresh, which resolves the ambiguity.
+- Confirmation, cooldown, expiry and save/share reuse the personal export rules. The availability rule
+  moved to `DataExport.isExpiredAt` / `isDownloadableAt` so both exports share it. App start deletes
+  expired business files (`DeleteExpiredBusinessDataExportFiles`), and logout clears the table and all
+  business export files through the datasource's `LogOutAction` binding.
+- Android shares through a dedicated `BusinessDataExportFileProvider` subclass (authority
+  `<applicationId>.business_data_exports`), avoiding a manifest-merge clash with the personal export
+  provider. Strings are translated into English, Russian, Ukrainian and Polish.
+
+Validation:
+
+- Red: each new test failed to compile or failed before its implementation.
+- Green: database 11, business data 40, business domain 146, business presentation 151, settings domain
+  98, settings data 35, settings presentation 168, authorization domain 92 and employees domain 61 host tests.
+- `:androidApp:assembleDevDebug`, `:shared:compileKotlinIosArm64` and the iOS `dev` simulator build pass;
+  the merged manifest contains both export providers. Repository-wide Spotless passes.
+- No authenticated export was performed and the flow has not yet been checked on a device.
+
+Added or rewritten tests:
+
+| Test file | Protection |
+|---|---|
+| `BusinessDataExportMigrationTest` | 25 → 26 adds an empty per-business table without touching existing data |
+| `CommonBusinessDataExportCacheTest` (18) | Per-business rows and files, unchanged-status emissions, scoped cleanup, logout clearing every business, personal files untouched |
+| `GetBusinessDataExportImplTest` (9) | Expiry mapping, refresh save/cleanup rules, `NotOwner` forgets row and file |
+| `StartBusinessDataExportImplTest` (9) | Confirmation binding, cache write ordering, error mapping including `NotOwner`, cancellation writes nothing |
+| `DownloadBusinessDataExportImplTest` (7) | File reuse, download-and-save, `NotReady` cases, failure propagation |
+| `DeleteExpiredBusinessDataExportFilesImplTest` (5) | Startup cleanup per business by expiry and status |
+| `GetAvailableDashboardFeaturesImplTest` (+4) | `DATA_EXPORT` only for the owner; unknown owner/profile hides it; profile changes recompute |
+| `InitialAppDataFetchImplTest` (+2) | Business file cleanup runs on every start and never blocks the fetch |
+| `BusinessDataExportViewModelTest` (59) | The personal export screen behaviour plus business-id binding and lost-ownership handling |
+| `BusinessDashboardViewModelTest` (+2) | Data export entry shown to owners only, opening the selected business |
 
 ### 6. Add client-data retention to Business Settings
 
@@ -466,7 +706,7 @@ Review output: Android/iOS deletion behavior, translations and permission/state 
 
 #### Step 10 review output
 
-Status: Implemented and validated, awaiting user review.
+Status: Approved by the user.
 
 Implemented:
 

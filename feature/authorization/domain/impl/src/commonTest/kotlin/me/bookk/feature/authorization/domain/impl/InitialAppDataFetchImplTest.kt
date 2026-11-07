@@ -26,7 +26,9 @@ import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocuments
+import me.bookk.feature.business.domain.api.DeleteExpiredBusinessDataExportFiles
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
+import me.bookk.feature.settings.domain.api.DeleteExpiredPersonalDataExportFile
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -59,6 +61,12 @@ class InitialAppDataFetchImplTest {
         val lowPriorityDataFetch = mock<LowPriorityDataFetch>(MockMode.autofill)
         val authorizationDataSource = mock<AuthorizationDataSource>(MockMode.autofill)
         val clock = mock<Clock>()
+        val deleteExpiredPersonalDataExportFile = mock<DeleteExpiredPersonalDataExportFile> {
+            everySuspend { invoke() } returns Unit
+        }
+        val deleteExpiredBusinessDataExportFiles = mock<DeleteExpiredBusinessDataExportFiles> {
+            everySuspend { invoke() } returns Unit
+        }
         val getSignUpLegalDocuments = mock<GetSignUpLegalDocuments> {
             everySuspend { refresh() } returns SignUpLegalDocuments(
                 SignUpLegalDocument(
@@ -85,6 +93,8 @@ class InitialAppDataFetchImplTest {
             authorizationDataSource,
             clock,
             getSignUpLegalDocuments,
+            deleteExpiredPersonalDataExportFile,
+            deleteExpiredBusinessDataExportFiles,
         )
     }
 
@@ -342,6 +352,77 @@ class InitialAppDataFetchImplTest {
             fixture.sut.timestampProtectedFetch()
 
             then()
+            verifySuspend { fixture.authorizationDataSource.saveLastInitialDataFetchAt() }
+        }
+
+    @Test
+    fun `timestampProtectedFetch deletes an expired personal data export file on every start`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
+            every { fixture.authorizationDataSource.getIsAuthorizedFlow() } returns flowOf(false)
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend(VerifyMode.exactly(1)) { fixture.deleteExpiredPersonalDataExportFile() }
+        }
+
+    @Test
+    fun `timestampProtectedFetch still fetches when deleting the export file fails`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue()
+            everySuspend { fixture.deleteExpiredPersonalDataExportFile() } throws
+                IllegalStateException("disk")
+            everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+            everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } returns
+                Unit
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
+            verifySuspend { fixture.authorizationDataSource.saveLastInitialDataFetchAt() }
+        }
+
+    @Test
+    fun `timestampProtectedFetch deletes expired business data export files on every start`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
+            every { fixture.authorizationDataSource.getIsAuthorizedFlow() } returns flowOf(false)
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend(VerifyMode.exactly(1)) { fixture.deleteExpiredBusinessDataExportFiles() }
+        }
+
+    @Test
+    fun `timestampProtectedFetch still fetches when deleting business export files fails`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue()
+            everySuspend { fixture.deleteExpiredBusinessDataExportFiles() } throws
+                IllegalStateException("disk")
+            everySuspend { fixture.userProfileCRUD.updateFromRemote() } returns Unit
+            everySuspend { fixture.refreshBusiness(applyDashboardIdFromRemote = false) } returns
+                Unit
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend { fixture.deleteExpiredPersonalDataExportFile() }
+            verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
             verifySuspend { fixture.authorizationDataSource.saveLastInitialDataFetchAt() }
         }
 

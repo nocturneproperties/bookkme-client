@@ -2,6 +2,7 @@ package me.bookk.feature.settings.presentation
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.test.FakeAppBarState
 import me.bookk.designsystem.test.FakeBooleanState
 import me.bookk.designsystem.test.FakeButtonState
@@ -16,19 +17,28 @@ import me.bookk.feature.settings.presentation.contactus.ContactUsNavigationDesti
 import me.bookk.feature.settings.presentation.contactus.ContactUsState
 import me.bookk.feature.settings.presentation.dashboard.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection
-import me.bookk.feature.settings.presentation.dashboard.LegalDocumentItem
-import me.bookk.feature.settings.presentation.dashboard.LegalDocumentsSection
 import me.bookk.feature.settings.presentation.dashboard.ProfileSection
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
 import me.bookk.feature.settings.presentation.dashboard.SupportSection
 import me.bookk.feature.settings.presentation.editprofile.EditProfileNavigationDestination
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
+import me.bookk.feature.settings.presentation.export.PersonalDataExportDestinations
+import me.bookk.feature.settings.presentation.export.PersonalDataExportState
+import me.bookk.feature.settings.presentation.export.UIExportStatus
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsDestinations
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
 import me.bookk.feature.settings.presentation.passkey.PasskeyState
+import me.bookk.feature.settings.presentation.privacy.LegalDocumentItem
+import me.bookk.feature.settings.presentation.privacy.LegalDocumentsSection
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsDestinations
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsState
 
 internal class FakeSettingsStateFactory : SettingsStateFactory {
+    override fun createPersonalDataExportState(): PersonalDataExportState {
+        return FakePersonalDataExportState()
+    }
+
     override fun createSettingsState(initData: SettingsState.InitData): SettingsState =
         FakeSettingsState()
 
@@ -47,6 +57,10 @@ internal class FakeSettingsStateFactory : SettingsStateFactory {
 
     override fun createNotificationSettingsState(): NotificationSettingsState =
         FakeNotificationSettingsState()
+
+    override fun createPrivacySettingsState(): PrivacySettingsState {
+        return FakePrivacySettingsState()
+    }
 }
 
 internal class FakeSettingsState : SettingsState {
@@ -62,13 +76,15 @@ internal class FakeSettingsState : SettingsState {
         override var email: StringDesc = "".desc()
     }
     override val account = object : AccountSection {
+        override val dataExport = FakeTextState()
+        override val privacy = FakeTextState()
+        override var privacyStatus: StringDesc? = null
         override val title: StringDesc = "".desc()
         override val notifications = FakeTextState()
         override val passkey = FakeTextState()
         override val logout = FakeTextState()
         override val deleteAccount = FakeTextState()
     }
-    override val legal = FakeLegalDocumentsSectionState()
     override val support = object : SupportSection {
         override val title: StringDesc = "".desc()
         override val contact = FakeTextState()
@@ -132,6 +148,16 @@ internal class FakeNotificationSettingsState : NotificationSettingsState {
     override val navigation = FakeNavigationState<NotificationSettingsDestinations>()
 }
 
+internal class FakePrivacySettingsState : PrivacySettingsState {
+    override val appBar = FakeAppBarState()
+    override var diagnosticsTitle: StringDesc = "".desc()
+    override val crashReporting = FakeBooleanState()
+    override var crashReportingDescription: StringDesc = "".desc()
+    override val legal = FakeLegalDocumentsSectionState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<PrivacySettingsDestinations>()
+}
+
 internal class FakeLegalDocumentsSectionState : LegalDocumentsSection {
     override var title: StringDesc = "".desc()
     override var documents: List<LegalDocumentItem> = emptyList()
@@ -139,4 +165,25 @@ internal class FakeLegalDocumentsSectionState : LegalDocumentsSection {
     override var message: StringDesc? = null
     override val accept = FakeButtonState()
     override val retry = FakeButtonState()
+}
+
+internal class FakePersonalDataExportState : PersonalDataExportState {
+    override val appBar = FakeAppBarState()
+    override var status = UIExportStatus(
+        title = "".desc(),
+        message = null,
+        footer = null,
+        icon = null,
+        color = ColorToken.ActionText,
+        isInProgress = false,
+        showsFile = false,
+    )
+    override var expiry: StringDesc? = null
+    override var requestAvailability: StringDesc? = null
+    override var error: StringDesc? = null
+    override val request = FakeButtonState()
+    override val download = FakeButtonState()
+    override val retry = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<PersonalDataExportDestinations>()
 }

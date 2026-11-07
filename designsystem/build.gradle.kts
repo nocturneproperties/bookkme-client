@@ -14,8 +14,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core)
             implementation(projects.core.presentation)
-            implementation(projects.environment.api)
             implementation(projects.library.money)
         }
         commonTest.dependencies {

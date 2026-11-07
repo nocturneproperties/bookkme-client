@@ -11,7 +11,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)
-            implementation(projects.core.domain)
             implementation(projects.core.presentation)
             implementation(projects.designsystem)
             implementation(projects.library.picker)

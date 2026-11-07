@@ -61,6 +61,11 @@
     <string name="settings_edit_profile_email_taken_error">Ця електронна адреса вже використовується.</string>
     <string name="settings_passkey_last_error">Не можна видалити останній ключ доступу. Спочатку додайте інший ключ, щоб зберегти доступ до облікового запису.</string>
 
+    <string name="settings_privacy_title">Конфіденційність</string>
+    <string name="settings_privacy_diagnostics_title">Діагностика</string>
+    <string name="settings_privacy_action_required">Потрібна дія</string>
+    <string name="settings_privacy_crash_reports_label">Надсилати звіти про збої</string>
+    <string name="settings_privacy_crash_reports_description">Під час збою застосунок надсилає до Firebase Crashlytics технічні відомості про помилку та ваш пристрій, щоб ми могли її виправити. Звіти не містять вашого імені, email, даних бізнесу чи клієнтів.</string>
     <string name="settings_legal_title">Правова інформація</string>
     <string name="settings_legal_accepted">Прийнято</string>
     <string name="settings_legal_pending">Потребує ознайомлення</string>
@@ -71,4 +76,33 @@
     <string name="settings_legal_changed">Правові документи змінилися. Ознайомтеся з поточними версіями та прийміть їх знову.</string>
     <string name="settings_legal_consent">Натискаючи «Прийняти документи», ви погоджуєтеся з документами, що потребують ознайомлення.</string>
     <string name="settings_legal_loading">Перевіряємо документи…</string>
+
+    <string name="settings_export_title">Експорт моїх даних</string>
+    <string name="settings_export_loading">Перевіряємо стан експорту…</string>
+    <string name="settings_export_request_title">Копія ваших персональних даних</string>
+    <string name="settings_export_description">Запросіть копію персональних даних, які застосунок зберігає про вас. Їх буде підготовлено у файлі JSON — структурованому форматі, який можна завантажити, зберегти, поширити або відкрити в сумісній програмі.</string>
+    <string name="settings_export_request">Запросити експорт</string>
+    <string name="settings_export_download">Завантажити експорт</string>
+    <string name="settings_export_confirmation">Підтвердьте дію ключем доступу.</string>
+    <string name="settings_export_running_title">Готуємо ваш експорт</string>
+    <string name="settings_export_running_message">Ваш файл готується. Перевірте стан трохи згодом.</string>
+    <string name="settings_export_ready_title">Ваш експорт готовий</string>
+    <string name="settings_export_ready_message">Збережіть файл або поділіться ним після завантаження.</string>
+    <string name="settings_export_failed_title">Не вдалося підготувати експорт</string>
+    <string name="settings_export_failed_message">Запросіть новий експорт, коли він стане доступним.</string>
+    <string name="settings_export_expired_title">Термін дії експорту минув</string>
+    <string name="settings_export_expired_message">Цей файл більше недоступний. Запросіть новий експорт, коли він стане доступним.</string>
+    <string name="settings_export_expiry_label">Доступний до</string>
+    <string name="settings_export_cooldown">Наступний експорт можна запросити після %s</string>
+    <string name="settings_export_request_after_expiry">Новий експорт можна запросити після закінчення терміну дії поточного.</string>
+    <string name="settings_export_load_error">Не вдалося перевірити стан експорту.</string>
+    <string name="settings_export_request_error">Не вдалося запросити експорт. Спробуйте ще раз.</string>
+    <string name="settings_export_confirmation_error">Підтвердження ключем доступу не вдалося або втратило чинність. Запросіть експорт ще раз для підтвердження.</string>
+    <string name="settings_export_too_frequent">Поки що не можна запросити новий експорт. Оновіть стан, щоб перевірити доступність.</string>
+    <string name="settings_export_unavailable">Цей експорт більше недоступний. Оновіть стан, щоб дізнатися про подальші дії.</string>
+    <string name="settings_export_download_error">Не вдалося завантажити файл або поділитися ним. Спробуйте ще раз.</string>
+    <string name="settings_export_request_footer">Ви можете й далі користуватися застосунком, поки готується експорт.</string>
+    <string name="settings_export_running_footer">Ви можете залишити цей екран і повернутися пізніше.</string>
+    <string name="settings_export_file_title">Персональні дані</string>
+    <string name="settings_export_file_type">Файл JSON</string>
 </resources>

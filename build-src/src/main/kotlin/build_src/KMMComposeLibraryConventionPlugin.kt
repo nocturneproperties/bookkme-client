@@ -35,7 +35,6 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                     implementation(libs.compose.navigation)
                     implementation(libs.compose.icons.extended)
                     implementation(libs.androidx.activity.compose)
-                    implementation(libs.kotlinx.coroutines.android)
                     implementation(libs.androidx.lifecycle.viewmodel)
                     implementation(libs.kmm.resources.compose)
                     implementation(libs.koin.android)
@@ -47,7 +46,6 @@ class KMMComposeLibraryConventionPlugin : Plugin<Project> {
                 sourceSets.commonMain.dependencies {
                     implementation(libs.kotlin.serialization)
                     implementation(libs.kmm.resources)
-                    implementation(libs.koin.core)
                     implementation(libs.koin.annotation)
                 }
             }

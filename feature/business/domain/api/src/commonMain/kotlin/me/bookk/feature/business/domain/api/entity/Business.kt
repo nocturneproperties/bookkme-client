@@ -18,7 +18,7 @@ data class Business(
     val ownerId: Uuid? = null,
     val employeeId: Uuid? = null,
     val clientId: Uuid? = null,
-    val clientDataRetentionMonths: Int = 36,
+    val clientDataRetentionMonths: Int = ClientDataRetention.DEFAULT_MONTHS,
 ) {
     data class Update(
         val id: Uuid,

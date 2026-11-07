@@ -1,4 +1,4 @@
-package me.bookk.feature.settings.presentation.dashboard.section
+package me.bookk.feature.settings.presentation.privacy
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,8 +32,6 @@ import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.resources.color.themed
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.feature.settings.presentation.dashboard.LegalDocumentItem
-import me.bookk.feature.settings.presentation.dashboard.LegalDocumentsSection
 
 @Composable
 internal fun LegalDocumentsSection(state: LegalDocumentsSection) {

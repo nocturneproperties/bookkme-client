@@ -25,7 +25,14 @@ erDiagram
     SERVICE |o..o{ APPOINTMENT : "via appointment_service_snapshot.id"
     SERVICE |o..o{ EMPLOYEE : "via employee_service_snapshot.id"
     USER_PROFILE |o..o| NOTIFICATION_SETTINGS : "userId (logical, UK)"
+    BUSINESS |o..o| BUSINESS_DATA_EXPORT : "businessId (logical, PK)"
 
+    PERSONAL_DATA_EXPORT {
+        int id PK "singleton 0"
+    }
+    BUSINESS_DATA_EXPORT {
+        uuid businessId PK
+    }
     LEGAL_DOCUMENT_STATUS {
         string document PK
     }
@@ -66,6 +73,10 @@ erDiagram
 
 ## Why some references are logical
 
+- **Business data export status** is keyed by `businessId` without a foreign key. It is removed explicitly
+  together with the downloaded file (when the backend reports that the caller no longer owns the business,
+  and on logout), so a refresh of the business list can never cascade it away or make its insert fail.
+
 - **Appointments and requests** keep the client, employee and services as snapshots taken when the backend
   returned them. A client deleted later should not delete the appointment history, and a price change should not
   rewrite past bookings.
@@ -94,3 +105,7 @@ and deleting a client through other reconciliation paths does not trigger this e
 
 Legal-document acceptance is a current-account read cache keyed by document type. It has no FK to
 `user_profile`; `CommonLegalDocumentsDataSource` clears it on logout. See [Settings](settings.md).
+
+Personal export status is a separate current-account cache with singleton key `0`, no profile FK and
+explicit logout cleanup through `CommonDataExportDataSource`. A missing row means unknown; a saved
+`NONE` row with all timestamps null means no request history. See [Settings](settings.md).

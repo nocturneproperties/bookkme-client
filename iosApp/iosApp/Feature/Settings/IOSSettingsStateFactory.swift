@@ -10,6 +10,10 @@ import shared
 
 @MainActor
 class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
+	func createPersonalDataExportState() -> any PersonalDataExportState {
+		return IOSPersonalDataExportState()
+	}
+
 	
 	func createEditProfileState(initData: EditProfileStateInitData) -> any EditProfileState {
 		return IOSEditProfileState(initData: initData)
@@ -29,6 +33,10 @@ class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
 	
 	func createPasskeyState(initData: PasskeyStateInitData) -> any PasskeyState {
 		return IOSPasskeyState(initData: initData)
+	}
+
+	func createPrivacySettingsState() -> any PrivacySettingsState {
+		return IOSPrivacySettingsState()
 	}
 
 	func createNotificationSettingsState() -> any NotificationSettingsState {

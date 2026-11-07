@@ -14,6 +14,9 @@ struct SettingsTab: View {
 	var body: some View {
 		NavigationStack(path: $navigationStack.path) {
 			SettingsDashboardScreen()
+				.navigationDestination(for: SettingsDestination.PersonalDataExport.self) { _ in
+					PersonalDataExportScreen()
+				}
 				.navigationDestination(for: SettingsDestination.EditProfile.self) { _ in
 					EditProfileScreen()
 				}
@@ -28,6 +31,9 @@ struct SettingsTab: View {
 				}
 				.navigationDestination(for: SettingsDestination.Notifications.self) { _ in
 					NotificationSettingsScreen()
+				}
+				.navigationDestination(for: SettingsDestination.Privacy.self) { _ in
+					PrivacySettingsScreen()
 				}
 		}.environmentObject(navigationStack)
 	}

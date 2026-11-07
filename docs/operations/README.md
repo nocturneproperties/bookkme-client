@@ -52,8 +52,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `CreateAccount` | `POST /api/auth/passkey/sign_up/challenge`, `POST /api/auth/sign_up` with accepted legal-document versions | [Create account](authorization/create-account.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
-| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `timestampProtectedFetch`: `GET /api/user/legal` first; private requests only when authorized; `rawFetch`: profile, business, per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
-| `LogOut` | `DELETE /api/auth/session` | [Log out](authorization/log-out.md) |
+| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `timestampProtectedFetch`: local expired personal and business export file cleanup, then `GET /api/user/legal`; private requests only when authorized; `rawFetch`: profile, business, per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
+| `LogOut` | `DELETE /api/auth/session`; bound cleanup includes export status and temporary files | [Log out](authorization/log-out.md) |
 | `RefreshToken` | `POST /api/auth/refresh` | [Refresh token](authorization/refresh-token.md) |
 | `UserProfileCRUD` | `GET` / `PATCH /api/user/me` | [User profile CRUD](authorization/user-profile-crud.md) |
 | `IsUserLoggedIn`, `GetTokenInfo`, `GetSettingsColorScheme` | local only | [Is user logged in / Get token info / Get settings color scheme](authorization/is-user-logged-in.md) |
@@ -62,9 +62,10 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `DownloadBusinessDataExport` | `GET /api/business/{id}/export/download`; shared `NotFound` → `NotReady` | [Download business data export](business/download-business-data-export.md) |
-| `GetBusinessDataExport` | `GET /api/business/{id}/export` | [Get business data export](business/get-business-data-export.md) |
-| `StartBusinessDataExport` | `POST /api/business/{id}/export` | [Start business data export](business/start-business-data-export.md) |
+| `DeleteExpiredBusinessDataExportFiles` | Local only, on every app start from `InitialAppDataFetch.timestampProtectedFetch`: every cached `business_data_export` row → delete `business_data_exports/<businessId>/` unless READY and unexpired | [Delete expired business data export files](business/delete-expired-business-data-export-files.md) |
+| `DownloadBusinessDataExport` | Local READY status of the business (else `NotReady`) → reuse JSON file per business and export; cache miss → `GET /api/business/{id}/export/download` → save through `FileProvider` → return file path for the `Share` destination; `NotFound` → `NotReady` | [Download business data export](business/download-business-data-export.md) |
+| `GetBusinessDataExport` | Read-only per-business flow maps expired records to null; ViewModel refreshes on open only for a null or RUNNING first value and polls RUNNING every 10 s (max 30); `refresh` uses `GET /api/business/{id}/export` → clear that business's files unless READY and unexpired → save server response; 404 → forget row and file → `NotOwner` | [Get business data export](business/get-business-data-export.md) |
+| `StartBusinessDataExport` | `POST /api/business/{id}/export`; passkey confirmation → clear that business's JSON file → status cache upsert; 404 → forget row and file → `NotOwner` | [Start business data export](business/start-business-data-export.md) |
 | `CreateBusiness` | `POST /api/business`; typed backend errors | [Create business](business/create-business.md) |
 | `UpdateBusiness` | `PUT /api/business/{id}`; Business Settings retention (12–120 months; cache default 36) + inline validation errors | [Update business](business/update-business.md) |
 | `RefreshBusinessInfo` | `GET /api/business/mine`; cache retention defaults to 36 months | [Refresh business info](business/refresh-business-info.md) |
@@ -73,7 +74,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `EnableAppointmentsPlugin` | `POST /api/appointments/enabled/{businessId}` | [Enable appointments plugin](business/enable-appointments-plugin.md) |
 | `IsAppointmentsPluginEnabled` | `GET /api/appointments/enabled/{businessId}` | [Is appointments plugin enabled](business/is-appointments-plugin-enabled.md) |
 | `CanEditBusiness` | local only (`business` table) | [Can edit business](business/can-edit-business.md) |
-| `GetAvailableDashboardFeatures` | local only | [Get available dashboard features](business/get-available-dashboard-features.md) |
+| `GetAvailableDashboardFeatures` | local only; `DATA_EXPORT` only for the owner (`business.ownerId` = cached profile id) | [Get available dashboard features](business/get-available-dashboard-features.md) |
 | `ObserveDashboardSetupStatus` | local only | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) |
 | `RefreshDashboardSetupStatus` | via `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) |
 | `ObserveDashboardBusinessChanges`, `ObserveDashboardBusinessIdChanges`, `ObserveCurrentBusinessId` (×4), `ObserveCurrentBusiness` | local only | [Observe dashboard business](business/observe-dashboard-business-changes.md) |
@@ -151,15 +152,17 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `DownloadPersonalDataExport` | `GET /api/user/export/download`; shared `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
-| `GetPersonalDataExport` | `GET /api/user/export` | [Get personal data export](settings/get-personal-data-export.md) |
-| `StartPersonalDataExport` | `POST /api/user/export` | [Start personal data export](settings/start-personal-data-export.md) |
-| `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings | [Accept legal documents](settings/accept-legal-documents.md) |
-| `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Settings review and post-acceptance refresh | [Get legal document statuses](settings/get-legal-document-statuses.md) |
+| `DeleteExpiredPersonalDataExportFile` | Local only, on every app start from `InitialAppDataFetch.timestampProtectedFetch`: cached `personal_data_export` row → delete `personal_data_exports/` unless READY and unexpired | [Delete expired personal data export file](settings/delete-expired-personal-data-export-file.md) |
+| `DownloadPersonalDataExport` | Local READY status (else `NotReady`) → reuse JSON file per export; cache miss → `GET /api/user/export/download` → save through `FileProvider` → return file path for the `Share` destination; `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
+| `GetPersonalDataExport` | Read-only flow maps expired records to null; ViewModel refreshes on open only for a null or RUNNING first value and polls RUNNING every 10 s (max 30); `refresh` always uses `GET /api/user/export` → clear personal files unless READY and unexpired → save server response | [Get personal data export](settings/get-personal-data-export.md) |
+| `StartPersonalDataExport` | `POST /api/user/export`; passkey confirmation → clear all personal export JSON files → status cache upsert | [Start personal data export](settings/start-personal-data-export.md) |
+| `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings → Privacy | [Accept legal documents](settings/accept-legal-documents.md) |
+| `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Privacy screen review and post-acceptance refresh; dashboard "Action required" row status | [Get legal document statuses](settings/get-legal-document-statuses.md) |
 | `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |
 | `GetSettings` | local-first | [Get settings](settings/get-settings.md) |
 | `EditProfile` | `PATCH /api/user/me`; contact-conflict error | [Edit profile](settings/edit-profile.md) |
 | `GetColorScheme`, `UpdateColorScheme` | local only | [Get / update color scheme](settings/get-color-scheme.md) |
+| `GetCrashReportingEnabled`, `UpdateCrashReportingEnabled` | local only, through the platform `CrashReporter` (Firebase Crashlytics); every change deletes unsent reports | [Get / update crash reporting](settings/get-crash-reporting-enabled.md) |
 | `GetNotificationSettings` | `GET /api/notifications/settings` | [Get notification settings](settings/get-notification-settings.md) |
 | `UpdateNotificationSettings` | `PUT /api/notifications/settings` | [Update notification settings](settings/update-notification-settings.md) |
 | `UpdateNotificationToken` | `PUT /api/notifications/{deviceUuid}/token` | [Update notification token](settings/update-notification-token.md) |
@@ -175,12 +178,13 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | [Create account](authorization/create-account.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
 | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) | `refresh`: `GetLegalDocumentVersions` (cross-feature wrapper); `invoke`: local cache only |
 | [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |
-| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `timestampProtectedFetch`: `GetSignUpLegalDocuments.refresh` before authorization check; authorized path: `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
+| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `timestampProtectedFetch`: `DeleteExpiredPersonalDataExportFile` and `DeleteExpiredBusinessDataExportFiles` before the throttle, `GetSignUpLegalDocuments.refresh` before authorization check; authorized path: `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
 | [Create business](business/create-business.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Join business](business/join-business.md) | `RedeemEmployeeInvitation` (cross-feature wrapper) |
 | [Refresh business info](business/refresh-business-info.md) | `IsAppointmentsPluginEnabled.refresh` per business |
-| [Get available dashboard features](business/get-available-dashboard-features.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow` |
+| [Get available dashboard features](business/get-available-dashboard-features.md) | `ObserveDashboardBusinessChanges`, `IsAppointmentsPluginEnabled.flow`, `UserProfileCRUD.observe` |
+| [Download business data export](business/download-business-data-export.md) | `GetBusinessDataExport.flow` |
 | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `BusinessDataSource.observeUserBusinessInfoInDb` (business + selection snapshot), `IsAppointmentsPluginEnabled.flow`, `GetServiceGroups.flow`, `GetServices.flow`, `GetClientsList.flow` (cross-feature) |
 | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) | `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` (cross-feature) |
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |

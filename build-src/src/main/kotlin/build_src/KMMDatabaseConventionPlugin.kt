@@ -22,7 +22,6 @@ class KMMDatabaseConventionPlugin : Plugin<Project> {
             extensions.getByType<KotlinMultiplatformExtension>().apply {
                 applyConvention(target)
                 sourceSets.commonMain.dependencies {
-                    implementation(libs.koin.core)
                     implementation(libs.room.runtime)
                     implementation(libs.room.sqlite)
                 }

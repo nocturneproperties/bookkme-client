@@ -15,7 +15,6 @@ kotlin {
             implementation(projects.designsystem)
             implementation(projects.library.money)
             implementation(libs.kmm.resources)
-            implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.test.kotlin)
         }

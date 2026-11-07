@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.feature.authorization.data.source)
             implementation(projects.feature.settings.domain.api)
             implementation(projects.feature.settings.data.source)
+            implementation(projects.library.crashreporting.api)
         }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)

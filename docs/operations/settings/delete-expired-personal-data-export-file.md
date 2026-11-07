@@ -23,7 +23,7 @@ flowchart TD
     Delete -- failure --> Error
 ```
 
-The expiry rule is shared with `GetPersonalDataExport` (`isExpiredAt` / `isDownloadableAt` in
-`PersonalDataExportAvailability.kt`), so the startup cleanup and the screen agree on when an export
+The expiry rule is shared with `GetPersonalDataExport` (`DataExport.isExpiredAt` /
+`DataExport.isDownloadableAt` in core domain, also used by the business export), so the startup cleanup and the screen agree on when an export
 stops being downloadable. `InitialAppDataFetch` wraps the call in `runCatching`, so a file-system
 failure never blocks the startup fetch.

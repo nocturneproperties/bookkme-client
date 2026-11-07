@@ -141,6 +141,48 @@ class BusinessDashboardViewModelTest {
     }
 
     @Test
+    fun `offers the business data export to owners of the dashboard business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.overview.value = DashboardOverview(
+            business,
+            setOf(DashboardFeature.BUSINESS, DashboardFeature.DATA_EXPORT),
+        )
+
+        then()
+        val items = sut.uiState.sections.single().items
+        assertEquals(
+            DashboardNavigationDestination.DataExport(business.id),
+            items.last().navigation,
+        )
+        assertEquals(BusinessRes.strings.business_dashboard_data_export.desc(), items.last().text)
+    }
+
+    @Test
+    fun `hides the business data export from non owners`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.overview.value = DashboardOverview(
+            stubBusiness(),
+            setOf(DashboardFeature.BUSINESS),
+        )
+
+        then()
+        assertFalse(
+            sut.uiState.sections.single().items.any {
+                it.navigation is DashboardNavigationDestination.DataExport
+            },
+        )
+    }
+
+    @Test
     fun `shows no sections when no section feature is available`() = runUnitTest {
         given()
         val fixture = Fixture()

@@ -44,6 +44,9 @@ fun BusinessTab(
                 toBusinessPlugins = {
                     businessController.navigate(BusinessDestination.Plugins(it))
                 },
+                toBusinessDataExport = {
+                    businessController.navigate(BusinessDestination.DataExport(it))
+                },
                 toShopOrders = {},
                 toShopAssortment = {},
                 toShopWarehouse = {},

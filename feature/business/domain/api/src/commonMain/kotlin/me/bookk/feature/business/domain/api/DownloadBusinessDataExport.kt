@@ -1,10 +1,10 @@
 package me.bookk.feature.business.domain.api
 
-import me.bookk.core.domain.entity.DataExport
+import okio.Path
 import kotlin.uuid.Uuid
 
 interface DownloadBusinessDataExport {
-    suspend operator fun invoke(businessId: Uuid): String
+    suspend operator fun invoke(businessId: Uuid): Path
 
     sealed interface Error {
         class NotReady :

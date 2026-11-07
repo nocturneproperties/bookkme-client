@@ -11,6 +11,9 @@ sealed class DashboardNavigationDestination : NavigationDestination() {
     data class Plugins(
         val id: Uuid,
     ) : DashboardNavigationDestination()
+    data class DataExport(
+        val businessId: Uuid,
+    ) : DashboardNavigationDestination()
     data object Services : DashboardNavigationDestination()
     data class History(
         val businessId: Uuid,

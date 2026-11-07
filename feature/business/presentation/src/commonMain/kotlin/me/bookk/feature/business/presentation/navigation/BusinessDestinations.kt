@@ -17,4 +17,9 @@ sealed class BusinessDestination {
     data class Plugins(
         val id: Uuid,
     ) : BusinessDestination()
+
+    @Serializable
+    data class DataExport(
+        val id: Uuid,
+    ) : BusinessDestination()
 }

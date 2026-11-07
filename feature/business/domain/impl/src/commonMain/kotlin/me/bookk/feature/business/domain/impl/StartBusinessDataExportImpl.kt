@@ -1,13 +1,14 @@
 package me.bookk.feature.business.domain.impl
 
 import me.bookk.core.domain.entity.DataExport
-import me.bookk.core.domain.entity.onBusinessError
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.business.domain.api.StartBusinessDataExport
+import me.bookk.feature.business.domain.api.StartBusinessDataExport.Error
 import me.bookk.feature.business.domain.datasource.BusinessErrorCodes
 import me.bookk.feature.business.domain.datasource.DataExportDataSource
 import kotlin.uuid.Uuid
+import me.bookk.core.domain.entity.Error as DomainError
 
 internal class StartBusinessDataExportImpl(
     private val dataSource: DataExportDataSource,
@@ -15,36 +16,47 @@ internal class StartBusinessDataExportImpl(
 ) : StartBusinessDataExport {
     override suspend fun invoke(businessId: Uuid): DataExport {
         val token = getConfirmationToken(businessId)
-        return requestDataExport(businessId, token)
+        return requestDataExport(businessId, token).also {
+            dataSource.deleteFiles(businessId)
+            dataSource.saveInDb(businessId, it)
+        }
     }
 
-    private suspend fun requestDataExport(businessId: Uuid, token: String): DataExport =
-        runCatching {
-            dataSource.start(businessId, token)
-        }.onBusinessError {
-            when (it.errorCode) {
-                BusinessErrorCodes.BUSINESS_ACTION_CONFIRMATION_INVALID -> {
-                    throw StartBusinessDataExport.Error.ConfirmationRequired()
-                }
+    private suspend fun requestDataExport(businessId: Uuid, token: String): DataExport {
+        return runCatching { dataSource.start(businessId, token) }
+            .getOrElse { throw mapStartError(businessId, it) }
+    }
 
-                BusinessErrorCodes.DATA_EXPORT_TOO_FREQUENT -> {
-                    throw StartBusinessDataExport.Error.TooFrequent()
-                }
+    private suspend fun mapStartError(businessId: Uuid, error: Throwable): Throwable {
+        return when {
+            error is DomainError.NotFound -> {
+                dataSource.forgetExport(businessId)
+                Error.NotOwner()
             }
-        }.getOrThrow()
 
-    private suspend fun getConfirmationToken(businessId: Uuid): String = runCatching {
-        confirmation(SensitiveAction.EXPORT_BUSINESS_DATA, businessId, businessId).token
-    }
-        .getOrElse {
-            throw when (it) {
-                is ConfirmSensitiveAction.Error -> {
-                    StartBusinessDataExport.Error.ConfirmationFailed()
-                }
+            error !is DomainError.BusinessError -> {
+                error
+            }
 
-                else -> {
-                    it
-                }
+            error.errorCode == BusinessErrorCodes.BUSINESS_ACTION_CONFIRMATION_INVALID -> {
+                Error.ConfirmationRequired()
+            }
+
+            error.errorCode == BusinessErrorCodes.DATA_EXPORT_TOO_FREQUENT -> {
+                Error.TooFrequent()
+            }
+
+            else -> {
+                error
             }
         }
+    }
+
+    private suspend fun getConfirmationToken(businessId: Uuid): String {
+        return runCatching {
+            confirmation(SensitiveAction.EXPORT_BUSINESS_DATA, businessId, businessId).token
+        }.getOrElse {
+            throw if (it is ConfirmSensitiveAction.Error) Error.ConfirmationFailed() else it
+        }
+    }
 }

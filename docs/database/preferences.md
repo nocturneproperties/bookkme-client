@@ -32,4 +32,5 @@ list-loading mechanism.
 
 Personal export status and its timestamps use the singleton `personal_data_export` Room table,
 not a preferences bucket or serialized JSON. Row absence distinguishes an unknown status from a
-confirmed `NONE` result. Logout clears the table. See [Settings](settings.md).
+confirmed `NONE` result. Logout clears the table. See [Settings](settings.md). Business export
+statuses follow the same rule in the per-business `business_data_export` table; see [Business](business.md).

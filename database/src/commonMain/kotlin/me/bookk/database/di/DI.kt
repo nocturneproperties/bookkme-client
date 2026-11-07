@@ -24,6 +24,7 @@ internal fun daoModule() = module {
     factory { get<AppDatabase>().notificationSettingsDao() }
     factory { get<AppDatabase>().legalDocumentStatusDao() }
     factory { get<AppDatabase>().personalDataExportDao() }
+    factory { get<AppDatabase>().businessDataExportDao() }
     factory { get<AppDatabase>().employeeInvitationDao() }
     factory { get<AppDatabase>().employeeDao() }
 }

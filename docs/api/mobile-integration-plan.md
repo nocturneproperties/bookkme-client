@@ -489,6 +489,55 @@ the owner. Handle business changes, lost access, confirmation, cooldown, expiry 
 
 Review output: complete Android/iOS business-export flow and permission/state tests.
 
+#### Step 5 review output
+
+Implemented:
+
+- The business export follows the personal export design: a Room cache observed through
+  `GetBusinessDataExport.flow(businessId)` with `refresh(businessId)`, a downloaded JSON file reused per
+  export, bounded RUNNING polling, inline errors and the same request/preparing/ready presentation.
+  Everything is keyed by business: schema 26 adds `business_data_export` (one row per business, no FK) and
+  files live under `business_data_exports/<businessId>/`, so switching business never shows or reuses
+  another business's export.
+- Owner-only entry: `GetAvailableDashboardFeatures` adds `DATA_EXPORT` only when the business's
+  `ownerId` equals the cached profile id; the dashboard's Business section then lists "Data export" and
+  opens the screen for that business on Android and iOS.
+- Lost access: the backend answers 404 for non-owners. Status refresh and start map it to `NotOwner`,
+  forget that business's cached status and file, and the screen shows an owner-only message with every
+  action hidden; later cache emissions cannot bring the request button back. Download keeps the
+  documented `NotReady` mapping and offers a refresh, which resolves the ambiguity.
+- Confirmation, cooldown, expiry and save/share reuse the personal export rules. The availability rule
+  moved to `DataExport.isExpiredAt` / `isDownloadableAt` so both exports share it. App start deletes
+  expired business files (`DeleteExpiredBusinessDataExportFiles`), and logout clears the table and all
+  business export files through the datasource's `LogOutAction` binding.
+- Android shares through a dedicated `BusinessDataExportFileProvider` subclass (authority
+  `<applicationId>.business_data_exports`), avoiding a manifest-merge clash with the personal export
+  provider. Strings are translated into English, Russian, Ukrainian and Polish.
+
+Validation:
+
+- Red: each new test failed to compile or failed before its implementation.
+- Green: database 11, business data 40, business domain 146, business presentation 151, settings domain
+  98, settings data 35, settings presentation 168, authorization domain 92 and employees domain 61 host tests.
+- `:androidApp:assembleDevDebug`, `:shared:compileKotlinIosArm64` and the iOS `dev` simulator build pass;
+  the merged manifest contains both export providers. Repository-wide Spotless passes.
+- No authenticated export was performed and the flow has not yet been checked on a device.
+
+Added or rewritten tests:
+
+| Test file | Protection |
+|---|---|
+| `BusinessDataExportMigrationTest` | 25 → 26 adds an empty per-business table without touching existing data |
+| `CommonBusinessDataExportCacheTest` (18) | Per-business rows and files, unchanged-status emissions, scoped cleanup, logout clearing every business, personal files untouched |
+| `GetBusinessDataExportImplTest` (9) | Expiry mapping, refresh save/cleanup rules, `NotOwner` forgets row and file |
+| `StartBusinessDataExportImplTest` (9) | Confirmation binding, cache write ordering, error mapping including `NotOwner`, cancellation writes nothing |
+| `DownloadBusinessDataExportImplTest` (7) | File reuse, download-and-save, `NotReady` cases, failure propagation |
+| `DeleteExpiredBusinessDataExportFilesImplTest` (5) | Startup cleanup per business by expiry and status |
+| `GetAvailableDashboardFeaturesImplTest` (+4) | `DATA_EXPORT` only for the owner; unknown owner/profile hides it; profile changes recompute |
+| `InitialAppDataFetchImplTest` (+2) | Business file cleanup runs on every start and never blocks the fetch |
+| `BusinessDataExportViewModelTest` (59) | The personal export screen behaviour plus business-id binding and lost-ownership handling |
+| `BusinessDashboardViewModelTest` (+2) | Data export entry shown to owners only, opening the selected business |
+
 ### 6. Add client-data retention to Business Settings
 
 Display and edit the stored retention period, validate 12–120 months, explain its effect on ended

@@ -25,9 +25,13 @@ erDiagram
     SERVICE |o..o{ APPOINTMENT : "via appointment_service_snapshot.id"
     SERVICE |o..o{ EMPLOYEE : "via employee_service_snapshot.id"
     USER_PROFILE |o..o| NOTIFICATION_SETTINGS : "userId (logical, UK)"
+    BUSINESS |o..o| BUSINESS_DATA_EXPORT : "businessId (logical, PK)"
 
     PERSONAL_DATA_EXPORT {
         int id PK "singleton 0"
+    }
+    BUSINESS_DATA_EXPORT {
+        uuid businessId PK
     }
     LEGAL_DOCUMENT_STATUS {
         string document PK
@@ -68,6 +72,10 @@ erDiagram
 ```
 
 ## Why some references are logical
+
+- **Business data export status** is keyed by `businessId` without a foreign key. It is removed explicitly
+  together with the downloaded file (when the backend reports that the caller no longer owns the business,
+  and on logout), so a refresh of the business list can never cascade it away or make its insert fail.
 
 - **Appointments and requests** keep the client, employee and services as snapshots taken when the backend
   returned them. A client deleted later should not delete the appointment history, and a price change should not

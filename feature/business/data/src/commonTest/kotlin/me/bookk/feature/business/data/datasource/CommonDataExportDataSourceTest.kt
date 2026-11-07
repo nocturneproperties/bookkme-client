@@ -51,6 +51,14 @@ class CommonDataExportDataSourceTest {
 
     private val id = Uuid.parse("00000000-0000-0000-0000-000000000001")
 
+    private fun dataSource(client: HttpClient): CommonDataExportDataSource {
+        return CommonDataExportDataSource(
+            client,
+            FakeBusinessDataExportDao(),
+            TestExportFileProvider(),
+        )
+    }
+
     @Test
     fun `starts an export with the confirmed token at the documented endpoint`() = runUnitTest {
         given()
@@ -81,7 +89,7 @@ class CommonDataExportDataSourceTest {
             install(ContentNegotiation) { protobuf(dataSerializer) }
             defaultRequest { contentType(ContentType.Application.ProtoBuf) }
         }
-        val dataSource = CommonDataExportDataSource(client)
+        val dataSource = dataSource(client)
 
         whenn()
         val result = try {
@@ -124,7 +132,7 @@ class CommonDataExportDataSourceTest {
 
         whenn()
         val result = try {
-            CommonDataExportDataSource(client).get(id)
+            dataSource(client).get(id)
         } finally {
             client.close()
         }
@@ -157,7 +165,7 @@ class CommonDataExportDataSourceTest {
 
         whenn()
         val result = try {
-            CommonDataExportDataSource(client).download(id)
+            dataSource(client).download(id)
         } finally {
             client.close()
         }

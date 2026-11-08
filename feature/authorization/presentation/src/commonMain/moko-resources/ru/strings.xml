@@ -8,7 +8,6 @@
     <string name="sign_up_last_name_error">Фамилия должна содержать не менее 2 символов</string>
     <string name="sign_up_email">Эл. почта</string>
     <string name="sign_up_email_error">Неверный формат эл. почты</string>
-    <string name="sign_up_create_account_button">Создать</string>
     <string name="sign_up_email_exist">Аккаунт с такой эл. почтой уже существует</string>
     <string name="sign_up_passkey_failed">Не удалось проверить ключ доступа</string>
     <string name="sign_up_failed">Ошибка при создании аккаунта, попробуйте позже</string>
@@ -33,8 +32,6 @@
     <string name="troubleshoot_passkey_missing">Ключи доступа отсутствуют или недоступны</string>
     <string name="troubleshoot_passkey_missing_description">Если в вашем аккаунте есть ключи доступа, но при входе ключ не предлагается, убедитесь, что на устройстве с ключом включена блокировка экрана. Если блокировка экрана отключена, вы не сможете использовать ключ доступа на этом устройстве, пока снова её не включите. \nВы можете восстановить ключ доступа через своего поставщика учётных данных, например Google или Apple.</string>
     <string name="troubleshoot_contact_support_button">Связаться с поддержкой</string>
-
-    <string name="sign_up_challenge_expired_error">Время подтверждения истекло. Попробуйте создать аккаунт ещё раз.</string>
     <string name="sign_up_accept_legal_documents">Я подтверждаю ознакомление, даю согласие и принимаю\nПолитику конфиденциальности и Условия использования</string>
     <string name="sign_up_accept_privacy_policy">Я принимаю Политику конфиденциальности</string>
     <string name="sign_up_accept_terms_of_service">Я принимаю Условия использования</string>
@@ -45,4 +42,18 @@
     <string name="sign_up_legal_retry">Повторить</string>
     <string name="sign_up_legal_documents_changed">Юридические документы изменились. Ознакомьтесь с актуальными документами и примите их перед повторной попыткой.</string>
     <string name="sign_up_legal_acceptance_error">Примите Политику конфиденциальности и Условия использования, чтобы создать аккаунт.</string>
+
+    <string name="sign_up_continue_button">Продолжить</string>
+    <string name="sign_up_email_undeliverable">Не удалось отправить письмо на этот адрес. Проверьте его и попробуйте ещё раз.</string>
+    <string name="verify_email_title">Подтвердите эл. почту</string>
+    <string name="verify_email_description">Мы отправили 6-значный код на %s. Введите его ниже, чтобы завершить создание аккаунта.</string>
+    <string name="verify_email_code_label">Код подтверждения</string>
+    <string name="verify_email_confirm_button">Подтвердить</string>
+    <string name="verify_email_resend_button">Отправить новый код</string>
+    <string name="verify_email_resend_countdown">Отправить новый код через %s</string>
+    <string name="verify_email_change_email_button">Указать другую эл. почту</string>
+    <string name="verify_email_code_invalid">Неверный код. Проверьте письмо и попробуйте ещё раз.</string>
+    <string name="verify_email_code_expired">Срок действия кода истёк. Запросите новый.</string>
+    <string name="verify_email_attempts_exceeded">Слишком много неверных попыток. Запросите новый код.</string>
+    <string name="verify_email_resend_too_soon">Код недавно отправлен. Подождите немного, прежде чем запросить новый.</string>
 </resources>

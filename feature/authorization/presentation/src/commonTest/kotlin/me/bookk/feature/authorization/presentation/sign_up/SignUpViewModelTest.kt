@@ -16,6 +16,8 @@ import dev.mokkery.verifySuspend
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
@@ -36,13 +38,15 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.uistate.ValidationState
-import me.bookk.feature.authorization.domain.api.FinishSignUp
-import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
+import me.bookk.feature.authorization.domain.api.ObserveSignUpRejection
+import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
+import me.bookk.feature.authorization.domain.entity.EmailVerificationError
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument.Document
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocuments
+import me.bookk.feature.authorization.domain.entity.SignUpRejection
 import me.bookk.feature.authorization.presentation.FakeAuthStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -89,8 +93,17 @@ class SignUpViewModelTest {
         }
     }
 
+    private class FakeObserveSignUpRejection : ObserveSignUpRejection {
+        val rejection = MutableStateFlow<SignUpRejection?>(null)
+
+        override fun invoke(): Flow<SignUpRejection?> {
+            return rejection
+        }
+    }
+
     private class Fixture {
         val startSignUp = mock<StartSignUp>()
+        val observeSignUpRejection = FakeObserveSignUpRejection()
         val pendingSignUp = StartSignUp.PendingSignUp(
             maskedEmail = "j***@example.com",
             expiresAt = Instant.fromEpochSeconds(1_000),
@@ -122,6 +135,7 @@ class SignUpViewModelTest {
                 validateName = FakeValidateName(),
                 validateEmail = FakeValidateEmail(),
                 startSignUp = startSignUp,
+                observeSignUpRejection = observeSignUpRejection,
                 getSignUpLegalDocuments = getSignUpLegalDocuments,
                 deviceFacade = deviceFacade,
                 stateFactory = FakeAuthStateFactory(),
@@ -132,6 +146,10 @@ class SignUpViewModelTest {
                 }
             }
         }
+    }
+
+    private fun Fixture.reject(rejection: SignUpRejection) {
+        observeSignUpRejection.rejection.value = rejection
     }
 
     private fun SignUpViewModel.fillValidForm() {
@@ -245,7 +263,7 @@ class SignUpViewModelTest {
     }
 
     @Test
-    fun `plays success haptic when account is created`() = runUnitTest {
+    fun `opens email verification when sign up starts`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.startSignUp(any()) } returns fixture.pendingSignUp
@@ -256,11 +274,17 @@ class SignUpViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        sut.uiState.notification.assertSingle<PresentationNotification.SuccessHaptic>()
+        assertEquals(
+            listOf<SignUpNavigationDestination>(
+                SignUpNavigationDestination.VerifyEmail(fixture.pendingSignUp),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
+        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
     }
 
     @Test
-    fun `does not play success haptic when account creation fails`() = runUnitTest {
+    fun `stays on the form when sign up cannot start`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.startSignUp(any()) } throws TestException()
@@ -271,11 +295,8 @@ class SignUpViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        assertTrue(
-            sut.uiState.notification.presentationNotification.none {
-                it is PresentationNotification.SuccessHaptic
-            },
-        )
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+        assertTrue(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
@@ -312,11 +333,10 @@ class SignUpViewModelTest {
     }
 
     @Test
-    fun `shows message when passkey verification fails`() = runUnitTest {
+    fun `marks email invalid when it cannot receive the code`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.startSignUp(any()) } throws
-            FinishSignUp.Error.PasskeyVerificationFailed()
+        everySuspend { fixture.startSignUp(any()) } throws EmailVerificationError.Undeliverable()
         val sut = fixture.sut(acceptLegalDocuments = true)
         sut.fillValidForm()
 
@@ -324,15 +344,19 @@ class SignUpViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            AuthRes.strings.sign_up_email_undeliverable.desc(),
+            sut.uiState.email.supportingTextRes,
+        )
+        assertEquals(ValidationState.ERROR, sut.uiState.email.validationState)
+        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
     }
 
     @Test
-    fun `shows message when account creation fails`() = runUnitTest {
+    fun `asks to wait when a new code was requested too soon`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.startSignUp(any()) } throws
-            FinishSignUp.Error.AccountCreationFailed()
+        everySuspend { fixture.startSignUp(any()) } throws EmailVerificationError.ResendTooSoon()
         val sut = fixture.sut(acceptLegalDocuments = true)
         sut.fillValidForm()
 
@@ -340,7 +364,11 @@ class SignUpViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
-        sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            AuthRes.strings.verify_email_resend_too_soon.desc(),
+            sut.uiState.notification.assertSingle<PresentationNotification.Message>().message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
     @Test
@@ -374,34 +402,41 @@ class SignUpViewModelTest {
     }
 
     @Test
-    fun `explains expired signup verification`() = runUnitTest {
+    fun `marks email invalid when verification rejects it`() = runUnitTest {
         listOf(
-            FinishSignUp.Error.ChallengeWindowExpired() to
-                AuthRes.strings.sign_up_challenge_expired_error,
-        ).forEach { (error, expected) ->
+            SignUpRejection.EMAIL_TAKEN to AuthRes.strings.sign_up_email_exist,
+            SignUpRejection.EMAIL_INVALID to AuthRes.strings.sign_up_email_error,
+            SignUpRejection.EMAIL_UNDELIVERABLE to AuthRes.strings.sign_up_email_undeliverable,
+        ).forEach { (rejection, expected) ->
             given()
             val fixture = Fixture()
-            everySuspend { fixture.startSignUp(any()) } throws error
+            everySuspend { fixture.startSignUp(any()) } returns fixture.pendingSignUp
             val sut = fixture.sut(acceptLegalDocuments = true)
             sut.fillValidForm()
-
-            whenn()
             sut.onConfirmButtonClick()
 
+            whenn()
+            fixture.reject(rejection)
+
             then()
-            assertEquals(
-                listOf(expected.desc()),
-                sut.uiState.notification.presentationNotification
-                    .filterIsInstance<PresentationNotification.Message>()
-                    .map { it.message },
-            )
-            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
-            assertTrue(
-                sut.uiState.notification.presentationNotification.none {
-                    it is PresentationNotification.SuccessHaptic
-                },
-            )
+            assertEquals(expected.desc(), sut.uiState.email.supportingTextRes)
+            assertEquals(ValidationState.ERROR, sut.uiState.email.validationState)
+            assertFalse(sut.uiState.confirmButton.isEnabled)
         }
+    }
+
+    @Test
+    fun `ignores a rejection left by an earlier sign up`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.reject(SignUpRejection.EMAIL_TAKEN)
+
+        whenn()
+        val sut = fixture.sut(acceptLegalDocuments = true)
+
+        then()
+        assertEquals(ValidationState.DEFAULT, sut.uiState.email.validationState)
+        assertNull(sut.uiState.email.supportingTextRes)
     }
 
     @Test
@@ -690,37 +725,36 @@ class SignUpViewModelTest {
     }
 
     @Test
-    fun `requires renewed consent after either legal rejection`() = runUnitTest {
-        listOf(
-            FinishSignUp.Error.LegalDocumentVersionUnknown(),
-            FinishSignUp.Error.LegalDocumentsNotAccepted(),
-        ).forEach { error ->
-            given()
-            val fixture = Fixture()
-            everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents
-            everySuspend { fixture.startSignUp(any()) } throws error
-            val sut = fixture.sut()
-            sut.fillValidForm()
-            sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
-            val updated = fixture.documents.copy(
-                privacyPolicy = fixture.documents.privacyPolicy.copy(version = "privacy-v3-new"),
-                termsOfService = fixture.documents.termsOfService.copy(version = "terms-v2-new"),
-            )
-            everySuspend { fixture.getSignUpLegalDocuments() } returns updated
+    fun `requires renewed consent when verification rejects the legal documents`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents
+        everySuspend { fixture.startSignUp(any()) } returns fixture.pendingSignUp
+        val sut = fixture.sut()
+        sut.fillValidForm()
+        sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
+        sut.onConfirmButtonClick()
+        val updated = fixture.documents.copy(
+            privacyPolicy = fixture.documents.privacyPolicy.copy(version = "privacy-v3-new"),
+            termsOfService = fixture.documents.termsOfService.copy(version = "terms-v2-new"),
+        )
+        everySuspend { fixture.getSignUpLegalDocuments() } returns updated
 
-            whenn()
-            sut.onConfirmButtonClick()
+        whenn()
+        fixture.reject(SignUpRejection.LEGAL_DOCUMENTS_CHANGED)
 
-            then()
-            assertFalse(sut.uiState.legalAcceptance.isChecked)
-            assertTrue(sut.uiState.confirmButton.isEnabled)
-            assertEquals(
-                AuthRes.strings.sign_up_legal_documents_changed.desc(),
-                sut.uiState.notification.assertSingle<PresentationNotification.Message>().message,
-            )
-            verifySuspend(VerifyMode.exactly(1)) { fixture.startSignUp(any()) }
-            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
-        }
+        then()
+        assertFalse(sut.uiState.legalAcceptance.isChecked)
+        assertTrue(sut.uiState.confirmButton.isEnabled)
+        assertEquals(
+            AuthRes.strings.sign_up_legal_documents_changed.desc(),
+            sut.uiState.notification.assertSingle<PresentationNotification.Message>().message,
+        )
+        assertEquals(
+            updated.privacyPolicy,
+            sut.uiState.legalDocuments?.privacyPolicy?.document,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
     @Test
@@ -728,17 +762,16 @@ class SignUpViewModelTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents
-        everySuspend { fixture.startSignUp(any()) } throws
-            FinishSignUp.Error.LegalDocumentVersionUnknown()
+        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
         val sut = fixture.sut()
         sut.fillValidForm()
         sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
+        sut.onConfirmButtonClick()
         everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents.copy(
             privacyPolicy = fixture.documents.privacyPolicy.copy(version = "privacy-v3-new"),
             termsOfService = fixture.documents.termsOfService.copy(version = "terms-v2-new"),
         )
-        sut.onConfirmButtonClick()
-        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
+        fixture.reject(SignUpRejection.LEGAL_DOCUMENTS_CHANGED)
         sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
 
         whenn()
@@ -756,16 +789,16 @@ class SignUpViewModelTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents
-        everySuspend { fixture.startSignUp(any()) } throws
-            FinishSignUp.Error.LegalDocumentsNotAccepted()
+        everySuspend { fixture.startSignUp(any()) } returns fixture.pendingSignUp
         val sut = fixture.sut()
         sut.fillValidForm()
         sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
+        sut.onConfirmButtonClick()
         val previousDocuments = assertNotNull(sut.uiState.legalDocuments)
         everySuspend { fixture.getSignUpLegalDocuments() } throws TestException()
 
         whenn()
-        sut.onConfirmButtonClick()
+        fixture.reject(SignUpRejection.LEGAL_DOCUMENTS_CHANGED)
 
         then()
         assertFalse(sut.uiState.confirmButton.isEnabled)
@@ -804,18 +837,17 @@ class SignUpViewModelTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents
-        everySuspend { fixture.startSignUp(any()) } throws
-            FinishSignUp.Error.LegalDocumentVersionUnknown()
+        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
         val sut = fixture.sut()
         sut.fillValidForm()
         val onAcceptanceChanged = assertNotNull(sut.uiState.legalAcceptance.onCheckedChange)
         sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
+        sut.onConfirmButtonClick()
         everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents.copy(
             privacyPolicy = fixture.documents.privacyPolicy.copy(version = "privacy-v3-new"),
             termsOfService = fixture.documents.termsOfService.copy(version = "terms-v2-new"),
         )
-        sut.onConfirmButtonClick()
-        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
+        fixture.reject(SignUpRejection.LEGAL_DOCUMENTS_CHANGED)
 
         whenn()
         onAcceptanceChanged(true)

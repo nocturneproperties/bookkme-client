@@ -1,6 +1,7 @@
 package me.bookk.feature.authorization.presentation.di
 
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapViewModel
+import me.bookk.feature.authorization.presentation.screen.verifyemail.VerifyEmailViewModel
 import me.bookk.feature.authorization.presentation.sign_in.SignInViewModel
 import me.bookk.feature.authorization.presentation.sign_up.SignUpViewModel
 import me.bookk.feature.authorization.presentation.troubleshoot.TroubleshootViewModel
@@ -13,4 +14,5 @@ internal actual fun platformAuthDiModule(): Module = module {
     viewModelOf(::SignInViewModel)
     viewModelOf(::BootstrapViewModel)
     viewModelOf(::TroubleshootViewModel)
+    viewModelOf(::VerifyEmailViewModel)
 }

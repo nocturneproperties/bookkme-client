@@ -1,5 +1,7 @@
 package me.bookk.feature.authorization.domain.impl
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
 import me.bookk.feature.authorization.domain.datasource.registration.SignUpSession
@@ -9,10 +11,20 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 internal class InMemorySignUpSessionDataSource : SignUpSessionDataSource {
-    var session: SignUpSession? = null
+    private val state = MutableStateFlow<SignUpSession?>(null)
+
+    var session: SignUpSession?
+        get() = state.value
+        set(value) {
+            state.value = value
+        }
 
     override fun get(): SignUpSession? {
         return session
+    }
+
+    override fun observe(): Flow<SignUpSession?> {
+        return state
     }
 
     override fun save(session: SignUpSession) {

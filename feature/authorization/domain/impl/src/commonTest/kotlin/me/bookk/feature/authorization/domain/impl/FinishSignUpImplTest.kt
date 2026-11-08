@@ -26,6 +26,7 @@ import me.bookk.feature.authorization.domain.datasource.registration.Registratio
 import me.bookk.feature.authorization.domain.datasource.registration.SignUpSession
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
 import me.bookk.feature.authorization.domain.entity.EmailVerificationError
+import me.bookk.feature.authorization.domain.entity.SignUpRejection
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -73,6 +74,14 @@ class FinishSignUpImplTest {
         setupHappyPath()
         everySuspend { registrationDataSource.finishRegistration(any()) } throws
             Error.BusinessError(code, "rejected")
+    }
+
+    private fun Fixture.assertChallengeDropped(rejection: SignUpRejection? = null) {
+        val session = assertNotNull(sessionDataSource.session)
+        assertEquals(stubSignUpUserData().email, session.userData.email)
+        assertNull(session.challenge)
+        assertNull(session.attestation)
+        assertEquals(rejection, session.rejection)
     }
 
     @Test
@@ -164,6 +173,22 @@ class FinishSignUpImplTest {
     }
 
     @Test
+    fun `throws SignUpNotStarted without prompting for a passkey once the challenge was dropped`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.setupHappyPath()
+            fixture.sessionDataSource.save(SignUpSession(stubSignUpUserData(), challenge = null))
+
+            whenn()
+            val result = runCatching { fixture.sut("123456") }
+
+            then()
+            assertFailsWith<FinishSignUp.Error.SignUpNotStarted> { result.getOrThrow() }
+            verifySuspend(VerifyMode.not) { fixture.passKeyManager.create(any()) }
+        }
+
+    @Test
     fun `creates the passkey once across a wrong code retry`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -214,7 +239,7 @@ class FinishSignUpImplTest {
     }
 
     @Test
-    fun `maps code expired and drops the session`() = runUnitTest {
+    fun `maps code expired and drops the challenge`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.EMAIL_CODE_EXPIRED)
@@ -224,11 +249,11 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<EmailVerificationError.CodeExpired> { result.getOrThrow() }
-        assertNull(fixture.sessionDataSource.session)
+        fixture.assertChallengeDropped()
     }
 
     @Test
-    fun `maps attempts exceeded and drops the session`() = runUnitTest {
+    fun `maps attempts exceeded and drops the challenge`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.EMAIL_CODE_ATTEMPTS_EXCEEDED)
@@ -238,11 +263,11 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<EmailVerificationError.AttemptsExceeded> { result.getOrThrow() }
-        assertNull(fixture.sessionDataSource.session)
+        fixture.assertChallengeDropped()
     }
 
     @Test
-    fun `maps challenge window expired and drops the session`() = runUnitTest {
+    fun `maps challenge window expired and drops the challenge`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED)
@@ -252,11 +277,11 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<FinishSignUp.Error.ChallengeWindowExpired> { result.getOrThrow() }
-        assertNull(fixture.sessionDataSource.session)
+        fixture.assertChallengeDropped()
     }
 
     @Test
-    fun `maps user already exist and drops the session`() = runUnitTest {
+    fun `maps user already exist and rejects the email as taken`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.USER_ALREADY_EXIST)
@@ -266,11 +291,11 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<FinishSignUp.Error.EmailAlreadyExist> { result.getOrThrow() }
-        assertNull(fixture.sessionDataSource.session)
+        fixture.assertChallengeDropped(SignUpRejection.EMAIL_TAKEN)
     }
 
     @Test
-    fun `maps invalid email format`() = runUnitTest {
+    fun `maps invalid email format and rejects the email as invalid`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.INVALID_EMAIL_FORMAT)
@@ -280,10 +305,11 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<FinishSignUp.Error.InvalidEmailFormat> { result.getOrThrow() }
+        fixture.assertChallengeDropped(SignUpRejection.EMAIL_INVALID)
     }
 
     @Test
-    fun `maps passkey verification failed`() = runUnitTest {
+    fun `maps passkey verification failed and drops the challenge`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.VERIFICATION_FAILED)
@@ -293,10 +319,11 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<FinishSignUp.Error.PasskeyVerificationFailed> { result.getOrThrow() }
+        fixture.assertChallengeDropped()
     }
 
     @Test
-    fun `maps account creation failed`() = runUnitTest {
+    fun `maps account creation failed and drops the challenge`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.ACCOUNT_CREATION_FAILED)
@@ -306,10 +333,11 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<FinishSignUp.Error.AccountCreationFailed> { result.getOrThrow() }
+        fixture.assertChallengeDropped()
     }
 
     @Test
-    fun `maps legal document version unknown`() = runUnitTest {
+    fun `maps legal document version unknown and rejects the documents`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.LEGAL_DOCUMENT_VERSION_UNKNOWN)
@@ -319,10 +347,11 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<FinishSignUp.Error.LegalDocumentVersionUnknown> { result.getOrThrow() }
+        fixture.assertChallengeDropped(SignUpRejection.LEGAL_DOCUMENTS_CHANGED)
     }
 
     @Test
-    fun `maps legal documents not accepted`() = runUnitTest {
+    fun `maps legal documents not accepted and rejects the documents`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.failRegistrationWith(AuthErrorCodes.LEGAL_DOCUMENTS_NOT_ACCEPTED)
@@ -332,6 +361,7 @@ class FinishSignUpImplTest {
 
         then()
         assertFailsWith<FinishSignUp.Error.LegalDocumentsNotAccepted> { result.getOrThrow() }
+        fixture.assertChallengeDropped(SignUpRejection.LEGAL_DOCUMENTS_CHANGED)
     }
 
     @Test

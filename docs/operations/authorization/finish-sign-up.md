@@ -5,18 +5,21 @@
 `FinishSignUp(code)` → `POST /api/auth/sign_up` · called from the verify-email flow after
 [Start sign-up](start-sign-up.md)
 
-Reads the session saved by `StartSignUp`; without one it throws `SignUpNotStarted`. On the first call for
-a challenge the platform `PassKeyManager` creates the passkey and the attestation is stored in the
-session, so every later call (for example after a wrong code) reuses it and needs **no second passkey
-prompt**. The backend checks the code **before** the passkey and does not spend the challenge on a wrong
-code, which is what makes the reuse safe. Starting sign-up again replaces the session, so a new challenge
-gets a new passkey.
+Reads the session saved by `StartSignUp`; without one, or once its challenge was dropped, it throws
+`SignUpNotStarted` before any passkey prompt. On the first call for a challenge the platform
+`PassKeyManager` creates the passkey and the attestation is stored in the session, so every later call
+(for example after a wrong code) reuses it and needs **no second passkey prompt**. The backend checks the
+code **before** the passkey and does not spend the challenge on a wrong code, which is what makes the
+reuse safe. Starting sign-up again replaces the session, so a new challenge gets a new passkey.
 
-The session is dropped on every mapped failure except a wrong code: expired code, too many wrong codes,
-expired challenge window, taken email, legal rejection, passkey verification failure and account creation
-failure. The user then starts again, which also resends the code. Unmapped errors (connection, 5xx) keep
-the session so the same code can be retried. A cancelled passkey prompt keeps the session without an
-attestation.
+Every mapped failure except a wrong code drops the challenge and the attestation but **keeps the user
+data**, so [Resend sign-up code](resend-sign-up-code.md) can restart without the form: expired code, too
+many wrong codes, expired challenge window, passkey verification failure and account creation failure.
+Failures only the form can fix also store a `SignUpRejection`, which the form reads through
+[Observe sign-up rejection](observe-sign-up-rejection.md): taken email (`EMAIL_TAKEN`), invalid format
+(`EMAIL_INVALID`) and both legal rejections (`LEGAL_DOCUMENTS_CHANGED`). Unmapped errors (connection,
+5xx) keep the session so the same code can be retried. A cancelled passkey prompt keeps the session
+without an attestation.
 
 A passkey created for a challenge that later expires stays on the device. `signalAccountDeleted` takes a
 sign-in assertion, not a registration attestation, and the account never existed, so there is no cleanup
@@ -34,8 +37,8 @@ business list already cached.
 ```mermaid
 flowchart TD
     Start([invoke code]) --> Get[SignUpSessionDataSource.get]
-    Get -- none --> E0([throw Error.SignUpNotStarted])
-    Get -- session --> Att{attestation cached?}
+    Get -- none or challenge dropped --> E0([throw Error.SignUpNotStarted])
+    Get -- session with challenge --> Att{attestation cached?}
     Att -- no --> PK[PassKeyManager.create challenge]
     PK -- UserCancelled --> Ign([throw Error.Ignore])
     PK -- other failure --> E3([throw Error.AccountCreationFailed])
@@ -55,15 +58,15 @@ flowchart TD
     FinC -- 100003 LEGAL_DOCUMENT_VERSION_UNKNOWN --> E9([throw Error.LegalDocumentVersionUnknown])
     FinC -- 100004 LEGAL_DOCUMENTS_NOT_ACCEPTED --> E10([throw Error.LegalDocumentsNotAccepted])
     FinC -- other --> EX([rethrow, session kept])
-    E6 --> Drop[SignUpSessionDataSource.clear]
+    E6 --> Drop[SignUpSessionDataSource.save<br/>challenge = null, attestation = null<br/>user data kept]
     E7 --> Drop
-    E1 --> Drop
-    E2 --> Drop
     E4 --> Drop
     E3 --> Drop
     E8 --> Drop
-    E9 --> Drop
-    E10 --> Drop
+    E1 --> RejE[SignUpSessionDataSource.save<br/>challenge dropped, rejection = EMAIL_TAKEN]
+    E2 --> RejI[SignUpSessionDataSource.save<br/>challenge dropped, rejection = EMAIL_INVALID]
+    E9 --> RejL[SignUpSessionDataSource.save<br/>challenge dropped, rejection = LEGAL_DOCUMENTS_CHANGED]
+    E10 --> RejL
     Fin -- tokens --> Clr[SignUpSessionDataSource.clear]
     Clr --> Save[authorization_prefs: access_token, refresh_token]
     Save --> Inv[invalidateClientTokens<br/>BearerAuthProvider.clearToken]

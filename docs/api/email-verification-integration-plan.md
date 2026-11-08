@@ -1,6 +1,6 @@
 # Email verification and rate-limit integration plan
 
-Status: Planned 2026-11-08. No step started.
+Status: Steps 1–2 committed; Step 3 implemented 2026-11-08, awaiting review. Steps 4–6 not started.
 
 Source: `GET http://localhost/api/monolith/internal/swagger/documentation.yaml`, fetched 2026-11-08
 (monolith built from `bookk-server` `e5f9d92a`, release notes `0.18.0`, issues #146 and #147).
@@ -113,6 +113,13 @@ cancellation silent, nothing saved on failure. Operation diagrams: replace `crea
   `FinishSignUp`: legal errors return to the form, reload documents and require renewed consent.
 - Wiring checklist from AGENTS.md: state, VM, destinations, Android state/screen/nav/DI/factory, iOS
   accessor, Swift state/screen/factory, navigation on both platforms; en/ru/uk/pl strings.
+- Decided during implementation: the verify screen tells the form about failures only the form can
+  fix through shared domain state, not navigation results. A failure that drops the challenge keeps
+  the user data in the in-memory session (`challenge = null`), so `ResendSignUpCode` can restart
+  without the form. Taken, invalid or undeliverable email and legal rejections also store a
+  `SignUpRejection`, which `SignUpViewModel` reads through `ObserveSignUpRejection` once its own start
+  has succeeded. The verify screen receives the masked email and times as its `PendingSignUp`
+  argument; Step 5 generalises the ViewModel to an email-change mode.
 
 Review output: Android/iOS flow, `VerifyEmailViewModelTest` (sign-up mode) and updated
 `SignUpViewModelTest`; builds on both platforms. Optional live dev sign-up using the logged code.

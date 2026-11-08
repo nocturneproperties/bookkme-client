@@ -104,7 +104,7 @@ class StartSignUpImplTest {
         val session = fixture.sessionDataSource.session!!
         assertEquals("John", session.userData.firstName)
         assertEquals(documents, session.userData.acceptedDocuments)
-        assertEquals("req-id", session.challenge.requestId)
+        assertEquals("req-id", session.challenge?.requestId)
         assertNull(session.attestation)
     }
 

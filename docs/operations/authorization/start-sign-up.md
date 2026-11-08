@@ -3,7 +3,8 @@
 # Start sign-up (challenge and email code)
 
 `StartSignUp(userData)` → `POST /api/auth/passkey/sign_up/challenge` · called from `SignUpViewModel`
-and, to resend the code, again from the verify-email screen
+and, to resend the code, through [Resend sign-up code](resend-sign-up-code.md) from the verify-email
+screen
 
 The challenge request has two side effects on the backend: it issues the passkey challenge (valid 10
 minutes) and emails a 6-digit code in the `Accept-Language` language. Calling it again restarts sign-up
@@ -17,8 +18,8 @@ fetches versions and never infers consent.
 The result carries the masked address (`j***@example.com`), `expiresAt` and `resendAvailableAt`. The
 session (user data, challenge, verification id) lives in `SignUpSessionDataSource`, an in-memory `single`
 that is never persisted: it holds a short-lived secret and process death simply restarts sign-up. It is
-replaced on every successful start, left untouched when the challenge fails, and cleared on logout
-(`LogOutAction`).
+replaced on every successful start (which also clears any stored `SignUpRejection`), left untouched
+when the challenge fails, and cleared on logout (`LogOutAction`).
 
 ```mermaid
 flowchart TD
@@ -31,7 +32,7 @@ flowchart TD
     ChC -- 910004 EMAIL_CODE_RESEND_TOO_SOON --> E4([throw EmailVerificationError.ResendTooSoon])
     ChC -- other --> EX([rethrow])
     Ch -- 429 without protobuf body --> TM([Error.TooManyRequests])
-    Ch -- ok --> Save[SignUpSessionDataSource.save<br/>userData + challenge, no attestation]
+    Ch -- ok --> Save[SignUpSessionDataSource.save<br/>userData + challenge, no attestation, no rejection]
     Save --> Mask[mask email]
     Mask --> R([PendingSignUp maskedEmail, expiresAt, resendAvailableAt])
 ```

@@ -13,6 +13,7 @@ import me.bookk.feature.authorization.domain.datasource.registration.PassKeyMana
 import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationData
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationDataSource
+import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
 import me.bookk.feature.authorization.domain.datasource.registration.SignUpSession
 import me.bookk.feature.authorization.domain.datasource.registration.SignUpSessionDataSource
 import me.bookk.feature.authorization.domain.entity.EmailVerificationError
@@ -31,9 +32,10 @@ internal class FinishSignUpImpl(
     private val logger = Logger.create("FinishSignUpImpl")
 
     override suspend fun invoke(code: String) {
-        val session = signUpSessionDataSource.get() ?: throw FinishSignUp.Error.SignUpNotStarted()
-        val attestation = session.attestation ?: createAttestation(session)
-        val data = createRegistrationData(session, attestation, code)
+        val session = signUpSessionDataSource.get()
+        val challenge = session?.challenge ?: throw FinishSignUp.Error.SignUpNotStarted()
+        val attestation = session.attestation ?: createAttestation(session, challenge)
+        val data = createRegistrationData(session, challenge, attestation, code)
         val tokenInfo = finishRegistration(data)
         signUpSessionDataSource.clear()
         authorizationDataSource.saveAuthorizationTokens(tokenInfo)
@@ -42,8 +44,10 @@ internal class FinishSignUpImpl(
         authorizationDataSource.setAuthorizationStatus(true)
     }
 
-    private suspend fun createAttestation(session: SignUpSession): PasskeyVerificationPayload {
-        val challenge = session.challenge
+    private suspend fun createAttestation(
+        session: SignUpSession,
+        challenge: ServerSignUpChallenge,
+    ): PasskeyVerificationPayload {
         val attestation = runCatching {
             passKeyManager.create(
                 PassKeyManager.CreationRequest(
@@ -70,10 +74,15 @@ internal class FinishSignUpImpl(
             .getOrElse {
                 val error = it.businessOrThrow().toFinishError() ?: throw it
                 if (error !is EmailVerificationError.CodeInvalid) {
-                    signUpSessionDataSource.clear()
+                    dropChallenge(error)
                 }
                 throw error
             }
+    }
+
+    private fun dropChallenge(error: Throwable) {
+        val session = signUpSessionDataSource.get() ?: return
+        signUpSessionDataSource.save(session.dropped(error.toSignUpRejection()))
     }
 
     private fun Error.BusinessError.toFinishError(): Throwable? {
@@ -97,12 +106,13 @@ internal class FinishSignUpImpl(
 
     private suspend fun createRegistrationData(
         session: SignUpSession,
+        challenge: ServerSignUpChallenge,
         attestation: PasskeyVerificationPayload,
         code: String,
     ): RegistrationData {
         val userData = session.userData
         return RegistrationData(
-            requestId = session.challenge.requestId,
+            requestId = challenge.requestId,
             deviceInfo = RegistrationData.DeviceInfo(
                 deviceUUID = deviceDataSource.getOrCreateDeviceUUID(),
                 deviceName = deviceFacade.getDeviceName(),
@@ -114,7 +124,7 @@ internal class FinishSignUpImpl(
             ),
             publicKeyCredentialJson = attestation.jsonPayload,
             acceptedDocuments = userData.acceptedDocuments,
-            verificationId = session.challenge.emailVerification.id,
+            verificationId = challenge.emailVerification.id,
             emailCode = code,
         )
     }

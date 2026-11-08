@@ -11,6 +11,8 @@ import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 import me.bookk.feature.authorization.presentation.bootstrap.state.BootstrapState
+import me.bookk.feature.authorization.presentation.screen.verifyemail.VerifyEmailDestinations
+import me.bookk.feature.authorization.presentation.screen.verifyemail.VerifyEmailState
 import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
 import me.bookk.feature.authorization.presentation.sign_in.SignInNavigationDestination
 import me.bookk.feature.authorization.presentation.sign_in.state.SignInState
@@ -41,6 +43,21 @@ internal class FakeAuthStateFactory : AuthStateFactory {
     }
 
     override fun createBootstrapState(): BootstrapState = FakeBootstrapState()
+
+    override fun createVerifyEmailState(): VerifyEmailState {
+        return FakeVerifyEmailState()
+    }
+}
+
+internal class FakeVerifyEmailState : VerifyEmailState {
+    override val appBar = FakeAppBarState()
+    override var codeSentMessage: StringDesc = "".desc()
+    override val code = FakeTextFieldState()
+    override val confirmButton = FakeButtonState()
+    override val resendButton = FakeButtonState()
+    override val changeEmailButton = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<VerifyEmailDestinations>()
 }
 
 internal class FakeBootstrapState : BootstrapState {

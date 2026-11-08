@@ -9,7 +9,9 @@ import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.InitiateBusinessSuspend
 import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
 import me.bookk.feature.authorization.domain.api.LogOut
+import me.bookk.feature.authorization.domain.api.ObserveSignUpRejection
 import me.bookk.feature.authorization.domain.api.RefreshToken
+import me.bookk.feature.authorization.domain.api.ResendSignUpCode
 import me.bookk.feature.authorization.domain.api.SignIn
 import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
@@ -23,7 +25,9 @@ import me.bookk.feature.authorization.domain.impl.InitiateBusinessSuspendImpl
 import me.bookk.feature.authorization.domain.impl.IsUserLoggedInImpl
 import me.bookk.feature.authorization.domain.impl.LogOutImpl
 import me.bookk.feature.authorization.domain.impl.LowPriorityDataFetch
+import me.bookk.feature.authorization.domain.impl.ObserveSignUpRejectionImpl
 import me.bookk.feature.authorization.domain.impl.RefreshTokenImpl
+import me.bookk.feature.authorization.domain.impl.ResendSignUpCodeImpl
 import me.bookk.feature.authorization.domain.impl.SignInImpl
 import me.bookk.feature.authorization.domain.impl.StartSignUpImpl
 import me.bookk.feature.authorization.domain.impl.UserProfileCRUDImpl
@@ -38,6 +42,8 @@ fun authDomainModule() = module {
     factoryOf(::GetSignUpLegalDocumentsImpl) bind GetSignUpLegalDocuments::class
     factoryOf(::StartSignUpImpl) bind StartSignUp::class
     factoryOf(::FinishSignUpImpl) bind FinishSignUp::class
+    factoryOf(::ResendSignUpCodeImpl) bind ResendSignUpCode::class
+    factoryOf(::ObserveSignUpRejectionImpl) bind ObserveSignUpRejection::class
     factoryOf(::GetTokenInfoImpl) bind GetTokenInfo::class
     factoryOf(::RefreshTokenImpl) bind RefreshToken::class
     factoryOf(::SignInImpl) bind SignIn::class

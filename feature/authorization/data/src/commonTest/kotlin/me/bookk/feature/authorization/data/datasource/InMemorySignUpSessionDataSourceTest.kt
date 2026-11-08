@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.data.datasource
 
+import kotlinx.coroutines.flow.first
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -73,5 +74,31 @@ class InMemorySignUpSessionDataSourceTest {
 
         then()
         assertNull(sut.get())
+    }
+
+    @Test
+    fun `emits the current session to observers`() = runUnitTest {
+        given()
+        val sut = InMemorySignUpSessionDataSource()
+        val saved = session()
+
+        whenn()
+        sut.save(saved)
+
+        then()
+        assertEquals(saved, sut.observe().first())
+    }
+
+    @Test
+    fun `emits no session to observers after logout`() = runUnitTest {
+        given()
+        val sut = InMemorySignUpSessionDataSource()
+        sut.save(session())
+
+        whenn()
+        sut.doOnLogOut()
+
+        then()
+        assertNull(sut.observe().first())
     }
 }

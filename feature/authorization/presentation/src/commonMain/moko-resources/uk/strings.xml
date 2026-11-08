@@ -8,7 +8,6 @@
     <string name="sign_up_last_name_error">Прізвище має містити щонайменше 2 символи</string>
     <string name="sign_up_email">Ел. пошта</string>
     <string name="sign_up_email_error">Неправильний формат ел. пошти</string>
-    <string name="sign_up_create_account_button">Створити</string>
     <string name="sign_up_email_exist">Обліковий запис із такою ел. поштою вже існує</string>
     <string name="sign_up_passkey_failed">Не вдалося перевірити ключ доступу</string>
     <string name="sign_up_failed">Помилка під час створення облікового запису, спробуйте пізніше</string>
@@ -33,8 +32,6 @@
     <string name="troubleshoot_passkey_missing">Ключі доступу відсутні або недоступні</string>
     <string name="troubleshoot_passkey_missing_description">Якщо у вашому обліковому записі є ключі доступу, але під час входу ключ не пропонується, переконайтеся, що на пристрої з ключем увімкнено блокування екрана. Якщо блокування екрана вимкнено, ви не зможете використовувати ключ доступу на цьому пристрої, доки знову його не ввімкнете. \nВи можете відновити ключ доступу через свого постачальника облікових даних, наприклад Google або Apple.</string>
     <string name="troubleshoot_contact_support_button">Звʼязатися з підтримкою</string>
-
-    <string name="sign_up_challenge_expired_error">Час підтвердження минув. Спробуйте створити обліковий запис ще раз.</string>
     <string name="sign_up_accept_legal_documents">Я підтверджую ознайомлення, надаю згоду та приймаю\nПолітику конфіденційності та Умови використання</string>
     <string name="sign_up_accept_privacy_policy">Я приймаю Політику конфіденційності</string>
     <string name="sign_up_accept_terms_of_service">Я приймаю Умови використання</string>
@@ -45,4 +42,18 @@
     <string name="sign_up_legal_retry">Спробувати ще раз</string>
     <string name="sign_up_legal_documents_changed">Юридичні документи змінилися. Ознайомтеся з актуальними документами та прийміть їх перед повторною спробою.</string>
     <string name="sign_up_legal_acceptance_error">Прийміть Політику конфіденційності та Умови використання, щоб створити обліковий запис.</string>
+
+    <string name="sign_up_continue_button">Продовжити</string>
+    <string name="sign_up_email_undeliverable">Не вдалося надіслати лист на цю адресу. Перевірте її та спробуйте ще раз.</string>
+    <string name="verify_email_title">Підтвердьте ел. пошту</string>
+    <string name="verify_email_description">Ми надіслали 6-значний код на %s. Введіть його нижче, щоб завершити створення облікового запису.</string>
+    <string name="verify_email_code_label">Код підтвердження</string>
+    <string name="verify_email_confirm_button">Підтвердити</string>
+    <string name="verify_email_resend_button">Надіслати новий код</string>
+    <string name="verify_email_resend_countdown">Надіслати новий код через %s</string>
+    <string name="verify_email_change_email_button">Вказати іншу ел. пошту</string>
+    <string name="verify_email_code_invalid">Неправильний код. Перевірте лист і спробуйте ще раз.</string>
+    <string name="verify_email_code_expired">Термін дії коду минув. Запросіть новий.</string>
+    <string name="verify_email_attempts_exceeded">Забагато неправильних спроб. Запросіть новий код.</string>
+    <string name="verify_email_resend_too_soon">Код нещодавно надіслано. Зачекайте трохи, перш ніж запитувати новий.</string>
 </resources>

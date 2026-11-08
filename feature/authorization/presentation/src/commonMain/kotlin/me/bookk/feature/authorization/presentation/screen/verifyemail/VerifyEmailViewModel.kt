@@ -111,17 +111,16 @@ class VerifyEmailViewModel(
     private fun onFinishError(error: Throwable) {
         when (error) {
             is EmailVerificationError.CodeInvalid -> {
-                uiState.code.text = ""
-                uiState.code.showError(AuthRes.strings.verify_email_code_invalid.desc())
+                rejectCode(AuthRes.strings.verify_email_code_invalid)
             }
 
             is EmailVerificationError.CodeExpired,
             is FinishSignUp.Error.ChallengeWindowExpired,
             is FinishSignUp.Error.SignUpNotStarted,
-            -> uiState.code.showError(AuthRes.strings.verify_email_code_expired.desc())
+            -> rejectCode(AuthRes.strings.verify_email_code_expired)
 
             is EmailVerificationError.AttemptsExceeded -> {
-                uiState.code.showError(AuthRes.strings.verify_email_attempts_exceeded.desc())
+                rejectCode(AuthRes.strings.verify_email_attempts_exceeded)
             }
 
             is Error.TooManyRequests -> {
@@ -129,10 +128,10 @@ class VerifyEmailViewModel(
             }
 
             is FinishSignUp.Error.PasskeyVerificationFailed -> {
-                showMessage(AuthRes.strings.sign_up_passkey_failed)
+                failSignUp(AuthRes.strings.sign_up_passkey_failed)
             }
 
-            is FinishSignUp.Error.AccountCreationFailed -> showMessage(AuthRes.strings.sign_up_failed)
+            is FinishSignUp.Error.AccountCreationFailed -> failSignUp(AuthRes.strings.sign_up_failed)
 
             is FinishSignUp.Error.EmailAlreadyExist,
             is FinishSignUp.Error.InvalidEmailFormat,
@@ -144,7 +143,13 @@ class VerifyEmailViewModel(
         }
     }
 
-    private fun showMessage(message: StringResource) {
+    private fun rejectCode(reason: StringResource) {
+        uiState.code.text = ""
+        uiState.code.showError(reason.desc())
+    }
+
+    private fun failSignUp(message: StringResource) {
+        uiState.code.text = ""
         uiState.notifications.add(
             PresentationNotification.Message(
                 message = message.desc(),

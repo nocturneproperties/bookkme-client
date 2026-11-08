@@ -282,6 +282,30 @@ class VerifyEmailViewModelTest {
     }
 
     @Test
+    fun `disables confirm once the code can no longer be verified`() = runUnitTest {
+        listOf(
+            EmailVerificationError.CodeExpired(),
+            EmailVerificationError.AttemptsExceeded(),
+            FinishSignUp.Error.ChallengeWindowExpired(),
+            FinishSignUp.Error.SignUpNotStarted(),
+            FinishSignUp.Error.PasskeyVerificationFailed(),
+            FinishSignUp.Error.AccountCreationFailed(),
+        ).forEach { error ->
+            given()
+            val fixture = Fixture(testScheduler)
+            fixture.failFinishWith(error)
+            val sut = fixture.sut()
+
+            whenn()
+            sut.code.type("123456")
+
+            then()
+            assertEquals("", sut.uiState.code.text)
+            assertFalse(sut.uiState.confirmButton.isEnabled)
+        }
+    }
+
+    @Test
     fun `explains rate limiting of the code check inline`() = runUnitTest {
         given()
         val fixture = Fixture(testScheduler)

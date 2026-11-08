@@ -14,9 +14,17 @@ internal class StartEmailChangeImpl(
         return runCatching { emailChangeDataSource.startEmailChange(trimmedEmail) }
             .onBusinessError { error ->
                 throw error.toEmailVerificationError() ?: when (error.errorCode) {
-                    AuthErrorCodes.EMAIL_EXIST -> StartEmailChange.Error.EmailAlreadyExist()
-                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> StartEmailChange.Error.InvalidEmailFormat()
-                    else -> error
+                    AuthErrorCodes.EMAIL_EXIST -> {
+                        StartEmailChange.Error.EmailAlreadyExist()
+                    }
+
+                    AuthErrorCodes.INVALID_EMAIL_FORMAT -> {
+                        StartEmailChange.Error.InvalidEmailFormat()
+                    }
+
+                    else -> {
+                        error
+                    }
                 }
             }
             .map { StartEmailChange.PendingEmailChange(trimmedEmail, it) }

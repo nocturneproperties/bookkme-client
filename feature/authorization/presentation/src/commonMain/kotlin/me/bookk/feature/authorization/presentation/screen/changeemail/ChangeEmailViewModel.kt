@@ -32,7 +32,8 @@ class ChangeEmailViewModel(
 
     private fun ChangeEmailState.setup() = apply {
         appBar.title = AuthRes.strings.change_email_title.desc()
-        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(ChangeEmailDestinations.Back) }
+        appBar.onBackClick =
+            weakVMClosure { it.uiState.navigation.push(ChangeEmailDestinations.Back) }
         explanation = AuthRes.strings.change_email_explanation.desc()
         email.label = AuthRes.strings.change_email_field_label.desc()
         email.placeholder = email.label
@@ -69,11 +70,24 @@ class ChangeEmailViewModel(
 
     private fun onStartError(error: Throwable) {
         when (error) {
-            is StartEmailChange.Error.EmailAlreadyExist -> showEmailError(AuthRes.strings.sign_up_email_exist)
-            is StartEmailChange.Error.InvalidEmailFormat -> showEmailError(AuthRes.strings.sign_up_email_error)
-            is EmailVerificationError.Undeliverable -> showEmailError(AuthRes.strings.sign_up_email_undeliverable)
-            is EmailVerificationError.ResendTooSoon -> showEmailError(AuthRes.strings.verify_email_resend_too_soon)
+            is StartEmailChange.Error.EmailAlreadyExist -> showEmailError(
+                AuthRes.strings.sign_up_email_exist,
+            )
+
+            is StartEmailChange.Error.InvalidEmailFormat -> showEmailError(
+                AuthRes.strings.sign_up_email_error,
+            )
+
+            is EmailVerificationError.Undeliverable -> showEmailError(
+                AuthRes.strings.sign_up_email_undeliverable,
+            )
+
+            is EmailVerificationError.ResendTooSoon -> showEmailError(
+                AuthRes.strings.verify_email_resend_too_soon,
+            )
+
             is Error.TooManyRequests -> showEmailError(DesignSystem.strings.error_too_many_requests)
+
             else -> uiState.notifications.add(error.notification())
         }
     }

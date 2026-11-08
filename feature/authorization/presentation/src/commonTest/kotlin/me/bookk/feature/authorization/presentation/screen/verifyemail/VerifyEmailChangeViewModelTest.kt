@@ -60,7 +60,9 @@ class VerifyEmailChangeViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(private val scheduler: TestCoroutineScheduler) {
+    private class Fixture(
+        private val scheduler: TestCoroutineScheduler,
+    ) {
         val start = Instant.parse("2026-11-08T12:00:00Z")
         val finishSignUp = mock<FinishSignUp>()
         val resendSignUpCode = mock<ResendSignUpCode>()
@@ -283,9 +285,12 @@ class VerifyEmailChangeViewModelTest {
     @Test
     fun `explains an address refused on resend inline`() = runUnitTest {
         listOf(
-            StartEmailChange.Error.EmailAlreadyExist() to AuthRes.strings.verify_email_change_email_taken.desc(),
-            StartEmailChange.Error.InvalidEmailFormat() to AuthRes.strings.sign_up_email_error.desc(),
-            EmailVerificationError.Undeliverable() to AuthRes.strings.sign_up_email_undeliverable.desc(),
+            StartEmailChange.Error.EmailAlreadyExist() to
+                AuthRes.strings.verify_email_change_email_taken.desc(),
+            StartEmailChange.Error.InvalidEmailFormat() to
+                AuthRes.strings.sign_up_email_error.desc(),
+            EmailVerificationError.Undeliverable() to
+                AuthRes.strings.sign_up_email_undeliverable.desc(),
         ).forEach { (error, expected) ->
             given()
             val fixture = Fixture(testScheduler)
@@ -306,7 +311,8 @@ class VerifyEmailChangeViewModelTest {
     fun `explains a code sent too recently inline`() = runUnitTest {
         given()
         val fixture = Fixture(testScheduler)
-        everySuspend { fixture.startEmailChange(any()) } throws EmailVerificationError.ResendTooSoon()
+        everySuspend { fixture.startEmailChange(any()) } throws
+            EmailVerificationError.ResendTooSoon()
         val sut = fixture.sut()
 
         whenn()

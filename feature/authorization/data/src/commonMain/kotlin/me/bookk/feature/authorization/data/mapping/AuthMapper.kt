@@ -4,9 +4,9 @@ import me.bookk.database.entity.UserProfileEntity
 import me.bookk.feature.authorization.data.remote.model.AcceptedLegalDocumentsRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.DeleteAccountRequestRemote
+import me.bookk.feature.authorization.data.remote.model.EmailVerificationStartedRemote
 import me.bookk.feature.authorization.data.remote.model.PassKeySignUpStartInfo
 import me.bookk.feature.authorization.data.remote.model.SignUpChallengeResponseRemote
-import me.bookk.feature.authorization.data.remote.model.EmailVerificationStartedRemote
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
 import me.bookk.feature.authorization.data.remote.model.UserProfileRemote
 import me.bookk.feature.authorization.data.remote.model.VerifyAccountCreationRequest

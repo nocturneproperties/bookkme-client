@@ -88,7 +88,11 @@ class EditProfileImplTest {
 
         then()
         verifySuspend {
-            fixture.profileCRUD.update(matches({ "stored email" }) { it.email == "old@example.com" })
+            fixture.profileCRUD.update(
+                matches({
+                    "stored email"
+                }) { it.email == "old@example.com" },
+            )
         }
     }
 

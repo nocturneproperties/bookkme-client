@@ -11,7 +11,8 @@ internal class ResendSignUpCodeImpl(
 ) : ResendSignUpCode {
 
     override suspend fun invoke(): StartSignUp.PendingSignUp {
-        val session = signUpSessionDataSource.get() ?: throw ResendSignUpCode.Error.SignUpNotStarted()
+        val session =
+            signUpSessionDataSource.get() ?: throw ResendSignUpCode.Error.SignUpNotStarted()
         return runCatching { startSignUp(session.userData) }
             .onFailure { rejectSession(session, it) }
             .getOrThrow()

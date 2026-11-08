@@ -31,7 +31,9 @@ class EditProfileViewModel(
         LAST,
     }
 
-    val uiState: EditProfileState = settingsStateFactory.createEditProfileState(createInitData()).apply {
+    val uiState: EditProfileState = settingsStateFactory.createEditProfileState(
+        createInitData(),
+    ).apply {
         email.readOnly = true
         showEmailHint()
         changeEmailButton.text = SettingsRes.strings.settings_edit_profile_change_email.desc()
@@ -144,7 +146,8 @@ class EditProfileViewModel(
 
     private fun EditProfileState.showEmailHint() {
         email.clearError()
-        email.supportingTextRes = SettingsRes.strings.settings_edit_profile_email_read_only_hint.desc()
+        email.supportingTextRes =
+            SettingsRes.strings.settings_edit_profile_email_read_only_hint.desc()
     }
 
     private fun validateButton() {

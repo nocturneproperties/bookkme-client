@@ -2,6 +2,7 @@ package me.bookk.feature.authorization.presentation.sign_up
 
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
 import library.device.api.DeviceFacade
 import library.validation.api.ValidateEmail
 import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
@@ -22,7 +23,6 @@ import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.designsystem.uistate.validate
-import kotlinx.coroutines.flow.filterNotNull
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
 import me.bookk.feature.authorization.domain.api.ObserveSignUpRejection
 import me.bookk.feature.authorization.domain.api.StartSignUp
@@ -285,17 +285,27 @@ class SignUpViewModel(
 
     private fun onStartSignUpError(error: Throwable) {
         when (error) {
-            is StartSignUp.Error.EmailAlreadyExist -> showEmailError(AuthRes.strings.sign_up_email_exist)
-            is StartSignUp.Error.InvalidEmailFormat -> showEmailError(AuthRes.strings.sign_up_email_error)
+            is StartSignUp.Error.EmailAlreadyExist -> {
+                showEmailError(AuthRes.strings.sign_up_email_exist)
+            }
+
+            is StartSignUp.Error.InvalidEmailFormat -> {
+                showEmailError(AuthRes.strings.sign_up_email_error)
+            }
+
             is EmailVerificationError.Undeliverable -> {
                 showEmailError(AuthRes.strings.sign_up_email_undeliverable)
             }
 
-            is EmailVerificationError.ResendTooSoon -> uiState.notification.add(
-                Message.simple(AuthRes.strings.verify_email_resend_too_soon.desc()),
-            )
+            is EmailVerificationError.ResendTooSoon -> {
+                uiState.notification.add(
+                    Message.simple(AuthRes.strings.verify_email_resend_too_soon.desc()),
+                )
+            }
 
-            else -> uiState.notification.add(error.notification())
+            else -> {
+                uiState.notification.add(error.notification())
+            }
         }
     }
 
@@ -310,9 +320,18 @@ class SignUpViewModel(
 
     private fun renderRejection(rejection: SignUpRejection) {
         when (rejection) {
-            SignUpRejection.LEGAL_DOCUMENTS_CHANGED -> onLegalDocumentsRejected()
-            SignUpRejection.EMAIL_TAKEN -> showEmailError(AuthRes.strings.sign_up_email_exist)
-            SignUpRejection.EMAIL_INVALID -> showEmailError(AuthRes.strings.sign_up_email_error)
+            SignUpRejection.LEGAL_DOCUMENTS_CHANGED -> {
+                onLegalDocumentsRejected()
+            }
+
+            SignUpRejection.EMAIL_TAKEN -> {
+                showEmailError(AuthRes.strings.sign_up_email_exist)
+            }
+
+            SignUpRejection.EMAIL_INVALID -> {
+                showEmailError(AuthRes.strings.sign_up_email_error)
+            }
+
             SignUpRejection.EMAIL_UNDELIVERABLE -> {
                 showEmailError(AuthRes.strings.sign_up_email_undeliverable)
             }

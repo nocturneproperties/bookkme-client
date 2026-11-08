@@ -87,11 +87,26 @@ internal class FinishSignUpImpl(
 
     private fun Error.BusinessError.toFinishError(): Throwable? {
         return toEmailVerificationError() ?: when (errorCode) {
-            AuthErrorCodes.USER_ALREADY_EXIST -> FinishSignUp.Error.EmailAlreadyExist()
-            AuthErrorCodes.INVALID_EMAIL_FORMAT -> FinishSignUp.Error.InvalidEmailFormat()
-            AuthErrorCodes.VERIFICATION_FAILED -> FinishSignUp.Error.PasskeyVerificationFailed()
-            AuthErrorCodes.ACCOUNT_CREATION_FAILED -> FinishSignUp.Error.AccountCreationFailed()
-            AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> FinishSignUp.Error.ChallengeWindowExpired()
+            AuthErrorCodes.USER_ALREADY_EXIST -> {
+                FinishSignUp.Error.EmailAlreadyExist()
+            }
+
+            AuthErrorCodes.INVALID_EMAIL_FORMAT -> {
+                FinishSignUp.Error.InvalidEmailFormat()
+            }
+
+            AuthErrorCodes.VERIFICATION_FAILED -> {
+                FinishSignUp.Error.PasskeyVerificationFailed()
+            }
+
+            AuthErrorCodes.ACCOUNT_CREATION_FAILED -> {
+                FinishSignUp.Error.AccountCreationFailed()
+            }
+
+            AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> {
+                FinishSignUp.Error.ChallengeWindowExpired()
+            }
+
             AuthErrorCodes.LEGAL_DOCUMENT_VERSION_UNKNOWN -> {
                 FinishSignUp.Error.LegalDocumentVersionUnknown()
             }
@@ -100,7 +115,9 @@ internal class FinishSignUpImpl(
                 FinishSignUp.Error.LegalDocumentsNotAccepted()
             }
 
-            else -> null
+            else -> {
+                null
+            }
         }
     }
 

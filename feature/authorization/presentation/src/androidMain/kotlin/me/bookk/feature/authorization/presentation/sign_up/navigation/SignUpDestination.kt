@@ -25,6 +25,7 @@ internal fun NavGraphBuilder.signUpScreen(navigation: AuthNavigation) {
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
                     SignUpNavigationDestination.Back -> navigation.navigateBack()
+
                     is SignUpNavigationDestination.VerifyEmail -> navigation.navigateToVerifyEmail(
                         it.pendingSignUp.toVerifyEmailDestination(),
                     )

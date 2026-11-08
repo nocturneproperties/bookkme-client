@@ -6,5 +6,7 @@ import me.bookk.feature.authorization.domain.api.StartSignUp
 sealed class SignUpNavigationDestination : NavigationDestination() {
     data object Back : SignUpNavigationDestination()
 
-    data class VerifyEmail(val pendingSignUp: StartSignUp.PendingSignUp) : SignUpNavigationDestination()
+    data class VerifyEmail(
+        val pendingSignUp: StartSignUp.PendingSignUp,
+    ) : SignUpNavigationDestination()
 }

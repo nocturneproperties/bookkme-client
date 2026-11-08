@@ -18,9 +18,14 @@ internal fun NavGraphBuilder.changeEmailScreen(navigation: EmailChangeNavigation
         ChangeEmailScreen(viewModel.uiState)
         ObserveNavigation(viewModel.uiState.navigation) { destination ->
             when (destination) {
-                ChangeEmailDestinations.Back -> navigation.navigateBack()
+                ChangeEmailDestinations.Back -> {
+                    navigation.navigateBack()
+                }
+
                 is ChangeEmailDestinations.VerifyEmail -> {
-                    navigation.navigateToVerifyEmail(destination.pendingEmailChange.toVerifyEmailDestination())
+                    navigation.navigateToVerifyEmail(
+                        destination.pendingEmailChange.toVerifyEmailDestination(),
+                    )
                 }
             }
         }

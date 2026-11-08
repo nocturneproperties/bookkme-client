@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.data.remote.model
 
+import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.protobuf.ProtoNumber
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -114,7 +115,7 @@ class SignUpRemoteContractTest {
         assertEquals(listOf(false, false), optional)
     }
 
-    private fun kotlinx.serialization.descriptors.SerialDescriptor.protoFields(): List<Pair<String, Int>> {
+    private fun SerialDescriptor.protoFields(): List<Pair<String, Int>> {
         return (0 until elementsCount).map {
             getElementName(it) to
                 getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number

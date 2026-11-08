@@ -67,8 +67,13 @@ internal fun EditProfileScreen(state: EditProfileState) {
 private fun HandleNavigation(navigation: NavigationState<EditProfileNavigationDestination>) {
     ObserveNavigation(navigation) {
         when (it) {
-            EditProfileNavigationDestination.Back -> LocalNavigation.current.navigateBack()
-            EditProfileNavigationDestination.ChangeEmail -> LocalNavigation.current.navigateToChangeEmail()
+            EditProfileNavigationDestination.Back -> {
+                LocalNavigation.current.navigateBack()
+            }
+
+            EditProfileNavigationDestination.ChangeEmail -> {
+                LocalNavigation.current.navigateToChangeEmail()
+            }
         }
     }
 }

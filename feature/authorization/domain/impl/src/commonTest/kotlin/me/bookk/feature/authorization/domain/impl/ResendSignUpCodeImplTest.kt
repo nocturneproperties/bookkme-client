@@ -60,7 +60,8 @@ class ResendSignUpCodeImplTest {
         given()
         val fixture = Fixture()
         fixture.startSession()
-        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
+        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns
+            fixture.pendingSignUp
 
         whenn()
         val result = fixture.sut()
@@ -150,7 +151,10 @@ class ResendSignUpCodeImplTest {
 
         then()
         assertFailsWith<EmailVerificationError.ResendTooSoon> { result.getOrThrow() }
-        assertEquals(activeSession().userData.email, fixture.sessionDataSource.session?.userData?.email)
+        assertEquals(
+            activeSession().userData.email,
+            fixture.sessionDataSource.session?.userData?.email,
+        )
         assertNotNull(fixture.sessionDataSource.session?.challenge)
         assertNull(fixture.sessionDataSource.session?.rejection)
     }

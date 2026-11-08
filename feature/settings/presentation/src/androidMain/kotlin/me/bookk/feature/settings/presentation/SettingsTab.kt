@@ -59,7 +59,10 @@ fun SettingsTab() {
                 navigateBack = { settingsController.popBackStack() },
                 navigateToVerifyEmail = { settingsController.navigate(it) },
                 finishEmailChange = {
-                    settingsController.popBackStack(SettingsDestination.EditProfile, inclusive = false)
+                    settingsController.popBackStack(
+                        SettingsDestination.EditProfile,
+                        inclusive = false,
+                    )
                 },
             ),
         )

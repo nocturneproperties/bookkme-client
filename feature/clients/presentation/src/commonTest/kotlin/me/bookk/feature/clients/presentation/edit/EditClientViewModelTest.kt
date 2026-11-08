@@ -12,15 +12,6 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.uuid.Uuid
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -48,6 +39,15 @@ import me.bookk.feature.clients.presentation.FakeValidateEmail
 import me.bookk.feature.clients.presentation.FakeValidateName
 import me.bookk.feature.clients.presentation.stubDetachedClient
 import me.bookk.feature.clients.presentation.stubIntegratedClient
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.uuid.Uuid
 
 class EditClientViewModelTest {
 

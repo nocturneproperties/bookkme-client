@@ -65,7 +65,9 @@ class ConfirmEmailChangeImplTest {
         fixture.sut(fixture.change, "123456")
 
         then()
-        verifySuspend { fixture.emailChangeDataSource.confirmEmailChange(stubVerificationId, "123456") }
+        verifySuspend {
+            fixture.emailChangeDataSource.confirmEmailChange(stubVerificationId, "123456")
+        }
     }
 
     @Test
@@ -80,7 +82,9 @@ class ConfirmEmailChangeImplTest {
 
         then()
         verifySuspend {
-            fixture.userProfileDataSource.upsertProfile(fixture.profile.copy(email = "new@example.com"))
+            fixture.userProfileDataSource.upsertProfile(
+                fixture.profile.copy(email = "new@example.com"),
+            )
         }
     }
 

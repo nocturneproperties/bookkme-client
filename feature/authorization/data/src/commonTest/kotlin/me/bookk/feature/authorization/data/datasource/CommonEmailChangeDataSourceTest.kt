@@ -158,7 +158,8 @@ class CommonEmailChangeDataSourceTest {
         fixture.respondWithBusinessError(910001)
 
         whenn()
-        val result = runCatching { fixture.sut.confirmEmailChange(fixture.verificationId, "000000") }
+        val result =
+            runCatching { fixture.sut.confirmEmailChange(fixture.verificationId, "000000") }
 
         then()
         assertEquals(910001, assertFailsWith<Error.BusinessError> { result.getOrThrow() }.errorCode)

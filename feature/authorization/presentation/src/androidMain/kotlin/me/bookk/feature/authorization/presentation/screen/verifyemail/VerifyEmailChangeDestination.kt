@@ -33,7 +33,8 @@ internal fun NavGraphBuilder.verifyEmailChangeScreen(navigation: EmailChangeNavi
     }
 }
 
-internal fun StartEmailChange.PendingEmailChange.toVerifyEmailDestination(): EmailChangeDestination.VerifyEmail {
+internal fun StartEmailChange.PendingEmailChange.toVerifyEmailDestination():
+    EmailChangeDestination.VerifyEmail {
     return EmailChangeDestination.VerifyEmail(
         email = email,
         verificationId = verification.id.toString(),
@@ -42,7 +43,8 @@ internal fun StartEmailChange.PendingEmailChange.toVerifyEmailDestination(): Ema
     )
 }
 
-private fun EmailChangeDestination.VerifyEmail.toPendingEmailChange(): StartEmailChange.PendingEmailChange {
+private fun EmailChangeDestination.VerifyEmail.toPendingEmailChange():
+    StartEmailChange.PendingEmailChange {
     return StartEmailChange.PendingEmailChange(
         email = email,
         verification = EmailVerification(

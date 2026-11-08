@@ -9,15 +9,6 @@ import dev.mokkery.matcher.capture.Capture
 import dev.mokkery.matcher.capture.capture
 import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.uuid.Uuid
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
@@ -38,6 +29,15 @@ import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
 import me.bookk.feature.clients.presentation.FakeValidateEmail
 import me.bookk.feature.clients.presentation.FakeValidateName
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.uuid.Uuid
 
 class CreateClientViewModelTest {
 

@@ -66,7 +66,9 @@ class VerifyEmailViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(private val scheduler: TestCoroutineScheduler) {
+    private class Fixture(
+        private val scheduler: TestCoroutineScheduler,
+    ) {
         val start = Instant.parse("2026-11-08T12:00:00Z")
         val finishSignUp = mock<FinishSignUp>()
         val resendSignUpCode = mock<ResendSignUpCode>()
@@ -79,7 +81,9 @@ class VerifyEmailViewModelTest {
             }
         }
 
-        fun pendingSignUp(resendAvailableAt: Instant = start + 60.seconds): StartSignUp.PendingSignUp {
+        fun pendingSignUp(
+            resendAvailableAt: Instant = start + 60.seconds,
+        ): StartSignUp.PendingSignUp {
             return StartSignUp.PendingSignUp(
                 maskedEmail = "a***@example.com",
                 expiresAt = start + 10.minutes,
@@ -343,7 +347,8 @@ class VerifyEmailViewModelTest {
     @Test
     fun `shows a message when the passkey step fails`() = runUnitTest {
         listOf(
-            FinishSignUp.Error.PasskeyVerificationFailed() to AuthRes.strings.sign_up_passkey_failed,
+            FinishSignUp.Error.PasskeyVerificationFailed() to
+                AuthRes.strings.sign_up_passkey_failed,
             FinishSignUp.Error.AccountCreationFailed() to AuthRes.strings.sign_up_failed,
         ).forEach { (error, expected) ->
             given()
@@ -463,7 +468,10 @@ class VerifyEmailViewModelTest {
 
         then()
         assertTrue(sut.uiState.resendButton.isEnabled)
-        assertEquals(AuthRes.strings.verify_email_resend_button.desc(), sut.uiState.resendButton.text)
+        assertEquals(
+            AuthRes.strings.verify_email_resend_button.desc(),
+            sut.uiState.resendButton.text,
+        )
     }
 
     @Test
@@ -495,8 +503,10 @@ class VerifyEmailViewModelTest {
     @Test
     fun `explains a refused resend inline`() = runUnitTest {
         listOf(
-            EmailVerificationError.ResendTooSoon() to AuthRes.strings.verify_email_resend_too_soon.desc(),
-            Error.TooManyRequests(Exception()) to DesignSystem.strings.error_too_many_requests.desc(),
+            EmailVerificationError.ResendTooSoon() to
+                AuthRes.strings.verify_email_resend_too_soon.desc(),
+            Error.TooManyRequests(Exception()) to
+                DesignSystem.strings.error_too_many_requests.desc(),
         ).forEach { (error, expected) ->
             given()
             val fixture = Fixture(testScheduler)
@@ -588,7 +598,10 @@ class VerifyEmailViewModelTest {
 
         then()
         assertEquals(
-            listOf<VerifyEmailDestinations>(VerifyEmailDestinations.Back, VerifyEmailDestinations.Back),
+            listOf<VerifyEmailDestinations>(
+                VerifyEmailDestinations.Back,
+                VerifyEmailDestinations.Back,
+            ),
             sut.uiState.navigation.navigationDestination,
         )
     }

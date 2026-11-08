@@ -124,7 +124,11 @@ class VerifyEmailViewModel(
     private suspend fun verify(request: VerifyEmailRequest, code: String) {
         when (request) {
             is VerifyEmailRequest.SignUp -> finishSignUp(code)
-            is VerifyEmailRequest.EmailChange -> confirmEmailChange(request.pendingEmailChange, code)
+
+            is VerifyEmailRequest.EmailChange -> confirmEmailChange(
+                request.pendingEmailChange,
+                code,
+            )
         }
     }
 
@@ -132,7 +136,9 @@ class VerifyEmailViewModel(
         uiState.notifications.add(PresentationNotification.SuccessHaptic)
         if (request is VerifyEmailRequest.EmailChange) {
             uiState.notifications.add(
-                PresentationNotification.GlobalMessage(AuthRes.strings.verify_email_change_success.desc()),
+                PresentationNotification.GlobalMessage(
+                    AuthRes.strings.verify_email_change_success.desc(),
+                ),
             )
             uiState.navigation.push(VerifyEmailDestinations.EmailChanged)
         }
@@ -147,13 +153,17 @@ class VerifyEmailViewModel(
             is EmailVerificationError.CodeExpired,
             is FinishSignUp.Error.ChallengeWindowExpired,
             is FinishSignUp.Error.SignUpNotStarted,
-            -> rejectCode(AuthRes.strings.verify_email_code_expired)
+            -> {
+                rejectCode(AuthRes.strings.verify_email_code_expired)
+            }
 
             is EmailVerificationError.AttemptsExceeded -> {
                 rejectCode(AuthRes.strings.verify_email_attempts_exceeded)
             }
 
-            is Error.TooManyRequests -> showCodeError(DesignSystem.strings.error_too_many_requests)
+            is Error.TooManyRequests -> {
+                showCodeError(DesignSystem.strings.error_too_many_requests)
+            }
 
             is ConfirmEmailChange.Error.EmailAlreadyExist -> {
                 showCodeError(AuthRes.strings.verify_email_change_email_taken)
@@ -163,15 +173,21 @@ class VerifyEmailViewModel(
                 failSignUp(AuthRes.strings.sign_up_passkey_failed)
             }
 
-            is FinishSignUp.Error.AccountCreationFailed -> failSignUp(AuthRes.strings.sign_up_failed)
+            is FinishSignUp.Error.AccountCreationFailed -> {
+                failSignUp(AuthRes.strings.sign_up_failed)
+            }
 
             is FinishSignUp.Error.EmailAlreadyExist,
             is FinishSignUp.Error.InvalidEmailFormat,
             is FinishSignUp.Error.LegalDocumentVersionUnknown,
             is FinishSignUp.Error.LegalDocumentsNotAccepted,
-            -> goBack()
+            -> {
+                goBack()
+            }
 
-            else -> uiState.notifications.add(error.notification())
+            else -> {
+                uiState.notifications.add(error.notification())
+            }
         }
     }
 
@@ -230,28 +246,46 @@ class VerifyEmailViewModel(
 
     private fun onResendError(error: Throwable) {
         when (error) {
-            is EmailVerificationError.ResendTooSoon -> showCodeError(AuthRes.strings.verify_email_resend_too_soon)
-            is Error.TooManyRequests -> showCodeError(DesignSystem.strings.error_too_many_requests)
+            is EmailVerificationError.ResendTooSoon -> {
+                showCodeError(AuthRes.strings.verify_email_resend_too_soon)
+            }
+
+            is Error.TooManyRequests -> {
+                showCodeError(DesignSystem.strings.error_too_many_requests)
+            }
+
             is StartEmailChange.Error.EmailAlreadyExist -> {
                 showCodeError(AuthRes.strings.verify_email_change_email_taken)
             }
 
-            is StartEmailChange.Error.InvalidEmailFormat -> showCodeError(AuthRes.strings.sign_up_email_error)
-            is EmailVerificationError.Undeliverable -> onUndeliverable()
+            is StartEmailChange.Error.InvalidEmailFormat -> {
+                showCodeError(AuthRes.strings.sign_up_email_error)
+            }
+
+            is EmailVerificationError.Undeliverable -> {
+                onUndeliverable()
+            }
 
             is StartSignUp.Error.EmailAlreadyExist,
             is StartSignUp.Error.InvalidEmailFormat,
             is ResendSignUpCode.Error.SignUpNotStarted,
-            -> goBack()
+            -> {
+                goBack()
+            }
 
-            else -> uiState.notifications.add(error.notification())
+            else -> {
+                uiState.notifications.add(error.notification())
+            }
         }
     }
 
     private fun onUndeliverable() {
         when (request) {
             is VerifyEmailRequest.SignUp -> goBack()
-            is VerifyEmailRequest.EmailChange -> showCodeError(AuthRes.strings.sign_up_email_undeliverable)
+
+            is VerifyEmailRequest.EmailChange -> showCodeError(
+                AuthRes.strings.sign_up_email_undeliverable,
+            )
         }
     }
 

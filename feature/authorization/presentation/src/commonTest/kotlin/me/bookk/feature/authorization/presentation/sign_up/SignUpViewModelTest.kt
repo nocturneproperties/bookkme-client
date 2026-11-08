@@ -51,13 +51,13 @@ import me.bookk.feature.authorization.presentation.FakeValidateEmail
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class SignUpViewModelTest {
 
@@ -237,7 +237,8 @@ class SignUpViewModelTest {
     fun `creates account with entered data`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
+        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns
+            fixture.pendingSignUp
         val sut = fixture.sut(acceptLegalDocuments = true)
         sut.fillValidForm()
 
@@ -525,7 +526,8 @@ class SignUpViewModelTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents
-        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
+        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns
+            fixture.pendingSignUp
         val sut = fixture.sut()
         sut.fillValidForm()
         sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
@@ -752,7 +754,8 @@ class SignUpViewModelTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents
-        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
+        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns
+            fixture.pendingSignUp
         val sut = fixture.sut()
         sut.fillValidForm()
         sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
@@ -827,7 +830,8 @@ class SignUpViewModelTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSignUpLegalDocuments() } returns fixture.documents
-        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns fixture.pendingSignUp
+        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns
+            fixture.pendingSignUp
         val sut = fixture.sut()
         sut.fillValidForm()
         val onAcceptanceChanged = assertNotNull(sut.uiState.legalAcceptance.onCheckedChange)

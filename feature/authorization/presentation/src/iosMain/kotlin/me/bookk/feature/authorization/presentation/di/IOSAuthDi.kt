@@ -39,11 +39,16 @@ fun troubleshootVM(): TroubleshootViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun verifyEmailVM(pendingSignUp: StartSignUp.PendingSignUp): VerifyEmailViewModel =
-    KoinPlatform.getKoin().get(parameters = { parametersOf(VerifyEmailRequest.SignUp(pendingSignUp)) })
+    KoinPlatform.getKoin().get(parameters = {
+        parametersOf(VerifyEmailRequest.SignUp(pendingSignUp))
+    })
 
 @UsedInSwift
-fun verifyEmailChangeVM(pendingEmailChange: StartEmailChange.PendingEmailChange): VerifyEmailViewModel =
-    KoinPlatform.getKoin().get(parameters = { parametersOf(VerifyEmailRequest.EmailChange(pendingEmailChange)) })
+fun verifyEmailChangeVM(
+    pendingEmailChange: StartEmailChange.PendingEmailChange,
+): VerifyEmailViewModel = KoinPlatform.getKoin().get(parameters = {
+    parametersOf(VerifyEmailRequest.EmailChange(pendingEmailChange))
+})
 
 @UsedInSwift
 fun changeEmailVM(): ChangeEmailViewModel = KoinPlatform.getKoin().get()

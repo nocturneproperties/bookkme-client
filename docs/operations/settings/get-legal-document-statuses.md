@@ -35,7 +35,7 @@ one transaction, so active observers never see an intermediate empty list. The d
 table through its singleton `LogOutAction` binding. See [Settings persistence](../../database/settings.md).
 
 `acceptedAt = null` means the current document has not been accepted. This operation only reads acceptance
-status. Signup sends accepted document versions through [Create account](../authorization/create-account.md).
+status. Signup sends accepted document versions through [Finish sign-up](../authorization/finish-sign-up.md).
 
 Settings subscribes once to the local flow and refreshes when presented, after successful acceptance or an
 unknown-version rejection, and on retry. Both platforms always show the Privacy Policy and Terms of

@@ -5,21 +5,23 @@ import me.bookk.feature.authorization.data.remote.model.AcceptedLegalDocumentsRe
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.DeleteAccountRequestRemote
 import me.bookk.feature.authorization.data.remote.model.PassKeySignUpStartInfo
-import me.bookk.feature.authorization.data.remote.model.RegistrationChallengeResponse
+import me.bookk.feature.authorization.data.remote.model.SignUpChallengeResponseRemote
+import me.bookk.feature.authorization.data.remote.model.EmailVerificationStartedRemote
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
 import me.bookk.feature.authorization.data.remote.model.UserProfileRemote
 import me.bookk.feature.authorization.data.remote.model.VerifyAccountCreationRequest
 import me.bookk.feature.authorization.data.remote.model.VerifyAuthRequest
-import me.bookk.feature.authorization.domain.api.CreateAccount
+import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationData
 import me.bookk.feature.authorization.domain.datasource.registration.ServerSignUpChallenge
+import me.bookk.feature.authorization.domain.entity.EmailVerification
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 import me.bookk.feature.authorization.domain.entity.UserProfile
 
-internal fun CreateAccount.UserData.toRemote(): PassKeySignUpStartInfo {
+internal fun StartSignUp.UserData.toRemote(): PassKeySignUpStartInfo {
     return PassKeySignUpStartInfo(
         firstName = firstName,
         lastName = lastName,
@@ -27,13 +29,22 @@ internal fun CreateAccount.UserData.toRemote(): PassKeySignUpStartInfo {
     )
 }
 
-internal fun RegistrationChallengeResponse.toDomain(): ServerSignUpChallenge {
+internal fun EmailVerificationStartedRemote.toDomain(): EmailVerification {
+    return EmailVerification(
+        id = verificationId,
+        expiresAt = expiresAt,
+        resendAvailableAt = resendAvailableAt,
+    )
+}
+
+internal fun SignUpChallengeResponseRemote.toDomain(): ServerSignUpChallenge {
     return ServerSignUpChallenge(
         requestId = requestId,
         displayName = displayName,
         jsonChallengeData = challengeJson,
         challenge = challenge,
         userHandle = userHandle,
+        emailVerification = emailVerification.toDomain(),
     )
 }
 
@@ -61,6 +72,8 @@ internal fun RegistrationData.toRemote(): VerifyAccountCreationRequest {
             privacyPolicy = acceptedDocuments.privacyPolicy,
             termsOfService = acceptedDocuments.termsOfService,
         ),
+        verificationId = verificationId,
+        emailCode = emailCode,
     )
 }
 

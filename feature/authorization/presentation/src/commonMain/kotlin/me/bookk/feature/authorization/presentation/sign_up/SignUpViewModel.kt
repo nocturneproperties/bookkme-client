@@ -24,9 +24,9 @@ import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.designsystem.uistate.validate
-import me.bookk.feature.authorization.domain.api.CreateAccount
-import me.bookk.feature.authorization.domain.api.CreateAccount.Error
+import me.bookk.feature.authorization.domain.api.FinishSignUp
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
+import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument.Document
@@ -41,7 +41,7 @@ import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 class SignUpViewModel(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
-    private val createAccount: CreateAccount,
+    private val startSignUp: StartSignUp,
     private val getSignUpLegalDocuments: GetSignUpLegalDocuments,
     private val deviceFacade: DeviceFacade,
     private val stateFactory: AuthStateFactory,
@@ -254,7 +254,7 @@ class SignUpViewModel(
             validateButton()
             return
         }
-        val userData = CreateAccount.UserData(
+        val userData = StartSignUp.UserData(
             uiState.name.text,
             uiState.lastName.text,
             uiState.email.text,
@@ -265,7 +265,7 @@ class SignUpViewModel(
             launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.confirmButton.startLoading() },
-            call = { createAccount(userData) },
+            call = { startSignUp(userData) },
             onComplete = { uiState.notification.add(PresentationNotification.SuccessHaptic) },
             onError = ::onCreateAccountError,
             onTerminate = {
@@ -277,13 +277,13 @@ class SignUpViewModel(
 
     private fun onCreateAccountError(error: Throwable) {
         when (error) {
-            is Error.LegalDocumentVersionUnknown,
-            is Error.LegalDocumentsNotAccepted,
+            is FinishSignUp.Error.LegalDocumentVersionUnknown,
+            is FinishSignUp.Error.LegalDocumentsNotAccepted,
             -> {
                 onLegalDocumentsRejected()
             }
 
-            is Error.ChallengeWindowExpired -> {
+            is FinishSignUp.Error.ChallengeWindowExpired -> {
                 uiState.notification.add(
                     Message.simple(
                         AuthRes.strings.sign_up_challenge_expired_error.desc(),
@@ -291,15 +291,15 @@ class SignUpViewModel(
                 )
             }
 
-            is Error.EmailAlreadyExist -> {
+            is StartSignUp.Error.EmailAlreadyExist -> {
                 uiState.email.showError(AuthRes.strings.sign_up_email_exist.desc())
             }
 
-            is Error.InvalidEmailFormat -> {
+            is StartSignUp.Error.InvalidEmailFormat -> {
                 uiState.email.showError(AuthRes.strings.sign_up_email_error.desc())
             }
 
-            is Error.PasskeyVerificationFailed -> {
+            is FinishSignUp.Error.PasskeyVerificationFailed -> {
                 uiState.notification.add(
                     Message(
                         message = AuthRes.strings.sign_up_passkey_failed.desc(),
@@ -312,7 +312,7 @@ class SignUpViewModel(
                 )
             }
 
-            is Error.AccountCreationFailed -> {
+            is FinishSignUp.Error.AccountCreationFailed -> {
                 uiState.notification.add(
                     Message(
                         message = AuthRes.strings.sign_up_failed.desc(),

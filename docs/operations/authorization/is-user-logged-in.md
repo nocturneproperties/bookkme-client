@@ -12,7 +12,7 @@ Three small read-only use cases in `authorization`, all **local only**.
 | `GetSettingsColorScheme()` / `.asFlow()` | wraps `settings`' [GetColorScheme](../settings/get-color-scheme.md), mapped to `AuthColorScheme` | `BootstrapViewModel` (app theme) |
 
 Note that "logged in" is driven by the `authorized` flag and **not** by whether a token exists.
-[Sign in](sign-in.md) and [Create account](create-account.md) set the flag after the initial fetch,
+[Sign in](sign-in.md) and [Finish sign-up](finish-sign-up.md) set the flag after the initial fetch,
 [Delete account](../settings/delete-account.md) clears it, and [Log out](log-out.md) clears the whole bucket.
 
 ```mermaid

@@ -19,7 +19,7 @@ internal fun NavGraphBuilder.verifyEmailScreen(navigation: AuthNavigation) {
     composable<AuthDestination.VerifyEmail> {
         val entry = it.toRoute<AuthDestination.VerifyEmail>()
         val viewModel: VerifyEmailViewModel = koinViewModel {
-            parametersOf(entry.toPendingSignUp())
+            parametersOf(VerifyEmailRequest.SignUp(entry.toPendingSignUp()))
         }
         CompositionLocalProvider(LocalNavigation provides navigation) {
             ObserveNotifications(viewModel.uiState.notifications)
@@ -29,6 +29,7 @@ internal fun NavGraphBuilder.verifyEmailScreen(navigation: AuthNavigation) {
         ObserveNavigation(viewModel.uiState.navigation) { destination ->
             when (destination) {
                 VerifyEmailDestinations.Back -> navigation.navigateBack()
+                VerifyEmailDestinations.EmailChanged -> Unit
             }
         }
     }

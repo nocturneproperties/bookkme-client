@@ -5,6 +5,7 @@ import androidx.compose.runtime.compositionLocalOf
 class SettingsNavigation(
     val navigateBack: () -> Unit,
     val navigateToEditProfile: () -> Unit,
+    val navigateToChangeEmail: () -> Unit,
     val navigateToPasskey: () -> Unit,
     val navigateToNotifications: () -> Unit,
     val navigateToPersonalDataExport: () -> Unit,
@@ -17,6 +18,7 @@ internal val LocalNavigation = compositionLocalOf {
     SettingsNavigation(
         navigateBack = {},
         navigateToEditProfile = {},
+        navigateToChangeEmail = {},
         navigateToPasskey = {},
         navigateToDeleteAccount = {},
         navigateToContact = {},

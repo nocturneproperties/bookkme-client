@@ -56,4 +56,11 @@
     <string name="verify_email_code_expired">Срок действия кода истёк. Запросите новый.</string>
     <string name="verify_email_attempts_exceeded">Слишком много неверных попыток. Запросите новый код.</string>
     <string name="verify_email_resend_too_soon">Код недавно отправлен. Подождите немного, прежде чем запросить новый.</string>
+    <string name="change_email_title">Изменить эл. почту</string>
+    <string name="change_email_explanation">Введите новый адрес эл. почты. Мы отправим на него 6-значный код, чтобы подтвердить изменение.</string>
+    <string name="change_email_field_label">Новая эл. почта</string>
+    <string name="change_email_continue_button">Отправить код</string>
+    <string name="verify_email_change_description">Мы отправили 6-значный код на %s. Введите его ниже, чтобы подтвердить новую эл. почту.</string>
+    <string name="verify_email_change_success">Эл. почта изменена.</string>
+    <string name="verify_email_change_email_taken">Эта эл. почта уже используется другим аккаунтом. Укажите другую эл. почту.</string>
 </resources>

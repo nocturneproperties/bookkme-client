@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.domain.impl.di
 
+import me.bookk.feature.authorization.domain.api.ConfirmEmailChange
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.FinishSignUp
 import me.bookk.feature.authorization.domain.api.GetSettingsColorScheme
@@ -13,8 +14,10 @@ import me.bookk.feature.authorization.domain.api.ObserveSignUpRejection
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.ResendSignUpCode
 import me.bookk.feature.authorization.domain.api.SignIn
+import me.bookk.feature.authorization.domain.api.StartEmailChange
 import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.authorization.domain.impl.ConfirmEmailChangeImpl
 import me.bookk.feature.authorization.domain.impl.ConfirmSensitiveActionImpl
 import me.bookk.feature.authorization.domain.impl.FinishSignUpImpl
 import me.bookk.feature.authorization.domain.impl.GetSettingsColorSchemeImpl
@@ -29,6 +32,7 @@ import me.bookk.feature.authorization.domain.impl.ObserveSignUpRejectionImpl
 import me.bookk.feature.authorization.domain.impl.RefreshTokenImpl
 import me.bookk.feature.authorization.domain.impl.ResendSignUpCodeImpl
 import me.bookk.feature.authorization.domain.impl.SignInImpl
+import me.bookk.feature.authorization.domain.impl.StartEmailChangeImpl
 import me.bookk.feature.authorization.domain.impl.StartSignUpImpl
 import me.bookk.feature.authorization.domain.impl.UserProfileCRUDImpl
 import org.koin.core.module.dsl.factoryOf
@@ -44,6 +48,8 @@ fun authDomainModule() = module {
     factoryOf(::FinishSignUpImpl) bind FinishSignUp::class
     factoryOf(::ResendSignUpCodeImpl) bind ResendSignUpCode::class
     factoryOf(::ObserveSignUpRejectionImpl) bind ObserveSignUpRejection::class
+    factoryOf(::StartEmailChangeImpl) bind StartEmailChange::class
+    factoryOf(::ConfirmEmailChangeImpl) bind ConfirmEmailChange::class
     factoryOf(::GetTokenInfoImpl) bind GetTokenInfo::class
     factoryOf(::RefreshTokenImpl) bind RefreshToken::class
     factoryOf(::SignInImpl) bind SignIn::class

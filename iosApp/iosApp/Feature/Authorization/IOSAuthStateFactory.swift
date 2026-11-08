@@ -33,5 +33,9 @@ class IOSAuthStateFactory: @MainActor AuthStateFactory {
     func createVerifyEmailState() -> any VerifyEmailState {
         return IOSVerifyEmailState()
     }
+
+    func createChangeEmailState() -> any ChangeEmailState {
+        return IOSChangeEmailState()
+    }
     
 }

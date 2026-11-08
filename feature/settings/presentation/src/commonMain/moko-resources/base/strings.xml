@@ -31,7 +31,6 @@
     <string name="settings_edit_profile_last_name">Last name</string>
     <string name="settings_edit_profile_last_name_error">Last name should be at least 2 characters long</string>
     <string name="settings_edit_profile_email">Email</string>
-    <string name="settings_edit_profile_email_error">Invalid email format</string>
 
     <string name="settings_contact_us_title">Contact us</string>
     <string name="settings_contact_us_contact_hint">Enter your message here an we will reach out to you via email on your profile</string>
@@ -59,6 +58,8 @@
     <string name="settings_notifications_push_label">Push notifications</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
     <string name="settings_edit_profile_email_taken_error">This email address is already in use.</string>
+    <string name="settings_edit_profile_email_verification_required_error">A new email address must be confirmed with a code.</string>
+    <string name="settings_edit_profile_email_read_only_hint">Your email is used to sign in, so it can’t be edited here. A new address has to be confirmed with a code.</string>
     <string name="settings_passkey_last_error">You cannot delete your last passkey. Add another passkey first to keep access to your account.</string>
 
     <string name="settings_privacy_title">Privacy</string>
@@ -105,4 +106,5 @@
     <string name="settings_export_running_footer">You can leave this screen and return later.</string>
     <string name="settings_export_file_title">Personal data</string>
     <string name="settings_export_file_type">JSON file</string>
+    <string name="settings_edit_profile_change_email">Change email</string>
 </resources>

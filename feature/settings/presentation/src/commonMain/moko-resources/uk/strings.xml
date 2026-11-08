@@ -31,7 +31,6 @@
     <string name="settings_edit_profile_last_name">Прізвище</string>
     <string name="settings_edit_profile_last_name_error">Прізвище має містити щонайменше 2 символи</string>
     <string name="settings_edit_profile_email">Ел. пошта</string>
-    <string name="settings_edit_profile_email_error">Неправильний формат ел. пошти</string>
 
     <string name="settings_contact_us_title">Звʼязатися з нами</string>
     <string name="settings_contact_us_contact_hint">Введіть повідомлення, і ми звʼяжемося з вами через ел. пошту, вказану в профілі</string>
@@ -59,6 +58,8 @@
     <string name="settings_notifications_push_label">Push-сповіщення</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
     <string name="settings_edit_profile_email_taken_error">Ця електронна адреса вже використовується.</string>
+    <string name="settings_edit_profile_email_verification_required_error">Нову адресу ел. пошти потрібно підтвердити кодом.</string>
+    <string name="settings_edit_profile_email_read_only_hint">Ел. пошта використовується для входу, тому її не можна змінити тут. Нову адресу потрібно підтвердити кодом.</string>
     <string name="settings_passkey_last_error">Не можна видалити останній ключ доступу. Спочатку додайте інший ключ, щоб зберегти доступ до облікового запису.</string>
 
     <string name="settings_privacy_title">Конфіденційність</string>
@@ -105,4 +106,5 @@
     <string name="settings_export_running_footer">Ви можете залишити цей екран і повернутися пізніше.</string>
     <string name="settings_export_file_title">Персональні дані</string>
     <string name="settings_export_file_type">Файл JSON</string>
+    <string name="settings_edit_profile_change_email">Змінити ел. пошту</string>
 </resources>

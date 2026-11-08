@@ -12,6 +12,7 @@ interface EditProfileState {
     val name: TextFieldState
     val lastName: TextFieldState
     val email: TextFieldState
+    val changeEmailButton: ButtonState
     val confirmButton: ButtonState
 
     val notification: PresentationNotificationState

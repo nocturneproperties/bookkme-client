@@ -31,7 +31,6 @@
     <string name="settings_edit_profile_last_name">Nazwisko</string>
     <string name="settings_edit_profile_last_name_error">Nazwisko musi mieć co najmniej 2 znaki</string>
     <string name="settings_edit_profile_email">E-mail</string>
-    <string name="settings_edit_profile_email_error">Nieprawidłowy format adresu e-mail</string>
 
     <string name="settings_contact_us_title">Kontakt</string>
     <string name="settings_contact_us_contact_hint">Wpisz tutaj swoją wiadomość, a skontaktujemy się z Tobą przez adres e-mail z Twojego profilu</string>
@@ -59,6 +58,8 @@
     <string name="settings_notifications_push_label">Powiadomienia push</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
     <string name="settings_edit_profile_email_taken_error">Ten adres e-mail jest już używany.</string>
+    <string name="settings_edit_profile_email_verification_required_error">Nowy adres e-mail trzeba potwierdzić kodem.</string>
+    <string name="settings_edit_profile_email_read_only_hint">Adres e-mail służy do logowania, więc nie można go tu edytować. Nowy adres trzeba potwierdzić kodem.</string>
     <string name="settings_passkey_last_error">Nie możesz usunąć ostatniego klucza dostępu. Najpierw dodaj inny klucz, aby zachować dostęp do konta.</string>
 
     <string name="settings_privacy_title">Prywatność</string>
@@ -105,4 +106,5 @@
     <string name="settings_export_running_footer">Możesz opuścić ten ekran i wrócić później.</string>
     <string name="settings_export_file_title">Dane osobowe</string>
     <string name="settings_export_file_type">Plik JSON</string>
+    <string name="settings_edit_profile_change_email">Zmień adres e-mail</string>
 </resources>

@@ -9,6 +9,12 @@ struct VerifyEmailScreen: View {
         self._viewModel = StateViewModel(wrappedValue: IOSAuthDiKt.verifyEmailVM(pendingSignUp: pendingSignUp))
     }
 
+    init(pendingEmailChange: ApiStartEmailChangePendingEmailChange) {
+        self._viewModel = StateViewModel(
+            wrappedValue: IOSAuthDiKt.verifyEmailChangeVM(pendingEmailChange: pendingEmailChange)
+        )
+    }
+
     var body: some View {
         let uiState = IOSVerifyEmailState.cast(viewModel.uiState)
         List {
@@ -39,6 +45,9 @@ struct VerifyEmailScreen: View {
             switch dest {
             case is VerifyEmailDestinations.Back:
                 navigationStack.popLast()
+
+            case is VerifyEmailDestinations.EmailChanged:
+                navigationStack.popLast(2)
 
             default:
                 break

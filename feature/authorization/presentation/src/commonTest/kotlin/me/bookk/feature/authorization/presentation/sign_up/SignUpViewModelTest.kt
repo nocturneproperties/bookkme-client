@@ -22,7 +22,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import library.device.api.DeviceFacade
-import library.validation.api.ValidateEmail
 import library.validation.api.ValidateName
 import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.coroutine.DispatcherProvider
@@ -48,6 +47,7 @@ import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument.Document
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocuments
 import me.bookk.feature.authorization.domain.entity.SignUpRejection
 import me.bookk.feature.authorization.presentation.FakeAuthStateFactory
+import me.bookk.feature.authorization.presentation.FakeValidateEmail
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -79,16 +79,6 @@ class SignUpViewModelTest {
                 ValidateName.Result.Valid
             } else {
                 ValidateName.Result.Invalid.Length
-            }
-        }
-    }
-
-    private class FakeValidateEmail : ValidateEmail {
-        override fun invoke(email: String): ValidateEmail.Result {
-            return if ("@" in email) {
-                ValidateEmail.Result.Valid
-            } else {
-                ValidateEmail.Result.Invalid.Format
             }
         }
     }

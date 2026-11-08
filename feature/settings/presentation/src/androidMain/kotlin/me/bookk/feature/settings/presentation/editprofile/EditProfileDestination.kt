@@ -18,7 +18,6 @@ internal fun NavGraphBuilder.editProfileScreen(navigation: SettingsNavigation) {
             LocalEditProfileEventListener provides EditProfileEventListener(
                 onNameChanged = viewModel::onFirstNameTextChanged,
                 onLastNameChanged = viewModel::onLastNameTextChanged,
-                onEmailChanged = viewModel::onEmailTextChanged,
                 onSaveClick = viewModel::onConfirmButtonClick,
             ),
         ) {

@@ -56,4 +56,11 @@
     <string name="verify_email_code_expired">This code has expired. Request a new one.</string>
     <string name="verify_email_attempts_exceeded">Too many incorrect attempts. Request a new code.</string>
     <string name="verify_email_resend_too_soon">A code was sent recently. Wait a moment before requesting a new one.</string>
+    <string name="change_email_title">Change email</string>
+    <string name="change_email_explanation">Enter your new email address. We\'ll send a 6-digit code to it to confirm the change.</string>
+    <string name="change_email_field_label">New email</string>
+    <string name="change_email_continue_button">Send code</string>
+    <string name="verify_email_change_description">We sent a 6-digit code to %s. Enter it below to confirm your new email.</string>
+    <string name="verify_email_change_success">Your email has been changed.</string>
+    <string name="verify_email_change_email_taken">This email is already used by another account. Use a different email.</string>
 </resources>

@@ -32,8 +32,10 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.uistate.ValidationState
+import me.bookk.feature.authorization.domain.api.ConfirmEmailChange
 import me.bookk.feature.authorization.domain.api.FinishSignUp
 import me.bookk.feature.authorization.domain.api.ResendSignUpCode
+import me.bookk.feature.authorization.domain.api.StartEmailChange
 import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.entity.EmailVerificationError
 import me.bookk.feature.authorization.presentation.FakeAuthStateFactory
@@ -68,6 +70,8 @@ class VerifyEmailViewModelTest {
         val start = Instant.parse("2026-11-08T12:00:00Z")
         val finishSignUp = mock<FinishSignUp>()
         val resendSignUpCode = mock<ResendSignUpCode>()
+        val startEmailChange = mock<StartEmailChange>()
+        val confirmEmailChange = mock<ConfirmEmailChange>()
         val errorMapper = FakeErrorMapper()
         val clock = object : Clock {
             override fun now(): Instant {
@@ -85,9 +89,11 @@ class VerifyEmailViewModelTest {
 
         fun sut(): VerifyEmailViewModel {
             return VerifyEmailViewModel(
-                pendingSignUp = pendingSignUp(),
+                initialRequest = VerifyEmailRequest.SignUp(pendingSignUp()),
                 finishSignUp = finishSignUp,
                 resendSignUpCode = resendSignUpCode,
+                startEmailChange = startEmailChange,
+                confirmEmailChange = confirmEmailChange,
                 clock = clock,
                 stateFactory = FakeAuthStateFactory(),
                 vmArgs = VmArgs(errorMapper),
@@ -193,6 +199,20 @@ class VerifyEmailViewModelTest {
 
         then()
         sut.uiState.notifications.assertSingle<PresentationNotification.SuccessHaptic>()
+    }
+
+    @Test
+    fun `stays on the screen once the account is created`() = runUnitTest {
+        given()
+        val fixture = Fixture(testScheduler)
+        everySuspend { fixture.finishSignUp(any()) } returns Unit
+        val sut = fixture.sut()
+
+        whenn()
+        sut.code.type("123456")
+
+        then()
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
     }
 
     @Test

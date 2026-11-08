@@ -1,6 +1,6 @@
 # Email verification and rate-limit integration plan
 
-Status: Steps 1–2 committed; Step 3 implemented 2026-11-08, awaiting review. Steps 4–6 not started.
+Status: Steps 1–3 committed; Steps 4–5 implemented 2026-11-08, awaiting review. Step 6 not started.
 
 Source: `GET http://localhost/api/monolith/internal/swagger/documentation.yaml`, fetched 2026-11-08
 (monolith built from `bookk-server` `e5f9d92a`, release notes `0.18.0`, issues #146 and #147).
@@ -135,6 +135,10 @@ Review output: Android/iOS flow, `VerifyEmailViewModelTest` (sign-up mode) and u
 Review output: `EditProfileViewModelTest` and `EditProfileImplTest` updates; both platforms build.
 Small and independent: can ship as a hotfix with Steps 2–3.
 
+- Done: the read-only email field carries a supporting hint explaining that the email is used to sign in
+  and a new address has to be confirmed with a code (`settings_edit_profile_email_read_only_hint`). An
+  inline save error replaces the hint; the next save attempt restores it.
+
 ### 5. Change email with a verification code
 
 - `data`: `POST /api/auth/email` and `POST /api/auth/email/confirm` routes, `EmailChangeRequestRemote`
@@ -153,6 +157,24 @@ Small and independent: can ship as a hotfix with Steps 2–3.
 Review output: use-case tests (happy path, every error, profile refresh after confirm, no refresh on
 failure), `ChangeEmailViewModelTest`, `VerifyEmailViewModelTest` (email-change mode), operation
 diagrams `start-email-change.md` / `confirm-email-change.md`, updated `edit-profile.md`, strings.
+
+Decided during implementation:
+- The flow lives in authorization presentation (owner of `/api/auth` and of the verify screen), so
+  there are no settings wrapper use cases. `VerifyEmailViewModel` takes a `VerifyEmailRequest`
+  (`SignUp` / `EmailChange`) instead of `PendingSignUp`; error types of the two modes are disjoint, so
+  one error `when` serves both. Android: authorization exposes `emailChangeGraph(EmailChangeNavigation)`
+  and `feature/settings/presentation` depends on `feature/authorization/presentation` in `androidMain`
+  only, to host it in the settings NavHost (first presentation→presentation dependency). iOS:
+  `SettingsTab` registers `ChangeEmailScreen` and `VerifyEmailScreen(pendingEmailChange:)`.
+- `ConfirmEmailChange` writes the confirmed address into the cached `user_profile` row instead of
+  re-fetching `GET /api/user/me`, so a network failure after a successful confirmation cannot report
+  the change as failed.
+- Resend in email-change mode calls `StartEmailChange` again for the same address; the verify screen
+  then confirms with the newest verification id. Address refusals on resend (taken, invalid,
+  undeliverable) are shown inline on the verify screen rather than navigating back.
+- Success: success haptic + `GlobalMessage`, then `VerifyEmailDestinations.EmailChanged` pops both
+  screens back to Edit Profile. Edit Profile now loads names only once and refreshes just the email
+  when it reappears, so unsaved name edits survive the round trip.
 
 ### 6. Clients: duplicates are by email only
 

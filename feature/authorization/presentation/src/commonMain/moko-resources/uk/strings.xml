@@ -56,4 +56,11 @@
     <string name="verify_email_code_expired">Термін дії коду минув. Запросіть новий.</string>
     <string name="verify_email_attempts_exceeded">Забагато неправильних спроб. Запросіть новий код.</string>
     <string name="verify_email_resend_too_soon">Код нещодавно надіслано. Зачекайте трохи, перш ніж запитувати новий.</string>
+    <string name="change_email_title">Змінити ел. пошту</string>
+    <string name="change_email_explanation">Введіть нову адресу ел. пошти. Ми надішлемо на неї 6-значний код, щоб підтвердити зміну.</string>
+    <string name="change_email_field_label">Нова ел. пошта</string>
+    <string name="change_email_continue_button">Надіслати код</string>
+    <string name="verify_email_change_description">Ми надіслали 6-значний код на %s. Введіть його нижче, щоб підтвердити нову ел. пошту.</string>
+    <string name="verify_email_change_success">Ел. пошту змінено.</string>
+    <string name="verify_email_change_email_taken">Ця ел. пошта вже використовується іншим обліковим записом. Вкажіть іншу ел. пошту.</string>
 </resources>

@@ -22,8 +22,10 @@ import me.bookk.designsystem.uistate.clearError
 import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.feature.authorization.domain.api.ConfirmEmailChange
 import me.bookk.feature.authorization.domain.api.FinishSignUp
 import me.bookk.feature.authorization.domain.api.ResendSignUpCode
+import me.bookk.feature.authorization.domain.api.StartEmailChange
 import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.entity.EmailVerificationError
 import me.bookk.feature.authorization.presentation.AuthStateFactory
@@ -36,16 +38,19 @@ import kotlin.time.DurationUnit
 import kotlin.time.Instant
 
 class VerifyEmailViewModel(
-    @InjectedParam private val pendingSignUp: StartSignUp.PendingSignUp,
+    @InjectedParam initialRequest: VerifyEmailRequest,
     private val finishSignUp: FinishSignUp,
     private val resendSignUpCode: ResendSignUpCode,
+    private val startEmailChange: StartEmailChange,
+    private val confirmEmailChange: ConfirmEmailChange,
     private val clock: Clock,
     stateFactory: AuthStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
+    private var request = initialRequest
     val uiState: VerifyEmailState = stateFactory.createVerifyEmailState().setup()
-    private val resendAvailableAt = MutableStateFlow(pendingSignUp.resendAvailableAt)
+    private val resendAvailableAt = MutableStateFlow(request.resendAvailableAt)
 
     init {
         observeResendAvailability()
@@ -54,9 +59,16 @@ class VerifyEmailViewModel(
     private fun VerifyEmailState.setup() = apply {
         appBar.title = AuthRes.strings.verify_email_title.desc()
         appBar.onBackClick = weakVMClosure { it.goBack() }
-        codeSentMessage = AuthRes.strings.verify_email_description.format(pendingSignUp.maskedEmail)
+        codeSentMessage = request.descriptionResource().format(request.shownEmail)
         setupCode()
         setupButtons()
+    }
+
+    private fun VerifyEmailRequest.descriptionResource(): StringResource {
+        return when (this) {
+            is VerifyEmailRequest.SignUp -> AuthRes.strings.verify_email_description
+            is VerifyEmailRequest.EmailChange -> AuthRes.strings.verify_email_change_description
+        }
     }
 
     private fun VerifyEmailState.setupCode() {
@@ -96,19 +108,37 @@ class VerifyEmailViewModel(
 
     private fun submitCode() {
         val code = uiState.code.text
+        val request = request
         launch(
             key = VERIFICATION_KEY,
             launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.confirmButton.startLoading() },
-            call = { finishSignUp(code) },
-            onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
-            onError = ::onFinishError,
+            call = { verify(request, code) },
+            onComplete = { onVerified(request) },
+            onError = ::onVerifyError,
             onTerminate = { uiState.confirmButton.stopLoading(enable = isCodeComplete()) },
         )
     }
 
-    private fun onFinishError(error: Throwable) {
+    private suspend fun verify(request: VerifyEmailRequest, code: String) {
+        when (request) {
+            is VerifyEmailRequest.SignUp -> finishSignUp(code)
+            is VerifyEmailRequest.EmailChange -> confirmEmailChange(request.pendingEmailChange, code)
+        }
+    }
+
+    private fun onVerified(request: VerifyEmailRequest) {
+        uiState.notifications.add(PresentationNotification.SuccessHaptic)
+        if (request is VerifyEmailRequest.EmailChange) {
+            uiState.notifications.add(
+                PresentationNotification.GlobalMessage(AuthRes.strings.verify_email_change_success.desc()),
+            )
+            uiState.navigation.push(VerifyEmailDestinations.EmailChanged)
+        }
+    }
+
+    private fun onVerifyError(error: Throwable) {
         when (error) {
             is EmailVerificationError.CodeInvalid -> {
                 rejectCode(AuthRes.strings.verify_email_code_invalid)
@@ -123,8 +153,10 @@ class VerifyEmailViewModel(
                 rejectCode(AuthRes.strings.verify_email_attempts_exceeded)
             }
 
-            is Error.TooManyRequests -> {
-                uiState.code.showError(DesignSystem.strings.error_too_many_requests.desc())
+            is Error.TooManyRequests -> showCodeError(DesignSystem.strings.error_too_many_requests)
+
+            is ConfirmEmailChange.Error.EmailAlreadyExist -> {
+                showCodeError(AuthRes.strings.verify_email_change_email_taken)
             }
 
             is FinishSignUp.Error.PasskeyVerificationFailed -> {
@@ -145,6 +177,10 @@ class VerifyEmailViewModel(
 
     private fun rejectCode(reason: StringResource) {
         uiState.code.text = ""
+        showCodeError(reason)
+    }
+
+    private fun showCodeError(reason: StringResource) {
         uiState.code.showError(reason.desc())
     }
 
@@ -159,42 +195,63 @@ class VerifyEmailViewModel(
     }
 
     private fun resendCode() {
+        val request = request
         launch(
             key = VERIFICATION_KEY,
             launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.resendButton.startLoading() },
-            call = { resendSignUpCode() },
+            call = { resend(request) },
             onComplete = ::onCodeResent,
             onError = ::onResendError,
             onTerminate = { uiState.resendButton.stopLoading(enable = !isResendWaiting()) },
         )
     }
 
-    private fun onCodeResent(pendingSignUp: StartSignUp.PendingSignUp) {
+    private suspend fun resend(request: VerifyEmailRequest): VerifyEmailRequest {
+        return when (request) {
+            is VerifyEmailRequest.SignUp -> {
+                VerifyEmailRequest.SignUp(resendSignUpCode())
+            }
+
+            is VerifyEmailRequest.EmailChange -> {
+                VerifyEmailRequest.EmailChange(startEmailChange(request.pendingEmailChange.email))
+            }
+        }
+    }
+
+    private fun onCodeResent(resent: VerifyEmailRequest) {
+        request = resent
         uiState.code.text = ""
         uiState.code.clearError()
         uiState.confirmButton.isEnabled = false
-        resendAvailableAt.value = pendingSignUp.resendAvailableAt
+        resendAvailableAt.value = resent.resendAvailableAt
     }
 
     private fun onResendError(error: Throwable) {
         when (error) {
-            is EmailVerificationError.ResendTooSoon -> {
-                uiState.code.showError(AuthRes.strings.verify_email_resend_too_soon.desc())
+            is EmailVerificationError.ResendTooSoon -> showCodeError(AuthRes.strings.verify_email_resend_too_soon)
+            is Error.TooManyRequests -> showCodeError(DesignSystem.strings.error_too_many_requests)
+            is StartEmailChange.Error.EmailAlreadyExist -> {
+                showCodeError(AuthRes.strings.verify_email_change_email_taken)
             }
 
-            is Error.TooManyRequests -> {
-                uiState.code.showError(DesignSystem.strings.error_too_many_requests.desc())
-            }
+            is StartEmailChange.Error.InvalidEmailFormat -> showCodeError(AuthRes.strings.sign_up_email_error)
+            is EmailVerificationError.Undeliverable -> onUndeliverable()
 
             is StartSignUp.Error.EmailAlreadyExist,
             is StartSignUp.Error.InvalidEmailFormat,
-            is EmailVerificationError.Undeliverable,
             is ResendSignUpCode.Error.SignUpNotStarted,
             -> goBack()
 
             else -> uiState.notifications.add(error.notification())
+        }
+    }
+
+    private fun onUndeliverable() {
+        when (request) {
+            is VerifyEmailRequest.SignUp -> goBack()
+            is VerifyEmailRequest.EmailChange -> showCodeError(AuthRes.strings.sign_up_email_undeliverable)
         }
     }
 

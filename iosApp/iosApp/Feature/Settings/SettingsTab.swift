@@ -20,6 +20,12 @@ struct SettingsTab: View {
 				.navigationDestination(for: SettingsDestination.EditProfile.self) { _ in
 					EditProfileScreen()
 				}
+				.navigationDestination(for: EditProfileNavigationDestination.ChangeEmail.self) { _ in
+					ChangeEmailScreen()
+				}
+				.navigationDestination(for: ChangeEmailDestinations.VerifyEmail.self) { value in
+					VerifyEmailScreen(pendingEmailChange: value.pendingEmailChange)
+				}
 				.navigationDestination(for: SettingsDestination.Passkey.self) { _ in
 					PasskeyScreen()
 				}

@@ -56,4 +56,11 @@
     <string name="verify_email_code_expired">Kod wygasł. Poproś o nowy.</string>
     <string name="verify_email_attempts_exceeded">Zbyt wiele nieudanych prób. Poproś o nowy kod.</string>
     <string name="verify_email_resend_too_soon">Kod został niedawno wysłany. Odczekaj chwilę, zanim poprosisz o nowy.</string>
+    <string name="change_email_title">Zmień adres e-mail</string>
+    <string name="change_email_explanation">Wpisz nowy adres e-mail. Wyślemy na niego 6-cyfrowy kod, aby potwierdzić zmianę.</string>
+    <string name="change_email_field_label">Nowy adres e-mail</string>
+    <string name="change_email_continue_button">Wyślij kod</string>
+    <string name="verify_email_change_description">Wysłaliśmy 6-cyfrowy kod na adres %s. Wpisz go poniżej, aby potwierdzić nowy adres e-mail.</string>
+    <string name="verify_email_change_success">Adres e-mail został zmieniony.</string>
+    <string name="verify_email_change_email_taken">Ten adres e-mail jest już używany przez inne konto. Użyj innego adresu e-mail.</string>
 </resources>

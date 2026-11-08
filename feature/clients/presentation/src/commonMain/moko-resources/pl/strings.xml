@@ -12,6 +12,7 @@
     <string name="clients_create_phone_placeholder">2025550123</string>
     <string name="clients_create_email">E-mail</string>
     <string name="clients_create_email_placeholder">opcjonalnie</string>
+    <string name="clients_email_taken_error">Klient z tym adresem e-mail już istnieje.</string>
     <string name="clients_details_description">Opis</string>
     <string name="clients_delete_title">Usuń klienta</string>
     <string name="clients_delete_data_warning">Usunięcie tego klienta spowoduje również usunięcie jego danych osobowych z wizyt w tej firmie.\n\nTej operacji nie można cofnąć. Przed usunięciem konieczne będzie potwierdzenie za pomocą klucza dostępu.</string>
@@ -31,7 +32,7 @@
     <string name="clients_import_result_rejected">Pominięto: %d</string>
     <string name="clients_import_result_reason_invalid">• Nieprawidłowe imię: %d</string>
     <string name="clients_import_result_reason_missing_contact">• Brak numeru telefonu lub adresu e-mail: %d</string>
-    <string name="clients_import_result_reason_exists">• Już jest wśród klientów: %d</string>
+    <string name="clients_import_result_reason_exists">• Adres e-mail ma już inny klient: %d</string>
     <string name="clients_import_result_reason_unknown">• Inne powody: %d</string>
     <string name="clients_delete_confirmation_failed_error">Nie udało się potwierdzić tożsamości. Spróbuj ponownie usunąć klienta.</string>
 </resources>

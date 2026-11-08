@@ -14,6 +14,8 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.clients.domain.api.CreateClient
@@ -53,6 +55,7 @@ class CreateClientViewModel(
 
     private fun onEmailChanged(text: String) {
         uiState.email.text = text
+        uiState.email.clearError()
         uiState.email.isValid = text.isEmpty() || validateEmail(text).isValid
         invalidateButton()
     }
@@ -74,13 +77,27 @@ class CreateClientViewModel(
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
                 uiState.navigation.push(CreateClientDestination.Details(it.id))
             },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = { uiState.submit.stopLoading() },
+            onError = {
+                when (it) {
+                    is CreateClient.Error.EmailTaken -> {
+                        uiState.email.showError(ClientsRes.strings.clients_email_taken_error.desc())
+                    }
+
+                    else -> {
+                        uiState.notifications.add(errorMapper.mapToNotification(it))
+                    }
+                }
+            },
+            onTerminate = { uiState.submit.stopLoading(enable = isFormValid()) },
         )
     }
 
     private fun invalidateButton() {
-        uiState.submit.isEnabled = uiState.name.isValid &&
+        uiState.submit.isEnabled = isFormValid()
+    }
+
+    private fun isFormValid(): Boolean {
+        return uiState.name.isValid &&
             uiState.lastName.isValid &&
             uiState.phone.isValid &&
             uiState.email.isValid

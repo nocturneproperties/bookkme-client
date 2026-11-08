@@ -12,6 +12,15 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.uuid.Uuid
 import me.bookk.android.feature.clients.resources.ClientsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -27,6 +36,7 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.tap
+import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.EditClient
 import me.bookk.feature.clients.domain.api.GetClient
@@ -38,14 +48,6 @@ import me.bookk.feature.clients.presentation.FakeValidateEmail
 import me.bookk.feature.clients.presentation.FakeValidateName
 import me.bookk.feature.clients.presentation.stubDetachedClient
 import me.bookk.feature.clients.presentation.stubIntegratedClient
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
-import kotlin.uuid.Uuid
 
 class EditClientViewModelTest {
 
@@ -557,5 +559,58 @@ class EditClientViewModelTest {
             then()
             fixture.errorMapper.assertMappedSingle(error::class)
         }
+    }
+
+    @Test
+    fun `shows email taken error on the email field`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editClient(any()) } throws EditClient.Error.EmailTaken()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        whenn()
+        sut.uiState.submit.onClick?.invoke()
+
+        then()
+        assertEquals(
+            ClientsRes.strings.clients_email_taken_error.desc(),
+            sut.uiState.email.supportingTextRes,
+        )
+        assertEquals(ValidationState.ERROR, sut.uiState.email.validationState)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `keeps submit disabled after email taken error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editClient(any()) } throws EditClient.Error.EmailTaken()
+        val sut = fixture.sutWith(stubDetachedClient())
+
+        whenn()
+        sut.uiState.submit.onClick?.invoke()
+
+        then()
+        assertFalse(sut.uiState.submit.isEnabled)
+        assertFalse(sut.uiState.submit.isLoading)
+    }
+
+    @Test
+    fun `clears email taken error when email is edited`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editClient(any()) } throws EditClient.Error.EmailTaken()
+        val sut = fixture.sutWith(stubDetachedClient())
+        sut.uiState.submit.onClick?.invoke()
+
+        whenn()
+        (sut.uiState.email as FakeTextFieldState).type("anna.smith@example.com")
+
+        then()
+        assertNull(sut.uiState.email.supportingTextRes)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.email.validationState)
+        assertTrue(sut.uiState.submit.isEnabled)
     }
 }

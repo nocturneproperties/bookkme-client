@@ -27,10 +27,15 @@ struct EditProfileScreen: View {
 			}
 			.textFieldStyle(.inList)
 			
-			SectionTextField(state.email) { newText in
-				viewModel.onEmailTextChanged(text: newText)
-			}
+			SectionTextField(state.email)
 			.textFieldStyle(.inList)
+
+			Section {
+				TextButton(state.changeEmailButton)
+					.listRowBackground(Color.clear)
+					.listRowInsets(EdgeInsets())
+			}
+			.listRowSeparator(.hidden)
 		}
 		.listSectionSpacing(.compact)
 		.scrollDismissesKeyboard(.immediately)
@@ -40,6 +45,8 @@ struct EditProfileScreen: View {
 			switch dest {
 			case is EditProfileNavigationDestination.Back:
 				navigationStack.popLast()
+			case let changeEmail as EditProfileNavigationDestination.ChangeEmail:
+				navigationStack.push(changeEmail)
 			default:
 				break
 			}

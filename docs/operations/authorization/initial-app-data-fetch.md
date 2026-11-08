@@ -3,7 +3,7 @@
 # Initial app data fetch (and low-priority data fetch)
 
 `InitialAppDataFetch.rawFetch()` / `.timestampProtectedFetch()`
-· `rawFetch` is called from [Sign in](sign-in.md) and [Create account](create-account.md).
+· `rawFetch` is called from [Sign in](sign-in.md) and [Finish sign-up](finish-sign-up.md).
 `timestampProtectedFetch` is called from `BootstrapViewModel` on every app start.
 
 It warms the cache so the first screens can render locally. The variants differ as follows:

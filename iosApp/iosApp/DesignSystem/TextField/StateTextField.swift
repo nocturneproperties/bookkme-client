@@ -122,6 +122,7 @@ struct SectionTextField: View {
 	var state: IOSTextFieldState
 	let header: String?
 	let isEditor: Bool
+	let textContentType: UITextContentType?
 	let onTextChanged: ((String) -> Void)? //TODO: Backward compatibility, remove when deprecated screens will be refactored
 	
 	private var keyboardType: UIKeyboardType {
@@ -144,6 +145,9 @@ struct SectionTextField: View {
 	}
 	
 	private var contentType: UITextContentType? {
+		if let textContentType {
+			return textContentType
+		}
 		switch state.inputType {
 		case .email:
 			return .emailAddress
@@ -179,10 +183,12 @@ struct SectionTextField: View {
 		_ state: TextFieldState,
 		header: String? = nil,
 		textEditor: Bool = false,
+		textContentType: UITextContentType? = nil,
 		onTextChanged: ((String) -> Void)? = nil
 	) {
 		self._state = Bindable(wrappedValue: IOSTextFieldState.cast(state))
 		self.isEditor = textEditor
+		self.textContentType = textContentType
 		self.onTextChanged = onTextChanged
 		self.header = header
 	}

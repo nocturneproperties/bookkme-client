@@ -7,6 +7,7 @@ import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.feature.authorization.presentation.navigation.AuthDestination
 import me.bookk.feature.authorization.presentation.navigation.AuthNavigation
 import me.bookk.feature.authorization.presentation.navigation.LocalNavigation
+import me.bookk.feature.authorization.presentation.screen.verifyemail.toVerifyEmailDestination
 import me.bookk.feature.authorization.presentation.sign_up.SignUpNavigationDestination
 import me.bookk.feature.authorization.presentation.sign_up.SignUpScreen
 import me.bookk.feature.authorization.presentation.sign_up.SignUpViewModel
@@ -24,6 +25,10 @@ internal fun NavGraphBuilder.signUpScreen(navigation: AuthNavigation) {
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
                     SignUpNavigationDestination.Back -> navigation.navigateBack()
+
+                    is SignUpNavigationDestination.VerifyEmail -> navigation.navigateToVerifyEmail(
+                        it.pendingSignUp.toVerifyEmailDestination(),
+                    )
                 }
             }
         }

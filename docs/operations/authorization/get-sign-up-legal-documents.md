@@ -57,7 +57,7 @@ it controls retry visibility and prevents submission until loading succeeds.
 `SignUpState.legalDocuments` is a nullable `SignUpLegalDocumentsState` with named `privacyPolicy` and
 `termsOfService` link states, assigned together after a successful load. It does not use `ListState`.
 
-On `CreateAccount.Error.LegalDocumentVersionUnknown` (100003) or `LegalDocumentsNotAccepted` (100004), signup
+On `FinishSignUp.Error.LegalDocumentVersionUnknown` (100003) or `LegalDocumentsNotAccepted` (100004), signup
 explains that the documents changed and rereads the cached requirements. Previous documents and consent remain in
 state while the loading indicator is shown; consent is unchecked when the replacement documents arrive.
 The caller must explicitly accept the reloaded documents and submit again; registration is never retried

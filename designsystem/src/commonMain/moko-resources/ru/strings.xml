@@ -3,6 +3,7 @@
     <string name="error_no_internet">Похоже, вы не в сети. Проверьте подключение к интернету и попробуйте снова.</string>
     <string name="error_server">На сервере произошла ошибка. Мы уже работаем над этим! Обновите страницу или вернитесь чуть позже.</string>
     <string name="error_unexpected">Непредвиденная ошибка. При необходимости обратитесь в поддержку.</string>
+    <string name="error_too_many_requests">Слишком много попыток. Повторите чуть позже.</string>
     <string name="error_empty">Не может быть пустым</string>
     <string name="error_connection_title">Проблема с подключением</string>
     <string name="error_connection_subtitle">Проверьте подключение к интернету и попробуйте снова.</string>

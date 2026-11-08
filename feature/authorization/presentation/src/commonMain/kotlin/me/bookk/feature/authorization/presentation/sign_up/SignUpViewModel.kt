@@ -1,19 +1,18 @@
 package me.bookk.feature.authorization.presentation.sign_up
 
+import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.desc.desc
+import kotlinx.coroutines.flow.filterNotNull
 import library.device.api.DeviceFacade
 import library.validation.api.ValidateEmail
 import library.validation.api.ValidateEmail.Result.Invalid.Format.isValid
 import library.validation.api.ValidateName
 import library.validation.api.ValidateName.Result.Invalid.Length.isValid
-import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
-import me.bookk.core.presentation.error.ButtonDescriptor
-import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.Message
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.simple
@@ -24,12 +23,14 @@ import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.designsystem.uistate.validate
-import me.bookk.feature.authorization.domain.api.CreateAccount
-import me.bookk.feature.authorization.domain.api.CreateAccount.Error
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
+import me.bookk.feature.authorization.domain.api.ObserveSignUpRejection
+import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
+import me.bookk.feature.authorization.domain.entity.EmailVerificationError
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument.Document
+import me.bookk.feature.authorization.domain.entity.SignUpRejection
 import me.bookk.feature.authorization.presentation.AuthConstants
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.authorization.presentation.shared.PasskeyInfoCardData
@@ -41,7 +42,8 @@ import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 class SignUpViewModel(
     private val validateName: ValidateName,
     private val validateEmail: ValidateEmail,
-    private val createAccount: CreateAccount,
+    private val startSignUp: StartSignUp,
+    private val observeSignUpRejection: ObserveSignUpRejection,
     private val getSignUpLegalDocuments: GetSignUpLegalDocuments,
     private val deviceFacade: DeviceFacade,
     private val stateFactory: AuthStateFactory,
@@ -50,6 +52,7 @@ class SignUpViewModel(
     SignUpEventListener {
 
     val uiState: SignUpState = stateFactory.createSignUpState().setup()
+    private var isObservingRejection = false
 
     init {
         loadLegalDocuments()
@@ -118,7 +121,7 @@ class SignUpViewModel(
 
     private fun SignUpState.setupConfirmButton() {
         confirmButton.apply {
-            text = AuthRes.strings.sign_up_create_account_button.desc()
+            text = AuthRes.strings.sign_up_continue_button.desc()
             isEnabled = false
             onClick = weakVMClosure { it.onConfirmButtonClick() }
         }
@@ -254,20 +257,20 @@ class SignUpViewModel(
             validateButton()
             return
         }
-        val userData = CreateAccount.UserData(
+        val userData = StartSignUp.UserData(
             uiState.name.text,
             uiState.lastName.text,
             uiState.email.text,
             acceptedDocuments(),
         )
         launch(
-            key = CREATE_ACCOUNT_KEY,
+            key = START_SIGN_UP_KEY,
             launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.confirmButton.startLoading() },
-            call = { createAccount(userData) },
-            onComplete = { uiState.notification.add(PresentationNotification.SuccessHaptic) },
-            onError = ::onCreateAccountError,
+            call = { startSignUp(userData) },
+            onComplete = ::onSignUpStarted,
+            onError = ::onStartSignUpError,
             onTerminate = {
                 uiState.confirmButton.isLoading = false
                 validateButton()
@@ -275,60 +278,69 @@ class SignUpViewModel(
         )
     }
 
-    private fun onCreateAccountError(error: Throwable) {
+    private fun onSignUpStarted(pendingSignUp: StartSignUp.PendingSignUp) {
+        observeRejection()
+        uiState.navigation.push(SignUpNavigationDestination.VerifyEmail(pendingSignUp))
+    }
+
+    private fun onStartSignUpError(error: Throwable) {
         when (error) {
-            is Error.LegalDocumentVersionUnknown,
-            is Error.LegalDocumentsNotAccepted,
-            -> {
-                onLegalDocumentsRejected()
+            is StartSignUp.Error.EmailAlreadyExist -> {
+                showEmailError(AuthRes.strings.sign_up_email_exist)
             }
 
-            is Error.ChallengeWindowExpired -> {
+            is StartSignUp.Error.InvalidEmailFormat -> {
+                showEmailError(AuthRes.strings.sign_up_email_error)
+            }
+
+            is EmailVerificationError.Undeliverable -> {
+                showEmailError(AuthRes.strings.sign_up_email_undeliverable)
+            }
+
+            is EmailVerificationError.ResendTooSoon -> {
                 uiState.notification.add(
-                    Message.simple(
-                        AuthRes.strings.sign_up_challenge_expired_error.desc(),
-                    ),
-                )
-            }
-
-            is Error.EmailAlreadyExist -> {
-                uiState.email.showError(AuthRes.strings.sign_up_email_exist.desc())
-            }
-
-            is Error.InvalidEmailFormat -> {
-                uiState.email.showError(AuthRes.strings.sign_up_email_error.desc())
-            }
-
-            is Error.PasskeyVerificationFailed -> {
-                uiState.notification.add(
-                    Message(
-                        message = AuthRes.strings.sign_up_passkey_failed.desc(),
-                        buttons = listOf(
-                            ButtonDescriptor(
-                                text = DesignSystem.strings.action_ok.desc(),
-                            ),
-                        ),
-                    ),
-                )
-            }
-
-            is Error.AccountCreationFailed -> {
-                uiState.notification.add(
-                    Message(
-                        message = AuthRes.strings.sign_up_failed.desc(),
-                        buttons = listOf(
-                            ButtonDescriptor(
-                                text = DesignSystem.strings.action_ok.desc(),
-                            ),
-                        ),
-                    ),
+                    Message.simple(AuthRes.strings.verify_email_resend_too_soon.desc()),
                 )
             }
 
             else -> {
-                uiState.notification.add(errorMapper.mapToNotification(error))
+                uiState.notification.add(error.notification())
             }
         }
+    }
+
+    private fun observeRejection() {
+        if (isObservingRejection) return
+        isObservingRejection = true
+        observeSignUpRejection()
+            .filterNotNull()
+            .safeOnEach(::renderRejection)
+            .observe()
+    }
+
+    private fun renderRejection(rejection: SignUpRejection) {
+        when (rejection) {
+            SignUpRejection.LEGAL_DOCUMENTS_CHANGED -> {
+                onLegalDocumentsRejected()
+            }
+
+            SignUpRejection.EMAIL_TAKEN -> {
+                showEmailError(AuthRes.strings.sign_up_email_exist)
+            }
+
+            SignUpRejection.EMAIL_INVALID -> {
+                showEmailError(AuthRes.strings.sign_up_email_error)
+            }
+
+            SignUpRejection.EMAIL_UNDELIVERABLE -> {
+                showEmailError(AuthRes.strings.sign_up_email_undeliverable)
+            }
+        }
+        validateButton()
+    }
+
+    private fun showEmailError(message: StringResource) {
+        uiState.email.showError(message.desc())
     }
 
     private fun validateButton() {
@@ -341,6 +353,6 @@ class SignUpViewModel(
 
     private companion object {
         const val LOAD_LEGAL_DOCUMENTS_KEY = "load_legal_documents"
-        const val CREATE_ACCOUNT_KEY = "create_account"
+        const val START_SIGN_UP_KEY = "start_sign_up"
     }
 }

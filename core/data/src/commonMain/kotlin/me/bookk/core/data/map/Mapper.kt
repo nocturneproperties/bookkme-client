@@ -2,7 +2,10 @@ package me.bookk.core.data.map
 
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.utils.io.CancellationException
 import kotlinx.io.IOException
 import me.bookk.core.data.BuildKonfig
@@ -27,7 +30,7 @@ suspend fun Throwable.toDomain(): Error {
                 }
 
                 in 400..500 -> {
-                    val body = runCatching { response.body<BusinessServerError>() }.getOrNull()
+                    val body = response.protobufBusinessError()
                     when {
                         body != null && body.isAccessSuspended(response.status.value) -> {
                             Error.BusinessAccessSuspended(body.message)
@@ -43,6 +46,10 @@ suspend fun Throwable.toDomain(): Error {
 
                         response.status.value == 404 -> {
                             Error.NotFound(this)
+                        }
+
+                        response.status == HttpStatusCode.TooManyRequests -> {
+                            Error.TooManyRequests(this)
                         }
 
                         response.status.value == 500 -> {
@@ -73,6 +80,13 @@ suspend fun Throwable.toDomain(): Error {
             }
         }
     }
+}
+
+private suspend fun HttpResponse.protobufBusinessError(): BusinessServerError? {
+    if (contentType()?.match(ContentType.Application.ProtoBuf) != true) {
+        return null
+    }
+    return runCatching { body<BusinessServerError>() }.getOrNull()
 }
 
 private fun BusinessServerError.isAccessSuspended(status: Int): Boolean {

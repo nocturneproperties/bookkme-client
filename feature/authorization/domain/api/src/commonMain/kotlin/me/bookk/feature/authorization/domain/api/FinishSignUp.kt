@@ -1,18 +1,10 @@
 package me.bookk.feature.authorization.domain.api
 
-import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
-
-interface CreateAccount {
-    class UserData(
-        val firstName: String,
-        val lastName: String,
-        val email: String,
-        val acceptedDocuments: AcceptedLegalDocuments = AcceptedLegalDocuments(),
-    )
-
-    suspend operator fun invoke(userData: UserData)
+interface FinishSignUp {
+    suspend operator fun invoke(code: String)
 
     sealed class Error : Throwable() {
+        class SignUpNotStarted : Error()
         class EmailAlreadyExist : Error()
         class InvalidEmailFormat : Error()
         class PasskeyVerificationFailed : Error()

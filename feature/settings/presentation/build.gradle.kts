@@ -19,6 +19,9 @@ kotlin {
             implementation(projects.library.device.api)
             implementation(projects.library.permissions.api)
         }
+        androidMain.dependencies {
+            implementation(projects.feature.authorization.presentation)
+        }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)
             implementation(projects.designsystem.testFixtures)

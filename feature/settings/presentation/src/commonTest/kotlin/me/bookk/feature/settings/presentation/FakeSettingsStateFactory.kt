@@ -102,6 +102,7 @@ internal class FakeEditProfileState : EditProfileState {
     override val name = FakeTextFieldState()
     override val lastName = FakeTextFieldState()
     override val email = FakeTextFieldState()
+    override val changeEmailButton = FakeButtonState()
     override val confirmButton = FakeButtonState()
     override val notification = FakeNotificationState()
     override val navigation = FakeNavigationState<EditProfileNavigationDestination>()

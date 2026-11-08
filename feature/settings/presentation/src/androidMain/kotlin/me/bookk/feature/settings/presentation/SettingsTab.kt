@@ -7,6 +7,9 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import me.bookk.feature.authorization.presentation.navigation.EmailChangeDestination
+import me.bookk.feature.authorization.presentation.navigation.EmailChangeNavigation
+import me.bookk.feature.authorization.presentation.navigation.emailChangeGraph
 import me.bookk.feature.settings.presentation.navigation.SettingsDestination
 import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
 import me.bookk.feature.settings.presentation.navigation.settingsGraph
@@ -28,6 +31,9 @@ fun SettingsTab() {
                 navigateToEditProfile = {
                     settingsController.navigate(SettingsDestination.EditProfile)
                 },
+                navigateToChangeEmail = {
+                    settingsController.navigate(EmailChangeDestination.ChangeEmail)
+                },
                 navigateToPasskey = {
                     settingsController.navigate(SettingsDestination.Passkey)
                 },
@@ -45,6 +51,18 @@ fun SettingsTab() {
                 },
                 navigateToNotifications = {
                     settingsController.navigate(SettingsDestination.Notifications)
+                },
+            ),
+        )
+        emailChangeGraph(
+            navigation = EmailChangeNavigation(
+                navigateBack = { settingsController.popBackStack() },
+                navigateToVerifyEmail = { settingsController.navigate(it) },
+                finishEmailChange = {
+                    settingsController.popBackStack(
+                        SettingsDestination.EditProfile,
+                        inclusive = false,
+                    )
                 },
             ),
         )

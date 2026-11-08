@@ -8,7 +8,6 @@
     <string name="sign_up_last_name_error">Last name should be at least 2 characters long</string>
     <string name="sign_up_email">Email</string>
     <string name="sign_up_email_error">Invalid email format</string>
-    <string name="sign_up_create_account_button">Create</string>
     <string name="sign_up_email_exist">Account with this email already exist</string>
     <string name="sign_up_passkey_failed">Passkey verification failed</string>
     <string name="sign_up_failed">Error during account creation, try again later</string>
@@ -33,8 +32,6 @@
     <string name="troubleshoot_passkey_missing">Missing or unavailable passkeys</string>
     <string name="troubleshoot_passkey_missing_description">If you have passkeys on your account but aren\'t offered a passkey during sign-in, make sure tha the device with the passkey has the screen lock enabled. If your device\'s screen lock is disabled, you will not be able to use the passkey on that device until you enable the screen lock again. \nYou can recover your passkey with your credential provider, e.g. Google or Apple etc.</string>
     <string name="troubleshoot_contact_support_button">Contact support</string>
-
-    <string name="sign_up_challenge_expired_error">Verification timed out. Please try creating your account again.</string>
     <string name="sign_up_accept_legal_documents">I confirm that I have read, consent and agree to\nPrivacy Policy and Terms of Service</string>
     <string name="sign_up_accept_privacy_policy">I accept the Privacy Policy</string>
     <string name="sign_up_accept_terms_of_service">I accept the Terms of Service</string>
@@ -45,4 +42,25 @@
     <string name="sign_up_legal_retry">Try again</string>
     <string name="sign_up_legal_documents_changed">The legal documents have changed. Please review and accept the current documents before trying again.</string>
     <string name="sign_up_legal_acceptance_error">Accept the Privacy Policy and Terms of Service to create an account.</string>
+
+    <string name="sign_up_continue_button">Continue</string>
+    <string name="sign_up_email_undeliverable">We couldn\'t deliver an email to this address. Check it and try again.</string>
+    <string name="verify_email_title">Verify your email</string>
+    <string name="verify_email_description">We sent a 6-digit code to %s. Enter it below to finish creating your account.</string>
+    <string name="verify_email_code_label">Verification code</string>
+    <string name="verify_email_confirm_button">Verify</string>
+    <string name="verify_email_resend_button">Send a new code</string>
+    <string name="verify_email_resend_countdown">Send a new code in %s</string>
+    <string name="verify_email_change_email_button">Use a different email</string>
+    <string name="verify_email_code_invalid">Incorrect code. Check the email and try again.</string>
+    <string name="verify_email_code_expired">This code has expired. Request a new one.</string>
+    <string name="verify_email_attempts_exceeded">Too many incorrect attempts. Request a new code.</string>
+    <string name="verify_email_resend_too_soon">A code was sent recently. Wait a moment before requesting a new one.</string>
+    <string name="change_email_title">Change email</string>
+    <string name="change_email_explanation">Enter your new email address. We\'ll send a 6-digit code to it to confirm the change.</string>
+    <string name="change_email_field_label">New email</string>
+    <string name="change_email_continue_button">Send code</string>
+    <string name="verify_email_change_description">We sent a 6-digit code to %s. Enter it below to confirm your new email.</string>
+    <string name="verify_email_change_success">Your email has been changed.</string>
+    <string name="verify_email_change_email_taken">This email is already used by another account. Use a different email.</string>
 </resources>

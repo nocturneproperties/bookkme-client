@@ -49,7 +49,12 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 |---|---|---|
 | `ConfirmSensitiveAction` | `GET challenge + POST /api/auth/passkey/confirm_action` | [Confirm sensitive action](authorization/confirm-sensitive-action.md) |
 | `GetSignUpLegalDocuments` | `invoke`: persisted cache only; `refresh`: via `GetLegalDocumentVersions`, `GET /api/user/legal` | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) |
-| `CreateAccount` | `POST /api/auth/passkey/sign_up/challenge`, `POST /api/auth/sign_up` with accepted legal-document versions | [Create account](authorization/create-account.md) |
+| `StartSignUp` | `POST /api/auth/passkey/sign_up/challenge` (also emails the 6-digit code) | [Start sign-up](authorization/start-sign-up.md) |
+| `FinishSignUp` | `POST /api/auth/sign_up` with the emailed code and accepted legal-document versions | [Finish sign-up](authorization/finish-sign-up.md) |
+| `ResendSignUpCode` | via `StartSignUp`, `POST /api/auth/passkey/sign_up/challenge` with the user data kept in the sign-up session | [Resend sign-up code](authorization/resend-sign-up-code.md) |
+| `StartEmailChange` | `POST /api/auth/email` (emails a 6-digit code to the new address) | [Start email change](authorization/start-email-change.md) |
+| `ConfirmEmailChange` | `POST /api/auth/email/confirm`, then writes the confirmed address into the cached `user_profile` | [Confirm email change](authorization/confirm-email-change.md) |
+| `ObserveSignUpRejection` | local only: in-memory sign-up session | [Observe sign-up rejection](authorization/observe-sign-up-rejection.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
 | `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `timestampProtectedFetch`: local expired personal and business export file cleanup, then `GET /api/user/legal`; private requests only when authorized; `rawFetch`: profile, business, per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
@@ -160,7 +165,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Privacy screen review and post-acceptance refresh; dashboard "Action required" row status | [Get legal document statuses](settings/get-legal-document-statuses.md) |
 | `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |
 | `GetSettings` | local-first | [Get settings](settings/get-settings.md) |
-| `EditProfile` | `PATCH /api/user/me`; contact-conflict error | [Edit profile](settings/edit-profile.md) |
+| `EditProfile` | `PATCH /api/user/me` with the stored email unchanged; contact-conflict and email-verification errors | [Edit profile](settings/edit-profile.md) |
 | `GetColorScheme`, `UpdateColorScheme` | local only | [Get / update color scheme](settings/get-color-scheme.md) |
 | `GetCrashReportingEnabled`, `UpdateCrashReportingEnabled` | local only, through the platform `CrashReporter` (Firebase Crashlytics); every change deletes unsent reports | [Get / update crash reporting](settings/get-crash-reporting-enabled.md) |
 | `GetNotificationSettings` | `GET /api/notifications/settings` | [Get notification settings](settings/get-notification-settings.md) |
@@ -175,7 +180,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Calls |
 |---|---|
-| [Create account](authorization/create-account.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
+| [Finish sign-up](authorization/finish-sign-up.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
+| [Resend sign-up code](authorization/resend-sign-up-code.md) | `StartSignUp` |
 | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) | `refresh`: `GetLegalDocumentVersions` (cross-feature wrapper); `invoke`: local cache only |
 | [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |
 | [Initial app data fetch](authorization/initial-app-data-fetch.md) | `timestampProtectedFetch`: `DeleteExpiredPersonalDataExportFile` and `DeleteExpiredBusinessDataExportFiles` before the throttle, `GetSignUpLegalDocuments.refresh` before authorization check; authorized path: `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |

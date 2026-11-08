@@ -29,5 +29,13 @@ class IOSAuthStateFactory: @MainActor AuthStateFactory {
     func createTroubleshootState(initData: TroubleshootStateInitData) -> any TroubleshootState {
         return IOSTroubleshootState(initData: initData)
     }
+
+    func createVerifyEmailState() -> any VerifyEmailState {
+        return IOSVerifyEmailState()
+    }
+
+    func createChangeEmailState() -> any ChangeEmailState {
+        return IOSChangeEmailState()
+    }
     
 }

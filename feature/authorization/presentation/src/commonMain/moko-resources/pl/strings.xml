@@ -8,7 +8,6 @@
     <string name="sign_up_last_name_error">Nazwisko musi mieć co najmniej 2 znaki</string>
     <string name="sign_up_email">E-mail</string>
     <string name="sign_up_email_error">Nieprawidłowy format adresu e-mail</string>
-    <string name="sign_up_create_account_button">Utwórz</string>
     <string name="sign_up_email_exist">Konto z tym adresem e-mail już istnieje</string>
     <string name="sign_up_passkey_failed">Weryfikacja klucza dostępu nie powiodła się</string>
     <string name="sign_up_failed">Błąd podczas tworzenia konta, spróbuj ponownie później</string>
@@ -33,8 +32,6 @@
     <string name="troubleshoot_passkey_missing">Brakujące lub niedostępne klucze dostępu</string>
     <string name="troubleshoot_passkey_missing_description">Jeśli masz klucze dostępu na koncie, ale podczas logowania nie jest proponowany żaden klucz, upewnij się, że na urządzeniu z kluczem włączona jest blokada ekranu. Jeśli blokada ekranu jest wyłączona, nie będzie można użyć klucza dostępu na tym urządzeniu, dopóki ponownie jej nie włączysz. \nKlucz dostępu możesz odzyskać u swojego dostawcy danych logowania, np. Google lub Apple.</string>
     <string name="troubleshoot_contact_support_button">Skontaktuj się z pomocą techniczną</string>
-
-    <string name="sign_up_challenge_expired_error">Czas weryfikacji upłynął. Spróbuj ponownie utworzyć konto.</string>
     <string name="sign_up_accept_legal_documents">Potwierdzam zapoznanie się z dokumentami, wyrażam zgodę i akceptuję\nPolitykę prywatności oraz Warunki korzystania</string>
     <string name="sign_up_accept_privacy_policy">Akceptuję Politykę prywatności</string>
     <string name="sign_up_accept_terms_of_service">Akceptuję Warunki korzystania</string>
@@ -45,4 +42,25 @@
     <string name="sign_up_legal_retry">Spróbuj ponownie</string>
     <string name="sign_up_legal_documents_changed">Dokumenty prawne uległy zmianie. Zapoznaj się z aktualnymi dokumentami i zaakceptuj je przed ponowną próbą.</string>
     <string name="sign_up_legal_acceptance_error">Zaakceptuj Politykę prywatności i Warunki korzystania, aby utworzyć konto.</string>
+
+    <string name="sign_up_continue_button">Dalej</string>
+    <string name="sign_up_email_undeliverable">Nie udało się dostarczyć wiadomości na ten adres. Sprawdź go i spróbuj ponownie.</string>
+    <string name="verify_email_title">Potwierdź adres e-mail</string>
+    <string name="verify_email_description">Wysłaliśmy 6-cyfrowy kod na adres %s. Wpisz go poniżej, aby dokończyć tworzenie konta.</string>
+    <string name="verify_email_code_label">Kod weryfikacyjny</string>
+    <string name="verify_email_confirm_button">Potwierdź</string>
+    <string name="verify_email_resend_button">Wyślij nowy kod</string>
+    <string name="verify_email_resend_countdown">Wyślij nowy kod za %s</string>
+    <string name="verify_email_change_email_button">Użyj innego adresu e-mail</string>
+    <string name="verify_email_code_invalid">Nieprawidłowy kod. Sprawdź wiadomość i spróbuj ponownie.</string>
+    <string name="verify_email_code_expired">Kod wygasł. Poproś o nowy.</string>
+    <string name="verify_email_attempts_exceeded">Zbyt wiele nieudanych prób. Poproś o nowy kod.</string>
+    <string name="verify_email_resend_too_soon">Kod został niedawno wysłany. Odczekaj chwilę, zanim poprosisz o nowy.</string>
+    <string name="change_email_title">Zmień adres e-mail</string>
+    <string name="change_email_explanation">Wpisz nowy adres e-mail. Wyślemy na niego 6-cyfrowy kod, aby potwierdzić zmianę.</string>
+    <string name="change_email_field_label">Nowy adres e-mail</string>
+    <string name="change_email_continue_button">Wyślij kod</string>
+    <string name="verify_email_change_description">Wysłaliśmy 6-cyfrowy kod na adres %s. Wpisz go poniżej, aby potwierdzić nowy adres e-mail.</string>
+    <string name="verify_email_change_success">Adres e-mail został zmieniony.</string>
+    <string name="verify_email_change_email_taken">Ten adres e-mail jest już używany przez inne konto. Użyj innego adresu e-mail.</string>
 </resources>

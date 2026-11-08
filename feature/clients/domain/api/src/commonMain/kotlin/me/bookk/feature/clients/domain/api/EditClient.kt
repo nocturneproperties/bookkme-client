@@ -4,4 +4,10 @@ import me.bookk.feature.clients.domain.api.entity.Client
 
 interface EditClient {
     suspend operator fun invoke(client: Client): Client
+
+    sealed interface Error {
+        class EmailTaken :
+            Exception(),
+            Error
+    }
 }

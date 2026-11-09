@@ -127,8 +127,8 @@ class AppColors {
     static var error: Color {
         get {
             createColor(
-                dark: DesignSystem.colors().error,
-                light: DesignSystem.colors().error
+                dark: DesignSystem.colors().darkError,
+                light: DesignSystem.colors().lightError
             )
         }
     }

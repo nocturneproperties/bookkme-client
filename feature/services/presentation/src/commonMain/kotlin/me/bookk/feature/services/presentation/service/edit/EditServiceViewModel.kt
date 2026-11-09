@@ -25,6 +25,7 @@ import me.bookk.feature.services.domain.api.service.GetService
 import me.bookk.feature.services.domain.api.service.entity.Service
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.ServiceGroupOption
+import me.bookk.feature.services.presentation.service.serviceVisibilityHint
 import me.bookk.feature.services.presentation.service.edit.EditServiceDestination.Back
 import me.bookk.feature.services.presentation.service.toDurationInput
 import me.bookk.feature.services.presentation.service.toPriceInput
@@ -123,6 +124,7 @@ class EditServiceViewModel(
 
     private fun onAvailableChanged(available: Boolean) {
         uiState.available.isChecked = available
+        uiState.available.supportingTextRes = serviceVisibilityHint(available)
     }
 
     private fun onSubmit() {

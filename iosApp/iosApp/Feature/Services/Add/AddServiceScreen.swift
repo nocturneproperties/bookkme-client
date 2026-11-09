@@ -29,14 +29,14 @@ struct AddServiceScreen: View {
 		let uiState = IOSAddServiceState.cast(viewModel.uiState)
 		List {
 			Section {
-				PickerField(uiState.group)
-					.textFieldStyle(.inListTrailing)
 				StateTextField(uiState.name)
 					.focused($focusedField, equals: .name)
 					.submitLabel(.next)
 					.onSubmit {
 						focusedField = .duration
 					}
+					.textFieldStyle(.inListTrailing)
+				PickerField(uiState.group)
 					.textFieldStyle(.inListTrailing)
 			}
 			Section {
@@ -53,7 +53,7 @@ struct AddServiceScreen: View {
 					.textFieldStyle(.inListTrailing)
 			}
 			Section {
-				StateCheckBox(uiState.enabled_)
+				StateSwitch(state: uiState.enabled_)
 			}
 		}
 		.toolbar {

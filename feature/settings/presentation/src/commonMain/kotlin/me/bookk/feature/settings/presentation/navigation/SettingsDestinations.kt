@@ -23,7 +23,4 @@ sealed class SettingsDestination {
 
     @Serializable
     data object DeleteAccount : SettingsDestination()
-
-    @Serializable
-    data object ContactUs : SettingsDestination()
 }

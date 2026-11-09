@@ -32,9 +32,6 @@ struct SettingsTab: View {
 				.navigationDestination(for: SettingsDestination.DeleteAccount.self) { _ in
 					DeleteAccountScreen()
 				}
-				.navigationDestination(for: SettingsDestination.ContactUs.self) { _ in
-					ContactUsScreen()
-				}
 				.navigationDestination(for: SettingsDestination.Notifications.self) { _ in
 					NotificationSettingsScreen()
 				}

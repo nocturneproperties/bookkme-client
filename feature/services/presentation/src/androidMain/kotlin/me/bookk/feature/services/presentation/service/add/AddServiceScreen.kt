@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
-import me.bookk.designsystem.components.CheckBox
 import me.bookk.designsystem.components.PickerField
+import me.bookk.designsystem.components.StateSwitch
 import me.bookk.designsystem.components.TextField
 
 @Composable
@@ -37,16 +37,16 @@ internal fun AddServiceScreen(state: AddServiceState) {
                     .padding(all = 16.dp)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
+                TextField(state.name)
                 PickerField(
                     state = state.group,
                     screenPicker = standardScreenPicker(),
                 )
-                TextField(state.name)
                 TextField(state.duration)
                 TextField(state.price)
-                CheckBox(state.enabled)
+                StateSwitch(state.enabled)
             }
         },
         bottomBar = {

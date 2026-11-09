@@ -95,6 +95,7 @@ interface SupportSection {
     val terms: TextState
     val policy: TextState
     val reportError: TextState
+    var onContactClick: () -> Unit
 
     class InitData(
         val title: StringDesc,

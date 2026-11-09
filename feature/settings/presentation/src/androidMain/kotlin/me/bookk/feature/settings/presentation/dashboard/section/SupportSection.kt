@@ -14,7 +14,6 @@ import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.SectionItem
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.feature.settings.presentation.dashboard.SupportSection
-import me.bookk.feature.settings.presentation.navigation.LocalNavigation
 
 @Composable
 internal fun SupportSection(state: SupportSection) {
@@ -39,7 +38,7 @@ internal fun SupportSection(state: SupportSection) {
         ) {
             SectionItem(
                 text = state.contact.text.localized(),
-                onClick = LocalNavigation.current.navigateToContact,
+                onClick = state.onContactClick,
             )
         }
     }

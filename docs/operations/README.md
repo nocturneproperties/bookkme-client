@@ -174,7 +174,6 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `GetAvailablePasskeys`, `DeletePasskey` | `GET /api/auth/passkey`, `DELETE /api/auth/passkey/{id}` | [Delete passkey / Get available passkeys](settings/delete-passkey.md) |
 | `CreateNewPasskey` | `GET /api/auth/passkey/add/challenge`, `POST /api/auth/passkey/add/finish`; typed backend errors | [Create new passkey](settings/create-new-passkey.md) |
 | `DeleteAccount` | Action confirmation + `DELETE /api/auth/account`; typed backend errors | [Delete account](settings/delete-account.md) |
-| `SendContactForm` | `POST /api/user/contactus` | [Send contact form](settings/send-contact-form.md) |
 
 ## Use cases composed of other use cases
 

@@ -23,6 +23,7 @@ import me.bookk.feature.services.domain.api.service.CreateService
 import me.bookk.feature.services.domain.api.service.entity.Service
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.ServiceGroupOption
+import me.bookk.feature.services.presentation.service.serviceVisibilityHint
 import me.bookk.feature.services.presentation.service.add.AddServiceDestination.Back
 import me.bookk.feature.services.presentation.service.toDurationInput
 import me.bookk.feature.services.presentation.service.toPriceInput
@@ -99,6 +100,7 @@ class AddServiceViewModel(
 
     private fun onEnabledChanged(enabled: Boolean) {
         uiState.enabled.isChecked = enabled
+        uiState.enabled.supportingTextRes = serviceVisibilityHint(enabled)
     }
 
     private fun onCreateClick() {
@@ -204,6 +206,7 @@ class AddServiceViewModel(
         price.inputType = InputType.DECIMAL
 
         enabled.text = ServicesRes.strings.services_create_visible.desc()
+        enabled.supportingTextRes = serviceVisibilityHint(enabled.isChecked)
         enabled.onCheckedChange = weakVMClosure { vm, enabled -> vm.onEnabledChanged(enabled) }
 
         create.text = DesignSystem.strings.action_create.desc()

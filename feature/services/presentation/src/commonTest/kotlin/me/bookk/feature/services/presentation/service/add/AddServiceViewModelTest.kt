@@ -104,6 +104,37 @@ class AddServiceViewModelTest {
     }
 
     @Test
+    fun `explains staff only booking for a new hidden service`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            ServicesRes.strings.services_create_visible_off_hint.desc(),
+            sut.uiState.enabled.supportingTextRes,
+        )
+    }
+
+    @Test
+    fun `explains online booking when new service is made visible`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.enabled.onCheckedChange?.invoke(true)
+
+        then()
+        assertEquals(
+            ServicesRes.strings.services_create_visible_on_hint.desc(),
+            sut.uiState.enabled.supportingTextRes,
+        )
+    }
+
+    @Test
     fun `loads group options for business`() = runUnitTest {
         given()
         val fixture = Fixture()

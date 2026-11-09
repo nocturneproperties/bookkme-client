@@ -24,7 +24,7 @@ struct StateSwitch: View {
 	}
 	
 	var body: some View {
-		Toggle(state.text.localized(), isOn: Binding(
+		Toggle(isOn: Binding(
 			get: { state.isChecked },
 			set: { newValue in
 				withAnimation {
@@ -32,7 +32,14 @@ struct StateSwitch: View {
 					onToggledChanged(newValue)
 				}
 			}
-		))
+		)) {
+			Text(state.text.localized())
+			if let supportingText = state.supportingTextRes {
+				Text(supportingText.localized())
+					.font(.footnote)
+					.foregroundStyle(state.validationState == .error ? AppColors.error : AppColors.secondary)
+			}
+		}
 		.disabled(!state.isEnabled)
 	}
 }

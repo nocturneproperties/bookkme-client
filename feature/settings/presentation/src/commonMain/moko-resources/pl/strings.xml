@@ -32,10 +32,6 @@
     <string name="settings_edit_profile_last_name_error">Nazwisko musi mieć co najmniej 2 znaki</string>
     <string name="settings_edit_profile_email">E-mail</string>
 
-    <string name="settings_contact_us_title">Kontakt</string>
-    <string name="settings_contact_us_contact_hint">Wpisz tutaj swoją wiadomość, a skontaktujemy się z Tobą przez adres e-mail z Twojego profilu</string>
-    <string name="settings_contact_us_include_logs">Dołącz logi aplikacji</string>
-    <string name="settings_contact_us_include_logs_hint">Jeśli napotkasz problem, dołącz logi korzystania z aplikacji, aby nasi programiści mogli szybciej go naprawić</string>
 
     <string name="settings_delete_account_title">Usuń konto</string>
     <string name="settings_delete_account_confirmation">Rozumiem, że usunięcie konta jest nieodwracalne i nie będzie można go przywrócić</string>

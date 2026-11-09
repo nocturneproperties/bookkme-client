@@ -4,7 +4,7 @@ import android.graphics.Color.BLACK
 import android.graphics.Color.WHITE
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -52,7 +52,7 @@ fun <T : PickerPresentation> PickerField(
                 },
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Filled.KeyboardArrowDown,
+                        imageVector = Icons.Filled.ArrowDropDown,
                         tint = LocalColors.current.secondaryText,
                         contentDescription = null,
                     )

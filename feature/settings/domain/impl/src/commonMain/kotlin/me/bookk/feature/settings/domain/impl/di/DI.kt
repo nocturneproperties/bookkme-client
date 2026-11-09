@@ -15,7 +15,6 @@ import me.bookk.feature.settings.domain.api.GetLegalDocumentVersions
 import me.bookk.feature.settings.domain.api.GetNotificationSettings
 import me.bookk.feature.settings.domain.api.GetPersonalDataExport
 import me.bookk.feature.settings.domain.api.GetSettings
-import me.bookk.feature.settings.domain.api.SendContactForm
 import me.bookk.feature.settings.domain.api.StartPersonalDataExport
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.domain.api.UpdateCrashReportingEnabled
@@ -36,7 +35,6 @@ import me.bookk.feature.settings.domain.impl.GetLegalDocumentVersionsImpl
 import me.bookk.feature.settings.domain.impl.GetNotificationSettingsImpl
 import me.bookk.feature.settings.domain.impl.GetPersonalDataExportImpl
 import me.bookk.feature.settings.domain.impl.GetSettingsImpl
-import me.bookk.feature.settings.domain.impl.SendContactFormImpl
 import me.bookk.feature.settings.domain.impl.StartPersonalDataExportImpl
 import me.bookk.feature.settings.domain.impl.UpdateColorSchemeImpl
 import me.bookk.feature.settings.domain.impl.UpdateCrashReportingEnabledImpl
@@ -61,7 +59,6 @@ fun settingsDomainModule() = module {
     factoryOf(::UpdateCrashReportingEnabledImpl) bind UpdateCrashReportingEnabled::class
     factoryOf(::GetSettingsImpl) bind GetSettings::class
     factoryOf(::EditProfileImpl) bind EditProfile::class
-    factoryOf(::SendContactFormImpl) bind SendContactForm::class
     factoryOf(::DeleteAccountImpl) bind DeleteAccount::class
     factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
     factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class

@@ -1,204 +1,177 @@
 # BookkMe
 
-**BookkMe** is a Kotlin Multiplatform (KMP) mobile app for **Android and iOS** that helps businesses manage bookings — appointments, clients, services, and business settings from a single shared codebase.
+**BookkMe** is a free, source-available booking app for **Android and iOS** that helps small businesses — salons, studios, clinics, tutors, repair shops, and anyone who works by appointment — run their day from their phone.
 
-The business logic, view models, and data layer are written once in Kotlin and shared across both platforms. Only the UI is native: **Jetpack Compose** on Android and **SwiftUI** on iOS.
-
----
-
-## Highlights
-
--  **Kotlin Multiplatform** — domain, data, and presentation (ViewModels + UI state) live in `commonMain`.
--  **Native UI on both platforms** — Compose (`androidMain`) and SwiftUI (`iosApp/`) render the same shared state.
--  **Clean, modular architecture** — every feature is split into `presentation` / `domain` (`api` + `impl`) / `data` (`source` + implementation) modules with strict layer boundaries.
--  **Unidirectional data flow** — the UI only reads `State` interfaces; user actions and navigation flow back through state callbacks.
--  **Logic-first testing** — every use case is unit-tested in `commonTest` with the Mokkery mocking framework and a given/when/then structure.
--  **Reusable design system** — shared `designsystem` module maps directly to screen building blocks (fields, pickers, lists, dialogs, buttons).
+Keep your calendar, clients, services, and team in one place, and let your clients book with you directly.
 
 ---
 
-## Tech Stack
+## What you can do with BookkMe
 
-| Concern | Technology |
+### For business owners and staff
+
+- **Appointments** — create, reschedule, complete, cancel, or mark appointments as no-shows; browse the calendar and the full appointment history.
+- **Booking requests** — clients can request a time; approve or decline each request in one tap.
+- **Clients** — keep a client list with contact details, or import clients straight from your phone's contacts.
+- **Services** — describe what you offer with prices and durations, grouped into categories, in your business's currency.
+- **Team** — invite employees with a code, choose which services each of them performs, and suspend or reinstate access at any time.
+- **Dashboard** — see today's business at a glance and switch between businesses if you run more than one.
+- **Plugins** — turn on optional features, such as online appointment booking, only when you need them.
+- **Business data export** — download a full copy of your business's data whenever you want.
+
+### For everyone
+
+- **Password-free sign-in** with passkeys.
+- **Notifications** about new bookings, changes and cancellations, with per-channel settings.
+- **Privacy controls** — export your personal data, opt out of crash reporting, or delete your account from the app.
+- **Light and dark themes.**
+- **Available in English, Ukrainian, Russian and Polish.**
+
+---
+
+## Download
+
+BookkMe will soon be available in the app stores:
+
+- **App Store (iPhone)** — coming soon
+- **Google Play (Android)** — coming soon
+
+Until then, you can build the app yourself — see [Building the app](#building-the-app).
+
+---
+
+## Privacy and GDPR
+
+BookkMe handles personal data of business owners, their employees and their clients, so privacy is built into the app rather than added on:
+
+- **Right of access and data portability** — anyone can export a copy of their personal data, and business owners can export all of their business's data (profile, services, employees, clients, appointments and requests) as a JSON file, straight from the app.
+- **Right to erasure** — users can delete their account from the app, and businesses can delete individual clients.
+- **Storage limitation** — each business chooses how long client details on finished appointments and requests are kept (12–120 months). After that, they are anonymized or deleted.
+- **Informed consent** — new users review and accept the Privacy Policy and Terms of Service when they sign up. When those documents change, the new versions are marked for review under **Settings → Legal**.
+- **No tracking** — there is no analytics or advertising SDK, and advertising-ID permissions are removed from the Android app.
+- **Optional crash reporting** — crash reports go to Firebase Crashlytics and contain only technical details about the error and the device, not names, emails, business or client data. They can be turned off at any time under **Settings → Privacy**.
+- **Contacts stay on the device** — importing clients from the phone's contacts asks for permission first and uploads only the contacts you select.
+
+### If you self-host
+
+When you run BookkMe for your own business, you are the **data controller** for the personal data it holds, including your clients' data. You are responsible for publishing your own Privacy Policy and Terms, choosing where your server and Firebase project are hosted, signing data processing agreements with your providers, and responding to requests from the people whose data you hold. The features above help you meet these obligations, but they don't do it for you.
+
+---
+
+## Security
+
+- **No passwords** — sign-in uses passkeys, which can't be phished, reused or leaked in a password breach.
+- **Extra confirmation for sensitive actions** — deleting an account, deleting a client, and exporting personal or business data each require a fresh passkey confirmation.
+- **Verified email changes** — a new email address only takes effect after it is confirmed with a code sent to it.
+- **Role-based access** — only the business owner can export the business's data, and suspended employees lose access to the business immediately.
+- **Clean sign-out** — signing out clears the sign-in session and the business data cached on the device.
+
+### Reporting a vulnerability
+
+If you find a security issue, **please don't open a public issue.** Report it privately using GitHub's **Report a vulnerability** button on this repository's **Security** tab, and give us a reasonable time to fix it before you disclose it publicly.
+
+---
+
+## Ways to use BookkMe
+
+### 1. Self-host it for your own business
+
+The license explicitly allows you to run BookkMe for your own business, with your employees and your own clients using it — see [`LICENSE-SELF-HOSTING.md`](LICENSE-SELF-HOSTING.md). You can also have a hosting provider or IT contractor run it on your behalf.
+
+The mobile app is a client: it needs a BookkMe-compatible backend to talk to. Once you have one running, point the app at it (see [Connect to your own server](#connect-to-your-own-server)) and build the app as described below.
+
+### 2. Study it, modify it, learn from it
+
+You are free to read the code, change it, and run it for internal use, education, and research. The project is a complete, real-world Kotlin Multiplatform app, so it is also a practical reference for building mobile apps that share logic between Android and iOS.
+
+### What you can't do
+
+You may not offer BookkMe, or a product built from it, to *other* businesses — as a hosted service, as software you sell, or as part of a booking platform or marketplace. See [License](#license) for details.
+
+---
+
+## Building the app
+
+### Requirements
+
+- **macOS, Linux or Windows** with **JDK 17+** and **Android Studio** (latest stable) — for Android.
+- **macOS** with **Xcode** — additionally, for iOS.
+- Your own **Firebase project** (used for push notifications and optional crash reporting).
+
+### 1. Get the code
+
+```bash
+git clone git@github.com:nocturneproperties/bookkme-client.git
+cd bookkme-client
+```
+
+### 2. Add your local configuration
+
+These files are machine- or owner-specific and are not part of the repository. Create them before the first build:
+
+| File | What it is |
 |---|---|
-| Language | Kotlin `2.3.21` (Multiplatform) |
-| Android UI | Jetpack Compose (Material 3) |
-| iOS UI | SwiftUI |
-| Dependency Injection | [Koin](https://insert-koin.io/) `4.2.2` |
-| Networking | [Ktor](https://ktor.io/) `3.5.1` (typed `Resources` routes, `application/x-protobuf`) |
-| Local persistence | Room `2.8.4` + DataStore preferences |
-| Async | Kotlin Coroutines `1.11.0` |
-| Resources / i18n | [moko-resources](https://github.com/icerockdev/moko-resources) |
-| Images | Coil `3.5.0` |
-| Push / crash / analytics | Firebase (`34.15.0`) |
-| Testing / mocking | kotlin-test + [Mokkery](https://mokkery.dev/) `3.4.2` |
+| `local.properties` | Path to your Android SDK, e.g. `sdk.dir=/Users/you/Library/Android/sdk`. Android Studio creates it on first open. |
+| `androidApp/keystore.properties` | Signing config with `debugKeyAlias`, `debugKeyPassword`, `debugStoreFile`, `debugStorePassword` and the same four `release*` keys. Point the store files at keystores you generate yourself. |
+| `androidApp/google-services.json` | Firebase config for the Android app, downloaded from your Firebase project. |
+| `iosApp/iosApp/Firebase/Dev/GoogleService-Info.plist`<br>`iosApp/iosApp/Firebase/Prod/GoogleService-Info.plist` | Firebase config for the iOS app, one per build flavor. |
 
-**Build tooling:** Android Gradle Plugin `9.2.1`, KSP, custom Gradle convention plugins (`build-src`), version catalog (`gradle/libs.versions.toml`).
+### 3. Connect to your own server
 
-**Platform targets:** Android `minSdk 28` / `compileSdk 37`, iOS via the `shared` KMP framework. App package: `me.bookk.android`.
+The server address is set per build variant in [`shared/build.gradle.kts`](shared/build.gradle.kts) (`BASE_URL`). Replace the URLs there with the address of your backend, e.g. `https://booking.example.com/api`.
 
----
+Sign-in uses passkeys, which are tied to a domain. To use them with your own server:
 
-## Repository Layout
+- update the associated domains (`applinks:` / `webcredentials:`) in the iOS `.entitlements` files to your domain, and
+- publish the matching Digital Asset Links (Android) and Apple App Site Association (iOS) files on that domain, listing your app ID and signing certificate.
 
-```
-BookkMe/
-├── androidApp/            Android entry point & app configuration
-├── iosApp/                iOS app (SwiftUI, Xcode file-system-synchronized groups)
-├── shared/                Global DI wiring + cross-feature StateFactoryCreator
-├── database/              Room database, entities, DAOs, migrations
-├── core/                  Base classes: ViewModel, DataSource, navigation primitives
-│   ├── data/  ├── domain/  ├── presentation/  └── testFixtures/
-├── designsystem/          Shared UI components + reusable UI-state primitives
-├── environment/           Environment config (api + impl)
-├── library/               Independent reusable modules
-│   ├── cache/  credentials/  permissions/  files/  device/
-│   ├── money/  biometry/  validation/  picker/  notifications/
-├── feature/               Feature modules (see below)
-└── build-src/             Gradle convention plugins & app constants
-```
+If you publish your own build, also change the application ID (`ROOT_PACKAGE` in `build-src/src/main/kotlin/build_src/constants/ApplicationConfig.kt`) and the iOS bundle identifier.
 
-### Feature modules
+### 4. Build and run
 
-Each feature is a set of KMP modules following the same shape:
-
-```
-feature/<name>/
-├── presentation/   ViewModels, State interfaces, Destinations, StateFactory,
-│                   Compose screens (androidMain), SwiftUI accessors (iosMain)
-├── domain/
-│   ├── api/        UseCase interfaces + domain entities
-│   └── impl/       UseCase implementations + unit tests
-└── data/
-    ├── source/     DataSource interfaces
-    └── (impl)      Ktor routing/models, mappers, DataSource impls, DI
-```
-
-Features: **authorization**, **business**, **appointments**, **clients**, **services**, **dashboard**, **settings**.
-
-> **Canonical reference screen:** `BusinessPlugins` (`feature/business`, `screen/plugins`) demonstrates the current architecture pattern. See [`AGENTS.md`](AGENTS.md) for the full screen-creation, use-case, and testing conventions.
-
----
-
-## Architecture
-
-BookkMe uses a layered, unidirectional-data-flow architecture:
-
-- **Presentation** — ViewModels expose a `State` interface built by a per-feature `StateFactory`. State is created parameterless and configured in a `setup()` extension; all callbacks use `weakSelfClosure` to avoid iOS retain cycles. UI reads state only.
-- **Domain** — Use cases are verb-named interfaces (`api`) with `internal` implementations (`impl`). Domain errors are exception classes nested in a `sealed interface Error`.
-- **Data** — Ktor models, SQL, and platform APIs never leak past the `data` boundary. Remote/local models are always mapped to domain entities. Each DataSource method does exactly one thing (fetch **or** read DB **or** write DB); use cases orchestrate multi-step operations.
-- **DI** — Koin wires presentation (`viewModelOf` / `factoryOf`), domain, and data modules, aggregated per feature under `shared/di/feature/`.
-
-Build flavors (`dimension = "type"`): **`dev`**, **`prod`** (defined in `build-src`).
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- **JDK 17+**
-- **Android Studio** (latest stable) with the Android SDK
-- **Xcode** (for iOS) on macOS
-- A running local backend instance for API access (see [API docs](#api-documentation))
-
-### Clone
+**Android** — open the project in Android Studio and run the `androidApp` configuration, or build from the command line:
 
 ```bash
-git clone git@github.com:an22/bookk.me-mobile.git
-cd bookk.me-mobile
+./gradlew :androidApp:assembleDevDebug     # development build
+./gradlew :androidApp:assembleProdRelease  # release build
 ```
 
-Create a `local.properties` with your Android SDK path (Android Studio generates this on first open):
+**iOS** — open `iosApp/iosApp.xcodeproj` in Xcode, pick your signing team, and run. The shared Kotlin code is compiled automatically as part of the Xcode build.
 
-```properties
-sdk.dir=/Users/you/Library/Android/sdk
-```
-
-### Run Android
-
-Open the project in Android Studio and run the `androidApp` configuration, or from the command line:
+### Run the tests
 
 ```bash
-./gradlew :androidApp:assembleDevDebug
-```
-
-### Run iOS
-
-Open `iosApp/iosApp.xcodeproj` in Xcode and run the app. The shared Kotlin framework is built automatically. To quickly compile the shared code for iOS from the CLI:
-
-```bash
-./gradlew :shared:compileKotlinIosArm64
+./gradlew test
 ```
 
 ---
 
-## Development
+## Project structure
 
-### Common Gradle commands
-
-| Task | Command |
-|---|---|
-| Build Android (dev debug) | `./gradlew :androidApp:assembleDevDebug` |
-| Compile shared for iOS | `./gradlew :shared:compileKotlinIosArm64` |
-| Run tests (common + Android) | `./gradlew test` |
-| Lint | `./gradlew detekt` |
-| Check Kotlin formatting | `./gradlew spotlessCheck` |
-| Apply Kotlin formatting | `./gradlew spotlessApply` |
-
-Spotless formats Kotlin sources and Gradle Kotlin scripts across the repository, including
-`build-src`, using ktlint's `intellij_idea` style, based on Kotlin's official coding conventions.
-Generated sources, build outputs, and scaffold templates are excluded. Formatter versions are
-pinned in `gradle/libs.versions.toml`. The root `check` task and Android pull request verification
-run `spotlessCheck`.
-
-The `.editorconfig` and `kotlin.code.style=official` property configure the IDE's Kotlin style.
-Expression bodies stay on the function signature's line when the first line fits within
-100 characters. Multiline constructor arguments do not force a break after `=`.
-Block-bodied functions and Compose function names are preserved. Existing file names,
-package names, and package-only files are exempt from structural lint checks.
-Run `./gradlew spotlessApply` before committing.
-
-### Adding a new screen
-
-Scaffold with the template script, then complete the wiring checklist in [`AGENTS.md`](AGENTS.md):
-
-```bash
-cd feature/.template
-./screen.template.sh <feature_name> <ScreenName> <screen.package>
-# example: ./screen.template.sh business Plugins screen.plugins
-```
-
-A screen is **not done until both platforms are wired**: commonMain state/VM/destinations, Android state/screen/nav/DI/factory, and iOS Kotlin DI accessors + SwiftUI state/screen/factory/navigation.
-
-### Testing
-
-Testing is **logic-only** (no UI/instrumentation/snapshot tests). Every `<Name>Impl` use case gets a `<Name>ImplTest.kt` in `domain/impl/src/commonTest`, written test-first (given/when/then) with Mokkery and the `Fixture` pattern. See the **Testing Rules** section of [`AGENTS.md`](AGENTS.md) for the required style.
-
----
-
-## API Documentation
-
-REST API specs are served by the local backend instance:
+BookkMe is written in Kotlin Multiplatform: the business logic, data handling and screen state are written once and shared, while the UI is native on each platform — Jetpack Compose on Android and SwiftUI on iOS.
 
 ```
-http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
+androidApp/    Android app
+iosApp/        iOS app
+shared/        Wiring that puts the shared modules together
+feature/       One folder per feature: appointments, business, clients,
+               employees, services, dashboard, settings, authorization
+core/          Shared base building blocks
+designsystem/  Shared UI components
+database/      Local storage for offline access
+library/       Small reusable modules (cache, permissions, files, …)
+docs/          Database diagrams and per-operation flow diagrams
 ```
 
-`{feature_name}` accepts short or long forms (e.g. `auth`/`authorization`, `appointments`, `clients`, `services`, `business`).
-
-> ⚠️ API requests/responses are serialized as `application/x-protobuf` with **positional** field numbers. When adding, removing, or reordering a field on any `*Remote`/`*Request` model, verify the Kotlin property order matches the backend schema exactly — a mismatch silently desyncs the wire format at runtime. Always fetch the current swagger schema before editing a contract.
+If you plan to modify the app, [`AGENTS.md`](AGENTS.md) describes the conventions the codebase follows — how screens, operations and tests are put together — and [`docs/`](docs) documents the local database and every operation the app performs.
 
 ---
 
 ## Contributing
 
-Please read [`AGENTS.md`](AGENTS.md) before contributing — it is the authoritative guide to the project's architecture, screen/use-case creation patterns, DI wiring, design-system components, and testing rules. Key expectations:
+Thank you for your interest in BookkMe! Unfortunately, **we do not accept contributions** — pull requests will not be reviewed or merged.
 
-- Respect layer boundaries (Ktor/SQL/platform APIs stay in `data`).
-- No hardcoded user-visible strings — use moko-resources `strings.xml`.
-- Follow the current screen pattern (parameterless state + `setup()`); never copy deprecated `InitData` screens.
-- Unit-test every use case implementation.
+You are welcome to fork the project and adapt it for your own business within the terms of the license.
 
 ---
 
@@ -206,7 +179,7 @@ Please read [`AGENTS.md`](AGENTS.md) before contributing — it is the authorita
 
 BookkMe is **source-available** under the **Functional Source License, Version 1.1, ALv2 Future License** (`FSL-1.1-ALv2`) — see [`LICENSE`](LICENSE) — plus an [additional permission for self-hosting](LICENSE-SELF-HOSTING.md).
 
-- **Allowed:** reading, modifying and running the code for any purpose other than a competing product — internal use, non-commercial education and research, contributing, and self-hosting BookkMe to take bookings for your own business, with your own clients booking through it.
+- **Allowed:** reading, modifying and running the code for any purpose other than a competing product — internal use, non-commercial education and research, and self-hosting BookkMe to take bookings for your own business, with your own clients booking through it.
 - **Not allowed:** offering BookkMe, or a product built from it, to other businesses — as a hosted service, as software you sell, or as part of a booking platform.
 - **Becomes Apache 2.0 after two years:** each version is also licensed under the Apache License, Version 2.0 from the second anniversary of its release.
 - **Earlier versions stay Apache 2.0:** versions published before the switch to FSL — every commit whose `LICENSE` file is the Apache License — were released under the Apache License, Version 2.0 and remain available under it.

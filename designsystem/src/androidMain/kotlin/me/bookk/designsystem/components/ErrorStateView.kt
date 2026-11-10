@@ -47,7 +47,7 @@ fun LazyItemScope.ErrorStateView(state: ErrorState, modifier: Modifier = Modifie
             state.subtitle.localized(),
             modifier = Modifier.padding(top = 4.dp),
             style = MaterialTheme.typography.bodyMedium.secondary(),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
         val retryButtonState = remember(state) {
             AndroidButtonState(

@@ -23,8 +23,8 @@ import me.bookk.feature.services.domain.api.service.CreateService
 import me.bookk.feature.services.domain.api.service.entity.Service
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.services.presentation.service.ServiceGroupOption
-import me.bookk.feature.services.presentation.service.serviceVisibilityHint
 import me.bookk.feature.services.presentation.service.add.AddServiceDestination.Back
+import me.bookk.feature.services.presentation.service.serviceVisibilityHint
 import me.bookk.feature.services.presentation.service.toDurationInput
 import me.bookk.feature.services.presentation.service.toPriceInput
 import org.koin.core.annotation.InjectedParam

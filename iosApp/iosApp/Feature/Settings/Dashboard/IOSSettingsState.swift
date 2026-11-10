@@ -118,6 +118,8 @@ class IOSSupportSection: @MainActor SupportSection {
 	
 	var terms: any TextState
 	
+	var onContactClick: () -> Void = {}
+	
 	
 	init(initData: SupportSectionInitData) {
 		title = initData.title

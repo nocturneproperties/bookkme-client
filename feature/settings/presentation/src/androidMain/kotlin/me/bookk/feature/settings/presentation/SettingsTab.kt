@@ -37,9 +37,6 @@ fun SettingsTab() {
                 navigateToPasskey = {
                     settingsController.navigate(SettingsDestination.Passkey)
                 },
-                navigateToContact = {
-                    settingsController.navigate(SettingsDestination.ContactUs)
-                },
                 navigateToDeleteAccount = {
                     settingsController.navigate(SettingsDestination.DeleteAccount)
                 },

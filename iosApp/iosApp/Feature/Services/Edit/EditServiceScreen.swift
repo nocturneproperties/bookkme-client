@@ -21,12 +21,12 @@ struct EditServiceScreen: View {
 		let uiState = IOSEditServiceState.cast(viewModel.uiState)
 		List {
 			Section {
-				PickerField(uiState.group)
-					.textFieldStyle(.inListTrailing)
 				StateTextField(uiState.name)
 					.focused($focusedField, equals: .name)
 					.submitLabel(.next)
 					.onSubmit { focusedField = .duration }
+					.textFieldStyle(.inListTrailing)
+				PickerField(uiState.group)
 					.textFieldStyle(.inListTrailing)
 			}
 			Section {
@@ -41,7 +41,7 @@ struct EditServiceScreen: View {
 					.textFieldStyle(.inListTrailing)
 			}
 			Section {
-				StateCheckBox(uiState.available)
+				StateSwitch(state: uiState.available)
 			}
 			if uiState.deleteButton.isVisible {
 				Section {

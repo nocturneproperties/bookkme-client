@@ -3,6 +3,7 @@ package me.bookk.feature.settings.presentation.dashboard
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.flowOn
+import library.device.api.DeviceFacade
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
@@ -25,6 +26,7 @@ class SettingsDashboardViewModel(
     private val getSettings: GetSettings,
     private val getLegalDocumentStatuses: GetLegalDocumentStatuses,
     private val updateColorScheme: UpdateColorScheme,
+    private val device: DeviceFacade,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
@@ -38,6 +40,7 @@ class SettingsDashboardViewModel(
     private fun SettingsState.setup(): SettingsState = apply {
         account.dataExport.text = SettingsRes.strings.settings_export_title.desc()
         account.privacy.text = SettingsRes.strings.settings_privacy_title.desc()
+        support.onContactClick = weakVMClosure { it.device.mail(SUPPORT_EMAIL) }
         appBar.actions.replace(
             listOf(
                 appBar.action(
@@ -134,6 +137,7 @@ class SettingsDashboardViewModel(
 
     companion object {
         private const val REFRESH_LEGAL_DOCUMENTS_KEY = "refreshLegalDocuments"
+        private const val SUPPORT_EMAIL = "support@bookkme.com"
 
         fun createInitData() = SettingsState.InitData(
             appearance = AppearanceSection.InitData(

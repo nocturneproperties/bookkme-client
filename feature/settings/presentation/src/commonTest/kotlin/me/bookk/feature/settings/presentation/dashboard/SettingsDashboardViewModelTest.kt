@@ -7,9 +7,11 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
+import library.device.api.DeviceFacade
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -67,6 +69,9 @@ class SettingsDashboardViewModelTest {
             every { flow() } returns statuses
             everySuspend { refresh() } returns emptyList()
         }
+        val device = mock<DeviceFacade> {
+            every { mail(any()) } returns Unit
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut(): SettingsDashboardViewModel {
@@ -74,6 +79,7 @@ class SettingsDashboardViewModelTest {
                 getSettings = getSettings,
                 getLegalDocumentStatuses = getLegalDocumentStatuses,
                 updateColorScheme = updateColorScheme,
+                device = device,
                 settingsStateFactory = FakeSettingsStateFactory(),
                 vmArgs = VmArgs(errorMapper),
             )
@@ -234,6 +240,19 @@ class SettingsDashboardViewModelTest {
             listOf<SettingsDashboardDestination>(SettingsDashboardDestination.EditProfile),
             sut.uiState.navigation.navigationDestination,
         )
+    }
+
+    @Test
+    fun `opens mail app addressed to support when contact is clicked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.support.onContactClick()
+
+        then()
+        verify { fixture.device.mail("support@bookkme.com") }
     }
 
     @Test

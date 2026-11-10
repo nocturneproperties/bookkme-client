@@ -63,4 +63,5 @@ internal class AndroidSupportState(
     override val terms: TextState = AndroidTextState(initData.termsLabel)
     override val policy: TextState = AndroidTextState(initData.policyLabel)
     override val reportError: TextState = AndroidTextState(initData.reportErrorLabel)
+    override var onContactClick: () -> Unit = {}
 }

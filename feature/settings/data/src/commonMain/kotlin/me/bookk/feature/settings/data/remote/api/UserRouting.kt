@@ -33,11 +33,6 @@ internal object UserRouting {
                     val parent: Export = Export(),
                 )
             }
-
-            @Resource("/contactus")
-            class ContactUs(
-                val parent: User = User(),
-            )
         }
     }
 }

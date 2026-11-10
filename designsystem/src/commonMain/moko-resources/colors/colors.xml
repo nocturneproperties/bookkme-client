@@ -2,7 +2,6 @@
 <resources>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="error">#FF3B30</color>
 
     <!--Light-->
     <color name="lightBackground">#F2F2F7</color>
@@ -22,6 +21,7 @@
     <color name="lightButtonInactive">#E3E3E9</color>
     <color name="lightButtonActive">#2C91FF</color>
     <color name="lightOnAction">#FFFFFF</color>
+    <color name="lightError">#D70015</color>
 
     <!--Dark-->
     <color name="darkBackground">#000000</color>
@@ -41,4 +41,5 @@
     <color name="darkButtonInactive">#1B1B1D</color>
     <color name="darkButtonActive">#0A84FF</color>
     <color name="darkOnAction">#FFFFFF</color>
+    <color name="darkError">#FF6961</color>
 </resources>

@@ -25,6 +25,9 @@ struct AuthorizationRoot: View {
 				.navigationDestination(for: AuthDestination.Troubleshoot.self) { value in
                     TroubleshootScreen()
                 }
+				.navigationDestination(for: SignUpNavigationDestination.VerifyEmail.self) { value in
+					VerifyEmailScreen(pendingSignUp: value.pendingSignUp)
+				}
         }.environmentObject(navigationStack)
     }
 }

@@ -73,7 +73,7 @@ class ImportClientsImplTest {
 
     private fun clientExistsError() = Error.BusinessError(
         ClientErrorCodes.CLIENT_EXISTS,
-        "Client with this phone or email already exists",
+        "Client with this email already exists",
     )
 
     @Test

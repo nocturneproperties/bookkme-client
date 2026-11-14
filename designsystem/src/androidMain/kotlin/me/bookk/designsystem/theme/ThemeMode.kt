@@ -6,6 +6,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import me.bookk.designsystem.theme.color.AppColorScheme
 import me.bookk.designsystem.theme.color.AppColors
@@ -32,41 +33,55 @@ enum class ThemeMode {
     val materialScheme: ColorScheme
         @Composable
         get() {
-            val currentScheme = scheme
             return when (this) {
-                LIGHT -> lightColorScheme(
-                    onSurfaceVariant = currentScheme.primaryText,
-                    surfaceContainerLow = currentScheme.background,
-                    background = currentScheme.background,
-                    primary = currentScheme.primaryText,
-                    secondary = AppColors.White,
-                    error = currentScheme.error,
-                    onPrimary = AppColors.White,
-                    onSecondary = currentScheme.primaryText,
-                    onBackground = currentScheme.primaryText,
-                    onSurface = currentScheme.primaryText,
-                    onError = AppColors.White,
-                    outline = currentScheme.divider,
-                    outlineVariant = currentScheme.divider,
-                )
-
-                DARK -> darkColorScheme(
-                    onSurfaceVariant = currentScheme.primaryText,
-                    surfaceContainerLow = currentScheme.background,
-                    background = currentScheme.background,
-                    primary = currentScheme.primaryText,
-                    secondary = AppColors.Black,
-                    error = currentScheme.error,
-                    onPrimary = AppColors.Black,
-                    onSecondary = currentScheme.primaryText,
-                    onBackground = currentScheme.primaryText,
-                    onSurface = currentScheme.primaryText,
-                    onError = AppColors.Black,
-                    outline = currentScheme.divider,
-                    outlineVariant = currentScheme.divider,
-                )
+                LIGHT -> scheme.toMaterialScheme(lightColorScheme())
+                DARK -> scheme.toMaterialScheme(darkColorScheme())
             }
         }
+}
+
+private const val CONTAINER_TINT_ALPHA = 0.16f
+
+private fun AppColorScheme.toMaterialScheme(base: ColorScheme): ColorScheme {
+    val actionContainer = actionText.copy(alpha = CONTAINER_TINT_ALPHA).compositeOver(elevated)
+    val errorContainer = error.copy(alpha = CONTAINER_TINT_ALPHA).compositeOver(elevated)
+    return base.copy(
+        primary = actionText,
+        onPrimary = onAction,
+        primaryContainer = actionContainer,
+        onPrimaryContainer = primaryText,
+        inversePrimary = actionText,
+        secondary = actionText,
+        onSecondary = onAction,
+        secondaryContainer = actionContainer,
+        onSecondaryContainer = primaryText,
+        tertiary = success,
+        onTertiary = onAction,
+        tertiaryContainer = success.copy(alpha = CONTAINER_TINT_ALPHA).compositeOver(elevated),
+        onTertiaryContainer = primaryText,
+        background = background,
+        onBackground = primaryText,
+        surface = background,
+        onSurface = primaryText,
+        surfaceVariant = divider,
+        onSurfaceVariant = secondaryText,
+        surfaceTint = Color.Transparent,
+        inverseSurface = primaryText,
+        inverseOnSurface = background,
+        error = error,
+        onError = onAction,
+        errorContainer = errorContainer,
+        onErrorContainer = error,
+        outline = secondaryText,
+        outlineVariant = divider,
+        surfaceBright = elevated,
+        surfaceDim = background,
+        surfaceContainerLowest = elevated,
+        surfaceContainerLow = background,
+        surfaceContainer = elevated,
+        surfaceContainerHigh = elevated,
+        surfaceContainerHighest = divider,
+    )
 }
 
 @Composable
@@ -81,10 +96,10 @@ fun AppColorScheme.animated(): AppColorScheme {
         actionText = animateColor(actionText),
         actionTextDisabled = animateColor(actionTextDisabled),
         inactive = animateColor(inactive),
-        blurredBackground = animateColor(primaryText),
+        blurredBackground = animateColor(blurredBackground),
         header = animateColor(header),
         success = animateColor(success),
-        inactiveToggle = animateColor(primaryText),
+        inactiveToggle = animateColor(inactiveToggle),
         buttonPrimary = animateColor(buttonPrimary),
         buttonActive = animateColor(buttonActive),
         buttonInactive = animateColor(buttonInactive),

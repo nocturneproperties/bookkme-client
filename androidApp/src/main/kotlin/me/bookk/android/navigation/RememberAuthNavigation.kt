@@ -17,5 +17,6 @@ fun rememberAuthNavigation(controller: NavController) = remember(controller) {
         navigateToSignUp = { controller.navigate(AuthDestination.SignUp) },
         navigateToTroubleshoot = { controller.navigate(AuthDestination.Troubleshoot) },
         navigateToContactSupport = {},
+        navigateToVerifyEmail = { controller.navigate(it) },
     )
 }

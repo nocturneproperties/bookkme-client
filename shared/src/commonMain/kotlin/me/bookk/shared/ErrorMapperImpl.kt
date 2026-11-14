@@ -29,6 +29,13 @@ class ErrorMapperImpl : ErrorMapper {
                     ),
                 )
 
+                is Error.TooManyRequests -> PresentationNotification.Message(
+                    message = DesignSystem.strings.error_too_many_requests.desc(),
+                    buttons = listOf(
+                        ButtonDescriptor(text = DesignSystem.strings.action_ok.desc()),
+                    ),
+                )
+
                 is Error.NoConnectionError -> PresentationNotification.Message(
                     message = DesignSystem.strings.error_no_internet.desc(),
                     buttons = listOf(
@@ -96,6 +103,11 @@ class ErrorMapperImpl : ErrorMapper {
             -> ErrorDescription(
                 title = DesignSystem.strings.error_server_title.desc(),
                 message = DesignSystem.strings.error_server.desc(),
+            )
+
+            is Error.TooManyRequests -> ErrorDescription(
+                title = DesignSystem.strings.error_generic_title.desc(),
+                message = DesignSystem.strings.error_too_many_requests.desc(),
             )
 
             is Error.BusinessAccessSuspended -> ErrorDescription(

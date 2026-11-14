@@ -71,6 +71,7 @@ interface ProfileSection {
 
 interface AccountSection {
     val dataExport: TextState
+    val changeEmail: TextState
     val privacy: TextState
     var privacyStatus: StringDesc?
     val title: StringDesc
@@ -95,6 +96,7 @@ interface SupportSection {
     val terms: TextState
     val policy: TextState
     val reportError: TextState
+    var onContactClick: () -> Unit
 
     class InitData(
         val title: StringDesc,

@@ -1,6 +1,7 @@
 package me.bookk.feature.clients.domain.impl
 
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -10,16 +11,21 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import me.bookk.core.domain.entity.Error
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.clients.domain.api.EditClient
 import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.clients.domain.datasource.ClientErrorCodes
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -104,5 +110,37 @@ class EditClientImplTest {
 
         then()
         verifySuspend { fixture.dataSource.updateClient(trimmed) }
+    }
+
+    @Test
+    fun `throws EmailTaken when another client of the business has this email`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateClient(any()) } throws Error.BusinessError(
+            ClientErrorCodes.CLIENT_EXISTS,
+            "Client with this email already exists",
+        )
+
+        whenn()
+        val error = runCatching { fixture.sut(stubClient()) }.exceptionOrNull()
+
+        then()
+        assertIs<EditClient.Error.EmailTaken>(error)
+    }
+
+    @Test
+    fun `rethrows other business errors unchanged`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.updateClient(any()) } throws Error.BusinessError(
+            ClientErrorCodes.CLIENT_VALIDATION_ERROR,
+            "Invalid phone",
+        )
+
+        whenn()
+        val error = assertFailsWith<Error.BusinessError> { fixture.sut(stubClient()) }
+
+        then()
+        assertEquals(ClientErrorCodes.CLIENT_VALIDATION_ERROR, error.errorCode)
     }
 }

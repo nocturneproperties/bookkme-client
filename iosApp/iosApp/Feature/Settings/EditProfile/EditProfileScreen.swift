@@ -26,11 +26,6 @@ struct EditProfileScreen: View {
 				viewModel.onLastNameTextChanged(text: newText)
 			}
 			.textFieldStyle(.inList)
-			
-			SectionTextField(state.email) { newText in
-				viewModel.onEmailTextChanged(text: newText)
-			}
-			.textFieldStyle(.inList)
 		}
 		.listSectionSpacing(.compact)
 		.scrollDismissesKeyboard(.immediately)

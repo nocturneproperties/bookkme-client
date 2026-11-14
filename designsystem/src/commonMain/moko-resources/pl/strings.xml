@@ -3,6 +3,7 @@
     <string name="error_no_internet">Ups! Wygląda na to, że jesteś offline. Sprawdź połączenie z internetem i spróbuj ponownie.</string>
     <string name="error_server">Wystąpił problem z serwerem. Już nad tym pracujemy! Odśwież lub wróć za chwilę.</string>
     <string name="error_unexpected">Nieoczekiwany błąd. W razie potrzeby skontaktuj się z pomocą techniczną.</string>
+    <string name="error_too_many_requests">Zbyt wiele prób. Spróbuj ponownie za chwilę.</string>
     <string name="error_empty">Pole nie może być puste</string>
     <string name="error_connection_title">Problem z połączeniem</string>
     <string name="error_connection_subtitle">Sprawdź połączenie z internetem i spróbuj ponownie.</string>

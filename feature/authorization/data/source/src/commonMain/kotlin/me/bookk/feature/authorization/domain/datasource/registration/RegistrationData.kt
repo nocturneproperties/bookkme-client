@@ -1,6 +1,7 @@
 package me.bookk.feature.authorization.domain.datasource.registration
 
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
+import kotlin.uuid.Uuid
 
 class RegistrationData(
     val requestId: String,
@@ -8,6 +9,8 @@ class RegistrationData(
     val userInfo: UserInfo,
     val publicKeyCredentialJson: String,
     val acceptedDocuments: AcceptedLegalDocuments,
+    val verificationId: Uuid,
+    val emailCode: String,
 ) {
 
     class UserInfo(

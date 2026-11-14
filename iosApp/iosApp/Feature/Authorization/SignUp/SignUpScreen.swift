@@ -30,6 +30,9 @@ struct SignUpScreen: View {
 			switch dest {
 			case is SignUpNavigationDestination.Back:
 				navigationStack.popLast()
+
+			case let verifyEmail as SignUpNavigationDestination.VerifyEmail:
+				navigationStack.push(verifyEmail)
 				
 			default:
 				break

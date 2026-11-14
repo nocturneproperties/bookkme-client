@@ -264,7 +264,10 @@ class PrivacySettingsViewModelTest {
         sut.uiState.legal.retry.onClick?.invoke()
 
         then()
-        assertEquals(SettingsRes.strings.settings_legal_consent.desc(), sut.uiState.legal.message)
+        assertEquals(
+            SettingsRes.strings.settings_legal_review_note.desc(),
+            sut.uiState.legal.message,
+        )
         assertTrue(!sut.uiState.legal.retry.isVisible)
         assertTrue(sut.uiState.legal.accept.isEnabled)
     }
@@ -541,6 +544,27 @@ class PrivacySettingsViewModelTest {
     }
 
     @Test
+    fun `shows an acknowledged privacy policy as read rather than accepted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.remoteStatuses.refresh() } returns
+            listOf(privacyPolicyStatus(accepted = true), termsStatus(accepted = true))
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals(
+            listOf(
+                SettingsRes.strings.settings_legal_acknowledged.desc(),
+                SettingsRes.strings.settings_legal_accepted.desc(),
+            ),
+            sut.uiState.legal.documents.map { it.status },
+        )
+    }
+
+    @Test
     fun `opens the published privacy URL without accepting`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -729,7 +753,7 @@ class PrivacySettingsViewModelTest {
         then()
         assertTrue(!sut.uiState.legal.accept.isVisible)
         assertEquals(
-            SettingsRes.strings.settings_legal_accepted.desc(),
+            SettingsRes.strings.settings_legal_acknowledged.desc(),
             sut.uiState.legal.documents[0].status,
         )
     }
@@ -898,7 +922,10 @@ class PrivacySettingsViewModelTest {
         sut.onViewPresented()
 
         then()
-        assertEquals(SettingsRes.strings.settings_legal_consent.desc(), sut.uiState.legal.message)
+        assertEquals(
+            SettingsRes.strings.settings_legal_review_note.desc(),
+            sut.uiState.legal.message,
+        )
         assertEquals(
             SettingsRes.strings.settings_legal_accept.desc(),
             sut.uiState.legal.accept.text,

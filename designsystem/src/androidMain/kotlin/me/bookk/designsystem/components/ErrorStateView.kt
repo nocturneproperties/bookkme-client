@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
@@ -46,6 +47,7 @@ fun LazyItemScope.ErrorStateView(state: ErrorState, modifier: Modifier = Modifie
             state.subtitle.localized(),
             modifier = Modifier.padding(top = 4.dp),
             style = MaterialTheme.typography.bodyMedium.secondary(),
+            textAlign = TextAlign.Center,
         )
         val retryButtonState = remember(state) {
             AndroidButtonState(

@@ -52,7 +52,7 @@ class IosDeviceFacade : DeviceFacade {
     }
 
     override fun mail(email: String) {
-        openUrlPreview("mailto://$email")
+        openUrlPreview("mailto:$email")
     }
 
     override fun openAppSettings() {

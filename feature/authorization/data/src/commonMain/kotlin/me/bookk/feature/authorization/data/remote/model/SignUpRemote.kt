@@ -2,6 +2,8 @@ package me.bookk.feature.authorization.data.remote.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 @Serializable
 data class PassKeySignUpStartInfo(
@@ -11,12 +13,20 @@ data class PassKeySignUpStartInfo(
 )
 
 @Serializable
-class RegistrationChallengeResponse(
+class EmailVerificationStartedRemote(
+    @ProtoNumber(1) val verificationId: Uuid,
+    @ProtoNumber(2) val expiresAt: Instant,
+    @ProtoNumber(3) val resendAvailableAt: Instant,
+)
+
+@Serializable
+class SignUpChallengeResponseRemote(
     @ProtoNumber(1) val requestId: String,
     @ProtoNumber(2) val challenge: String,
     @ProtoNumber(3) val challengeJson: String,
     @ProtoNumber(4) val userHandle: String,
     @ProtoNumber(5) val displayName: String,
+    @ProtoNumber(6) val emailVerification: EmailVerificationStartedRemote,
 )
 
 @Serializable
@@ -26,6 +36,8 @@ class VerifyAccountCreationRequest(
     @ProtoNumber(3) val userInfo: UserInfo,
     @ProtoNumber(4) val publicKeyCredentialJson: String,
     @ProtoNumber(5) val acceptedDocuments: AcceptedLegalDocumentsRemote,
+    @ProtoNumber(6) val verificationId: Uuid,
+    @ProtoNumber(7) val emailCode: String,
 ) {
     @Serializable
     class UserInfo(

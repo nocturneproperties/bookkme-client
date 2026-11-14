@@ -5,15 +5,19 @@ import me.bookk.core.data.mock.RoutingMock
 import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.feature.authorization.data.datasource.CommonAuthorizationDataSource
 import me.bookk.feature.authorization.data.datasource.CommonDeviceDataSource
+import me.bookk.feature.authorization.data.datasource.CommonEmailChangeDataSource
 import me.bookk.feature.authorization.data.datasource.CommonRegistrationDataSource
 import me.bookk.feature.authorization.data.datasource.CommonSignUpLegalDocumentsDataSource
 import me.bookk.feature.authorization.data.datasource.CommonUserProfileDataSource
+import me.bookk.feature.authorization.data.datasource.InMemorySignUpSessionDataSource
 import me.bookk.feature.authorization.data.remote.mock.UserRoutingMock
 import me.bookk.feature.authorization.domain.datasource.SignUpLegalDocumentsDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
+import me.bookk.feature.authorization.domain.datasource.email.EmailChangeDataSource
 import me.bookk.feature.authorization.domain.datasource.profile.UserProfileDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.RegistrationDataSource
+import me.bookk.feature.authorization.domain.datasource.registration.SignUpSessionDataSource
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -33,6 +37,9 @@ fun authDataModule() = module {
         )
     } binds arrayOf(AuthorizationDataSource::class, LogOutAction::class)
     singleOf(::CommonRegistrationDataSource) bind RegistrationDataSource::class
+    singleOf(::CommonEmailChangeDataSource) bind EmailChangeDataSource::class
+    singleOf(::InMemorySignUpSessionDataSource) binds
+        arrayOf(SignUpSessionDataSource::class, LogOutAction::class)
     singleOf(::CommonSignUpLegalDocumentsDataSource) bind SignUpLegalDocumentsDataSource::class
     singleOf(::CommonDeviceDataSource) bind DeviceDataSource::class
     singleOf(::CommonUserProfileDataSource) binds

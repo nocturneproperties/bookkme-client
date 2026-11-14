@@ -35,7 +35,7 @@ one transaction, so active observers never see an intermediate empty list. The d
 table through its singleton `LogOutAction` binding. See [Settings persistence](../../database/settings.md).
 
 `acceptedAt = null` means the current document has not been accepted. This operation only reads acceptance
-status. Signup sends accepted document versions through [Create account](../authorization/create-account.md).
+status. Signup sends accepted document versions through [Finish sign-up](../authorization/finish-sign-up.md).
 
 Settings subscribes once to the local flow and refreshes when presented, after successful acceptance or an
 unknown-version rejection, and on retry. Both platforms always show the Privacy Policy and Terms of
@@ -55,7 +55,9 @@ These failures do not also add a notification. Acceptance is visible only for pe
 the shared button loading helpers manage its submission state.
 After initial placeholder setup, only the local flow updates document rows, callbacks and acceptance labels. Refresh launches manage
 loading and error presentation without rendering or storing their return value.
-Consent callbacks use the displayed versions; visibility and enabled state determine when they can be triggered.
+A confirmed Privacy Policy row reads “Read” and a confirmed Terms of Use row reads “Accepted”: the backend
+records both as acceptance, but for the policy it only documents receipt of information.
+Confirmation callbacks use the displayed versions; visibility and enabled state determine when they can be triggered.
 Version identifiers remain bound to the shared records and are not displayed in the compact Settings rows.
 An empty snapshot keeps both unknown rows without a separate empty-publication message.
 Clearing the cache restores both unknown rows. Published URLs open through the shared

@@ -437,6 +437,26 @@ class AppointmentListViewModelTest {
     }
 
     @Test
+    fun `lists earlier appointments first`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val late = Appointment.stub(date = LocalDateTime(2030, 1, 1, 15, 30))
+        val early = Appointment.stub(date = LocalDateTime(2030, 1, 1, 9, 0))
+        val middle = Appointment.stub(date = LocalDateTime(2030, 1, 1, 12, 15))
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.appointments.value = listOf(late, early, middle)
+
+        then()
+        assertEquals(
+            listOf("09:00", "12:15", "15:30"),
+            sut.uiState.appointments.items.map { it.scheduledAt },
+        )
+    }
+
+    @Test
     fun `shows booked services and their total for an appointment without adjustment`() =
         runUnitTest {
             given()

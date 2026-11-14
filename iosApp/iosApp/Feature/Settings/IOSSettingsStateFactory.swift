@@ -23,10 +23,6 @@ class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
 		return IOSSettingsState(initData: initData)
 	}
 	
-	func createContactUsState(initData: ContactUsStateInitData) -> any ContactUsState {
-		return IOSContactUsState(initData: initData)
-	}
-	
 	func createDeleteAccountState(initData: DeleteAccountStateInitData) -> any DeleteAccountState {
 		return IOSDeleteAccountState(initData: initData)
 	}

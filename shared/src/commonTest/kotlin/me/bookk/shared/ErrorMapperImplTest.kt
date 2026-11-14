@@ -169,4 +169,35 @@ class ErrorMapperImplTest {
             result,
         )
     }
+
+    @Test
+    fun `notifies too many requests with a try again message`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = fixture.sut.mapToNotification(Error.TooManyRequests(Exception()))
+
+        then()
+        assertIs<PresentationNotification.Message>(result)
+        assertEquals(DesignSystem.strings.error_too_many_requests.desc(), result.message)
+    }
+
+    @Test
+    fun `describes too many requests as a try again later issue`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = fixture.sut.mapToDescription(Error.TooManyRequests(Exception()))
+
+        then()
+        assertEquals(
+            ErrorDescription(
+                title = DesignSystem.strings.error_generic_title.desc(),
+                message = DesignSystem.strings.error_too_many_requests.desc(),
+            ),
+            result,
+        )
+    }
 }

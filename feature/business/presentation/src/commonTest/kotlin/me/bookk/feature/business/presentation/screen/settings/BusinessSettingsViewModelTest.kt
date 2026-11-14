@@ -38,6 +38,7 @@ import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.test.tap
+import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
@@ -182,6 +183,18 @@ class BusinessSettingsViewModelTest {
 
         then()
         assertFalse(sut.uiState.save.isEnabled)
+    }
+
+    @Test
+    fun `uses phone input type for business phone`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(InputType.PHONE, sut.uiState.phone.inputType)
     }
 
     @Test

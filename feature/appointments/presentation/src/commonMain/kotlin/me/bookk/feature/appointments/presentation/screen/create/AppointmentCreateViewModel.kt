@@ -302,7 +302,7 @@ class AppointmentCreateViewModel(
     }
 
     private fun AppointmentCreateState.setup() = apply {
-        appBar.size = TopBarSize.LARGE
+        appBar.size = TopBarSize.SMALL
         appBar.title = AppointmentsRes.strings.appointments_create_title.desc()
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(AppointmentCreateDestination.Back)

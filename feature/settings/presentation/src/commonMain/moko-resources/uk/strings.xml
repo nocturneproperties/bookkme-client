@@ -17,6 +17,7 @@
     <string name="settings_account_logout_message">Ви впевнені, що хочете вийти?</string>
     <string name="settings_account_delete_acc_label">Видалити обліковий запис</string>
     <string name="settings_account_notifications_lable">Сповіщення</string>
+    <string name="settings_account_change_email_label">Змінити мою ел. пошту</string>
 
     <string name="settings_support_title">Підтримка</string>
     <string name="settings_support_contact_label">Звʼязатися з нами</string>
@@ -30,13 +31,7 @@
     <string name="settings_edit_profile_first_name_error">Імʼя має містити щонайменше 2 символи</string>
     <string name="settings_edit_profile_last_name">Прізвище</string>
     <string name="settings_edit_profile_last_name_error">Прізвище має містити щонайменше 2 символи</string>
-    <string name="settings_edit_profile_email">Ел. пошта</string>
-    <string name="settings_edit_profile_email_error">Неправильний формат ел. пошти</string>
 
-    <string name="settings_contact_us_title">Звʼязатися з нами</string>
-    <string name="settings_contact_us_contact_hint">Введіть повідомлення, і ми звʼяжемося з вами через ел. пошту, вказану в профілі</string>
-    <string name="settings_contact_us_include_logs">Додати журнали використання</string>
-    <string name="settings_contact_us_include_logs_hint">Якщо у вас виникла проблема, додайте журнали використання застосунку, щоб наші розробники змогли швидше її виправити</string>
 
     <string name="settings_delete_account_title">Видалити обліковий запис</string>
     <string name="settings_delete_account_confirmation">Я розумію, що видалення облікового запису є незворотним і я не зможу його відновити</string>
@@ -59,6 +54,7 @@
     <string name="settings_notifications_push_label">Push-сповіщення</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
     <string name="settings_edit_profile_email_taken_error">Ця електронна адреса вже використовується.</string>
+    <string name="settings_edit_profile_email_verification_required_error">Нову адресу ел. пошти потрібно підтвердити кодом.</string>
     <string name="settings_passkey_last_error">Не можна видалити останній ключ доступу. Спочатку додайте інший ключ, щоб зберегти доступ до облікового запису.</string>
 
     <string name="settings_privacy_title">Конфіденційність</string>
@@ -68,13 +64,14 @@
     <string name="settings_privacy_crash_reports_description">Під час збою застосунок надсилає до Firebase Crashlytics технічні відомості про помилку та ваш пристрій, щоб ми могли її виправити. Звіти не містять вашого імені, email, даних бізнесу чи клієнтів.</string>
     <string name="settings_legal_title">Правова інформація</string>
     <string name="settings_legal_accepted">Прийнято</string>
+    <string name="settings_legal_acknowledged">Прочитано</string>
     <string name="settings_legal_pending">Потребує ознайомлення</string>
     <string name="settings_legal_unknown">Статус прийняття невідомий</string>
-    <string name="settings_legal_accept">Прийняти документи</string>
+    <string name="settings_legal_accept">Підтвердити</string>
     <string name="settings_legal_retry">Повторити</string>
     <string name="settings_legal_load_error">Не вдалося завантажити правові документи. Спробуйте ще раз.</string>
-    <string name="settings_legal_changed">Правові документи змінилися. Ознайомтеся з поточними версіями та прийміть їх знову.</string>
-    <string name="settings_legal_consent">Натискаючи «Прийняти документи», ви погоджуєтеся з документами, що потребують ознайомлення.</string>
+    <string name="settings_legal_changed">Правові документи змінилися. Ознайомтеся з поточними версіями та підтвердьте знову.</string>
+    <string name="settings_legal_review_note">Підтверджуючи, ви приймаєте оновлені Умови використання, а ми фіксуємо, що ви прочитали оновлену Політику конфіденційності. Ознайомлення з Політикою конфіденційності не є згодою на обробку даних.</string>
     <string name="settings_legal_loading">Перевіряємо документи…</string>
 
     <string name="settings_export_title">Експорт моїх даних</string>

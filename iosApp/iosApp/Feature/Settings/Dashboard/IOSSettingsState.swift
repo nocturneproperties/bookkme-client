@@ -36,6 +36,7 @@ class IOSSettingsState: @MainActor SettingsState {
 @Observable
 class IOSAccountSection: @MainActor AccountSection {
 	let dataExport: any TextState = IOSTextState(text: RawStringDesc(string: ""))
+	let changeEmail: any TextState = IOSTextState(text: RawStringDesc(string: ""))
 	let privacy: any TextState = IOSTextState(text: RawStringDesc(string: ""))
 	var privacyStatus: (any StringDesc)? = nil
 	
@@ -117,6 +118,8 @@ class IOSSupportSection: @MainActor SupportSection {
 	var reportError: any TextState
 	
 	var terms: any TextState
+	
+	var onContactClick: () -> Void = {}
 	
 	
 	init(initData: SupportSectionInitData) {

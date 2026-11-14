@@ -26,6 +26,9 @@ sealed class Error(
     class NotFound(
         cause: Throwable,
     ) : Error("Not Found", cause)
+    class TooManyRequests(
+        cause: Throwable,
+    ) : Error("Too Many Requests", cause)
     class Ignore(
         cause: Throwable,
     ) : Error("Exception can be ignored", cause)

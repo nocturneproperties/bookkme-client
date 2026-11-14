@@ -8,6 +8,7 @@ class AuthNavigation(
     val navigateToSignUp: () -> Unit,
     val navigateToContactSupport: () -> Unit,
     val navigateToTroubleshoot: () -> Unit,
+    val navigateToVerifyEmail: (AuthDestination.VerifyEmail) -> Unit,
 )
 
 internal val LocalNavigation = compositionLocalOf {
@@ -17,5 +18,6 @@ internal val LocalNavigation = compositionLocalOf {
         navigateToSignUp = {},
         navigateToContactSupport = {},
         navigateToTroubleshoot = {},
+        navigateToVerifyEmail = {},
     )
 }

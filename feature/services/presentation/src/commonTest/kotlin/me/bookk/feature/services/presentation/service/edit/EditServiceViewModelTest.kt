@@ -130,6 +130,37 @@ class EditServiceViewModelTest {
     }
 
     @Test
+    fun `explains online booking when service is visible to clients`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            ServicesRes.strings.services_create_visible_on_hint.desc(),
+            sut.uiState.available.supportingTextRes,
+        )
+    }
+
+    @Test
+    fun `explains staff only booking when service is hidden from clients`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.available.onCheckedChange?.invoke(false)
+
+        then()
+        assertEquals(
+            ServicesRes.strings.services_create_visible_off_hint.desc(),
+            sut.uiState.available.supportingTextRes,
+        )
+    }
+
+    @Test
     fun `enables save for the untouched stored service`() = runUnitTest {
         given()
         val fixture = Fixture()

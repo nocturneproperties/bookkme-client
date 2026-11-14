@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,6 +26,9 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.uistate.AndroidButtonState
+
+private val DIALOG_MIN_WIDTH = 280.dp
+private val DIALOG_MAX_WIDTH = 560.dp
 
 @Composable
 fun AppDialog(
@@ -55,8 +59,10 @@ fun AppDialog(
             }
             content?.invoke()
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 buttonDescriptors.forEach {
@@ -66,6 +72,7 @@ fun AppDialog(
                             onDismiss()
                         },
                         state = AndroidButtonState(text = it.text),
+                        textStyle = MaterialTheme.typography.labelLarge,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent,
                             contentColor = when (it.actionType) {
@@ -89,13 +96,13 @@ fun AppDialogScreenContainer(onDismiss: () -> Unit, content: @Composable () -> U
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Card(
-            shape = MaterialTheme.shapes.large,
+            shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
                 containerColor = LocalColors.current.elevated,
             ),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 24.dp)
+                .widthIn(min = DIALOG_MIN_WIDTH, max = DIALOG_MAX_WIDTH),
         ) {
             content()
         }

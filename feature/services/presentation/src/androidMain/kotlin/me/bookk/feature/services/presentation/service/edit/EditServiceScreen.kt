@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
-import me.bookk.designsystem.components.CheckBox
 import me.bookk.designsystem.components.PickerField
+import me.bookk.designsystem.components.StateSwitch
 import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.stateButtonColors
@@ -45,11 +45,11 @@ internal fun EditServiceScreen(state: EditServiceState) {
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
+                TextField(state.name, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next))
                 PickerField(
                     state = state.group,
                     screenPicker = standardScreenPicker(),
                 )
-                TextField(state.name, keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next))
                 TextField(
                     state.duration,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -58,7 +58,7 @@ internal fun EditServiceScreen(state: EditServiceState) {
                     state.price,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 )
-                CheckBox(state.available)
+                StateSwitch(state.available)
             }
         },
         bottomBar = {

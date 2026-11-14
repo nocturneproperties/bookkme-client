@@ -188,4 +188,83 @@ class MapperTest {
         assertIs<Error.UnknownApiError>(result)
         assertEquals(409, result.errorCode)
     }
+
+    @Test
+    fun `maps an html 429 to too many requests preserving the cause`() = runUnitTest {
+        given()
+        val failure = failureFor(
+            HttpStatusCode.TooManyRequests,
+            "<html><body>429 Too Many Requests</body></html>".encodeToByteArray(),
+            ContentType.Text.Html,
+        )
+
+        whenn()
+        val result = failure.toDomain()
+
+        then()
+        assertIs<Error.TooManyRequests>(result)
+        assertSame(failure, result.cause)
+    }
+
+    @Test
+    fun `maps an empty protobuf 429 to too many requests`() = runUnitTest {
+        given()
+        val failure = failureFor(
+            HttpStatusCode.TooManyRequests,
+            byteArrayOf(),
+            ContentType.Application.ProtoBuf,
+        )
+
+        whenn()
+        val result = failure.toDomain()
+
+        then()
+        assertIs<Error.TooManyRequests>(result)
+    }
+
+    @Test
+    fun `keeps a protobuf 429 as a business error`() = runUnitTest {
+        given()
+        val failure = failureFor(HttpStatusCode.TooManyRequests, 910004, "Too soon")
+
+        whenn()
+        val result = failure.toDomain()
+
+        then()
+        assertIs<Error.BusinessError>(result)
+        assertEquals(910004, result.errorCode)
+    }
+
+    @Test
+    fun `ignores a protobuf looking body that is not served as protobuf`() = runUnitTest {
+        given()
+        val body = dataSerializer.encodeToByteArray(
+            BusinessServerError.serializer(),
+            BusinessServerError(200027, "garbage"),
+        )
+        val failure = failureFor(HttpStatusCode.Conflict, body, ContentType.Text.Html)
+
+        whenn()
+        val result = failure.toDomain()
+
+        then()
+        assertIs<Error.UnknownApiError>(result)
+        assertEquals(409, result.errorCode)
+    }
+
+    @Test
+    fun `maps a non protobuf 400 to bad request`() = runUnitTest {
+        given()
+        val failure = failureFor(
+            HttpStatusCode.BadRequest,
+            "<html>bad</html>".encodeToByteArray(),
+            ContentType.Text.Html,
+        )
+
+        whenn()
+        val result = failure.toDomain()
+
+        then()
+        assertIs<Error.BadRequest>(result)
+    }
 }

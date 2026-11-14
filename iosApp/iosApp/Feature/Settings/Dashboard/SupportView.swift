@@ -18,7 +18,7 @@ struct SupportView: View {
 	}
 	
 	var body: some View {
-		NavigationLink(value: SettingsDestination.ContactUs()) {
+		Button(action: state.onContactClick) {
 			Text(state.contact.text.localized())
 		}
 	}

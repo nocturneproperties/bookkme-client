@@ -11,6 +11,7 @@ import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.uuid.Uuid
 
 class RegistrationMapperTest {
     private fun registration(documents: AcceptedLegalDocuments): RegistrationData {
@@ -23,6 +24,8 @@ class RegistrationMapperTest {
             userInfo = RegistrationData.UserInfo("John", "Doe", "john@example.com"),
             publicKeyCredentialJson = "{}",
             acceptedDocuments = documents,
+            verificationId = Uuid.parse("00000000-0000-0000-0000-0000000000a1"),
+            emailCode = "123456",
         )
     }
 
@@ -84,5 +87,25 @@ class RegistrationMapperTest {
         then()
         assertNull(result.acceptedDocuments.privacyPolicy)
         assertNull(result.acceptedDocuments.termsOfService)
+    }
+
+    @Test
+    fun `serializes the verification id and email code`() = runUnitTest {
+        given()
+        val data = registration(AcceptedLegalDocuments())
+
+        whenn()
+        val bytes = dataSerializer.encodeToByteArray(
+            VerifyAccountCreationRequest.serializer(),
+            data.toRemote(),
+        )
+        val result = dataSerializer.decodeFromByteArray(
+            VerifyAccountCreationRequest.serializer(),
+            bytes,
+        )
+
+        then()
+        assertEquals(Uuid.parse("00000000-0000-0000-0000-0000000000a1"), result.verificationId)
+        assertEquals("123456", result.emailCode)
     }
 }

@@ -13,8 +13,6 @@ import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.FakeTextState
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountNavigationDestination
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountState
-import me.bookk.feature.settings.presentation.contactus.ContactUsNavigationDestination
-import me.bookk.feature.settings.presentation.contactus.ContactUsState
 import me.bookk.feature.settings.presentation.dashboard.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection
 import me.bookk.feature.settings.presentation.dashboard.ProfileSection
@@ -45,9 +43,6 @@ internal class FakeSettingsStateFactory : SettingsStateFactory {
     override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState =
         FakeEditProfileState()
 
-    override fun createContactUsState(initData: ContactUsState.InitData): ContactUsState =
-        FakeContactUsState()
-
     override fun createDeleteAccountState(
         initData: DeleteAccountState.InitData,
     ): DeleteAccountState = FakeDeleteAccountState()
@@ -77,6 +72,7 @@ internal class FakeSettingsState : SettingsState {
     }
     override val account = object : AccountSection {
         override val dataExport = FakeTextState()
+        override val changeEmail = FakeTextState()
         override val privacy = FakeTextState()
         override var privacyStatus: StringDesc? = null
         override val title: StringDesc = "".desc()
@@ -92,6 +88,7 @@ internal class FakeSettingsState : SettingsState {
         override val terms = FakeTextState()
         override val policy = FakeTextState()
         override val reportError = FakeTextState()
+        override var onContactClick: () -> Unit = {}
     }
     override val notification = FakeNotificationState()
     override val navigation = FakeNavigationState<SettingsDashboardDestination>()
@@ -101,20 +98,9 @@ internal class FakeEditProfileState : EditProfileState {
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
     override val lastName = FakeTextFieldState()
-    override val email = FakeTextFieldState()
     override val confirmButton = FakeButtonState()
     override val notification = FakeNotificationState()
     override val navigation = FakeNavigationState<EditProfileNavigationDestination>()
-}
-
-internal class FakeContactUsState : ContactUsState {
-    override val appBar = FakeAppBarState()
-    override val contactField = FakeTextFieldState()
-    override val includeLogsSwitch = FakeBooleanState()
-    override val logsExplanationText: StringDesc = "".desc()
-    override val submitButton = FakeButtonState()
-    override val notifications = FakeNotificationState()
-    override val navigation = FakeNavigationState<ContactUsNavigationDestination>()
 }
 
 internal class FakeDeleteAccountState : DeleteAccountState {

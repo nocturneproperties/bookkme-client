@@ -10,6 +10,9 @@ sealed class SettingsDestination {
     data object EditProfile : SettingsDestination()
 
     @Serializable
+    data object ChangeEmail : SettingsDestination()
+
+    @Serializable
     data object Passkey : SettingsDestination()
 
     @Serializable
@@ -23,7 +26,4 @@ sealed class SettingsDestination {
 
     @Serializable
     data object DeleteAccount : SettingsDestination()
-
-    @Serializable
-    data object ContactUs : SettingsDestination()
 }

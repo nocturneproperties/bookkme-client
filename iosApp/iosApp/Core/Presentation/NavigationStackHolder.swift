@@ -40,7 +40,10 @@ public final class NavigationStackHolder: ObservableObject {
 	}
 	
 	public func popLast() {
-		guard path.count > 0 else { return }
-		path.removeLast()
+		popLast(1)
+	}
+
+	public func popLast(_ count: Int) {
+		path.removeLast(min(count, path.count))
 	}
 }

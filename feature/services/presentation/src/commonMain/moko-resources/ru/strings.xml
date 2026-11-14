@@ -15,6 +15,8 @@
     <string name="services_create_price">Цена</string>
     <string name="services_create_price_placeholder">Сумма оплаты</string>
     <string name="services_create_visible">Видна клиентам</string>
+    <string name="services_create_visible_on_hint">Клиенты могут записаться онлайн</string>
+    <string name="services_create_visible_off_hint">Записать могут только сотрудники</string>
     <string name="services_create_group_error">Выберите группу услуг</string>
     <string name="services_create_price_error">Введите корректную цену</string>
 

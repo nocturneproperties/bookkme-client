@@ -40,7 +40,9 @@ flowchart TD
 ```
 
 Signup renders one unchecked checkbox for both required documents, with each document name as an inline
-hyperlink in its label. Checking it explicitly accepts both displayed versions. Once documents load, confirm
+hyperlink in its label. Its label keeps the two meanings apart: the user accepts the Terms of Service and
+confirms having read the Privacy Policy (receipt of information, not consent to processing). Checking it
+submits both displayed versions to the acceptance API. Once documents load, confirm
 is enabled until form validation reports an invalid field. Confirm validates consent alongside first name,
 last name and email. Missing consent sets `legalAcceptance.validationState = ERROR`, `isValid = false`,
 and a localized supporting message; account creation does not run. The checkbox remains enabled so the user
@@ -57,7 +59,7 @@ it controls retry visibility and prevents submission until loading succeeds.
 `SignUpState.legalDocuments` is a nullable `SignUpLegalDocumentsState` with named `privacyPolicy` and
 `termsOfService` link states, assigned together after a successful load. It does not use `ListState`.
 
-On `CreateAccount.Error.LegalDocumentVersionUnknown` (100003) or `LegalDocumentsNotAccepted` (100004), signup
+On `FinishSignUp.Error.LegalDocumentVersionUnknown` (100003) or `LegalDocumentsNotAccepted` (100004), signup
 explains that the documents changed and rereads the cached requirements. Previous documents and consent remain in
 state while the loading indicator is shown; consent is unchecked when the replacement documents arrive.
 The caller must explicitly accept the reloaded documents and submit again; registration is never retried

@@ -12,12 +12,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import me.bookk.core.domain.entity.Error
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.entity.UserProfile
+import me.bookk.feature.settings.domain.api.EditProfile
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -45,7 +47,7 @@ class EditProfileImplTest {
     }
 
     @Test
-    fun `calls update with merged profile fields`() = runUnitTest {
+    fun `calls update with merged profile names`() = runUnitTest {
         given()
         val fixture = Fixture()
         val existing = UserProfile(
@@ -58,16 +60,38 @@ class EditProfileImplTest {
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("New", "Lastname", "new@example.com")
+        fixture.sut("New", "Lastname")
 
         then()
         verifySuspend {
             fixture.profileCRUD.update(
-                matches({ "match" }) {
-                    it.firstName == "New" &&
-                        it.lastName == "Lastname" &&
-                        it.email == "new@example.com"
-                },
+                matches({ "match" }) { it.firstName == "New" && it.lastName == "Lastname" },
+            )
+        }
+    }
+
+    @Test
+    fun `sends stored email unchanged`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val existing = UserProfile(
+            id = Uuid.random(),
+            firstName = "Old",
+            lastName = "Name",
+            email = "old@example.com",
+        )
+        everySuspend { fixture.profileCRUD.get() } returns existing
+        everySuspend { fixture.profileCRUD.update(any()) } returns Unit
+
+        whenn()
+        fixture.sut("New", "Lastname")
+
+        then()
+        verifySuspend {
+            fixture.profileCRUD.update(
+                matches({
+                    "stored email"
+                }) { it.email == "old@example.com" },
             )
         }
     }
@@ -83,14 +107,14 @@ class EditProfileImplTest {
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("A", "B", "a@b.com")
+        fixture.sut("A", "B")
 
         then()
         verifySuspend { fixture.profileCRUD.update(matches({ "match" }) { it.id == id }) }
     }
 
     @Test
-    fun `saves trimmed profile fields`() = runUnitTest {
+    fun `saves trimmed profile names`() = runUnitTest {
         given()
         val fixture = Fixture()
         val existing = UserProfile(
@@ -103,16 +127,12 @@ class EditProfileImplTest {
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("  New ", "Lastname\n", " new@example.com ")
+        fixture.sut("  New ", "Lastname\n")
 
         then()
         verifySuspend {
             fixture.profileCRUD.update(
-                matches({ "trimmed" }) {
-                    it.firstName == "New" &&
-                        it.lastName == "Lastname" &&
-                        it.email == "new@example.com"
-                },
+                matches({ "trimmed" }) { it.firstName == "New" && it.lastName == "Lastname" },
             )
         }
     }
@@ -124,16 +144,28 @@ class EditProfileImplTest {
         everySuspend { fixture.profileCRUD.get() } returns
             UserProfile(Uuid.random(), "John", "Doe", "old@example.com")
         everySuspend { fixture.profileCRUD.update(any()) } throws
-            me.bookk.core.domain.entity.Error.BusinessError(100002, "rejected")
+            Error.BusinessError(100002, "rejected")
 
         whenn()
-        val result = runCatching { fixture.sut("John", "Doe", "john@example.com") }
+        val result = runCatching { fixture.sut("John", "Doe") }
 
         then()
-        assertFailsWith<
-            me.bookk.feature.settings.domain.api.EditProfile.Error.ContactAlreadyTaken,
-            > {
-            result.getOrThrow()
-        }
+        assertFailsWith<EditProfile.Error.ContactAlreadyTaken> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `maps backend error 100006 to EmailChangeRequiresVerification`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.profileCRUD.get() } returns
+            UserProfile(Uuid.random(), "John", "Doe", "old@example.com")
+        everySuspend { fixture.profileCRUD.update(any()) } throws
+            Error.BusinessError(100006, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut("John", "Doe") }
+
+        then()
+        assertFailsWith<EditProfile.Error.EmailChangeRequiresVerification> { result.getOrThrow() }
     }
 }

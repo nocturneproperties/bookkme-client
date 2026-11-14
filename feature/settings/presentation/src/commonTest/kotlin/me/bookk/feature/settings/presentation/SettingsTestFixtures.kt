@@ -3,7 +3,6 @@ package me.bookk.feature.settings.presentation
 import library.permissions.api.PermissionChecker
 import library.permissions.api.PermissionManager
 import library.permissions.api.PermissionType
-import library.validation.api.ValidateEmail
 import library.validation.api.ValidateName
 import me.bookk.feature.settings.domain.api.entity.LegalDocument
 import me.bookk.feature.settings.domain.api.entity.LegalDocumentStatus
@@ -19,12 +18,6 @@ internal class FakeValidateName : ValidateName {
         } else {
             ValidateName.Result.Invalid.Length
         }
-    }
-}
-
-internal class FakeValidateEmail : ValidateEmail {
-    override fun invoke(email: String): ValidateEmail.Result {
-        return if ("@" in email) ValidateEmail.Result.Valid else ValidateEmail.Result.Invalid.Format
     }
 }
 

@@ -27,6 +27,8 @@
 	<string>1</string>
 	<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
 	<true/>
+	<key>FirebaseCrashlyticsCollectionEnabled</key>
+	<false/>
 	<key>FirebaseMessagingInstallationIdEnabled</key>
 	<true/>
 	<key>GOOGLE_ADS_ON_DEVICE_CONVERSION_EVENT_DATA_ENABLED</key>

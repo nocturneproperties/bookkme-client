@@ -11,4 +11,11 @@ sealed class AuthDestination {
 
     @Serializable
     data object Troubleshoot : AuthDestination()
+
+    @Serializable
+    data class VerifyEmail(
+        val maskedEmail: String,
+        val expiresAtMillis: Long,
+        val resendAvailableAtMillis: Long,
+    ) : AuthDestination()
 }

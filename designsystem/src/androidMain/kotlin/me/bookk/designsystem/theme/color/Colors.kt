@@ -41,7 +41,7 @@ object AppColors {
             buttonPrimary = colorResource(resource = DesignSystem.colors.lightButton),
             buttonActive = colorResource(resource = DesignSystem.colors.lightButtonActive),
             buttonInactive = colorResource(resource = DesignSystem.colors.lightButtonInactive),
-            error = colorResource(resource = DesignSystem.colors.error),
+            error = colorResource(resource = DesignSystem.colors.lightError),
             onAction = colorResource(resource = DesignSystem.colors.lightOnAction),
         )
 
@@ -66,7 +66,7 @@ object AppColors {
             buttonPrimary = colorResource(resource = DesignSystem.colors.darkButton),
             buttonActive = colorResource(resource = DesignSystem.colors.darkButtonActive),
             buttonInactive = colorResource(resource = DesignSystem.colors.darkButtonInactive),
-            error = colorResource(resource = DesignSystem.colors.error),
+            error = colorResource(resource = DesignSystem.colors.darkError),
             onAction = colorResource(resource = DesignSystem.colors.darkOnAction),
         )
 }

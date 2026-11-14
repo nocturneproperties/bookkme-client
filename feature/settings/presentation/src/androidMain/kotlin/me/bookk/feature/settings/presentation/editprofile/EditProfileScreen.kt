@@ -46,10 +46,6 @@ internal fun EditProfileScreen(state: EditProfileState) {
                     state = state.lastName,
                     onValueChange = LocalEditProfileEventListener.current.onLastNameChanged,
                 )
-                TextField(
-                    state = state.email,
-                    onValueChange = LocalEditProfileEventListener.current.onEmailChanged,
-                )
             }
         },
         bottomBar = {
@@ -68,7 +64,9 @@ internal fun EditProfileScreen(state: EditProfileState) {
 private fun HandleNavigation(navigation: NavigationState<EditProfileNavigationDestination>) {
     ObserveNavigation(navigation) {
         when (it) {
-            EditProfileNavigationDestination.Back -> LocalNavigation.current.navigateBack()
+            EditProfileNavigationDestination.Back -> {
+                LocalNavigation.current.navigateBack()
+            }
         }
     }
 }

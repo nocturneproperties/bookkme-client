@@ -17,6 +17,7 @@
     <string name="settings_account_logout_message">Вы уверены, что хотите выйти?</string>
     <string name="settings_account_delete_acc_label">Удалить аккаунт</string>
     <string name="settings_account_notifications_lable">Уведомления</string>
+    <string name="settings_account_change_email_label">Изменить мою эл. почту</string>
 
     <string name="settings_support_title">Поддержка</string>
     <string name="settings_support_contact_label">Связаться с нами</string>
@@ -30,13 +31,7 @@
     <string name="settings_edit_profile_first_name_error">Имя должно содержать не менее 2 символов</string>
     <string name="settings_edit_profile_last_name">Фамилия</string>
     <string name="settings_edit_profile_last_name_error">Фамилия должна содержать не менее 2 символов</string>
-    <string name="settings_edit_profile_email">Эл. почта</string>
-    <string name="settings_edit_profile_email_error">Неверный формат эл. почты</string>
 
-    <string name="settings_contact_us_title">Связаться с нами</string>
-    <string name="settings_contact_us_contact_hint">Введите сообщение, и мы свяжемся с вами по эл. почте, указанной в профиле</string>
-    <string name="settings_contact_us_include_logs">Приложить журналы использования</string>
-    <string name="settings_contact_us_include_logs_hint">Если у вас возникла проблема, приложите журналы использования приложения, чтобы наши разработчики смогли быстрее её исправить</string>
 
     <string name="settings_delete_account_title">Удалить аккаунт</string>
     <string name="settings_delete_account_confirmation">Я понимаю, что удаление аккаунта необратимо и я не смогу его восстановить</string>
@@ -59,6 +54,7 @@
     <string name="settings_notifications_push_label">Push-уведомления</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
     <string name="settings_edit_profile_email_taken_error">Этот адрес электронной почты уже используется.</string>
+    <string name="settings_edit_profile_email_verification_required_error">Новый адрес эл. почты нужно подтвердить кодом.</string>
     <string name="settings_passkey_last_error">Нельзя удалить последний ключ доступа. Сначала добавьте другой ключ, чтобы сохранить доступ к аккаунту.</string>
 
     <string name="settings_privacy_title">Конфиденциальность</string>
@@ -68,13 +64,14 @@
     <string name="settings_privacy_crash_reports_description">При сбое приложение отправляет в Firebase Crashlytics технические сведения об ошибке и вашем устройстве, чтобы мы могли её исправить. Отчёты не содержат ваше имя, email, данные бизнеса или клиентов.</string>
     <string name="settings_legal_title">Правовая информация</string>
     <string name="settings_legal_accepted">Принято</string>
+    <string name="settings_legal_acknowledged">Прочитано</string>
     <string name="settings_legal_pending">Требуется ознакомление</string>
     <string name="settings_legal_unknown">Статус принятия неизвестен</string>
-    <string name="settings_legal_accept">Принять документы</string>
+    <string name="settings_legal_accept">Подтвердить</string>
     <string name="settings_legal_retry">Повторить</string>
     <string name="settings_legal_load_error">Не удалось загрузить правовые документы. Повторите попытку.</string>
-    <string name="settings_legal_changed">Правовые документы изменились. Ознакомьтесь с текущими версиями и примите их снова.</string>
-    <string name="settings_legal_consent">Нажимая «Принять документы», вы соглашаетесь с документами, требующими ознакомления.</string>
+    <string name="settings_legal_changed">Правовые документы изменились. Ознакомьтесь с текущими версиями и подтвердите снова.</string>
+    <string name="settings_legal_review_note">Подтверждая, вы принимаете обновлённые Условия использования, а мы фиксируем, что вы прочитали обновлённую Политику конфиденциальности. Ознакомление с Политикой конфиденциальности не является согласием на обработку данных.</string>
     <string name="settings_legal_loading">Проверяем документы…</string>
 
     <string name="settings_export_title">Экспорт моих данных</string>

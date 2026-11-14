@@ -20,14 +20,17 @@ struct SettingsTab: View {
 				.navigationDestination(for: SettingsDestination.EditProfile.self) { _ in
 					EditProfileScreen()
 				}
+				.navigationDestination(for: SettingsDestination.ChangeEmail.self) { _ in
+					ChangeEmailScreen()
+				}
+				.navigationDestination(for: ChangeEmailDestinations.VerifyEmail.self) { value in
+					VerifyEmailScreen(pendingEmailChange: value.pendingEmailChange)
+				}
 				.navigationDestination(for: SettingsDestination.Passkey.self) { _ in
 					PasskeyScreen()
 				}
 				.navigationDestination(for: SettingsDestination.DeleteAccount.self) { _ in
 					DeleteAccountScreen()
-				}
-				.navigationDestination(for: SettingsDestination.ContactUs.self) { _ in
-					ContactUsScreen()
 				}
 				.navigationDestination(for: SettingsDestination.Notifications.self) { _ in
 					NotificationSettingsScreen()

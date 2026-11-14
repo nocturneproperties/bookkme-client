@@ -15,6 +15,8 @@
     <string name="services_create_price">Price</string>
     <string name="services_create_price_placeholder">Payment amount</string>
     <string name="services_create_visible">Visible to clients</string>
+    <string name="services_create_visible_on_hint">Clients can book it online</string>
+    <string name="services_create_visible_off_hint">Only staff can book it</string>
     <string name="services_create_group_error">Select a service group</string>
     <string name="services_create_price_error">Enter a valid price</string>
 

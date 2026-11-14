@@ -57,8 +57,8 @@ fun SettingsTab() {
                 navigateToVerifyEmail = { settingsController.navigate(it) },
                 finishEmailChange = {
                     settingsController.popBackStack(
-                        SettingsDestination.EditProfile,
-                        inclusive = false,
+                        EmailChangeDestination.ChangeEmail,
+                        inclusive = true,
                     )
                 },
             ),

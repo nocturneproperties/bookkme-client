@@ -72,6 +72,7 @@ internal class FakeSettingsState : SettingsState {
     }
     override val account = object : AccountSection {
         override val dataExport = FakeTextState()
+        override val changeEmail = FakeTextState()
         override val privacy = FakeTextState()
         override var privacyStatus: StringDesc? = null
         override val title: StringDesc = "".desc()
@@ -97,8 +98,6 @@ internal class FakeEditProfileState : EditProfileState {
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
     override val lastName = FakeTextFieldState()
-    override val email = FakeTextFieldState()
-    override val changeEmailButton = FakeButtonState()
     override val confirmButton = FakeButtonState()
     override val notification = FakeNotificationState()
     override val navigation = FakeNavigationState<EditProfileNavigationDestination>()

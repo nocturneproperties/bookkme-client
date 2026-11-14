@@ -9,7 +9,7 @@
     <string name="clients_create_last_name">Прізвище</string>
     <string name="clients_create_last_name_placeholder">Петренко</string>
     <string name="clients_create_phone">Телефон</string>
-    <string name="clients_create_phone_placeholder">2025550123</string>
+    <string name="clients_create_phone_placeholder">+380 67 123 4567</string>
     <string name="clients_create_email">Ел. пошта</string>
     <string name="clients_create_email_placeholder">необовʼязково</string>
     <string name="clients_email_taken_error">Клієнт із такою адресою ел. пошти вже існує.</string>

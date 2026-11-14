@@ -71,6 +71,7 @@ interface ProfileSection {
 
 interface AccountSection {
     val dataExport: TextState
+    val changeEmail: TextState
     val privacy: TextState
     var privacyStatus: StringDesc?
     val title: StringDesc

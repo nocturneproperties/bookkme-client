@@ -45,6 +45,11 @@ internal fun AccountSection(state: AccountSection) {
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
+                text = state.changeEmail.text.localized(),
+                onClick = LocalNavigation.current.navigateToChangeEmail,
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            SectionItem(
                 text = state.passkey.text.localized(),
                 onClick = LocalNavigation.current.navigateToPasskey,
             )

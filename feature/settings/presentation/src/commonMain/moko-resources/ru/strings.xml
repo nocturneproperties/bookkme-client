@@ -17,6 +17,7 @@
     <string name="settings_account_logout_message">Вы уверены, что хотите выйти?</string>
     <string name="settings_account_delete_acc_label">Удалить аккаунт</string>
     <string name="settings_account_notifications_lable">Уведомления</string>
+    <string name="settings_account_change_email_label">Изменить мою эл. почту</string>
 
     <string name="settings_support_title">Поддержка</string>
     <string name="settings_support_contact_label">Связаться с нами</string>
@@ -30,7 +31,6 @@
     <string name="settings_edit_profile_first_name_error">Имя должно содержать не менее 2 символов</string>
     <string name="settings_edit_profile_last_name">Фамилия</string>
     <string name="settings_edit_profile_last_name_error">Фамилия должна содержать не менее 2 символов</string>
-    <string name="settings_edit_profile_email">Эл. почта</string>
 
 
     <string name="settings_delete_account_title">Удалить аккаунт</string>
@@ -55,7 +55,6 @@
     <string name="settings_notifications_telegram_label">Telegram</string>
     <string name="settings_edit_profile_email_taken_error">Этот адрес электронной почты уже используется.</string>
     <string name="settings_edit_profile_email_verification_required_error">Новый адрес эл. почты нужно подтвердить кодом.</string>
-    <string name="settings_edit_profile_email_read_only_hint">Эл. почта используется для входа, поэтому её нельзя изменить здесь. Новый адрес нужно подтвердить кодом.</string>
     <string name="settings_passkey_last_error">Нельзя удалить последний ключ доступа. Сначала добавьте другой ключ, чтобы сохранить доступ к аккаунту.</string>
 
     <string name="settings_privacy_title">Конфиденциальность</string>
@@ -103,5 +102,4 @@
     <string name="settings_export_running_footer">Вы можете покинуть этот экран и вернуться позже.</string>
     <string name="settings_export_file_title">Персональные данные</string>
     <string name="settings_export_file_type">Файл JSON</string>
-    <string name="settings_edit_profile_change_email">Изменить эл. почту</string>
 </resources>

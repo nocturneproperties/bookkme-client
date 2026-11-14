@@ -13,7 +13,6 @@ import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.designsystem.components.ObserveNotifications
-import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
@@ -47,8 +46,6 @@ internal fun EditProfileScreen(state: EditProfileState) {
                     state = state.lastName,
                     onValueChange = LocalEditProfileEventListener.current.onLastNameChanged,
                 )
-                TextField(state = state.email)
-                StateTextButton(state = state.changeEmailButton)
             }
         },
         bottomBar = {
@@ -69,10 +66,6 @@ private fun HandleNavigation(navigation: NavigationState<EditProfileNavigationDe
         when (it) {
             EditProfileNavigationDestination.Back -> {
                 LocalNavigation.current.navigateBack()
-            }
-
-            EditProfileNavigationDestination.ChangeEmail -> {
-                LocalNavigation.current.navigateToChangeEmail()
             }
         }
     }

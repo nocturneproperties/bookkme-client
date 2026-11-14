@@ -11,8 +11,6 @@ interface EditProfileState {
     val appBar: AppBarState
     val name: TextFieldState
     val lastName: TextFieldState
-    val email: TextFieldState
-    val changeEmailButton: ButtonState
     val confirmButton: ButtonState
 
     val notification: PresentationNotificationState
@@ -22,7 +20,6 @@ interface EditProfileState {
         val title: StringDesc,
         val nameHint: StringDesc,
         val lastNameHint: StringDesc,
-        val emailHint: StringDesc,
         val confirmButtonText: StringDesc,
     )
 }

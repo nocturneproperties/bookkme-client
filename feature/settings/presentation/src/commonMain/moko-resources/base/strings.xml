@@ -65,13 +65,14 @@
     <string name="settings_privacy_crash_reports_description">When the app crashes, it sends Firebase Crashlytics technical details about the error and your device so we can fix it. Reports do not include your name, email, business or client data.</string>
     <string name="settings_legal_title">Legal</string>
     <string name="settings_legal_accepted">Accepted</string>
+    <string name="settings_legal_acknowledged">Read</string>
     <string name="settings_legal_pending">Needs your review</string>
     <string name="settings_legal_unknown">Unknown acceptance status</string>
-    <string name="settings_legal_accept">Accept documents</string>
+    <string name="settings_legal_accept">Confirm</string>
     <string name="settings_legal_retry">Retry</string>
     <string name="settings_legal_load_error">Could not load legal documents. Please retry.</string>
-    <string name="settings_legal_changed">Legal documents have changed. Review the current versions and accept again.</string>
-    <string name="settings_legal_consent">By selecting “Accept documents”, you agree to the documents marked for review.</string>
+    <string name="settings_legal_changed">Legal documents have changed. Review the current versions and confirm again.</string>
+    <string name="settings_legal_review_note">Confirming accepts the updated Terms of Use and records that you have read the updated Privacy Policy. Reading the Privacy Policy is not consent to data processing.</string>
     <string name="settings_legal_loading">Checking documents…</string>
 
     <string name="settings_export_title">Export my data</string>

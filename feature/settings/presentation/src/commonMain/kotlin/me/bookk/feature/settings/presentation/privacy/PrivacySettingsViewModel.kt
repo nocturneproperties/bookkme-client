@@ -127,7 +127,7 @@ class PrivacySettingsViewModel(
         }
         val hasPendingDocuments = statuses.any { it.acceptedAt == null }
         legal.message = if (hasPendingDocuments) {
-            SettingsRes.strings.settings_legal_consent.desc()
+            SettingsRes.strings.settings_legal_review_note.desc()
         } else {
             null
         }
@@ -167,7 +167,14 @@ class PrivacySettingsViewModel(
         return when {
             this == null -> SettingsRes.strings.settings_legal_unknown.desc()
             acceptedAt == null -> SettingsRes.strings.settings_legal_pending.desc()
-            else -> SettingsRes.strings.settings_legal_accepted.desc()
+            else -> current.document.confirmedDescription()
+        }
+    }
+
+    private fun LegalDocument.confirmedDescription(): StringDesc {
+        return when (this) {
+            LegalDocument.PRIVACY_POLICY -> SettingsRes.strings.settings_legal_acknowledged.desc()
+            LegalDocument.TERMS_OF_SERVICE -> SettingsRes.strings.settings_legal_accepted.desc()
         }
     }
 

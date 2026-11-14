@@ -65,13 +65,14 @@
     <string name="settings_privacy_crash_reports_description">Gdy aplikacja ulegnie awarii, wysyła do Firebase Crashlytics techniczne informacje o błędzie i Twoim urządzeniu, abyśmy mogli go naprawić. Raporty nie zawierają Twojego imienia, adresu e-mail ani danych firmy czy klientów.</string>
     <string name="settings_legal_title">Informacje prawne</string>
     <string name="settings_legal_accepted">Zaakceptowano</string>
+    <string name="settings_legal_acknowledged">Przeczytano</string>
     <string name="settings_legal_pending">Wymaga zapoznania się</string>
     <string name="settings_legal_unknown">Nieznany status akceptacji</string>
-    <string name="settings_legal_accept">Akceptuję dokumenty</string>
+    <string name="settings_legal_accept">Potwierdź</string>
     <string name="settings_legal_retry">Spróbuj ponownie</string>
     <string name="settings_legal_load_error">Nie udało się wczytać dokumentów prawnych. Spróbuj ponownie.</string>
-    <string name="settings_legal_changed">Dokumenty prawne uległy zmianie. Zapoznaj się z aktualnymi wersjami i zaakceptuj je ponownie.</string>
-    <string name="settings_legal_consent">Wybierając „Akceptuję dokumenty”, zgadzasz się na dokumenty wymagające zapoznania się.</string>
+    <string name="settings_legal_changed">Dokumenty prawne uległy zmianie. Zapoznaj się z aktualnymi wersjami i potwierdź je ponownie.</string>
+    <string name="settings_legal_review_note">Potwierdzając, akceptujesz zaktualizowane Warunki korzystania, a my odnotowujemy, że przeczytałeś(-aś) zaktualizowaną Politykę prywatności. Zapoznanie się z Polityką prywatności nie jest zgodą na przetwarzanie danych.</string>
     <string name="settings_legal_loading">Sprawdzanie dokumentów…</string>
 
     <string name="settings_export_title">Eksport moich danych</string>

@@ -49,7 +49,6 @@
     <string name="verify_email_confirm_button">Підтвердити</string>
     <string name="verify_email_resend_button">Надіслати новий код</string>
     <string name="verify_email_resend_countdown">Надіслати новий код через %s</string>
-    <string name="verify_email_change_email_button">Вказати іншу ел. пошту</string>
     <string name="verify_email_code_invalid">Неправильний код. Перевірте лист і спробуйте ще раз.</string>
     <string name="verify_email_code_expired">Термін дії коду минув. Запросіть новий.</string>
     <string name="verify_email_attempts_exceeded">Забагато неправильних спроб. Запросіть новий код.</string>

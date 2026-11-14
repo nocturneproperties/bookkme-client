@@ -12,7 +12,6 @@ class IOSVerifyEmailState: @MainActor VerifyEmailState, NativeStateRepresentatio
     let code: any TextFieldState
     let confirmButton: any ButtonState
     let resendButton: any ButtonState
-    let changeEmailButton: any ButtonState
     let notifications: any PresentationNotificationState
     let navigation: any NavigationState
 
@@ -21,7 +20,6 @@ class IOSVerifyEmailState: @MainActor VerifyEmailState, NativeStateRepresentatio
         code = IOSTextFieldState()
         confirmButton = IOSButtonState(isEnabled: false)
         resendButton = IOSButtonState(isEnabled: false)
-        changeEmailButton = IOSButtonState()
         notifications = IOSNotificationState()
         navigation = IOSNavigationState()
     }

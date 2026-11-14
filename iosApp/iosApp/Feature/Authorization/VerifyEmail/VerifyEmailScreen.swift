@@ -28,9 +28,6 @@ struct VerifyEmailScreen: View {
                 TextButton(uiState.resendButton)
 					.listRowBackground(Color.clear)
 					.listRowInsets(EdgeInsets())
-                TextButton(uiState.changeEmailButton)
-					.listRowBackground(Color.clear)
-					.listRowInsets(EdgeInsets())
 			}.listRowSeparator(.hidden)
         }
         .toolbar {

@@ -17,7 +17,6 @@ internal class AndroidVerifyEmailState : VerifyEmailState {
     override val code = AndroidTextFieldState()
     override val confirmButton = AndroidButtonState(isEnabled = false)
     override val resendButton = AndroidButtonState(isEnabled = false)
-    override val changeEmailButton = AndroidButtonState()
     override val notifications = AndroidNotificationState()
     override val navigation = AndroidNavigationState<VerifyEmailDestinations>()
 }

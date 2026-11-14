@@ -49,7 +49,6 @@
     <string name="verify_email_confirm_button">Potwierdź</string>
     <string name="verify_email_resend_button">Wyślij nowy kod</string>
     <string name="verify_email_resend_countdown">Wyślij nowy kod za %s</string>
-    <string name="verify_email_change_email_button">Użyj innego adresu e-mail</string>
     <string name="verify_email_code_invalid">Nieprawidłowy kod. Sprawdź wiadomość i spróbuj ponownie.</string>
     <string name="verify_email_code_expired">Kod wygasł. Poproś o nowy.</string>
     <string name="verify_email_attempts_exceeded">Zbyt wiele nieudanych prób. Poproś o nowy kod.</string>

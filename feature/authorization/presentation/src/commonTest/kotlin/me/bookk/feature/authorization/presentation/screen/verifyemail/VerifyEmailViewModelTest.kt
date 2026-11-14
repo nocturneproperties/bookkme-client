@@ -593,15 +593,11 @@ class VerifyEmailViewModelTest {
         val sut = Fixture(testScheduler).sut()
 
         whenn()
-        sut.uiState.changeEmailButton.onClick?.invoke()
         sut.uiState.appBar.onBackClick?.invoke()
 
         then()
         assertEquals(
-            listOf<VerifyEmailDestinations>(
-                VerifyEmailDestinations.Back,
-                VerifyEmailDestinations.Back,
-            ),
+            listOf<VerifyEmailDestinations>(VerifyEmailDestinations.Back),
             sut.uiState.navigation.navigationDestination,
         )
     }

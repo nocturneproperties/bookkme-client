@@ -221,7 +221,7 @@ class AppointmentListViewModel(
 
     private fun mapItems(appointments: List<Appointment>) {
         val dateFormat = dateLocalizer.forStyle(DateStyle.SHORT)
-        val items = appointments.map { appointment ->
+        val items = appointments.sortedBy { it.date }.map { appointment ->
             AppointmentItemState(
                 appointment = appointment,
                 formatter = dateFormat,

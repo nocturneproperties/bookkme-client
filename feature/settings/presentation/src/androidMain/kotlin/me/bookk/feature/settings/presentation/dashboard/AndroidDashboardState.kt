@@ -45,6 +45,7 @@ internal class AndroidAccountSectionState(
     initData: AccountSection.InitData,
 ) : AccountSection {
     override val dataExport = AndroidTextState()
+    override val changeEmail: TextState = AndroidTextState()
     override val privacy: TextState = AndroidTextState()
     override var privacyStatus: StringDesc? by mutableStateOf(null)
     override val title: StringDesc = initData.title

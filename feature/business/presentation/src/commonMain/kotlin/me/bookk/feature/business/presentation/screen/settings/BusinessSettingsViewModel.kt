@@ -74,6 +74,7 @@ class BusinessSettingsViewModel(
     private fun BusinessSettingsState.setup() = apply {
         save.isVisible = false
         appBar.onBackClick = weakVMClosure { it.onBackClick() }
+        phone.inputType = InputType.PHONE
         clientDataRetentionMonths.apply {
             suffix = BusinessRes.strings.business_settings_retention_months.desc()
             supportingTextRes = BusinessRes.strings.business_settings_retention_explanation.desc()

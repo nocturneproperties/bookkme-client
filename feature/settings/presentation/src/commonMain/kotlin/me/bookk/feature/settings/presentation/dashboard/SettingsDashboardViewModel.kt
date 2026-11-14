@@ -38,6 +38,7 @@ class SettingsDashboardViewModel(
     }
 
     private fun SettingsState.setup(): SettingsState = apply {
+        account.changeEmail.text = SettingsRes.strings.settings_account_change_email_label.desc()
         account.dataExport.text = SettingsRes.strings.settings_export_title.desc()
         account.privacy.text = SettingsRes.strings.settings_privacy_title.desc()
         support.onContactClick = weakVMClosure { it.device.mail(SUPPORT_EMAIL) }

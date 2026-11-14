@@ -84,8 +84,6 @@ class VerifyEmailViewModel(
         confirmButton.isEnabled = false
         confirmButton.onClick = weakVMClosure { it.submitCode() }
         resendButton.onClick = weakVMClosure { it.resendCode() }
-        changeEmailButton.text = AuthRes.strings.verify_email_change_email_button.desc()
-        changeEmailButton.onClick = weakVMClosure { it.goBack() }
     }
 
     private fun goBack() {

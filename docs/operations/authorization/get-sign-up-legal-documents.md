@@ -40,7 +40,9 @@ flowchart TD
 ```
 
 Signup renders one unchecked checkbox for both required documents, with each document name as an inline
-hyperlink in its label. Checking it explicitly accepts both displayed versions. Once documents load, confirm
+hyperlink in its label. Its label keeps the two meanings apart: the user accepts the Terms of Service and
+confirms having read the Privacy Policy (receipt of information, not consent to processing). Checking it
+submits both displayed versions to the acceptance API. Once documents load, confirm
 is enabled until form validation reports an invalid field. Confirm validates consent alongside first name,
 last name and email. Missing consent sets `legalAcceptance.validationState = ERROR`, `isValid = false`,
 and a localized supporting message; account creation does not run. The checkbox remains enabled so the user

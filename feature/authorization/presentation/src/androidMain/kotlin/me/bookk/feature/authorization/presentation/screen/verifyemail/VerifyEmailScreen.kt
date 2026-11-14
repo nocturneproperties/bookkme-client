@@ -65,7 +65,6 @@ internal fun VerifyEmailScreen(state: VerifyEmailState) {
                     ),
                 )
                 StateTextButton(state = state.resendButton)
-                StateTextButton(state = state.changeEmailButton)
             }
         },
         bottomBar = {

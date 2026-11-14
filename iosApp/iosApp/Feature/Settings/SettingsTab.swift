@@ -20,7 +20,7 @@ struct SettingsTab: View {
 				.navigationDestination(for: SettingsDestination.EditProfile.self) { _ in
 					EditProfileScreen()
 				}
-				.navigationDestination(for: EditProfileNavigationDestination.ChangeEmail.self) { _ in
+				.navigationDestination(for: SettingsDestination.ChangeEmail.self) { _ in
 					ChangeEmailScreen()
 				}
 				.navigationDestination(for: ChangeEmailDestinations.VerifyEmail.self) { value in

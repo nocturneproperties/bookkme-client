@@ -102,6 +102,21 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
+    fun `sets the change email account label`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_account_change_email_label.desc(),
+            sut.uiState.account.changeEmail.text,
+        )
+    }
+
+    @Test
     fun `renders profile and color scheme when presented`() = runUnitTest {
         given()
         val sut = Fixture().sut()

@@ -17,6 +17,7 @@
     <string name="settings_account_logout_message">Czy na pewno chcesz się wylogować?</string>
     <string name="settings_account_delete_acc_label">Usuń konto</string>
     <string name="settings_account_notifications_lable">Powiadomienia</string>
+    <string name="settings_account_change_email_label">Zmień mój adres e-mail</string>
 
     <string name="settings_support_title">Pomoc</string>
     <string name="settings_support_contact_label">Skontaktuj się z nami</string>
@@ -30,7 +31,6 @@
     <string name="settings_edit_profile_first_name_error">Imię musi mieć co najmniej 2 znaki</string>
     <string name="settings_edit_profile_last_name">Nazwisko</string>
     <string name="settings_edit_profile_last_name_error">Nazwisko musi mieć co najmniej 2 znaki</string>
-    <string name="settings_edit_profile_email">E-mail</string>
 
 
     <string name="settings_delete_account_title">Usuń konto</string>
@@ -55,7 +55,6 @@
     <string name="settings_notifications_telegram_label">Telegram</string>
     <string name="settings_edit_profile_email_taken_error">Ten adres e-mail jest już używany.</string>
     <string name="settings_edit_profile_email_verification_required_error">Nowy adres e-mail trzeba potwierdzić kodem.</string>
-    <string name="settings_edit_profile_email_read_only_hint">Adres e-mail służy do logowania, więc nie można go tu edytować. Nowy adres trzeba potwierdzić kodem.</string>
     <string name="settings_passkey_last_error">Nie możesz usunąć ostatniego klucza dostępu. Najpierw dodaj inny klucz, aby zachować dostęp do konta.</string>
 
     <string name="settings_privacy_title">Prywatność</string>
@@ -65,13 +64,14 @@
     <string name="settings_privacy_crash_reports_description">Gdy aplikacja ulegnie awarii, wysyła do Firebase Crashlytics techniczne informacje o błędzie i Twoim urządzeniu, abyśmy mogli go naprawić. Raporty nie zawierają Twojego imienia, adresu e-mail ani danych firmy czy klientów.</string>
     <string name="settings_legal_title">Informacje prawne</string>
     <string name="settings_legal_accepted">Zaakceptowano</string>
+    <string name="settings_legal_acknowledged">Przeczytano</string>
     <string name="settings_legal_pending">Wymaga zapoznania się</string>
     <string name="settings_legal_unknown">Nieznany status akceptacji</string>
-    <string name="settings_legal_accept">Akceptuję dokumenty</string>
+    <string name="settings_legal_accept">Potwierdź</string>
     <string name="settings_legal_retry">Spróbuj ponownie</string>
     <string name="settings_legal_load_error">Nie udało się wczytać dokumentów prawnych. Spróbuj ponownie.</string>
-    <string name="settings_legal_changed">Dokumenty prawne uległy zmianie. Zapoznaj się z aktualnymi wersjami i zaakceptuj je ponownie.</string>
-    <string name="settings_legal_consent">Wybierając „Akceptuję dokumenty”, zgadzasz się na dokumenty wymagające zapoznania się.</string>
+    <string name="settings_legal_changed">Dokumenty prawne uległy zmianie. Zapoznaj się z aktualnymi wersjami i potwierdź je ponownie.</string>
+    <string name="settings_legal_review_note">Potwierdzając, akceptujesz zaktualizowane Warunki korzystania, a my odnotowujemy, że przeczytałeś(-aś) zaktualizowaną Politykę prywatności. Zapoznanie się z Polityką prywatności nie jest zgodą na przetwarzanie danych.</string>
     <string name="settings_legal_loading">Sprawdzanie dokumentów…</string>
 
     <string name="settings_export_title">Eksport moich danych</string>
@@ -102,5 +102,4 @@
     <string name="settings_export_running_footer">Możesz opuścić ten ekran i wrócić później.</string>
     <string name="settings_export_file_title">Dane osobowe</string>
     <string name="settings_export_file_type">Plik JSON</string>
-    <string name="settings_edit_profile_change_email">Zmień adres e-mail</string>
 </resources>

@@ -13,7 +13,6 @@ interface VerifyEmailState {
     val code: TextFieldState
     val confirmButton: ButtonState
     val resendButton: ButtonState
-    val changeEmailButton: ButtonState
     val notifications: PresentationNotificationState
     val navigation: NavigationState<VerifyEmailDestinations>
 }

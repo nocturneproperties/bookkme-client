@@ -23,7 +23,7 @@ Keep your calendar, clients, services, and team in one place, and let your clien
 
 - **Password-free sign-in** with passkeys.
 - **Notifications** about new bookings, changes and cancellations, with per-channel settings.
-- **Privacy controls** — export your personal data, opt out of crash reporting, or delete your account from the app.
+- **Privacy controls** — export your personal data, opt in to crash reporting, or delete your account from the app.
 - **Light and dark themes.**
 - **Available in English, Ukrainian, Russian and Polish.**
 
@@ -47,9 +47,9 @@ BookkMe handles personal data of business owners, their employees and their clie
 - **Right of access and data portability** — anyone can export a copy of their personal data, and business owners can export all of their business's data (profile, services, employees, clients, appointments and requests) as a JSON file, straight from the app.
 - **Right to erasure** — users can delete their account from the app, and businesses can delete individual clients.
 - **Storage limitation** — each business chooses how long client details on finished appointments and requests are kept (12–120 months). After that, they are anonymized or deleted.
-- **Informed consent** — new users review and accept the Privacy Policy and Terms of Service when they sign up. When those documents change, the new versions are marked for review under **Settings → Legal**.
+- **Transparent legal documents** — at sign-up, new users accept the Terms of Service and confirm they have read the Privacy Policy; reading the policy is recorded as receipt of information, never as consent to processing. When those documents change, the new versions are marked for review under **Settings → Privacy**.
 - **No tracking** — there is no analytics or advertising SDK, and advertising-ID permissions are removed from the Android app.
-- **Optional crash reporting** — crash reports go to Firebase Crashlytics and contain only technical details about the error and the device, not names, emails, business or client data. They can be turned off at any time under **Settings → Privacy**.
+- **Optional crash reporting** — crash reports go to Firebase Crashlytics and contain only technical details about the error and the device, not names, emails, business or client data. They are off by default and can be turned on or off at any time under **Settings → Privacy**.
 - **Contacts stay on the device** — importing clients from the phone's contacts asks for permission first and uploads only the contacts you select.
 
 ### If you self-host

@@ -25,6 +25,9 @@ struct AccountView: View {
 		NavigationLink(value: SettingsDestination.Notifications()) {
 			Text(state.notifications.text.localized())
 		}
+		NavigationLink(value: SettingsDestination.ChangeEmail()) {
+			Text(state.changeEmail.text.localized())
+		}
 		NavigationLink(value: SettingsDestination.Passkey()) {
 			Text(state.passkey.text.localized())
 		}

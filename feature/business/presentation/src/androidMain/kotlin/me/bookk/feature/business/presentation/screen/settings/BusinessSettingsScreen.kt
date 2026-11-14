@@ -216,7 +216,6 @@ private fun BusinessSocialsCard(state: BusinessSettingsState) {
                 FlatTextField(
                     state = state.phone,
                     onValueChange = listener.onPhoneChanged,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 12.dp),

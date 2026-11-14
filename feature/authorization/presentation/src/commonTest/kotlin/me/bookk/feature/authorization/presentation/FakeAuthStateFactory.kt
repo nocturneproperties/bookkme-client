@@ -70,7 +70,6 @@ internal class FakeVerifyEmailState : VerifyEmailState {
     override val code = FakeTextFieldState()
     override val confirmButton = FakeButtonState()
     override val resendButton = FakeButtonState()
-    override val changeEmailButton = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<VerifyEmailDestinations>()
 }

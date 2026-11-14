@@ -1,7 +1,6 @@
 package me.bookk.feature.settings.presentation.editprofile
 
 import dev.icerock.moko.resources.desc.desc
-import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
@@ -12,6 +11,7 @@ import dev.mokkery.verifySuspend
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -20,6 +20,7 @@ import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
+import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetSettings
@@ -51,11 +52,9 @@ class EditProfileViewModelTest {
     }
 
     private class Fixture {
-        var storedEmail = "anna@example.com"
         val getSettings = mock<GetSettings> {
-            everySuspend { invoke() } calls {
-                Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", storedEmail))
-            }
+            everySuspend { invoke() } returns
+                Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", "anna@example.com"))
         }
         val editProfile = mock<EditProfile>()
         val errorMapper = FakeErrorMapper()
@@ -84,80 +83,7 @@ class EditProfileViewModelTest {
         then()
         assertEquals("Anna", sut.uiState.name.text)
         assertEquals("Smith", sut.uiState.lastName.text)
-        assertEquals("anna@example.com", sut.uiState.email.text)
         assertFalse(sut.uiState.confirmButton.isEnabled)
-    }
-
-    @Test
-    fun `shows email as read-only`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-
-        whenn()
-        val sut = fixture.presentedSut()
-
-        then()
-        assertTrue(sut.uiState.email.readOnly)
-    }
-
-    @Test
-    fun `explains why email is not editable`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-
-        whenn()
-        val sut = fixture.presentedSut()
-
-        then()
-        assertEquals(
-            SettingsRes.strings.settings_edit_profile_email_read_only_hint.desc(),
-            sut.uiState.email.supportingTextRes,
-        )
-        assertEquals(ValidationState.DEFAULT, sut.uiState.email.validationState)
-    }
-
-    @Test
-    fun `offers to change the email`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-
-        whenn()
-        val sut = fixture.presentedSut()
-
-        then()
-        assertEquals(
-            SettingsRes.strings.settings_edit_profile_change_email.desc(),
-            sut.uiState.changeEmailButton.text,
-        )
-    }
-
-    @Test
-    fun `opens the email change`() = runUnitTest {
-        given()
-        val sut = Fixture().presentedSut()
-
-        whenn()
-        sut.uiState.changeEmailButton.onClick?.invoke()
-
-        then()
-        assertEquals(
-            listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.ChangeEmail),
-            sut.uiState.navigation.navigationDestination,
-        )
-    }
-
-    @Test
-    fun `shows the confirmed email when presented again`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.presentedSut()
-        fixture.storedEmail = "new@example.com"
-
-        whenn()
-        sut.onViewPresented()
-
-        then()
-        assertEquals("new@example.com", sut.uiState.email.text)
     }
 
     @Test
@@ -245,22 +171,6 @@ class EditProfileViewModelTest {
 
         then()
         verifySuspend(VerifyMode.not) { fixture.editProfile(any(), any()) }
-    }
-
-    @Test
-    fun `saves names when stored email fails validation`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.storedEmail = "broken"
-        everySuspend { fixture.editProfile(any(), any()) } returns Unit
-        val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
-
-        whenn()
-        sut.onConfirmButtonClick()
-
-        then()
-        verifySuspend { fixture.editProfile("Maria", "Smith") }
     }
 
     @Test
@@ -356,7 +266,7 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `shows email taken error inline`() = runUnitTest {
+    fun `shows email taken error as an error message`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.editProfile(any(), any()) } throws
@@ -368,18 +278,18 @@ class EditProfileViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
+        val message = sut.uiState.notification.assertSingle<GlobalMessage>()
         assertEquals(
             SettingsRes.strings.settings_edit_profile_email_taken_error.desc(),
-            sut.uiState.email.supportingTextRes,
+            message.text,
         )
-        assertFalse(sut.uiState.confirmButton.isLoading)
+        assertEquals(GlobalMessage.State.ERROR, message.state)
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
         assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
-        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
     }
 
     @Test
-    fun `shows email verification required error inline`() = runUnitTest {
+    fun `shows email verification required error as an error message`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.editProfile(any(), any()) } throws
@@ -391,18 +301,18 @@ class EditProfileViewModelTest {
         sut.onConfirmButtonClick()
 
         then()
+        val message = sut.uiState.notification.assertSingle<GlobalMessage>()
         assertEquals(
             SettingsRes.strings.settings_edit_profile_email_verification_required_error.desc(),
-            sut.uiState.email.supportingTextRes,
+            message.text,
         )
-        assertEquals(ValidationState.ERROR, sut.uiState.email.validationState)
+        assertEquals(GlobalMessage.State.ERROR, message.state)
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
         assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
-        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
     }
 
     @Test
-    fun `keeps save enabled after an inline email error`() = runUnitTest {
+    fun `keeps save enabled after an email error`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.editProfile(any(), any()) } throws
@@ -415,27 +325,6 @@ class EditProfileViewModelTest {
 
         then()
         assertTrue(sut.uiState.confirmButton.isEnabled)
-    }
-
-    @Test
-    fun `restores email hint when saving again`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.editProfile(any(), any()) } throws
-            EditProfile.Error.ContactAlreadyTaken()
-        val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
-        sut.onConfirmButtonClick()
-        everySuspend { fixture.editProfile(any(), any()) } returns Unit
-
-        whenn()
-        sut.onConfirmButtonClick()
-
-        then()
-        assertEquals(
-            SettingsRes.strings.settings_edit_profile_email_read_only_hint.desc(),
-            sut.uiState.email.supportingTextRes,
-        )
-        assertEquals(ValidationState.DEFAULT, sut.uiState.email.validationState)
+        assertFalse(sut.uiState.confirmButton.isLoading)
     }
 }

@@ -1,6 +1,7 @@
 package library.money.api
 
 import kotlinx.serialization.Serializable
+import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.roundToLong
@@ -79,7 +80,10 @@ data class Money(
     }
 
     fun valueToStringWithoutAmountSeparation(): String {
-        return (value / 100.0).toString()
+        val sign = if (value < 0) "-" else ""
+        val units = abs(value) / PRECISION_MULTIPLIER
+        val fraction = (abs(value) % PRECISION_MULTIPLIER).toString().padStart(PRECISION, '0')
+        return "$sign$units.$fraction"
     }
 
     enum class SupportedCurrency(

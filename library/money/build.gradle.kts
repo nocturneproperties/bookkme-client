@@ -17,8 +17,9 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlin.serialization.core)
         }
-        jsTest.dependencies {
+        commonTest.dependencies {
             implementation(projects.core.testFixtures)
+            implementation(libs.kotlin.serialization)
         }
     }
 }

@@ -125,7 +125,7 @@ class EditServiceViewModelTest {
         )
         assertEquals("Haircut", sut.uiState.name.text)
         assertEquals("30", sut.uiState.duration.text)
-        assertEquals("100.0", sut.uiState.price.text)
+        assertEquals("100.00", sut.uiState.price.text)
         assertTrue(sut.uiState.available.isChecked)
     }
 

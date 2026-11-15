@@ -30,7 +30,6 @@
     <string name="site_privacy_retention_description">Choose how long finished client records are kept before they are erased.</string>
     <string name="site_privacy_passkeys_title">Password-free sign-in</string>
     <string name="site_privacy_passkeys_description">Sign in with passkeys, with no password to leak or forget.</string>
-    <string name="site_languages">Available in English, Ukrainian, Russian and Polish. Light and dark themes.</string>
     <string name="site_footer">BookkMe — a source-available booking app for Android and iOS.</string>
     <string name="site_toggle_color_mode">Toggle color mode</string>
     <string name="site_language">Language</string>

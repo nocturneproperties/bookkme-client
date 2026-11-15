@@ -86,7 +86,6 @@ fun HomePage() {
         LandingContent.privacy,
         wideColumns = 2,
     )
-    SecondaryText(SiteRes.strings.site_languages.desc())
 }
 
 @Composable

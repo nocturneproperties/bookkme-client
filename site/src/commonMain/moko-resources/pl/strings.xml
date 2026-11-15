@@ -30,7 +30,6 @@
     <string name="site_privacy_retention_description">Wybierz, jak długo przechowywać dane klientów z zakończonych wizyt, zanim zostaną usunięte.</string>
     <string name="site_privacy_passkeys_title">Logowanie bez hasła</string>
     <string name="site_privacy_passkeys_description">Loguj się kluczem dostępu — bez hasła, które można zapomnieć lub stracić.</string>
-    <string name="site_languages">Dostępna po angielsku, ukraińsku, rosyjsku i polsku. Jasny i ciemny motyw.</string>
     <string name="site_footer">BookkMe — aplikacja do rezerwacji z dostępnym kodem źródłowym na Androida i iOS.</string>
     <string name="site_toggle_color_mode">Zmień motyw</string>
     <string name="site_language">Język</string>

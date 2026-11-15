@@ -85,13 +85,7 @@ private fun FooterLinks() {
     Row(Modifier.gap(0.75.cssRem), verticalAlignment = Alignment.CenterVertically) {
         SiteNavigation.footer.forEachIndexed { index, link ->
             if (index > 0) LinkSeparator()
-            TextLink(
-                link.title,
-                link.path,
-                LabelSmallTextStyle
-                    .toModifier()
-                    .color(ColorToken.PrimaryText.themed),
-            )
+            TextLink(link.title, link.path, LabelSmallTextStyle.toModifier())
         }
     }
 }

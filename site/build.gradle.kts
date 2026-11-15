@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.kmm.resources)
+    id(libs.plugins.convention.site.legal.get().pluginId)
 }
 
 group = "me.bookk.site"
@@ -32,10 +33,16 @@ val copySqliteWasm by tasks.registering(Copy::class) {
 
 kotlin {
     configAsKobwebApplication("site")
+    js {
+        nodejs {
+            testTask { useMocha { timeout = "10s" } }
+        }
+    }
 
     sourceSets {
         jsMain {
             resources.srcDir(copySqliteWasm.map { sqliteWasmResources.get() })
+            kotlin.srcDir(tasks.named("generateLegalTexts"))
         }
         jsMain.dependencies {
             implementation(npm("@sqlite.org/sqlite-wasm", libs.versions.npm.sqlite.wasm.get()))
@@ -46,6 +53,12 @@ kotlin {
             implementation(libs.compose.html.core)
             implementation(libs.kobweb.core)
             implementation(libs.kobweb.silk)
+            implementation(libs.kotlinx.datetime)
+        }
+        jsTest.dependencies {
+            implementation(projects.core.testFixtures)
+            implementation(libs.test.kotlin)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

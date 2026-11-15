@@ -7,7 +7,6 @@ enum class AppLanguage(
     EN("en", "English"),
     UK("uk", "Українська"),
     PL("pl", "Polski"),
-    RU("ru", "Русский"),
     ;
 
     companion object {

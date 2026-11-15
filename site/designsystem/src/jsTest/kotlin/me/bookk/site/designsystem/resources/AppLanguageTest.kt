@@ -24,13 +24,25 @@ class AppLanguageTest {
     @Test
     fun `ignores a saved language that is not supported`() = runUnitTest {
         given()
-        val preferred = listOf("ru")
+        val preferred = listOf("uk")
 
         whenn()
         val language = AppLanguage.resolve(saved = "de", preferred = preferred)
 
         then()
-        assertEquals(AppLanguage.RU, language)
+        assertEquals(AppLanguage.UK, language)
+    }
+
+    @Test
+    fun `does not offer russian`() = runUnitTest {
+        given()
+        val preferred = listOf("ru-RU", "pl")
+
+        whenn()
+        val language = AppLanguage.resolve(saved = "ru", preferred = preferred)
+
+        then()
+        assertEquals(AppLanguage.PL, language)
     }
 
     @Test

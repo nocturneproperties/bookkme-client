@@ -120,6 +120,7 @@ convention-android-application = { id = "convention.android.application", versio
 convention-kmm-library-kotlin = { id = "convention.kmm.library", version.ref = "local-plugin-version" }
 convention-kmm-library-compose = { id = "convention.kmm.library.compose", version.ref = "local-plugin-version" }
 convention-kmm-database = { id = "convention.kmm.library.database", version.ref = "local-plugin-version" }
+convention-site-legal = { id = "convention.site.legal", version.ref = "local-plugin-version" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 kmm-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "kmm-resources" }

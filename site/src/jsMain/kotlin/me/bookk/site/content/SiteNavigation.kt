@@ -32,7 +32,7 @@ object SiteNavigation {
 
     val footer = listOf(
         SiteLink(SiteRes.strings.site_privacy_policy.desc(), "/privacy"),
-        SiteLink(SiteRes.strings.site_terms_of_use.desc(), "/terms"),
+        SiteLink(SiteRes.strings.site_terms_of_service.desc(), "/terms"),
         contact(),
     )
 

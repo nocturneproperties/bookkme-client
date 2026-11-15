@@ -23,6 +23,10 @@ private val modulesWithWebTarget = setOf(
     ":library:money",
     ":library:device:api",
     ":library:crashreporting:api",
+    ":library:cache:api",
+    ":library:cache:impl",
+    ":library:files:api",
+    ":database",
 )
 
 private val layersWithWebTarget = listOf(":domain:api", ":domain:impl", ":data:source")
@@ -44,7 +48,6 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 

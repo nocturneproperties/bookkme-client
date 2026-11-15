@@ -1,15 +1,15 @@
 package me.bookk.database.converter
 
-import androidx.room.TypeConverter
+import androidx.room3.ColumnTypeConverter
 import kotlin.time.Instant
 
 internal class InstantConverter {
-    @TypeConverter
+    @ColumnTypeConverter
     fun longToInstant(long: Long?): Instant? {
         return long?.let { Instant.fromEpochMilliseconds(it) }
     }
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun instantToLong(instant: Instant?): Long? {
         return instant?.toEpochMilliseconds()
     }

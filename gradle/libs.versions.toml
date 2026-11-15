@@ -23,11 +23,13 @@ kobweb = "0.25.1"
 compose-html = "1.11.1"
 kobweb-compose-runtime = "1.12.0"
 coil = "3.5.0"
-room = "2.8.4"
-sqlite = "2.6.2"
+room = "3.0.3"
+sqlite = "2.7.1"
+npm-sqlite-wasm = "3.54.1-build1"
+kotlinx-browser = "0.5.0"
 compose-navigation = "2.9.8"
 ksp = "2.3.11"
-preferences = "1.2.1"
+preferences = "1.3.0"
 okio = "3.17.0"
 build-konfig = "0.22.0"
 json-serialization = "1.11.0"
@@ -45,7 +47,7 @@ androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-cor
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-androidx-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "preferences" }
+androidx-preferences = { module = "androidx.datastore:datastore-preferences-core", version.ref = "preferences" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidx-credentials" }
 androidx-credentials-compat = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "androidx-credentials" }
 androidx-biometry = { module = "androidx.biometric:biometric-ktx", version.ref = "biometry" }
@@ -57,6 +59,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "json-serialization" }
 kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "json-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
+kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 compose-bom = { module = "androidx.compose:compose-bom", version = "2026.06.00" }
@@ -90,9 +93,11 @@ ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 kmm-resources = { module = "dev.icerock.moko:resources", version.ref = "kmm-resources" }
 kmm-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "kmm-resources" }
 kmm-resources-graphics = { module = "dev.icerock.moko:graphics", version.ref = "kmm-resources-graphics" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room" }
+room-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room" }
 room-sqlite = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+room-sqlite-web = { module = "androidx.sqlite:sqlite-web", version.ref = "sqlite" }
+room-sqlite-async = { module = "androidx.sqlite:sqlite-async", version.ref = "sqlite" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 joda-money = { module = "org.joda:joda-money", version.ref = "money" }
 logger = { module = "io.github.aakira:napier", version.ref = "napier" }
@@ -106,7 +111,7 @@ kobweb-silk = { module = "com.varabyte.kobweb:kobweb-silk", version.ref = "kobwe
 
 [plugins]
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-android-room = { id = "androidx.room", version.ref = "room" }
+android-room = { id = "androidx.room3", version.ref = "room" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

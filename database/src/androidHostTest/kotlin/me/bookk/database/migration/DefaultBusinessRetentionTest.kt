@@ -169,5 +169,3 @@ class DefaultBusinessRetentionTest {
         }
     }
 }
-
-internal expect fun prepareSqliteTestDriver()

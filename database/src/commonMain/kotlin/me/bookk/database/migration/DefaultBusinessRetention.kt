@@ -1,22 +1,22 @@
 package me.bookk.database.migration
 
-import androidx.room.migration.Migration
+import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
-import androidx.sqlite.execSQL
+import androidx.sqlite.async.executeSQL
 import me.bookk.database.entity.DEFAULT_CLIENT_DATA_RETENTION_MONTHS
 
 internal object DefaultBusinessRetention : Migration(22, 23) {
-    override fun migrate(connection: SQLiteConnection) {
-        connection.execSQL(
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.executeSQL(
             "ALTER TABLE business ADD COLUMN retentionMonths INTEGER NOT NULL " +
                 "DEFAULT $DEFAULT_CLIENT_DATA_RETENTION_MONTHS",
         )
-        connection.execSQL(
+        connection.executeSQL(
             "UPDATE business SET retentionMonths = " +
                 "COALESCE(clientDataRetentionMonths, $DEFAULT_CLIENT_DATA_RETENTION_MONTHS)",
         )
-        connection.execSQL("ALTER TABLE business DROP COLUMN clientDataRetentionMonths")
-        connection.execSQL(
+        connection.executeSQL("ALTER TABLE business DROP COLUMN clientDataRetentionMonths")
+        connection.executeSQL(
             "ALTER TABLE business RENAME COLUMN retentionMonths TO clientDataRetentionMonths",
         )
     }

@@ -1,16 +1,16 @@
 package me.bookk.database.converter
 
-import androidx.room.TypeConverter
+import androidx.room3.ColumnTypeConverter
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 internal class DurationConverter {
-    @TypeConverter
+    @ColumnTypeConverter
     fun longToDuration(long: Long?): Duration? {
         return long?.milliseconds
     }
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun durationToLong(duration: Duration?): Long? {
         return duration?.inWholeMilliseconds
     }

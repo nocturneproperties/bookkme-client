@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="site_app_name">BookkMe</string>
+    <string name="site_page_title">Aplikacja do rezerwacji dla małych firm</string>
+    <string name="site_headline">Prowadź firmę opartą na wizytach z telefonu</string>
+    <string name="site_subheadline">Kalendarz, klienci, usługi i zespół w jednym miejscu, a klienci umawiają się bezpośrednio u Ciebie. Za darmo dla salonów, studiów, gabinetów, korepetytorów, warsztatów i wszystkich, którzy pracują na umówione wizyty.</string>
+    <string name="site_stores_title">Wkrótce w</string>
+    <string name="site_app_store">App Store</string>
+    <string name="site_google_play">Google Play</string>
+    <string name="site_features_title">Wszystko, czego potrzebuje Twoja firma</string>
+    <string name="site_feature_appointments_title">Wizyty</string>
+    <string name="site_feature_appointments_description">Twórz, przekładaj, kończ i odwołuj wizyty, oznaczaj nieobecności oraz przeglądaj kalendarz i historię.</string>
+    <string name="site_feature_requests_title">Prośby o wizytę</string>
+    <string name="site_feature_requests_description">Klienci wybierają dogodny termin. Akceptuj lub odrzucaj każdą prośbę jednym dotknięciem.</string>
+    <string name="site_feature_clients_title">Klienci</string>
+    <string name="site_feature_clients_description">Prowadź listę klientów z danymi kontaktowymi albo importuj ich prosto z kontaktów w telefonie.</string>
+    <string name="site_feature_services_title">Usługi</string>
+    <string name="site_feature_services_description">Opisuj usługi z cenami i czasem trwania, grupuj je w kategorie, w swojej walucie.</string>
+    <string name="site_feature_team_title">Zespół</string>
+    <string name="site_feature_team_description">Zapraszaj pracowników kodem, wybieraj, które usługi wykonuje każdy z nich, i zarządzaj ich dostępem.</string>
+    <string name="site_feature_dashboard_title">Pulpit</string>
+    <string name="site_feature_dashboard_description">Zobacz dzisiejszy dzień w skrócie i przełączaj się między firmami, jeśli prowadzisz kilka.</string>
+    <string name="site_privacy_title">Prywatność od podstaw</string>
+    <string name="site_privacy_subtitle">BookkMe przechowuje dane o Tobie, Twoim zespole i Twoich klientach, dlatego ochrona prywatności jest wbudowana, a nie dodana później.</string>
+    <string name="site_privacy_tracking_title">Bez śledzenia</string>
+    <string name="site_privacy_tracking_description">Żadnych SDK analitycznych ani reklamowych. Raporty o awariach są wyłączone, dopóki ich nie włączysz.</string>
+    <string name="site_privacy_export_title">Twoje dane do pobrania</string>
+    <string name="site_privacy_export_description">Eksportuj swoje dane osobowe lub całą firmę do pliku w dowolnym momencie.</string>
+    <string name="site_privacy_retention_title">Okres przechowywania pod Twoją kontrolą</string>
+    <string name="site_privacy_retention_description">Wybierz, jak długo przechowywać dane klientów z zakończonych wizyt, zanim zostaną usunięte.</string>
+    <string name="site_privacy_passkeys_title">Logowanie bez hasła</string>
+    <string name="site_privacy_passkeys_description">Loguj się kluczem dostępu — bez hasła, które można zapomnieć lub stracić.</string>
+    <string name="site_languages">Dostępna po angielsku, ukraińsku, rosyjsku i polsku. Jasny i ciemny motyw.</string>
+    <string name="site_footer">BookkMe — darmowa aplikacja do rezerwacji z dostępnym kodem źródłowym na Androida i iOS.</string>
+    <string name="site_toggle_color_mode">Zmień motyw</string>
+    <string name="site_language">Język</string>
+</resources>

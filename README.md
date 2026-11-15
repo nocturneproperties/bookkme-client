@@ -138,21 +138,32 @@ If you publish your own build, also change the application ID (`ROOT_PACKAGE` in
 
 **iOS** — open `iosApp/iosApp.xcodeproj` in Xcode, pick your signing team, and run. The shared Kotlin code is compiled automatically as part of the Xcode build.
 
+**Website** — the landing page in `site/` is built with [Kobweb](https://kobweb.varabyte.com) on the same design system and translations as the apps (English, Ukrainian, Russian, Polish). Run it locally at http://localhost:8080:
+
+```bash
+./gradlew :site:kobwebStart -t   # dev server, rebuilds on change
+./gradlew :site:kobwebStop
+```
+
+With the [Kobweb CLI](https://github.com/varabyte/kobweb-cli) installed, `cd site && kobweb run` does the same, and `kobweb export --layout static` produces a static site in `site/.kobweb/site`.
+
 ### Run the tests
 
 ```bash
-./gradlew test
+./gradlew test testAndroidHostTest   # Android app and shared logic, on the JVM
+./gradlew jsNodeTest                 # shared domain logic compiled for the web, on Node.js
 ```
 
 ---
 
 ## Project structure
 
-BookkMe is written in Kotlin Multiplatform: the business logic, data handling and screen state are written once and shared, while the UI is native on each platform — Jetpack Compose on Android and SwiftUI on iOS.
+BookkMe is written in Kotlin Multiplatform: the business logic, data handling and screen state are written once and shared, while the UI is native on each platform — Jetpack Compose on Android and SwiftUI on iOS. The domain layer is also compiled for the web, so the website can reuse it.
 
 ```
 androidApp/    Android app
 iosApp/        iOS app
+site/          Website (Kobweb, Kotlin/JS) and its web design system
 shared/        Wiring that puts the shared modules together
 feature/       One folder per feature: appointments, business, clients,
                employees, services, dashboard, settings, authorization

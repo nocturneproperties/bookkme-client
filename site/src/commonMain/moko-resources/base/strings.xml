@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="site_app_name">BookkMe</string>
+    <string name="site_page_title">Booking app for small businesses</string>
+    <string name="site_headline">Run your appointment business from your phone</string>
+    <string name="site_subheadline">Keep your calendar, clients, services and team in one place, and let your clients book with you directly. Free for salons, studios, clinics, tutors, repair shops and anyone who works by appointment.</string>
+    <string name="site_stores_title">Coming soon to</string>
+    <string name="site_app_store">App Store</string>
+    <string name="site_google_play">Google Play</string>
+    <string name="site_features_title">Everything your business runs on</string>
+    <string name="site_feature_appointments_title">Appointments</string>
+    <string name="site_feature_appointments_description">Create, reschedule, complete or cancel appointments, mark no-shows, and browse your calendar and history.</string>
+    <string name="site_feature_requests_title">Booking requests</string>
+    <string name="site_feature_requests_description">Clients request a time that suits them. Approve or decline each request in one tap.</string>
+    <string name="site_feature_clients_title">Clients</string>
+    <string name="site_feature_clients_description">Keep a client list with contact details, or import clients straight from your phone\'s contacts.</string>
+    <string name="site_feature_services_title">Services</string>
+    <string name="site_feature_services_description">Describe what you offer with prices and durations, grouped into categories, in your own currency.</string>
+    <string name="site_feature_team_title">Team</string>
+    <string name="site_feature_team_description">Invite employees with a code, choose which services each of them performs, and manage their access.</string>
+    <string name="site_feature_dashboard_title">Dashboard</string>
+    <string name="site_feature_dashboard_description">See today\'s business at a glance, and switch between businesses if you run more than one.</string>
+    <string name="site_privacy_title">Private by design</string>
+    <string name="site_privacy_subtitle">BookkMe holds data about you, your team and your clients, so privacy is built in rather than added on.</string>
+    <string name="site_privacy_tracking_title">No tracking</string>
+    <string name="site_privacy_tracking_description">No analytics or advertising SDKs. Crash reporting is off until you turn it on.</string>
+    <string name="site_privacy_export_title">Your data, exportable</string>
+    <string name="site_privacy_export_description">Export your personal data or your whole business as a file, at any time.</string>
+    <string name="site_privacy_retention_title">Retention you control</string>
+    <string name="site_privacy_retention_description">Choose how long finished client records are kept before they are erased.</string>
+    <string name="site_privacy_passkeys_title">Password-free sign-in</string>
+    <string name="site_privacy_passkeys_description">Sign in with passkeys, with no password to leak or forget.</string>
+    <string name="site_languages">Available in English, Ukrainian, Russian and Polish. Light and dark themes.</string>
+    <string name="site_footer">BookkMe — a free, source-available booking app for Android and iOS.</string>
+    <string name="site_toggle_color_mode">Toggle color mode</string>
+    <string name="site_language">Language</string>
+</resources>

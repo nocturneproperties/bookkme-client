@@ -1,6 +1,6 @@
 # Bookk Project Guidelines
 
-Bookk is a Kotlin Multiplatform (KMP) mobile application for Android and iOS. Android UI is Jetpack Compose (`androidMain` of presentation modules); iOS UI is SwiftUI (`iosApp/`). ViewModels, state interfaces, domain and data layers are shared in `commonMain`.
+Bookk is a Kotlin Multiplatform (KMP) mobile application for Android and iOS. Android UI is Jetpack Compose (`androidMain` of presentation modules); iOS UI is SwiftUI (`iosApp/`). ViewModels, state interfaces, domain and data layers are shared in `commonMain`. A Kobweb (Kotlin/JS) website lives in `site/`; the domain layer, `core:presentation` and the shared `designsystem` state interfaces also compile for JS, with web state implementations and components in `:site:designsystem` (see **Web target & site**).
 
 > **Canonical reference screen**: `BusinessPlugins` (feature/business, `screen/plugins` package + `iosApp/iosApp/Feature/Business/Plugins/`). It is the newest screen and demonstrates the current pattern.
 > **Outdated pattern — do NOT copy**: screens whose state is created with a `State.InitData` parameter (e.g. business `bootstrap`, `create`, `settings`). New screens must use parameterless state creation + the `setup()` extension pattern described below.
@@ -10,6 +10,7 @@ Bookk is a Kotlin Multiplatform (KMP) mobile application for Android and iOS. An
 Top-level directories:
 
 - `androidApp/`: Android entry point and configuration.
+- `site/`: Kobweb website (Kotlin/JS, Compose HTML + Silk). Pages in `site/src/jsMain/kotlin/me/bookk/site/pages/`, static files in `site/src/jsMain/resources/public/`. `site/designsystem/` is the web design system (`:site:designsystem`).
 - `iosApp/`: iOS app (SwiftUI). Uses Xcode file-system-synchronized groups, so new `.swift` files under `iosApp/iosApp/` are picked up automatically — no pbxproj editing needed.
 - `shared/`: Global DI wiring (`me/bookk/di/DISetup.kt`, `me/bookk/di/feature/*DI.kt`) and the cross-feature `StateFactoryCreator`.
 - `feature/`: Feature modules (`authorization`, `business`, `appointments`, `clients`, `dashboard`, `services`, `settings`, …).
@@ -265,7 +266,9 @@ Any new persisted marker (prefs bucket or DB table) must be cleared on logout: i
 
 - **Build Android**: `./gradlew :androidApp:assembleDevDebug`
 - **Compile shared for iOS (quick check of commonMain/iosMain code)**: `./gradlew :shared:compileKotlinIosArm64`
-- **Run Tests**: `./gradlew test` (runs common and Android tests)
+- **Run Tests**: `./gradlew test testAndroidHostTest` (`test` alone only runs `androidApp`'s unit tests; `testAndroidHostTest` runs every KMP module's `commonTest` on the JVM)
+- **Run JS Tests**: `./gradlew jsNodeTest` (web-target modules' `commonTest` + `jsTest` on Node.js; one module: `./gradlew :<module>:jsNodeTest`)
+- **Run the website**: `./gradlew :site:kobwebStart -t` (http://localhost:8080), stop with `./gradlew :site:kobwebStop`
 - **Lint**: `./gradlew detekt` (if configured)
 
 ## API Documentation
@@ -279,6 +282,31 @@ http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
 `{feature_name}` can be the short or long form of the feature, e.g. `auth` or `authorization`, `appointments`, `clients`, `services`, `business`, etc.
 
 **Before reading any endpoint contract**, fetch the relevant YAML to get the authoritative, up-to-date schema. If the URL is not reachable, **stop and return an error**: the local backend is not running and the task cannot be completed safely without current API docs.
+
+## Web target & site
+
+- The JS target is opt-in, declared in `build-src/.../convention/KotlinConvention.kt`: `modulesWithWebTarget` (`:core`, `:core:domain`, `:core:testFixtures`, `:core:presentation`, `:designsystem`, `:library:money`, `:library:device:api`, `:library:crashreporting:api`) plus every module ending in `:domain:api`, `:domain:impl` or `:data:source`. Modules that use Room, DataStore or platform UI stay Android/iOS only. To give another module a JS target, add it there and make sure its whole dependency graph has one.
+- Every `expect` in a web-target module needs a `jsMain` actual, built on the browser's `Intl` APIs where the other platforms use ICU/Foundation (`JsDateLocalizer`, `JsTextCollator`, `startOfWeek`, `Currency`). `core:presentation` shares the iOS `ViewModel` with JS through the `nonAndroidMain` source set (iOS + JS); Android keeps its own. Test JS-only behavior in `jsTest`.
+- JS formatting follows `StringDesc.localeType` (set by the site's language picker); with `LocaleType.System` it falls back to the browser default.
+- kotlinx-datetime on JS only knows the system zone unless `@js-joda/timezone` is loaded; `:core`'s `jsMain` (`me.bookk.core.time.JsJodaTimeZone.kt`) does that for every consumer — do not remove it.
+- JS tests run on Node via `jsNodeTest` (browser test tasks are disabled). moko's generated JS code loads string files with `require("./localization/*.json")`, which only webpack can resolve; `runUnitTest` calls the JS `prepareTestEnvironment()` in `core:testFixtures` to emulate it, so moko resources work in Node tests. A module whose JS tests touch moko resources must apply the moko plugin (it copies the JSON files into the test package).
+- Configuration on Demand stays off (`org.gradle.configureondemand=false`): Kotlin/JS does not support it, and with it on a single-module JS task configures only part of the npm workspace and fails the yarn lock check.
+- `kotlin-js-store/yarn.lock` is committed. After changing Kotlin or any npm dependency, run `./gradlew kotlinUpgradeYarnLock --rerun` and commit the result.
+- Mokkery must support the project's Kotlin version (see the compatibility table on mokkery.dev) or the JS test link step crashes.
+
+### Web design system (`:site:designsystem`)
+
+- Kobweb library module holding the web counterparts of `designsystem/androidMain` and the Swift design system: `Web*State` implementations of the shared state interfaces (`uistate/`), Silk/Compose HTML components that render them (`components/`: `ActionButton`/`TextButton(ButtonState)`, `StateText`, `TextBlock`, `Heading`, `Header`, `AppCard`, `StateSwitch`/`CheckBox(BooleanState)`, `RadioButton`, `TextField`, `List(ListState)` with empty/error/banner views, `AppTopBar`, `ObserveNavigation`, `LanguagePicker`, `IconButton`), typography `CssStyle`s and the theme.
+- Colors come from `designsystem`'s moko `colors.xml` through `theme/WebColors` (light/dark, like Android's `Colors.kt`). Resolve a `ColorToken` with `ColorToken.themed` (composable) or `ColorToken.resolve(colorMode.webColors())` inside a `CssStyle` — never hardcode a hex color in the site.
+- Strings: `WebLocalization` loads one merged moko provider (the app's loader + `DesignSystem` + `CorePresentation`) inside `LocalizedContent(...)` at the app entry; render any `StringDesc` with the composable `localized()`. `AppLanguage` lists the supported languages (same four as the apps); the choice is saved in `localStorage` and applied to `StringDesc.localeType` and `<html lang>`.
+- Not ported yet: pickers (date/time/date-range/money/multi), schedule, business menu, and a notification renderer (`WebNotificationState` exists, nothing displays it). Add them here when a web screen needs them, together with a `Web*State`.
+
+### Site (`:site`)
+
+- Kobweb application module. It may depend on web-target `domain/api` + `domain/impl` modules and `:site:designsystem`, never on `data` (Ktor/Room) or `presentation`. Build UI from `:site:designsystem` components and states rather than raw HTML/Silk styling.
+- Site copy is moko strings in `site/src/commonMain/moko-resources` (`SiteRes`, keys prefixed `site_` so they never collide with the shared modules' keys in the merged provider). The **Translations** and **No string literals in screens** rules apply to the site too.
+- `site/webpack.config.d/moko-resources-inline.js` inlines moko's localization JSON into the bundle, because Kobweb's server serves only `public/` resources and the script, not webpack's emitted assets. moko regenerates `*/webpack.config.d/moko-resources-generated.js` and `*/karma.config.d/moko-resources-generated.js` on each build; they are git-ignored.
+- Kobweb version in the catalog must match the Kotlin 2.4 line. The no-comments and block-body rules apply to site code too.
 
 ## AI Agent Interaction Rules
 

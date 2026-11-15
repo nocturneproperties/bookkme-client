@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="site_app_name">BookkMe</string>
+    <string name="site_page_title">Приложение для записи клиентов для малого бизнеса</string>
+    <string name="site_headline">Управляйте бизнесом по записи прямо с телефона</string>
+    <string name="site_subheadline">Календарь, клиенты, услуги и команда — в одном месте, а клиенты записываются к вам напрямую. Бесплатно для салонов, студий, клиник, репетиторов, мастерских и всех, кто работает по записи.</string>
+    <string name="site_stores_title">Скоро в</string>
+    <string name="site_app_store">App Store</string>
+    <string name="site_google_play">Google Play</string>
+    <string name="site_features_title">Всё, на чём держится ваш бизнес</string>
+    <string name="site_feature_appointments_title">Записи</string>
+    <string name="site_feature_appointments_description">Создавайте, переносите, завершайте и отменяйте записи, отмечайте неявки, просматривайте календарь и историю.</string>
+    <string name="site_feature_requests_title">Заявки на запись</string>
+    <string name="site_feature_requests_description">Клиенты выбирают удобное время. Одобряйте или отклоняйте каждую заявку одним нажатием.</string>
+    <string name="site_feature_clients_title">Клиенты</string>
+    <string name="site_feature_clients_description">Ведите список клиентов с контактами или импортируйте их прямо из контактов телефона.</string>
+    <string name="site_feature_services_title">Услуги</string>
+    <string name="site_feature_services_description">Описывайте услуги с ценами и длительностью, группируйте их по категориям в вашей валюте.</string>
+    <string name="site_feature_team_title">Команда</string>
+    <string name="site_feature_team_description">Приглашайте сотрудников по коду, выбирайте, какие услуги выполняет каждый, и управляйте их доступом.</string>
+    <string name="site_feature_dashboard_title">Сводка</string>
+    <string name="site_feature_dashboard_description">Оценивайте сегодняшний день с первого взгляда и переключайтесь между бизнесами, если у вас их несколько.</string>
+    <string name="site_privacy_title">Конфиденциальность по умолчанию</string>
+    <string name="site_privacy_subtitle">BookkMe хранит данные о вас, вашей команде и ваших клиентах, поэтому защита данных встроена в приложение, а не добавлена потом.</string>
+    <string name="site_privacy_tracking_title">Без слежки</string>
+    <string name="site_privacy_tracking_description">Никаких SDK для аналитики и рекламы. Отчёты о сбоях выключены, пока вы их не включите.</string>
+    <string name="site_privacy_export_title">Ваши данные всегда доступны</string>
+    <string name="site_privacy_export_description">Экспортируйте свои личные данные или весь бизнес в файл в любой момент.</string>
+    <string name="site_privacy_retention_title">Срок хранения под вашим контролем</string>
+    <string name="site_privacy_retention_description">Выбирайте, сколько хранить данные клиентов о завершённых записях, прежде чем они будут удалены.</string>
+    <string name="site_privacy_passkeys_title">Вход без пароля</string>
+    <string name="site_privacy_passkeys_description">Входите с ключом доступа — без пароля, который можно забыть или потерять.</string>
+    <string name="site_languages">Доступно на английском, украинском, русском и польском. Светлая и тёмная темы.</string>
+    <string name="site_footer">BookkMe — бесплатное приложение для записи клиентов с доступным исходным кодом для Android и iOS.</string>
+    <string name="site_toggle_color_mode">Сменить тему</string>
+    <string name="site_language">Язык</string>
+</resources>

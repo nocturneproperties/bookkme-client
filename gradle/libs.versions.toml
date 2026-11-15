@@ -1,7 +1,7 @@
 [versions]
 local-plugin-version = "1.0"
 agp = "9.2.1"
-kotlin = "2.3.21"
+kotlin = "2.4.21"
 compose-runtime = "1.11.1"
 androidx-activity = "1.13.0"
 androidx-lifecycle = "2.11.0"
@@ -18,11 +18,15 @@ splash = "1.2.0"
 kmm-resources = "0.26.4"
 kmm-resources-graphics = "0.25.2"
 datetime = "0.8.0"
+js-joda-timezone = "3.2.1"
+kobweb = "0.25.1"
+compose-html = "1.11.1"
+kobweb-compose-runtime = "1.12.0"
 coil = "3.5.0"
 room = "2.8.4"
 sqlite = "2.6.2"
 compose-navigation = "2.9.8"
-ksp = "2.3.4"
+ksp = "2.3.11"
 preferences = "1.2.1"
 okio = "3.17.0"
 build-konfig = "0.22.0"
@@ -30,7 +34,7 @@ json-serialization = "1.11.0"
 money = "2.0.3"
 biometry = "1.4.0-alpha02"
 napier = "2.7.1"
-mockery = "3.4.2"
+mockery = "3.6.0"
 spotless = "8.11.0"
 ktlint = "1.8.0"
 
@@ -95,6 +99,11 @@ logger = { module = "io.github.aakira:napier", version.ref = "napier" }
 buildkonfig-compiler = { module = "com.codingfeline.buildkonfig:buildkonfig-compiler", version.ref = "build-konfig" }
 compose-compiler-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 
+compose-html-core = { module = "org.jetbrains.compose.html:html-core", version.ref = "compose-html" }
+kobweb-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "kobweb-compose-runtime" }
+kobweb-core = { module = "com.varabyte.kobweb:kobweb-core", version.ref = "kobweb" }
+kobweb-silk = { module = "com.varabyte.kobweb:kobweb-silk", version.ref = "kobweb" }
+
 [plugins]
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 android-room = { id = "androidx.room", version.ref = "room" }
@@ -114,3 +123,5 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 buldconfig = { id = "com.codingfeline.buildkonfig", version.ref = "build-konfig" }
 mockery = { id = "dev.mokkery", version.ref = "mockery" }
+kobweb-application = { id = "com.varabyte.kobweb.application", version.ref = "kobweb" }
+kobweb-library = { id = "com.varabyte.kobweb.library", version.ref = "kobweb" }

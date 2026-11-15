@@ -27,6 +27,10 @@ include(":database")
 // App
 include(":androidApp")
 
+// Web
+include(":site")
+include(":site:designsystem")
+
 // Core
 include(":designsystem")
 include(":core")

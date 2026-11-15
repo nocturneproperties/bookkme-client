@@ -14,6 +14,23 @@ private fun Project.hasAndroidResourcesInHostTests(): Boolean {
     return path in modulesWithAndroidResourcesInHostTests || path.endsWith(":presentation")
 }
 
+private val modulesWithWebTarget = setOf(
+    ":core",
+    ":core:domain",
+    ":core:testFixtures",
+    ":core:presentation",
+    ":designsystem",
+    ":library:money",
+    ":library:device:api",
+    ":library:crashreporting:api",
+)
+
+private val layersWithWebTarget = listOf(":domain:api", ":domain:impl", ":data:source")
+
+private fun Project.hasWebTarget(): Boolean {
+    return path in modulesWithWebTarget || layersWithWebTarget.any { path.endsWith(it) }
+}
+
 internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
         compileSdk = ApplicationConfig.COMPILE_SDK
@@ -30,6 +47,17 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    if (project.hasWebTarget()) {
+        js {
+            browser {
+                testTask { enabled = false }
+            }
+            nodejs {
+                testTask { useMocha { timeout = "10s" } }
+            }
+        }
+    }
 
     sourceSets.all {
         if (project.path.endsWith("data") || project.path.endsWith("presentation")) {

@@ -5,14 +5,6 @@ plugins {
 }
 
 kotlin {
-    applyDefaultHierarchyTemplate {
-        common {
-            group("nonAndroid") {
-                group("ios")
-                withJs()
-            }
-        }
-    }
     android {
         namespace = "${ApplicationConfig.ROOT_PACKAGE}.core.presentation"
         optimization {

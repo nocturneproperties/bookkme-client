@@ -3,7 +3,7 @@ package me.bookk.database.migration
 import java.io.File
 import java.nio.file.Files
 
-internal actual fun prepareSqliteTestDriver() {
+internal fun prepareSqliteTestDriver() {
     if (System.getProperty("androidx.sqlite.driver.bundled.path") != null) return
     val os = System.getProperty("os.name").orEmpty().lowercase()
     val platform = when {

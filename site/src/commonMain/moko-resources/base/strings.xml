@@ -36,6 +36,7 @@
     <string name="site_language">Language</string>
     <string name="site_nav_features">Features</string>
     <string name="site_nav_privacy">Privacy</string>
+    <string name="site_nav_guides">Guides</string>
     <string name="site_copyright">Copyright © %s Nocturne Properties. All rights reserved.</string>
     <string name="site_privacy_policy">Privacy Policy</string>
     <string name="site_terms_of_use">Terms of Use</string>

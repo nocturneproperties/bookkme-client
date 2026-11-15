@@ -26,6 +26,7 @@ object SiteNavigation {
     val header = listOf(
         SiteLink(SiteRes.strings.site_nav_features.desc(), LandingSection.FEATURES.path),
         SiteLink(SiteRes.strings.site_nav_privacy.desc(), LandingSection.PRIVACY.path),
+        SiteLink(SiteRes.strings.site_nav_guides.desc(), "/guides"),
     )
 
     val legal = listOf(

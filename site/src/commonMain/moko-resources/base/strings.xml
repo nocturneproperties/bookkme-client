@@ -3,7 +3,7 @@
     <string name="site_app_name">BookkMe</string>
     <string name="site_page_title">Booking app for small businesses</string>
     <string name="site_headline">Run your appointment business from your phone</string>
-    <string name="site_subheadline">Keep your calendar, clients, services and team in one place, and let your clients book with you directly. Free for salons, studios, clinics, tutors, repair shops and anyone who works by appointment.</string>
+    <string name="site_subheadline">Keep your calendar, clients, services and team in one place, and let your clients book with you directly. Made for salons, studios, clinics, tutors, repair shops and anyone who works by appointment.</string>
     <string name="site_stores_title">Coming soon to</string>
     <string name="site_app_store">App Store</string>
     <string name="site_google_play">Google Play</string>
@@ -31,7 +31,12 @@
     <string name="site_privacy_passkeys_title">Password-free sign-in</string>
     <string name="site_privacy_passkeys_description">Sign in with passkeys, with no password to leak or forget.</string>
     <string name="site_languages">Available in English, Ukrainian, Russian and Polish. Light and dark themes.</string>
-    <string name="site_footer">BookkMe — a free, source-available booking app for Android and iOS.</string>
+    <string name="site_footer">BookkMe — a source-available booking app for Android and iOS.</string>
     <string name="site_toggle_color_mode">Toggle color mode</string>
     <string name="site_language">Language</string>
+    <string name="site_nav_features">Features</string>
+    <string name="site_nav_privacy">Privacy</string>
+    <string name="site_copyright">Copyright © %s Nocturne Properties. All rights reserved.</string>
+    <string name="site_privacy_policy">Privacy Policy</string>
+    <string name="site_terms_of_use">Terms of Use</string>
 </resources>

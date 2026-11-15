@@ -3,7 +3,7 @@
     <string name="site_app_name">BookkMe</string>
     <string name="site_page_title">Застосунок для запису клієнтів для малого бізнесу</string>
     <string name="site_headline">Керуйте бізнесом за записом просто з телефона</string>
-    <string name="site_subheadline">Календар, клієнти, послуги та команда — в одному місці, а клієнти записуються до вас напряму. Безкоштовно для салонів, студій, клінік, репетиторів, майстерень і всіх, хто працює за записом.</string>
+    <string name="site_subheadline">Календар, клієнти, послуги та команда — в одному місці, а клієнти записуються до вас напряму. Для салонів, студій, клінік, репетиторів, майстерень і всіх, хто працює за записом.</string>
     <string name="site_stores_title">Незабаром в</string>
     <string name="site_app_store">App Store</string>
     <string name="site_google_play">Google Play</string>
@@ -31,7 +31,12 @@
     <string name="site_privacy_passkeys_title">Вхід без пароля</string>
     <string name="site_privacy_passkeys_description">Входьте за допомогою ключа доступу — без пароля, який можна забути чи втратити.</string>
     <string name="site_languages">Доступно англійською, українською, російською та польською. Світла й темна теми.</string>
-    <string name="site_footer">BookkMe — безкоштовний застосунок для запису клієнтів із доступним вихідним кодом для Android та iOS.</string>
+    <string name="site_footer">BookkMe — застосунок для запису клієнтів із доступним вихідним кодом для Android та iOS.</string>
     <string name="site_toggle_color_mode">Змінити тему</string>
     <string name="site_language">Мова</string>
+    <string name="site_nav_features">Можливості</string>
+    <string name="site_nav_privacy">Конфіденційність</string>
+    <string name="site_copyright">© %s Nocturne Properties. Усі права захищено.</string>
+    <string name="site_privacy_policy">Політика конфіденційності</string>
+    <string name="site_terms_of_use">Умови використання</string>
 </resources>

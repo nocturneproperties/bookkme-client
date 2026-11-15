@@ -9,8 +9,10 @@ import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.flexWrap
 import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.height
+import com.varabyte.kobweb.compose.ui.modifiers.id
 import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
+import com.varabyte.kobweb.compose.ui.modifiers.scrollMarginBlock
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.data.add
 import com.varabyte.kobweb.core.init.InitRoute
@@ -31,6 +33,7 @@ import me.bookk.site.components.widgets.Logo
 import me.bookk.site.components.widgets.StoreBadge
 import me.bookk.site.content.Feature
 import me.bookk.site.content.LandingContent
+import me.bookk.site.content.LandingSection
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
 import me.bookk.site.designsystem.components.TextBlock
@@ -56,6 +59,7 @@ val SectionStyle = CssStyle.base {
     Modifier
         .gap(1.5.cssRem)
         .margin(bottom = 4.cssRem)
+        .scrollMarginBlock(start = 4.cssRem)
 }
 
 @InitRoute
@@ -69,12 +73,14 @@ fun initHomePage(ctx: InitRouteContext) {
 fun HomePage() {
     Hero()
     FeatureSection(
+        LandingSection.FEATURES,
         SiteRes.strings.site_features_title.desc(),
         null,
         LandingContent.features,
         wideColumns = 3,
     )
     FeatureSection(
+        LandingSection.PRIVACY,
         SiteRes.strings.site_privacy_title.desc(),
         SiteRes.strings.site_privacy_subtitle.desc(),
         LandingContent.privacy,
@@ -123,12 +129,17 @@ private fun StoreBadges() {
 
 @Composable
 private fun FeatureSection(
+    section: LandingSection,
     title: StringDesc,
     subtitle: StringDesc?,
     features: List<Feature>,
     wideColumns: Int,
 ) {
-    Column(SectionStyle.toModifier()) {
+    Column(
+        SectionStyle
+            .toModifier()
+            .id(section.id),
+    ) {
         Heading(title, HeadingLevel.H2, HeadlineLargeTextStyle.toModifier())
         subtitle?.let {
             TextBlock(

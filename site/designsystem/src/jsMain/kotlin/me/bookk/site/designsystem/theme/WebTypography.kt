@@ -73,3 +73,17 @@ val BodySmallTextStyle = CssStyle.base {
         .lineHeight(1.4)
         .margin(0.px)
 }
+
+val LabelMediumTextStyle = CssStyle.base {
+    Modifier
+        .fontSize(0.8.cssRem)
+        .lineHeight(1.4)
+        .margin(0.px)
+}
+
+val LabelSmallTextStyle = CssStyle.base {
+    Modifier
+        .fontSize(0.75.cssRem)
+        .lineHeight(1.4)
+        .margin(0.px)
+}

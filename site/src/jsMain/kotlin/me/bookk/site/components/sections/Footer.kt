@@ -74,16 +74,16 @@ fun Footer(modifier: Modifier = Modifier) {
             TextBlock(SiteRes.strings.site_footer.desc(), LabelSmallTextStyle.toModifier())
             Row(FooterLegalStyle.toModifier(), verticalAlignment = Alignment.CenterVertically) {
                 TextBlock(SiteNavigation.copyright(), LabelSmallTextStyle.toModifier())
-                LegalLinks()
+                FooterLinks()
             }
         }
     }
 }
 
 @Composable
-private fun LegalLinks() {
+private fun FooterLinks() {
     Row(Modifier.gap(0.75.cssRem), verticalAlignment = Alignment.CenterVertically) {
-        SiteNavigation.legal.forEachIndexed { index, link ->
+        SiteNavigation.footer.forEachIndexed { index, link ->
             if (index > 0) LinkSeparator()
             TextLink(
                 link.title,

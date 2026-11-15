@@ -37,9 +37,27 @@
     <string name="site_nav_features">Возможности</string>
     <string name="site_nav_privacy">Конфиденциальность</string>
     <string name="site_nav_guides">Руководства</string>
+    <string name="site_nav_contact">Контакты</string>
     <string name="site_copyright">© %s Nocturne Properties. Все права защищены.</string>
     <string name="site_privacy_policy">Политика конфиденциальности</string>
     <string name="site_terms_of_use">Условия использования</string>
     <string name="site_not_found_title">Страница не найдена</string>
     <string name="site_not_found_message">Страница, которую вы ищете,\nне найдена.</string>
+    <string name="site_contact_title">Свяжитесь с нами</string>
+    <string name="site_contact_subtitle">Пишите на адрес, который подходит вашему вопросу, — так он быстрее попадёт к нужным людям.</string>
+    <string name="site_contact_support_title">Поддержка</string>
+    <string name="site_contact_support_description">Помощь с приложением и вашим аккаунтом.</string>
+    <string name="site_contact_support_topic_app">Вопросы об использовании BookkMe, сообщения об ошибках и отзывы</string>
+    <string name="site_contact_support_topic_access">Проблемы со входом или потерян доступ к ключам доступа</string>
+    <string name="site_contact_support_topic_report">Жалобы на бизнес, пользователя или контент, нарушающие наши правила</string>
+    <string name="site_contact_support_topic_complaints">Претензии и обжалование ограничений аккаунта</string>
+    <string name="site_contact_legal_title">Конфиденциальность и юридические вопросы</string>
+    <string name="site_contact_legal_description">Ваши персональные данные и наши юридические документы.</string>
+    <string name="site_contact_legal_topic_policy">Вопросы о Политике конфиденциальности и обработке ваших данных</string>
+    <string name="site_contact_legal_topic_rights">Запросы на доступ, исправление, экспорт или удаление ваших данных, а также отзыв согласия</string>
+    <string name="site_contact_legal_topic_deletion">Удаление аккаунта, если вы больше не можете пользоваться приложением. Пишите с адреса электронной почты вашего аккаунта.</string>
+    <string name="site_contact_legal_topic_businesses">Вопросы и инструкции бизнесов по обработке данных</string>
+    <string name="site_contact_legal_topic_security">Проблемы безопасности и подозрения на утечку данных</string>
+    <string name="site_contact_note_business">Вопрос о конкретной записи? Свяжитесь с бизнесом напрямую: он сам ведёт своё расписание и данные клиентов.</string>
+    <string name="site_contact_note_sensitive">Пожалуйста, не присылайте конфиденциальную информацию, которая не нужна нам, чтобы помочь.</string>
 </resources>

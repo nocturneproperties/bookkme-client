@@ -37,9 +37,27 @@
     <string name="site_nav_features">Funkcje</string>
     <string name="site_nav_privacy">Prywatność</string>
     <string name="site_nav_guides">Poradniki</string>
+    <string name="site_nav_contact">Kontakt</string>
     <string name="site_copyright">Copyright © %s Nocturne Properties. Wszelkie prawa zastrzeżone.</string>
     <string name="site_privacy_policy">Polityka prywatności</string>
     <string name="site_terms_of_use">Warunki korzystania</string>
     <string name="site_not_found_title">Nie znaleziono strony</string>
     <string name="site_not_found_message">Nie można znaleźć strony,\nktórej szukasz.</string>
+    <string name="site_contact_title">Skontaktuj się z nami</string>
+    <string name="site_contact_subtitle">Napisz na adres odpowiedni do Twojego pytania, aby szybciej trafiło do właściwych osób.</string>
+    <string name="site_contact_support_title">Wsparcie</string>
+    <string name="site_contact_support_description">Pomoc z aplikacją i Twoim kontem.</string>
+    <string name="site_contact_support_topic_app">Pytania o korzystanie z BookkMe, zgłoszenia błędów i opinie</string>
+    <string name="site_contact_support_topic_access">Problemy z logowaniem lub utrata dostępu do kluczy dostępu</string>
+    <string name="site_contact_support_topic_report">Zgłoszenia firm, użytkowników lub treści naruszających nasze zasady</string>
+    <string name="site_contact_support_topic_complaints">Reklamacje i odwołania od ograniczeń konta</string>
+    <string name="site_contact_legal_title">Prywatność i sprawy prawne</string>
+    <string name="site_contact_legal_description">Twoje dane osobowe i nasze dokumenty prawne.</string>
+    <string name="site_contact_legal_topic_policy">Pytania o Politykę prywatności i przetwarzanie Twoich danych</string>
+    <string name="site_contact_legal_topic_rights">Wnioski o dostęp, sprostowanie, eksport lub usunięcie danych oraz wycofanie zgody</string>
+    <string name="site_contact_legal_topic_deletion">Usunięcie konta, gdy nie możesz już korzystać z aplikacji. Napisz z adresu e-mail przypisanego do konta.</string>
+    <string name="site_contact_legal_topic_businesses">Pytania i polecenia firm dotyczące przetwarzania danych</string>
+    <string name="site_contact_legal_topic_security">Problemy z bezpieczeństwem i podejrzenia naruszenia ochrony danych</string>
+    <string name="site_contact_note_business">Masz pytanie o konkretną wizytę? Skontaktuj się bezpośrednio z firmą: to ona prowadzi swój grafik i dane klientów.</string>
+    <string name="site_contact_note_sensitive">Prosimy nie przesyłać poufnych informacji, których nie potrzebujemy, aby pomóc.</string>
 </resources>

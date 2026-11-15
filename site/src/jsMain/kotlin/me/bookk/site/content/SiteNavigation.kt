@@ -27,12 +27,18 @@ object SiteNavigation {
         SiteLink(SiteRes.strings.site_nav_features.desc(), LandingSection.FEATURES.path),
         SiteLink(SiteRes.strings.site_nav_privacy.desc(), LandingSection.PRIVACY.path),
         SiteLink(SiteRes.strings.site_nav_guides.desc(), "/guides"),
+        contact(),
     )
 
-    val legal = listOf(
+    val footer = listOf(
         SiteLink(SiteRes.strings.site_privacy_policy.desc(), "/privacy"),
         SiteLink(SiteRes.strings.site_terms_of_use.desc(), "/terms"),
+        contact(),
     )
+
+    private fun contact(): SiteLink {
+        return SiteLink(SiteRes.strings.site_nav_contact.desc(), "/contact")
+    }
 
     fun copyright(): StringDesc {
         return SiteRes.strings.site_copyright.format(Date().getFullYear().toString())

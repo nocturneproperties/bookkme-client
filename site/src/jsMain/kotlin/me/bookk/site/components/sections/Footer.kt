@@ -39,6 +39,7 @@ import org.jetbrains.compose.web.css.px
 val FooterStyle = CssStyle.base {
     val colors = colorMode.webColors()
     Modifier
+        .backgroundColor(ColorToken.Elevated.resolve(colors))
         .borderTop(1.px, LineStyle.Solid, ColorToken.Divider.resolve(colors))
         .color(ColorToken.SecondaryText.resolve(colors))
         .padding(topBottom = 1.25.cssRem, leftRight = 1.cssRem)

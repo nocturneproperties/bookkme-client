@@ -39,4 +39,6 @@
     <string name="site_copyright">© %s Nocturne Properties. Усі права захищено.</string>
     <string name="site_privacy_policy">Політика конфіденційності</string>
     <string name="site_terms_of_use">Умови використання</string>
+    <string name="site_not_found_title">Сторінку не знайдено</string>
+    <string name="site_not_found_message">Сторінку, яку ви шукаєте,\nне знайдено.</string>
 </resources>

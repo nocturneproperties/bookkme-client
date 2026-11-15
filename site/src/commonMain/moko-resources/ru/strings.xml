@@ -39,4 +39,6 @@
     <string name="site_copyright">© %s Nocturne Properties. Все права защищены.</string>
     <string name="site_privacy_policy">Политика конфиденциальности</string>
     <string name="site_terms_of_use">Условия использования</string>
+    <string name="site_not_found_title">Страница не найдена</string>
+    <string name="site_not_found_message">Страница, которую вы ищете,\nне найдена.</string>
 </resources>

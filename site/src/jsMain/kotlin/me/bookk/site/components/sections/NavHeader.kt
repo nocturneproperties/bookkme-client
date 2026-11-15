@@ -56,7 +56,12 @@ val NavHeaderStyle = CssStyle.base {
         .position(Position.Sticky)
         .top(0.px)
         .zIndex(1)
-        .backgroundColor(ColorToken.BlurredBackground.resolve(colors))
+        .backgroundColor(
+            ColorToken.Elevated
+                .resolve(colors)
+                .toRgb()
+                .copyf(alpha = 0.75f),
+        )
         .backdropFilter(saturate(180.percent), blur(20.px))
         .borderBottom(1.px, LineStyle.Solid, ColorToken.Divider.resolve(colors))
 }

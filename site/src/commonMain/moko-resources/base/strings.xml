@@ -39,4 +39,6 @@
     <string name="site_copyright">Copyright © %s Nocturne Properties. All rights reserved.</string>
     <string name="site_privacy_policy">Privacy Policy</string>
     <string name="site_terms_of_use">Terms of Use</string>
+    <string name="site_not_found_title">Page not found</string>
+    <string name="site_not_found_message">The page you’re looking\nfor can’t be found.</string>
 </resources>

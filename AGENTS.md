@@ -308,10 +308,11 @@ http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
 
 ### Site (`:site`)
 
-- Kobweb application module. It may depend on web-target `domain/api` + `domain/impl` modules and `:site:designsystem`, never on `data` (Ktor/Room) or `presentation`. Build UI from `:site:designsystem` components and states rather than raw HTML/Silk styling.
+- Kobweb application module. It may depend on web-target `domain/api` + `domain/impl` modules, `:database`, `:library:cache:*` and `:site:designsystem`, never on feature `data` modules or `presentation`. Build UI from `:site:designsystem` components and states rather than raw HTML/Silk styling.
 - Site copy is moko strings in `site/src/commonMain/moko-resources` (`SiteRes`, keys prefixed `site_` so they never collide with the shared modules' keys in the merged provider). The **Translations** and **No string literals in screens** rules apply to the site too.
 - `site/webpack.config.d/moko-resources-inline.js` inlines moko's localization JSON into the bundle, because Kobweb's server serves only `public/` resources and the script, not webpack's emitted assets. moko regenerates `*/webpack.config.d/moko-resources-generated.js` and `*/karma.config.d/moko-resources-generated.js` on each build; they are git-ignored.
 - Kobweb version in the catalog must match the Kotlin 2.4 line. The no-comments and block-body rules apply to site code too.
+- The site links against `kotlinx-browser` instead of `kotlin-dom-api-compat`. DataStore's web storage depends on `kotlinx-browser-js`, a full second copy of the DOM API that cannot be linked next to `dom-api-compat`. `site/build.gradle.kts` therefore excludes `kotlin-dom-api-compat` and depends on `:site:domcompat`. That module adds the one symbol precompiled libraries need but `kotlinx-browser` lacks: moko-resources' `org.w3c.dom.events.EventListener(handler)` factory. Keep the factory in its own module, because a copy inside `:site` creates a circular JS-module import with moko. JS links run with `-Xpartial-linkage-loglevel=ERROR`, so any other missing DOM symbol fails the build instead of the browser. When a library upgrade breaks the link, add the reported symbol to `:site:domcompat`. Upgrading moko-resources does not remove the factory: 0.27.x still calls it.
 
 ## AI Agent Interaction Rules
 

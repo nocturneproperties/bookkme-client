@@ -30,6 +30,7 @@ include(":androidApp")
 // Web
 include(":site")
 include(":site:designsystem")
+include(":site:domcompat")
 
 // Core
 include(":designsystem")

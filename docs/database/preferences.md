@@ -5,6 +5,8 @@
 Small scalar state lives in Jetpack DataStore rather than Room. `PreferenceProvider.get(name)` opens
 `<name>.preferences_pb`. A bucket name is owned by exactly one `single`-scoped class and opened once
 (DataStore throws if two instances target the same file). See **Prefs buckets** in `AGENTS.md`.
+On the website (JS), each bucket is the localStorage entry `<name>.preferences_pb`, plus DataStore's
+`datastore_LOCAL_<name>.preferences_pb_version` counter. Open tabs pick up each other's writes live.
 
 | Bucket | Owner | Keys | Purpose | Cleared on logout |
 |---|---|---|---|---|

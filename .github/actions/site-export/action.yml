@@ -1,0 +1,20 @@
+name: Site Export
+description: Exports the Kobweb site for the Kobweb server into site/.kobweb, reusing the cached Playwright browser the export renders pages with
+
+runs:
+  using: composite
+  steps:
+    - name: Query Browser Cache ID
+      id: browser
+      shell: bash
+      run: echo "cache-id=$(./gradlew -q :site:kobwebBrowserCacheId)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Browser
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ steps.browser.outputs.cache-id }}
+
+    - name: Export
+      shell: bash
+      run: ./gradlew :site:kobwebExport -PkobwebBuildTarget=RELEASE -PkobwebExportLayout=FULLSTACK

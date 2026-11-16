@@ -15,5 +15,8 @@ kotlin {
             implementation(projects.library.files.api)
             implementation(libs.androidx.preferences)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
     }
 }

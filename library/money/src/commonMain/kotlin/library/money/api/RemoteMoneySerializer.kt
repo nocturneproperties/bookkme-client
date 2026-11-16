@@ -12,10 +12,10 @@ class RemoteMoneySerializer : KSerializer<Money> {
         PrimitiveSerialDescriptor("Money", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): Money {
-        val string = decoder.decodeString()
+        val (currencyCode, amount) = decoder.decodeString().split(' ', limit = 2)
         return Money(
-            value = string.substring(4, string.length - 1).toDouble(),
-            currency = Money.SupportedCurrency.valueOf(string.substring(0, 3)),
+            value = amount.trim().toDouble(),
+            currency = Money.SupportedCurrency.valueOf(currencyCode),
         )
     }
 

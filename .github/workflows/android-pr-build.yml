@@ -32,6 +32,12 @@ jobs:
       - name: Test & Build
         run: ./gradlew spotlessCheck testAndroidHostTest assembleDevDebug --continue
 
+      - name: Test & Build Site
+        if: ${{ !cancelled() }}
+        run: |
+          ./gradlew :site:jsNodeTest
+          ./gradlew :site:jsBrowserProductionWebpack
+
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7

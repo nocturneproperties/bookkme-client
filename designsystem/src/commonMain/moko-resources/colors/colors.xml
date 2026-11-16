@@ -13,7 +13,7 @@
     <color name="lightActionTextDisabled">#C4C4C7</color>
     <color name="lightActionText">#0A84FF</color>
     <color name="lightInactive">#999999</color>
-    <color name="lightBlurredBackground">#BFFFFFFF</color>
+    <color name="lightBlurredBackground">#FFFFFFBF</color>
     <color name="lightHeader">#9c9a9a</color>
     <color name="lightSuccess">#34C759</color>
     <color name="lightInactiveToggle">#40767680</color>
@@ -33,7 +33,7 @@
     <color name="darkActionTextDisabled">#505054</color>
     <color name="darkActionText">#0A84FF</color>
     <color name="darkInactive">#999999</color>
-    <color name="darkBlurredBackground">#BF000000</color>
+    <color name="darkBlurredBackground">#000000BF</color>
     <color name="darkHeader">#8D8D93</color>
     <color name="darkSuccess">#30D158</color>
     <color name="darkInactiveToggle">#40767680</color>

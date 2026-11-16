@@ -1,0 +1,84 @@
+package me.bookk.site.designsystem.components
+
+import androidx.compose.runtime.Composable
+import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.Row
+import com.varabyte.kobweb.compose.foundation.layout.Spacer
+import com.varabyte.kobweb.compose.ui.Alignment
+import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.color
+import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
+import com.varabyte.kobweb.compose.ui.modifiers.gap
+import com.varabyte.kobweb.compose.ui.modifiers.padding
+import com.varabyte.kobweb.silk.components.icons.ArrowBackIcon
+import com.varabyte.kobweb.silk.style.toModifier
+import me.bookk.core.presentation.error.ActionType
+import me.bookk.designsystem.resources.color.ColorToken
+import me.bookk.designsystem.uistate.AppBarActionState
+import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.site.designsystem.theme.BodySmallTextStyle
+import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.site.designsystem.theme.TitleMediumTextStyle
+import me.bookk.site.designsystem.theme.themed
+import me.bookk.site.designsystem.uistate.WebButtonState
+import org.jetbrains.compose.web.css.cssRem
+
+@Composable
+fun AppTopBar(state: AppBarState, modifier: Modifier = Modifier) {
+    if (!state.isVisible) return
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(1.cssRem)
+            .gap(0.5.cssRem)
+            .then(modifier),
+    ) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .gap(0.5.cssRem),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            state.onBackClick?.let { IconButton(onClick = it) { ArrowBackIcon() } }
+            if (state.size ==
+                TopBarSize.SMALL
+            ) {
+                TextBlock(state.title, TitleMediumTextStyle.toModifier())
+            }
+            Spacer()
+            state.actions.items.filter { it.isVisible }.forEach { AppBarAction(it) }
+        }
+        if (state.size == TopBarSize.LARGE) LargeTitle(state)
+    }
+}
+
+@Composable
+private fun LargeTitle(state: AppBarState) {
+    TextBlock(state.title, HeadlineLargeTextStyle.toModifier())
+    state.subtitle?.let {
+        TextBlock(
+            it,
+            BodySmallTextStyle
+                .toModifier()
+                .color(ColorToken.SecondaryText.themed),
+        )
+    }
+}
+
+@Composable
+private fun AppBarAction(action: AppBarActionState) {
+    val button = WebButtonState(
+        text = action.contentDescription,
+        icon = action.icon,
+        isLoading = action.isLoading,
+        isEnabled = action.isEnabled,
+        onClick = action.onClick,
+    )
+    val color = if (action.type == ActionType.NEGATIVE) {
+        ColorToken.Error.themed
+    } else {
+        ColorToken.ActionText.themed
+    }
+    TextButton(button, Modifier.color(color))
+}

@@ -45,5 +45,10 @@ gradlePlugin {
             implementationClass = "build_src.KMMDatabaseConventionPlugin"
             version = "1.0"
         }
+        register("siteLegalTexts") {
+            id = "convention.site.legal"
+            implementationClass = "build_src.SiteLegalTextsConventionPlugin"
+            version = "1.0"
+        }
     }
 }

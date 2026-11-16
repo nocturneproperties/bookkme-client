@@ -1,6 +1,6 @@
 package library.cache.impl.preferences
 
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.byteArrayPreferencesKey
@@ -13,18 +13,12 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import library.files.api.FileProvider
 import kotlin.reflect.KClass
 import library.cache.api.Preferences as AppPreferences
 
 internal class PreferencesImpl(
-    fileName: String,
-    fileProvider: FileProvider,
+    private val dataStore: DataStore<Preferences>,
 ) : AppPreferences {
-
-    private val dataStore = PreferenceDataStoreFactory.createWithPath(
-        produceFile = { fileProvider.touchPrefsFile("$fileName.preferences_pb") },
-    )
 
     override suspend fun <T : Any> get(key: AppPreferences.Key<T>, cls: KClass<T>): T? {
         return dataStore.data.map { it[key.toAndroidX(cls)] }.first()

@@ -7,9 +7,10 @@ plugins {
     id(libs.plugins.convention.android.application.get().pluginId)
 }
 
-val keystoreProperties = file("keystore.properties").inputStream().use {
-    Properties().apply {
-        load(it)
+val keystoreProperties = Properties().apply {
+    val keystorePropertiesFile = file("keystore.properties")
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
     }
 }
 
@@ -26,16 +27,16 @@ android {
 
     signingConfigs {
         getByName("debug") {
-            keyAlias = keystoreProperties["debugKeyAlias"] as String
-            keyPassword = keystoreProperties["debugKeyPassword"] as String
-            storeFile = file(keystoreProperties["debugStoreFile"] as String)
-            storePassword = keystoreProperties["debugStorePassword"] as String
+            keyAlias = keystoreProperties.getProperty("debugKeyAlias")
+            keyPassword = keystoreProperties.getProperty("debugKeyPassword")
+            storeFile = keystoreProperties.getProperty("debugStoreFile")?.let(::file)
+            storePassword = keystoreProperties.getProperty("debugStorePassword")
         }
         create("release") {
-            keyAlias = keystoreProperties["releaseKeyAlias"] as String
-            keyPassword = keystoreProperties["releaseKeyPassword"] as String
-            storeFile = file(keystoreProperties["releaseStoreFile"] as String)
-            storePassword = keystoreProperties["releaseStorePassword"] as String
+            keyAlias = keystoreProperties.getProperty("releaseKeyAlias")
+            keyPassword = keystoreProperties.getProperty("releaseKeyPassword")
+            storeFile = keystoreProperties.getProperty("releaseStoreFile")?.let(::file)
+            storePassword = keystoreProperties.getProperty("releaseStorePassword")
         }
     }
 

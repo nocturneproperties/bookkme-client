@@ -1,6 +1,7 @@
 package me.bookk.core.test
 
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlin.coroutines.AbstractCoroutineContextElement
@@ -37,11 +38,16 @@ class TestHolder : AbstractCoroutineContextElement(Key) {
     companion object Key : CoroutineContext.Key<TestHolder>
 }
 
-fun runUnitTest(context: CoroutineContext = TestHolder(), body: suspend TestScope.() -> Unit) =
-    runTest(context) {
+fun runUnitTest(
+    context: CoroutineContext = TestHolder(),
+    body: suspend TestScope.() -> Unit,
+): TestResult {
+    prepareTestEnvironment()
+    return runTest(context) {
         body()
         requireNotNull(currentCoroutineContext()[TestHolder.Key]).assertFormat()
     }
+}
 
 suspend fun given() {
     requireNotNull(currentCoroutineContext()[TestHolder.Key]).givenCalled()

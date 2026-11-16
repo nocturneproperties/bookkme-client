@@ -17,6 +17,9 @@ kobweb {
             description.set("BookkMe — a booking app for small businesses on Android and iOS.")
             faviconPath.set("/favicon.svg")
         }
+        export {
+            suppressLayoutWarning.set(true)
+        }
     }
 }
 

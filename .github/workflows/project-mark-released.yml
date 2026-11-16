@@ -1,12 +1,12 @@
 name: Mark Released Issues
 on:
   workflow_run:
-    workflows: ["Android Release", "iOS Release"]
+    workflows: ["Android Release", "iOS Release", "Site Release"]
     types: [completed]
   workflow_dispatch:
     inputs:
       release:
-        description: Release tag to mention in issue comments (e.g. prod-v1.2.3)
+        description: Release tag to mention in issue comments (e.g. prod-v1.2.3 or site-v1.0.0)
         required: true
         type: string
 
@@ -68,19 +68,37 @@ jobs:
             echo "option_id=$option_id"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Find issues in Done
+      - name: Resolve release label
         run: |
+          if [[ "$RELEASE_TAG" == site-* ]]; then
+            label=site
+          else
+            label=mobile
+          fi
+          echo "RELEASE_LABEL=$label" >> "$GITHUB_ENV"
+
+      - name: Find issues in Done
+        env:
+          ISSUES_TOKEN: ${{ github.token }}
+        run: |
+          labeled=$(
+            GH_TOKEN="$ISSUES_TOKEN" gh issue list --repo "$REPO" \
+              --label "$RELEASE_LABEL" --state all --limit 1000 \
+              --json number --jq '[.[].number]'
+          )
+
           gh project item-list "$PROJECT_NUMBER" --owner "$OWNER" --limit 1000 --format json |
-            jq -r --arg status "$FROM_STATUS" --arg repo "$REPO" '
+            jq -r --arg status "$FROM_STATUS" --arg repo "$REPO" --argjson labeled "$labeled" '
               .items[]
               | select(.status == $status)
               | select(.content.type == "Issue")
               | select(.content.repository == $repo)
+              | select(.content.number as $number | $labeled | any(. == $number))
               | [.id, .content.number, .content.title]
               | @tsv
             ' > issues.tsv
 
-          echo "Found $(wc -l < issues.tsv | tr -d ' ') issue(s) in '$FROM_STATUS'"
+          echo "Found $(wc -l < issues.tsv | tr -d ' ') issue(s) labeled '$RELEASE_LABEL' in '$FROM_STATUS'"
 
       - name: Compose release comment
         run: |

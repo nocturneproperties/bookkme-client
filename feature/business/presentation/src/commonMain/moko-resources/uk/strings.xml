@@ -80,6 +80,7 @@
     <string name="business_plugins_appointments_clients_item2_sub">Зверніть увагу, що клієнт може відмовитися від будь-яких сповіщень</string>
     <string name="business_plugins_demo">Натисніть тут, щоб переглянути демо, дізнатися, як це працює, і вирішити, чи підходить це вам.</string>
     <string name="business_settings_active_day_without_work_hours_error">Робочий день має містити щонайменше одну робочу годину</string>
+    <string name="business_settings_empty_work_hour_range_error">Робочий проміжок не може починатися й закінчуватися в один і той самий час</string>
     <string name="business_settings_invalid_day_off_range_error">Дата початку вихідних має бути раніше за дату завершення</string>
     <string name="business_analytics_coming_soon_title">Аналітика незабаром зʼявиться</string>
     <string name="business_analytics_coming_soon_message">Ми готуємо звіти щодо вашого доходу, записів і клієнтів. Вони зʼявляться тут в одному з наступних оновлень.</string>

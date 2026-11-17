@@ -17,7 +17,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.rowGap
-import com.varabyte.kobweb.compose.ui.modifiers.width
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
@@ -26,9 +25,9 @@ import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.site.content.SiteNavigation
 import me.bookk.site.designsystem.components.TextBlock
 import me.bookk.site.designsystem.components.TextLink
+import me.bookk.site.designsystem.components.VerticalDivider
 import me.bookk.site.designsystem.theme.LabelSmallTextStyle
 import me.bookk.site.designsystem.theme.resolve
-import me.bookk.site.designsystem.theme.themed
 import me.bookk.site.designsystem.theme.webColors
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.FlexWrap
@@ -84,18 +83,8 @@ fun Footer(modifier: Modifier = Modifier) {
 private fun FooterLinks() {
     Row(Modifier.gap(0.75.cssRem), verticalAlignment = Alignment.CenterVertically) {
         SiteNavigation.footer.forEachIndexed { index, link ->
-            if (index > 0) LinkSeparator()
+            if (index > 0) VerticalDivider(Modifier.height(0.75.cssRem))
             TextLink(link.title, link.path, LabelSmallTextStyle.toModifier())
         }
     }
-}
-
-@Composable
-private fun LinkSeparator() {
-    Box(
-        Modifier
-            .width(1.px)
-            .height(0.75.cssRem)
-            .backgroundColor(ColorToken.Divider.themed),
-    )
 }

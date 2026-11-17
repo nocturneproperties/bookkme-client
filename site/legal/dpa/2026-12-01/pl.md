@@ -44,7 +44,7 @@ Umowa jest dostępna w języku angielskim, polskim i ukraińskim; każda wersja 
 
 ## <a id="section-2"></a>2. Polecenia firmy
 
-2.1. BookkMe przetwarza dane przestrzeni roboczej wyłącznie na udokumentowane polecenie firmy. Firma wydaje polecenia niniejszą umową, Regulaminem oraz swoimi działaniami w aplikacji: tworzeniem, importowaniem, edycją, eksportem i usuwaniem rekordów, ustawianiem okresu przechowywania danych klientów, nadawaniem uprawnień pracownikom i usunięciem firmy. Dalsze polecenia muszą mieć formę pisemną, w tym e-mail na [legal@bookkme.com](mailto:legal@bookkme.com), i być technicznie wykonalne w ramach usługi.
+2.1. BookkMe przetwarza dane przestrzeni roboczej wyłącznie na udokumentowane polecenie firmy. Firma wydaje polecenia niniejszą umową, Regulaminem oraz swoimi działaniami w aplikacji: tworzeniem, importowaniem, edycją, eksportem i usuwaniem rekordów, ustawianiem okresu przechowywania danych klientów, nadawaniem uprawnień pracownikom i usunięciem firmy. Tymi samymi warunkami firma poleca również BookkMe powiązać rekord klienta z kontem BookkMe osoby, której potwierdzony adres e-mail ten rekord zawiera; aktualizować rekordy klientów i pracowników firmy dotyczące posiadacza konta, gdy zmieni on w swoim koncie imię i nazwisko, telefon lub adres e-mail, oraz scalać z jego rekordem klienta inny rekord klienta zawierający jego nowy potwierdzony adres e-mail; a także uwzględniać rekordy, które firma prowadzi o posiadaczu konta, w jego własnym eksporcie danych. Dalsze polecenia muszą mieć formę pisemną, w tym e-mail na [legal@bookkme.com](mailto:legal@bookkme.com), i być technicznie wykonalne w ramach usługi.
 
 2.2. BookkMe może również przetwarzać dane przestrzeni roboczej, jeżeli wymaga tego prawo Unii lub państwa członkowskiego, któremu podlega. W takim przypadku BookkMe informuje firmę o tym obowiązku prawnym przed rozpoczęciem przetwarzania, chyba że prawo to zabrania udzielania takiej informacji z uwagi na ważny interes publiczny.
 
@@ -85,7 +85,7 @@ BookkMe zapewnia, że każda osoba upoważniona przez nie do przetwarzania danyc
 
 6.1. Firma udziela BookkMe ogólnej zgody na korzystanie z dalszych podmiotów przetwarzających. Aktualne dalsze podmioty przetwarzające wymienia [załącznik 3](#annex-3).
 
-6.2. BookkMe informuje firmę o dodaniu lub zastąpieniu dalszego podmiotu przetwarzającego, publikując zaktualizowaną wersję niniejszej umowy co najmniej 14 dni przed wejściem zmiany w życie. Firma, która zgłasza sprzeciw z uzasadnionych przyczyn dotyczących ochrony danych, może zakończyć umowę, eksportując swoje dane i usuwając firmę; jest to jedyny środek przysługujący firmie w związku z tym sprzeciwem.
+6.2. Co najmniej 14 dni przed dodaniem lub zastąpieniem dalszego podmiotu przetwarzającego BookkMe informuje firmę e-mailem wysłanym na adres konta BookkMe właściciela, wskazując ten podmiot i jego usługę, oraz publikuje zaktualizowaną wersję niniejszej umowy. Firma może zgłosić sprzeciw z uzasadnionych przyczyn dotyczących ochrony danych, pisząc na [legal@bookkme.com](mailto:legal@bookkme.com) przed wejściem zmiany w życie. BookkMe wówczas albo nie korzysta z nowego podmiotu przy przetwarzaniu danych przestrzeni roboczej tej firmy, albo, jeżeli nie jest to racjonalnie możliwe, informuje o tym firmę; firma może wtedy bezpłatnie zakończyć umowę, eksportując swoje dane i usuwając firmę, a BookkMe nie korzysta z nowego podmiotu w odniesieniu do danych przestrzeni roboczej tej firmy, dopóki firma nie będzie miała na to 14 dni.
 
 6.3. BookkMe nakłada na każdy dalszy podmiot przetwarzający obowiązki w zakresie ochrony danych zapewniające wystarczające gwarancje dla przetwarzania, zgodnie z art. 28 ust. 4 RODO; standardowe warunki dostawcy obejmujące jego umowę powierzenia spełniają ten wymóg, jeżeli odpowiadają temu standardowi. BookkMe pozostaje odpowiedzialne wobec firmy za wykonanie tych obowiązków przez dalsze podmioty przetwarzające.
 
@@ -123,9 +123,9 @@ BookkMe zapewnia, że każda osoba upoważniona przez nie do przetwarzania danyc
 
 ## <a id="section-10"></a>10. Usunięcie danych po zakończeniu przetwarzania
 
-10.1. Przed usunięciem firmy właściciel może eksportować jej dane w aplikacji; w ten sposób BookkMe zwraca dane przestrzeni roboczej.
+10.1. Firma decyduje, czy dane przestrzeni roboczej mają zostać zwrócone, usunięte, czy jedno i drugie. Właściciel może w każdej chwili eksportować dane firmy w aplikacji; w ten sposób BookkMe je zwraca, a usunięcie firmy jest poleceniem ich usunięcia. Zanim nieużywane konto właściciela, a wraz z nim firma, zostanie usunięte, BookkMe ostrzega właściciela 60, 30 i 7 dni wcześniej i nie usuwa tego konta, jeśli inny członek firmy był aktywny w ciągu ostatnich 3 lat.
 
-10.2. Po usunięciu firmy, także gdy konto właściciela zostanie usunięte lub usunięte po 3 latach nieużywania zgodnie z [Polityką prywatności](https://bookkme.com/privacy#section-8), BookkMe usuwa dane przestrzeni roboczej z działającej usługi. Imiona i nazwiska, dane kontaktowe, notatki i opisy klientów są szyfrowane odrębnym kluczem dla każdej osoby, niszczonym wraz z danymi, a kopie kluczy w kopiach zapasowych są usuwane w ciągu 7 dni, więc po tym czasie tych danych nie można odczytać z żadnej kopii zapasowej. Pozostałe usunięte dane znikają z kopii zapasowych w ciągu 30 dni, wraz z wygaśnięciem kopii; jeżeli kopia zapasowa sporządzona przed usunięciem zostanie kiedykolwiek przywrócona, BookkMe ponownie usuwa dane przed wznowieniem usługi. Dane przechowywane przez dalsze podmioty przetwarzające wygasają zgodnie z [załącznikiem 1](#annex-1).
+10.2. Po usunięciu firmy, także gdy konto właściciela zostanie usunięte lub usunięte po 3 latach nieużywania zgodnie z [Polityką prywatności](https://bookkme.com/privacy#section-8), BookkMe usuwa dane przestrzeni roboczej z działającej usługi. Imiona i nazwiska, dane kontaktowe, notatki i opisy klientów są szyfrowane odrębnym kluczem dla każdej osoby, niszczonym wraz z danymi, a kopie kluczy w kopiach zapasowych są usuwane w ciągu 7 dni, więc po tym czasie tych danych nie można odczytać z żadnej kopii zapasowej. Pozostałe usunięte dane znikają z kopii zapasowych w ciągu 30 dni, wraz z wygaśnięciem kopii; jeżeli kopia zapasowa sporządzona przed usunięciem zostanie kiedykolwiek przywrócona, BookkMe ponownie usuwa dane przed wznowieniem usługi.
 
 10.3. BookkMe przechowuje dane przestrzeni roboczej po zakończeniu przetwarzania tylko wtedy, gdy wymaga tego prawo Unii lub państwa członkowskiego.
 
@@ -198,7 +198,6 @@ Pytania o ochronę danych przestrzeni roboczej: [legal@bookkme.com](mailto:legal
 | Wewnętrzne wiadomości między częściami usługi, których nie udało się dostarczyć | 30 dni |
 | Logi serwera | 14 dni |
 | Kopie zapasowe | 30 dni; imiona i nazwiska, dane kontaktowe, notatki i opisy klientów są w nich nieczytelne 7 dni po usunięciu danej osoby ([załącznik 2](#annex-2)) |
-| Treść, aktywność i metadane e-maili przechowywane przez Postmark | 45 dni; zapisy blokad adresów z odbiciami lub skargami są przechowywane dłużej, aby zapobiec dalszym niedostarczalnym e-mailom |
 
 ---
 
@@ -220,10 +219,9 @@ Pytania o ochronę danych przestrzeni roboczej: [legal@bookkme.com](mailto:legal
 
 | Dalszy podmiot przetwarzający | Usługa | Miejsce przetwarzania | Mechanizm przekazania |
 |---|---|---|---|
-| Hostinger International Ltd., Cypr | Serwery, baza danych i kopie zapasowe | Litwa i Niemcy (UE) | Nie dotyczy; [Data Processing Addendum](https://www.hostinger.com/legal/dpa) Hostinger stosuje standardowe klauzule umowne wobec jego dalszych podmiotów przetwarzających spoza EOG |
+| Hostinger International Ltd., Cypr | Serwery, baza danych i kopie zapasowe; e-maile do pracowników i klientów firmy oraz skrzynka pocztowa BookkMe | Serwery na Litwie i w Niemczech, poczta e-mail we Francji i w Niemczech (UE) | Nie dotyczy; [Data Processing Addendum](https://www.hostinger.com/legal/dpa) Hostinger stosuje standardowe klauzule umowne wobec jego dalszych podmiotów przetwarzających spoza EOG |
 | Cloudflare, Inc. | DNS, odwrotne proxy, ochrona przed DDoS i bezpieczeństwo sieci | Sieć globalna; spółka z USA | [Cloudflare Customer DPA](https://www.cloudflare.com/cloudflare-customer-dpa/): Ramy ochrony danych, gdy mają zastosowanie, w pozostałych przypadkach standardowe klauzule umowne |
 | Google (Firebase Cloud Messaging) | Powiadomienia push do pracowników i klientów firmy | Przetwarzanie globalne, w tym w USA | [Firebase Data Processing and Security Terms](https://firebase.google.com/terms/data-processing-terms): Ramy ochrony danych i standardowe klauzule umowne, gdy mają zastosowanie |
-| Postmark | E-maile do pracowników i klientów firmy | USA | [Postmark DPA](https://postmarkapp.com/dpa): standardowe klauzule umowne |
 
 ---
 
@@ -236,7 +234,7 @@ Niniejszy załącznik uzupełnia standardowe klauzule umowne włączone do umowy
 | Klauzula | Wybór |
 |---|---|
 | Klauzula 7, klauzula dokująca | Nie ma zastosowania |
-| Klauzula 9 lit. a), korzystanie z usług podmiotów przetwarzających | Opcja 2, ogólne pisemne upoważnienie. BookkMe informuje firmę o zamierzonym dodaniu lub zastąpieniu podmiotu przetwarzającego co najmniej 14 dni wcześniej, zgodnie z [punktem 6.2](#section-6) |
+| Klauzula 9 lit. a), korzystanie z usług podmiotów przetwarzających | Opcja 2, ogólne pisemne upoważnienie. BookkMe informuje firmę indywidualnie, e-mailem do właściciela, o zamierzonym dodaniu lub zastąpieniu podmiotu przetwarzającego co najmniej 14 dni wcześniej i rozpatruje sprzeciw zgodnie z [punktem 6.2](#section-6) |
 | Klauzula 11 lit. a), środki ochrony prawnej | Fakultatywne postanowienie o niezależnym organie rozstrzygania sporów nie ma zastosowania |
 | Klauzula 13 lit. a), nadzór | Organ nadzorczy wskazany w części C |
 | Klauzula 17, prawo właściwe | Opcja 2: prawo państwa członkowskiego UE, w którym firma ma siedzibę; jeżeli to prawo nie przewiduje praw osób trzecich będących beneficjentami albo firma nie ma siedziby w państwie członkowskim UE, prawo Polski |

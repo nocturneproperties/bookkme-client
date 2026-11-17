@@ -18,6 +18,9 @@ interface UpdateBusiness {
         class ActiveDayWithoutWorkHours :
             Throwable(),
             Error
+        class EmptyWorkHourRange :
+            Throwable(),
+            Error
         class InvalidDayOffRange :
             Throwable(),
             Error

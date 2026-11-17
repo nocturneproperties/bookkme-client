@@ -287,6 +287,25 @@ class UpdateEmployeeImplTest {
         }
 
     @Test
+    fun `throws EmptyWorkHourRange on BUSINESS_EMPLOYEE_EMPTY_WORK_HOUR_RANGE`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val employee = stubEmployee()
+        fixture.stubSuccess(employee)
+        everySuspend { fixture.dataSource.updateEmployee(employee) } throws
+            DomainError.BusinessError(
+                EmployeeErrorCodes.BUSINESS_EMPLOYEE_EMPTY_WORK_HOUR_RANGE,
+                "msg",
+            )
+
+        whenn()
+        then()
+        assertFailsWith<UpdateEmployee.Error.EmptyWorkHourRange> {
+            fixture.sut(employee)
+        }
+    }
+
+    @Test
     fun `throws InvalidDayOffRange on BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE`() = runUnitTest {
         given()
         val fixture = Fixture()

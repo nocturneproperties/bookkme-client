@@ -490,6 +490,14 @@ class AppointmentDetailsViewModel(
                         )
                     }
 
+                    is UpdateAppointment.Error.EmployeeDateIsNotAllowed -> {
+                        showMessage(AppointmentsRes.strings.appointments_employee_date_error.desc())
+                    }
+
+                    is UpdateAppointment.Error.EmployeeTimeIsNotAllowed -> {
+                        showMessage(AppointmentsRes.strings.appointments_employee_time_error.desc())
+                    }
+
                     is UpdateAppointment.Error.AppointmentNotScheduled -> {
                         showMessage(
                             AppointmentsRes.strings.appointments_details_not_scheduled_error.desc(),

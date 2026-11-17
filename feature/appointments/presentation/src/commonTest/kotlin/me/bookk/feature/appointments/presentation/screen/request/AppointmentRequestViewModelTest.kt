@@ -1,5 +1,6 @@
 package me.bookk.feature.appointments.presentation.screen.request
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -10,6 +11,7 @@ import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import library.money.api.Money
+import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -241,6 +243,87 @@ class AppointmentRequestViewModelTest {
 
         then()
         sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+    }
+
+    @Test
+    fun `shows employee day message when employee does not work on requested date`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.approveAppointmentRequest(any()) } throws
+            ApproveAppointmentRequest.Error.EmployeeDateNotAllowed()
+        val sut = presentedSutWith(fixture, AppointmentRequest.stub())
+
+        whenn()
+        sut.uiState.requests.items.single().approveButton.onClick?.invoke()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            AppointmentsRes.strings.appointments_employee_date_error.desc(),
+            message.message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
+    fun `shows employee hours message when requested time is outside employee hours`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.approveAppointmentRequest(any()) } throws
+                ApproveAppointmentRequest.Error.EmployeeTimeNotAllowed()
+            val sut = presentedSutWith(fixture, AppointmentRequest.stub())
+
+            whenn()
+            sut.uiState.requests.items.single().approveButton.onClick?.invoke()
+
+            then()
+            val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(
+                AppointmentsRes.strings.appointments_employee_time_error.desc(),
+                message.message,
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        }
+
+    @Test
+    fun `shows suspended message when requested employee is suspended`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.approveAppointmentRequest(any()) } throws
+            ApproveAppointmentRequest.Error.EmployeeSuspended()
+        val sut = presentedSutWith(fixture, AppointmentRequest.stub())
+
+        whenn()
+        sut.uiState.requests.items.single().approveButton.onClick?.invoke()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            AppointmentsRes.strings.appointments_details_employee_suspended_error.desc(),
+            message.message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
+    fun `shows not found message when requested employee was removed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.approveAppointmentRequest(any()) } throws
+            ApproveAppointmentRequest.Error.EmployeeNotFound()
+        val sut = presentedSutWith(fixture, AppointmentRequest.stub())
+
+        whenn()
+        sut.uiState.requests.items.single().approveButton.onClick?.invoke()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            AppointmentsRes.strings.appointments_employee_not_found_error.desc(),
+            message.message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
     @Test

@@ -15,6 +15,12 @@ interface CreateAppointmentRequest {
         class DateIsNotAllowed :
             Throwable(),
             Error
+        class EmployeeDateIsNotAllowed :
+            Throwable(),
+            Error
+        class EmployeeTimeIsNotAllowed :
+            Throwable(),
+            Error
         class DateInPast :
             Throwable(),
             Error

@@ -9,14 +9,13 @@ class ContactChannel(
     val description: StringDesc,
     val email: String,
     val topics: List<StringDesc>,
-) {
-    val mailto: String
-        get() = "mailto:$email"
-}
+)
 
 object ContactContent {
     private const val SUPPORT_EMAIL = "support@bookkme.com"
     private const val LEGAL_EMAIL = "legal@bookkme.com"
+
+    private const val SECURITY_EMAIL = "security@bookkme.com"
 
     val channels = listOf(
         ContactChannel(
@@ -39,13 +38,22 @@ object ContactContent {
                 SiteRes.strings.site_contact_legal_topic_rights.desc(),
                 SiteRes.strings.site_contact_legal_topic_deletion.desc(),
                 SiteRes.strings.site_contact_legal_topic_businesses.desc(),
-                SiteRes.strings.site_contact_legal_topic_security.desc(),
+            ),
+        ),
+        ContactChannel(
+            SiteRes.strings.site_contact_security_title.desc(),
+            SiteRes.strings.site_contact_security_description.desc(),
+            SECURITY_EMAIL,
+            listOf(
+                SiteRes.strings.site_contact_security_topic_vulnerabilities.desc(),
+                SiteRes.strings.site_contact_security_topic_breaches.desc(),
             ),
         ),
     )
 
-    val notes = listOf(
-        SiteRes.strings.site_contact_note_business.desc(),
-        SiteRes.strings.site_contact_note_sensitive.desc(),
-    )
+    val appointmentQuestion = SiteRes.strings.site_contact_appointment_question.desc()
+
+    val appointmentAnswer = SiteRes.strings.site_contact_appointment_answer.desc()
+
+    val sensitiveNote = SiteRes.strings.site_contact_note_sensitive.desc()
 }

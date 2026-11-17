@@ -38,6 +38,7 @@
     <string name="employees_edit_updated">Сотрудник обновлён</string>
     <string name="employees_edit_error_validation">Неверное имя, телефон или эл. почта сотрудника</string>
     <string name="employees_edit_error_active_day_without_work_hours">В рабочем дне должен быть хотя бы один рабочий час</string>
+    <string name="employees_edit_error_empty_work_hour_range">Рабочий интервал не может начинаться и заканчиваться в одно и то же время</string>
     <string name="employees_edit_error_invalid_day_off_range">Дата начала выходных должна быть раньше даты окончания</string>
     <string name="employees_edit_suspend">Приостановить сотрудника</string>
     <string name="employees_edit_reinstate">Восстановить сотрудника</string>

@@ -170,6 +170,25 @@ class UpdateBusinessImplTest {
     }
 
     @Test
+    fun `throws EmptyWorkHourRange on corresponding error code`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        everySuspend { fixture.dataSource.getBusinessById(id) } returns stubBusiness(id)
+        everySuspend { fixture.dataSource.updateBusiness(any()) } throws
+            DomainError.BusinessError(
+                BusinessErrorCodes.BUSINESS_EMPTY_WORK_HOUR_RANGE,
+                "msg",
+            )
+
+        whenn()
+        then()
+        assertFailsWith<UpdateBusiness.Error.EmptyWorkHourRange> {
+            fixture.sut(stubUpdate(id))
+        }
+    }
+
+    @Test
     fun `throws InvalidDayOffRange on corresponding error code`() = runUnitTest {
         given()
         val fixture = Fixture()

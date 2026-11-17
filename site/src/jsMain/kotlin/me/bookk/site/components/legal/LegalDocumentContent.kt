@@ -7,7 +7,6 @@ import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.columnGap
 import com.varabyte.kobweb.compose.ui.modifiers.flexWrap
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
@@ -27,7 +26,6 @@ import dev.icerock.moko.resources.format
 import kotlinx.datetime.LocalDate
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.date.JsDateLocalizer
-import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.site.designsystem.components.AppCard
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
@@ -38,7 +36,8 @@ import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.BodySmallTextStyle
 import me.bookk.site.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.site.designsystem.theme.LabelMediumTextStyle
-import me.bookk.site.designsystem.theme.themed
+import me.bookk.site.designsystem.theme.active
+import me.bookk.site.designsystem.theme.secondary
 import me.bookk.site.legal.LegalHistoryEntry
 import me.bookk.site.legal.LegalLanguageLink
 import me.bookk.site.legal.LegalNotice
@@ -119,7 +118,7 @@ private fun LegalNoticeCard(notice: LegalNotice) {
             TextLink(
                 text,
                 path,
-                BodyMediumTextStyle.toModifier().color(ColorToken.ActionText.themed),
+                BodyMediumTextStyle.toModifier().active(),
             )
         }
     }
@@ -153,7 +152,7 @@ private fun LegalHistoryItem(entry: LegalHistoryEntry) {
         entry.period.description(),
         BodySmallTextStyle
             .toModifier()
-            .color(ColorToken.SecondaryText.themed),
+            .secondary(),
     )
 }
 
@@ -162,7 +161,7 @@ private fun LegalLink(text: StringDesc, path: String, isSelected: Boolean, modif
     if (isSelected) {
         TextBlock(text, modifier.fontWeight(FontWeight.SemiBold))
     } else {
-        TextLink(text, path, modifier.color(ColorToken.ActionText.themed))
+        TextLink(text, path, modifier.active())
     }
 }
 

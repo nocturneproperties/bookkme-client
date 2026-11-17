@@ -145,7 +145,7 @@ You may write to [support@bookkme.com](mailto:support@bookkme.com) to seek a res
 - **Postal address:** 2/37 Leiptsyzka St., apt. 43, Kyiv, 01015, Ukraine
 - **Email:** [support@bookkme.com](mailto:support@bookkme.com)
 - **Company phone:** [+380 73 059 70 41](tel:+380730597041)
-- **Company email:** [antufeevmichael@gmail.com](mailto:antufeevmichael@gmail.com)
+- **Company email:** [contact@bookkme.com](mailto:contact@bookkme.com)
 
 ---
 

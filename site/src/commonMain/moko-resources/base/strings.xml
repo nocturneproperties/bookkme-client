@@ -33,11 +33,9 @@
     <string name="site_footer">BookkMe — a source-available booking app for Android and iOS.</string>
     <string name="site_toggle_color_mode">Toggle color mode</string>
     <string name="site_language">Language</string>
-    <string name="site_nav_features">Features</string>
-    <string name="site_nav_privacy">Privacy</string>
     <string name="site_nav_guides">Guides</string>
     <string name="site_nav_contact">Contact</string>
-    <string name="site_copyright">Copyright © %s Nocturne Properties. All rights reserved.</string>
+    <string name="site_copyright">Copyright © %s Nocturne Properties LLC. All rights reserved.</string>
     <string name="site_privacy_policy">Privacy Policy</string>
     <string name="site_terms_of_service">Terms of Service</string>
     <string name="site_data_processing_agreement">Data Processing Agreement</string>
@@ -54,7 +52,8 @@
     <string name="site_not_found_title">Page not found</string>
     <string name="site_not_found_message">The page you’re looking\nfor can’t be found.</string>
     <string name="site_contact_title">Contact us</string>
-    <string name="site_contact_subtitle">Write to the address that matches your question so it reaches the right people sooner.</string>
+    <string name="site_contact_guides_question">Questions about how the app or service works?</string>
+    <string name="site_contact_guides_link">You’ll most likely find the answer in our guides.</string>
     <string name="site_contact_support_title">Support</string>
     <string name="site_contact_support_description">Help with the app and your account.</string>
     <string name="site_contact_support_topic_app">Questions about using BookkMe, bug reports and feedback</string>
@@ -67,7 +66,12 @@
     <string name="site_contact_legal_topic_rights">Requests to access, correct, export or delete your data, or to withdraw consent</string>
     <string name="site_contact_legal_topic_deletion">Deleting your account when you can no longer use the app. Write from your account’s email address.</string>
     <string name="site_contact_legal_topic_businesses">Data processing questions and instructions from businesses</string>
-    <string name="site_contact_legal_topic_security">Security issues and suspected data breaches</string>
-    <string name="site_contact_note_business">Have a question about a specific appointment? Contact the business directly: it manages its own schedule and client records.</string>
+    <string name="site_contact_appointment_question">Have a question about a specific appointment?</string>
+    <string name="site_contact_appointment_answer">Contact the business directly: it manages its own schedule and client records.</string>
     <string name="site_contact_note_sensitive">Please don’t include sensitive information we don’t need to help you.</string>
+    <string name="site_contact_security_title">Security</string>
+    <string name="site_contact_security_description">Vulnerabilities and data breaches.</string>
+    <string name="site_contact_security_topic_vulnerabilities">Security vulnerabilities in our apps, website or services</string>
+    <string name="site_contact_security_topic_breaches">Suspected data breaches</string>
+    <string name="site_contact_legal_links_title">Legal documents</string>
 </resources>

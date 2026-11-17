@@ -14,6 +14,10 @@ interface UpdateEmployee {
             cause: Throwable,
         ) : Throwable(cause),
             Error
+        class EmptyWorkHourRange(
+            cause: Throwable,
+        ) : Throwable(cause),
+            Error
         class InvalidDayOffRange(
             cause: Throwable,
         ) : Throwable(cause),

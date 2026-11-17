@@ -20,12 +20,16 @@ flowchart TD
     Save --> R([return merged Business])
     Net -- business error --> Code{errorCode}
     Code -- 200019 BUSINESS_ACTIVE_DAY_WITHOUT_WORK_HOURS --> E1([throw Error.ActiveDayWithoutWorkHours])
+    Code -- 200042 BUSINESS_EMPTY_WORK_HOUR_RANGE --> E3([throw Error.EmptyWorkHourRange])
     Code -- 200020 BUSINESS_INVALID_DAY_OFF_RANGE --> E2([throw Error.InvalidDayOffRange])
     Code -- 200035 --> Added200035([throw Error.InvalidCurrency])
     Code -- 200036 --> Added200036([throw Error.CurrencyLocked])
     Code -- 200041 --> Added200041([throw Error.InvalidRetentionPeriod])
     Code -- other --> EX([rethrow])
 ```
+
+A working range whose end is before its start runs past midnight; one that starts and ends at the same time
+is rejected with `EmptyWorkHourRange`. Saving the business schedule never changes any employee's schedule.
 
 `clientDataRetentionMonths` is persisted and sent in the update. A null value in `Business.Update`
 preserves the cached period. Cached periods are non-null with a 36-month default.

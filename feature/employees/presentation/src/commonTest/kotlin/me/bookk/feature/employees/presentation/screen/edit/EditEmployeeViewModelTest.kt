@@ -777,6 +777,27 @@ class EditEmployeeViewModelTest {
     }
 
     @Test
+    fun `shows message when a work hour range starts and ends at the same time`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateEmployee(any()) } throws
+            UpdateEmployee.Error.EmptyWorkHourRange(TestException())
+        val sut = fixture.sut()
+        sut.permissionRow(0).canView.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            EmployeesRes.strings.employees_edit_error_empty_work_hour_range.desc(),
+            message.message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
     fun `shows mapped error when save fails unexpectedly`() = runUnitTest {
         given()
         val fixture = Fixture()

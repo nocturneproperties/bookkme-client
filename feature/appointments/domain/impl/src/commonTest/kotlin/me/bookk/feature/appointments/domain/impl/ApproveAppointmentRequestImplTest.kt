@@ -113,12 +113,12 @@ class ApproveAppointmentRequestImplTest {
     }
 
     @Test
-    fun `throws DateNotAllowed on DATE_NOT_ALLOWED error`() = runUnitTest {
+    fun `throws DateNotAllowed on BUSINESS_DATE_NOT_ALLOWED error`() = runUnitTest {
         given()
         val fixture = Fixture()
         val requestId = Uuid.random()
         everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } throws
-            DomainError.BusinessError(AppointmentErrorCodes.DATE_NOT_ALLOWED, "msg")
+            DomainError.BusinessError(AppointmentErrorCodes.BUSINESS_DATE_NOT_ALLOWED, "msg")
 
         whenn()
         then()
@@ -128,12 +128,12 @@ class ApproveAppointmentRequestImplTest {
     }
 
     @Test
-    fun `throws TimeNotAllowed on TIME_NOT_ALLOWED error`() = runUnitTest {
+    fun `throws TimeNotAllowed on BUSINESS_TIME_NOT_ALLOWED error`() = runUnitTest {
         given()
         val fixture = Fixture()
         val requestId = Uuid.random()
         everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } throws
-            DomainError.BusinessError(AppointmentErrorCodes.TIME_NOT_ALLOWED, "msg")
+            DomainError.BusinessError(AppointmentErrorCodes.BUSINESS_TIME_NOT_ALLOWED, "msg")
 
         whenn()
         then()
@@ -153,6 +153,66 @@ class ApproveAppointmentRequestImplTest {
         whenn()
         then()
         assertFailsWith<ApproveAppointmentRequest.Error.DateInPast> {
+            fixture.sut(requestId)
+        }
+    }
+
+    @Test
+    fun `throws EmployeeDateNotAllowed on EMPLOYEE_DATE_NOT_ALLOWED error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val requestId = Uuid.random()
+        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.EMPLOYEE_DATE_NOT_ALLOWED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<ApproveAppointmentRequest.Error.EmployeeDateNotAllowed> {
+            fixture.sut(requestId)
+        }
+    }
+
+    @Test
+    fun `throws EmployeeTimeNotAllowed on EMPLOYEE_TIME_NOT_ALLOWED error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val requestId = Uuid.random()
+        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.EMPLOYEE_TIME_NOT_ALLOWED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<ApproveAppointmentRequest.Error.EmployeeTimeNotAllowed> {
+            fixture.sut(requestId)
+        }
+    }
+
+    @Test
+    fun `throws EmployeeSuspended on BUSINESS_EMPLOYEE_SUSPENDED error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val requestId = Uuid.random()
+        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<ApproveAppointmentRequest.Error.EmployeeSuspended> {
+            fixture.sut(requestId)
+        }
+    }
+
+    @Test
+    fun `throws EmployeeNotFound on BUSINESS_EMPLOYEE_NOT_EXISTS error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val requestId = Uuid.random()
+        everySuspend { fixture.dataSource.createAppointmentFromRequest(requestId) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<ApproveAppointmentRequest.Error.EmployeeNotFound> {
             fixture.sut(requestId)
         }
     }

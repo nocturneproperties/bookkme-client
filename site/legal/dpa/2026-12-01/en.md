@@ -44,7 +44,7 @@ It is available in English, Polish and Ukrainian; each language describes the sa
 
 ## <a id="section-2"></a>2. The business's instructions
 
-2.1. BookkMe processes workspace data only on the business's documented instructions. The business gives those instructions by this agreement, by the Terms of Service, and by its actions in the app: creating, importing, editing, exporting and deleting records, setting the client data retention period, granting employees permissions and deleting the business. Further instructions must be in writing, including by email to [legal@bookkme.com](mailto:legal@bookkme.com), and must be technically feasible within the service.
+2.1. BookkMe processes workspace data only on the business's documented instructions. The business gives those instructions by this agreement, by the Terms of Service, and by its actions in the app: creating, importing, editing, exporting and deleting records, setting the client data retention period, granting employees permissions and deleting the business. By the same terms the business also instructs BookkMe to link a client record to the BookkMe account of the person whose confirmed email address it holds; to update the business's client and employee records about an account holder when they change their name, phone or email address in their account, and to merge into their client record another client record that holds their new confirmed email address; and to include the records the business keeps about an account holder in that account holder's own data export. Further instructions must be in writing, including by email to [legal@bookkme.com](mailto:legal@bookkme.com), and must be technically feasible within the service.
 
 2.2. BookkMe may also process workspace data where Union or Member State law to which it is subject requires it. In that case BookkMe informs the business of that legal requirement before processing, unless that law prohibits such information on important grounds of public interest.
 
@@ -85,7 +85,7 @@ BookkMe ensures that everyone it authorises to process workspace data, including
 
 6.1. The business gives BookkMe general authorisation to engage subprocessors. The current subprocessors are listed in [Annex 3](#annex-3).
 
-6.2. BookkMe informs the business of an added or replaced subprocessor by publishing an updated version of this agreement at least 14 days before the change takes effect. A business that objects on reasonable data protection grounds may end this agreement by exporting its data and deleting the business; this is the business's sole remedy for that objection.
+6.2. At least 14 days before adding or replacing a subprocessor, BookkMe informs the business by email to the address of the owner's BookkMe account, naming the subprocessor and its service, and publishes an updated version of this agreement. The business may object on reasonable data protection grounds by writing to [legal@bookkme.com](mailto:legal@bookkme.com) before the change takes effect. BookkMe then either does not use the new subprocessor for that business's workspace data or, where that is not reasonably possible, tells the business so; the business may then end this agreement free of charge by exporting its data and deleting the business, and BookkMe does not use the new subprocessor for that business's workspace data until the business has had 14 days to do so.
 
 6.3. BookkMe imposes data protection obligations on each subprocessor that provide sufficient guarantees for the processing, as required by Article 28(4) GDPR; a provider's standard terms that incorporate its data processing addendum satisfy this where they meet that standard. BookkMe remains liable to the business for its subprocessors' performance of those obligations.
 
@@ -123,9 +123,9 @@ BookkMe ensures that everyone it authorises to process workspace data, including
 
 ## <a id="section-10"></a>10. Deletion at the end of processing
 
-10.1. Before deleting the business, the owner can export its data in the app; this is how BookkMe returns workspace data.
+10.1. The business chooses whether its workspace data is returned, deleted, or both. The owner can export the business's data in the app at any time, which is how BookkMe returns it, and deleting the business is the instruction to delete it. Before an owner's unused account, and with it the business, is deleted, BookkMe warns the owner 60, 30 and 7 days ahead, and it does not delete that account while another member of the business has been active within the last 3 years.
 
-10.2. When the business is deleted, including when the owner's account is deleted or removed for 3 years without use as the [Privacy Policy](https://bookkme.com/privacy#section-8) describes, BookkMe deletes the workspace data from the live service. Names, contact details, notes and client descriptions are encrypted with a key per person, which is destroyed with the data, and copies of the keys in backups are deleted within 7 days, so after that those details can no longer be read from any backup. Other deleted data leaves backups within 30 days, as the backups expire; if a backup taken before the deletion is ever restored, BookkMe deletes the data again before the service resumes. Records kept by subprocessors expire as described in [Annex 1](#annex-1).
+10.2. When the business is deleted, including when the owner's account is deleted or removed for 3 years without use as the [Privacy Policy](https://bookkme.com/privacy#section-8) describes, BookkMe deletes the workspace data from the live service. Names, contact details, notes and client descriptions are encrypted with a key per person, which is destroyed with the data, and copies of the keys in backups are deleted within 7 days, so after that those details can no longer be read from any backup. Other deleted data leaves backups within 30 days, as the backups expire; if a backup taken before the deletion is ever restored, BookkMe deletes the data again before the service resumes.
 
 10.3. BookkMe keeps workspace data after the end of processing only where Union or Member State law requires it to.
 
@@ -198,7 +198,6 @@ Data protection questions about workspace data: [legal@bookkme.com](mailto:legal
 | Internal messages between parts of the service that could not be delivered | 30 days |
 | Server logs | 14 days |
 | Backups | 30 days; names, contact details, notes and client descriptions in them unreadable 7 days after the person's erasure ([Annex 2](#annex-2)) |
-| Email content, activity and metadata kept by Postmark | 45 days; suppression records of bounced or complaining addresses are kept longer to prevent further undeliverable emails |
 
 ---
 
@@ -220,10 +219,9 @@ Data protection questions about workspace data: [legal@bookkme.com](mailto:legal
 
 | Subprocessor | Service | Location of processing | Transfer mechanism |
 |---|---|---|---|
-| Hostinger International Ltd., Cyprus | Servers, database and backups | Lithuania and Germany (EU) | Not applicable; Hostinger's [Data Processing Addendum](https://www.hostinger.com/legal/dpa) applies standard contractual clauses to its own subprocessors outside the EEA |
+| Hostinger International Ltd., Cyprus | Servers, database and backups; emails to the business's employees and clients, and BookkMe's mailbox | Servers in Lithuania and Germany, email in France and Germany (EU) | Not applicable; Hostinger's [Data Processing Addendum](https://www.hostinger.com/legal/dpa) applies standard contractual clauses to its own subprocessors outside the EEA |
 | Cloudflare, Inc. | DNS, reverse proxy, DDoS protection and network security | Global network; United States company | [Cloudflare Customer DPA](https://www.cloudflare.com/cloudflare-customer-dpa/): Data Privacy Framework where applicable, standard contractual clauses otherwise |
 | Google (Firebase Cloud Messaging) | Push notifications to the business's employees and clients | Global processing, including the United States | [Firebase Data Processing and Security Terms](https://firebase.google.com/terms/data-processing-terms): Data Privacy Framework and standard contractual clauses where applicable |
-| Postmark | Emails to the business's employees and clients | United States | [Postmark DPA](https://postmarkapp.com/dpa): standard contractual clauses |
 
 ---
 
@@ -236,7 +234,7 @@ This annex completes the standard contractual clauses incorporated by [section 7
 | Clause | Choice |
 |---|---|
 | Clause 7, docking clause | Does not apply |
-| Clause 9(a), use of sub-processors | Option 2, general written authorisation. BookkMe informs the business of any intended addition or replacement of a sub-processor at least 14 days in advance, as in [section 6.2](#section-6) |
+| Clause 9(a), use of sub-processors | Option 2, general written authorisation. BookkMe informs the business specifically, by email to the owner, of any intended addition or replacement of a sub-processor at least 14 days in advance, and handles an objection, as in [section 6.2](#section-6) |
 | Clause 11(a), redress | The optional wording on an independent dispute resolution body does not apply |
 | Clause 13(a), supervision | The supervisory authority in Part C |
 | Clause 17, governing law | Option 2: the law of the EU Member State in which the business is established; where that law does not allow third-party beneficiary rights, or the business is not established in an EU Member State, the law of Poland |

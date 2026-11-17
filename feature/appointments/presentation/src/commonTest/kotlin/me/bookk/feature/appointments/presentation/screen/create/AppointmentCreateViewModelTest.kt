@@ -598,6 +598,68 @@ class AppointmentCreateViewModelTest {
     }
 
     @Test
+    fun `marks date field with employee day error when employee does not work that day`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createAppointment(any()) } throws
+                CreateAppointment.Error.EmployeeDateIsNotAllowed()
+            val sut = fixture.sut()
+            sut.fillValidForm()
+
+            whenn()
+            sut.uiState.create.onClick?.invoke()
+
+            then()
+            assertEquals(ValidationState.ERROR, sut.uiState.datePicker.textField.validationState)
+            assertEquals(
+                AppointmentsRes.strings.appointments_employee_date_error.desc(),
+                sut.uiState.datePicker.textField.supportingTextRes,
+            )
+            assertFalse(sut.uiState.create.isEnabled)
+        }
+
+    @Test
+    fun `marks time field with employee hours error when time is outside employee hours`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createAppointment(any()) } throws
+                CreateAppointment.Error.EmployeeTimeIsNotAllowed()
+            val sut = fixture.sut()
+            sut.fillValidForm()
+
+            whenn()
+            sut.uiState.create.onClick?.invoke()
+
+            then()
+            assertEquals(ValidationState.ERROR, sut.uiState.timePicker.textField.validationState)
+            assertEquals(
+                AppointmentsRes.strings.appointments_employee_time_error.desc(),
+                sut.uiState.timePicker.textField.supportingTextRes,
+            )
+            assertFalse(sut.uiState.create.isEnabled)
+        }
+
+    @Test
+    fun `clears employee day error when a new date is picked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createAppointment(any()) } throws
+            CreateAppointment.Error.EmployeeDateIsNotAllowed()
+        val sut = fixture.sut()
+        sut.fillValidForm()
+        sut.uiState.create.onClick?.invoke()
+
+        whenn()
+        sut.uiState.datePicker.datePicker.onDatePicked?.invoke(LocalDate(2030, 1, 2))
+
+        then()
+        assertEquals(ValidationState.DEFAULT, sut.uiState.datePicker.textField.validationState)
+        assertTrue(sut.uiState.create.isEnabled)
+    }
+
+    @Test
     fun `clears date and time errors when a new time is picked`() = runUnitTest {
         given()
         val fixture = Fixture()

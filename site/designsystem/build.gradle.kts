@@ -1,7 +1,7 @@
 import com.varabyte.kobweb.gradle.library.util.configAsKobwebLibrary
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
+    id(libs.plugins.convention.kmm.web.get().pluginId)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kobweb.library)
     alias(libs.plugins.kmm.resources)

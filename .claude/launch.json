@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "./gradlew",
+      "runtimeArgs": [":site:kobwebStart", "-t"],
+      "port": 8080
+    }
+  ]
+}

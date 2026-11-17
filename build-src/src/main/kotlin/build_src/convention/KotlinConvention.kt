@@ -35,6 +35,12 @@ private fun Project.hasWebTarget(): Boolean {
     return path in modulesWithWebTarget || layersWithWebTarget.any { path.endsWith(it) }
 }
 
+internal fun KotlinMultiplatformExtension.applyCompilerOptions() {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+}
+
 internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
         compileSdk = ApplicationConfig.COMPILE_SDK
@@ -44,9 +50,7 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     }
 
     jvmToolchain(21)
-    compilerOptions {
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-    }
+    applyCompilerOptions()
 
     iosArm64()
     iosSimulatorArm64()

@@ -1,7 +1,7 @@
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
+    id(libs.plugins.convention.kmm.web.get().pluginId)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.kmm.resources)
@@ -25,7 +25,10 @@ kobweb {
 
 val sqliteWasmResources = layout.buildDirectory.dir("generated/sqliteWasm")
 
-val copySqliteWasm by tasks.registering(Copy::class) {
+val copySqliteWasm = tasks.register<Copy>("copySqliteWasm") {
+    group = "build"
+    description =
+        "Copies the SQLite WASM runtime from npm into the site's public/sqlite resources for the Room web worker"
     dependsOn(":kotlinNpmInstall")
     from(rootProject.layout.buildDirectory.dir("js/node_modules/@sqlite.org/sqlite-wasm/dist")) {
         include("index.mjs", "sqlite3.wasm", "sqlite3-opfs-async-proxy.js")

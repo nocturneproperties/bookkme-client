@@ -35,7 +35,7 @@
     <string name="site_language">Język</string>
     <string name="site_nav_guides">Poradniki</string>
     <string name="site_nav_contact">Kontakt</string>
-    <string name="site_copyright">Copyright © %s Nocturne Properties. Wszelkie prawa zastrzeżone.</string>
+    <string name="site_copyright">Copyright © %s Nocturne Properties LLC. Wszelkie prawa zastrzeżone.</string>
     <string name="site_privacy_policy">Polityka prywatności</string>
     <string name="site_terms_of_service">Regulamin</string>
     <string name="site_data_processing_agreement">Umowa powierzenia przetwarzania danych</string>

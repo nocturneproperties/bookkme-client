@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
+    id(libs.plugins.convention.kmm.web.get().pluginId)
 }
 
 group = "me.bookk.site.domcompat"

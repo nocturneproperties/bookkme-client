@@ -118,23 +118,21 @@ Powody anulowania, odrzucenia i zmiany ceny są widoczne dla obu stron i nie mog
 
 | Dostawca | Zadanie | Lokalizacja |
 |---|---|---|
-| Nasz dostawca hostingu | Serwery, baza danych i kopie zapasowe | Litwa i Niemcy (UE) |
-| Cloudflare, Inc. | DNS, odwrotne proxy, ochrona przed DDoS, inne zabezpieczenia sieci oraz przekazywanie e-maili wysłanych na nasze adresy | Sieć globalna; spółka amerykańska |
+| Nasz dostawca hostingu | Serwery, baza danych i kopie zapasowe; nasza poczta e-mail: wysyłanie e-maili aplikacji (kody rejestracyjne, powiadomienia, informacje o koncie) oraz prowadzenie naszej skrzynki pocztowej dla [legal@bookkme.com](mailto:legal@bookkme.com) i [support@bookkme.com](mailto:support@bookkme.com) | Serwery na Litwie i w Niemczech, poczta e-mail we Francji i w Niemczech (UE) |
+| Cloudflare, Inc. | DNS, odwrotne proxy, ochrona przed DDoS i inne zabezpieczenia sieci | Sieć globalna; spółka amerykańska |
 | Google (Firebase Cloud Messaging, Firebase Crashlytics) | Dostarczanie powiadomień push; zbieranie raportów o awariach | Przetwarzanie globalne, w tym w Stanach Zjednoczonych |
-| Google (Gmail) | Prowadzenie naszej skrzynki pocztowej dla [legal@bookkme.com](mailto:legal@bookkme.com) i [support@bookkme.com](mailto:support@bookkme.com) | Przetwarzanie globalne, w tym w Stanach Zjednoczonych |
-| Postmark | Wysyłanie e-maili (kody rejestracyjne, powiadomienia, informacje o koncie, nasze odpowiedzi na Twoje wiadomości) | Stany Zjednoczone |
 
 - **Organy publiczne**, gdy wymaga tego prawo.
 
-Cloudflare opisuje odrębne przetwarzanie danych sieciowych i usługowych w swojej [polityce prywatności](https://www.cloudflare.com/privacypolicy/). Google opisuje przetwarzanie danych usługowych Firebase w [informacjach o prywatności](https://firebase.google.com/support/privacy). Nasza skrzynka pocztowa to konto Gmail na konsumenckich warunkach Google, dlatego Google przetwarza znajdujące się w niej e-maile jako administrator zgodnie z [Polityką prywatności Google](https://policies.google.com/privacy), a nie jako nasz podmiot przetwarzający.
+Cloudflare opisuje odrębne przetwarzanie danych sieciowych i usługowych w swojej [polityce prywatności](https://www.cloudflare.com/privacypolicy/). Google opisuje przetwarzanie danych usługowych Firebase w [informacjach o prywatności](https://firebase.google.com/support/privacy).
 
 ---
 
 ## <a id="section-7"></a>7. Przekazywanie danych do innych krajów
 
-Nasze serwery, baza danych i kopie zapasowe znajdują się na Litwie i w Niemczech (UE). Sieć proxy i zabezpieczeń Cloudflare przetwarza ruch globalnie. Google/Firebase i Postmark mogą przetwarzać dane w Stanach Zjednoczonych; Google może również korzystać z infrastruktury w innych krajach. E-maile wysyłane na [legal@bookkme.com](mailto:legal@bookkme.com) lub [support@bookkme.com](mailto:support@bookkme.com) są przechowywane w naszej skrzynce Gmail, którą Google może przetwarzać w Stanach Zjednoczonych i w innych krajach.
+Nasze serwery, baza danych i kopie zapasowe znajdują się na Litwie i w Niemczech (UE), a nasza poczta e-mail, w tym skrzynka dla [legal@bookkme.com](mailto:legal@bookkme.com) i [support@bookkme.com](mailto:support@bookkme.com), we Francji i w Niemczech (UE). Sieć proxy i zabezpieczeń Cloudflare przetwarza ruch globalnie. Google/Firebase może przetwarzać dane w Stanach Zjednoczonych; Google może również korzystać z infrastruktury w innych krajach.
 
-[Umowa powierzenia przetwarzania danych Cloudflare](https://www.cloudflare.com/cloudflare-customer-dpa/) przewiduje przekazywanie na podstawie Data Privacy Framework, gdy ma zastosowanie, oraz standardowe klauzule umowne dla innych przekazań podlegających ograniczeniom. [Warunki Postmark](https://postmarkapp.com/terms-of-service) obejmują [umowę powierzenia przetwarzania danych](https://postmarkapp.com/dpa) ze standardowymi klauzulami umownymi. Firebase Cloud Messaging i Crashlytics podlegają [warunkom przetwarzania i bezpieczeństwa danych Firebase](https://firebase.google.com/terms/data-processing-terms), których postanowienia o przekazywaniu obejmują Data Privacy Framework i standardowe klauzule umowne w odpowiednich przypadkach. Nasza skrzynka Gmail nie jest objęta umową powierzenia przetwarzania danych ani standardowymi klauzulami umownymi z Google; przesyłaj nam tylko to, czego wymaga Twoja sprawa.
+[Umowa powierzenia przetwarzania danych Cloudflare](https://www.cloudflare.com/cloudflare-customer-dpa/) przewiduje przekazywanie na podstawie Data Privacy Framework, gdy ma zastosowanie, oraz standardowe klauzule umowne dla innych przekazań podlegających ograniczeniom. Umowa powierzenia przetwarzania danych naszego dostawcy hostingu obejmuje nasze serwery i pocztę e-mail oraz stosuje standardowe klauzule umowne wobec jego własnych dalszych podmiotów przetwarzających spoza EOG. Firebase Cloud Messaging i Crashlytics podlegają [warunkom przetwarzania i bezpieczeństwa danych Firebase](https://firebase.google.com/terms/data-processing-terms), których postanowienia o przekazywaniu obejmują Data Privacy Framework i standardowe klauzule umowne w odpowiednich przypadkach.
 
 Nikt nie uzyskuje dostępu do danych produkcyjnych z Ukrainy. Nasi pracownicy i nasz dyrektor mogą uzyskiwać do nich zdalny dostęp z innych krajów, w których przebywają, także spoza EOG. Taki dostęp jest ograniczony do obsługi i wsparcia usługi i odbywa się przez szyfrowane połączenia. Jeśli dostęp z zagranicy stanowi międzynarodowe przekazanie danych, stosujemy zabezpieczenia wymagane przez właściwe przepisy. Aby uzyskać kopię odpowiednich zabezpieczeń, napisz na [legal@bookkme.com](mailto:legal@bookkme.com); informacje poufne mogą zostać ukryte.
 
@@ -147,6 +145,7 @@ Nikt nie uzyskuje dostępu do danych produkcyjnych z Ukrainy. Nasi pracownicy i 
 | Twoje konto | Do usunięcia przez Ciebie. Konto nieużywane przez 3 lata jest usuwane; ostrzegamy 60, 30 i 7 dni wcześniej. Konto właściciela pozostaje aktywne, jeśli w tym czasie był aktywny inny członek jego firmy. |
 | Urządzenie, na którym się logowano | Usuwane po 30 dniach bez użycia. |
 | Kody potwierdzające e-mail | 10 minut. |
+| Kopie e-maili, które do Ciebie wysyłamy (kody rejestracyjne, powiadomienia, informacje o koncie), przechowywane w naszej skrzynce nadawczej | 5 lat od wysłania, potem usuwane automatycznie. |
 | Dokumentacja klientów firmy | Dopóki firma ją przechowuje, maksymalnie przez ustalony przez nią okres (12–120 miesięcy od ostatniej wizyty lub zmiany rekordu; domyślnie 36). Następnie jest automatycznie usuwana. Firma może usunąć klienta wcześniej. |
 | Wizyty | Przez czas istnienia firmy, bez automatycznego usuwania historii wizyt ze względu na wiek rekordu. Dane klienta i notatki są usuwane po usunięciu rekordu klienta, także w wyniku upływu odrębnego okresu przechowywania danych klienta. |
 | Prośby o rezerwację | 60 dni po zakończeniu wnioskowanej wizyty. |
@@ -156,8 +155,6 @@ Nikt nie uzyskuje dostępu do danych produkcyjnych z Ukrainy. Nasi pracownicy i 
 | Zapisy o usunięciu konta lub klienta (tylko identyfikatory) | 60 dni, aby powtórzyć usunięcie po odtworzeniu kopii zapasowej. |
 | Dzienniki serwera | 14 dni. |
 | Niedostarczone wiadomości wewnętrzne między częściami usługi (mogą zawierać dane rezerwacji lub profilu) | 30 dni. |
-| Treść e-maili, aktywność i metadane wiadomości przechowywane przez Postmark | 45 dni. |
-| Rejestry blokady wysyłki Postmark, np. adresy powodujące odbicia lub skargi | Przechowywane dłużej niż historia wiadomości, aby zapobiegać dalszym niechcianym lub niedostarczalnym e-mailom; skontaktuj się z nami w sprawie usunięcia danych. |
 | Raporty o awariach | Po 90 dniach Google rozpoczyna usuwanie śladów awarii i powiązanych identyfikatorów z systemów aktywnych i kopii zapasowych; nie jest to gwarantowany termin zakończenia usuwania. |
 | Kopie zapasowe | 30 dni. Imiona i nazwiska, dane kontaktowe, notatki i opisy klientów stają się w nich nieczytelne 7 dni po usunięciu danej osoby ([sekcja 9](#section-9)). |
 
@@ -211,4 +208,4 @@ Gdy zmieniamy politykę, publikujemy nową wersję z nową datą i zachowujemy p
 - **Adres pocztowy:** ul. Leiptsyzka 2/37, lok. 43, 01015 Kijów, Ukraina
 - **E-mail:** [legal@bookkme.com](mailto:legal@bookkme.com)
 - **Telefon firmy:** [+380 73 059 70 41](tel:+380730597041)
-- **E-mail firmy:** [antufeevmichael@gmail.com](mailto:antufeevmichael@gmail.com)
+- **E-mail firmy:** [contact@bookkme.com](mailto:contact@bookkme.com)

@@ -145,7 +145,7 @@ BookkMe безкоштовний на етапі запуску та вдоск�
 - **Поштова адреса:** вул. Лейпцизька, буд. 2/37, кв. 43, м. Київ, 01015, Україна
 - **Електронна пошта:** [support@bookkme.com](mailto:support@bookkme.com)
 - **Телефон компанії:** [+380 73 059 70 41](tel:+380730597041)
-- **Електронна пошта компанії:** [antufeevmichael@gmail.com](mailto:antufeevmichael@gmail.com)
+- **Електронна пошта компанії:** [contact@bookkme.com](mailto:contact@bookkme.com)
 
 ---
 

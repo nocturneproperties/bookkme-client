@@ -118,23 +118,21 @@ Cancellation, decline and price adjustment reasons are visible to both sides and
 
 | Provider | What it does | Where |
 |---|---|---|
-| Our hosting provider | Servers, database and backups | Lithuania and Germany (EU) |
-| Cloudflare, Inc. | DNS, reverse proxy, DDoS protection, other network security, and forwarding of emails sent to our addresses | Global network; United States company |
+| Our hosting provider | Servers, database and backups; our email: sending the app's emails (sign-up codes, notifications, account notices) and hosting our mailbox for [legal@bookkme.com](mailto:legal@bookkme.com) and [support@bookkme.com](mailto:support@bookkme.com) | Servers in Lithuania and Germany, email in France and Germany (EU) |
+| Cloudflare, Inc. | DNS, reverse proxy, DDoS protection, and other network security | Global network; United States company |
 | Google (Firebase Cloud Messaging, Firebase Crashlytics) | Delivers push notifications; collects crash reports | Global processing, including the United States |
-| Google (Gmail) | Hosts our mailbox for [legal@bookkme.com](mailto:legal@bookkme.com) and [support@bookkme.com](mailto:support@bookkme.com) | Global processing, including the United States |
-| Postmark | Sends emails (sign-up codes, notifications, account notices, our replies to your messages) | United States |
 
 - **Authorities**, when the law requires it.
 
-Cloudflare describes its separate processing of network and service data in its [privacy policy](https://www.cloudflare.com/privacypolicy/). Google describes Firebase service-data processing in its [privacy information](https://firebase.google.com/support/privacy). Our mailbox is a Gmail account under Google's consumer terms, so Google processes the emails in it as a controller under the [Google Privacy Policy](https://policies.google.com/privacy), not as our processor.
+Cloudflare describes its separate processing of network and service data in its [privacy policy](https://www.cloudflare.com/privacypolicy/). Google describes Firebase service-data processing in its [privacy information](https://firebase.google.com/support/privacy).
 
 ---
 
 ## <a id="section-7"></a>7. Transfers to other countries
 
-Our servers, database and backups are in Lithuania and Germany (EU). Cloudflare's proxy and security network processes traffic globally. Google/Firebase and Postmark may process data in the United States; Google may also use facilities in other countries. Emails you send to [legal@bookkme.com](mailto:legal@bookkme.com) or [support@bookkme.com](mailto:support@bookkme.com) are kept in our Gmail mailbox, which Google may process in the United States and other countries.
+Our servers, database and backups are in Lithuania and Germany (EU), and our email, including the mailbox for [legal@bookkme.com](mailto:legal@bookkme.com) and [support@bookkme.com](mailto:support@bookkme.com), is in France and Germany (EU). Cloudflare's proxy and security network processes traffic globally. Google/Firebase may process data in the United States; Google may also use facilities in other countries.
 
-Cloudflare's [Data Processing Addendum](https://www.cloudflare.com/cloudflare-customer-dpa/) provides for Data Privacy Framework transfers where applicable and standard contractual clauses for other restricted transfers. Postmark's [terms](https://postmarkapp.com/terms-of-service) incorporate its [Data Processing Addendum](https://postmarkapp.com/dpa), including standard contractual clauses. Firebase Cloud Messaging and Crashlytics are covered by Google's [Firebase Data Processing and Security Terms](https://firebase.google.com/terms/data-processing-terms), whose transfer provisions include the Data Privacy Framework and standard contractual clauses where applicable. Our Gmail mailbox is not covered by a data processing agreement or standard contractual clauses with Google; send us only what your request needs.
+Cloudflare's [Data Processing Addendum](https://www.cloudflare.com/cloudflare-customer-dpa/) provides for Data Privacy Framework transfers where applicable and standard contractual clauses for other restricted transfers. Our hosting provider's data processing agreement covers our servers and our email, and applies standard contractual clauses to its own subprocessors outside the EEA. Firebase Cloud Messaging and Crashlytics are covered by Google's [Firebase Data Processing and Security Terms](https://firebase.google.com/terms/data-processing-terms), whose transfer provisions include the Data Privacy Framework and standard contractual clauses where applicable.
 
 No one accesses production data from Ukraine. Our employees and our director may access it remotely from other countries where they are located, which can be outside the EEA. Such access is limited to operating and supporting the service and uses encrypted connections. Where access from abroad constitutes an international transfer, we apply the safeguards required by applicable law. To request a copy of relevant safeguards, contact [legal@bookkme.com](mailto:legal@bookkme.com); confidential information may be redacted.
 
@@ -147,6 +145,7 @@ No one accesses production data from Ukraine. Our employees and our director may
 | Your account | Until you delete it. An account not used for 3 years is deleted; we warn you 60, 30 and 7 days before. An owner's account is kept while another member of their business has been active within that time. |
 | A device you signed in on | Deleted after 30 days without use. |
 | Email confirmation codes | 10 minutes. |
+| Copies of the emails we send you (sign-up codes, notifications, account notices), kept in our sending mailbox | 5 years after sending, then deleted automatically. |
 | A business's client records | As long as the business keeps them, at most the retention period the business sets (12 to 120 months since the client's last visit or change; 36 by default). After that they are deleted automatically. A business can delete a client sooner. |
 | Appointments | Kept while the business exists, with no automatic age-based deletion of appointment history. Client details and notes are removed when the client record is erased, including under the client's separate retention period. |
 | Appointment requests | 60 days after the requested appointment ends. |
@@ -156,8 +155,6 @@ No one accesses production data from Ukraine. Our employees and our director may
 | Records that an account or client was erased (identifiers only) | 60 days, so that an erasure can be repeated after a backup is restored. |
 | Server logs | 14 days. |
 | Internal messages between parts of our service that could not be delivered (may contain booking or profile details) | 30 days. |
-| Email content, activity and message metadata kept by Postmark | 45 days. |
-| Postmark suppression records, such as bounced or complaining email addresses | Kept beyond the message-retention period to prevent further unwanted or undeliverable emails; contact us about erasure requests. |
 | Crash reports | Google starts removing crash traces and associated identifiers from live and backup systems after 90 days; this is not a guaranteed completion deadline. |
 | Backups | 30 days. Names, contact details, notes and client descriptions in them become unreadable 7 days after the person is erased ([section 9](#section-9)). |
 
@@ -211,4 +208,4 @@ When we change this policy we publish a new version with a new date and keep ear
 - **Postal address:** 2/37 Leiptsyzka St., apt. 43, Kyiv, 01015, Ukraine
 - **Email:** [legal@bookkme.com](mailto:legal@bookkme.com)
 - **Company phone:** [+380 73 059 70 41](tel:+380730597041)
-- **Company email:** [antufeevmichael@gmail.com](mailto:antufeevmichael@gmail.com)
+- **Company email:** [contact@bookkme.com](mailto:contact@bookkme.com)

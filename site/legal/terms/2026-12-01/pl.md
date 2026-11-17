@@ -145,7 +145,7 @@ Możesz napisać na [support@bookkme.com](mailto:support@bookkme.com) w celu roz
 - **Adres pocztowy:** ul. Leiptsyzka 2/37, lok. 43, 01015 Kijów, Ukraina
 - **E-mail:** [support@bookkme.com](mailto:support@bookkme.com)
 - **Telefon firmy:** [+380 73 059 70 41](tel:+380730597041)
-- **E-mail firmy:** [antufeevmichael@gmail.com](mailto:antufeevmichael@gmail.com)
+- **E-mail firmy:** [contact@bookkme.com](mailto:contact@bookkme.com)
 
 ---
 

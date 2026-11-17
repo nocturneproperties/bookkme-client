@@ -12,6 +12,7 @@ import me.bookk.site.designsystem.resources.AppLanguage
 import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.pages.ContactPage
 import me.bookk.site.pages.DpaPage
+import me.bookk.site.pages.GuidesPage
 import me.bookk.site.pages.HomePage
 import me.bookk.site.pages.PrivacyPage
 import me.bookk.site.pages.TermsPage
@@ -19,6 +20,7 @@ import me.bookk.site.pages.dpa.DpaVersionPage
 import me.bookk.site.pages.dpa.initDpaVersionPage
 import me.bookk.site.pages.initContactPage
 import me.bookk.site.pages.initDpaPage
+import me.bookk.site.pages.initGuidesPage
 import me.bookk.site.pages.initHomePage
 import me.bookk.site.pages.initPrivacyPage
 import me.bookk.site.pages.initTermsPage
@@ -35,6 +37,7 @@ private class LocalizedPage(
 
 private val localizedPages = listOf(
     LocalizedPage("/", ::initHomePage) { HomePage() },
+    LocalizedPage("/guides", ::initGuidesPage) { GuidesPage() },
     LocalizedPage("/contact", ::initContactPage) { ContactPage() },
     LocalizedPage("/privacy", ::initPrivacyPage) { PrivacyPage() },
     LocalizedPage("/privacy/{version}", ::initPrivacyVersionPage) { PrivacyVersionPage() },

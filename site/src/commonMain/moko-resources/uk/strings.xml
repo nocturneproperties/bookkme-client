@@ -59,6 +59,10 @@
     <string name="site_legal_history">Історія версій</string>
     <string name="site_not_found_title">Сторінку не знайдено</string>
     <string name="site_not_found_message">Сторінку, яку ви шукаєте,\nне знайдено.</string>
+    <string name="site_guides_title">Посібники</string>
+    <string name="site_guides_description">Покрокові посібники з користування BookkMe для бізнесів та їхніх клієнтів.</string>
+    <string name="site_guides_coming_soon">Наші посібники зʼявляться незабаром. А поки ми охоче відповімо на ваші запитання.</string>
+    <string name="site_guides_contact_link">Звʼяжіться з нами</string>
     <string name="site_contact_title">Звʼяжіться з нами</string>
     <string name="site_contact_description">Як звʼязатися з BookkMe: підтримка, питання конфіденційності та правові питання, безпека.</string>
     <string name="site_contact_guides_question">Питання про те, як працює застосунок чи сервіс?</string>

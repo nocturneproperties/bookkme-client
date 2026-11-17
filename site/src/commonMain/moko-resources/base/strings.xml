@@ -59,6 +59,10 @@
     <string name="site_legal_history">Version history</string>
     <string name="site_not_found_title">Page not found</string>
     <string name="site_not_found_message">The page you’re looking\nfor can’t be found.</string>
+    <string name="site_guides_title">Guides</string>
+    <string name="site_guides_description">Step-by-step guides to using BookkMe for businesses and their clients.</string>
+    <string name="site_guides_coming_soon">Our guides are coming soon. In the meantime, we’re happy to answer your questions.</string>
+    <string name="site_guides_contact_link">Contact us</string>
     <string name="site_contact_title">Contact us</string>
     <string name="site_contact_description">How to reach BookkMe: support, privacy and legal questions, and security.</string>
     <string name="site_contact_guides_question">Questions about how the app or service works?</string>

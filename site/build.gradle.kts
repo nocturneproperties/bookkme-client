@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.kmm.resources)
     id(libs.plugins.convention.site.legal.get().pluginId)
+    id(libs.plugins.convention.site.securitytxt.get().pluginId)
 }
 
 group = "me.bookk.site"

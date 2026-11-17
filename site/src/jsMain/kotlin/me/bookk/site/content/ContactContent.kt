@@ -5,6 +5,7 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.site.resources.SiteRes
 
 class ContactChannel(
+    val id: String,
     val title: StringDesc,
     val description: StringDesc,
     val email: String,
@@ -19,6 +20,7 @@ object ContactContent {
 
     val channels = listOf(
         ContactChannel(
+            "support",
             SiteRes.strings.site_contact_support_title.desc(),
             SiteRes.strings.site_contact_support_description.desc(),
             SUPPORT_EMAIL,
@@ -30,6 +32,7 @@ object ContactContent {
             ),
         ),
         ContactChannel(
+            "legal",
             SiteRes.strings.site_contact_legal_title.desc(),
             SiteRes.strings.site_contact_legal_description.desc(),
             LEGAL_EMAIL,
@@ -41,6 +44,7 @@ object ContactContent {
             ),
         ),
         ContactChannel(
+            "security",
             SiteRes.strings.site_contact_security_title.desc(),
             SiteRes.strings.site_contact_security_description.desc(),
             SECURITY_EMAIL,

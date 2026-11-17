@@ -21,6 +21,11 @@ dependencies {
     compileOnly(libs.firebase.crashlytics.gradlePlugin)
     compileOnly(libs.buildkonfig.compiler)
     compileOnly(libs.compose.compiler.gradlePlugin)
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 gradlePlugin {
@@ -53,6 +58,11 @@ gradlePlugin {
         register("siteLegalTexts") {
             id = "convention.site.legal"
             implementationClass = "build_src.SiteLegalTextsConventionPlugin"
+            version = "1.0"
+        }
+        register("siteSecurityTxt") {
+            id = "convention.site.securitytxt"
+            implementationClass = "build_src.SiteSecurityTxtConventionPlugin"
             version = "1.0"
         }
     }

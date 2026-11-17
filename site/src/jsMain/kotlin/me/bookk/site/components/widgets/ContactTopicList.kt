@@ -10,7 +10,9 @@ import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flexWrap
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.gap
+import com.varabyte.kobweb.compose.ui.modifiers.id
 import com.varabyte.kobweb.compose.ui.modifiers.padding
+import com.varabyte.kobweb.compose.ui.modifiers.scrollMarginBlock
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.site.content.ContactChannel
@@ -27,7 +29,12 @@ import org.jetbrains.compose.web.css.cssRem
 
 @Composable
 fun ContactTopicList(channel: ContactChannel) {
-    Column(Modifier.fillMaxWidth()) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .id(channel.id)
+            .scrollMarginBlock(start = 4.cssRem),
+    ) {
         ContactTopicHeader(channel)
         TextList(channel.topics)
     }

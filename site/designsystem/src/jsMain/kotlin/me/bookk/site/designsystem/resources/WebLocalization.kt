@@ -21,14 +21,26 @@ object WebLocalization {
     internal var provider: JsStringProvider? by mutableStateOf(null)
         private set
 
-    fun restoreLanguage() {
-        val saved = runCatching { localStorage.getItem(LANGUAGE_KEY) }.getOrNull()
-        apply(AppLanguage.resolve(saved, window.navigator.languages.toList()))
+    private var selected: AppLanguage? = null
+
+    fun show(language: AppLanguage) {
+        StringDesc.localeType = StringDesc.LocaleType.Custom(language.tag)
+        document.documentElement?.setAttribute("lang", language.tag)
+        this.language = language
     }
 
     fun select(language: AppLanguage) {
+        selected = language
         runCatching { localStorage.setItem(LANGUAGE_KEY, language.tag) }
-        apply(language)
+    }
+
+    fun preferredLanguage(): AppLanguage {
+        val saved = selected?.tag ?: runCatching { localStorage.getItem(LANGUAGE_KEY) }.getOrNull()
+        return AppLanguage.resolve(saved, window.navigator.languages.toList())
+    }
+
+    fun localize(path: String): String {
+        return language.localize(path)
     }
 
     suspend fun load(appStrings: RemoteJsStringLoader) {
@@ -38,11 +50,5 @@ object WebLocalization {
 
     internal fun resolve(desc: StringDesc): String {
         return provider?.let(desc::toLocalizedString).orEmpty()
-    }
-
-    private fun apply(language: AppLanguage) {
-        StringDesc.localeType = StringDesc.LocaleType.Custom(language.tag)
-        document.documentElement?.setAttribute("lang", language.tag)
-        this.language = language
     }
 }

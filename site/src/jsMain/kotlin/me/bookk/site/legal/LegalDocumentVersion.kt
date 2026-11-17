@@ -18,10 +18,6 @@ class LegalDocumentVersion(
     val effectiveDate: LocalDate
         get() = effectiveAt.toLocalDateTime(TimeZone.UTC).date
 
-    fun path(language: AppLanguage): String {
-        return "$path/${language.tag}"
-    }
-
     fun text(language: AppLanguage): String? {
         return texts[language]
     }

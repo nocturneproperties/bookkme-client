@@ -94,34 +94,17 @@ class LegalPagesTest {
     }
 
     @Test
-    fun `prefers the requested language over the site language`() = runUnitTest {
+    fun `shows no page when the text is not published in the site language`() = runUnitTest {
         given()
-        val history = stubHistory(FIRST_VERSION)
-
-        whenn()
-        val page = LegalPages.build(
-            history,
-            LegalPageRequest(FIRST_VERSION, "uk"),
-            AppLanguage.PL,
-            afterSecondVersion,
+        val history = LegalDocumentHistory.from(
+            LegalDocument.PRIVACY_POLICY,
+            stubPublishedTexts(version = FIRST_VERSION).filter {
+                it.language == AppLanguage.EN.tag
+            },
         )
 
-        then()
-        assertEquals(AppLanguage.UK, page?.language)
-    }
-
-    @Test
-    fun `shows no page for a language the texts are not published in`() = runUnitTest {
-        given()
-        val history = stubHistory(FIRST_VERSION)
-
         whenn()
-        val page = LegalPages.build(
-            history,
-            LegalPageRequest(FIRST_VERSION, "ru"),
-            AppLanguage.EN,
-            afterSecondVersion,
-        )
+        val page = LegalPages.build(history, LegalPageRequest(), AppLanguage.PL, afterSecondVersion)
 
         then()
         assertNull(page)
@@ -247,11 +230,41 @@ class LegalPagesTest {
         then()
         assertEquals(
             listOf(
-                LegalLanguageLink(AppLanguage.EN, "/privacy/$FIRST_VERSION/en", isSelected = false),
-                LegalLanguageLink(AppLanguage.UK, "/privacy/$FIRST_VERSION/uk", isSelected = true),
-                LegalLanguageLink(AppLanguage.PL, "/privacy/$FIRST_VERSION/pl", isSelected = false),
+                LegalLanguageLink(AppLanguage.EN, "/privacy/$FIRST_VERSION", isSelected = false),
+                LegalLanguageLink(AppLanguage.UK, "/uk/privacy/$FIRST_VERSION", isSelected = true),
+                LegalLanguageLink(AppLanguage.PL, "/pl/privacy/$FIRST_VERSION", isSelected = false),
             ),
             page?.languages,
+        )
+    }
+
+    @Test
+    fun `links the version history in the page language`() = runUnitTest {
+        given()
+        val history = stubHistory(FIRST_VERSION, SECOND_VERSION)
+
+        whenn()
+        val page = LegalPages.build(history, LegalPageRequest(), AppLanguage.PL, afterSecondVersion)
+
+        then()
+        assertEquals(
+            listOf("/pl/privacy/$SECOND_VERSION", "/pl/privacy/$FIRST_VERSION"),
+            page?.history?.map { it.path },
+        )
+    }
+
+    @Test
+    fun `links the notice in the page language`() = runUnitTest {
+        given()
+        val history = stubHistory(FIRST_VERSION, SECOND_VERSION)
+
+        whenn()
+        val page = LegalPages.build(history, LegalPageRequest(), AppLanguage.UK, betweenVersions)
+
+        then()
+        assertEquals(
+            LegalNotice.NewVersion(date(SECOND_VERSION), "/uk/privacy/$SECOND_VERSION"),
+            page?.notice,
         )
     }
 }

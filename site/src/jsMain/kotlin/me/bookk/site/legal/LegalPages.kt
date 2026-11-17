@@ -8,7 +8,6 @@ import kotlin.time.Instant
 
 class LegalPageRequest(
     val version: String? = null,
-    val language: String? = null,
 )
 
 class LegalPage(
@@ -69,19 +68,18 @@ object LegalPages {
     fun build(
         history: LegalDocumentHistory,
         request: LegalPageRequest,
-        siteLanguage: AppLanguage,
+        language: AppLanguage,
         now: Instant,
     ): LegalPage? {
         val version = selectVersion(history, request.version, now) ?: return null
-        val language = selectLanguage(request.language, siteLanguage) ?: return null
         val text = version.text(language) ?: return null
         return LegalPage(
             version = version,
             language = language,
             blocks = Markdown.parse(text),
-            notice = notice(history, version, now),
+            notice = notice(history, version, now)?.localized(language),
             languages = languageLinks(version, language),
-            history = historyEntries(history, version, now),
+            history = historyEntries(history, version, now, language),
         )
     }
 
@@ -92,11 +90,6 @@ object LegalPages {
     ): LegalDocumentVersion? {
         if (requested != null) return history.find(requested)
         return history.inEffect(now) ?: history.next(now)
-    }
-
-    private fun selectLanguage(requested: String?, siteLanguage: AppLanguage): AppLanguage? {
-        if (requested == null) return siteLanguage
-        return AppLanguage.entries.firstOrNull { it.tag == requested }
     }
 
     private fun notice(
@@ -141,16 +134,36 @@ object LegalPages {
         version: LegalDocumentVersion,
         selected: AppLanguage,
     ): List<LegalLanguageLink> {
-        return AppLanguage.entries.map { LegalLanguageLink(it, version.path(it), it == selected) }
+        return AppLanguage.entries.map {
+            LegalLanguageLink(
+                it,
+                it.localize(version.path),
+                it == selected,
+            )
+        }
     }
 
     private fun historyEntries(
         history: LegalDocumentHistory,
         selected: LegalDocumentVersion,
         now: Instant,
+        language: AppLanguage,
     ): List<LegalHistoryEntry> {
         return history.versions.map {
-            LegalHistoryEntry(it.version, it.path, period(history, it, now), it == selected)
+            LegalHistoryEntry(
+                it.version,
+                language.localize(it.path),
+                period(history, it, now),
+                it == selected,
+            )
+        }
+    }
+
+    private fun LegalNotice.localized(language: AppLanguage): LegalNotice {
+        return when (this) {
+            is LegalNotice.Superseded -> copy(currentPath = language.localize(currentPath))
+            is LegalNotice.Upcoming -> copy(currentPath = currentPath?.let(language::localize))
+            is LegalNotice.NewVersion -> copy(path = language.localize(path))
         }
     }
 }

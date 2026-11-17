@@ -19,6 +19,7 @@ enum class LandingSection(
 }
 
 object SiteNavigation {
+    const val ORIGIN = "https://bookkme.com"
     const val GUIDES_PATH = "/guides"
 
     val header = listOf(

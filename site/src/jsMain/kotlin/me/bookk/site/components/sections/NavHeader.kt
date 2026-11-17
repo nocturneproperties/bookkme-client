@@ -34,6 +34,7 @@ import me.bookk.site.content.SiteNavigation
 import me.bookk.site.designsystem.components.ColorModeButton
 import me.bookk.site.designsystem.components.LanguagePicker
 import me.bookk.site.designsystem.components.TextLink
+import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.theme.LabelMediumTextStyle
 import me.bookk.site.designsystem.theme.resolve
 import me.bookk.site.designsystem.theme.webColors
@@ -85,7 +86,10 @@ fun NavHeader() {
 
 @Composable
 private fun HomeLink() {
-    Link("/", variant = UndecoratedLinkVariant.then(UncoloredLinkVariant)) {
+    Link(
+        WebLocalization.localize("/"),
+        variant = UndecoratedLinkVariant.then(UncoloredLinkVariant),
+    ) {
         Logo(Modifier.height(1.5.cssRem))
     }
 }
@@ -99,7 +103,7 @@ private fun SectionLinks() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         SiteNavigation.header.forEach {
-            TextLink(it.title, it.path, LabelMediumTextStyle.toModifier())
+            TextLink(it.title, WebLocalization.localize(it.path), LabelMediumTextStyle.toModifier())
         }
     }
 }

@@ -26,6 +26,7 @@ import me.bookk.site.content.SiteNavigation
 import me.bookk.site.designsystem.components.TextBlock
 import me.bookk.site.designsystem.components.TextLink
 import me.bookk.site.designsystem.components.VerticalDivider
+import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.theme.LabelSmallTextStyle
 import me.bookk.site.designsystem.theme.resolve
 import me.bookk.site.designsystem.theme.webColors
@@ -84,7 +85,11 @@ private fun FooterLinks() {
     Row(Modifier.gap(0.75.cssRem), verticalAlignment = Alignment.CenterVertically) {
         SiteNavigation.footer.forEachIndexed { index, link ->
             if (index > 0) VerticalDivider(Modifier.height(0.75.cssRem))
-            TextLink(link.title, link.path, LabelSmallTextStyle.toModifier())
+            TextLink(
+                link.title,
+                WebLocalization.localize(link.path),
+                LabelSmallTextStyle.toModifier(),
+            )
         }
     }
 }

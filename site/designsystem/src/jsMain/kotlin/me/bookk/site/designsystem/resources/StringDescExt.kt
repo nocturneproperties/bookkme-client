@@ -14,7 +14,6 @@ fun StringDesc.localized(): String {
 @Composable
 fun LocalizedContent(appStrings: RemoteJsStringLoader, content: @Composable () -> Unit) {
     LaunchedEffect(appStrings) {
-        WebLocalization.restoreLanguage()
         WebLocalization.load(appStrings)
     }
     if (WebLocalization.provider != null) content()

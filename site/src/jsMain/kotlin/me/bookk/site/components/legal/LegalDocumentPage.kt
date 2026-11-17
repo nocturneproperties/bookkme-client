@@ -16,7 +16,6 @@ import me.bookk.site.legal.LegalPages
 import kotlin.time.Clock
 
 private const val VERSION_PARAM = "version"
-private const val LANGUAGE_PARAM = "language"
 
 fun InitRouteContext.addLegalPageData(document: LegalDocument) {
     data.add(PageLayoutData(document.title.desc()))
@@ -24,15 +23,13 @@ fun InitRouteContext.addLegalPageData(document: LegalDocument) {
 
 @Composable
 fun LegalDocumentPage(document: LegalDocument) {
-    val params = rememberPageContext().route.dynamicParams
-    val version = params[VERSION_PARAM]
-    val requestedLanguage = params[LANGUAGE_PARAM]
-    val siteLanguage = WebLocalization.language
-    val page = remember(document, version, requestedLanguage, siteLanguage) {
+    val version = rememberPageContext().route.dynamicParams[VERSION_PARAM]
+    val language = WebLocalization.language
+    val page = remember(document, version, language) {
         LegalPages.build(
             LegalDocuments.history(document),
-            LegalPageRequest(version, requestedLanguage),
-            siteLanguage,
+            LegalPageRequest(version),
+            language,
             Clock.System.now(),
         )
     }

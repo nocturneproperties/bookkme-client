@@ -13,6 +13,8 @@ import com.varabyte.kobweb.compose.ui.modifiers.minHeight
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.core.PageContext
 import com.varabyte.kobweb.core.data.getValue
+import com.varabyte.kobweb.core.init.InitRoute
+import com.varabyte.kobweb.core.init.InitRouteContext
 import com.varabyte.kobweb.core.layout.Layout
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
@@ -22,10 +24,17 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.browser.document
 import me.bookk.site.components.sections.Footer
 import me.bookk.site.components.sections.NavHeader
+import me.bookk.site.content.SiteNavigation
+import me.bookk.site.designsystem.components.HeadLinks
+import me.bookk.site.designsystem.resources.AppLanguage
+import me.bookk.site.designsystem.resources.LanguageLinks
+import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.resources.localized
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.vh
+
+const val PAGE_LAYOUT_ID = "me.bookk.site.components.layouts.PageLayout"
 
 val PageContentStyle = CssStyle.base {
     Modifier
@@ -36,15 +45,24 @@ val PageContentStyle = CssStyle.base {
 
 class PageLayoutData(
     val title: StringDesc,
+    val isIndexed: Boolean = true,
 )
+
+@InitRoute
+fun initPageLayout(ctx: InitRouteContext) {
+    WebLocalization.show(AppLanguage.fromPath(ctx.route.path) ?: AppLanguage.DEFAULT)
+}
 
 @Composable
 @Layout
 fun PageLayout(ctx: PageContext, content: @Composable ColumnScope.() -> Unit) {
-    val pageTitle = ctx.data.getValue<PageLayoutData>().title.localized()
-    val title = "$pageTitle · ${SiteRes.strings.site_app_name.desc().localized()}"
+    val data = ctx.data.getValue<PageLayoutData>()
+    val title = "${data.title.localized()} · ${SiteRes.strings.site_app_name.desc().localized()}"
     LaunchedEffect(title) {
         document.title = title
+    }
+    if (data.isIndexed) {
+        HeadLinks(LanguageLinks.forPath(SiteNavigation.ORIGIN, ctx.route.path))
     }
     Column(
         Modifier

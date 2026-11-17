@@ -30,6 +30,7 @@ import me.bookk.site.designsystem.components.HeadingLevel
 import me.bookk.site.designsystem.components.TextBlock
 import me.bookk.site.designsystem.components.TextLink
 import me.bookk.site.designsystem.components.TitledCard
+import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.designsystem.theme.HeadlineSmallTextStyle
@@ -102,7 +103,7 @@ private fun ContactHints() {
         ContactHint(SiteRes.strings.site_contact_guides_question.desc()) {
             TextLink(
                 SiteRes.strings.site_contact_guides_link.desc(),
-                SiteNavigation.GUIDES_PATH,
+                WebLocalization.localize(SiteNavigation.GUIDES_PATH),
                 BodyMediumTextStyle
                     .toModifier()
                     .active(),
@@ -155,7 +156,7 @@ private fun LegalLinks() {
         LegalDocument.entries.forEach {
             TextLink(
                 it.title.desc(),
-                it.path,
+                WebLocalization.localize(it.path),
                 BodyMediumTextStyle
                     .toModifier()
                     .active(),

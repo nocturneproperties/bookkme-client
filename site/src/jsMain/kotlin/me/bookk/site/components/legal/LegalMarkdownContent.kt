@@ -25,12 +25,14 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.resources.color.ColorToken
+import me.bookk.site.content.SiteNavigation
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
 import me.bookk.site.designsystem.components.HorizontalDivider
 import me.bookk.site.designsystem.components.TextLink
 import me.bookk.site.designsystem.components.TextList
 import me.bookk.site.designsystem.components.TextListType
+import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.BodySmallTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
@@ -54,8 +56,6 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.Th
 import org.jetbrains.compose.web.dom.Thead
 import org.jetbrains.compose.web.dom.Tr
-
-private const val SITE_ORIGIN = "https://bookkme.com/"
 
 val LegalHeadingStyle = CssStyle.base {
     Modifier
@@ -177,7 +177,7 @@ private fun LegalInlines(content: List<MarkdownInline>) {
 
             is MarkdownInline.Link -> TextLink(
                 inline.label.desc(),
-                inline.url.toSitePath(),
+                WebLocalization.localize(inline.url.toSitePath()),
                 Modifier.active(),
             )
         }
@@ -195,6 +195,7 @@ private fun List<MarkdownInline>.plainText(): String {
 }
 
 private fun String.toSitePath(): String {
-    if (!startsWith(SITE_ORIGIN)) return this
-    return "/" + removePrefix(SITE_ORIGIN)
+    val origin = "${SiteNavigation.ORIGIN}/"
+    if (!startsWith(origin)) return this
+    return "/" + removePrefix(origin)
 }

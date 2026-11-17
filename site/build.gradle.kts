@@ -19,6 +19,11 @@ kobweb {
         }
         export {
             suppressLayoutWarning.set(true)
+            val localizedLanguages = listOf("uk", "pl")
+            val localizedRoutes = listOf("", "/contact", "/privacy", "/terms", "/dpa")
+            localizedLanguages.forEach { language ->
+                localizedRoutes.forEach { route -> addExtraRoute("/$language$route") }
+            }
         }
     }
 }

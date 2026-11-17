@@ -65,5 +65,10 @@ gradlePlugin {
             implementationClass = "build_src.SiteSecurityTxtConventionPlugin"
             version = "1.0"
         }
+        register("siteWebManifest") {
+            id = "convention.site.webmanifest"
+            implementationClass = "build_src.SiteWebManifestConventionPlugin"
+            version = "1.0"
+        }
     }
 }

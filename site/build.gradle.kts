@@ -1,4 +1,9 @@
+import build_src.site.DesignSystemColors
+import build_src.site.GenerateWebManifestTask
+import build_src.site.WebManifest
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
+import kotlinx.html.link
+import kotlinx.html.meta
 
 plugins {
     id(libs.plugins.convention.kmm.web.get().pluginId)
@@ -7,16 +12,42 @@ plugins {
     alias(libs.plugins.kmm.resources)
     id(libs.plugins.convention.site.legal.get().pluginId)
     id(libs.plugins.convention.site.securitytxt.get().pluginId)
+    id(libs.plugins.convention.site.webmanifest.get().pluginId)
 }
 
 group = "me.bookk.site"
 version = "0.1"
 
+val siteName = "BookkMe"
+val siteDescription = "BookkMe — a booking app for small businesses on Android and iOS."
+val designSystemColors = DesignSystemColors.read(rootDir)
+
+val generateWebManifest = tasks.named<GenerateWebManifestTask>("generateWebManifest") {
+    manifestName.set(siteName)
+    manifestDescription.set(siteDescription)
+    themeColor.set(designSystemColors.opaque("lightBackground"))
+    backgroundColor.set(designSystemColors.opaque("lightBackground"))
+}
+
 kobweb {
     app {
         index {
-            description.set("BookkMe — a booking app for small businesses on Android and iOS.")
-            faviconPath.set("/favicon.svg")
+            val lightBackground = designSystemColors.opaque("lightBackground")
+            val darkBackground = designSystemColors.opaque("darkBackground")
+            description.set(siteDescription)
+            faviconPath.set("")
+            head.add {
+                link(rel = "icon", href = "/favicon.ico") { attributes["sizes"] = "32x32" }
+                link(rel = "icon", href = "/favicon.svg", type = "image/svg+xml")
+                link(rel = "apple-touch-icon", href = "/apple-touch-icon.png")
+                link(rel = "manifest", href = "/${WebManifest.FILE_NAME}")
+                meta(name = "theme-color", content = lightBackground) {
+                    attributes["media"] = "(prefers-color-scheme: light)"
+                }
+                meta(name = "theme-color", content = darkBackground) {
+                    attributes["media"] = "(prefers-color-scheme: dark)"
+                }
+            }
         }
         export {
             suppressLayoutWarning.set(true)
@@ -54,6 +85,7 @@ kotlin {
     sourceSets {
         jsMain {
             resources.srcDir(copySqliteWasm.map { sqliteWasmResources.get() })
+            resources.srcDir(generateWebManifest)
             kotlin.srcDir(tasks.named("generateLegalTexts"))
         }
         jsMain.dependencies {

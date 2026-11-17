@@ -44,6 +44,9 @@ private val localizedPages = listOf(
     LocalizedPage("/dpa/{version}", ::initDpaVersionPage) { DpaVersionPage() },
 )
 
+internal val localizedPageRoutes: List<String>
+    get() = localizedPages.map { it.route }
+
 @InitKobweb
 fun initLocalizedRoutes(ctx: InitKobwebContext) {
     AppLanguage.entries

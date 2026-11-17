@@ -9,7 +9,9 @@ import me.bookk.site.legal.markdown.MarkdownBlock
 import me.bookk.site.legal.markdown.MarkdownInline
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class LegalPagesTest {
 
@@ -91,6 +93,62 @@ class LegalPagesTest {
 
         then()
         assertNull(page)
+    }
+
+    @Test
+    fun `reports a requested version as published`() = runUnitTest {
+        given()
+        val history = stubHistory(FIRST_VERSION)
+
+        whenn()
+        val isPublished = LegalPages.isPublished(
+            history,
+            LegalPageRequest(FIRST_VERSION),
+            AppLanguage.UK,
+            afterSecondVersion,
+        )
+
+        then()
+        assertTrue(isPublished)
+    }
+
+    @Test
+    fun `reports an unknown version as not published`() = runUnitTest {
+        given()
+        val history = stubHistory(FIRST_VERSION)
+
+        whenn()
+        val isPublished = LegalPages.isPublished(
+            history,
+            LegalPageRequest("2020-01-01"),
+            AppLanguage.EN,
+            afterSecondVersion,
+        )
+
+        then()
+        assertFalse(isPublished)
+    }
+
+    @Test
+    fun `reports a version without a text in the site language as not published`() = runUnitTest {
+        given()
+        val history = LegalDocumentHistory.from(
+            LegalDocument.PRIVACY_POLICY,
+            stubPublishedTexts(version = FIRST_VERSION).filter {
+                it.language == AppLanguage.EN.tag
+            },
+        )
+
+        whenn()
+        val isPublished = LegalPages.isPublished(
+            history,
+            LegalPageRequest(),
+            AppLanguage.PL,
+            afterSecondVersion,
+        )
+
+        then()
+        assertFalse(isPublished)
     }
 
     @Test

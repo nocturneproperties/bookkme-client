@@ -83,6 +83,15 @@ object LegalPages {
         )
     }
 
+    fun isPublished(
+        history: LegalDocumentHistory,
+        request: LegalPageRequest,
+        language: AppLanguage,
+        now: Instant,
+    ): Boolean {
+        return selectVersion(history, request.version, now)?.text(language) != null
+    }
+
     private fun selectVersion(
         history: LegalDocumentHistory,
         requested: String?,

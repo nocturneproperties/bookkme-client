@@ -2,6 +2,7 @@
 <resources>
     <string name="site_app_name">BookkMe</string>
     <string name="site_page_title">Aplikacja do rezerwacji dla małych firm</string>
+    <string name="site_description">BookkMe to aplikacja do rezerwacji dla małych firm na Androida i iOS: kalendarz, klienci, usługi i zespół w jednym miejscu, a klienci umawiają się bezpośrednio u Ciebie.</string>
     <string name="site_headline">Prowadź firmę opartą na wizytach z telefonu</string>
     <string name="site_subheadline">Kalendarz, klienci, usługi i zespół w jednym miejscu, a klienci umawiają się bezpośrednio u Ciebie. Dla salonów, studiów, gabinetów, korepetytorów, warsztatów i wszystkich, którzy pracują na umówione wizyty.</string>
     <string name="site_stores_title">Wkrótce w</string>
@@ -43,6 +44,9 @@
     <string name="site_privacy_policy">Polityka prywatności</string>
     <string name="site_terms_of_service">Regulamin</string>
     <string name="site_data_processing_agreement">Umowa powierzenia przetwarzania danych</string>
+    <string name="site_privacy_policy_description">Jak w BookkMe zbierane, wykorzystywane i chronione są dane osobowe firm, ich zespołów i klientów.</string>
+    <string name="site_terms_of_service_description">Zasady korzystania z aplikacji i usług BookkMe.</string>
+    <string name="site_data_processing_agreement_description">Warunki, na jakich dane klientów są przetwarzane w imieniu firm korzystających z BookkMe.</string>
     <string name="site_legal_version">Wersja %s</string>
     <string name="site_legal_in_effect_since">Obowiązuje od %s</string>
     <string name="site_legal_in_effect_between">Obowiązywała od %1$s do %2$s</string>
@@ -56,6 +60,7 @@
     <string name="site_not_found_title">Nie znaleziono strony</string>
     <string name="site_not_found_message">Nie można znaleźć strony,\nktórej szukasz.</string>
     <string name="site_contact_title">Skontaktuj się z nami</string>
+    <string name="site_contact_description">Jak skontaktować się z BookkMe: wsparcie, prywatność i sprawy prawne, bezpieczeństwo.</string>
     <string name="site_contact_guides_question">Pytania o to, jak działa aplikacja lub usługa?</string>
     <string name="site_contact_guides_link">Najpewniej znajdziesz odpowiedź w naszych poradnikach.</string>
     <string name="site_contact_support_title">Wsparcie</string>

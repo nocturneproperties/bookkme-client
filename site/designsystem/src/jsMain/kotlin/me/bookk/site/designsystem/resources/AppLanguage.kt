@@ -4,10 +4,11 @@ enum class AppLanguage(
     val tag: String,
     val autonym: String,
     val abbreviation: String,
+    val locale: String,
 ) {
-    EN("en", "English", "EN"),
-    UK("uk", "Українська", "UA"),
-    PL("pl", "Polski", "PL"),
+    EN("en", "English", "EN", "en_US"),
+    UK("uk", "Українська", "UA", "uk_UA"),
+    PL("pl", "Polski", "PL", "pl_PL"),
     ;
 
     private val pathPrefix: String

@@ -1,7 +1,6 @@
 package me.bookk.site.components.layouts
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.ColumnScope
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -21,13 +20,14 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
-import kotlinx.browser.document
 import me.bookk.site.components.sections.Footer
 import me.bookk.site.components.sections.NavHeader
 import me.bookk.site.content.SiteNavigation
-import me.bookk.site.designsystem.components.HeadLinks
+import me.bookk.site.designsystem.components.HeadTags
 import me.bookk.site.designsystem.resources.AppLanguage
 import me.bookk.site.designsystem.resources.LanguageLinks
+import me.bookk.site.designsystem.resources.PageMeta
+import me.bookk.site.designsystem.resources.PageMetaTags
 import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.resources.localized
 import me.bookk.site.resources.SiteRes
@@ -45,8 +45,15 @@ val PageContentStyle = CssStyle.base {
 
 class PageLayoutData(
     val title: StringDesc,
+    val description: StringDesc = SiteRes.strings.site_description.desc(),
     val isIndexed: Boolean = true,
-)
+) {
+    companion object {
+        fun notFound(): PageLayoutData {
+            return PageLayoutData(SiteRes.strings.site_not_found_title.desc(), isIndexed = false)
+        }
+    }
+}
 
 @InitRoute
 fun initPageLayout(ctx: InitRouteContext) {
@@ -56,14 +63,7 @@ fun initPageLayout(ctx: InitRouteContext) {
 @Composable
 @Layout
 fun PageLayout(ctx: PageContext, content: @Composable ColumnScope.() -> Unit) {
-    val data = ctx.data.getValue<PageLayoutData>()
-    val title = "${data.title.localized()} · ${SiteRes.strings.site_app_name.desc().localized()}"
-    LaunchedEffect(title) {
-        document.title = title
-    }
-    if (data.isIndexed) {
-        HeadLinks(LanguageLinks.forPath(SiteNavigation.ORIGIN, ctx.route.path))
-    }
+    PageHead(ctx.data.getValue(), ctx.route.path)
     Column(
         Modifier
             .fillMaxWidth()
@@ -80,4 +80,23 @@ fun PageLayout(ctx: PageContext, content: @Composable ColumnScope.() -> Unit) {
         }
         Footer(Modifier.fillMaxWidth())
     }
+}
+
+@Composable
+private fun PageHead(data: PageLayoutData, path: String) {
+    val title = data.title.localized()
+    val page = PageMeta(path, title, data.description.localized(), data.isIndexed)
+    val links = if (data.isIndexed) {
+        LanguageLinks.forPath(
+            SiteNavigation.ORIGIN,
+            path,
+        )
+    } else {
+        emptyList()
+    }
+    HeadTags(
+        "$title · ${SiteRes.strings.site_app_name.desc().localized()}",
+        PageMetaTags.forPage(SiteNavigation.ORIGIN, page),
+        links,
+    )
 }

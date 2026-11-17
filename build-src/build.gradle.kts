@@ -70,5 +70,15 @@ gradlePlugin {
             implementationClass = "build_src.SiteWebManifestConventionPlugin"
             version = "1.0"
         }
+        register("siteSitemap") {
+            id = "convention.site.sitemap"
+            implementationClass = "build_src.SiteSitemapConventionPlugin"
+            version = "1.0"
+        }
+        register("siteBuildConfig") {
+            id = "convention.site.buildconfig"
+            implementationClass = "build_src.SiteBuildConfigConventionPlugin"
+            version = "1.0"
+        }
     }
 }

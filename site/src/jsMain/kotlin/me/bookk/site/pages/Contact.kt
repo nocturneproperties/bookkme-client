@@ -59,7 +59,12 @@ val ContactSectionStyle = CssStyle.base {
 
 @InitRoute
 fun initContactPage(ctx: InitRouteContext) {
-    ctx.data.add(PageLayoutData(SiteRes.strings.site_contact_title.desc()))
+    ctx.data.add(
+        PageLayoutData(
+            SiteRes.strings.site_contact_title.desc(),
+            SiteRes.strings.site_contact_description.desc(),
+        ),
+    )
 }
 
 @Page

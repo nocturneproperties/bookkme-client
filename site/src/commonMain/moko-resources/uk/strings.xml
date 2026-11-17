@@ -2,6 +2,7 @@
 <resources>
     <string name="site_app_name">BookkMe</string>
     <string name="site_page_title">Застосунок для запису клієнтів для малого бізнесу</string>
+    <string name="site_description">BookkMe — застосунок для запису клієнтів для малого бізнесу на Android та iOS: календар, клієнти, послуги та команда в одному місці, а клієнти записуються до вас напряму.</string>
     <string name="site_headline">Керуйте бізнесом за записом просто з телефона</string>
     <string name="site_subheadline">Календар, клієнти, послуги та команда — в одному місці, а клієнти записуються до вас напряму. Для салонів, студій, клінік, репетиторів, майстерень і всіх, хто працює за записом.</string>
     <string name="site_stores_title">Незабаром в</string>
@@ -43,6 +44,9 @@
     <string name="site_privacy_policy">Політика конфіденційності</string>
     <string name="site_terms_of_service">Умови використання</string>
     <string name="site_data_processing_agreement">Договір про обробку даних</string>
+    <string name="site_privacy_policy_description">Як у BookkMe збираються, використовуються та захищаються персональні дані бізнесів, їхніх команд і клієнтів.</string>
+    <string name="site_terms_of_service_description">Умови використання застосунків і сервісів BookkMe.</string>
+    <string name="site_data_processing_agreement_description">Умови, на яких дані клієнтів обробляються від імені бізнесів, що користуються BookkMe.</string>
     <string name="site_legal_version">Версія %s</string>
     <string name="site_legal_in_effect_since">Діє з %s</string>
     <string name="site_legal_in_effect_between">Діяла з %1$s до %2$s</string>
@@ -56,6 +60,7 @@
     <string name="site_not_found_title">Сторінку не знайдено</string>
     <string name="site_not_found_message">Сторінку, яку ви шукаєте,\nне знайдено.</string>
     <string name="site_contact_title">Звʼяжіться з нами</string>
+    <string name="site_contact_description">Як звʼязатися з BookkMe: підтримка, питання конфіденційності та правові питання, безпека.</string>
     <string name="site_contact_guides_question">Питання про те, як працює застосунок чи сервіс?</string>
     <string name="site_contact_guides_link">Найімовірніше, відповідь є в наших посібниках.</string>
     <string name="site_contact_support_title">Підтримка</string>

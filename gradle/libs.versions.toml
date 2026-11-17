@@ -124,6 +124,8 @@ convention-kmm-web = { id = "convention.kmm.web", version.ref = "local-plugin-ve
 convention-site-legal = { id = "convention.site.legal", version.ref = "local-plugin-version" }
 convention-site-securitytxt = { id = "convention.site.securitytxt", version.ref = "local-plugin-version" }
 convention-site-webmanifest = { id = "convention.site.webmanifest", version.ref = "local-plugin-version" }
+convention-site-sitemap = { id = "convention.site.sitemap", version.ref = "local-plugin-version" }
+convention-site-buildconfig = { id = "convention.site.buildconfig", version.ref = "local-plugin-version" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 kmm-resources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "kmm-resources" }

@@ -33,6 +33,18 @@ internal class LegalTextsReader(
         return texts.sortedWith(compareBy({ it.document }, { it.version }, { it.language }))
     }
 
+    fun publishedVersionPaths(): List<String> {
+        val locked = readLock().keys
+        return documentDirectories()
+            .flatMap(::versionDirectories)
+            .filter { version -> VERSION_FILES.all { "${version.relative()}/$it" in locked } }
+            .filter { version ->
+                version.listFiles().orEmpty().map { it.name }.toSet() ==
+                    VERSION_FILES
+            }
+            .map { "/${it.relative()}" }
+    }
+
     private fun documentDirectories(): List<File> {
         val directories = root.listFiles().orEmpty().filter { it.isDirectory }.sortedBy { it.name }
         directories.filter { it.name !in DOCUMENTS }.forEach {
@@ -43,14 +55,16 @@ internal class LegalTextsReader(
     }
 
     private fun readDocument(document: File): List<LegalText> {
+        return versionDirectories(document).flatMap(::readVersion)
+    }
+
+    private fun versionDirectories(document: File): List<File> {
         val versions = document.listFiles().orEmpty().sortedBy { it.name }
         versions.filterNot { it.isDirectory && VERSION_NAME.matches(it.name) }
             .forEach {
                 errors += "'${it.relative()}' is not a version folder named like 2026-12-01"
             }
-        return versions.filter {
-            it.isDirectory && VERSION_NAME.matches(it.name)
-        }.flatMap(::readVersion)
+        return versions.filter { it.isDirectory && VERSION_NAME.matches(it.name) }
     }
 
     private fun readVersion(version: File): List<LegalText> {
@@ -137,6 +151,12 @@ internal class LegalTextsReader(
     }
 }
 
+object LegalVersionPaths {
+    fun read(legalDirectory: File): List<String> {
+        return LegalTextsReader(legalDirectory).publishedVersionPaths()
+    }
+}
+
 private fun File.sha256(): String {
     return MessageDigest.getInstance("SHA-256")
         .digest(readBytes())
@@ -157,22 +177,12 @@ internal object LegalTextsWriter {
     private fun record(text: LegalText): String {
         return buildString {
             appendLine("    PublishedLegalText(")
-            appendLine("        document = ${text.document.literal()},")
-            appendLine("        version = ${text.version.literal()},")
-            appendLine("        effectiveAt = ${text.effectiveAt.literal()},")
-            appendLine("        language = ${text.language.literal()},")
-            appendLine("        markdown = ${text.markdown.literal()},")
+            appendLine("        document = ${text.document.kotlinLiteral()},")
+            appendLine("        version = ${text.version.kotlinLiteral()},")
+            appendLine("        effectiveAt = ${text.effectiveAt.kotlinLiteral()},")
+            appendLine("        language = ${text.language.kotlinLiteral()},")
+            appendLine("        markdown = ${text.markdown.kotlinLiteral()},")
             appendLine("    ),")
         }
-    }
-
-    private fun String.literal(): String {
-        val escaped = replace("\\", "\\\\")
-            .replace("\"", "\\\"")
-            .replace("$", "\\$")
-            .replace("\r", "")
-            .replace("\t", "\\t")
-            .replace("\n", "\\n")
-        return "\"$escaped\""
     }
 }

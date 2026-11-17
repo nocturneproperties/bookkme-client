@@ -8,6 +8,7 @@ import com.varabyte.kobweb.core.rememberPageContext
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.site.components.layouts.PageLayoutData
 import me.bookk.site.components.sections.NotFoundMessage
+import me.bookk.site.designsystem.resources.AppLanguage
 import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.legal.LegalDocument
 import me.bookk.site.legal.LegalDocuments
@@ -18,7 +19,18 @@ import kotlin.time.Clock
 private const val VERSION_PARAM = "version"
 
 fun InitRouteContext.addLegalPageData(document: LegalDocument) {
-    data.add(PageLayoutData(document.title.desc()))
+    val language = AppLanguage.fromPath(route.path) ?: AppLanguage.DEFAULT
+    val isPublished = LegalPages.isPublished(
+        LegalDocuments.history(document),
+        LegalPageRequest(route.dynamicParams[VERSION_PARAM]),
+        language,
+        Clock.System.now(),
+    )
+    if (isPublished) {
+        data.add(PageLayoutData(document.title.desc(), document.description.desc()))
+    } else {
+        data.add(PageLayoutData.notFound())
+    }
 }
 
 @Composable

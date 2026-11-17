@@ -19,12 +19,12 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
 render() {
-    local svg=$1 size=$2 glyph_width=$3 output=$4 background_color=${5:-}
+    local svg=$1 page_width=$2 page_height=$3 glyph_width=$4 output=$5 background_color=${6:-}
     local glyph_height=$((glyph_width * logo_height / logo_width))
     local options=(
         --width "$glyph_width" --height "$glyph_height"
-        --page-width "$size" --page-height "$size"
-        --left $(((size - glyph_width) / 2)) --top $(((size - glyph_height) / 2))
+        --page-width "$page_width" --page-height "$page_height"
+        --left $(((page_width - glyph_width) / 2)) --top $(((page_height - glyph_height) / 2))
     )
     [[ -z "$background_color" ]] || options+=(--background-color "$background_color")
     rsvg-convert "${options[@]}" --output "$output" "$svg"
@@ -32,7 +32,7 @@ render() {
 
 render_app_icon() {
     local size=$1 output=$2
-    render "$app_icon_svg" "$size" $((size * glyph_ratio / 100)) "$output" "$background"
+    render "$app_icon_svg" "$size" "$size" $((size * glyph_ratio / 100)) "$output" "$background"
 }
 
 little_endian() {
@@ -70,12 +70,13 @@ write_ico() {
 
 favicon_sizes=(16 32 48)
 for size in "${favicon_sizes[@]}"; do
-    render "$favicon_svg" "$size" "$size" "$work/favicon-$size.png"
+    render "$favicon_svg" "$size" "$size" "$size" "$work/favicon-$size.png"
 done
 write_ico "$public/favicon.ico" "${favicon_sizes[@]}"
 
 render_app_icon 180 "$public/apple-touch-icon.png"
 render_app_icon 192 "$public/icon-192.png"
 render_app_icon 512 "$public/icon-512.png"
+render "$app_icon_svg" 1200 630 290 "$public/share-image.png" "$background"
 
-echo "Generated favicon.ico, apple-touch-icon.png, icon-192.png and icon-512.png in $public"
+echo "Generated favicon.ico, apple-touch-icon.png, icon-192.png, icon-512.png and share-image.png in $public"

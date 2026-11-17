@@ -2,6 +2,7 @@
 <resources>
     <string name="site_app_name">BookkMe</string>
     <string name="site_page_title">Booking app for small businesses</string>
+    <string name="site_description">BookkMe is a booking app for small businesses on Android and iOS: calendar, clients, services and team in one place, and clients book with you directly.</string>
     <string name="site_headline">Run your appointment business from your phone</string>
     <string name="site_subheadline">Keep your calendar, clients, services and team in one place, and let your clients book with you directly. Made for salons, studios, clinics, tutors, repair shops and anyone who works by appointment.</string>
     <string name="site_stores_title">Coming soon to</string>
@@ -43,6 +44,9 @@
     <string name="site_privacy_policy">Privacy Policy</string>
     <string name="site_terms_of_service">Terms of Service</string>
     <string name="site_data_processing_agreement">Data Processing Agreement</string>
+    <string name="site_privacy_policy_description">How the personal data of businesses, their teams and their clients is collected, used and protected in BookkMe.</string>
+    <string name="site_terms_of_service_description">The terms for using the BookkMe apps and services.</string>
+    <string name="site_data_processing_agreement_description">The terms under which client data is processed on behalf of businesses that use BookkMe.</string>
     <string name="site_legal_version">Version %s</string>
     <string name="site_legal_in_effect_since">In effect since %s</string>
     <string name="site_legal_in_effect_between">In effect from %1$s to %2$s</string>
@@ -56,6 +60,7 @@
     <string name="site_not_found_title">Page not found</string>
     <string name="site_not_found_message">The page you’re looking\nfor can’t be found.</string>
     <string name="site_contact_title">Contact us</string>
+    <string name="site_contact_description">How to reach BookkMe: support, privacy and legal questions, and security.</string>
     <string name="site_contact_guides_question">Questions about how the app or service works?</string>
     <string name="site_contact_guides_link">You’ll most likely find the answer in our guides.</string>
     <string name="site_contact_support_title">Support</string>

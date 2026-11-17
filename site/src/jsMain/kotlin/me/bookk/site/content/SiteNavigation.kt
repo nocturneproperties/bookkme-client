@@ -3,6 +3,7 @@ package me.bookk.site.content
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
+import me.bookk.site.config.SiteBuildConfig
 import me.bookk.site.resources.SiteRes
 import kotlin.js.Date
 
@@ -19,7 +20,7 @@ enum class LandingSection(
 }
 
 object SiteNavigation {
-    const val ORIGIN = "https://bookkme.com"
+    const val ORIGIN = SiteBuildConfig.ORIGIN
     const val GUIDES_PATH = "/guides"
 
     val header = listOf(

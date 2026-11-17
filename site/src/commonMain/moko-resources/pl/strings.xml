@@ -31,6 +31,9 @@
     <string name="site_privacy_passkeys_title">Logowanie bez hasła</string>
     <string name="site_privacy_passkeys_description">Loguj się kluczem dostępu — bez hasła, które można zapomnieć lub stracić.</string>
     <string name="site_footer">BookkMe — aplikacja do rezerwacji z dostępnym kodem źródłowym na Androida i iOS.</string>
+    <string name="site_footer_app_source">Kod aplikacji</string>
+    <string name="site_footer_server_source">Kod serwera</string>
+    <string name="site_footer_license">Licencja FSL-1.1-ALv2</string>
     <string name="site_toggle_color_mode">Zmień motyw</string>
     <string name="site_language">Język</string>
     <string name="site_nav_guides">Poradniki</string>

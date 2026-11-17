@@ -33,6 +33,17 @@ object SiteNavigation {
         contact(),
     )
 
+    private const val SOURCE_ORIGIN = "https://github.com/nocturneproperties"
+
+    val source = listOf(
+        SiteLink(SiteRes.strings.site_footer_app_source.desc(), "$SOURCE_ORIGIN/bookkme-client"),
+        SiteLink(SiteRes.strings.site_footer_server_source.desc(), "$SOURCE_ORIGIN/bookkme"),
+        SiteLink(
+            SiteRes.strings.site_footer_license.desc(),
+            "$SOURCE_ORIGIN/bookkme-client/blob/main/LICENSE",
+        ),
+    )
+
     private fun contact(): SiteLink {
         return SiteLink(SiteRes.strings.site_nav_contact.desc(), "/contact")
     }

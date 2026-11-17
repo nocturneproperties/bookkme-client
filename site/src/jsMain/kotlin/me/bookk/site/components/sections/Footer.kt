@@ -22,6 +22,7 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.resources.color.ColorToken
+import me.bookk.site.content.SiteLink
 import me.bookk.site.content.SiteNavigation
 import me.bookk.site.designsystem.components.TextBlock
 import me.bookk.site.designsystem.components.TextLink
@@ -52,6 +53,13 @@ val FooterContentStyle = CssStyle.base {
         .gap(0.75.cssRem)
 }
 
+val FooterAboutStyle = CssStyle.base {
+    Modifier
+        .rowGap(0.5.cssRem)
+        .columnGap(1.25.cssRem)
+        .flexWrap(FlexWrap.Wrap)
+}
+
 val FooterLegalStyle = CssStyle.base {
     Modifier
         .fillMaxWidth()
@@ -71,19 +79,22 @@ fun Footer(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.TopCenter,
     ) {
         Column(FooterContentStyle.toModifier()) {
-            TextBlock(SiteRes.strings.site_footer.desc(), LabelSmallTextStyle.toModifier())
+            Row(FooterAboutStyle.toModifier(), verticalAlignment = Alignment.CenterVertically) {
+                TextBlock(SiteRes.strings.site_footer.desc(), LabelSmallTextStyle.toModifier())
+                FooterLinks(SiteNavigation.source)
+            }
             Row(FooterLegalStyle.toModifier(), verticalAlignment = Alignment.CenterVertically) {
                 TextBlock(SiteNavigation.copyright(), LabelSmallTextStyle.toModifier())
-                FooterLinks()
+                FooterLinks(SiteNavigation.footer)
             }
         }
     }
 }
 
 @Composable
-private fun FooterLinks() {
+private fun FooterLinks(links: List<SiteLink>) {
     Row(Modifier.gap(0.75.cssRem), verticalAlignment = Alignment.CenterVertically) {
-        SiteNavigation.footer.forEachIndexed { index, link ->
+        links.forEachIndexed { index, link ->
             if (index > 0) VerticalDivider(Modifier.height(0.75.cssRem))
             TextLink(
                 link.title,

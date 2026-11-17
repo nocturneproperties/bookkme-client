@@ -31,6 +31,9 @@
     <string name="site_privacy_passkeys_title">Password-free sign-in</string>
     <string name="site_privacy_passkeys_description">Sign in with passkeys, with no password to leak or forget.</string>
     <string name="site_footer">BookkMe — a source-available booking app for Android and iOS.</string>
+    <string name="site_footer_app_source">App source</string>
+    <string name="site_footer_server_source">Server source</string>
+    <string name="site_footer_license">FSL-1.1-ALv2 license</string>
     <string name="site_toggle_color_mode">Toggle color mode</string>
     <string name="site_language">Language</string>
     <string name="site_nav_guides">Guides</string>

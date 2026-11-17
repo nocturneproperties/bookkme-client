@@ -31,6 +31,9 @@
     <string name="site_privacy_passkeys_title">Вхід без пароля</string>
     <string name="site_privacy_passkeys_description">Входьте за допомогою ключа доступу — без пароля, який можна забути чи втратити.</string>
     <string name="site_footer">BookkMe — застосунок для запису клієнтів із доступним вихідним кодом для Android та iOS.</string>
+    <string name="site_footer_app_source">Код застосунку</string>
+    <string name="site_footer_server_source">Код сервера</string>
+    <string name="site_footer_license">Ліцензія FSL-1.1-ALv2</string>
     <string name="site_toggle_color_mode">Змінити тему</string>
     <string name="site_language">Мова</string>
     <string name="site_nav_guides">Посібники</string>

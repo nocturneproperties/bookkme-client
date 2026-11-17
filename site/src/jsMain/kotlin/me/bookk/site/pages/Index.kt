@@ -5,7 +5,6 @@ import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.flexWrap
 import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.height
@@ -26,9 +25,7 @@ import com.varabyte.kobweb.silk.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.site.components.layouts.PageLayoutData
-import me.bookk.site.components.widgets.FeatureCard
 import me.bookk.site.components.widgets.Logo
 import me.bookk.site.components.widgets.StoreBadge
 import me.bookk.site.content.Feature
@@ -37,11 +34,12 @@ import me.bookk.site.content.LandingSection
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
 import me.bookk.site.designsystem.components.TextBlock
+import me.bookk.site.designsystem.components.TitledCard
 import me.bookk.site.designsystem.theme.BodyLargeTextStyle
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.DisplayTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
-import me.bookk.site.designsystem.theme.themed
+import me.bookk.site.designsystem.theme.secondary
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.cssRem
@@ -104,7 +102,7 @@ private fun Hero() {
             BodyLargeTextStyle
                 .toModifier()
                 .maxWidth(44.cssRem)
-                .color(ColorToken.SecondaryText.themed),
+                .secondary(),
         )
         StoreBadges()
     }
@@ -113,7 +111,12 @@ private fun Hero() {
 @Composable
 private fun StoreBadges() {
     Column(Modifier.gap(0.75.cssRem)) {
-        SecondaryText(SiteRes.strings.site_stores_title.desc())
+        TextBlock(
+            SiteRes.strings.site_stores_title.desc(),
+            BodyMediumTextStyle
+                .toModifier()
+                .secondary(),
+        )
         Row(
             Modifier
                 .gap(0.75.cssRem)
@@ -146,7 +149,7 @@ private fun FeatureSection(
                 BodyLargeTextStyle
                     .toModifier()
                     .maxWidth(44.cssRem)
-                    .color(ColorToken.SecondaryText.themed),
+                    .secondary(),
             )
         }
         SimpleGrid(numColumns(1, md = 2, lg = wideColumns), Modifier.gap(1.cssRem)) {
@@ -156,11 +159,13 @@ private fun FeatureSection(
 }
 
 @Composable
-private fun SecondaryText(text: StringDesc) {
-    TextBlock(
-        text,
-        BodyMediumTextStyle
-            .toModifier()
-            .color(ColorToken.SecondaryText.themed),
-    )
+private fun FeatureCard(feature: Feature) {
+    TitledCard(feature.title) {
+        TextBlock(
+            feature.description,
+            BodyMediumTextStyle
+                .toModifier()
+                .secondary(),
+        )
+    }
 }

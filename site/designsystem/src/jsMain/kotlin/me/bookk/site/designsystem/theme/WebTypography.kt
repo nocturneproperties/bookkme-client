@@ -1,7 +1,9 @@
 package me.bookk.site.designsystem.theme
 
+import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.fontSize
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.lineHeight
@@ -9,6 +11,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.breakpoint.Breakpoint
+import me.bookk.designsystem.resources.color.ColorToken
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 
@@ -86,4 +89,24 @@ val LabelSmallTextStyle = CssStyle.base {
         .fontSize(0.75.cssRem)
         .lineHeight(1.4)
         .margin(0.px)
+}
+
+@Composable
+fun Modifier.primary(): Modifier {
+    return color(ColorToken.PrimaryText.themed)
+}
+
+@Composable
+fun Modifier.secondary(): Modifier {
+    return color(ColorToken.SecondaryText.themed)
+}
+
+@Composable
+fun Modifier.active(): Modifier {
+    return color(ColorToken.ActionText.themed)
+}
+
+@Composable
+fun Modifier.error(): Modifier {
+    return color(ColorToken.Error.themed)
 }

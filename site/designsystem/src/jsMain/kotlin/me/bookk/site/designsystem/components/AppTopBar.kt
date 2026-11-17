@@ -20,6 +20,7 @@ import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.site.designsystem.theme.BodySmallTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.designsystem.theme.TitleMediumTextStyle
+import me.bookk.site.designsystem.theme.secondary
 import me.bookk.site.designsystem.theme.themed
 import me.bookk.site.designsystem.uistate.WebButtonState
 import org.jetbrains.compose.web.css.cssRem
@@ -61,7 +62,7 @@ private fun LargeTitle(state: AppBarState) {
             it,
             BodySmallTextStyle
                 .toModifier()
-                .color(ColorToken.SecondaryText.themed),
+                .secondary(),
         )
     }
 }

@@ -5,7 +5,6 @@ import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.silk.components.forms.Input
@@ -16,6 +15,7 @@ import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.site.designsystem.resources.localized
 import me.bookk.site.designsystem.theme.BodySmallTextStyle
+import me.bookk.site.designsystem.theme.secondary
 import me.bookk.site.designsystem.theme.themed
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.attributes.InputType as HtmlInputType
@@ -32,7 +32,7 @@ fun TextField(state: TextFieldState, modifier: Modifier = Modifier) {
             state.label,
             BodySmallTextStyle
                 .toModifier()
-                .color(ColorToken.SecondaryText.themed),
+                .secondary(),
         )
         Input(
             type = state.inputType.html(),

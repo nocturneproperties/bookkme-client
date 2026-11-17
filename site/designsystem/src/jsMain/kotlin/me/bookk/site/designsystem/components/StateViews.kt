@@ -8,7 +8,6 @@ import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.height
@@ -18,13 +17,13 @@ import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem
-import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.simple.BannerErrorState
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.simple.ErrorState
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.TitleMediumTextStyle
-import me.bookk.site.designsystem.theme.themed
+import me.bookk.site.designsystem.theme.error
+import me.bookk.site.designsystem.theme.secondary
 import me.bookk.site.designsystem.uistate.WebButtonState
 import org.jetbrains.compose.web.css.cssRem
 
@@ -78,7 +77,7 @@ fun ErrorStateView(state: ErrorState) {
             BodyMediumTextStyle
                 .toModifier()
                 .textAlign(TextAlign.Center)
-                .color(ColorToken.SecondaryText.themed),
+                .secondary(),
         )
         ActionButton(retry)
     }
@@ -99,7 +98,7 @@ fun BannerErrorView(state: BannerErrorState) {
                 state.text,
                 BodyMediumTextStyle
                     .toModifier()
-                    .color(ColorToken.Error.themed),
+                    .error(),
             )
             Spacer()
             TextButton(retry)

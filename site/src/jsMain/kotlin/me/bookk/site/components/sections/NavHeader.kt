@@ -1,8 +1,6 @@
 package me.bookk.site.components.sections
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import com.varabyte.kobweb.compose.css.functions.blur
 import com.varabyte.kobweb.compose.css.functions.saturate
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -21,8 +19,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.position
 import com.varabyte.kobweb.compose.ui.modifiers.top
 import com.varabyte.kobweb.compose.ui.modifiers.zIndex
-import com.varabyte.kobweb.silk.components.icons.MoonIcon
-import com.varabyte.kobweb.silk.components.icons.SunIcon
 import com.varabyte.kobweb.silk.components.navigation.Link
 import com.varabyte.kobweb.silk.components.navigation.UncoloredLinkVariant
 import com.varabyte.kobweb.silk.components.navigation.UndecoratedLinkVariant
@@ -31,12 +27,11 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.style.breakpoint.displayIfAtLeast
 import com.varabyte.kobweb.silk.style.toModifier
-import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.site.components.widgets.Logo
 import me.bookk.site.content.SiteNavigation
-import me.bookk.site.designsystem.components.IconButton
+import me.bookk.site.designsystem.components.ColorModeButton
 import me.bookk.site.designsystem.components.LanguagePicker
 import me.bookk.site.designsystem.components.TextLink
 import me.bookk.site.designsystem.theme.LabelMediumTextStyle
@@ -83,7 +78,7 @@ fun NavHeader() {
             SectionLinks()
             Spacer()
             LanguagePicker(SiteRes.strings.site_language.desc())
-            ColorModeButton()
+            ColorModeButton(SiteRes.strings.site_toggle_color_mode.desc())
         }
     }
 }
@@ -106,16 +101,5 @@ private fun SectionLinks() {
         SiteNavigation.header.forEach {
             TextLink(it.title, it.path, LabelMediumTextStyle.toModifier())
         }
-    }
-}
-
-@Composable
-private fun ColorModeButton() {
-    var colorMode by ColorMode.currentState
-    IconButton(
-        onClick = { colorMode = colorMode.opposite },
-        description = SiteRes.strings.site_toggle_color_mode.desc(),
-    ) {
-        if (colorMode.isLight) MoonIcon() else SunIcon()
     }
 }

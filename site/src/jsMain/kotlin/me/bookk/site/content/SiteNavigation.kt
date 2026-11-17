@@ -16,17 +16,13 @@ enum class LandingSection(
 ) {
     FEATURES("features"),
     PRIVACY("privacy"),
-    ;
-
-    val path: String
-        get() = "/#$id"
 }
 
 object SiteNavigation {
+    const val GUIDES_PATH = "/guides"
+
     val header = listOf(
-        SiteLink(SiteRes.strings.site_nav_features.desc(), LandingSection.FEATURES.path),
-        SiteLink(SiteRes.strings.site_nav_privacy.desc(), LandingSection.PRIVACY.path),
-        SiteLink(SiteRes.strings.site_nav_guides.desc(), "/guides"),
+        SiteLink(SiteRes.strings.site_nav_guides.desc(), GUIDES_PATH),
         contact(),
     )
 

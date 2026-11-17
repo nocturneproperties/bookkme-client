@@ -10,8 +10,6 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.border
 import com.varabyte.kobweb.compose.ui.modifiers.borderCollapse
-import com.varabyte.kobweb.compose.ui.modifiers.borderTop
-import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.id
@@ -29,14 +27,17 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
+import me.bookk.site.designsystem.components.HorizontalDivider
 import me.bookk.site.designsystem.components.TextLink
+import me.bookk.site.designsystem.components.TextList
+import me.bookk.site.designsystem.components.TextListType
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.BodySmallTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.site.designsystem.theme.TitleMediumTextStyle
+import me.bookk.site.designsystem.theme.active
 import me.bookk.site.designsystem.theme.resolve
-import me.bookk.site.designsystem.theme.themed
 import me.bookk.site.designsystem.theme.webColors
 import me.bookk.site.legal.markdown.MarkdownBlock
 import me.bookk.site.legal.markdown.MarkdownInline
@@ -44,9 +45,6 @@ import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Hr
-import org.jetbrains.compose.web.dom.Li
-import org.jetbrains.compose.web.dom.Ol
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Table
@@ -56,28 +54,13 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.Th
 import org.jetbrains.compose.web.dom.Thead
 import org.jetbrains.compose.web.dom.Tr
-import org.jetbrains.compose.web.dom.Ul
 
 private const val SITE_ORIGIN = "https://bookkme.com/"
-
-val LegalListStyle = CssStyle.base {
-    Modifier
-        .margin(0.px)
-        .padding(left = 1.5.cssRem)
-}
 
 val LegalHeadingStyle = CssStyle.base {
     Modifier
         .margin(top = 1.cssRem)
         .scrollMarginBlock(start = 4.cssRem)
-}
-
-val LegalThematicBreakStyle = CssStyle.base {
-    Modifier
-        .fillMaxWidth()
-        .margin(topBottom = 0.5.cssRem)
-        .border(0.px, LineStyle.None)
-        .borderTop(1.px, LineStyle.Solid, ColorToken.Divider.resolve(colorMode.webColors()))
 }
 
 val LegalTableWrapperStyle = CssStyle.base {
@@ -111,10 +94,19 @@ fun LegalMarkdownContent(blocks: List<MarkdownBlock>) {
     blocks.forEach { block ->
         when (block) {
             is MarkdownBlock.Heading -> LegalHeading(block)
+
             is MarkdownBlock.Paragraph -> LegalParagraph(block.content)
-            is MarkdownBlock.BulletList -> LegalBulletList(block.items)
-            is MarkdownBlock.OrderedList -> LegalOrderedList(block.items)
-            MarkdownBlock.ThematicBreak -> Hr(LegalThematicBreakStyle.toModifier().toAttrs())
+
+            is MarkdownBlock.BulletList -> TextList(block.items) { LegalInlines(it) }
+
+            is MarkdownBlock.OrderedList -> TextList(block.items, type = TextListType.ORDERED) {
+                LegalInlines(it)
+            }
+
+            MarkdownBlock.ThematicBreak -> HorizontalDivider(
+                Modifier.margin(topBottom = 0.5.cssRem),
+            )
+
             is MarkdownBlock.Table -> LegalTable(block)
         }
     }
@@ -136,32 +128,6 @@ private fun LegalHeading(heading: MarkdownBlock.Heading) {
 private fun LegalParagraph(content: List<MarkdownInline>) {
     P(BodyMediumTextStyle.toModifier().toAttrs()) {
         LegalInlines(content)
-    }
-}
-
-@Composable
-private fun LegalBulletList(items: List<List<MarkdownInline>>) {
-    Ul(LegalListModifier.toAttrs()) {
-        LegalListItems(items)
-    }
-}
-
-@Composable
-private fun LegalOrderedList(items: List<List<MarkdownInline>>) {
-    Ol(LegalListModifier.toAttrs()) {
-        LegalListItems(items)
-    }
-}
-
-private val LegalListModifier
-    @Composable get() = BodyMediumTextStyle
-        .toModifier()
-        .then(LegalListStyle.toModifier())
-
-@Composable
-private fun LegalListItems(items: List<List<MarkdownInline>>) {
-    items.forEach { item ->
-        Li(Modifier.margin(bottom = 0.5.cssRem).toAttrs()) { LegalInlines(item) }
     }
 }
 
@@ -212,7 +178,7 @@ private fun LegalInlines(content: List<MarkdownInline>) {
             is MarkdownInline.Link -> TextLink(
                 inline.label.desc(),
                 inline.url.toSitePath(),
-                Modifier.color(ColorToken.ActionText.themed),
+                Modifier.active(),
             )
         }
     }

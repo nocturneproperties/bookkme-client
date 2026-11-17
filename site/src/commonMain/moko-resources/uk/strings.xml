@@ -35,6 +35,7 @@
     <string name="site_language">Мова</string>
     <string name="site_nav_guides">Посібники</string>
     <string name="site_nav_contact">Контакти</string>
+    <string name="site_menu">Меню</string>
     <string name="site_copyright">© %s Nocturne Properties LLC. Усі права захищено.</string>
     <string name="site_privacy_policy">Політика конфіденційності</string>
     <string name="site_terms_of_service">Умови використання</string>

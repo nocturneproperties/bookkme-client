@@ -28,6 +28,7 @@ val CircleButtonVariant = ButtonStyle.addVariantBase {
 fun IconButton(
     onClick: () -> Unit,
     description: StringDesc? = null,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
     val label = description?.localized()
@@ -35,7 +36,8 @@ fun IconButton(
         onClick = { onClick() },
         modifier = Modifier
             .setVariable(ButtonVars.FontSize, 1.em)
-            .attrsModifier { label?.let { attr("aria-label", it) } },
+            .attrsModifier { label?.let { attr("aria-label", it) } }
+            .then(modifier),
         variant = CircleButtonVariant,
     ) {
         content()

@@ -1668,6 +1668,48 @@ class AppointmentDetailsViewModelTest {
         }
 
     @Test
+    fun `shows employee day message when employee does not work on rescheduled date`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateAppointment(any()) } throws
+                UpdateAppointment.Error.EmployeeDateIsNotAllowed()
+            val sut = fixture.sutWith(fixture.appointment())
+
+            whenn()
+            sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+            then()
+            val message =
+                sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(
+                AppointmentsRes.strings.appointments_employee_date_error.desc(),
+                message.message,
+            )
+        }
+
+    @Test
+    fun `shows employee hours message when rescheduled time is outside employee hours`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.updateAppointment(any()) } throws
+                UpdateAppointment.Error.EmployeeTimeIsNotAllowed()
+            val sut = fixture.sutWith(fixture.appointment())
+
+            whenn()
+            sut.uiState.dateTimePicker.onDatePicked?.invoke(LocalDateTime(2030, 2, 1, 12, 0))
+
+            then()
+            val message =
+                sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(
+                AppointmentsRes.strings.appointments_employee_time_error.desc(),
+                message.message,
+            )
+        }
+
+    @Test
     fun `shows message when rescheduling to a suspended employee`() = runUnitTest {
         given()
         val fixture = Fixture()

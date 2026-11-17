@@ -19,5 +19,17 @@ interface ApproveAppointmentRequest {
         class DateInPast :
             Throwable(),
             Error
+        class EmployeeDateNotAllowed :
+            Throwable(),
+            Error
+        class EmployeeTimeNotAllowed :
+            Throwable(),
+            Error
+        class EmployeeSuspended :
+            Throwable(),
+            Error
+        class EmployeeNotFound :
+            Throwable(),
+            Error
     }
 }

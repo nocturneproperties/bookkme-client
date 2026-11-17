@@ -133,6 +133,22 @@ class AppointmentRequestViewModel(
                         AppointmentsRes.strings.appointments_request_time_error.desc()
                     }
 
+                    is Error.EmployeeDateNotAllowed -> {
+                        AppointmentsRes.strings.appointments_employee_date_error.desc()
+                    }
+
+                    is Error.EmployeeTimeNotAllowed -> {
+                        AppointmentsRes.strings.appointments_employee_time_error.desc()
+                    }
+
+                    is Error.EmployeeSuspended -> {
+                        AppointmentsRes.strings.appointments_details_employee_suspended_error.desc()
+                    }
+
+                    is Error.EmployeeNotFound -> {
+                        AppointmentsRes.strings.appointments_employee_not_found_error.desc()
+                    }
+
                     null -> {
                         null
                     }

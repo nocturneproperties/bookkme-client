@@ -61,12 +61,20 @@ internal class CreateAppointmentImpl(
                         CreateAppointment.Error.AppointmentOverlap()
                     }
 
-                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
+                    AppointmentErrorCodes.BUSINESS_TIME_NOT_ALLOWED -> {
                         CreateAppointment.Error.TimeIsNotAllowed()
                     }
 
-                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
+                    AppointmentErrorCodes.BUSINESS_DATE_NOT_ALLOWED -> {
                         CreateAppointment.Error.DateIsNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.EMPLOYEE_DATE_NOT_ALLOWED -> {
+                        CreateAppointment.Error.EmployeeDateIsNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.EMPLOYEE_TIME_NOT_ALLOWED -> {
+                        CreateAppointment.Error.EmployeeTimeIsNotAllowed()
                     }
 
                     AppointmentErrorCodes.DATE_IN_PAST -> {

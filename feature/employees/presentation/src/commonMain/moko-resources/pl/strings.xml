@@ -38,6 +38,7 @@
     <string name="employees_edit_updated">Pracownik zaktualizowany</string>
     <string name="employees_edit_error_validation">Nieprawidłowe imię, telefon lub e-mail pracownika</string>
     <string name="employees_edit_error_active_day_without_work_hours">Aktywny dzień musi mieć co najmniej jedną godzinę pracy</string>
+    <string name="employees_edit_error_empty_work_hour_range">Przedział godzin pracy nie może zaczynać się i kończyć o tej samej godzinie</string>
     <string name="employees_edit_error_invalid_day_off_range">Data rozpoczęcia dnia wolnego musi być wcześniejsza niż data zakończenia</string>
     <string name="employees_edit_suspend">Zawieś pracownika</string>
     <string name="employees_edit_reinstate">Przywróć pracownika</string>

@@ -26,16 +26,32 @@ internal class ApproveAppointmentRequestImpl(
                         throw ApproveAppointmentRequest.Error.AppointmentExists()
                     }
 
-                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
+                    AppointmentErrorCodes.BUSINESS_DATE_NOT_ALLOWED -> {
                         throw ApproveAppointmentRequest.Error.DateNotAllowed()
                     }
 
-                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
+                    AppointmentErrorCodes.BUSINESS_TIME_NOT_ALLOWED -> {
                         throw ApproveAppointmentRequest.Error.TimeNotAllowed()
                     }
 
                     AppointmentErrorCodes.DATE_IN_PAST -> {
                         throw ApproveAppointmentRequest.Error.DateInPast()
+                    }
+
+                    AppointmentErrorCodes.EMPLOYEE_DATE_NOT_ALLOWED -> {
+                        throw ApproveAppointmentRequest.Error.EmployeeDateNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.EMPLOYEE_TIME_NOT_ALLOWED -> {
+                        throw ApproveAppointmentRequest.Error.EmployeeTimeNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED -> {
+                        throw ApproveAppointmentRequest.Error.EmployeeSuspended()
+                    }
+
+                    AppointmentErrorCodes.BUSINESS_EMPLOYEE_NOT_EXISTS -> {
+                        throw ApproveAppointmentRequest.Error.EmployeeNotFound()
                     }
                 }
             }

@@ -63,12 +63,12 @@ class UpdateAppointmentImplTest {
     }
 
     @Test
-    fun `throws DateIsNotAllowed on DATE_NOT_ALLOWED error`() = runUnitTest {
+    fun `throws DateIsNotAllowed on BUSINESS_DATE_NOT_ALLOWED error`() = runUnitTest {
         given()
         val fixture = Fixture()
         val appointment = stubAppointment()
         everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
-            DomainError.BusinessError(AppointmentErrorCodes.DATE_NOT_ALLOWED, "msg")
+            DomainError.BusinessError(AppointmentErrorCodes.BUSINESS_DATE_NOT_ALLOWED, "msg")
 
         whenn()
         then()
@@ -78,16 +78,46 @@ class UpdateAppointmentImplTest {
     }
 
     @Test
-    fun `throws TimeIsNotAllowed on TIME_NOT_ALLOWED error`() = runUnitTest {
+    fun `throws TimeIsNotAllowed on BUSINESS_TIME_NOT_ALLOWED error`() = runUnitTest {
         given()
         val fixture = Fixture()
         val appointment = stubAppointment()
         everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
-            DomainError.BusinessError(AppointmentErrorCodes.TIME_NOT_ALLOWED, "msg")
+            DomainError.BusinessError(AppointmentErrorCodes.BUSINESS_TIME_NOT_ALLOWED, "msg")
 
         whenn()
         then()
         assertFailsWith<UpdateAppointment.Error.TimeIsNotAllowed> {
+            fixture.sut(appointment)
+        }
+    }
+
+    @Test
+    fun `throws EmployeeDateIsNotAllowed on EMPLOYEE_DATE_NOT_ALLOWED error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = stubAppointment()
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.EMPLOYEE_DATE_NOT_ALLOWED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<UpdateAppointment.Error.EmployeeDateIsNotAllowed> {
+            fixture.sut(appointment)
+        }
+    }
+
+    @Test
+    fun `throws EmployeeTimeIsNotAllowed on EMPLOYEE_TIME_NOT_ALLOWED error`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = stubAppointment()
+        everySuspend { fixture.dataSource.updateAppointment(appointment) } throws
+            DomainError.BusinessError(AppointmentErrorCodes.EMPLOYEE_TIME_NOT_ALLOWED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<UpdateAppointment.Error.EmployeeTimeIsNotAllowed> {
             fixture.sut(appointment)
         }
     }

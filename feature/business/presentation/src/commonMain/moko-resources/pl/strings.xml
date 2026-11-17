@@ -80,6 +80,7 @@
     <string name="business_plugins_appointments_clients_item2_sub">Pamiętaj, że klient może zrezygnować z dowolnych powiadomień</string>
     <string name="business_plugins_demo">Kliknij tutaj, aby zobaczyć demo, sprawdzić, jak to działa, i zdecydować, czy to dla Ciebie.</string>
     <string name="business_settings_active_day_without_work_hours_error">Aktywny dzień musi mieć co najmniej jedną godzinę pracy</string>
+    <string name="business_settings_empty_work_hour_range_error">Przedział godzin pracy nie może zaczynać się i kończyć o tej samej godzinie</string>
     <string name="business_settings_invalid_day_off_range_error">Data rozpoczęcia dnia wolnego musi być wcześniejsza niż data zakończenia</string>
     <string name="business_analytics_coming_soon_title">Analityka już wkrótce</string>
     <string name="business_analytics_coming_soon_message">Przygotowujemy raporty dotyczące Twoich przychodów, wizyt i klientów. Pojawią się tutaj w jednej z przyszłych aktualizacji.</string>

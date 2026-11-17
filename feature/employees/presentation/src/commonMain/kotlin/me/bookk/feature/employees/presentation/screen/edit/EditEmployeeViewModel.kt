@@ -352,6 +352,10 @@ class EditEmployeeViewModel(
                 EmployeesRes.strings.employees_edit_error_active_day_without_work_hours
             }
 
+            is UpdateEmployee.Error.EmptyWorkHourRange -> {
+                EmployeesRes.strings.employees_edit_error_empty_work_hour_range
+            }
+
             is UpdateEmployee.Error.InvalidDayOffRange -> {
                 EmployeesRes.strings.employees_edit_error_invalid_day_off_range
             }

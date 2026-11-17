@@ -289,6 +289,20 @@ class AppointmentCreateViewModel(
                         uiState.create.isEnabled = false
                     }
 
+                    is CreateAppointment.Error.EmployeeDateIsNotAllowed -> {
+                        uiState.datePicker.textField.showError(
+                            AppointmentsRes.strings.appointments_employee_date_error.desc(),
+                        )
+                        uiState.create.isEnabled = false
+                    }
+
+                    is CreateAppointment.Error.EmployeeTimeIsNotAllowed -> {
+                        uiState.timePicker.textField.showError(
+                            AppointmentsRes.strings.appointments_employee_time_error.desc(),
+                        )
+                        uiState.create.isEnabled = false
+                    }
+
                     else -> {
                         uiState.notifications.add(it.notification())
                     }

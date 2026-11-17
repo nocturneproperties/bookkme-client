@@ -89,6 +89,8 @@
     <string name="appointments_date_in_past_error">The appointment time is in the past. Choose a future date and time.</string>
     <string name="appointments_create_offer_used_error">This booking offer has already been used. Check the appointments list before trying again.</string>
     <string name="appointments_employee_not_found_error">This employee is no longer available. Refresh the appointments and try again.</string>
+    <string name="appointments_employee_date_error">The employee doesn\'t work on this day</string>
+    <string name="appointments_employee_time_error">This time is outside the employee\'s working hours</string>
     <string name="appointments_client_not_found_error">This client is no longer available. Select another client.</string>
     <string name="appointments_edit_window_closed_error">This appointment can no longer be changed.</string>
     <string name="appointments_concurrent_modification_error">Appointment changed. Please try again.</string>

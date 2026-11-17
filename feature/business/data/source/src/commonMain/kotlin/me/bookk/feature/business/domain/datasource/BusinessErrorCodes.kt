@@ -13,4 +13,5 @@ object BusinessErrorCodes {
     const val BUSINESS_INVALID_CURRENCY = BASE + 35
     const val BUSINESS_CURRENCY_LOCKED = BASE + 36
     const val BUSINESS_CLIENT_DATA_RETENTION_OUT_OF_RANGE = BASE + 41
+    const val BUSINESS_EMPTY_WORK_HOUR_RANGE = BASE + 42
 }

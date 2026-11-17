@@ -298,7 +298,7 @@ class CreateAppointmentImplTest {
     }
 
     @Test
-    fun `maps booking error 300002 to TimeIsNotAllowed`() = runUnitTest {
+    fun `maps booking error 300002 BUSINESS_TIME_NOT_ALLOWED to TimeIsNotAllowed`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.appointmentDataSource.createAppointment(any()) } throws
@@ -315,7 +315,7 @@ class CreateAppointmentImplTest {
     }
 
     @Test
-    fun `maps booking error 300003 to DateIsNotAllowed`() = runUnitTest {
+    fun `maps booking error 300003 BUSINESS_DATE_NOT_ALLOWED to DateIsNotAllowed`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.appointmentDataSource.createAppointment(any()) } throws
@@ -326,6 +326,40 @@ class CreateAppointmentImplTest {
 
         then()
         assertFailsWith<CreateAppointment.Error.DateIsNotAllowed> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.appointmentDataSource.saveAppointmentInDB(any())
+        }
+    }
+
+    @Test
+    fun `maps booking error 300027 to EmployeeDateIsNotAllowed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(300027, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(fixture.draft) }
+
+        then()
+        assertFailsWith<CreateAppointment.Error.EmployeeDateIsNotAllowed> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.appointmentDataSource.saveAppointmentInDB(any())
+        }
+    }
+
+    @Test
+    fun `maps booking error 300028 to EmployeeTimeIsNotAllowed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.appointmentDataSource.createAppointment(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(300028, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(fixture.draft) }
+
+        then()
+        assertFailsWith<CreateAppointment.Error.EmployeeTimeIsNotAllowed> { result.getOrThrow() }
         verifySuspend(VerifyMode.exactly(0)) {
             fixture.appointmentDataSource.saveAppointmentInDB(any())
         }

@@ -22,8 +22,10 @@ flowchart TD
     Net -- 204 --> R([return Unit])
     Net -- business error --> Code{errorCode}
     Code -- 300001 REQUEST_EXISTS --> E1([throw Error.RequestForThisTimeExists])
-    Code -- 300002 TIME_NOT_ALLOWED --> E2([throw Error.TimeIsNotAllowed])
-    Code -- 300003 DATE_NOT_ALLOWED --> E3([throw Error.DateIsNotAllowed])
+    Code -- 300002 BUSINESS_TIME_NOT_ALLOWED --> E2([throw Error.TimeIsNotAllowed])
+    Code -- 300003 BUSINESS_DATE_NOT_ALLOWED --> E3([throw Error.DateIsNotAllowed])
+    Code -- 300027 EMPLOYEE_DATE_NOT_ALLOWED --> E12([throw Error.EmployeeDateIsNotAllowed])
+    Code -- 300028 EMPLOYEE_TIME_NOT_ALLOWED --> E13([throw Error.EmployeeTimeIsNotAllowed])
     Code -- 300012 DATE_IN_PAST --> E4([throw Error.DateInPast])
     Code -- 300013 PRICE_CHANGED --> E5([throw Error.PriceChanged])
     Code -- 300017 DURATION_CHANGED --> E6([throw Error.DurationChanged])

@@ -23,7 +23,7 @@ plugins {
 }
 
 group = "me.bookk.site"
-version = "0.1"
+version = "0.1.0"
 
 val siteStrings = MokoStrings.read(file("src/commonMain/moko-resources/base/strings.xml"))
 val siteName = siteStrings.value("site_app_name")

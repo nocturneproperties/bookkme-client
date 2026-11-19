@@ -3,6 +3,7 @@ package me.bookk.site.landing
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.JustifyContent
 import com.varabyte.kobweb.compose.css.TextAlign
+import com.varabyte.kobweb.compose.css.WhiteSpace
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.ColumnScope
 import com.varabyte.kobweb.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.scrollMarginBlock
 import com.varabyte.kobweb.compose.ui.modifiers.textAlign
+import com.varabyte.kobweb.compose.ui.modifiers.whiteSpace
 import com.varabyte.kobweb.silk.components.layout.SimpleGrid
 import com.varabyte.kobweb.silk.components.layout.numColumns
 import com.varabyte.kobweb.silk.style.CssStyle
@@ -125,6 +127,7 @@ private fun HeroText(headline: StringDesc, subheadline: StringDesc) {
         BodyLargeTextStyle
             .toModifier()
             .maxWidth(40.cssRem)
+            .whiteSpace(WhiteSpace.PreLine)
             .secondary(),
     )
 }

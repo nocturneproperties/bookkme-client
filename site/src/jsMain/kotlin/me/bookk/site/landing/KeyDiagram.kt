@@ -2,7 +2,10 @@ package me.bookk.site.landing
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.FontWeight
+import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.css.TextDecorationLine
+import com.varabyte.kobweb.compose.css.TextOverflow
+import com.varabyte.kobweb.compose.css.WhiteSpace
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -11,24 +14,29 @@ import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.border
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
+import com.varabyte.kobweb.compose.ui.modifiers.display
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flexBasis
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
 import com.varabyte.kobweb.compose.ui.modifiers.flexShrink
-import com.varabyte.kobweb.compose.ui.modifiers.flexWrap
 import com.varabyte.kobweb.compose.ui.modifiers.fontFamily
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.letterSpacing
 import com.varabyte.kobweb.compose.ui.modifiers.margin
+import com.varabyte.kobweb.compose.ui.modifiers.minWidth
+import com.varabyte.kobweb.compose.ui.modifiers.overflow
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.size
 import com.varabyte.kobweb.compose.ui.modifiers.textDecorationLine
+import com.varabyte.kobweb.compose.ui.modifiers.textOverflow
+import com.varabyte.kobweb.compose.ui.modifiers.whiteSpace
 import com.varabyte.kobweb.compose.ui.modifiers.width
 import com.varabyte.kobweb.compose.ui.styleModifier
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
+import com.varabyte.kobweb.silk.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
@@ -47,7 +55,7 @@ import me.bookk.site.designsystem.theme.resolve
 import me.bookk.site.designsystem.theme.secondary
 import me.bookk.site.designsystem.theme.webColors
 import me.bookk.site.resources.SiteRes
-import org.jetbrains.compose.web.css.FlexWrap
+import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.em
@@ -68,21 +76,40 @@ class KeyHolder(
     val isDeleted: Boolean,
 )
 
-val KeyDiagramStyle = CssStyle.base {
-    Modifier
-        .gap(0.875.cssRem)
-        .padding(2.cssRem)
-        .borderRadius(1.5.cssRem)
-        .backgroundColor(SurfaceCardColor.value())
+val KeyDiagramStyle = CssStyle {
+    base {
+        Modifier
+            .gap(0.875.cssRem)
+            .padding(1.25.cssRem)
+            .borderRadius(1.5.cssRem)
+            .backgroundColor(SurfaceCardColor.value())
+    }
+    Breakpoint.MD { Modifier.padding(2.cssRem) }
 }
 
-val KeyHolderChipStyle = CssStyle.base {
-    Modifier
-        .width(8.cssRem)
-        .flexShrink(0)
-        .padding(topBottom = 0.625.cssRem, leftRight = 0.875.cssRem)
-        .borderRadius(0.75.cssRem)
-        .backgroundColor(SurfaceInsetColor.value())
+val KeyRowStyle = CssStyle {
+    base {
+        Modifier
+            .fillMaxWidth()
+            .gap(0.5.cssRem)
+    }
+    Breakpoint.MD { Modifier.gap(0.75.cssRem) }
+}
+
+val KeyHolderChipStyle = CssStyle {
+    base {
+        Modifier
+            .width(5.5.cssRem)
+            .flexShrink(0)
+            .padding(topBottom = 0.625.cssRem, leftRight = 0.625.cssRem)
+            .borderRadius(0.75.cssRem)
+            .backgroundColor(SurfaceInsetColor.value())
+    }
+    Breakpoint.MD {
+        Modifier
+            .width(8.cssRem)
+            .padding(topBottom = 0.625.cssRem, leftRight = 0.875.cssRem)
+    }
 }
 
 val DeletedKeyHolderChipStyle = CssStyle.base {
@@ -91,15 +118,23 @@ val DeletedKeyHolderChipStyle = CssStyle.base {
         .border(1.px, LineStyle.Dashed, ColorToken.Divider.resolve(colorMode.webColors()))
 }
 
-val KeyRecordStyle = CssStyle.base {
-    Modifier
-        .flexGrow(1)
-        .flexShrink(1)
-        .flexBasis(12.cssRem)
-        .gap(0.625.cssRem)
-        .padding(topBottom = 0.625.cssRem, leftRight = 0.875.cssRem)
-        .borderRadius(0.75.cssRem)
-        .border(1.px, LineStyle.Solid, ColorToken.Divider.resolve(colorMode.webColors()))
+val KeyRecordStyle = CssStyle {
+    base {
+        Modifier
+            .flexGrow(1)
+            .flexShrink(1)
+            .flexBasis(0.px)
+            .minWidth(0.px)
+            .gap(0.5.cssRem)
+            .padding(topBottom = 0.625.cssRem, leftRight = 0.625.cssRem)
+            .borderRadius(0.75.cssRem)
+            .border(1.px, LineStyle.Solid, ColorToken.Divider.resolve(colorMode.webColors()))
+    }
+    Breakpoint.MD {
+        Modifier
+            .gap(0.625.cssRem)
+            .padding(topBottom = 0.625.cssRem, leftRight = 0.875.cssRem)
+    }
 }
 
 val ErasedKeyRecordStyle = CssStyle.base {
@@ -119,8 +154,22 @@ val CiphertextStyle = CssStyle.base {
         .letterSpacing(0.04.em)
 }
 
-val KeyFieldChipStyle = CssStyle.base {
-    Modifier.width(9.5.cssRem)
+val SingleLineCiphertextStyle = CssStyle.base {
+    Modifier
+        .minWidth(0.px)
+        .whiteSpace(WhiteSpace.NoWrap)
+        .overflow(Overflow.Hidden)
+        .textOverflow(TextOverflow.Ellipsis)
+}
+
+val ErasedCiphertextStyle = CssStyle {
+    base { Modifier.display(DisplayStyle.Block) }
+    Breakpoint.MD { Modifier.display(DisplayStyle.Inline) }
+}
+
+val KeyFieldChipStyle = CssStyle {
+    base { Modifier.width(7.cssRem) }
+    Breakpoint.MD { Modifier.width(9.5.cssRem) }
 }
 
 @Composable
@@ -177,10 +226,7 @@ private fun KeyDiagramFrame(
 @Composable
 private fun KeyRow(content: @Composable () -> Unit) {
     Row(
-        Modifier
-            .fillMaxWidth()
-            .gap(0.75.cssRem)
-            .flexWrap(FlexWrap.Wrap),
+        KeyRowStyle.toModifier(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         content()
@@ -209,6 +255,7 @@ private fun KeyFieldRow(field: KeyField) {
                 field.ciphertext,
                 CiphertextStyle
                     .toModifier()
+                    .then(SingleLineCiphertextStyle.toModifier())
                     .then(BodySmallTextStyle.toModifier())
                     .secondary(),
             )
@@ -278,7 +325,14 @@ private fun ErasedKeyRecord() {
             .secondary()
             .toAttrs(),
     ) {
-        Span { Text(SiteRes.strings.site_privacy_keys_ciphertext.desc().localized()) }
+        Span(
+            SingleLineCiphertextStyle
+                .toModifier()
+                .then(ErasedCiphertextStyle.toModifier())
+                .toAttrs(),
+        ) {
+            Text(SiteRes.strings.site_privacy_keys_ciphertext.desc().localized())
+        }
         Text(" ")
         Text(SiteRes.strings.site_privacy_keys_erased.desc().localized())
     }

@@ -45,7 +45,7 @@ jobs:
 
       - name: Build Debug
         run: |
-          xcodebuild build \
+          .github/scripts/xcodebuild.sh debug build \
             -project iosApp/iosApp.xcodeproj \
             -scheme dev \
             -configuration Debug \
@@ -56,7 +56,7 @@ jobs:
 
       - name: Build Release
         run: |
-          xcodebuild build \
+          .github/scripts/xcodebuild.sh release build \
             -project iosApp/iosApp.xcodeproj \
             -scheme dev \
             -configuration Release \
@@ -64,6 +64,15 @@ jobs:
             -derivedDataPath ${{ runner.temp }}/DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             COMPILATION_CACHE_ENABLE_CACHING=YES
+
+      - name: Upload xcodebuild Logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xcodebuild-logs
+          path: ${{ runner.temp }}/xcodebuild-logs
+          if-no-files-found: ignore
+          retention-days: 5
 
       - name: Save Caches
         uses: ./.github/actions/ios-cache-save

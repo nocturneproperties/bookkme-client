@@ -80,7 +80,7 @@ jobs:
         id: archive
         if: steps.download.outcome != 'success'
         run: |
-          xcodebuild archive \
+          .github/scripts/xcodebuild.sh archive archive \
             -project iosApp/iosApp.xcodeproj \
             -scheme ${{ env.ENV_NAME }} \
             -configuration Release \
@@ -92,6 +92,15 @@ jobs:
             -archivePath ${{ runner.temp }}/BookkMe.xcarchive \
             -exportOptionsPlist iosApp/ExportOptions.plist \
             -exportPath ${{ runner.temp }}/export
+
+      - name: Upload xcodebuild Logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xcodebuild-logs
+          path: ${{ runner.temp }}/xcodebuild-logs
+          if-no-files-found: ignore
+          retention-days: 5
 
       - name: Upload artifact
         if: steps.archive.outcome == 'success'

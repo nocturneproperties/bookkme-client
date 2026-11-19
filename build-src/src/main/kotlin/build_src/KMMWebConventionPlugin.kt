@@ -1,6 +1,7 @@
 package build_src
 
 import build_src.convention.applyCompilerOptions
+import build_src.convention.skipDuplicateJsTestResources
 import build_src.tools.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,7 +13,10 @@ class KMMWebConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             pluginManager.apply(libs.plugins.kotlin.multiplatform.get().pluginId)
-            extensions.getByType<KotlinMultiplatformExtension>().applyCompilerOptions()
+            with(extensions.getByType<KotlinMultiplatformExtension>()) {
+                applyCompilerOptions()
+                skipDuplicateJsTestResources()
+            }
         }
     }
 }

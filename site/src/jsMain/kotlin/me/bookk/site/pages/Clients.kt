@@ -7,13 +7,13 @@ import com.varabyte.kobweb.core.init.InitRoute
 import com.varabyte.kobweb.core.init.InitRouteContext
 import com.varabyte.kobweb.core.layout.Layout
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.site.components.layouts.PageLayoutData
-import me.bookk.site.components.sections.BookingHistorySection
-import me.bookk.site.components.sections.BookingWaysSection
-import me.bookk.site.components.sections.CenteredHero
-import me.bookk.site.components.sections.ClientPrivacySection
-import me.bookk.site.components.sections.ClientPromisesSection
-import me.bookk.site.components.sections.LeavingStatement
+import me.bookk.site.landing.CenteredHero
+import me.bookk.site.landing.clients.BookingHistorySection
+import me.bookk.site.landing.clients.BookingWaysSection
+import me.bookk.site.landing.clients.ClientPrivacySection
+import me.bookk.site.landing.clients.ClientPromisesSection
+import me.bookk.site.landing.clients.LeavingStatement
+import me.bookk.site.layout.PageLayoutData
 import me.bookk.site.resources.SiteRes
 
 @InitRoute
@@ -28,7 +28,7 @@ fun initClientsPage(ctx: InitRouteContext) {
 }
 
 @Page
-@Layout(".components.layouts.PageLayout")
+@Layout(".layout.PageLayout")
 @Composable
 fun ClientsPage() {
     CenteredHero(

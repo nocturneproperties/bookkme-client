@@ -125,7 +125,7 @@ fun MediaPlaceholder(label: StringDesc, frame: MediaFrame, modifier: Modifier = 
 }
 
 @Composable
-fun PhoneFrame(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+private fun PhoneFrame(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Box(
         PhoneFrameStyle
             .toModifier()
@@ -142,7 +142,7 @@ fun PhoneFrame(modifier: Modifier = Modifier, content: @Composable ColumnScope.(
 }
 
 @Composable
-fun BrowserFrame(
+private fun BrowserFrame(
     address: StringDesc?,
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,

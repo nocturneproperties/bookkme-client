@@ -41,9 +41,6 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Text
 
-private const val BUTTON_TRANSITION_MS = 150
-private const val HOVER_BRIGHTNESS = 1.12
-private const val PRESSED_SCALE = 0.97
 private const val TEXT_HOVER_OPACITY = 0.75
 
 val ActionButtonStyle = CssStyle {
@@ -65,8 +62,8 @@ val ActionButtonStyle = CssStyle {
                 Transition.of("transform", BUTTON_TRANSITION_MS.ms),
             )
     }
-    cssRule(":hover:not(:disabled)") { Modifier.filter(brightness(HOVER_BRIGHTNESS)) }
-    cssRule(":active:not(:disabled)") { Modifier.scale(PRESSED_SCALE) }
+    cssRule(":hover:not(:disabled)") { Modifier.filter(brightness(BUTTON_HOVER_BRIGHTNESS)) }
+    cssRule(":active:not(:disabled)") { Modifier.scale(BUTTON_PRESSED_SCALE) }
     disabled {
         val colors = colorMode.webColors()
         Modifier

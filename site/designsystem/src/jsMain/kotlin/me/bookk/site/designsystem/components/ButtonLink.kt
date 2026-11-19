@@ -40,10 +40,6 @@ import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.ms
 
-private const val BUTTON_TRANSITION_MS = 150
-private const val HOVER_BRIGHTNESS = 1.12
-private const val PRESSED_SCALE = 0.97
-
 enum class ButtonLinkVariant {
     FILLED,
     TONAL,
@@ -54,7 +50,7 @@ val FilledButtonLinkVariant = LinkStyle.addVariant {
     buttonLink(
         ColorToken.ButtonActive.resolve(colors),
         ColorToken.OnAction.resolve(colors),
-        Modifier.filter(brightness(HOVER_BRIGHTNESS)),
+        Modifier.filter(brightness(BUTTON_HOVER_BRIGHTNESS)),
     )
 }
 
@@ -110,5 +106,5 @@ private fun CssStyleScope.buttonLink(background: Color, content: Color, hoverEff
             .textDecorationLine(TextDecorationLine.None)
             .then(hoverEffect)
     }
-    active { Modifier.scale(PRESSED_SCALE) }
+    active { Modifier.scale(BUTTON_PRESSED_SCALE) }
 }

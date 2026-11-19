@@ -21,7 +21,6 @@ import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.site.components.layouts.PageLayoutData
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
 import me.bookk.site.designsystem.components.TextBlock
@@ -32,6 +31,8 @@ import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.designsystem.theme.active
 import me.bookk.site.designsystem.theme.secondary
+import me.bookk.site.layout.PageLayoutData
+import me.bookk.site.navigation.SiteNavigation
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.cssRem
 
@@ -55,7 +56,7 @@ fun initGuidesPage(ctx: InitRouteContext) {
 }
 
 @Page
-@Layout(".components.layouts.PageLayout")
+@Layout(".layout.PageLayout")
 @Composable
 fun GuidesPage() {
     Column(
@@ -77,7 +78,7 @@ fun GuidesPage() {
         )
         TextLink(
             SiteRes.strings.site_guides_contact_link.desc(),
-            WebLocalization.localize("/contact"),
+            WebLocalization.localize(SiteNavigation.CONTACT_PATH),
             BodyMediumTextStyle
                 .toModifier()
                 .active(),

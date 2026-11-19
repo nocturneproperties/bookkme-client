@@ -5,7 +5,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.site.designsystem.resources.AppLanguage
-import me.bookk.site.routing.localizedPageRoutes
+import me.bookk.site.navigation.localizedPageRoutes
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

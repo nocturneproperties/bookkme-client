@@ -17,10 +17,8 @@ import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.site.components.layouts.PageLayoutData
-import me.bookk.site.components.sections.FeatureGrid
-import me.bookk.site.components.widgets.ContactChannelRow
-import me.bookk.site.content.ContactContent
+import me.bookk.site.contact.ContactChannelRow
+import me.bookk.site.contact.ContactContent
 import me.bookk.site.designsystem.components.Band
 import me.bookk.site.designsystem.components.DividedRows
 import me.bookk.site.designsystem.components.Heading
@@ -35,6 +33,8 @@ import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.site.designsystem.theme.active
 import me.bookk.site.designsystem.theme.secondary
+import me.bookk.site.landing.FeatureGrid
+import me.bookk.site.layout.PageLayoutData
 import me.bookk.site.legal.LegalDocument
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.FlexWrap
@@ -44,7 +44,7 @@ val ContactHeaderStyle = CssStyle.base {
     Modifier.gap(0.75.cssRem)
 }
 
-val LegalDocumentsStyle = CssStyle.base {
+val LegalDocumentLinksStyle = CssStyle.base {
     Modifier
         .gap(1.cssRem)
         .margin(top = 3.cssRem)
@@ -62,7 +62,7 @@ fun initContactPage(ctx: InitRouteContext) {
 }
 
 @Page
-@Layout(".components.layouts.PageLayout")
+@Layout(".layout.PageLayout")
 @Composable
 fun ContactPage() {
     Band {
@@ -82,7 +82,7 @@ fun ContactPage() {
         DividedRows {
             ContactContent.channels.forEach { ContactChannelRow(it) }
         }
-        LegalDocuments()
+        LegalDocumentLinks()
     }
 }
 
@@ -105,8 +105,8 @@ private fun ContactHeader() {
 }
 
 @Composable
-private fun LegalDocuments() {
-    Column(LegalDocumentsStyle.toModifier()) {
+private fun LegalDocumentLinks() {
+    Column(LegalDocumentLinksStyle.toModifier()) {
         Heading(
             SiteRes.strings.site_contact_legal_links_title.desc(),
             HeadingLevel.H2,

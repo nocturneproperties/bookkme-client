@@ -7,16 +7,16 @@ import com.varabyte.kobweb.core.init.InitRoute
 import com.varabyte.kobweb.core.init.InitRouteContext
 import com.varabyte.kobweb.core.layout.Layout
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.site.components.layouts.PageLayoutData
-import me.bookk.site.components.sections.BusinessHeroActions
-import me.bookk.site.components.sections.BusinessHeroVisual
-import me.bookk.site.components.sections.CenteredHero
-import me.bookk.site.components.sections.FeaturesSection
-import me.bookk.site.components.sections.LaunchSection
-import me.bookk.site.components.sections.PhilosophySection
-import me.bookk.site.components.sections.PrivacySection
-import me.bookk.site.components.sections.Statement
-import me.bookk.site.components.sections.StepsSection
+import me.bookk.site.landing.CenteredHero
+import me.bookk.site.landing.Statement
+import me.bookk.site.landing.business.BusinessHeroActions
+import me.bookk.site.landing.business.BusinessHeroVisual
+import me.bookk.site.landing.business.FeaturesSection
+import me.bookk.site.landing.business.LaunchSection
+import me.bookk.site.landing.business.PhilosophySection
+import me.bookk.site.landing.business.PrivacySection
+import me.bookk.site.landing.business.StepsSection
+import me.bookk.site.layout.PageLayoutData
 import me.bookk.site.resources.SiteRes
 
 @InitRoute
@@ -25,7 +25,7 @@ fun initHomePage(ctx: InitRouteContext) {
 }
 
 @Page
-@Layout(".components.layouts.PageLayout")
+@Layout(".layout.PageLayout")
 @Composable
 fun HomePage() {
     CenteredHero(

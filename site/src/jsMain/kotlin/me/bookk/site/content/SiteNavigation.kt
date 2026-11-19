@@ -15,13 +15,25 @@ class SiteLink(
 enum class LandingSection(
     val id: String,
 ) {
+    HOW("how"),
+    PHILOSOPHY("philosophy"),
+    BOOKING("booking"),
     FEATURES("features"),
     PRIVACY("privacy"),
 }
 
 object SiteNavigation {
     const val ORIGIN = SiteBuildConfig.ORIGIN
+    const val HOME_PATH = "/"
+    const val CLIENTS_PATH = "/clients"
     const val GUIDES_PATH = "/guides"
+    const val CONTACT_PATH = "/contact"
+    const val PRIVACY_PATH = "/privacy"
+
+    val audiences = listOf(
+        SiteLink(SiteRes.strings.site_nav_business.desc(), HOME_PATH),
+        SiteLink(SiteRes.strings.site_nav_clients.desc(), CLIENTS_PATH),
+    )
 
     val header = listOf(
         SiteLink(SiteRes.strings.site_nav_guides.desc(), GUIDES_PATH),
@@ -29,24 +41,36 @@ object SiteNavigation {
     )
 
     val footer = listOf(
-        SiteLink(SiteRes.strings.site_privacy_policy.desc(), "/privacy"),
+        SiteLink(SiteRes.strings.site_privacy_policy.desc(), PRIVACY_PATH),
         SiteLink(SiteRes.strings.site_terms_of_service.desc(), "/terms"),
         contact(),
     )
 
     private const val SOURCE_ORIGIN = "https://github.com/nocturneproperties"
 
+    val appSource =
+        SiteLink(SiteRes.strings.site_footer_app_source.desc(), "$SOURCE_ORIGIN/bookkme-client")
+
+    val serverSource =
+        SiteLink(SiteRes.strings.site_footer_server_source.desc(), "$SOURCE_ORIGIN/bookkme")
+
+    val selfHosting = SiteLink(
+        SiteRes.strings.site_footer_self_hosting.desc(),
+        "$SOURCE_ORIGIN/bookkme-client/blob/main/LICENSE-SELF-HOSTING.md",
+    )
+
     val source = listOf(
-        SiteLink(SiteRes.strings.site_footer_app_source.desc(), "$SOURCE_ORIGIN/bookkme-client"),
-        SiteLink(SiteRes.strings.site_footer_server_source.desc(), "$SOURCE_ORIGIN/bookkme"),
+        appSource,
+        serverSource,
         SiteLink(
             SiteRes.strings.site_footer_license.desc(),
             "$SOURCE_ORIGIN/bookkme-client/blob/main/LICENSE",
         ),
+        selfHosting,
     )
 
     private fun contact(): SiteLink {
-        return SiteLink(SiteRes.strings.site_nav_contact.desc(), "/contact")
+        return SiteLink(SiteRes.strings.site_nav_contact.desc(), CONTACT_PATH)
     }
 
     fun copyright(): StringDesc {

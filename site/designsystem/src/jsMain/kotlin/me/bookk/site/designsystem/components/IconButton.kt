@@ -29,6 +29,7 @@ fun IconButton(
     onClick: () -> Unit,
     description: StringDesc? = null,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val label = description?.localized()
@@ -39,6 +40,7 @@ fun IconButton(
             .attrsModifier { label?.let { attr("aria-label", it) } }
             .then(modifier),
         variant = CircleButtonVariant,
+        enabled = enabled,
     ) {
         content()
     }

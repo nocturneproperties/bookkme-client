@@ -15,6 +15,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.padding
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.navigation.Link
 import com.varabyte.kobweb.silk.components.navigation.UncoloredLinkVariant
 import com.varabyte.kobweb.silk.components.navigation.UndecoratedLinkVariant
@@ -28,9 +29,12 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.site.components.widgets.Logo
 import me.bookk.site.content.SiteNavigation
 import me.bookk.site.designsystem.components.ColorModeButton
+import me.bookk.site.designsystem.components.ContentMaxWidth
 import me.bookk.site.designsystem.components.LanguagePicker
 import me.bookk.site.designsystem.components.NavigationBar
 import me.bookk.site.designsystem.components.NavigationMenuButton
+import me.bookk.site.designsystem.components.SegmentedLinkItem
+import me.bookk.site.designsystem.components.SegmentedLinks
 import me.bookk.site.designsystem.components.TextLink
 import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.theme.LabelMediumTextStyle
@@ -43,7 +47,7 @@ private val CompactNavigationBreakpoint = Breakpoint.MD
 val NavBarStyle = CssStyle.base {
     Modifier
         .fillMaxWidth()
-        .maxWidth(64.cssRem)
+        .maxWidth(ContentMaxWidth)
         .fillMaxHeight()
         .padding(leftRight = 1.cssRem)
         .gap(2.cssRem)
@@ -60,6 +64,7 @@ fun NavHeader() {
         bar = {
             Row(NavBarStyle.toModifier(), verticalAlignment = Alignment.CenterVertically) {
                 HomeLink()
+                AudienceSwitch()
                 SectionLinks()
                 Spacer()
                 LanguagePicker(SiteRes.strings.site_language.desc())
@@ -73,7 +78,7 @@ fun NavHeader() {
             }
         },
         menu = {
-            SiteNavigation.header.forEach {
+            (SiteNavigation.audiences + SiteNavigation.header).forEach {
                 TextLink(
                     it.title,
                     WebLocalization.localize(it.path),
@@ -92,6 +97,20 @@ private fun HomeLink() {
     ) {
         Logo(Modifier.height(1.5.cssRem))
     }
+}
+
+@Composable
+private fun AudienceSwitch() {
+    val path = rememberPageContext().route.path
+    val items = SiteNavigation.audiences.map {
+        val localizedPath = WebLocalization.localize(it.path)
+        SegmentedLinkItem(it.title, localizedPath, localizedPath == path)
+    }
+    SegmentedLinks(
+        SiteRes.strings.site_nav_audience.desc(),
+        items,
+        Modifier.displayIfAtLeast(CompactNavigationBreakpoint),
+    )
 }
 
 @Composable

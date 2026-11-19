@@ -24,6 +24,7 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.site.content.SiteLink
 import me.bookk.site.content.SiteNavigation
+import me.bookk.site.designsystem.components.ContentMaxWidth
 import me.bookk.site.designsystem.components.TextBlock
 import me.bookk.site.designsystem.components.TextLink
 import me.bookk.site.designsystem.components.VerticalDivider
@@ -49,7 +50,7 @@ val FooterStyle = CssStyle.base {
 val FooterContentStyle = CssStyle.base {
     Modifier
         .fillMaxWidth()
-        .maxWidth(64.cssRem)
+        .maxWidth(ContentMaxWidth)
         .gap(0.75.cssRem)
 }
 

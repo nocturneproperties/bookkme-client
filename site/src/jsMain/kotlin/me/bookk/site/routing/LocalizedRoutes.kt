@@ -8,8 +8,10 @@ import com.varabyte.kobweb.core.isExporting
 import com.varabyte.kobweb.navigation.InitRouteMethod
 import com.varabyte.kobweb.navigation.Router
 import me.bookk.site.components.layouts.PAGE_LAYOUT_ID
+import me.bookk.site.content.SiteNavigation
 import me.bookk.site.designsystem.resources.AppLanguage
 import me.bookk.site.designsystem.resources.WebLocalization
+import me.bookk.site.pages.ClientsPage
 import me.bookk.site.pages.ContactPage
 import me.bookk.site.pages.DpaPage
 import me.bookk.site.pages.GuidesPage
@@ -18,6 +20,7 @@ import me.bookk.site.pages.PrivacyPage
 import me.bookk.site.pages.TermsPage
 import me.bookk.site.pages.dpa.DpaVersionPage
 import me.bookk.site.pages.dpa.initDpaVersionPage
+import me.bookk.site.pages.initClientsPage
 import me.bookk.site.pages.initContactPage
 import me.bookk.site.pages.initDpaPage
 import me.bookk.site.pages.initGuidesPage
@@ -37,6 +40,7 @@ private class LocalizedPage(
 
 private val localizedPages = listOf(
     LocalizedPage("/", ::initHomePage) { HomePage() },
+    LocalizedPage(SiteNavigation.CLIENTS_PATH, ::initClientsPage) { ClientsPage() },
     LocalizedPage("/guides", ::initGuidesPage) { GuidesPage() },
     LocalizedPage("/contact", ::initContactPage) { ContactPage() },
     LocalizedPage("/privacy", ::initPrivacyPage) { PrivacyPage() },

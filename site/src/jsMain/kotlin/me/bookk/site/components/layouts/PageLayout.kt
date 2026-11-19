@@ -1,10 +1,12 @@
 package me.bookk.site.components.layouts
 
 import androidx.compose.runtime.Composable
+import com.varabyte.kobweb.compose.css.AlignItems
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.ColumnScope
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.alignItems
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
@@ -18,11 +20,13 @@ import com.varabyte.kobweb.core.layout.Layout
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
+import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.site.components.sections.Footer
 import me.bookk.site.components.sections.NavHeader
 import me.bookk.site.content.SiteNavigation
+import me.bookk.site.designsystem.components.ContentMaxWidth
 import me.bookk.site.designsystem.components.HeadTags
 import me.bookk.site.designsystem.resources.AppLanguage
 import me.bookk.site.designsystem.resources.LanguageLinks
@@ -30,6 +34,10 @@ import me.bookk.site.designsystem.resources.PageMeta
 import me.bookk.site.designsystem.resources.PageMetaTags
 import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.resources.localized
+import me.bookk.site.designsystem.theme.BandTone
+import me.bookk.site.designsystem.theme.surfaceColors
+import me.bookk.site.designsystem.theme.surfaces
+import me.bookk.site.designsystem.theme.webColors
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.vh
@@ -39,14 +47,21 @@ const val PAGE_LAYOUT_ID = "me.bookk.site.components.layouts.PageLayout"
 val PageContentStyle = CssStyle.base {
     Modifier
         .fillMaxWidth()
-        .maxWidth(64.cssRem)
+        .maxWidth(ContentMaxWidth)
         .padding(leftRight = 1.cssRem, bottom = 4.cssRem)
+}
+
+val FullWidthPageContentStyle = CssStyle.base {
+    Modifier
+        .fillMaxWidth()
+        .alignItems(AlignItems.Center)
 }
 
 class PageLayoutData(
     val title: StringDesc,
     val description: StringDesc = SiteRes.strings.site_description.desc(),
     val isIndexed: Boolean = true,
+    val isFullWidth: Boolean = false,
 ) {
     companion object {
         fun notFound(): PageLayoutData {
@@ -63,16 +78,19 @@ fun initPageLayout(ctx: InitRouteContext) {
 @Composable
 @Layout
 fun PageLayout(ctx: PageContext, content: @Composable ColumnScope.() -> Unit) {
-    PageHead(ctx.data.getValue(), ctx.route.path)
+    val data: PageLayoutData = ctx.data.getValue()
+    val contentStyle = if (data.isFullWidth) FullWidthPageContentStyle else PageContentStyle
+    PageHead(data, ctx.route.path)
     Column(
         Modifier
             .fillMaxWidth()
-            .minHeight(100.vh),
+            .minHeight(100.vh)
+            .surfaceColors(BandTone.PLAIN.surfaces(), ColorMode.current.webColors()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         NavHeader()
         Column(
-            PageContentStyle
+            contentStyle
                 .toModifier()
                 .flexGrow(1),
         ) {

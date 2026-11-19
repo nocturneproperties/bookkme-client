@@ -91,8 +91,6 @@
     <string name="site_guides_contact_link">Звʼяжіться з нами</string>
     <string name="site_contact_title">Звʼяжіться з нами</string>
     <string name="site_contact_description">Як звʼязатися з BookkMe: підтримка, питання конфіденційності та правові питання, безпека.</string>
-    <string name="site_contact_guides_question">Питання про те, як працює застосунок чи сервіс?</string>
-    <string name="site_contact_guides_link">Найімовірніше, відповідь є в наших посібниках.</string>
     <string name="site_contact_support_title">Підтримка</string>
     <string name="site_contact_support_description">Допомога із застосунком і вашим акаунтом.</string>
     <string name="site_contact_support_topic_app">Питання щодо користування BookkMe, повідомлення про помилки та відгуки</string>
@@ -103,7 +101,7 @@
     <string name="site_contact_legal_description">Ваші персональні дані та наші юридичні документи.</string>
     <string name="site_contact_legal_topic_policy">Питання щодо Політики конфіденційності та обробки ваших даних</string>
     <string name="site_contact_legal_topic_rights">Запити на доступ, виправлення, експорт або видалення ваших даних, а також відкликання згоди</string>
-    <string name="site_contact_legal_topic_deletion">Видалення акаунта, якщо ви більше не можете користуватися застосунком. Пишіть з адреси електронної пошти вашого акаунта.</string>
+    <string name="site_contact_legal_topic_deletion">Видалення акаунта, якщо ви більше не можете користуватися застосунком</string>
     <string name="site_contact_legal_topic_businesses">Питання та інструкції бізнесів щодо обробки даних</string>
     <string name="site_contact_appointment_question">Питання щодо конкретного запису?</string>
     <string name="site_contact_appointment_answer">Звʼяжіться з бізнесом напряму: він сам веде свій розклад і дані клієнтів.</string>
@@ -161,4 +159,12 @@
     <string name="site_opinion_runs_marketplace">Типовий маркетплейс працює лише на власних серверах.</string>
     <string name="site_opinion_data_marketplace">З типовим маркетплейсом доводиться вірити платформі на слово.</string>
     <string name="site_opinion_leaving_marketplace">Якщо підете з типового маркетплейсу, ваші клієнти та історія залишаться там.</string>
+    <string name="site_contact_before_title">Перш ніж написати</string>
+    <string name="site_contact_tip_deletion_title">Видаляєте акаунт?</string>
+    <string name="site_contact_tip_deletion_description">Пишіть з адреси електронної пошти вашого акаунта, щоб ми знали, що це ви.</string>
+    <string name="site_contact_tip_sensitive_title">Не надсилайте чутливих даних</string>
+    <string name="site_contact_support_action">Написати в підтримку</string>
+    <string name="site_contact_legal_action">Написати з питань конфіденційності</string>
+    <string name="site_contact_security_action">Написати з питань безпеки</string>
+    <string name="site_contact_subtitle">Питання щодо застосунку, ваших даних чи безпеки? Оберіть відповідну адресу нижче.</string>
 </resources>

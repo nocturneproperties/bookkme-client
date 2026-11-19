@@ -162,7 +162,7 @@ fun LandingBand(
     tone: BandTone = BandTone.PLAIN,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Band(section.anchor(), tone, content)
+    Band(section.anchor(), tone, content = content)
 }
 
 @Composable
@@ -171,7 +171,7 @@ fun FullBleedLandingBand(
     tone: BandTone = BandTone.PLAIN,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    BandSurface(section.anchor(), tone, content)
+    BandSurface(section.anchor(), tone, content = content)
 }
 
 private fun LandingSection?.anchor(): Modifier {

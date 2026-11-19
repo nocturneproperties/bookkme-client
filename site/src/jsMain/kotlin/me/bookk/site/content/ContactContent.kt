@@ -8,6 +8,7 @@ class ContactChannel(
     val id: String,
     val title: StringDesc,
     val description: StringDesc,
+    val action: StringDesc,
     val email: String,
     val topics: List<StringDesc>,
 )
@@ -18,11 +19,27 @@ object ContactContent {
 
     private const val SECURITY_EMAIL = "security@bookkme.com"
 
+    val tips = listOf(
+        Feature(
+            SiteRes.strings.site_contact_appointment_question.desc(),
+            SiteRes.strings.site_contact_appointment_answer.desc(),
+        ),
+        Feature(
+            SiteRes.strings.site_contact_tip_deletion_title.desc(),
+            SiteRes.strings.site_contact_tip_deletion_description.desc(),
+        ),
+        Feature(
+            SiteRes.strings.site_contact_tip_sensitive_title.desc(),
+            SiteRes.strings.site_contact_note_sensitive.desc(),
+        ),
+    )
+
     val channels = listOf(
         ContactChannel(
             "support",
             SiteRes.strings.site_contact_support_title.desc(),
             SiteRes.strings.site_contact_support_description.desc(),
+            SiteRes.strings.site_contact_support_action.desc(),
             SUPPORT_EMAIL,
             listOf(
                 SiteRes.strings.site_contact_support_topic_app.desc(),
@@ -35,6 +52,7 @@ object ContactContent {
             "legal",
             SiteRes.strings.site_contact_legal_title.desc(),
             SiteRes.strings.site_contact_legal_description.desc(),
+            SiteRes.strings.site_contact_legal_action.desc(),
             LEGAL_EMAIL,
             listOf(
                 SiteRes.strings.site_contact_legal_topic_policy.desc(),
@@ -47,6 +65,7 @@ object ContactContent {
             "security",
             SiteRes.strings.site_contact_security_title.desc(),
             SiteRes.strings.site_contact_security_description.desc(),
+            SiteRes.strings.site_contact_security_action.desc(),
             SECURITY_EMAIL,
             listOf(
                 SiteRes.strings.site_contact_security_topic_vulnerabilities.desc(),
@@ -54,10 +73,4 @@ object ContactContent {
             ),
         ),
     )
-
-    val appointmentQuestion = SiteRes.strings.site_contact_appointment_question.desc()
-
-    val appointmentAnswer = SiteRes.strings.site_contact_appointment_answer.desc()
-
-    val sensitiveNote = SiteRes.strings.site_contact_note_sensitive.desc()
 }

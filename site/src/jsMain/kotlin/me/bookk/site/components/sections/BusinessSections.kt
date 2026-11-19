@@ -49,6 +49,8 @@ import me.bookk.site.content.StepIllustration
 import me.bookk.site.designsystem.components.ButtonLink
 import me.bookk.site.designsystem.components.ButtonLinkVariant
 import me.bookk.site.designsystem.components.CardGallery
+import me.bookk.site.designsystem.components.DividedRow
+import me.bookk.site.designsystem.components.DividedRows
 import me.bookk.site.designsystem.components.GalleryNavigation
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
@@ -134,22 +136,6 @@ val SplitAsideStyle = CssStyle.base {
         .flexShrink(1)
         .flexBasis(15.cssRem)
         .minWidth(0.px)
-}
-
-val OpinionListStyle = CssStyle.base {
-    Modifier
-        .fillMaxWidth()
-        .borderTop(1.px, LineStyle.Solid, ColorToken.Divider.resolve(colorMode.webColors()))
-}
-
-val OpinionRowStyle = CssStyle.base {
-    Modifier
-        .fillMaxWidth()
-        .gap(1.25.cssRem)
-        .padding(topBottom = 1.75.cssRem)
-        .flexWrap(FlexWrap.Wrap)
-        .justifyContent(JustifyContent.SpaceBetween)
-        .borderBottom(1.px, LineStyle.Solid, ColorToken.Divider.resolve(colorMode.webColors()))
 }
 
 val OpinionTextStyle = CssStyle.base {
@@ -280,7 +266,7 @@ fun PhilosophySection() {
             SiteRes.strings.site_philosophy_title.desc(),
             SiteRes.strings.site_philosophy_subtitle.desc(),
         )
-        Column(OpinionListStyle.toModifier()) {
+        DividedRows {
             LandingContent.opinions.forEach { OpinionRow(it) }
         }
     }
@@ -288,7 +274,7 @@ fun PhilosophySection() {
 
 @Composable
 private fun OpinionRow(opinion: Opinion) {
-    Row(OpinionRowStyle.toModifier(), verticalAlignment = Alignment.CenterVertically) {
+    DividedRow {
         Column(OpinionTextStyle.toModifier()) {
             Heading(opinion.title, HeadingLevel.H3, HeadlineSmallTextStyle.toModifier())
             TextBlock(

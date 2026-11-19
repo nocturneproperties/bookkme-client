@@ -91,8 +91,6 @@
     <string name="site_guides_contact_link">Contact us</string>
     <string name="site_contact_title">Contact us</string>
     <string name="site_contact_description">How to reach BookkMe: support, privacy and legal questions, and security.</string>
-    <string name="site_contact_guides_question">Questions about how the app or service works?</string>
-    <string name="site_contact_guides_link">You’ll most likely find the answer in our guides.</string>
     <string name="site_contact_support_title">Support</string>
     <string name="site_contact_support_description">Help with the app and your account.</string>
     <string name="site_contact_support_topic_app">Questions about using BookkMe, bug reports and feedback</string>
@@ -103,7 +101,7 @@
     <string name="site_contact_legal_description">Your personal data and our legal documents.</string>
     <string name="site_contact_legal_topic_policy">Questions about the Privacy Policy and how we handle your data</string>
     <string name="site_contact_legal_topic_rights">Requests to access, correct, export or delete your data, or to withdraw consent</string>
-    <string name="site_contact_legal_topic_deletion">Deleting your account when you can no longer use the app. Write from your account’s email address.</string>
+    <string name="site_contact_legal_topic_deletion">Deleting your account when you can no longer use the app</string>
     <string name="site_contact_legal_topic_businesses">Data processing questions and instructions from businesses</string>
     <string name="site_contact_appointment_question">Have a question about a specific appointment?</string>
     <string name="site_contact_appointment_answer">Contact the business directly: it manages its own schedule and client records.</string>
@@ -161,4 +159,12 @@
     <string name="site_opinion_runs_marketplace">A typical marketplace runs only on its own servers.</string>
     <string name="site_opinion_data_marketplace">With a typical marketplace, you take the platform’s word for it.</string>
     <string name="site_opinion_leaving_marketplace">Leave a typical marketplace, and your clients and history stay behind.</string>
+    <string name="site_contact_before_title">Before you write</string>
+    <string name="site_contact_tip_deletion_title">Deleting your account?</string>
+    <string name="site_contact_tip_deletion_description">Write from your account’s email address, so we know it’s you.</string>
+    <string name="site_contact_tip_sensitive_title">Leave out sensitive details</string>
+    <string name="site_contact_support_action">Email support</string>
+    <string name="site_contact_legal_action">Email privacy and legal</string>
+    <string name="site_contact_security_action">Email security</string>
+    <string name="site_contact_subtitle">Questions about the app, your data or security? Pick the address below that fits.</string>
 </resources>

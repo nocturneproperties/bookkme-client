@@ -43,13 +43,23 @@ val BandStyle = CssStyle {
     Breakpoint.MD { Modifier.padding(topBottom = 6.5.cssRem) }
 }
 
+val CompactBandStyle = CssStyle {
+    base {
+        Modifier
+            .fillMaxWidth()
+            .padding(topBottom = 2.5.cssRem)
+    }
+    Breakpoint.MD { Modifier.padding(topBottom = 3.5.cssRem) }
+}
+
 @Composable
 fun Band(
     modifier: Modifier = Modifier,
     tone: BandTone = BandTone.PLAIN,
+    isCompact: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    BandSurface(modifier, tone) {
+    BandSurface(modifier, tone, isCompact) {
         SectionContainer(content = content)
     }
 }
@@ -58,14 +68,16 @@ fun Band(
 fun BandSurface(
     modifier: Modifier = Modifier,
     tone: BandTone = BandTone.PLAIN,
+    isCompact: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val spacing = if (isCompact) CompactBandStyle else BandStyle
     val pageMode = ColorMode.current
     val bandMode = tone.colorMode(pageMode)
     val colors = bandMode.webColors()
     val surfaces = tone.surfaces()
     Surface(
-        BandStyle
+        spacing
             .toModifier()
             .backgroundColor(surfaces.background.resolve(colors))
             .color(ColorToken.PrimaryText.resolve(colors))

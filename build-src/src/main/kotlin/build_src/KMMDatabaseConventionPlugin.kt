@@ -23,14 +23,23 @@ class KMMDatabaseConventionPlugin : Plugin<Project> {
                 applyConvention(target)
                 sourceSets.commonMain.dependencies {
                     implementation(libs.room.runtime)
+                    implementation(libs.room.sqlite.async)
+                }
+                sourceSets.androidMain.dependencies {
                     implementation(libs.room.sqlite)
+                }
+                sourceSets.iosMain.dependencies {
+                    implementation(libs.room.sqlite)
+                }
+                sourceSets.jsMain.dependencies {
+                    implementation(libs.room.sqlite.web)
                 }
             }
             dependencies {
                 add("kspAndroid", libs.room.compiler)
                 add("kspIosSimulatorArm64", libs.room.compiler)
-                add("kspIosX64", libs.room.compiler)
                 add("kspIosArm64", libs.room.compiler)
+                add("kspJs", libs.room.compiler)
             }
         }
     }

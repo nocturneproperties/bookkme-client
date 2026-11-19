@@ -9,5 +9,8 @@ interface CreateClient {
         class EmailTaken :
             Exception(),
             Error
+        class ClientsLimitReached :
+            Exception(),
+            Error
     }
 }

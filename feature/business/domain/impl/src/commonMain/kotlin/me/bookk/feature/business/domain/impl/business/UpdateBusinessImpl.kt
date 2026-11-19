@@ -45,6 +45,10 @@ internal class UpdateBusinessImpl(
                         throw UpdateBusiness.Error.ActiveDayWithoutWorkHours()
                     }
 
+                    BusinessErrorCodes.BUSINESS_EMPTY_WORK_HOUR_RANGE -> {
+                        throw UpdateBusiness.Error.EmptyWorkHourRange()
+                    }
+
                     BusinessErrorCodes.BUSINESS_INVALID_DAY_OFF_RANGE -> {
                         throw UpdateBusiness.Error.InvalidDayOffRange()
                     }

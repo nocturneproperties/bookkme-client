@@ -33,6 +33,7 @@
     <string name="business_dashboard_switch_join_error_empty_code">Введите код приглашения</string>
     <string name="business_dashboard_switch_join_error_already_processed">Это приглашение уже использовано или больше не действительно</string>
     <string name="business_dashboard_switch_join_error_employee_exists">Вы уже являетесь сотрудником этого бизнеса</string>
+    <string name="business_dashboard_switch_join_error_employees_limit">В этом бизнесе уже максимальное количество сотрудников.</string>
 
     <string name="business_settings_title">Настройки бизнеса</string>
     <string name="business_settings_add_photo">Добавить фото</string>
@@ -80,10 +81,11 @@
     <string name="business_plugins_appointments_clients_item2_sub">Учтите, что клиент может отказаться от любых уведомлений</string>
     <string name="business_plugins_demo">Нажмите здесь, чтобы посмотреть демо, узнать, как это работает, и решить, подходит ли это вам.</string>
     <string name="business_settings_active_day_without_work_hours_error">В рабочем дне должен быть хотя бы один рабочий час</string>
+    <string name="business_settings_empty_work_hour_range_error">Рабочий интервал не может начинаться и заканчиваться в одно и то же время</string>
     <string name="business_settings_invalid_day_off_range_error">Дата начала выходных должна быть раньше даты окончания</string>
     <string name="business_analytics_coming_soon_title">Аналитика скоро появится</string>
     <string name="business_analytics_coming_soon_message">Мы готовим отчёты по вашей выручке, записям и клиентам. Они появятся здесь в одном из следующих обновлений.</string>
-    <string name="create_business_already_exists_error">Этот бизнес уже существует. Обновите список бизнесов и повторите попытку.</string>
+    <string name="create_business_limit_reached_error">Вы уже владеете максимальным количеством бизнесов.</string>
     <string name="create_business_invalid_name_error">Введите корректное название бизнеса.</string>
     <string name="business_settings_currency_locked_error">Валюту этого бизнеса больше нельзя изменить.</string>
     <string name="business_settings_retention_title">Срок хранения данных клиентов</string>

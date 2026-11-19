@@ -68,7 +68,6 @@ private fun ViewModel.launchListLoad(
             if (retriedBanner != null) listState.bannerError = retriedBanner
             when (val notification = error.notification()) {
                 PresentationNotification.Ignore -> {
-                    Unit
                 }
 
                 PresentationNotification.Unauthorized -> {

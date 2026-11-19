@@ -8,5 +8,19 @@
       "Bash(echo:*)",
       "Bash(grep:*)"
     ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/spotless-stop.sh",
+            "timeout": 300,
+            "statusMessage": "Checking Spotless..."
+          }
+        ]
+      }
+    ]
   }
 }

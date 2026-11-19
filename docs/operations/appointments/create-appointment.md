@@ -27,8 +27,10 @@ flowchart TD
     Net -- business error --> Code{errorCode}
     Code -- 300013 / 300017 / 300014 / 200013 --> Refresh
     Code -- 300004 --> Overlap([throw Error.AppointmentOverlap])
-    Code -- 300002 --> Time([throw Error.TimeIsNotAllowed])
-    Code -- 300003 --> Date([throw Error.DateIsNotAllowed])
+    Code -- 300002 BUSINESS_TIME_NOT_ALLOWED --> Time([throw Error.TimeIsNotAllowed])
+    Code -- 300003 BUSINESS_DATE_NOT_ALLOWED --> Date([throw Error.DateIsNotAllowed])
+    Code -- 300027 EMPLOYEE_DATE_NOT_ALLOWED --> EmployeeDate([throw Error.EmployeeDateIsNotAllowed])
+    Code -- 300028 EMPLOYEE_TIME_NOT_ALLOWED --> EmployeeTime([throw Error.EmployeeTimeIsNotAllowed])
     Code -- 300012 --> Past([throw Error.DateInPast])
     Code -- 300016 --> Used([throw Error.OfferAlreadyUsed])
     Code -- 200014 --> EmptyError
@@ -37,6 +39,10 @@ flowchart TD
     Code -- 200033 --> Suspended([throw Error.EmployeeSuspended])
     Code -- other --> Other([propagate])
 ```
+
+The backend checks the slot against the business schedule first, then the booked employee's schedule,
+so an employee error means the slot is inside business hours. A working range whose end is before its start
+runs past midnight. The creation screen shows both kinds of error inline on the date or time field.
 
 Duplicate service selections become positive counts; the quote requests each id once. Quote mismatches
 and quote-related booking races refresh backend services before returning the mismatch error. If that

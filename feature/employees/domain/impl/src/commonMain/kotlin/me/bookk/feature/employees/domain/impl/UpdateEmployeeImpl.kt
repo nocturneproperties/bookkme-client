@@ -32,6 +32,10 @@ internal class UpdateEmployeeImpl(
                         throw Error.ActiveDayWithoutWorkHours(error)
                     }
 
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEE_EMPTY_WORK_HOUR_RANGE -> {
+                        throw Error.EmptyWorkHourRange(error)
+                    }
+
                     EmployeeErrorCodes.BUSINESS_EMPLOYEE_INVALID_DAY_OFF_RANGE -> {
                         throw Error.InvalidDayOffRange(error)
                     }

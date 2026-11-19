@@ -49,4 +49,16 @@ class ValidateEmailImplTest {
         then()
         assertEquals(ValidateEmail.Result.Valid, result)
     }
+
+    @Test
+    fun `rejects an email with an ip address domain`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val result = fixture.sut("john@[192.168.0.1]")
+
+        then()
+        assertEquals(ValidateEmail.Result.Invalid.Format, result)
+    }
 }

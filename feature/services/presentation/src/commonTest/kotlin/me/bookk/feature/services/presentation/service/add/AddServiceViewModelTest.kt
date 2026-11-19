@@ -334,6 +334,8 @@ class AddServiceViewModelTest {
                 ServicesRes.strings.services_group_not_found_error,
             CreateService.Error.InvalidPricePrecision() to
                 ServicesRes.strings.services_price_precision_error,
+            CreateService.Error.ServicesLimitReached() to
+                ServicesRes.strings.services_limit_reached_error,
         ).forEach { (error, expected) ->
             given()
             val fixture = Fixture()

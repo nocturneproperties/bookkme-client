@@ -56,10 +56,22 @@ class PasskeyViewModel(
                 uiState.addPasskeyButton.isLoading = false
                 uiState.addPasskeyButton.isEnabled = true
             },
-            onError = {
-                uiState.notification.add(errorMapper.mapToNotification(it))
-            },
+            onError = { uiState.notification.add(it.addPasskeyErrorNotification()) },
         )
+    }
+
+    private fun Throwable.addPasskeyErrorNotification(): PresentationNotification {
+        return when (this) {
+            is CreateNewPasskey.Error.PasskeysLimitReached -> {
+                PresentationNotification.Message.simple(
+                    SettingsRes.strings.settings_passkey_limit_reached_error.desc(),
+                )
+            }
+
+            else -> {
+                errorMapper.mapToNotification(this)
+            }
+        }
     }
 
     fun onDeletePasskeyClick(passkeyItem: PasskeyItem) {

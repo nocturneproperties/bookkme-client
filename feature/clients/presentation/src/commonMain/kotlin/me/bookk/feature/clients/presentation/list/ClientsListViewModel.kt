@@ -261,6 +261,10 @@ class ClientsListViewModel(
                 ClientsRes.strings.clients_import_result_reason_exists
             }
 
+            RejectedClientImport.Reason.LIMIT_REACHED -> {
+                ClientsRes.strings.clients_import_result_reason_limit
+            }
+
             RejectedClientImport.Reason.UNKNOWN -> {
                 ClientsRes.strings.clients_import_result_reason_unknown
             }

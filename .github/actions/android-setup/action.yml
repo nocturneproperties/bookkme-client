@@ -9,6 +9,12 @@ inputs:
     description: Whether the Gradle cache is read-only
     required: false
     default: "true"
+  cache-key-job:
+    description: >-
+      Name shared by every job that saves or restores the same Gradle cache entry. Jobs with the same name restore each
+      other's latest entry, so jobs that save concurrently on the same commit must use different names.
+    required: false
+    default: android
   keystore-properties:
     description: Base64-encoded keystore.properties
     required: true
@@ -31,6 +37,16 @@ runs:
       with:
         distribution: temurin
         java-version: "21"
+
+    - name: Share Gradle Cache Key
+      shell: bash
+      env:
+        CACHE_KEY_JOB: ${{ inputs.cache-key-job }}
+      run: |
+        {
+          echo "GRADLE_BUILD_ACTION_CACHE_KEY_JOB=$CACHE_KEY_JOB"
+          echo "GRADLE_BUILD_ACTION_CACHE_KEY_JOB_INSTANCE=$CACHE_KEY_JOB"
+        } >> "$GITHUB_ENV"
 
     - name: Setup Gradle Cache
       uses: gradle/actions/setup-gradle@v5

@@ -13,6 +13,7 @@ data class RejectedClientImport(
         INVALID_FIELDS,
         MISSING_CONTACT_INFO,
         ALREADY_EXISTS,
+        LIMIT_REACHED,
         UNKNOWN,
     }
 }

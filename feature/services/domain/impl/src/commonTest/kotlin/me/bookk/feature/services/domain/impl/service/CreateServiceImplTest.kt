@@ -185,4 +185,19 @@ class CreateServiceImplTest {
             result.getOrThrow()
         }
     }
+
+    @Test
+    fun `maps backend error 200047 to ServicesLimitReached`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createService(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200047, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut(stubService()) }
+
+        then()
+        assertFailsWith<CreateService.Error.ServicesLimitReached> { result.getOrThrow() }
+    }
 }

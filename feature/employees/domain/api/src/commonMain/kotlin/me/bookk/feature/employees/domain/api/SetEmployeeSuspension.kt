@@ -11,5 +11,9 @@ interface SetEmployeeSuspension {
             cause: Throwable,
         ) : Throwable(cause),
             Error
+        class EmployeesLimitReached(
+            cause: Throwable,
+        ) : Throwable(cause),
+            Error
     }
 }

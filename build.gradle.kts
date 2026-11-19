@@ -21,6 +21,8 @@ plugins {
     alias(libs.plugins.firebase.appDistribution).apply(false)
     alias(libs.plugins.buldconfig).apply(false)
     alias(libs.plugins.kmm.resources).apply(false)
+    alias(libs.plugins.kobweb.application).apply(false)
+    alias(libs.plugins.kobweb.library).apply(false)
 }
 
 val classSignatureMultilineThreshold =

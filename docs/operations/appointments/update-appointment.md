@@ -21,8 +21,10 @@ flowchart TD
     Net -- 2xx result --> Save[(saveAppointmentInDB result<br/>upsertWithServices)]
     Save --> R([return result])
     Net -- business error --> Code{errorCode}
-    Code -- 300003 DATE_NOT_ALLOWED --> E1([throw Error.DateIsNotAllowed])
-    Code -- 300002 TIME_NOT_ALLOWED --> E2([throw Error.TimeIsNotAllowed])
+    Code -- 300003 BUSINESS_DATE_NOT_ALLOWED --> E1([throw Error.DateIsNotAllowed])
+    Code -- 300002 BUSINESS_TIME_NOT_ALLOWED --> E2([throw Error.TimeIsNotAllowed])
+    Code -- 300027 EMPLOYEE_DATE_NOT_ALLOWED --> E6([throw Error.EmployeeDateIsNotAllowed])
+    Code -- 300028 EMPLOYEE_TIME_NOT_ALLOWED --> E7([throw Error.EmployeeTimeIsNotAllowed])
     Code -- 300004 APPOINTMENT_EXISTS --> E3([throw Error.AppointmentOverlap])
     Code -- 300005 / 300006 / 300019 --> E4([throw Error.AppointmentNotScheduled])
     Code -- 200033 BUSINESS_EMPLOYEE_SUSPENDED --> E5([throw Error.EmployeeSuspended])
@@ -41,3 +43,7 @@ appointment is cached and rendered, including a changed date or status. The reje
 automatically retried, and reloading does not play a success haptic.
 
 `EditWindowClosed` means the appointment ended more than seven days ago.
+
+A new date, employee or duration must fit the business schedule and then the employee's schedule. Keeping a
+suspended employee still works (their schedule applies), and keeping a removed one checks only the business
+schedule.

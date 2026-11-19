@@ -1,7 +1,7 @@
 package me.bookk.database.relation
 
-import androidx.room.Embedded
-import androidx.room.Relation
+import androidx.room3.Embedded
+import androidx.room3.Relation
 import me.bookk.database.entity.AppointmentAdjustmentServiceEntity
 import me.bookk.database.entity.AppointmentEntity
 import me.bookk.database.entity.AppointmentServiceSnapshotEntity
@@ -9,13 +9,13 @@ import me.bookk.database.entity.AppointmentServiceSnapshotEntity
 class AppointmentLocal(
     @Embedded val entity: AppointmentEntity,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "appointmentId",
+        parentColumns = ["id"],
+        entityColumns = ["appointmentId"],
     )
     val services: List<AppointmentServiceSnapshotEntity>,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "appointmentId",
+        parentColumns = ["id"],
+        entityColumns = ["appointmentId"],
     )
     val adjustmentServices: List<AppointmentAdjustmentServiceEntity>,
 )

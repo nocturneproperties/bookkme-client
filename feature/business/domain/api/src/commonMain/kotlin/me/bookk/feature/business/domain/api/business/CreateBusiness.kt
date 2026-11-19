@@ -6,7 +6,7 @@ interface CreateBusiness {
     suspend operator fun invoke(name: String): Business
 
     sealed interface Error {
-        class BusinessAlreadyExists :
+        class OwnedBusinessesLimitReached :
             Exception(),
             Error
         class InvalidName :

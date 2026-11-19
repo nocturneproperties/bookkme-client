@@ -263,6 +263,15 @@ class BusinessSettingsViewModel(
                         )
                     }
 
+                    is UpdateBusiness.Error.EmptyWorkHourRange -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                BusinessRes.strings.business_settings_empty_work_hour_range_error
+                                    .desc(),
+                            ),
+                        )
+                    }
+
                     is UpdateBusiness.Error.InvalidDayOffRange -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(

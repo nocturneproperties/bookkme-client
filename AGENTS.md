@@ -1,6 +1,6 @@
 # Bookk Project Guidelines
 
-Bookk is a Kotlin Multiplatform (KMP) mobile application for Android and iOS. Android UI is Jetpack Compose (`androidMain` of presentation modules); iOS UI is SwiftUI (`iosApp/`). ViewModels, state interfaces, domain and data layers are shared in `commonMain`.
+Bookk is a Kotlin Multiplatform (KMP) mobile application for Android and iOS. Android UI is Jetpack Compose (`androidMain` of presentation modules); iOS UI is SwiftUI (`iosApp/`). ViewModels, state interfaces, domain and data layers are shared in `commonMain`. A Kobweb (Kotlin/JS) website lives in `site/`; the domain layer, `core:presentation` and the shared `designsystem` state interfaces also compile for JS, with web state implementations and components in `:site:designsystem` (see **Web target**).
 
 > **Canonical reference screen**: `BusinessPlugins` (feature/business, `screen/plugins` package + `iosApp/iosApp/Feature/Business/Plugins/`). It is the newest screen and demonstrates the current pattern.
 > **Outdated pattern — do NOT copy**: screens whose state is created with a `State.InitData` parameter (e.g. business `bootstrap`, `create`, `settings`). New screens must use parameterless state creation + the `setup()` extension pattern described below.
@@ -10,6 +10,7 @@ Bookk is a Kotlin Multiplatform (KMP) mobile application for Android and iOS. An
 Top-level directories:
 
 - `androidApp/`: Android entry point and configuration.
+- `site/`: Kobweb website (Kotlin/JS, Compose HTML + Silk) and its web design system (`:site:designsystem`). Guidelines in `site/README.md`.
 - `iosApp/`: iOS app (SwiftUI). Uses Xcode file-system-synchronized groups, so new `.swift` files under `iosApp/iosApp/` are picked up automatically — no pbxproj editing needed.
 - `shared/`: Global DI wiring (`me/bookk/di/DISetup.kt`, `me/bookk/di/feature/*DI.kt`) and the cross-feature `StateFactoryCreator`.
 - `feature/`: Feature modules (`authorization`, `business`, `appointments`, `clients`, `dashboard`, `services`, `settings`, …).
@@ -265,7 +266,8 @@ Any new persisted marker (prefs bucket or DB table) must be cleared on logout: i
 
 - **Build Android**: `./gradlew :androidApp:assembleDevDebug`
 - **Compile shared for iOS (quick check of commonMain/iosMain code)**: `./gradlew :shared:compileKotlinIosArm64`
-- **Run Tests**: `./gradlew test` (runs common and Android tests)
+- **Run Tests**: `./gradlew test testAndroidHostTest` (`test` alone only runs `androidApp`'s unit tests; `testAndroidHostTest` runs every KMP module's `commonTest` on the JVM)
+- **Run JS Tests**: `./gradlew jsNodeTest` (web-target modules' `commonTest` + `jsTest` on Node.js; one module: `./gradlew :<module>:jsNodeTest`)
 - **Lint**: `./gradlew detekt` (if configured)
 
 ## API Documentation
@@ -279,6 +281,20 @@ http://localhost/api/{feature_name}/internal/swagger/documentation.yaml
 `{feature_name}` can be the short or long form of the feature, e.g. `auth` or `authorization`, `appointments`, `clients`, `services`, `business`, etc.
 
 **Before reading any endpoint contract**, fetch the relevant YAML to get the authoritative, up-to-date schema. If the URL is not reachable, **stop and return an error**: the local backend is not running and the task cannot be completed safely without current API docs.
+
+## Web target
+
+**Before working on the website — anything in `site/`, any `jsMain`/`jsTest` source set, `convention.kmm.web`, or the JS/npm build — read [`site/README.md`](site/README.md).** It holds the site, web design system and JS-runtime guidelines and is not needed for mobile-only work. The rules below apply to every change to a shared module, because most of them also compile for JS:
+
+- The JS target is opt-in, declared in `build-src/.../convention/KotlinConvention.kt`: `modulesWithWebTarget` (`:core`, `:core:domain`, `:core:testFixtures`, `:core:presentation`, `:designsystem`, `:library:money`, `:library:device:api`, `:library:crashreporting:api`, `:library:cache:api`, `:library:cache:impl`, `:database`) plus every module ending in `:domain:api`, `:domain:impl` or `:data:source`. Modules that use platform UI stay Android/iOS only. To give another module a JS target, add it there and make sure its whole dependency graph has one.
+- Every `expect` in a web-target module needs a `jsMain` actual (see `site/README.md` for how they are built), and code in their `commonMain` must compile for JS. Run `./gradlew jsNodeTest` when you change a web-target module.
+- Modules use only the default hierarchy (`androidMain`, `iosMain`, `jsMain`); do not add custom intermediate source sets such as `nonWeb`/`nonAndroid`. Platform-only code that Android and iOS share goes in commonMain when it compiles for every target (e.g. `FilePreferenceDataStoreProducer`, only bound in the Android/iOS DI actuals), otherwise behind a small `expect` with one actual per platform. The bundled SQLite driver is an `androidMain`/`iosMain` dependency, and tests that open `BundledSQLiteDriver` live in `androidHostTest`.
+- iOS targets are `iosArm64` and `iosSimulatorArm64` only: Room 3, androidx SQLite 2.7 and DataStore 1.3 publish no `iosX64`, so Intel-Mac simulators are not supported.
+- **Room 3** (`androidx.room3`, plugin `androidx.room3`, `room3 { schemaDirectory(...) }`): converters use `@ColumnTypeConverter`/`@ColumnTypeConverters`; `@Relation` takes arrays (`parentColumns = ["id"], entityColumns = ["businessId"]`); `Migration.migrate` is `suspend` and runs SQL through `androidx.sqlite.async.executeSQL`, the variant that also compiles for JS. `AppDatabase.create` is platform-neutral: each platform's `getDatabaseBuilder()` sets the driver (`BundledSQLiteDriver` on Android/iOS, `WebWorkerSQLiteDriver` on JS).
+- Configuration on Demand stays off (`org.gradle.configureondemand=false`): Kotlin/JS does not support it, and with it on a single-module JS task configures only part of the npm workspace and fails the yarn lock check. Every build therefore configures every module, the iOS Xcode build included, so a build script must not require a CI-only file (keystores, `google-services.json`) at configuration time: `androidApp` reads `keystore.properties` only if it exists and leaves signing to fail at packaging.
+- **Site icons are Google Material Icons only** (outlined, Apache 2.0, the set the Android app uses). Never hand-draw, generate or approximate an icon's SVG path, and never pull in an icon font or icon npm package. Add each icon as `site/src/commonMain/moko-resources/images/material_<name>.svg`, converted 1:1 from its `ImageVector` source in `androidx.compose.material:material-icons-extended`/`material-icons-core` (`icons/outlined/<Name>.kt`, one `<path>` per `materialPath` in a 24×24 viewBox), and draw it with `TintedIcon`/`IconTile` (see `site/README.md`).
+- `kotlin-js-store/yarn.lock` is committed. After changing Kotlin or any npm dependency, run `./gradlew kotlinUpgradeYarnLock --rerun` and commit the result.
+- Mokkery must support the project's Kotlin version (see the compatibility table on mokkery.dev) or the JS test link step crashes.
 
 ## AI Agent Interaction Rules
 

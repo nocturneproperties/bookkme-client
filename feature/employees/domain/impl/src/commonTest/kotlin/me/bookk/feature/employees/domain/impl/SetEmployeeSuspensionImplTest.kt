@@ -131,4 +131,20 @@ class SetEmployeeSuspensionImplTest {
             fixture.sut(employee.businessId, employee.id, true)
         }
     }
+
+    @Test
+    fun `throws employees limit reached when reinstating into a full business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val employee = stubEmployee()
+        everySuspend { fixture.dataSource.setEmployeeSuspension(any(), any(), any()) } throws
+            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEES_LIMIT_REACHED, "full")
+
+        whenn()
+        then()
+        assertFailsWith<SetEmployeeSuspension.Error.EmployeesLimitReached> {
+            fixture.sut(employee.businessId, employee.id, false)
+        }
+        verifySuspend(VerifyMode.not) { fixture.dataSource.saveEmployeesInDb(any()) }
+    }
 }

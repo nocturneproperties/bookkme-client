@@ -470,6 +470,26 @@ class BusinessSettingsViewModelTest {
     }
 
     @Test
+    fun `shows message when a work hour range starts and ends at the same time`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateBusiness(any()) } throws
+            UpdateBusiness.Error.EmptyWorkHourRange()
+        val sut = fixture.sutWith(stubBusiness())
+
+        whenn()
+        sut.onSaveClick()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            BusinessRes.strings.business_settings_empty_work_hour_range_error.desc(),
+            message.message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
     fun `shows message when day off range is invalid`() = runUnitTest {
         given()
         val fixture = Fixture()

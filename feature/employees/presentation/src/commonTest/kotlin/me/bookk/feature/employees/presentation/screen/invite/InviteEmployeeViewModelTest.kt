@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.presentation.screen.invite
 
+import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.datetime.LocalDateTime
 import library.device.api.DeviceFacade
+import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -254,6 +256,26 @@ class InviteEmployeeViewModelTest {
 
         then()
         sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+    }
+
+    @Test
+    fun `shows message when the business has the maximum number of employees`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createEmployeeInvitation(any()) } throws
+            CreateEmployeeInvitation.Error.EmployeesLimitReached(TestException())
+        val sut = loadedSut(fixture)
+
+        whenn()
+        sut.uiState.generateCodeButton.onClick?.invoke()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            EmployeesRes.strings.employees_invite_generate_error_employees_limit.desc(),
+            message.message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
     @Test

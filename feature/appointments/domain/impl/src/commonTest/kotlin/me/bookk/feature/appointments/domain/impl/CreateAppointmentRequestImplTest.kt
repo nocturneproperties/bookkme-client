@@ -117,13 +117,29 @@ class CreateAppointmentRequestImplTest {
     }
 
     @Test
-    fun `throws TimeIsNotAllowed on TIME_NOT_ALLOWED`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.TIME_NOT_ALLOWED, Error.TimeIsNotAllowed::class)
+    fun `throws TimeIsNotAllowed on BUSINESS_TIME_NOT_ALLOWED`() = runUnitTest {
+        assertMapped(AppointmentErrorCodes.BUSINESS_TIME_NOT_ALLOWED, Error.TimeIsNotAllowed::class)
     }
 
     @Test
-    fun `throws DateIsNotAllowed on DATE_NOT_ALLOWED`() = runUnitTest {
-        assertMapped(AppointmentErrorCodes.DATE_NOT_ALLOWED, Error.DateIsNotAllowed::class)
+    fun `throws DateIsNotAllowed on BUSINESS_DATE_NOT_ALLOWED`() = runUnitTest {
+        assertMapped(AppointmentErrorCodes.BUSINESS_DATE_NOT_ALLOWED, Error.DateIsNotAllowed::class)
+    }
+
+    @Test
+    fun `throws EmployeeDateIsNotAllowed on EMPLOYEE_DATE_NOT_ALLOWED`() = runUnitTest {
+        assertMapped(
+            AppointmentErrorCodes.EMPLOYEE_DATE_NOT_ALLOWED,
+            Error.EmployeeDateIsNotAllowed::class,
+        )
+    }
+
+    @Test
+    fun `throws EmployeeTimeIsNotAllowed on EMPLOYEE_TIME_NOT_ALLOWED`() = runUnitTest {
+        assertMapped(
+            AppointmentErrorCodes.EMPLOYEE_TIME_NOT_ALLOWED,
+            Error.EmployeeTimeIsNotAllowed::class,
+        )
     }
 
     @Test
@@ -175,6 +191,14 @@ class CreateAppointmentRequestImplTest {
         assertMapped(
             AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED,
             Error.EmployeeSuspended::class,
+        )
+    }
+
+    @Test
+    fun `throws PendingRequestsLimitReached on PENDING_REQUESTS_LIMIT_REACHED`() = runUnitTest {
+        assertMapped(
+            AppointmentErrorCodes.PENDING_REQUESTS_LIMIT_REACHED,
+            Error.PendingRequestsLimitReached::class,
         )
     }
 

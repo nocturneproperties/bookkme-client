@@ -29,6 +29,10 @@ internal class RedeemEmployeeInvitationImpl(
                 EmployeeErrorCodes.BUSINESS_EMPLOYEE_EXISTS -> {
                     throw Error.EmployeeExists(error)
                 }
+
+                EmployeeErrorCodes.BUSINESS_EMPLOYEES_LIMIT_REACHED -> {
+                    throw Error.EmployeesLimitReached(error)
+                }
             }
         }
         .getOrThrow()

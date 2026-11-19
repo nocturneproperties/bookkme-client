@@ -272,6 +272,28 @@ class ServiceGroupListViewModelTest {
     }
 
     @Test
+    fun `shows groups limit message when the business has the maximum number of groups`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createServiceGroup(any()) } throws
+                CreateServiceGroup.Error.GroupsLimitReached(TestException())
+            val sut = fixture.sut()
+
+            whenn()
+            sut.submitGroupName("Hair")
+
+            then()
+            val message =
+                sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(
+                ServicesRes.strings.services_group_add_limit_reached.desc(),
+                message.message,
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        }
+
+    @Test
     fun `shows invalid name message when group name is rejected`() = runUnitTest {
         given()
         val fixture = Fixture()

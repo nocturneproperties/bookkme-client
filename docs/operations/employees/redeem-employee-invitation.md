@@ -12,6 +12,9 @@ set. The business-error mapping
 wraps the *whole* block. If the refresh or the switch fails after a successful redeem, the raw error
 propagates, even though the user has already joined.
 
+A business with its limit of active employees (100 unless the backend raises it; suspended employees don't count)
+refuses the join with `BUSINESS_EMPLOYEES_LIMIT_REACHED` (200044).
+
 ```mermaid
 flowchart TD
     Start([invoke code]) --> Net[EmployeeInvitationDataSource.redeemInvitation<br/>POST /api/business/employee_invitation/redeem]
@@ -21,6 +24,7 @@ flowchart TD
     Net -- business error --> Code{errorCode}
     Code -- 200017 INVITATION_ALREADY_PROCESSED --> E1([throw Error.AlreadyProcessed])
     Code -- 200018 EMPLOYEE_EXISTS --> E2([throw Error.EmployeeExists])
+    Code -- 200044 EMPLOYEES_LIMIT_REACHED --> E3([throw Error.EmployeesLimitReached])
     Code -- other --> EX([rethrow])
     Refresh -- error --> EX
 ```

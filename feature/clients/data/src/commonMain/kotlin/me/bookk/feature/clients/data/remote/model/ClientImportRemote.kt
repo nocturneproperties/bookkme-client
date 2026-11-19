@@ -71,6 +71,10 @@ internal class RejectedClientRemote(
                 RejectedClientImport.Reason.ALREADY_EXISTS
             }
 
+            ClientErrorCodes.CLIENTS_LIMIT_REACHED -> {
+                RejectedClientImport.Reason.LIMIT_REACHED
+            }
+
             else -> {
                 RejectedClientImport.Reason.UNKNOWN
             }

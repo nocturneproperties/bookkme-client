@@ -36,6 +36,10 @@ internal class CreateServiceImpl(
                     ServiceErrorCodes.BUSINESS_SERVICE_BUSINESS_CURRENCY_INVALID -> {
                         throw CreateService.Error.InvalidBusinessCurrency()
                     }
+
+                    ServiceErrorCodes.BUSINESS_SERVICES_LIMIT_REACHED -> {
+                        throw CreateService.Error.ServicesLimitReached()
+                    }
                 }
             }
             .getOrThrow()

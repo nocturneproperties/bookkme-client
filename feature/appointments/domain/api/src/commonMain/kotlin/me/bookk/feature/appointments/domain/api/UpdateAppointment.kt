@@ -30,6 +30,12 @@ interface UpdateAppointment {
         class TimeIsNotAllowed :
             Throwable(),
             Error
+        class EmployeeDateIsNotAllowed :
+            Throwable(),
+            Error
+        class EmployeeTimeIsNotAllowed :
+            Throwable(),
+            Error
         class AppointmentOverlap :
             Throwable(),
             Error

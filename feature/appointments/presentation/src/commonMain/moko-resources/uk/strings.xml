@@ -89,6 +89,8 @@
     <string name="appointments_date_in_past_error">Час запису вже минув. Виберіть майбутню дату й час.</string>
     <string name="appointments_create_offer_used_error">Цю пропозицію для запису вже використано. Перевірте список записів перед повторною спробою.</string>
     <string name="appointments_employee_not_found_error">Цей працівник більше недоступний. Оновіть записи та спробуйте ще раз.</string>
+    <string name="appointments_employee_date_error">Працівник не працює в цей день</string>
+    <string name="appointments_employee_time_error">Цей час поза робочими годинами працівника</string>
     <string name="appointments_client_not_found_error">Цей клієнт більше недоступний. Виберіть іншого клієнта.</string>
     <string name="appointments_edit_window_closed_error">Цей запис більше не можна змінити.</string>
     <string name="appointments_concurrent_modification_error">Запис змінився. Спробуйте знову.</string>

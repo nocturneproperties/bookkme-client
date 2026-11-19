@@ -28,10 +28,12 @@
     <string name="services_group_add_title">Create service group</string>
     <string name="services_group_add_message">Enter a name for the new service group</string>
     <string name="services_group_add_name_exists">Group with this name already exists</string>
+    <string name="services_group_add_limit_reached">This business already has the maximum number of service groups</string>
     <string name="services_group_add_name_invalid">Invalid name</string>
 
     <string name="services_name_exists_error">A service with this name already exists. Choose another name.</string>
     <string name="services_invalid_name_error">Enter a valid service name.</string>
     <string name="services_group_not_found_error">This service group is no longer available. Select another group.</string>
     <string name="services_price_precision_error">Enter a price with a valid number of decimal places for this currency.</string>
+    <string name="services_limit_reached_error">This business already has the maximum number of services.</string>
 </resources>

@@ -15,6 +15,8 @@ internal class JoinBusinessImpl(
             throw JoinBusiness.Error.AlreadyProcessed(e)
         } catch (e: RedeemEmployeeInvitation.Error.EmployeeExists) {
             throw JoinBusiness.Error.EmployeeExists(e)
+        } catch (e: RedeemEmployeeInvitation.Error.EmployeesLimitReached) {
+            throw JoinBusiness.Error.EmployeesLimitReached(e)
         }
     }
 }

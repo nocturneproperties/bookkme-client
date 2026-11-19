@@ -23,12 +23,20 @@ internal class CreateAppointmentRequestImpl(
                         throw Error.RequestForThisTimeExists()
                     }
 
-                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
+                    AppointmentErrorCodes.BUSINESS_TIME_NOT_ALLOWED -> {
                         throw Error.TimeIsNotAllowed()
                     }
 
-                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
+                    AppointmentErrorCodes.BUSINESS_DATE_NOT_ALLOWED -> {
                         throw Error.DateIsNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.EMPLOYEE_DATE_NOT_ALLOWED -> {
+                        throw Error.EmployeeDateIsNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.EMPLOYEE_TIME_NOT_ALLOWED -> {
+                        throw Error.EmployeeTimeIsNotAllowed()
                     }
 
                     AppointmentErrorCodes.DATE_IN_PAST -> {
@@ -61,6 +69,10 @@ internal class CreateAppointmentRequestImpl(
 
                     AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED -> {
                         throw Error.EmployeeSuspended()
+                    }
+
+                    AppointmentErrorCodes.PENDING_REQUESTS_LIMIT_REACHED -> {
+                        throw Error.PendingRequestsLimitReached()
                     }
                 }
             }

@@ -20,6 +20,7 @@
     <string name="employees_invite_revoke_error_already_processed">This invitation was already processed and can no longer be revoked</string>
     <string name="employees_invite_generate_error_pending_limit">You have reached the limit of pending invitations. Revoke an unused invitation to generate a new code</string>
     <string name="employees_invite_generate_error_daily_limit">You have reached the daily limit of invitations. Try again later</string>
+    <string name="employees_invite_generate_error_employees_limit">This business already has the maximum number of employees. Suspend or remove an employee to invite someone new</string>
     <string name="employees_edit_phone">Phone</string>
     <string name="employees_edit_email">Email</string>
     <string name="employees_edit_services">Services</string>
@@ -38,6 +39,7 @@
     <string name="employees_edit_updated">Employee updated</string>
     <string name="employees_edit_error_validation">Employee name, phone or email is invalid</string>
     <string name="employees_edit_error_active_day_without_work_hours">An active day must have at least one work hour</string>
+    <string name="employees_edit_error_empty_work_hour_range">A working time range can\'t start and end at the same time</string>
     <string name="employees_edit_error_invalid_day_off_range">Day off start date must be before the end date</string>
     <string name="employees_edit_suspend">Suspend employee</string>
     <string name="employees_edit_reinstate">Reinstate employee</string>
@@ -48,5 +50,6 @@
     <string name="employees_edit_suspended">Employee suspended</string>
     <string name="employees_edit_reinstated">Employee reinstated</string>
     <string name="employees_edit_error_owner_suspension">The business owner can\'t be suspended</string>
+    <string name="employees_edit_error_employees_limit">This business already has the maximum number of active employees, so this employee can\'t be reinstated</string>
     <string name="employees_edit_error_insufficient_grant">You can\'t grant access you don\'t have yourself</string>
 </resources>

@@ -5,13 +5,56 @@ import build_src.tools.isIosBuild
 import build_src.tools.libs
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.Project
+import org.gradle.api.file.DuplicatesStrategy
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.targets.js.ir.JsIrBinary
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 
 private val modulesWithAndroidResourcesInHostTests =
     setOf(":designsystem", ":shared", ":library:picker")
 
 private fun Project.hasAndroidResourcesInHostTests(): Boolean {
     return path in modulesWithAndroidResourcesInHostTests || path.endsWith(":presentation")
+}
+
+private val modulesWithWebTarget = setOf(
+    ":core",
+    ":core:domain",
+    ":core:testFixtures",
+    ":core:presentation",
+    ":designsystem",
+    ":library:money",
+    ":library:device:api",
+    ":library:crashreporting:api",
+    ":library:cache:api",
+    ":library:cache:impl",
+    ":library:files:api",
+    ":database",
+)
+
+private val layersWithWebTarget = listOf(":domain:api", ":domain:impl", ":data:source")
+
+private fun Project.hasWebTarget(): Boolean {
+    return path in modulesWithWebTarget || layersWithWebTarget.any { path.endsWith(it) }
+}
+
+internal fun KotlinMultiplatformExtension.applyCompilerOptions() {
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+}
+
+internal fun KotlinMultiplatformExtension.skipDuplicateJsTestResources() {
+    targets.withType(KotlinJsIrTarget::class.java).configureEach {
+        compilations
+            .matching { it.name == KotlinCompilation.TEST_COMPILATION_NAME }
+            .configureEach {
+                binaries.withType(JsIrBinary::class.java).configureEach {
+                    linkSyncTask.configure { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+                }
+            }
+    }
 }
 
 internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
@@ -23,13 +66,22 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     }
 
     jvmToolchain(21)
-    compilerOptions {
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-    }
+    applyCompilerOptions()
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    if (project.hasWebTarget()) {
+        js {
+            browser {
+                testTask { enabled = false }
+            }
+            nodejs {
+                testTask { useMocha { timeout = "10s" } }
+            }
+        }
+        skipDuplicateJsTestResources()
+    }
 
     sourceSets.all {
         if (project.path.endsWith("data") || project.path.endsWith("presentation")) {

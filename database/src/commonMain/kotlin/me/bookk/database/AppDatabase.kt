@@ -1,12 +1,11 @@
 package me.bookk.database
 
-import androidx.room.AutoMigration
-import androidx.room.ConstructedBy
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.RoomDatabaseConstructor
-import androidx.room.TypeConverters
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.room3.AutoMigration
+import androidx.room3.ColumnTypeConverters
+import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
+import androidx.room3.RoomDatabaseConstructor
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
@@ -117,7 +116,7 @@ import me.bookk.database.migration.DeleteEmployeeInvitationEmail
         AutoMigration(from = 25, to = 26),
     ],
 )
-@TypeConverters(
+@ColumnTypeConverters(
     UuidConverter::class,
     DurationConverter::class,
     InstantConverter::class,
@@ -149,7 +148,6 @@ abstract class AppDatabase : RoomDatabase() {
                 .addMigrations(DefaultBusinessRetention)
                 .fallbackToDestructiveMigrationOnDowngrade(true)
                 .fallbackToDestructiveMigration(true)
-                .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(DispatcherProvider.io)
                 .build()
         }

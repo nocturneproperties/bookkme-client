@@ -777,6 +777,27 @@ class EditEmployeeViewModelTest {
     }
 
     @Test
+    fun `shows message when a work hour range starts and ends at the same time`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.updateEmployee(any()) } throws
+            UpdateEmployee.Error.EmptyWorkHourRange(TestException())
+        val sut = fixture.sut()
+        sut.permissionRow(0).canView.onCheckedChange?.invoke(true)
+
+        whenn()
+        sut.uiState.save.onClick?.invoke()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            EmployeesRes.strings.employees_edit_error_empty_work_hour_range.desc(),
+            message.message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
     fun `shows mapped error when save fails unexpectedly`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -1061,6 +1082,32 @@ class EditEmployeeViewModelTest {
         assertTrue(sut.permissionRow(0).canView.isChecked)
         assertTrue(sut.uiState.save.isEnabled)
     }
+
+    @Test
+    fun `shows message when reinstating into a business with the maximum number of employees`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture(stubEmployee(suspendedAt = Instant.fromEpochMilliseconds(1)))
+            everySuspend { fixture.setEmployeeSuspension(any(), any(), any()) } throws
+                SetEmployeeSuspension.Error.EmployeesLimitReached(TestException())
+            val sut = fixture.sut()
+
+            whenn()
+            sut.confirmSuspensionDialog(ActionType.POSITIVE)
+
+            then()
+            val message =
+                sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(
+                EmployeesRes.strings.employees_edit_error_employees_limit.desc(),
+                message.message,
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertEquals(
+                EmployeesRes.strings.employees_edit_reinstate.desc(),
+                sut.uiState.suspension.text,
+            )
+        }
 
     @Test
     fun `shows message when the business owner cannot be suspended`() = runUnitTest {

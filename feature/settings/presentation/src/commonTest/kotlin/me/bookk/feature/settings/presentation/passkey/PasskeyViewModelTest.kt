@@ -172,6 +172,27 @@ class PasskeyViewModelTest {
     }
 
     @Test
+    fun `shows limit message when the account has the maximum number of passkeys`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createNewPasskey() } throws
+            CreateNewPasskey.Error.PasskeysLimitReached()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onAddPasskeyClick()
+
+        then()
+        val message = sut.uiState.notification.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            SettingsRes.strings.settings_passkey_limit_reached_error.desc(),
+            message.message,
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        assertTrue(sut.uiState.addPasskeyButton.isEnabled)
+    }
+
+    @Test
     fun `shows mapped error when adding passkey fails`() = runUnitTest {
         given()
         val fixture = Fixture()

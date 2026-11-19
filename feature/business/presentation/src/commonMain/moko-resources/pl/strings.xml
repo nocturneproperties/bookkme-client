@@ -33,6 +33,7 @@
     <string name="business_dashboard_switch_join_error_empty_code">Wpisz kod zaproszenia</string>
     <string name="business_dashboard_switch_join_error_already_processed">To zaproszenie zostało już użyte lub jest nieważne</string>
     <string name="business_dashboard_switch_join_error_employee_exists">Jesteś już pracownikiem tej firmy</string>
+    <string name="business_dashboard_switch_join_error_employees_limit">Ta firma ma już maksymalną liczbę pracowników.</string>
 
     <string name="business_settings_title">Ustawienia firmy</string>
     <string name="business_settings_add_photo">Dodaj zdjęcie</string>
@@ -80,10 +81,11 @@
     <string name="business_plugins_appointments_clients_item2_sub">Pamiętaj, że klient może zrezygnować z dowolnych powiadomień</string>
     <string name="business_plugins_demo">Kliknij tutaj, aby zobaczyć demo, sprawdzić, jak to działa, i zdecydować, czy to dla Ciebie.</string>
     <string name="business_settings_active_day_without_work_hours_error">Aktywny dzień musi mieć co najmniej jedną godzinę pracy</string>
+    <string name="business_settings_empty_work_hour_range_error">Przedział godzin pracy nie może zaczynać się i kończyć o tej samej godzinie</string>
     <string name="business_settings_invalid_day_off_range_error">Data rozpoczęcia dnia wolnego musi być wcześniejsza niż data zakończenia</string>
     <string name="business_analytics_coming_soon_title">Analityka już wkrótce</string>
     <string name="business_analytics_coming_soon_message">Przygotowujemy raporty dotyczące Twoich przychodów, wizyt i klientów. Pojawią się tutaj w jednej z przyszłych aktualizacji.</string>
-    <string name="create_business_already_exists_error">Ta firma już istnieje. Odśwież listę firm i spróbuj ponownie.</string>
+    <string name="create_business_limit_reached_error">Masz już maksymalną liczbę firm.</string>
     <string name="create_business_invalid_name_error">Wpisz prawidłową nazwę firmy.</string>
     <string name="business_settings_currency_locked_error">Nie można już zmienić waluty tej firmy.</string>
     <string name="business_settings_retention_title">Okres przechowywania danych klientów</string>

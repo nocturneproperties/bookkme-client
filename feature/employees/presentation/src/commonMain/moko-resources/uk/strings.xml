@@ -20,6 +20,7 @@
     <string name="employees_invite_revoke_error_already_processed">Це запрошення вже оброблено, і його не можна відкликати</string>
     <string name="employees_invite_generate_error_pending_limit">Досягнуто ліміту запрошень, що очікують. Відкличте невикористане запрошення, щоб створити новий код</string>
     <string name="employees_invite_generate_error_daily_limit">Досягнуто денного ліміту запрошень. Спробуйте пізніше</string>
+    <string name="employees_invite_generate_error_employees_limit">У цьому бізнесі вже максимальна кількість працівників. Призупиніть або видаліть працівника, щоб запросити нового</string>
     <string name="employees_edit_phone">Телефон</string>
     <string name="employees_edit_email">Ел. пошта</string>
     <string name="employees_edit_services">Послуги</string>
@@ -38,6 +39,7 @@
     <string name="employees_edit_updated">Працівника оновлено</string>
     <string name="employees_edit_error_validation">Неправильне імʼя, телефон або ел. пошта працівника</string>
     <string name="employees_edit_error_active_day_without_work_hours">Робочий день має містити щонайменше одну робочу годину</string>
+    <string name="employees_edit_error_empty_work_hour_range">Робочий проміжок не може починатися й закінчуватися в один і той самий час</string>
     <string name="employees_edit_error_invalid_day_off_range">Дата початку вихідних має бути раніше за дату завершення</string>
     <string name="employees_edit_suspend">Призупинити працівника</string>
     <string name="employees_edit_reinstate">Відновити працівника</string>
@@ -48,5 +50,6 @@
     <string name="employees_edit_suspended">Працівника призупинено</string>
     <string name="employees_edit_reinstated">Працівника відновлено</string>
     <string name="employees_edit_error_owner_suspension">Власника бізнесу не можна призупинити</string>
+    <string name="employees_edit_error_employees_limit">У цьому бізнесі вже максимальна кількість активних працівників, тому цього працівника не можна відновити</string>
     <string name="employees_edit_error_insufficient_grant">Не можна надати доступ, якого немає у вас самих</string>
 </resources>

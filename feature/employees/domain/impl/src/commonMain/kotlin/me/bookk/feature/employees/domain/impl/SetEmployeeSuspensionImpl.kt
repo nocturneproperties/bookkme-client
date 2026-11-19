@@ -20,6 +20,10 @@ internal class SetEmployeeSuspensionImpl(
                     EmployeeErrorCodes.BUSINESS_OWNER_SUSPENSION_NOT_ALLOWED -> {
                         throw Error.OwnerSuspensionNotAllowed(error)
                     }
+
+                    EmployeeErrorCodes.BUSINESS_EMPLOYEES_LIMIT_REACHED -> {
+                        throw Error.EmployeesLimitReached(error)
+                    }
                 }
             }
             .getOrThrow()

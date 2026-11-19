@@ -66,4 +66,17 @@ class RejectedClientRemoteTest {
         then()
         assertEquals(RejectedClientImport(1, RejectedClientImport.Reason.UNKNOWN), rejected)
     }
+
+    @Test
+    fun `maps clients limit reached error code to limit reached`() = runUnitTest {
+        given()
+        val remote =
+            RejectedClientRemote(index = 3, errorCode = ClientErrorCodes.CLIENTS_LIMIT_REACHED)
+
+        whenn()
+        val rejected = remote.toDomain()
+
+        then()
+        assertEquals(RejectedClientImport(3, RejectedClientImport.Reason.LIMIT_REACHED), rejected)
+    }
 }

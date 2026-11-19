@@ -15,3 +15,5 @@ androidApp/keystore/debug.jks
 androidApp/keystore/release.jks
 androidApp/keystore/*.jks
 androidApp/google-services.json
+**/webpack.config.d/moko-resources-generated.js
+**/karma.config.d/moko-resources-generated.js

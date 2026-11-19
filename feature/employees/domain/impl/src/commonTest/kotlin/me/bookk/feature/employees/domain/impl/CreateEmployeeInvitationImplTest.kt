@@ -96,4 +96,19 @@ class CreateEmployeeInvitationImplTest {
                 fixture.sut(businessId)
             }
         }
+
+    @Test
+    fun `throws EmployeesLimitReached on BUSINESS_EMPLOYEES_LIMIT_REACHED`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        everySuspend { fixture.dataSource.createInvitation(businessId) } throws
+            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEES_LIMIT_REACHED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<CreateEmployeeInvitation.Error.EmployeesLimitReached> {
+            fixture.sut(businessId)
+        }
+    }
 }

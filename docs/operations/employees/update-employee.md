@@ -44,6 +44,7 @@ flowchart TD
     Net2 -- business error --> Code
     Code -- 200021 EMPLOYEE_VALIDATION_ERROR --> E1([throw Error.ValidationError])
     Code -- 200022 EMPLOYEE_ACTIVE_DAY_WITHOUT_WORK_HOURS --> E2([throw Error.ActiveDayWithoutWorkHours])
+    Code -- 200043 EMPLOYEE_EMPTY_WORK_HOUR_RANGE --> E5([throw Error.EmptyWorkHourRange])
     Code -- 200023 EMPLOYEE_INVALID_DAY_OFF_RANGE --> E3([throw Error.InvalidDayOffRange])
     Code -- 200027 INSUFFICIENT_GRANT_PERMISSION --> E4([throw Error.InsufficientGrant])
     Code -- other --> EX([rethrow])

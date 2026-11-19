@@ -42,12 +42,20 @@ internal class UpdateAppointmentImpl(
                         throw UpdateAppointment.Error.EditWindowClosed()
                     }
 
-                    AppointmentErrorCodes.DATE_NOT_ALLOWED -> {
+                    AppointmentErrorCodes.BUSINESS_DATE_NOT_ALLOWED -> {
                         throw UpdateAppointment.Error.DateIsNotAllowed()
                     }
 
-                    AppointmentErrorCodes.TIME_NOT_ALLOWED -> {
+                    AppointmentErrorCodes.BUSINESS_TIME_NOT_ALLOWED -> {
                         throw UpdateAppointment.Error.TimeIsNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.EMPLOYEE_DATE_NOT_ALLOWED -> {
+                        throw UpdateAppointment.Error.EmployeeDateIsNotAllowed()
+                    }
+
+                    AppointmentErrorCodes.EMPLOYEE_TIME_NOT_ALLOWED -> {
+                        throw UpdateAppointment.Error.EmployeeTimeIsNotAllowed()
                     }
 
                     AppointmentErrorCodes.APPOINTMENT_EXISTS -> {

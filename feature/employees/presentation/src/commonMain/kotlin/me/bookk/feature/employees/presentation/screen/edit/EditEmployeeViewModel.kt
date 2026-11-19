@@ -329,17 +329,20 @@ class EditEmployeeViewModel(
     }
 
     private fun Throwable.suspensionErrorNotification(): PresentationNotification {
-        return when (this) {
+        val message = when (this) {
             is SetEmployeeSuspension.Error.OwnerSuspensionNotAllowed -> {
-                PresentationNotification.Message.simple(
-                    EmployeesRes.strings.employees_edit_error_owner_suspension.desc(),
-                )
+                EmployeesRes.strings.employees_edit_error_owner_suspension
+            }
+
+            is SetEmployeeSuspension.Error.EmployeesLimitReached -> {
+                EmployeesRes.strings.employees_edit_error_employees_limit
             }
 
             else -> {
-                notification()
+                return notification()
             }
         }
+        return PresentationNotification.Message.simple(message.desc())
     }
 
     private fun Throwable.saveErrorNotification(): PresentationNotification {
@@ -350,6 +353,10 @@ class EditEmployeeViewModel(
 
             is UpdateEmployee.Error.ActiveDayWithoutWorkHours -> {
                 EmployeesRes.strings.employees_edit_error_active_day_without_work_hours
+            }
+
+            is UpdateEmployee.Error.EmptyWorkHourRange -> {
+                EmployeesRes.strings.employees_edit_error_empty_work_hour_range
             }
 
             is UpdateEmployee.Error.InvalidDayOffRange -> {

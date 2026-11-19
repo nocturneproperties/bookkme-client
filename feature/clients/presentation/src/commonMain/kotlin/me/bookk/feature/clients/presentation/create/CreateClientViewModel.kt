@@ -12,6 +12,7 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.clearError
@@ -81,6 +82,14 @@ class CreateClientViewModel(
                 when (it) {
                     is CreateClient.Error.EmailTaken -> {
                         uiState.email.showError(ClientsRes.strings.clients_email_taken_error.desc())
+                    }
+
+                    is CreateClient.Error.ClientsLimitReached -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ClientsRes.strings.clients_create_limit_reached_error.desc(),
+                            ),
+                        )
                     }
 
                     else -> {

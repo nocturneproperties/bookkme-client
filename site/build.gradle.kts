@@ -1,4 +1,14 @@
+import build_src.site.DesignSystemColors
+import build_src.site.GenerateSiteBuildConfigTask
+import build_src.site.GenerateSitemapTask
+import build_src.site.GenerateWebManifestTask
+import build_src.site.LegalVersionPaths
+import build_src.site.MokoStrings
+import build_src.site.SitePages
+import build_src.site.WebManifest
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
+import kotlinx.html.link
+import kotlinx.html.meta
 
 plugins {
     id(libs.plugins.convention.kmm.web.get().pluginId)
@@ -6,19 +16,82 @@ plugins {
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.kmm.resources)
     id(libs.plugins.convention.site.legal.get().pluginId)
+    id(libs.plugins.convention.site.securitytxt.get().pluginId)
+    id(libs.plugins.convention.site.webmanifest.get().pluginId)
+    id(libs.plugins.convention.site.sitemap.get().pluginId)
+    id(libs.plugins.convention.site.buildconfig.get().pluginId)
 }
 
 group = "me.bookk.site"
-version = "0.1"
+version = "0.1.0"
+
+val siteStrings = MokoStrings.read(file("src/commonMain/moko-resources/base/strings.xml"))
+val siteName = siteStrings.value("site_app_name")
+val siteDescription = siteStrings.value("site_description")
+val siteOrigin = "https://bookkme.com"
+val designSystemColors = DesignSystemColors.read(rootDir)
+val sitePagePaths = listOf("/", "/clients", "/guides", "/contact", "/privacy", "/terms", "/dpa")
+val siteDefaultLanguage = "en"
+val siteOtherLanguages = listOf("uk", "pl")
+val siteVersionedPaths = LegalVersionPaths.read(file("legal"))
+val sitePages = SitePages(
+    pagePaths = sitePagePaths,
+    versionedPaths = siteVersionedPaths,
+    defaultLanguage = siteDefaultLanguage,
+    otherLanguages = siteOtherLanguages,
+)
+
+val generateWebManifest = tasks.named<GenerateWebManifestTask>("generateWebManifest") {
+    manifestName.set(siteName)
+    manifestDescription.set(siteDescription)
+    themeColor.set(designSystemColors.opaque("lightBackground"))
+    backgroundColor.set(designSystemColors.opaque("lightBackground"))
+}
+
+val generateSiteBuildConfig = tasks.named<GenerateSiteBuildConfigTask>("generateSiteBuildConfig") {
+    origin.set(siteOrigin)
+    pagePaths.set(sitePagePaths)
+    languages.set(listOf(siteDefaultLanguage) + siteOtherLanguages)
+}
+
+val generateSitemap = tasks.named<GenerateSitemapTask>("generateSitemap") {
+    origin.set(siteOrigin)
+    pagePaths.set(sitePagePaths)
+    versionedPaths.set(siteVersionedPaths)
+    defaultLanguage.set(siteDefaultLanguage)
+    otherLanguages.set(siteOtherLanguages)
+}
 
 kobweb {
     app {
         index {
-            description.set("BookkMe — a booking app for small businesses on Android and iOS.")
-            faviconPath.set("/favicon.svg")
+            val lightBackground = designSystemColors.opaque("lightBackground")
+            val darkBackground = designSystemColors.opaque("darkBackground")
+            val shareImage = "$siteOrigin/share-image.png"
+            val name = siteName
+            faviconPath.set("")
+            head.add {
+                link(rel = "icon", href = "/favicon.ico") { attributes["sizes"] = "32x32" }
+                link(rel = "icon", href = "/favicon.svg", type = "image/svg+xml")
+                link(rel = "apple-touch-icon", href = "/apple-touch-icon.png")
+                link(rel = "manifest", href = "/${WebManifest.FILE_NAME}")
+                meta(name = "theme-color", content = lightBackground) {
+                    attributes["media"] = "(prefers-color-scheme: light)"
+                }
+                meta(name = "theme-color", content = darkBackground) {
+                    attributes["media"] = "(prefers-color-scheme: dark)"
+                }
+                meta(content = "website") { attributes["property"] = "og:type" }
+                meta(content = name) { attributes["property"] = "og:site_name" }
+                meta(content = shareImage) { attributes["property"] = "og:image" }
+                meta(content = "1200") { attributes["property"] = "og:image:width" }
+                meta(content = "630") { attributes["property"] = "og:image:height" }
+                meta(name = "twitter:card", content = "summary_large_image")
+            }
         }
         export {
             suppressLayoutWarning.set(true)
+            sitePages.extraExportRoutes().forEach { addExtraRoute(it) }
         }
     }
 }
@@ -48,7 +121,10 @@ kotlin {
     sourceSets {
         jsMain {
             resources.srcDir(copySqliteWasm.map { sqliteWasmResources.get() })
+            resources.srcDir(generateWebManifest)
+            resources.srcDir(generateSitemap)
             kotlin.srcDir(tasks.named("generateLegalTexts"))
+            kotlin.srcDir(generateSiteBuildConfig)
         }
         jsMain.dependencies {
             implementation(npm("@sqlite.org/sqlite-wasm", libs.versions.npm.sqlite.wasm.get()))

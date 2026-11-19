@@ -205,6 +205,7 @@ Gdy zmieniamy politykę, publikujemy nową wersję z nową datą i zachowujemy p
 ## <a id="section-13"></a>13. Kontakt
 
 - **Firma:** Nocturne Properties LLC
+- **Numer rejestrowy:** kod EDRPOU 46113892
 - **Adres pocztowy:** ul. Leiptsyzka 2/37, lok. 43, 01015 Kijów, Ukraina
 - **E-mail:** [legal@bookkme.com](mailto:legal@bookkme.com)
 - **Telefon firmy:** [+380 73 059 70 41](tel:+380730597041)

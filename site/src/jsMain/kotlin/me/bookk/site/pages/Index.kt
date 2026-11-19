@@ -1,171 +1,48 @@
 package me.bookk.site.pages
 
 import androidx.compose.runtime.Composable
-import com.varabyte.kobweb.compose.foundation.layout.Column
-import com.varabyte.kobweb.compose.foundation.layout.Row
-import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.flexWrap
-import com.varabyte.kobweb.compose.ui.modifiers.gap
-import com.varabyte.kobweb.compose.ui.modifiers.height
-import com.varabyte.kobweb.compose.ui.modifiers.id
-import com.varabyte.kobweb.compose.ui.modifiers.margin
-import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
-import com.varabyte.kobweb.compose.ui.modifiers.scrollMarginBlock
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.data.add
 import com.varabyte.kobweb.core.init.InitRoute
 import com.varabyte.kobweb.core.init.InitRouteContext
 import com.varabyte.kobweb.core.layout.Layout
-import com.varabyte.kobweb.silk.components.layout.SimpleGrid
-import com.varabyte.kobweb.silk.components.layout.numColumns
-import com.varabyte.kobweb.silk.style.CssStyle
-import com.varabyte.kobweb.silk.style.base
-import com.varabyte.kobweb.silk.style.breakpoint.Breakpoint
-import com.varabyte.kobweb.silk.style.toModifier
-import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.site.components.layouts.PageLayoutData
-import me.bookk.site.components.widgets.Logo
-import me.bookk.site.components.widgets.StoreBadge
-import me.bookk.site.content.Feature
-import me.bookk.site.content.LandingContent
-import me.bookk.site.content.LandingSection
-import me.bookk.site.designsystem.components.Heading
-import me.bookk.site.designsystem.components.HeadingLevel
-import me.bookk.site.designsystem.components.TextBlock
-import me.bookk.site.designsystem.components.TitledCard
-import me.bookk.site.designsystem.theme.BodyLargeTextStyle
-import me.bookk.site.designsystem.theme.BodyMediumTextStyle
-import me.bookk.site.designsystem.theme.DisplayTextStyle
-import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
-import me.bookk.site.designsystem.theme.secondary
+import me.bookk.site.landing.CenteredHero
+import me.bookk.site.landing.Statement
+import me.bookk.site.landing.business.BusinessHeroActions
+import me.bookk.site.landing.business.BusinessHeroVisual
+import me.bookk.site.landing.business.FeaturesSection
+import me.bookk.site.landing.business.LaunchSection
+import me.bookk.site.landing.business.PhilosophySection
+import me.bookk.site.landing.business.PrivacySection
+import me.bookk.site.landing.business.StepsSection
+import me.bookk.site.layout.PageLayoutData
 import me.bookk.site.resources.SiteRes
-import org.jetbrains.compose.web.css.FlexWrap
-import org.jetbrains.compose.web.css.cssRem
-
-val HeroStyle = CssStyle {
-    base {
-        Modifier
-            .gap(1.5.cssRem)
-            .margin(top = 3.cssRem, bottom = 4.cssRem)
-    }
-    Breakpoint.MD { Modifier.margin(top = 6.cssRem, bottom = 6.cssRem) }
-}
-
-val SectionStyle = CssStyle.base {
-    Modifier
-        .gap(1.5.cssRem)
-        .margin(bottom = 4.cssRem)
-        .scrollMarginBlock(start = 4.cssRem)
-}
 
 @InitRoute
 fun initHomePage(ctx: InitRouteContext) {
-    ctx.data.add(PageLayoutData(SiteRes.strings.site_page_title.desc()))
+    ctx.data.add(PageLayoutData(SiteRes.strings.site_page_title.desc(), isFullWidth = true))
 }
 
 @Page
-@Layout(".components.layouts.PageLayout")
+@Layout(".layout.PageLayout")
 @Composable
 fun HomePage() {
-    Hero()
-    FeatureSection(
-        LandingSection.FEATURES,
-        SiteRes.strings.site_features_title.desc(),
-        null,
-        LandingContent.features,
-        wideColumns = 3,
-    )
-    FeatureSection(
-        LandingSection.PRIVACY,
-        SiteRes.strings.site_privacy_title.desc(),
-        SiteRes.strings.site_privacy_subtitle.desc(),
-        LandingContent.privacy,
-        wideColumns = 2,
-    )
-}
-
-@Composable
-private fun Hero() {
-    Column(HeroStyle.toModifier()) {
-        Logo(Modifier.height(4.cssRem))
-        Heading(
-            SiteRes.strings.site_headline.desc(),
-            HeadingLevel.H1,
-            DisplayTextStyle
-                .toModifier()
-                .maxWidth(48.cssRem),
-        )
-        TextBlock(
-            SiteRes.strings.site_subheadline.desc(),
-            BodyLargeTextStyle
-                .toModifier()
-                .maxWidth(44.cssRem)
-                .secondary(),
-        )
-        StoreBadges()
-    }
-}
-
-@Composable
-private fun StoreBadges() {
-    Column(Modifier.gap(0.75.cssRem)) {
-        TextBlock(
-            SiteRes.strings.site_stores_title.desc(),
-            BodyMediumTextStyle
-                .toModifier()
-                .secondary(),
-        )
-        Row(
-            Modifier
-                .gap(0.75.cssRem)
-                .flexWrap(FlexWrap.Wrap),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            StoreBadge(SiteRes.strings.site_app_store.desc())
-            StoreBadge(SiteRes.strings.site_google_play.desc())
-        }
-    }
-}
-
-@Composable
-private fun FeatureSection(
-    section: LandingSection,
-    title: StringDesc,
-    subtitle: StringDesc?,
-    features: List<Feature>,
-    wideColumns: Int,
-) {
-    Column(
-        SectionStyle
-            .toModifier()
-            .id(section.id),
+    CenteredHero(
+        SiteRes.strings.site_headline.desc(),
+        SiteRes.strings.site_subheadline.desc(),
+        visual = { BusinessHeroVisual() },
     ) {
-        Heading(title, HeadingLevel.H2, HeadlineLargeTextStyle.toModifier())
-        subtitle?.let {
-            TextBlock(
-                it,
-                BodyLargeTextStyle
-                    .toModifier()
-                    .maxWidth(44.cssRem)
-                    .secondary(),
-            )
-        }
-        SimpleGrid(numColumns(1, md = 2, lg = wideColumns), Modifier.gap(1.cssRem)) {
-            features.forEach { FeatureCard(it) }
-        }
+        BusinessHeroActions()
     }
-}
-
-@Composable
-private fun FeatureCard(feature: Feature) {
-    TitledCard(feature.title) {
-        TextBlock(
-            feature.description,
-            BodyMediumTextStyle
-                .toModifier()
-                .secondary(),
-        )
-    }
+    StepsSection()
+    FeaturesSection()
+    Statement(
+        SiteRes.strings.site_philosophy_clients_title_start.desc(),
+        SiteRes.strings.site_philosophy_clients_title_accent.desc(),
+        SiteRes.strings.site_philosophy_clients_description.desc(),
+    )
+    PhilosophySection()
+    PrivacySection()
+    LaunchSection()
 }

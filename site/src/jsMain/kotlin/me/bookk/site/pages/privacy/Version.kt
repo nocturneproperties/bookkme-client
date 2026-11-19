@@ -5,9 +5,9 @@ import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.init.InitRoute
 import com.varabyte.kobweb.core.init.InitRouteContext
 import com.varabyte.kobweb.core.layout.Layout
-import me.bookk.site.components.legal.LegalDocumentPage
-import me.bookk.site.components.legal.addLegalPageData
 import me.bookk.site.legal.LegalDocument
+import me.bookk.site.legal.ui.LegalDocumentPage
+import me.bookk.site.legal.ui.addLegalPageData
 
 @InitRoute
 fun initPrivacyVersionPage(ctx: InitRouteContext) {
@@ -15,7 +15,7 @@ fun initPrivacyVersionPage(ctx: InitRouteContext) {
 }
 
 @Page("{version}")
-@Layout(".components.layouts.PageLayout")
+@Layout(".layout.PageLayout")
 @Composable
 fun PrivacyVersionPage() {
     LegalDocumentPage(LegalDocument.PRIVACY_POLICY)

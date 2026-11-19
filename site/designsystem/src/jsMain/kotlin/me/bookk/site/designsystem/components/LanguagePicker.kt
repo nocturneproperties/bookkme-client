@@ -2,6 +2,7 @@ package me.bookk.site.designsystem.components
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.Cursor
+import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
@@ -10,8 +11,11 @@ import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
 import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.cursor
 import com.varabyte.kobweb.compose.ui.modifiers.fontSize
+import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.toAttrs
+import com.varabyte.kobweb.core.PageContext
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
@@ -34,14 +38,16 @@ val LanguagePickerStyle = CssStyle.base {
         .backgroundColor(Colors.Transparent)
         .color(colors.primaryText)
         .border(1.px, LineStyle.Solid, colors.divider)
-        .borderRadius(0.5.cssRem)
-        .padding(topBottom = 0.25.cssRem, leftRight = 0.5.cssRem)
-        .fontSize(0.9.cssRem)
+        .borderRadius(0.375.cssRem)
+        .padding(topBottom = 0.125.cssRem, leftRight = 0.25.cssRem)
+        .fontSize(0.75.cssRem)
+        .fontWeight(FontWeight.SemiBold)
         .cursor(Cursor.Pointer)
 }
 
 @Composable
 fun LanguagePicker(label: StringDesc, modifier: Modifier = Modifier) {
+    val ctx = rememberPageContext()
     val current = WebLocalization.language
     val description = label.localized()
     Select(
@@ -53,14 +59,26 @@ fun LanguagePicker(label: StringDesc, modifier: Modifier = Modifier) {
                 onChange { event ->
                     AppLanguage.entries.firstOrNull {
                         it.tag == event.value
-                    }?.let(WebLocalization::select)
+                    }?.let { ctx.switchTo(it) }
                 }
             },
     ) {
         AppLanguage.entries.forEach { language ->
-            Option(language.tag, attrs = { if (language == current) selected() }) {
-                Text(language.autonym)
+            Option(
+                language.tag,
+                attrs = {
+                    attr("lang", language.tag)
+                    attr("aria-label", language.autonym)
+                    if (language == current) selected()
+                },
+            ) {
+                Text(language.abbreviation)
             }
         }
     }
+}
+
+private fun PageContext.switchTo(language: AppLanguage) {
+    WebLocalization.select(language)
+    router.navigateTo(language.localize(route.path))
 }

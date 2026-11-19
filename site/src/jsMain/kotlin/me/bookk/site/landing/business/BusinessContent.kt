@@ -37,7 +37,6 @@ class TimeSlot(
 class Opinion(
     val title: StringDesc,
     val description: StringDesc,
-    val marketplaceNote: StringDesc,
     val proofs: List<SiteLink>,
 )
 
@@ -97,19 +96,16 @@ object BusinessContent {
         Opinion(
             SiteRes.strings.site_philosophy_selfhost_title.desc(),
             SiteRes.strings.site_philosophy_selfhost_description.desc(),
-            SiteRes.strings.site_opinion_runs_marketplace.desc(),
             listOf(SiteNavigation.selfHosting),
         ),
         Opinion(
             SiteRes.strings.site_philosophy_source_title.desc(),
             SiteRes.strings.site_philosophy_source_description.desc(),
-            SiteRes.strings.site_opinion_data_marketplace.desc(),
             listOf(SiteNavigation.appSource, SiteNavigation.serverSource),
         ),
         Opinion(
             SiteRes.strings.site_philosophy_lockin_title.desc(),
             SiteRes.strings.site_philosophy_lockin_description.desc(),
-            SiteRes.strings.site_opinion_leaving_marketplace.desc(),
             emptyList(),
         ),
     )

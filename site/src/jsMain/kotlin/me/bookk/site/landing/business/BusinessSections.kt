@@ -57,7 +57,6 @@ import me.bookk.site.designsystem.theme.BodyLargeTextStyle
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.designsystem.theme.HeadlineSmallTextStyle
-import me.bookk.site.designsystem.theme.LabelMediumTextStyle
 import me.bookk.site.designsystem.theme.TitleMediumTextStyle
 import me.bookk.site.designsystem.theme.active
 import me.bookk.site.designsystem.theme.resolve
@@ -280,12 +279,6 @@ private fun OpinionRow(opinion: Opinion) {
             TextBlock(
                 opinion.description,
                 BodyMediumTextStyle
-                    .toModifier()
-                    .secondary(),
-            )
-            TextBlock(
-                opinion.marketplaceNote,
-                LabelMediumTextStyle
                     .toModifier()
                     .secondary(),
             )

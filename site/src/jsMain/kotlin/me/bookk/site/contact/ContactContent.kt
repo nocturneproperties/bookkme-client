@@ -58,7 +58,6 @@ object ContactContent {
             listOf(
                 SiteRes.strings.site_contact_legal_topic_policy.desc(),
                 SiteRes.strings.site_contact_legal_topic_rights.desc(),
-                SiteRes.strings.site_contact_legal_topic_deletion.desc(),
                 SiteRes.strings.site_contact_legal_topic_businesses.desc(),
             ),
         ),

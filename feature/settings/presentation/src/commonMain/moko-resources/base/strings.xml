@@ -43,6 +43,7 @@
     <string name="settings_passkey_add_button">Add</string>
     <string name="settings_passkey_added_on_format">Added on %s</string>
     <string name="settings_passkey_delete_dialog_title">Delete passkey</string>
+    <string name="settings_passkey_limit_reached_error">Your account already has the maximum number of passkeys. Delete one to add another.</string>
     <string name="settings_passkey_delete_dialog_message">Remove ‘%s’ passkey? You won’t be able to login with this passkey anymore.</string>
 
     <string name="settings_notifications_title">Notifications</string>

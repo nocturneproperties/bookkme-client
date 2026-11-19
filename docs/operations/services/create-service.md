@@ -5,7 +5,8 @@
 `CreateService(service)` → `POST /api/business/{businessId}/service`
 · called from `AddServiceViewModel`
 
-The service name is trimmed before it is sent.
+The service name is trimmed before it is sent. A business with its limit of services (300 unless the backend
+raises it) answers `BUSINESS_SERVICES_LIMIT_REACHED` (200047).
 
 ```mermaid
 flowchart TD
@@ -19,6 +20,7 @@ flowchart TD
     Code -- 200012 --> E200012([throw Error.GroupNotFound])
     Code -- 200037 --> E200037([throw Error.InvalidPricePrecision])
     Code -- 200038 --> E200038([throw Error.InvalidBusinessCurrency])
+    Code -- 200047 SERVICES_LIMIT_REACHED --> E200047([throw Error.ServicesLimitReached])
     Code -- other --> EX([rethrow])
 ```
 

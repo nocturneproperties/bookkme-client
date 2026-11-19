@@ -43,6 +43,7 @@
     <string name="settings_passkey_add_button">Dodaj</string>
     <string name="settings_passkey_added_on_format">Dodano %s</string>
     <string name="settings_passkey_delete_dialog_title">Usuń klucz dostępu</string>
+    <string name="settings_passkey_limit_reached_error">Twoje konto ma już maksymalną liczbę kluczy dostępu. Usuń jeden, aby dodać nowy.</string>
     <string name="settings_passkey_delete_dialog_message">Usunąć klucz dostępu „%s”? Nie będzie już można logować się za jego pomocą.</string>
 
     <string name="settings_notifications_title">Powiadomienia</string>

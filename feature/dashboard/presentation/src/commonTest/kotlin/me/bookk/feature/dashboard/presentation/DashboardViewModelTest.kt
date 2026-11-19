@@ -954,6 +954,25 @@ class DashboardViewModelTest {
     }
 
     @Test
+    fun `shows employees limit message when the business is full`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.joinBusiness(any()) } throws
+            JoinBusiness.Error.EmployeesLimitReached(TestException())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.submitJoinCode("ABC123")
+
+        then()
+        assertEquals(
+            listOf(DashboardRes.strings.dashboard_join_error_employees_limit.desc()),
+            sut.messages().map { it.message },
+        )
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
     fun `shows employee exists message when user already works there`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -1261,8 +1280,8 @@ class DashboardViewModelTest {
     @Test
     fun `explains business creation failures`() = runUnitTest {
         listOf(
-            CreateBusiness.Error.BusinessAlreadyExists() to
-                DashboardRes.strings.create_business_already_exists_error,
+            CreateBusiness.Error.OwnedBusinessesLimitReached() to
+                DashboardRes.strings.create_business_limit_reached_error,
             CreateBusiness.Error.InvalidName() to
                 DashboardRes.strings.create_business_invalid_name_error,
         ).forEach { (error, expected) ->

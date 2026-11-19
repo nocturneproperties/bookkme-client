@@ -23,6 +23,10 @@ internal class CreateEmployeeInvitationImpl(
                 EmployeeErrorCodes.BUSINESS_EMPLOYEE_DAILY_INVITATIONS_LIMIT_REACHED -> {
                     throw Error.DailyInvitationsLimitReached(error)
                 }
+
+                EmployeeErrorCodes.BUSINESS_EMPLOYEES_LIMIT_REACHED -> {
+                    throw Error.EmployeesLimitReached(error)
+                }
             }
         }.getOrThrow()
     }

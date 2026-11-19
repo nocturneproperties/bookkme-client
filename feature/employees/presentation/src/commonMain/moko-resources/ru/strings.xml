@@ -20,6 +20,7 @@
     <string name="employees_invite_revoke_error_already_processed">Это приглашение уже обработано, и его нельзя отозвать</string>
     <string name="employees_invite_generate_error_pending_limit">Достигнут лимит ожидающих приглашений. Отзовите неиспользованное приглашение, чтобы создать новый код</string>
     <string name="employees_invite_generate_error_daily_limit">Достигнут дневной лимит приглашений. Попробуйте позже</string>
+    <string name="employees_invite_generate_error_employees_limit">В этом бизнесе уже максимальное количество сотрудников. Приостановите или удалите сотрудника, чтобы пригласить нового</string>
     <string name="employees_edit_phone">Телефон</string>
     <string name="employees_edit_email">Эл. почта</string>
     <string name="employees_edit_services">Услуги</string>
@@ -49,5 +50,6 @@
     <string name="employees_edit_suspended">Сотрудник приостановлен</string>
     <string name="employees_edit_reinstated">Сотрудник восстановлен</string>
     <string name="employees_edit_error_owner_suspension">Владельца бизнеса нельзя приостановить</string>
+    <string name="employees_edit_error_employees_limit">В этом бизнесе уже максимальное количество активных сотрудников, поэтому этого сотрудника нельзя восстановить</string>
     <string name="employees_edit_error_insufficient_grant">Нельзя выдать доступ, которого нет у вас самих</string>
 </resources>

@@ -1,0 +1,40 @@
+name: Mobile feature
+description: New behavior or an improvement in the Android and iOS app.
+title: "Mobile - "
+labels: ["enhancement", "mobile"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this is needed. Link the parent issue or the server issue it depends on (e.g. nocturneproperties/bookkme#156).
+    validations:
+      required: true
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current state
+      description: Relevant files, screens and behavior today.
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: The flow or the list of changes, step by step.
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] Works on Android and iOS
+        - [ ] Tests for the view models and use cases, including each error case
+        - [ ] Strings in EN, RU, UK and PL
+        - [ ] `docs/database` and `docs/operations` updated where the change touches them
+        - [ ] Manual check on a real Android device and iPhone
+    validations:
+      required: true

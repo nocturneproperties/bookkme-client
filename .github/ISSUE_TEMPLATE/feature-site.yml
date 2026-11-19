@@ -1,0 +1,33 @@
+name: Site feature
+description: New page, section or improvement on bookkme.com.
+labels: ["enhancement", "site"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this is needed and who it is for (businesses, people who book, search engines).
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] Strings in EN, UK and PL
+        - [ ] Built from `:site:designsystem` components; missing ones added there
+        - [ ] Icons are Google Material Icons only
+        - [ ] Works at phone width without horizontal scroll
+        - [ ] Static export checked
+    validations:
+      required: true

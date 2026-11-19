@@ -1,0 +1,76 @@
+name: iOS Cache Warm-up
+on:
+  workflow_run:
+    workflows: ["iOS Release"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Commit, branch or tag to build (defaults to the default branch head)
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  warm-up:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: macos-26
+    concurrency:
+      group: ios-cache-warmup
+      cancel-in-progress: false
+    timeout-minutes: 90
+
+    steps:
+      - name: Require Default Branch
+        if: github.ref_name != github.event.repository.default_branch
+        run: |
+          echo "::error::Run this workflow on ${{ github.event.repository.default_branch }}: only default-branch caches can be restored by every branch, PR and tag"
+          exit 1
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || inputs.ref || github.sha }}
+
+      - name: Setup iOS
+        id: setup
+        uses: ./.github/actions/ios-setup
+        with:
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          write-caches: "true"
+          environment: Dev
+          google-service-info: ${{ secrets.IOS_DEV_GOOGLE_SERVICE_INFO_FILE }}
+
+      - name: Build Debug
+        run: |
+          xcodebuild build \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme dev \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ${{ runner.temp }}/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILATION_CACHE_ENABLE_CACHING=YES
+
+      - name: Build Release
+        run: |
+          xcodebuild build \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme dev \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath ${{ runner.temp }}/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILATION_CACHE_ENABLE_CACHING=YES
+
+      - name: Save Caches
+        uses: ./.github/actions/ios-cache-save
+        with:
+          konan-toolchain-key: ${{ steps.setup.outputs.konan-toolchain-key }}
+          konan-toolchain-hit: ${{ steps.setup.outputs.konan-toolchain-hit }}
+          konan-caches-key: ${{ steps.setup.outputs.konan-caches-key }}
+          spm-key: ${{ steps.setup.outputs.spm-key }}
+          spm-hit: ${{ steps.setup.outputs.spm-hit }}
+          xcode-cas-key: ${{ steps.setup.outputs.xcode-cas-key }}

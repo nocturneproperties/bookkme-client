@@ -14,5 +14,9 @@ interface CreateServiceGroup {
             cause: Throwable,
         ) : Throwable(cause),
             Error
+        class GroupsLimitReached(
+            cause: Throwable,
+        ) : Throwable(cause),
+            Error
     }
 }

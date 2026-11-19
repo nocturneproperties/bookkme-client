@@ -5,7 +5,11 @@ import build_src.tools.isIosBuild
 import build_src.tools.libs
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import org.gradle.api.Project
+import org.gradle.api.file.DuplicatesStrategy
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.targets.js.ir.JsIrBinary
+import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 
 private val modulesWithAndroidResourcesInHostTests =
     setOf(":designsystem", ":shared", ":library:picker")
@@ -41,6 +45,18 @@ internal fun KotlinMultiplatformExtension.applyCompilerOptions() {
     }
 }
 
+internal fun KotlinMultiplatformExtension.skipDuplicateJsTestResources() {
+    targets.withType(KotlinJsIrTarget::class.java).configureEach {
+        compilations
+            .matching { it.name == KotlinCompilation.TEST_COMPILATION_NAME }
+            .configureEach {
+                binaries.withType(JsIrBinary::class.java).configureEach {
+                    linkSyncTask.configure { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+                }
+            }
+    }
+}
+
 internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
     targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java).configureEach {
         compileSdk = ApplicationConfig.COMPILE_SDK
@@ -64,6 +80,7 @@ internal fun KotlinMultiplatformExtension.applyConvention(project: Project) {
                 testTask { useMocha { timeout = "10s" } }
             }
         }
+        skipDuplicateJsTestResources()
     }
 
     sourceSets.all {

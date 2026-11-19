@@ -132,4 +132,22 @@ class CreateServiceGroupImplTest {
         then()
         verifySuspend { fixture.dataSource.createServiceGroup(trimmed) }
     }
+
+    @Test
+    fun `throws GroupsLimitReached on BUSINESS_SERVICE_GROUPS_LIMIT_REACHED`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val input = stubGroup()
+        everySuspend { fixture.dataSource.createServiceGroup(input) } throws
+            DomainError.BusinessError(
+                ServiceErrorCodes.BUSINESS_SERVICE_GROUPS_LIMIT_REACHED,
+                "msg",
+            )
+
+        whenn()
+        then()
+        assertFailsWith<CreateServiceGroup.Error.GroupsLimitReached> {
+            fixture.sut(input)
+        }
+    }
 }

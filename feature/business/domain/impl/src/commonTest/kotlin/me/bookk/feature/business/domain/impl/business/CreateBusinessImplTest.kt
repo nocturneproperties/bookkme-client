@@ -211,7 +211,22 @@ class CreateBusinessImplTest {
     }
 
     @Test
-    fun `maps backend error 200001 to BusinessAlreadyExists`() = runUnitTest {
+    fun `maps backend error 200045 to OwnedBusinessesLimitReached`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        everySuspend { fixture.dataSource.createBusiness(any(), any(), any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(200045, "rejected")
+
+        whenn()
+        val result = runCatching { fixture.sut("Business") }
+
+        then()
+        assertFailsWith<CreateBusiness.Error.OwnedBusinessesLimitReached> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `rethrows the removed backend error 200001 unchanged`() = runUnitTest {
         given()
         val fixture = Fixture()
 
@@ -222,7 +237,7 @@ class CreateBusinessImplTest {
         val result = runCatching { fixture.sut("Business") }
 
         then()
-        assertFailsWith<CreateBusiness.Error.BusinessAlreadyExists> { result.getOrThrow() }
+        assertFailsWith<me.bookk.core.domain.entity.Error.BusinessError> { result.getOrThrow() }
     }
 
     @Test

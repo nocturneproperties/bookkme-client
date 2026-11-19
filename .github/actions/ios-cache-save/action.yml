@@ -1,0 +1,54 @@
+name: iOS Cache Save
+description: Saves the Kotlin/Native, SPM and Xcode compilation caches restored by ios-setup; used only by the iOS Cache Warm-up workflow
+
+inputs:
+  konan-toolchain-key:
+    description: konan-toolchain-key output of ios-setup
+    required: true
+  konan-toolchain-hit:
+    description: konan-toolchain-hit output of ios-setup
+    required: true
+  konan-caches-key:
+    description: konan-caches-key output of ios-setup
+    required: true
+  spm-key:
+    description: spm-key output of ios-setup
+    required: true
+  spm-hit:
+    description: spm-hit output of ios-setup
+    required: true
+  xcode-cas-key:
+    description: xcode-cas-key output of ios-setup
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Save Kotlin/Native Toolchain
+      if: inputs.konan-toolchain-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: |
+          ~/.konan/dependencies
+          ~/.konan/kotlin-native-prebuilt-*
+          !~/.konan/kotlin-native-prebuilt-*/klib/cache
+        key: ${{ inputs.konan-toolchain-key }}
+
+    - name: Save Kotlin/Native Library Caches
+      uses: actions/cache/save@v6
+      with:
+        path: ~/.konan/kotlin-native-prebuilt-*/klib/cache
+        key: ${{ inputs.konan-caches-key }}
+
+    - name: Save Swift Packages
+      if: inputs.spm-hit != 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ runner.temp }}/DerivedData/SourcePackages
+        key: ${{ inputs.spm-key }}
+
+    - name: Save Xcode Compilation Cache
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ runner.temp }}/DerivedData/CompilationCache.noindex
+        key: ${{ inputs.xcode-cas-key }}

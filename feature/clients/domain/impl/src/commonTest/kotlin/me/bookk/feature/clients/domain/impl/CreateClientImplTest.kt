@@ -174,4 +174,21 @@ class CreateClientImplTest {
         then()
         assertEquals(ClientErrorCodes.CLIENT_VALIDATION_ERROR, error.errorCode)
     }
+
+    @Test
+    fun `throws ClientsLimitReached when the business has the maximum number of clients`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.dataSource.createClient(any()) } throws Error.BusinessError(
+                ClientErrorCodes.CLIENTS_LIMIT_REACHED,
+                "Clients limit reached",
+            )
+
+            whenn()
+            val error = runCatching { fixture.sut(stubClient()) }.exceptionOrNull()
+
+            then()
+            assertIs<CreateClient.Error.ClientsLimitReached>(error)
+        }
 }

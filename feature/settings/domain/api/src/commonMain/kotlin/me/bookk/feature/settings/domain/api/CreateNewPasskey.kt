@@ -8,5 +8,6 @@ interface CreateNewPasskey {
     sealed class Error : Throwable() {
         class ChallengeCreationFailed : Error()
         class AccountCreationFailed : Error()
+        class PasskeysLimitReached : Error()
     }
 }

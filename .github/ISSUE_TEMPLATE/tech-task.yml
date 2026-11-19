@@ -1,0 +1,29 @@
+name: Technical task or spike
+description: Refactor, dependency upgrade, build change or investigation.
+labels: ["tech-debt"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is wrong or missing today, with file paths where useful.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Proposed approach
+  - type: textarea
+    id: findings
+    attributes:
+      label: Record in this issue
+      description: For a spike, what must be written down before implementing (library choice, versions, app size impact, trade-offs).
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] Existing tests pass on all affected targets
+        - [ ]
+    validations:
+      required: true

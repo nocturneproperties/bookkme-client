@@ -61,6 +61,7 @@ jobs:
         uses: ./.github/actions/android-setup
         with:
           gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-key-job: site
           gradle-cache-read-only: "false"
           keystore-properties: ${{ secrets.ANDROID_KEYSTORE_FILE }}
           debug-keystore: ${{ secrets.ANDROID_DEBUG_KEYSTORE_FILE }}

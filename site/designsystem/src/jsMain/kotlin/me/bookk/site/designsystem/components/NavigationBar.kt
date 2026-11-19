@@ -36,6 +36,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.top
 import com.varabyte.kobweb.compose.ui.modifiers.transition
 import com.varabyte.kobweb.compose.ui.modifiers.zIndex
 import com.varabyte.kobweb.core.rememberPageContext
+import com.varabyte.kobweb.framework.annotations.DelicateApi
 import com.varabyte.kobweb.silk.components.icons.CloseIcon
 import com.varabyte.kobweb.silk.components.icons.HamburgerIcon
 import com.varabyte.kobweb.silk.style.CssStyle
@@ -163,6 +164,7 @@ private fun NavigationBarMenu(
     }
 }
 
+@OptIn(DelicateApi::class)
 @Composable
 private fun CollapseOnRouteOrLayoutChange(menuBreakpoint: Breakpoint, onCollapse: () -> Unit) {
     val path = rememberPageContext().route.path

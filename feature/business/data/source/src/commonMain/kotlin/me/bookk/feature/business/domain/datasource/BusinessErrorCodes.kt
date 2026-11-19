@@ -5,7 +5,6 @@ object BusinessErrorCodes {
     const val DATA_EXPORT_TOO_FREQUENT = 900002
     private const val BASE = 200000
 
-    const val BUSINESS_ALREADY_EXIST = BASE + 1
     const val BUSINESS_NAME_VALIDATION_ERROR = BASE + 2
     const val BUSINESS_NOT_FOUND = BASE + 3
     const val BUSINESS_ACTIVE_DAY_WITHOUT_WORK_HOURS = BASE + 19
@@ -14,4 +13,5 @@ object BusinessErrorCodes {
     const val BUSINESS_CURRENCY_LOCKED = BASE + 36
     const val BUSINESS_CLIENT_DATA_RETENTION_OUT_OF_RANGE = BASE + 41
     const val BUSINESS_EMPTY_WORK_HOUR_RANGE = BASE + 42
+    const val BUSINESS_OWNED_BUSINESSES_LIMIT_REACHED = BASE + 45
 }

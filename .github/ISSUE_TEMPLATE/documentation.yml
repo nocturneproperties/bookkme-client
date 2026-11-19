@@ -1,0 +1,43 @@
+name: Docs, legal or compliance task
+description: A policy, procedure, legal document or project documentation.
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this is needed. Link the parent issue if there is one (e.g. #119).
+    validations:
+      required: true
+  - type: input
+    id: regulation
+    attributes:
+      label: Related regulation
+      placeholder: e.g. GDPR Art. 30, Art. 32
+  - type: textarea
+    id: deliverable
+    attributes:
+      label: Deliverable
+      description: What document or change is produced.
+    validations:
+      required: true
+  - type: dropdown
+    id: published
+    attributes:
+      label: Where it is published
+      multiple: true
+      options:
+        - Website
+        - Mobile app
+        - Repository docs
+        - Internal only
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ]
+    validations:
+      required: true

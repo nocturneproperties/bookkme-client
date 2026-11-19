@@ -157,4 +157,19 @@ class RedeemEmployeeInvitationImplTest {
             fixture.sut(code)
         }
     }
+
+    @Test
+    fun `throws EmployeesLimitReached on BUSINESS_EMPLOYEES_LIMIT_REACHED`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val code = "ABCD1234"
+        everySuspend { fixture.dataSource.redeemInvitation(code) } throws
+            DomainError.BusinessError(EmployeeErrorCodes.BUSINESS_EMPLOYEES_LIMIT_REACHED, "msg")
+
+        whenn()
+        then()
+        assertFailsWith<RedeemEmployeeInvitation.Error.EmployeesLimitReached> {
+            fixture.sut(code)
+        }
+    }
 }

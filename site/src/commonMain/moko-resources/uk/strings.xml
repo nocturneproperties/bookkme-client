@@ -26,8 +26,8 @@
     <string name="site_clients_product_description">Жодної реклами чи рекламних трекерів. Ми не продаємо ваші дані й не використовуємо їх, щоб щось вам продати.</string>
     <string name="site_clients_direct_title">Ви записуєтеся до закладу, а не до нас</string>
     <string name="site_clients_direct_description">Ціни, час і правила встановлює заклад, і з будь-якими питаннями щодо запису ви звертаєтеся просто до нього.</string>
-    <string name="site_clients_history_title">Новий номер? Скажіть нам один раз.</string>
-    <string name="site_clients_history_description">Змініть номер телефону в акаунті — і кожен заклад, до якого ви записуєтеся, отримає новий. Не треба обдзвонювати кожен окремо.</string>
+    <string name="site_clients_anytime_title">Записуйтеся хоч о другій ночі. Ніхто не мусить брати слухавку.</string>
+    <string name="site_clients_anytime_description">Не треба дзвонити в робочі години, чекати на лінії чи слухати «я перевірю й передзвоню». Надішліть запит, коли вам зручно, а заклад підтвердить його, щойно зможе.</string>
     <string name="site_clients_leave_title_start">Піти —</string>
     <string name="site_clients_leave_title_accent">легко.</string>
     <string name="site_clients_privacy_subtitle">Щоб записатися, ви ділитеся імʼям і номером телефону. Ось як ми зберігаємо їх приватними.</string>

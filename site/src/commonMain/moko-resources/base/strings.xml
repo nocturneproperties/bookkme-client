@@ -26,8 +26,8 @@
     <string name="site_clients_product_description">No ads and no advertising trackers. We don’t sell your data, and we don’t use it to sell you anything.</string>
     <string name="site_clients_direct_title">You book with the business, not with us</string>
     <string name="site_clients_direct_description">Prices, times and rules come from the business, and any questions about your appointment go straight to it.</string>
-    <string name="site_clients_history_title">New number? Tell us once.</string>
-    <string name="site_clients_history_description">Change your phone number in your account, and every business you book with gets the new one. No calling around to tell each of them.</string>
+    <string name="site_clients_anytime_title">Book at 2 a.m. Nobody has to pick up.</string>
+    <string name="site_clients_anytime_description">No calling during opening hours, no waiting on hold, no “let me check and call you back”. Send your request whenever it suits you, and the business confirms it when it can.</string>
     <string name="site_clients_leave_title_start">Leaving is</string>
     <string name="site_clients_leave_title_accent">easy.</string>
     <string name="site_clients_privacy_subtitle">You share your name and phone number to book. Here’s how we keep them private.</string>

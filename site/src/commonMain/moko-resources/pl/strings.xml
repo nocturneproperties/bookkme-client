@@ -26,8 +26,8 @@
     <string name="site_clients_product_description">Zero reklam i trackerów reklamowych. Nie sprzedajemy Twoich danych i nie używamy ich, żeby coś Ci sprzedać.</string>
     <string name="site_clients_direct_title">Umawiasz się z firmą, nie z nami</string>
     <string name="site_clients_direct_description">Ceny, terminy i zasady ustala firma i to do niej kierujesz wszystkie pytania o wizytę.</string>
-    <string name="site_clients_history_title">Nowy numer? Powiedz nam raz.</string>
-    <string name="site_clients_history_description">Zmień numer telefonu na koncie, a każda firma, w której się umawiasz, dostanie nowy. Nie musisz obdzwaniać każdej z osobna.</string>
+    <string name="site_clients_anytime_title">Umów się choćby o drugiej w nocy. Nikt nie musi odbierać.</string>
+    <string name="site_clients_anytime_description">Bez dzwonienia w godzinach otwarcia, bez czekania na linii i bez „sprawdzę i oddzwonię”. Wyślij prośbę, kiedy Ci pasuje, a firma potwierdzi ją, gdy tylko będzie mogła.</string>
     <string name="site_clients_leave_title_start">Odejść jest</string>
     <string name="site_clients_leave_title_accent">łatwo.</string>
     <string name="site_clients_privacy_subtitle">Aby się umówić, podajesz imię i numer telefonu. Oto jak dbamy o ich prywatność.</string>

@@ -8,7 +8,7 @@ import com.varabyte.kobweb.core.init.InitRouteContext
 import com.varabyte.kobweb.core.layout.Layout
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.site.landing.CenteredHero
-import me.bookk.site.landing.clients.BookingHistorySection
+import me.bookk.site.landing.clients.AnytimeBookingSection
 import me.bookk.site.landing.clients.BookingWaysSection
 import me.bookk.site.landing.clients.ClientPrivacySection
 import me.bookk.site.landing.clients.ClientPromisesSection
@@ -37,7 +37,7 @@ fun ClientsPage() {
     )
     BookingWaysSection()
     ClientPromisesSection()
-    BookingHistorySection()
+    AnytimeBookingSection()
     ClientPrivacySection()
     LeavingStatement()
 }

@@ -189,17 +189,17 @@ private fun PromiseRow(promise: Promise, isDivided: Boolean) {
 }
 
 @Composable
-fun BookingHistorySection() {
+fun AnytimeBookingSection() {
     LandingBand(null) {
         Row(SplitSectionStyle.toModifier(), verticalAlignment = Alignment.CenterVertically) {
             Column(ClientTextColumnStyle.toModifier()) {
                 Heading(
-                    SiteRes.strings.site_clients_history_title.desc(),
+                    SiteRes.strings.site_clients_anytime_title.desc(),
                     HeadingLevel.H2,
                     HeadlineLargeTextStyle.toModifier(),
                 )
                 TextBlock(
-                    SiteRes.strings.site_clients_history_description.desc(),
+                    SiteRes.strings.site_clients_anytime_description.desc(),
                     BodyLargeTextStyle
                         .toModifier()
                         .secondary(),

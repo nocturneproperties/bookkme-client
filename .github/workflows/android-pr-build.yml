@@ -1,4 +1,4 @@
-name: Android Pull Request Verification
+name: Android & Site Pull Request Verification
 on:
   pull_request:
     branches: [ develop ]

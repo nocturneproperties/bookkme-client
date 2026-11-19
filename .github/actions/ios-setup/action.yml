@@ -1,14 +1,17 @@
 name: iOS Setup
-description: Prepares a macOS runner to build the iOS app (Java, Gradle, Kotlin/Native and SPM caches, Firebase config, build version, signing)
+description: Prepares a macOS runner to build the iOS app (Java, Gradle, Kotlin/Native, SPM and Xcode compilation caches, Firebase config, build version, signing)
 
 inputs:
   gradle-encryption-key:
     description: Gradle configuration cache encryption key
     required: true
-  gradle-cache-read-only:
-    description: Whether the Gradle cache is read-only
+  write-caches:
+    description: >-
+      Only the iOS Cache Warm-up workflow sets this to "true". It saves the Gradle cache and starts the Kotlin/Native
+      library caches and the Xcode compilation cache empty, so that ios-cache-save stores only what this build used.
+      Every other job restores those caches read-only.
     required: false
-    default: "true"
+    default: "false"
   environment:
     description: App variant being built (Dev or Prod); selects the Firebase config folder
     required: true
@@ -40,6 +43,26 @@ inputs:
     required: false
     default: ""
 
+outputs:
+  konan-toolchain-key:
+    description: Cache key of the Kotlin/Native toolchain
+    value: ${{ steps.cache-keys.outputs.konan-toolchain }}
+  konan-toolchain-hit:
+    description: Whether the Kotlin/Native toolchain was restored from an exact key match
+    value: ${{ steps.konan-toolchain.outputs.cache-hit }}
+  konan-caches-key:
+    description: Cache key of the Kotlin/Native library caches
+    value: ${{ steps.cache-keys.outputs.konan-caches }}
+  spm-key:
+    description: Cache key of the Swift package checkouts
+    value: ${{ steps.cache-keys.outputs.spm }}
+  spm-hit:
+    description: Whether the Swift package checkouts were restored from an exact key match
+    value: ${{ steps.spm.outputs.cache-hit }}
+  xcode-cas-key:
+    description: Cache key of the Xcode compilation cache
+    value: ${{ steps.cache-keys.outputs.xcode-cas }}
+
 runs:
   using: composite
   steps:
@@ -49,25 +72,73 @@ runs:
         distribution: temurin
         java-version: "21"
 
+    - name: Resolve Cache Keys
+      id: cache-keys
+      shell: bash
+      env:
+        LIBS_HASH: ${{ hashFiles('gradle/libs.versions.toml') }}
+        PACKAGES_HASH: ${{ hashFiles('iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+      run: |
+        kotlin_version=$(sed -nE 's/^kotlin = "(.+)"$/\1/p' gradle/libs.versions.toml)
+        if [ -z "$kotlin_version" ]; then
+          echo "::error::Kotlin version not found in gradle/libs.versions.toml"
+          exit 1
+        fi
+        xcode_version=$(xcodebuild -version | sed -nE 's/^Xcode (.+)$/\1/p')
+        platform="$RUNNER_OS-$RUNNER_ARCH"
+        {
+          echo "konan-toolchain=konan-toolchain-$platform-$kotlin_version"
+          echo "konan-caches-prefix=konan-caches-$platform-$kotlin_version-"
+          echo "konan-caches=konan-caches-$platform-$kotlin_version-$LIBS_HASH"
+          echo "spm-prefix=spm-$platform-"
+          echo "spm=spm-$platform-$PACKAGES_HASH"
+          echo "xcode-cas-prefix=xcode-cas-$platform-$xcode_version-"
+          echo "xcode-cas=xcode-cas-$platform-$xcode_version-$GITHUB_SHA"
+        } >> "$GITHUB_OUTPUT"
+        {
+          echo "GRADLE_BUILD_ACTION_CACHE_KEY_JOB=ios"
+          echo "GRADLE_BUILD_ACTION_CACHE_KEY_JOB_INSTANCE=ios"
+        } >> "$GITHUB_ENV"
+
     - name: Setup Gradle Cache
       uses: gradle/actions/setup-gradle@v5
       with:
         cache-encryption-key: ${{ inputs.gradle-encryption-key }}
-        cache-read-only: ${{ inputs.gradle-cache-read-only }}
+        cache-read-only: ${{ inputs.write-caches != 'true' }}
 
-    - name: Cache Kotlin/Native
-      uses: actions/cache@v6
+    - name: Restore Kotlin/Native Toolchain
+      id: konan-toolchain
+      uses: actions/cache/restore@v6
       with:
-        path: ~/.konan
-        key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
-        restore-keys: konan-${{ runner.os }}-
+        path: |
+          ~/.konan/dependencies
+          ~/.konan/kotlin-native-prebuilt-*
+          !~/.konan/kotlin-native-prebuilt-*/klib/cache
+        key: ${{ steps.cache-keys.outputs.konan-toolchain }}
 
-    - name: Cache Swift Packages
-      uses: actions/cache@v6
+    - name: Restore Kotlin/Native Library Caches
+      if: inputs.write-caches != 'true'
+      uses: actions/cache/restore@v6
+      with:
+        path: ~/.konan/kotlin-native-prebuilt-*/klib/cache
+        key: ${{ steps.cache-keys.outputs.konan-caches }}
+        restore-keys: ${{ steps.cache-keys.outputs.konan-caches-prefix }}
+
+    - name: Restore Swift Packages
+      id: spm
+      uses: actions/cache/restore@v6
       with:
         path: ${{ runner.temp }}/DerivedData/SourcePackages
-        key: spm-${{ runner.os }}-${{ hashFiles('iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
-        restore-keys: spm-${{ runner.os }}-
+        key: ${{ steps.cache-keys.outputs.spm }}
+        restore-keys: ${{ steps.cache-keys.outputs.spm-prefix }}
+
+    - name: Restore Xcode Compilation Cache
+      if: inputs.write-caches != 'true'
+      uses: actions/cache/restore@v6
+      with:
+        path: ${{ runner.temp }}/DerivedData/CompilationCache.noindex
+        key: ${{ steps.cache-keys.outputs.xcode-cas }}
+        restore-keys: ${{ steps.cache-keys.outputs.xcode-cas-prefix }}
 
     - name: Import Firebase Config
       shell: bash

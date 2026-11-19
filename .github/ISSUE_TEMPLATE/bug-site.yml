@@ -1,0 +1,72 @@
+name: Site bug
+description: Something is broken on bookkme.com.
+labels: ["bug", "site"]
+body:
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      placeholder: https://bookkme.com/...
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - EN
+        - UK
+        - PL
+        - All
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: e.g. Safari 18 on iOS, Chrome 131 on Windows
+    validations:
+      required: true
+  - type: dropdown
+    id: width
+    attributes:
+      label: Screen width
+      options:
+        - Phone
+        - Tablet
+        - Desktop
+        - All
+  - type: dropdown
+    id: color-mode
+    attributes:
+      label: Color mode
+      options:
+        - Light
+        - Dark
+        - Both
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots

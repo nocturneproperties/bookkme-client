@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://bookkme.com/contact#security
+    about: Please do not open a public issue. Email security@bookkme.com as described in our security policy.
+  - name: Get help using BookkMe
+    url: https://bookkme.com/contact
+    about: Questions about your account or how to use the app go to support, not to GitHub issues.

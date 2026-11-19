@@ -116,10 +116,10 @@ class BusinessDashboardViewModel(
             onComplete = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
             onError = {
                 when (it) {
-                    is CreateBusiness.Error.BusinessAlreadyExists -> {
+                    is CreateBusiness.Error.OwnedBusinessesLimitReached -> {
                         uiState.notifications.add(
                             PresentationNotification.Message.simple(
-                                BusinessRes.strings.create_business_already_exists_error.desc(),
+                                BusinessRes.strings.create_business_limit_reached_error.desc(),
                             ),
                         )
                     }
@@ -201,6 +201,16 @@ class BusinessDashboardViewModel(
                             PresentationNotification.Message.simple(
                                 BusinessRes.strings
                                     .business_dashboard_switch_join_error_employee_exists
+                                    .desc(),
+                            ),
+                        )
+                    }
+
+                    is JoinBusiness.Error.EmployeesLimitReached -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                BusinessRes.strings
+                                    .business_dashboard_switch_join_error_employees_limit
                                     .desc(),
                             ),
                         )

@@ -34,9 +34,13 @@ flowchart TD
     Code -- 200013 BUSINESS_QUOTE_SERVICE_NOT_FOUND --> E9([throw Error.ServiceNotFound])
     Code -- 200024 BUSINESS_EMPLOYEE_NOT_EXISTS --> E10([throw Error.EmployeeNotFound])
     Code -- 200033 BUSINESS_EMPLOYEE_SUSPENDED --> E11([throw Error.EmployeeSuspended])
+    Code -- 300029 PENDING_REQUESTS_LIMIT_REACHED --> E14([throw Error.PendingRequestsLimitReached])
     Code -- other --> EX([rethrow])
 ```
 
 `PriceChanged`, `DurationChanged` and `OfferAlreadyUsed` mean the quote is stale or spent: request a new
 quote and resubmit. The backend releases the token again on every other failure, so retrying with the same
 token after fixing the slot is fine.
+
+`PendingRequestsLimitReached` means the caller already has the business's maximum of requests waiting there
+(`maxPendingRequestsPerClient`, 10 by default); one has to be answered or withdrawn first.

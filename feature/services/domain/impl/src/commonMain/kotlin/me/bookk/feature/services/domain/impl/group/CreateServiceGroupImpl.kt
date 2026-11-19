@@ -16,11 +16,19 @@ internal class CreateServiceGroupImpl(
         }
     }.onBusinessError { error ->
         when (error.errorCode) {
-            ServiceErrorCodes.BUSINESS_SERVICE_GROUP_EXISTS -> throw Error.NameExists(error)
+            ServiceErrorCodes.BUSINESS_SERVICE_GROUP_EXISTS -> {
+                throw Error.NameExists(error)
+            }
 
-            ServiceErrorCodes.BUSINESS_SERVICE_GROUP_VALIDATION_ERROR -> throw Error.InvalidName(
-                error,
-            )
+            ServiceErrorCodes.BUSINESS_SERVICE_GROUP_VALIDATION_ERROR -> {
+                throw Error.InvalidName(
+                    error,
+                )
+            }
+
+            ServiceErrorCodes.BUSINESS_SERVICE_GROUPS_LIMIT_REACHED -> {
+                throw Error.GroupsLimitReached(error)
+            }
         }
     }.getOrThrow()
 }

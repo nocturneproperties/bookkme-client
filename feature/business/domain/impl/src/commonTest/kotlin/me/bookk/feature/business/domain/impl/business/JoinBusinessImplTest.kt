@@ -139,4 +139,20 @@ class JoinBusinessImplTest {
         assertFailsWith<JoinBusiness.Error.EmptyCode> { result.getOrThrow() }
         verifySuspend(VerifyMode.not) { fixture.redeemEmployeeInvitation(any()) }
     }
+
+    @Test
+    fun `throws EmployeesLimitReached when the business has no room for another employee`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val code = "ABCD1234"
+            everySuspend { fixture.redeemEmployeeInvitation(code) } throws
+                RedeemEmployeeInvitation.Error.EmployeesLimitReached(RuntimeException())
+
+            whenn()
+            then()
+            assertFailsWith<JoinBusiness.Error.EmployeesLimitReached> {
+                fixture.sut(code)
+            }
+        }
 }

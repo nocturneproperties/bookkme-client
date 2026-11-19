@@ -167,6 +167,14 @@ class ServiceGroupListViewModel(
                         )
                     }
 
+                    is CreateServiceGroup.Error.GroupsLimitReached -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_group_add_limit_reached.desc(),
+                            ),
+                        )
+                    }
+
                     else -> {
                         uiState.notifications.add(it.notification())
                     }

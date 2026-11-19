@@ -828,6 +828,43 @@ class ClientsListViewModelTest {
         }
 
     @Test
+    fun `shows clients limit reason in import summary when the business runs out of room`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.importClients(any(), any()) } returns
+                ClientImportResult(
+                    created = listOf(stubDetachedClient(name = "Anna")),
+                    rejected = listOf(
+                        RejectedClientImport(
+                            index = 1,
+                            reason = RejectedClientImport.Reason.LIMIT_REACHED,
+                        ),
+                        RejectedClientImport(
+                            index = 2,
+                            reason = RejectedClientImport.Reason.LIMIT_REACHED,
+                        ),
+                    ),
+                )
+            val sut = fixture.sut()
+            sut.tapImport()
+
+            whenn()
+            sut.pickContacts()
+
+            then()
+            assertEquals(
+                listOf(
+                    ClientsRes.strings.clients_import_result_created.format(1),
+                    ClientsRes.strings.clients_import_result_rejected.format(2),
+                    ClientsRes.strings.clients_import_result_reason_limit.format(2),
+                )
+                    .joinToStringDesc("\n"),
+                sut.importSummary().message,
+            )
+        }
+
+    @Test
     fun `does not show import summary when importing picked contacts fails`() = runUnitTest {
         given()
         val fixture = Fixture()

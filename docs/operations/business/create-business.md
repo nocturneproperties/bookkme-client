@@ -14,6 +14,10 @@ the new row and its permission columns come from `GET /api/business/mine` and ap
 selection. [Switch dashboard business](switch-dashboard-business.md) then only tells the server; its local
 write is a no-op because the business is already selected.
 
+A user can own several businesses. Once they own their limit (20 unless the backend raises it for them), the
+backend answers `BUSINESS_OWNED_BUSINESSES_LIMIT_REACHED` (200045). Both callers show it as a message. The backend
+no longer sends `BUSINESS_ALREADY_EXIST` (200001), so the use case does not map it.
+
 ```mermaid
 flowchart TD
     Start([invoke name]) --> Trim[name = name.trim]
@@ -29,9 +33,9 @@ flowchart TD
     Refresh --> Switch[SwitchDashboardBusiness business.id]
     Switch --> R([return Business])
     Net -- business error --> Code{errorCode}
-    Code -- 200001 --> Exists([throw Error.BusinessAlreadyExists])
     Code -- 200002 --> Invalid([throw Error.InvalidName])
     Code -- 200035 --> Currency([throw Error.InvalidCurrency])
+    Code -- 200045 OWNED_BUSINESSES_LIMIT_REACHED --> Limit([throw Error.OwnedBusinessesLimitReached])
     Code -- other --> EX([rethrow])
     Refresh -- error --> EX
 ```

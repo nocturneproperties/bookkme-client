@@ -18,5 +18,6 @@ flowchart TD
     Redeem -- ok --> R([Unit])
     Redeem -- Error.AlreadyProcessed --> E1([throw JoinBusiness.Error.AlreadyProcessed])
     Redeem -- Error.EmployeeExists --> E2([throw JoinBusiness.Error.EmployeeExists])
+    Redeem -- Error.EmployeesLimitReached --> E3([throw JoinBusiness.Error.EmployeesLimitReached])
     Redeem -- other --> EX([rethrow])
 ```

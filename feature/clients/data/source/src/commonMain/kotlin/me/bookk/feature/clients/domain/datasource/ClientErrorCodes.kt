@@ -7,4 +7,5 @@ object ClientErrorCodes {
     const val ACTION_CONFIRMATION_INVALID = BASE + 40
     const val CLIENT_VALIDATION_ERROR = BASE + 5
     const val CLIENT_MISSING_CONTACT_INFO = BASE + 25
+    const val CLIENTS_LIMIT_REACHED = BASE + 46
 }

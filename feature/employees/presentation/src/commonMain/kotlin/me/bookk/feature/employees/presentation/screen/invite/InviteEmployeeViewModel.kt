@@ -98,6 +98,13 @@ class InviteEmployeeViewModel(
                         )
                     }
 
+                    is CreateEmployeeInvitation.Error.EmployeesLimitReached -> {
+                        showSimpleMessage(
+                            EmployeesRes.strings.employees_invite_generate_error_employees_limit
+                                .desc(),
+                        )
+                    }
+
                     else -> {
                         uiState.notifications.add(it.notification())
                     }

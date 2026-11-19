@@ -70,6 +70,10 @@ internal class CreateAppointmentRequestImpl(
                     AppointmentErrorCodes.BUSINESS_EMPLOYEE_SUSPENDED -> {
                         throw Error.EmployeeSuspended()
                     }
+
+                    AppointmentErrorCodes.PENDING_REQUESTS_LIMIT_REACHED -> {
+                        throw Error.PendingRequestsLimitReached()
+                    }
                 }
             }
             .getOrThrow()

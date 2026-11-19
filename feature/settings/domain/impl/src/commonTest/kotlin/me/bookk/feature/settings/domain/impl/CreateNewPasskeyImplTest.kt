@@ -173,4 +173,62 @@ class CreateNewPasskeyImplTest {
         then()
         assertFailsWith<CreateNewPasskey.Error.ChallengeCreationFailed> { result.getOrThrow() }
     }
+
+    @Test
+    fun `throws PasskeysLimitReached when the challenge is refused for a full account`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend {
+                fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+            } throws
+                Error.BusinessError(13, "rejected")
+
+            whenn()
+            val result = runCatching { fixture.sut() }
+
+            then()
+            assertFailsWith<CreateNewPasskey.Error.PasskeysLimitReached> { result.getOrThrow() }
+        }
+
+    @Test
+    fun `throws PasskeysLimitReached when the verified passkey is refused for a full account`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend {
+                fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+            } returns
+                stubChallenge()
+            everySuspend { fixture.passKeyManager.create(any()) } returns
+                PasskeyVerificationPayload("{}")
+            everySuspend { fixture.passkeySettingsDataSource.sendVerifiedPasskey(any()) } throws
+                Error.BusinessError(13, "rejected")
+
+            whenn()
+            val result = runCatching { fixture.sut() }
+
+            then()
+            assertFailsWith<CreateNewPasskey.Error.PasskeysLimitReached> { result.getOrThrow() }
+        }
+
+    @Test
+    fun `rethrows other errors of the verified passkey unchanged`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend {
+            fixture.passkeySettingsDataSource.getRegistrationChallengeForNewPasskey()
+        } returns
+            stubChallenge()
+        everySuspend { fixture.passKeyManager.create(any()) } returns
+            PasskeyVerificationPayload("{}")
+        everySuspend { fixture.passkeySettingsDataSource.sendVerifiedPasskey(any()) } throws
+            Error.BusinessError(6, "expired")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<Error.BusinessError> { result.getOrThrow() }
+    }
 }

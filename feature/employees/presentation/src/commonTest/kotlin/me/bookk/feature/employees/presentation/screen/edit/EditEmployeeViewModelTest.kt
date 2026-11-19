@@ -1084,6 +1084,32 @@ class EditEmployeeViewModelTest {
     }
 
     @Test
+    fun `shows message when reinstating into a business with the maximum number of employees`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture(stubEmployee(suspendedAt = Instant.fromEpochMilliseconds(1)))
+            everySuspend { fixture.setEmployeeSuspension(any(), any(), any()) } throws
+                SetEmployeeSuspension.Error.EmployeesLimitReached(TestException())
+            val sut = fixture.sut()
+
+            whenn()
+            sut.confirmSuspensionDialog(ActionType.POSITIVE)
+
+            then()
+            val message =
+                sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(
+                EmployeesRes.strings.employees_edit_error_employees_limit.desc(),
+                message.message,
+            )
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+            assertEquals(
+                EmployeesRes.strings.employees_edit_reinstate.desc(),
+                sut.uiState.suspension.text,
+            )
+        }
+
+    @Test
     fun `shows message when the business owner cannot be suspended`() = runUnitTest {
         given()
         val fixture = Fixture()

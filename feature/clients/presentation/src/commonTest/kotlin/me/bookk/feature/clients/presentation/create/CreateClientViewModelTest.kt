@@ -265,6 +265,30 @@ class CreateClientViewModelTest {
     }
 
     @Test
+    fun `shows clients limit message when the business has the maximum number of clients`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.createClient(any()) } throws
+                CreateClient.Error.ClientsLimitReached()
+            val sut = fixture.sut()
+            sut.fillValidForm(email = "anna@example.com")
+
+            whenn()
+            sut.uiState.submit.onClick?.invoke()
+
+            then()
+            val message =
+                sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+            assertEquals(
+                ClientsRes.strings.clients_create_limit_reached_error.desc(),
+                message.message,
+            )
+            assertEquals(ValidationState.DEFAULT, sut.uiState.email.validationState)
+            assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+        }
+
+    @Test
     fun `keeps submit disabled after email taken error`() = runUnitTest {
         given()
         val fixture = Fixture()

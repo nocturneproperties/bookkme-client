@@ -26,17 +26,36 @@ internal class CreateNewPasskeyImpl(
                     SettingsErrorCodes.UNABLE_TO_GENERATE_REGISTRATION_CHALLENGE -> {
                         throw CreateNewPasskey.Error.ChallengeCreationFailed()
                     }
+
+                    SettingsErrorCodes.PASSKEYS_LIMIT_REACHED -> {
+                        throw CreateNewPasskey.Error.PasskeysLimitReached()
+                    }
                 }
             }
             .getOrThrow()
         val payload = createPasskeyFrom(challenge)
-        passkeySettingsDataSource.sendVerifiedPasskey(
-            ClientSignUpResult(
-                requestId = challenge.requestId,
-                publicKeyCredentialJson = payload.jsonPayload,
-            ),
-        )
+        sendVerifiedPasskey(challenge, payload)
         return getAvailablePasskeys()
+    }
+
+    private suspend fun sendVerifiedPasskey(
+        challenge: AddPasskeyChallenge,
+        payload: PasskeyVerificationPayload,
+    ) {
+        runCatching {
+            passkeySettingsDataSource.sendVerifiedPasskey(
+                ClientSignUpResult(
+                    requestId = challenge.requestId,
+                    publicKeyCredentialJson = payload.jsonPayload,
+                ),
+            )
+        }
+            .onBusinessError {
+                if (it.errorCode == SettingsErrorCodes.PASSKEYS_LIMIT_REACHED) {
+                    throw CreateNewPasskey.Error.PasskeysLimitReached()
+                }
+            }
+            .getOrThrow()
     }
 
     private suspend fun createPasskeyFrom(

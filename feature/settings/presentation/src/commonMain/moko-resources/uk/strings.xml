@@ -43,6 +43,7 @@
     <string name="settings_passkey_add_button">Додати</string>
     <string name="settings_passkey_added_on_format">Додано %s</string>
     <string name="settings_passkey_delete_dialog_title">Видалити ключ доступу</string>
+    <string name="settings_passkey_limit_reached_error">У вашому акаунті вже максимальна кількість ключів доступу. Видаліть один, щоб додати новий.</string>
     <string name="settings_passkey_delete_dialog_message">Видалити ключ доступу «%s»? Ви більше не зможете входити з цим ключем.</string>
 
     <string name="settings_notifications_title">Сповіщення</string>

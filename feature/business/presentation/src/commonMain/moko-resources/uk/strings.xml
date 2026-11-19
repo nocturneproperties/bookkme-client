@@ -33,6 +33,7 @@
     <string name="business_dashboard_switch_join_error_empty_code">Введіть код запрошення</string>
     <string name="business_dashboard_switch_join_error_already_processed">Це запрошення вже використано або воно більше не дійсне</string>
     <string name="business_dashboard_switch_join_error_employee_exists">Ви вже є працівником цього бізнесу</string>
+    <string name="business_dashboard_switch_join_error_employees_limit">У цьому бізнесі вже максимальна кількість працівників.</string>
 
     <string name="business_settings_title">Налаштування бізнесу</string>
     <string name="business_settings_add_photo">Додати фото</string>
@@ -84,7 +85,7 @@
     <string name="business_settings_invalid_day_off_range_error">Дата початку вихідних має бути раніше за дату завершення</string>
     <string name="business_analytics_coming_soon_title">Аналітика незабаром зʼявиться</string>
     <string name="business_analytics_coming_soon_message">Ми готуємо звіти щодо вашого доходу, записів і клієнтів. Вони зʼявляться тут в одному з наступних оновлень.</string>
-    <string name="create_business_already_exists_error">Цей бізнес уже існує. Оновіть список бізнесів і спробуйте ще раз.</string>
+    <string name="create_business_limit_reached_error">Ви вже володієте максимальною кількістю бізнесів.</string>
     <string name="create_business_invalid_name_error">Введіть коректну назву бізнесу.</string>
     <string name="business_settings_currency_locked_error">Валюту цього бізнесу більше не можна змінити.</string>
     <string name="business_settings_retention_title">Строк зберігання даних клієнтів</string>

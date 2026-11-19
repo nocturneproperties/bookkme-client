@@ -157,6 +157,14 @@ class AddServiceViewModel(
                         )
                     }
 
+                    is CreateService.Error.ServicesLimitReached -> {
+                        uiState.notifications.add(
+                            PresentationNotification.Message.simple(
+                                ServicesRes.strings.services_limit_reached_error.desc(),
+                            ),
+                        )
+                    }
+
                     else -> {
                         uiState.notifications.add(it.notification())
                     }

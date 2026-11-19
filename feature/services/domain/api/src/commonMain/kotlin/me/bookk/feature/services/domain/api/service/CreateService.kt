@@ -21,5 +21,8 @@ interface CreateService {
         class InvalidBusinessCurrency :
             Exception(),
             Error
+        class ServicesLimitReached :
+            Exception(),
+            Error
     }
 }

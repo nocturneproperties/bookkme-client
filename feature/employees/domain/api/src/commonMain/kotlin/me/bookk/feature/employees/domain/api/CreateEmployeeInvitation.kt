@@ -15,5 +15,9 @@ interface CreateEmployeeInvitation {
             cause: Throwable,
         ) : Throwable(cause),
             Error
+        class EmployeesLimitReached(
+            cause: Throwable,
+        ) : Throwable(cause),
+            Error
     }
 }

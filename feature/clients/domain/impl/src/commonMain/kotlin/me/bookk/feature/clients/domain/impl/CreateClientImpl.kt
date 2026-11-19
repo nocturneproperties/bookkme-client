@@ -12,8 +12,14 @@ internal class CreateClientImpl(
     override suspend fun invoke(client: Client): Client {
         return runCatching { clientsDataSource.createClient(client.trimmed()) }
             .onBusinessError {
-                if (it.errorCode == ClientErrorCodes.CLIENT_EXISTS) {
-                    throw CreateClient.Error.EmailTaken()
+                when (it.errorCode) {
+                    ClientErrorCodes.CLIENT_EXISTS -> {
+                        throw CreateClient.Error.EmailTaken()
+                    }
+
+                    ClientErrorCodes.CLIENTS_LIMIT_REACHED -> {
+                        throw CreateClient.Error.ClientsLimitReached()
+                    }
                 }
             }
             .getOrThrow()

@@ -195,6 +195,14 @@ class CreateAppointmentRequestImplTest {
     }
 
     @Test
+    fun `throws PendingRequestsLimitReached on PENDING_REQUESTS_LIMIT_REACHED`() = runUnitTest {
+        assertMapped(
+            AppointmentErrorCodes.PENDING_REQUESTS_LIMIT_REACHED,
+            Error.PendingRequestsLimitReached::class,
+        )
+    }
+
+    @Test
     fun `rethrows unmapped business errors`() = runUnitTest {
         given()
         val fixture = Fixture()

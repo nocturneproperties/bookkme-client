@@ -21,17 +21,20 @@ private fun Project.hasAndroidResourcesInHostTests(): Boolean {
 private val modulesWithWebTarget = setOf(
     ":core",
     ":core:domain",
+    ":core:data",
     ":core:testFixtures",
     ":core:presentation",
     ":designsystem",
     ":library:money",
     ":library:device:api",
     ":library:device:impl",
+    ":library:credentials:api",
     ":library:crashreporting:api",
     ":library:cache:api",
     ":library:cache:impl",
     ":library:files:api",
     ":database",
+    ":feature:authorization:data",
 )
 
 private val layersWithWebTarget = listOf(":domain:api", ":domain:impl", ":data:source")

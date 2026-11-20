@@ -7,11 +7,11 @@ import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.onClick
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
+import library.telegram.TelegramMainButton
 import library.telegram.TelegramWebApp
 import me.bookk.core.presentation.rememberViewModel
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentsState
-import me.bookk.site.designsystem.components.ActionButton
 import me.bookk.site.designsystem.components.CheckBox
 import me.bookk.site.designsystem.components.TextBlock
 import me.bookk.site.designsystem.components.TextLink
@@ -30,7 +30,7 @@ fun TelegramSignInScreen(webApp: TelegramWebApp) {
     when (state.phase) {
         TelegramSignInPhase.SIGNING_IN -> MessageText(state.message)
         TelegramSignInPhase.LEGAL_ACCEPTANCE -> LegalAcceptance(state, webApp)
-        TelegramSignInPhase.FAILED -> Failure(state)
+        TelegramSignInPhase.FAILED -> Failure(state, webApp)
     }
 }
 
@@ -45,9 +45,9 @@ private fun MessageText(text: StringDesc) {
 }
 
 @Composable
-private fun Failure(state: TelegramSignInState) {
+private fun Failure(state: TelegramSignInState, webApp: TelegramWebApp) {
     MessageText(state.message)
-    ActionButton(state.retryButton)
+    TelegramMainButton(webApp, state.retryButton)
 }
 
 @Composable
@@ -55,7 +55,7 @@ private fun LegalAcceptance(state: TelegramSignInState, webApp: TelegramWebApp) 
     MessageText(state.message)
     state.legalDocuments?.let { LegalDocumentLinks(it, webApp) }
     CheckBox(state.legalAcceptance)
-    ActionButton(state.continueButton)
+    TelegramMainButton(webApp, state.continueButton)
 }
 
 @Composable

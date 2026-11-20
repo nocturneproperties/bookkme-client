@@ -62,5 +62,6 @@ private fun PaintTelegramChrome(webApp: TelegramWebApp) {
     LaunchedEffect(webApp, background) {
         webApp.setHeaderColor(background)
         webApp.setBackgroundColor(background)
+        if (webApp.supports(TelegramFeature.BOTTOM_BAR_COLOR)) webApp.setBottomBarColor(background)
     }
 }

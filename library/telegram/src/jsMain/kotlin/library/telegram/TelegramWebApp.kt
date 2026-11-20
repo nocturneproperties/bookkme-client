@@ -5,6 +5,20 @@ external interface TelegramWebApp {
     val initData: String
     val initDataUnsafe: TelegramInitData
 
+    @JsName("MainButton")
+    val mainButton: TelegramBottomButton
+
+    @JsName("SecondaryButton")
+    val secondaryButton: TelegramBottomButton
+
+    @JsName("BackButton")
+    val backButton: TelegramBackButton
+
+    @JsName("HapticFeedback")
+    val hapticFeedback: TelegramHapticFeedback
+
+    fun isVersionAtLeast(version: String): Boolean
+
     fun ready()
 
     fun expand()
@@ -14,6 +28,10 @@ external interface TelegramWebApp {
     fun setHeaderColor(color: String)
 
     fun setBackgroundColor(color: String)
+
+    fun setBottomBarColor(color: String)
+
+    fun showPopup(params: TelegramPopupParams, callback: (String?) -> Unit)
 
     fun onEvent(eventType: String, eventHandler: () -> Unit)
 
@@ -29,6 +47,24 @@ external interface TelegramUser {
     val languageCode: String?
 }
 
+external interface TelegramBackButton {
+    fun show(): TelegramBackButton
+
+    fun hide(): TelegramBackButton
+
+    fun onClick(callback: () -> Unit): TelegramBackButton
+
+    fun offClick(callback: () -> Unit): TelegramBackButton
+}
+
+external interface TelegramHapticFeedback {
+    fun notificationOccurred(type: String): TelegramHapticFeedback
+}
+
 object TelegramEvents {
     const val THEME_CHANGED = "themeChanged"
+}
+
+object TelegramHaptics {
+    const val SUCCESS = "success"
 }

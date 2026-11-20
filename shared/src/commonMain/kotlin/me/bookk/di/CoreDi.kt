@@ -1,13 +1,9 @@
 package me.bookk.di
 
-import kotlinx.coroutines.CoroutineScope
 import library.crashreporting.api.CrashReporter
 import library.credentials.api.PasskeyCredentialUpdater
 import library.credentials.di.CredentialModuleFactory
 import library.picker.PickOptionStateFactory
-import me.bookk.core.coroutine.createApplicationScope
-import me.bookk.core.presentation.di.presentationCoreModule
-import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.database.business.di.businessDatabaseModule
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.authorization.presentation.AuthStateFactory
@@ -18,28 +14,14 @@ import me.bookk.feature.employees.presentation.EmployeesStateFactory
 import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.presentation.StateFactoryCreator
-import me.bookk.shared.BuildKonfig
-import me.bookk.shared.ErrorMapperImpl
-import org.koin.core.qualifier.named
+import me.bookk.shared.common.di.commonModule
 import org.koin.dsl.module
 
 internal fun coreModule(creator: StateFactoryCreator) = module {
-    single<ErrorMapper> { ErrorMapperImpl() }
     single<StateFactoryCreator> { creator }
-    single<CoroutineScope> { createApplicationScope() }
-    single<String>(named("baseUrl")) { BuildKonfig.BASE_URL }
-    single<String>(named("relyingParty")) {
-        BuildKonfig.BASE_URL
-            .removeSuffix("/api")
-            .removePrefix("https://")
-            .split(".")
-            .takeLast(2)
-            .joinToString(".")
-    }
     includes(
-        presentationCoreModule(),
+        commonModule(),
         stateModule(),
-        networkModule(),
         businessDatabaseModule(),
     )
 }

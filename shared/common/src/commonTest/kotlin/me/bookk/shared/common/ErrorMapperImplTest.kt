@@ -1,4 +1,4 @@
-package me.bookk.shared
+package me.bookk.shared.common
 
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem

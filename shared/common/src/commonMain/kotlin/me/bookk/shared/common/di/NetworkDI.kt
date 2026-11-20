@@ -1,4 +1,4 @@
-package me.bookk.di
+package me.bookk.shared.common.di
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -34,17 +34,20 @@ import me.bookk.core.data.HttpClientType
 import me.bookk.core.data.dataSerializer
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.RefreshToken
-import me.bookk.shared.BuildKonfig
-import me.bookk.shared.LoggerImpl
+import me.bookk.shared.common.BuildKonfig
+import me.bookk.shared.common.LoggerImpl
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-internal fun networkModule() = module {
-    single { buildClient(installAuth = true) }
-    factory(named(HttpClientType.NO_AUTH)) { buildClient(installAuth = false) }
+internal fun networkModule(): Module {
+    return module {
+        single { buildClient(installAuth = true) }
+        factory(named(HttpClientType.NO_AUTH)) { buildClient(installAuth = false) }
+    }
 }
 
 private fun debugProxy(url: Url): ProxyConfig = when (url.protocol) {

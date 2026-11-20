@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.gradle.targets.js.ir.JsIrBinary
 import org.jetbrains.kotlin.gradle.targets.js.ir.KotlinJsIrTarget
 
 private val modulesWithAndroidResourcesInHostTests =
-    setOf(":designsystem", ":shared", ":library:picker")
+    setOf(":designsystem", ":shared:common", ":library:picker")
 
 private fun Project.hasAndroidResourcesInHostTests(): Boolean {
     return path in modulesWithAndroidResourcesInHostTests || path.endsWith(":presentation")
@@ -36,6 +36,7 @@ private val modulesWithWebTarget = setOf(
     ":database:account",
     ":database:client",
     ":feature:authorization:data",
+    ":shared:common",
 )
 
 private val layersWithWebTarget = listOf(":domain:api", ":domain:impl", ":data:source")

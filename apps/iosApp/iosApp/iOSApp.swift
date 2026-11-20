@@ -7,7 +7,7 @@ struct iOSApp: App {
 	@UIApplicationDelegateAdaptor(FirebaseDelegate.self) var delegate
     
     init() {
-        DISetupKt.doInitDI(creator: IOSStateFactoryCreator())
+        DISetupKt.doInitBusinessApp(creator: IOSStateFactoryCreator())
 		if CommandLine.arguments.contains("--disable-animations") {
 			UIView.setAnimationsEnabled(false)
 		}

@@ -1,4 +1,4 @@
-package me.bookk.shared
+package me.bookk.shared.common
 
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.CancellationException
@@ -10,7 +10,7 @@ import me.bookk.core.presentation.error.ErrorDescription
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.presentation.error.PresentationNotification
 
-class ErrorMapperImpl : ErrorMapper {
+internal class ErrorMapperImpl : ErrorMapper {
     private val logger = Logger.create("ErrorMapper")
     override fun mapToNotification(e: Throwable): PresentationNotification {
         if (BuildKonfig.DEBUG) {

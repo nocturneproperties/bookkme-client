@@ -35,8 +35,8 @@ jobs:
       - name: Test & Build Site
         if: ${{ !cancelled() }}
         run: |
-          ./gradlew :site:jsNodeTest
-          ./gradlew :site:jsBrowserProductionWebpack
+          ./gradlew :site:jsNodeTest -Pbuildkonfig.flavor=devDebug
+          ./gradlew :site:jsBrowserProductionWebpack -Pbuildkonfig.flavor=devDebug
 
       - name: Upload test reports
         if: failure()

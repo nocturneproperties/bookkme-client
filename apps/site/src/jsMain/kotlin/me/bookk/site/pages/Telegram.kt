@@ -15,6 +15,7 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.site.designsystem.resources.WebLocalization
+import me.bookk.site.di.initClientApp
 import me.bookk.site.layout.PageHead
 import me.bookk.site.layout.PageLayoutData
 import me.bookk.site.navigation.SiteNavigation
@@ -32,6 +33,7 @@ val TelegramPageStyle = CssStyle.base {
 @InitRoute
 fun initTelegramPage(ctx: InitRouteContext) {
     WebLocalization.show(preferredLanguage())
+    initClientApp()
 }
 
 @Page

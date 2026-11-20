@@ -22,6 +22,7 @@ rootProject.name = "Bookk"
 
 // Shared
 include(":shared")
+include(":shared:common")
 include(":database:account")
 include(":database:business")
 include(":database:client")

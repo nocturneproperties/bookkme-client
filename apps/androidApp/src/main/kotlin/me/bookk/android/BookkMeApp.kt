@@ -2,7 +2,7 @@ package me.bookk.android
 
 import android.app.Application
 import android.os.StrictMode
-import me.bookk.di.initDI
+import me.bookk.di.initBusinessApp
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 
@@ -19,7 +19,7 @@ class BookkMeApp : Application() {
                 .detectAll()
                 .build(),
         )
-        initDI(AndroidStateFactoryCreator()) {
+        initBusinessApp(AndroidStateFactoryCreator()) {
             androidLogger()
             androidContext(this@BookkMeApp)
         }

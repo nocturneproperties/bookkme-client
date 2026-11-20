@@ -1,4 +1,4 @@
-package me.bookk.shared
+package me.bookk.shared.common
 
 import io.github.aakira.napier.Napier
 import me.bookk.core.Logger

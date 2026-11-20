@@ -36,6 +36,8 @@ jobs:
 
       - name: Export
         uses: ./.github/actions/site-export
+        with:
+          flavor: prodRelease
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7

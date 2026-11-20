@@ -130,6 +130,13 @@ kotlin {
             implementation(npm("@sqlite.org/sqlite-wasm", libs.versions.npm.sqlite.wasm.get()))
             implementation(projects.site.designsystem)
             implementation(projects.site.domcompat)
+            implementation(projects.shared.common)
+            implementation(projects.library.device.impl)
+            implementation(projects.library.cache.impl)
+            implementation(projects.database.client)
+            implementation(projects.feature.authorization.domain.impl)
+            implementation(projects.feature.authorization.data)
+            implementation(libs.koin.core)
             implementation(libs.kmm.resources)
             implementation(libs.kobweb.compose.runtime)
             implementation(libs.compose.html.core)
@@ -139,6 +146,11 @@ kotlin {
         }
         jsTest.dependencies {
             implementation(projects.core.testFixtures)
+            implementation(projects.core.data)
+            implementation(projects.core.presentation)
+            implementation(projects.feature.authorization.domain.api)
+            implementation(libs.ktor.client.core)
+            implementation(libs.koin.core)
             implementation(libs.test.kotlin)
             implementation(libs.kotlinx.coroutines.test)
         }

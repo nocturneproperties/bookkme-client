@@ -6,6 +6,9 @@ The signed-in user's own profile. There is at most one row, because the DAO read
 Written by `CommonUserProfileDataSource` and read through `UserProfileCRUD`
 ([diagram](../operations/authorization/user-profile-crud.md)).
 
+`user_profile` is an account table: its entity and DAO live in `:database:account`, and both `BusinessDatabase`
+and `ClientDatabase` hold a copy (see [README](README.md)).
+
 ```mermaid
 erDiagram
     USER_PROFILE {

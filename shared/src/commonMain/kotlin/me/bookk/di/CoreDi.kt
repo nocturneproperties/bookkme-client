@@ -8,7 +8,7 @@ import library.picker.PickOptionStateFactory
 import me.bookk.core.coroutine.createApplicationScope
 import me.bookk.core.presentation.di.presentationCoreModule
 import me.bookk.core.presentation.error.ErrorMapper
-import me.bookk.database.di.databaseModule
+import me.bookk.database.business.di.businessDatabaseModule
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.authorization.presentation.AuthStateFactory
 import me.bookk.feature.business.presentation.BusinessStateFactory
@@ -40,7 +40,7 @@ internal fun coreModule(creator: StateFactoryCreator) = module {
         presentationCoreModule(),
         stateModule(),
         networkModule(),
-        databaseModule(),
+        businessDatabaseModule(),
     )
 }
 

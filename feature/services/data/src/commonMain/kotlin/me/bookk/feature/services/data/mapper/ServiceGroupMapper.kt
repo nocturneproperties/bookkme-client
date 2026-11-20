@@ -1,6 +1,6 @@
 package me.bookk.feature.services.data.mapper
 
-import me.bookk.database.entity.ServiceGroupEntity
+import me.bookk.database.business.entity.ServiceGroupEntity
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 
 internal fun ServiceGroup.toDb(): ServiceGroupEntity {

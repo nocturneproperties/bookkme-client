@@ -19,8 +19,10 @@ class KMMDatabaseConventionPlugin : Plugin<Project> {
                 apply(libs.plugins.google.ksp.get().pluginId)
             }
 
-            extensions.getByType<KotlinMultiplatformExtension>().apply {
-                applyConvention(target)
+            val kotlin = extensions.getByType<KotlinMultiplatformExtension>()
+            kotlin.applyConvention(target)
+            val hasJsTarget = kotlin.targets.findByName("js") != null
+            kotlin.apply {
                 sourceSets.commonMain.dependencies {
                     implementation(libs.room.runtime)
                     implementation(libs.room.sqlite.async)
@@ -31,15 +33,19 @@ class KMMDatabaseConventionPlugin : Plugin<Project> {
                 sourceSets.iosMain.dependencies {
                     implementation(libs.room.sqlite)
                 }
-                sourceSets.jsMain.dependencies {
-                    implementation(libs.room.sqlite.web)
+                if (hasJsTarget) {
+                    sourceSets.jsMain.dependencies {
+                        implementation(libs.room.sqlite.web)
+                    }
                 }
             }
             dependencies {
                 add("kspAndroid", libs.room.compiler)
                 add("kspIosSimulatorArm64", libs.room.compiler)
                 add("kspIosArm64", libs.room.compiler)
-                add("kspJs", libs.room.compiler)
+                if (hasJsTarget) {
+                    add("kspJs", libs.room.compiler)
+                }
             }
         }
     }

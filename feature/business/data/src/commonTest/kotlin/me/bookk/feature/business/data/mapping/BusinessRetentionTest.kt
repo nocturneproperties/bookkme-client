@@ -6,8 +6,8 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.entity.DEFAULT_CLIENT_DATA_RETENTION_MONTHS
-import me.bookk.database.relation.BusinessLocal
+import me.bookk.database.business.entity.DEFAULT_CLIENT_DATA_RETENTION_MONTHS
+import me.bookk.database.business.relation.BusinessLocal
 import me.bookk.feature.business.data.remote.model.BusinessPermissionsRemote
 import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.ResourcePermissionRemote

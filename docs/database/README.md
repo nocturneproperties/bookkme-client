@@ -1,14 +1,32 @@
 # Local database ER diagrams
 
-The app keeps one on-device Room database, `bookk_me.db` (`database/src/commonMain/kotlin/me/bookk/database/AppDatabase.kt`),
-shared by every feature. The same schema runs on Android and iOS through the bundled SQLite driver. It is a
-**read cache** of what the backend holds: every row gets there after a successful network call, and nothing is
-queued offline and pushed later. Screens observe the tables through `Flow` DAO queries, so a write to the
-database is what redraws the screen.
+There are two on-device Room databases, one per audience. Each app opens exactly one of them:
 
-The `database` module holds no domain types. Each feature's data module owns the tables it writes and does the
+| Database | Module | File | Platforms | Tables |
+|---|---|---|---|---|
+| `BusinessDatabase` | `:database:business` | `bookk_me.db` | Android, iOS (bundled SQLite driver) | account tables + every business table below |
+| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web (SQLite WASM worker, see `apps/site/README.md`) | account tables only, for now |
+
+The account tables (`user_profile`, `notification_settings` and its channels, `legal_document_status`,
+`personal_data_export`) belong to the signed-in user rather than to a business, so both databases need them.
+Their entities, DAOs, relation class and the shared type converters live once in `:database:account`. Each
+database lists them in its own `@Database` and implements `AccountDatabase`, so each database file holds its own
+copy of these tables, and foreign keys and cascades between them stay inside that database.
+`accountDaoModule()` binds the account DAOs from whichever `AccountDatabase` the app installed, which lets
+`authorization/data` and `settings/data` depend on `:database:account` alone.
+
+Room generates the DAO implementations (for example `UserProfileDao_Impl` in the account DAO package) inside
+each database module. So no target may depend on both `:database:business` and `:database:client`, or the
+generated classes collide.
+
+Both databases are a **read cache** of what the backend holds: every row gets there after a successful network
+call, and nothing is queued offline and pushed later. Screens observe the tables through `Flow` DAO queries,
+so a write to the database is what redraws the screen.
+
+The database modules hold no domain types. Each feature's data module owns the tables it writes and does the
 entity ↔ domain mapping itself (`feature/<name>/data/src/commonMain/.../mapping/`). The diagrams below are
-grouped by the feature whose datasource **writes** the table.
+grouped by the feature whose datasource **writes** the table. They describe `BusinessDatabase`. `ClientDatabase`
+currently holds only the account tables from [Authorization](authorization.md) and [Settings](settings.md).
 
 - [Authorization](authorization.md): `user_profile`
 - [Business](business.md): `business`, its schedule tables, `dashboard_business` (the selected business) and `business_data_export`
@@ -22,14 +40,16 @@ grouped by the feature whose datasource **writes** the table.
 
 ## Conventions
 
-- **Version and migrations.** The schema is at `version = 26`. Every step from 1 to 22 is a Room
-  `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
+- **Version and migrations.** Each database has its own version and migration history. `BusinessDatabase` is
+  at `version = 26`; it kept the schema history of the former single `AppDatabase` (same file, same schema), so
+  the split needed no migration. `ClientDatabase` starts at `version = 1` with no migrations yet.
+  In `BusinessDatabase`, every step from 1 to 22 is a Room `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The manual 22 → 23 migration (`DefaultBusinessRetention`) makes business retention non-null,
   backfills missing values with 36 months and preserves custom periods and dependent rows.
   The additive 23 → 24 auto-migration adds the `legal_document_status` table.
   The additive 24 → 25 auto-migration adds the singleton `personal_data_export` table.
   The additive 25 → 26 auto-migration adds the per-business `business_data_export` table.
-  The builder also sets `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
+  Both builders set `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
   If a migration is missing, the cache is wiped instead of the app crashing, which is safe only because every
   table can be refetched.
 - **Type converters.** `Uuid` → `TEXT`, `Instant` → epoch millis `INTEGER`, `Duration` → `INTEGER`.
@@ -83,5 +103,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `business_data_export` and cached JSON (`caches/business_data_exports/`, outside Room) | `CommonDataExportDataSource` (business data module) | ✅ `businessDataExportDao.clear()` and the whole business export directory removed through `FileProvider.deleteRecursively()`; a business's directory is also cleared when a new file is saved, on export start, on refreshes returning a non-downloadable status and when the backend reports the caller no longer owns the business (its row is deleted too); personal export files are unaffected |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
 
-Every table is cleared on logout. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)
+Every table is cleared on logout. The account rows (`user_profile`, `notification_settings`, `legal_document_status`,
+`personal_data_export`) are cleared through the account DAOs, so the same data sources clear them in whichever
+database the app installed. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)
 deletes businesses the user no longer has, together with their cascaded rows.

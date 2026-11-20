@@ -1,6 +1,6 @@
 package me.bookk.feature.settings.data.mapping
 
-import me.bookk.database.entity.LegalDocumentStatusEntity
+import me.bookk.database.account.entity.LegalDocumentStatusEntity
 import me.bookk.feature.settings.domain.api.entity.LegalDocument
 import me.bookk.feature.settings.domain.api.entity.LegalDocumentStatus
 import me.bookk.feature.settings.domain.api.entity.LegalDocumentVersion

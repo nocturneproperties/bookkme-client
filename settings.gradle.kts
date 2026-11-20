@@ -22,7 +22,9 @@ rootProject.name = "Bookk"
 
 // Shared
 include(":shared")
-include(":database")
+include(":database:account")
+include(":database:business")
+include(":database:client")
 
 // App
 include(":androidApp")

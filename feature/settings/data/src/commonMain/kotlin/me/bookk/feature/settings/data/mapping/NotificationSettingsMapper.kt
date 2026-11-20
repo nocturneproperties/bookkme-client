@@ -1,8 +1,8 @@
 package me.bookk.feature.settings.data.mapping
 
-import me.bookk.database.entity.NotificationSettingsChannelEntity
-import me.bookk.database.entity.NotificationSettingsEntity
-import me.bookk.database.relation.NotificationSettingsLocal
+import me.bookk.database.account.entity.NotificationSettingsChannelEntity
+import me.bookk.database.account.entity.NotificationSettingsEntity
+import me.bookk.database.account.relation.NotificationSettingsLocal
 import me.bookk.feature.settings.data.remote.model.NotificationChannelRemote
 import me.bookk.feature.settings.data.remote.model.NotificationChannelSettingsRemote
 import me.bookk.feature.settings.data.remote.model.UpdateNotificationSettingsRequestRemote

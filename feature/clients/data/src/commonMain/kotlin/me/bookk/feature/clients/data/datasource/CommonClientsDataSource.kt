@@ -15,7 +15,7 @@ import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.database.dao.ClientsDao
+import me.bookk.database.business.dao.ClientsDao
 import me.bookk.feature.clients.data.mapping.toDbEntity
 import me.bookk.feature.clients.data.mapping.toDomain
 import me.bookk.feature.clients.data.mapping.toRemote

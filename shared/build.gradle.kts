@@ -76,7 +76,7 @@ kotlin {
         }
         commonMain.dependencies {
             // Core
-            implementation(projects.database)
+            implementation(projects.database.business)
             implementation(projects.core.data)
             api(projects.core)
             api(projects.core.domain)

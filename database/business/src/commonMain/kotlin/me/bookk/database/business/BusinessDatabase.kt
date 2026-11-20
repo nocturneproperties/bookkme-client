@@ -1,0 +1,163 @@
+package me.bookk.database.business
+
+import androidx.room3.AutoMigration
+import androidx.room3.ColumnTypeConverters
+import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
+import androidx.room3.RoomDatabaseConstructor
+import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.database.account.AccountDatabase
+import me.bookk.database.account.dao.LegalDocumentStatusDao
+import me.bookk.database.account.dao.NotificationSettingsDao
+import me.bookk.database.account.dao.PersonalDataExportDao
+import me.bookk.database.account.dao.UserProfileDao
+import me.bookk.database.account.entity.LegalDocumentStatusEntity
+import me.bookk.database.account.entity.NotificationSettingsChannelEntity
+import me.bookk.database.account.entity.NotificationSettingsEntity
+import me.bookk.database.account.entity.PersonalDataExportEntity
+import me.bookk.database.account.entity.UserProfileEntity
+import me.bookk.database.business.dao.AppointmentDao
+import me.bookk.database.business.dao.AppointmentRequestDao
+import me.bookk.database.business.dao.AppointmentSettingsDao
+import me.bookk.database.business.dao.BusinessDao
+import me.bookk.database.business.dao.BusinessDataExportDao
+import me.bookk.database.business.dao.ClientsDao
+import me.bookk.database.business.dao.EmployeeDao
+import me.bookk.database.business.dao.EmployeeInvitationDao
+import me.bookk.database.business.dao.ServiceDao
+import me.bookk.database.business.dao.ServiceGroupDao
+import me.bookk.database.business.entity.AppointmentAdjustmentServiceEntity
+import me.bookk.database.business.entity.AppointmentEntity
+import me.bookk.database.business.entity.AppointmentRequestEntity
+import me.bookk.database.business.entity.AppointmentRequestServiceSnapshotEntity
+import me.bookk.database.business.entity.AppointmentServiceSnapshotEntity
+import me.bookk.database.business.entity.AppointmentSettingsDayOffEntity
+import me.bookk.database.business.entity.AppointmentSettingsDayScheduleEntity
+import me.bookk.database.business.entity.AppointmentSettingsEntity
+import me.bookk.database.business.entity.AppointmentSettingsWorkHourEntity
+import me.bookk.database.business.entity.BusinessDataExportEntity
+import me.bookk.database.business.entity.BusinessDayOffEntity
+import me.bookk.database.business.entity.BusinessDayScheduleEntity
+import me.bookk.database.business.entity.BusinessEntity
+import me.bookk.database.business.entity.BusinessWorkHourEntity
+import me.bookk.database.business.entity.ClientEntity
+import me.bookk.database.business.entity.DashboardBusinessEntity
+import me.bookk.database.business.entity.EmployeeDayOffEntity
+import me.bookk.database.business.entity.EmployeeDayScheduleEntity
+import me.bookk.database.business.entity.EmployeeEntity
+import me.bookk.database.business.entity.EmployeeInvitationEntity
+import me.bookk.database.business.entity.EmployeeServiceSnapshotEntity
+import me.bookk.database.business.entity.EmployeeWorkHourEntity
+import me.bookk.database.business.entity.ServiceEntity
+import me.bookk.database.business.entity.ServiceGroupEntity
+import me.bookk.database.business.migration.DefaultBusinessRetention
+import me.bookk.database.business.migration.DeleteEmployeeInvitationEmail
+import me.bookk.database.converter.DurationConverter
+import me.bookk.database.converter.InstantConverter
+import me.bookk.database.converter.UuidConverter
+
+@Database(
+    entities = [
+        UserProfileEntity::class,
+        BusinessEntity::class,
+        BusinessDayScheduleEntity::class,
+        BusinessWorkHourEntity::class,
+        BusinessDayOffEntity::class,
+        DashboardBusinessEntity::class,
+        ClientEntity::class,
+        ServiceEntity::class,
+        ServiceGroupEntity::class,
+        AppointmentEntity::class,
+        AppointmentServiceSnapshotEntity::class,
+        AppointmentAdjustmentServiceEntity::class,
+        AppointmentSettingsEntity::class,
+        AppointmentSettingsDayScheduleEntity::class,
+        AppointmentSettingsWorkHourEntity::class,
+        AppointmentSettingsDayOffEntity::class,
+        AppointmentRequestEntity::class,
+        AppointmentRequestServiceSnapshotEntity::class,
+        NotificationSettingsEntity::class,
+        NotificationSettingsChannelEntity::class,
+        EmployeeInvitationEntity::class,
+        EmployeeEntity::class,
+        EmployeeDayScheduleEntity::class,
+        EmployeeWorkHourEntity::class,
+        EmployeeDayOffEntity::class,
+        EmployeeServiceSnapshotEntity::class,
+        LegalDocumentStatusEntity::class,
+        PersonalDataExportEntity::class,
+        BusinessDataExportEntity::class,
+    ],
+    version = 26,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8),
+        AutoMigration(from = 8, to = 9),
+        AutoMigration(from = 9, to = 10),
+        AutoMigration(from = 10, to = 11),
+        AutoMigration(from = 11, to = 12, spec = DeleteEmployeeInvitationEmail::class),
+        AutoMigration(from = 12, to = 13),
+        AutoMigration(from = 13, to = 14),
+        AutoMigration(from = 14, to = 15),
+        AutoMigration(from = 15, to = 16),
+        AutoMigration(from = 16, to = 17),
+        AutoMigration(from = 17, to = 18),
+        AutoMigration(from = 18, to = 19),
+        AutoMigration(from = 19, to = 20),
+        AutoMigration(from = 20, to = 21),
+        AutoMigration(from = 21, to = 22),
+        AutoMigration(from = 23, to = 24),
+        AutoMigration(from = 24, to = 25),
+        AutoMigration(from = 25, to = 26),
+    ],
+)
+@ColumnTypeConverters(
+    UuidConverter::class,
+    DurationConverter::class,
+    InstantConverter::class,
+)
+@ConstructedBy(BusinessDatabaseConstructor::class)
+abstract class BusinessDatabase :
+    RoomDatabase(),
+    AccountDatabase {
+
+    abstract override fun profileDao(): UserProfileDao
+    abstract fun businessDao(): BusinessDao
+    abstract fun clientDao(): ClientsDao
+    abstract fun serviceDao(): ServiceDao
+    abstract fun serviceGroupDao(): ServiceGroupDao
+    abstract fun appointmentDao(): AppointmentDao
+    abstract fun appointmentRequestDao(): AppointmentRequestDao
+    abstract fun appointmentSettingsDao(): AppointmentSettingsDao
+    abstract override fun notificationSettingsDao(): NotificationSettingsDao
+    abstract override fun legalDocumentStatusDao(): LegalDocumentStatusDao
+    abstract override fun personalDataExportDao(): PersonalDataExportDao
+    abstract fun businessDataExportDao(): BusinessDataExportDao
+    abstract fun employeeInvitationDao(): EmployeeInvitationDao
+    abstract fun employeeDao(): EmployeeDao
+
+    companion object {
+
+        const val DATABASE_NAME = "bookk_me.db"
+
+        fun create(builder: Builder<BusinessDatabase>): BusinessDatabase {
+            return builder
+                .addMigrations(DefaultBusinessRetention)
+                .fallbackToDestructiveMigrationOnDowngrade(true)
+                .fallbackToDestructiveMigration(true)
+                .setQueryCoroutineContext(DispatcherProvider.io)
+                .build()
+        }
+    }
+}
+
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+expect object BusinessDatabaseConstructor : RoomDatabaseConstructor<BusinessDatabase> {
+    override fun initialize(): BusinessDatabase
+}

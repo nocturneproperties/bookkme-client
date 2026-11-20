@@ -12,12 +12,12 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
-import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument.Document
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocuments
+import me.bookk.feature.authorization.presentation.ClientStateFactory
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentsState
 import org.koin.core.annotation.InjectedParam
@@ -25,9 +25,8 @@ import org.koin.core.annotation.InjectedParam
 class TelegramSignInViewModel(
     @InjectedParam private val initData: String,
     private val signInWithTelegram: SignInWithTelegram,
-    private val isUserLoggedIn: IsUserLoggedIn,
     private val getSignUpLegalDocuments: GetSignUpLegalDocuments,
-    private val stateFactory: TelegramSignInStateFactory,
+    private val stateFactory: ClientStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
@@ -49,6 +48,7 @@ class TelegramSignInViewModel(
     }
 
     private fun signIn() {
+        showPhase(TelegramSignInPhase.SIGNING_IN, PROGRESS)
         launchSignIn(acceptedDocuments = null)
     }
 
@@ -62,19 +62,12 @@ class TelegramSignInViewModel(
             launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { uiState.continueButton.startLoading() },
-            call = { signInUnlessSignedIn(acceptedDocuments) },
-            onComplete = { showPhase(TelegramSignInPhase.SIGNED_IN, SIGNED_IN) },
+            call = { signInWithTelegram(initData, acceptedDocuments) },
             onError = ::onSignInFailed,
             onTerminate = {
                 uiState.continueButton.stopLoading(enable = uiState.legalAcceptance.isChecked)
             },
         )
-    }
-
-    private suspend fun signInUnlessSignedIn(acceptedDocuments: AcceptedLegalDocuments?) {
-        if (!isUserLoggedIn()) {
-            signInWithTelegram(initData, acceptedDocuments)
-        }
     }
 
     private fun onSignInFailed(error: Throwable) {
@@ -168,7 +161,6 @@ class TelegramSignInViewModel(
         const val SIGN_IN_KEY = "telegram_sign_in"
         const val LEGAL_DOCUMENTS_KEY = "telegram_sign_in_legal_documents"
         val PROGRESS = AuthRes.strings.telegram_sign_in_progress
-        val SIGNED_IN = AuthRes.strings.telegram_sign_in_signed_in
         val LEGAL_PROMPT = AuthRes.strings.telegram_sign_in_legal_prompt
         val DOCUMENTS_CHANGED = AuthRes.strings.sign_up_legal_documents_changed
         val EXPIRED = AuthRes.strings.telegram_sign_in_expired

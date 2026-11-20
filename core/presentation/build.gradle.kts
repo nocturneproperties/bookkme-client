@@ -1,4 +1,5 @@
 import build_src.constants.ApplicationConfig
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
@@ -15,10 +16,17 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core)
         }
+        jsMain.dependencies {
+            implementation(libs.kobweb.compose.runtime)
+        }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)
         }
     }
+}
+
+composeCompiler {
+    targetKotlinPlatforms.add(KotlinPlatformType.js)
 }
 
 multiplatformResources {

@@ -17,6 +17,5 @@ interface TelegramSignInState {
 enum class TelegramSignInPhase {
     SIGNING_IN,
     LEGAL_ACCEPTANCE,
-    SIGNED_IN,
     FAILED,
 }

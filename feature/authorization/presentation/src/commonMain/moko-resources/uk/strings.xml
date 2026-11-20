@@ -61,7 +61,6 @@
     <string name="verify_email_change_success">Ел. пошту змінено.</string>
     <string name="verify_email_change_email_taken">Ця ел. пошта вже використовується іншим обліковим записом. Вкажіть іншу ел. пошту.</string>
     <string name="telegram_sign_in_progress">Виконуємо вхід через Telegram…</string>
-    <string name="telegram_sign_in_signed_in">Ви увійшли через Telegram.</string>
     <string name="telegram_sign_in_legal_prompt">Ласкаво просимо до BookkMe. Щоб створити обліковий запис, ознайомтеся з документами нижче та прийміть їх.</string>
     <string name="telegram_sign_in_continue">Створити обліковий запис</string>
     <string name="telegram_sign_in_retry">Спробувати ще раз</string>

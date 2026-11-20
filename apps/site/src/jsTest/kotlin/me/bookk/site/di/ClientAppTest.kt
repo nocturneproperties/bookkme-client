@@ -17,6 +17,7 @@ import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
+import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapViewModel
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
@@ -140,6 +141,19 @@ class ClientAppTest {
         val viewModel = KoinPlatform.getKoin().getOrNull<TelegramSignInViewModel> {
             parametersOf("query_id=AAE&hash=abc")
         }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the telegram bootstrap view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<ClientBootstrapViewModel>()
 
         then()
         assertNotNull(viewModel)

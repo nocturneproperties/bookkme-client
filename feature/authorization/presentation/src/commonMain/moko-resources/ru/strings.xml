@@ -61,7 +61,6 @@
     <string name="verify_email_change_success">Эл. почта изменена.</string>
     <string name="verify_email_change_email_taken">Эта эл. почта уже используется другим аккаунтом. Укажите другую эл. почту.</string>
     <string name="telegram_sign_in_progress">Выполняем вход через Telegram…</string>
-    <string name="telegram_sign_in_signed_in">Вы вошли через Telegram.</string>
     <string name="telegram_sign_in_legal_prompt">Добро пожаловать в BookkMe. Чтобы создать аккаунт, ознакомьтесь с документами ниже и примите их.</string>
     <string name="telegram_sign_in_continue">Создать аккаунт</string>
     <string name="telegram_sign_in_retry">Повторить</string>

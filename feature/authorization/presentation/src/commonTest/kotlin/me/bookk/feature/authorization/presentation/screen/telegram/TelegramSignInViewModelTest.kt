@@ -22,11 +22,11 @@ import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
-import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocuments
+import me.bookk.feature.authorization.presentation.FakeClientStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -52,9 +52,6 @@ class TelegramSignInViewModelTest {
         val signInWithTelegram = mock<SignInWithTelegram> {
             everySuspend { invoke(any(), any()) } returns Unit
         }
-        val isUserLoggedIn = mock<IsUserLoggedIn> {
-            everySuspend { invoke() } returns false
-        }
         val getSignUpLegalDocuments = mock<GetSignUpLegalDocuments> {
             everySuspend { refresh() } returns LEGAL_DOCUMENTS
         }
@@ -64,9 +61,8 @@ class TelegramSignInViewModelTest {
             return TelegramSignInViewModel(
                 initData = INIT_DATA,
                 signInWithTelegram = signInWithTelegram,
-                isUserLoggedIn = isUserLoggedIn,
                 getSignUpLegalDocuments = getSignUpLegalDocuments,
-                stateFactory = FakeTelegramSignInStateFactory(),
+                stateFactory = FakeClientStateFactory(),
                 vmArgs = VmArgs(errorMapper),
             )
         }
@@ -107,26 +103,10 @@ class TelegramSignInViewModelTest {
         val fixture = Fixture()
 
         whenn()
-        val sut = fixture.sut()
+        fixture.sut()
 
         then()
         verifySuspend(VerifyMode.exactly(1)) { fixture.signInWithTelegram(INIT_DATA, null) }
-        assertEquals(TelegramSignInPhase.SIGNED_IN, sut.uiState.phase)
-        assertEquals(AuthRes.strings.telegram_sign_in_signed_in.desc(), sut.uiState.message)
-    }
-
-    @Test
-    fun `skips telegram sign-in when the user is already signed in`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.isUserLoggedIn() } returns true
-
-        whenn()
-        val sut = fixture.sut()
-
-        then()
-        verifySuspend(VerifyMode.not) { fixture.signInWithTelegram(any(), any()) }
-        assertEquals(TelegramSignInPhase.SIGNED_IN, sut.uiState.phase)
     }
 
     @Test
@@ -199,7 +179,6 @@ class TelegramSignInViewModelTest {
 
         then()
         verifySuspend(VerifyMode.exactly(1)) { fixture.signInWithTelegram(INIT_DATA, accepted) }
-        assertEquals(TelegramSignInPhase.SIGNED_IN, sut.uiState.phase)
     }
 
     @Test
@@ -323,7 +302,26 @@ class TelegramSignInViewModelTest {
 
         then()
         verifySuspend(VerifyMode.exactly(2)) { fixture.signInWithTelegram(INIT_DATA, null) }
-        assertEquals(TelegramSignInPhase.SIGNED_IN, sut.uiState.phase)
+    }
+
+    @Test
+    fun `shows the signing in message again when retrying`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val signedIn = CompletableDeferred<Unit>()
+        everySuspend { fixture.signInWithTelegram(any(), any()) } sequentially {
+            throws(SignInWithTelegram.Error.Unavailable())
+            calls { signedIn.await() }
+        }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.retryButton.onClick?.invoke()
+
+        then()
+        assertEquals(TelegramSignInPhase.SIGNING_IN, sut.uiState.phase)
+        assertEquals(AuthRes.strings.telegram_sign_in_progress.desc(), sut.uiState.message)
+        signedIn.complete(Unit)
     }
 
     private companion object {

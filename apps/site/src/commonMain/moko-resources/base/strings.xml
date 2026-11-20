@@ -165,6 +165,7 @@
     <string name="site_contact_subtitle">Questions about the app, your data or security? Pick the address below that fits.</string>
     <string name="site_telegram_title">Telegram mini app</string>
     <string name="site_telegram_description">Book with businesses on BookkMe right in Telegram.</string>
+    <string name="site_telegram_signed_in_title">You’re signed in with Telegram.</string>
     <string name="site_telegram_coming_soon_body">Soon you’ll ask businesses on BookkMe for a time right here, and they’ll confirm it. Nothing to install.</string>
     <string name="site_telegram_outside_title">This page opens in Telegram</string>
     <string name="site_telegram_outside_body">It’s the BookkMe mini app. Open it from a business’s link in Telegram.</string>

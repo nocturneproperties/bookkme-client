@@ -1,14 +1,21 @@
-package me.bookk.feature.authorization.presentation.screen.telegram
+package me.bookk.feature.authorization.presentation
 
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.test.FakeBooleanState
 import me.bookk.designsystem.test.FakeButtonState
-import me.bookk.feature.authorization.presentation.FakeSignUpLegalDocumentState
+import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
+import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapState
+import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInPhase
+import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentsState
 
-internal class FakeTelegramSignInStateFactory : TelegramSignInStateFactory {
+internal class FakeClientStateFactory : ClientStateFactory {
+    override fun createClientBootstrapState(): ClientBootstrapState {
+        return FakeClientBootstrapState()
+    }
+
     override fun createTelegramSignInState(): TelegramSignInState {
         return FakeTelegramSignInState()
     }
@@ -25,4 +32,8 @@ internal class FakeTelegramSignInState : TelegramSignInState {
     override val legalAcceptance = FakeBooleanState()
     override val continueButton = FakeButtonState()
     override val retryButton = FakeButtonState()
+}
+
+internal class FakeClientBootstrapState : ClientBootstrapState {
+    override var startDestination: BootstrapNavigationDestination? = null
 }

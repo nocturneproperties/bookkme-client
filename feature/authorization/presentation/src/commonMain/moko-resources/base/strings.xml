@@ -61,7 +61,6 @@
     <string name="verify_email_change_success">Your email has been changed.</string>
     <string name="verify_email_change_email_taken">This email is already used by another account. Use a different email.</string>
     <string name="telegram_sign_in_progress">Signing you in with Telegram…</string>
-    <string name="telegram_sign_in_signed_in">You\'re signed in with Telegram.</string>
     <string name="telegram_sign_in_legal_prompt">Welcome to BookkMe. To create your account, review the documents below and accept them.</string>
     <string name="telegram_sign_in_continue">Create account</string>
     <string name="telegram_sign_in_retry">Try again</string>

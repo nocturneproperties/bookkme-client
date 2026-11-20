@@ -56,8 +56,9 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `ConfirmEmailChange` | `POST /api/auth/email/confirm`, then writes the confirmed address into the cached `user_profile` | [Confirm email change](authorization/confirm-email-change.md) |
 | `ObserveSignUpRejection` | local only: in-memory sign-up session | [Observe sign-up rejection](authorization/observe-sign-up-rejection.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
+| `SignInWithTelegram` | `POST /api/auth/telegram/sign_in` with the raw Mini App `initData` and, for a new user, the accepted legal-document versions | [Sign in with Telegram](authorization/sign-in-with-telegram.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
-| `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `timestampProtectedFetch`: local expired personal and business export file cleanup, then `GET /api/user/legal`; private requests only when authorized; `rawFetch`: profile, business, per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
+| `InitialAppDataFetch` | `timestampProtectedFetch`: every `AppStartAction` (local export file cleanup), then `GET /api/user/legal`; private requests only when authorized; `rawFetch`: profile, then every `DataFetchAction` (business refresh), then every `BackgroundDataFetchAction` in the application scope (notifications and per-business `BusinessDataFetchAction` refreshes) | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
 | `LogOut` | `DELETE /api/auth/session`; bound cleanup includes export status and temporary files | [Log out](authorization/log-out.md) |
 | `RefreshToken` | `POST /api/auth/refresh` | [Refresh token](authorization/refresh-token.md) |
 | `UserProfileCRUD` | `GET` / `PATCH /api/user/me` | [User profile CRUD](authorization/user-profile-crud.md) |
@@ -67,7 +68,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `DeleteExpiredBusinessDataExportFiles` | Local only, on every app start from `InitialAppDataFetch.timestampProtectedFetch`: every cached `business_data_export` row → delete `business_data_exports/<businessId>/` unless READY and unexpired | [Delete expired business data export files](business/delete-expired-business-data-export-files.md) |
+| `DeleteExpiredBusinessDataExportFiles` | Local only, an `AppStartAction` run on every app start by `InitialAppDataFetch.timestampProtectedFetch`: every cached `business_data_export` row → delete `business_data_exports/<businessId>/` unless READY and unexpired | [Delete expired business data export files](business/delete-expired-business-data-export-files.md) |
 | `DownloadBusinessDataExport` | Local READY status of the business (else `NotReady`) → reuse JSON file per business and export; cache miss → `GET /api/business/{id}/export/download` → save through `FileProvider` → return file path for the `Share` destination; `NotFound` → `NotReady` | [Download business data export](business/download-business-data-export.md) |
 | `GetBusinessDataExport` | Read-only per-business flow maps expired records to null; ViewModel refreshes on open only for a null or RUNNING first value and polls RUNNING every 10 s (max 30); `refresh` uses `GET /api/business/{id}/export` → clear that business's files unless READY and unexpired → save server response; 404 → forget row and file → `NotOwner` | [Get business data export](business/get-business-data-export.md) |
 | `StartBusinessDataExport` | `POST /api/business/{id}/export`; passkey confirmation → clear that business's JSON file → status cache upsert; 404 → forget row and file → `NotOwner` | [Start business data export](business/start-business-data-export.md) |
@@ -157,7 +158,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `DeleteExpiredPersonalDataExportFile` | Local only, on every app start from `InitialAppDataFetch.timestampProtectedFetch`: cached `personal_data_export` row → delete `personal_data_exports/` unless READY and unexpired | [Delete expired personal data export file](settings/delete-expired-personal-data-export-file.md) |
+| `DeleteExpiredPersonalDataExportFile` | Local only, an `AppStartAction` run on every app start by `InitialAppDataFetch.timestampProtectedFetch`: cached `personal_data_export` row → delete `personal_data_exports/` unless READY and unexpired | [Delete expired personal data export file](settings/delete-expired-personal-data-export-file.md) |
 | `DownloadPersonalDataExport` | Local READY status (else `NotReady`) → reuse JSON file per export; cache miss → `GET /api/user/export/download` → save through `FileProvider` → return file path for the `Share` destination; `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
 | `GetPersonalDataExport` | Read-only flow maps expired records to null; ViewModel refreshes on open only for a null or RUNNING first value and polls RUNNING every 10 s (max 30); `refresh` always uses `GET /api/user/export` → clear personal files unless READY and unexpired → save server response | [Get personal data export](settings/get-personal-data-export.md) |
 | `StartPersonalDataExport` | `POST /api/user/export`; passkey confirmation → clear all personal export JSON files → status cache upsert | [Start personal data export](settings/start-personal-data-export.md) |
@@ -179,11 +180,11 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Calls |
 |---|---|
-| [Finish sign-up](authorization/finish-sign-up.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
+| [Finish sign-up](authorization/finish-sign-up.md), [Sign in](authorization/sign-in.md), [Sign in with Telegram](authorization/sign-in-with-telegram.md) | `InitialAppDataFetch.rawFetch` |
 | [Resend sign-up code](authorization/resend-sign-up-code.md) | `StartSignUp` |
 | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) | `refresh`: `GetLegalDocumentVersions` (cross-feature wrapper); `invoke`: local cache only |
 | [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |
-| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `timestampProtectedFetch`: `DeleteExpiredPersonalDataExportFile` and `DeleteExpiredBusinessDataExportFiles` before the throttle, `GetSignUpLegalDocuments.refresh` before authorization check; authorized path: `UserProfileCRUD`, `RefreshBusinessInfo`, `LowPriorityDataFetch` → `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `IsAppointmentsPluginEnabled`, `GetAppointmentSettings`, `UpdateNotificationToken`, `GetNotificationSettings` |
+| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `GetSignUpLegalDocuments.refresh` before the authorization check, `UserProfileCRUD`; every other feature through the `core:domain` fetch triggers (`AppStartAction`, `DataFetchAction`, `BackgroundDataFetchAction`), bound like `LogOutAction`: `DeleteExpiredPersonalDataExportFile`, `DeleteExpiredBusinessDataExportFiles`, `RefreshBusinessInfo`, `UpdateNotificationToken`, `GetNotificationSettings`, `DashboardBusinessDataFetch` → `BusinessDataFetchAction`: `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `GetAppointmentSettings` |
 | [Create business](business/create-business.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Join business](business/join-business.md) | `RedeemEmployeeInvitation` (cross-feature wrapper) |

@@ -16,5 +16,8 @@ kotlin {
             implementation(projects.core)
             implementation(projects.library.device.api)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
     }
 }

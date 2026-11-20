@@ -1,5 +1,6 @@
 package me.bookk.feature.clients.domain.impl.di
 
+import me.bookk.core.domain.fetch.BusinessDataFetchAction
 import me.bookk.feature.clients.domain.api.CreateClient
 import me.bookk.feature.clients.domain.api.DeleteClient
 import me.bookk.feature.clients.domain.api.EditClient
@@ -20,10 +21,12 @@ import me.bookk.feature.clients.domain.impl.ImportClientsImpl
 import me.bookk.feature.clients.domain.impl.ObserveCurrentBusinessIdImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun clientsDomainModule() = module {
-    factoryOf(::GetClientsListImpl) bind GetClientsList::class
+    factoryOf(::GetClientsListImpl) binds
+        arrayOf(GetClientsList::class, BusinessDataFetchAction::class)
     factoryOf(::CreateClientImpl) bind CreateClient::class
     factoryOf(::ImportClientsImpl) bind ImportClients::class
     factoryOf(::GetDeviceContactsImpl) bind GetDeviceContacts::class

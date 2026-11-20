@@ -60,4 +60,12 @@
     <string name="verify_email_change_description">We sent a 6-digit code to %s. Enter it below to confirm your new email.</string>
     <string name="verify_email_change_success">Your email has been changed.</string>
     <string name="verify_email_change_email_taken">This email is already used by another account. Use a different email.</string>
+    <string name="telegram_sign_in_progress">Signing you in with Telegram…</string>
+    <string name="telegram_sign_in_legal_prompt">Welcome to BookkMe. To create your account, review the documents below and accept them.</string>
+    <string name="telegram_sign_in_continue">Create account</string>
+    <string name="telegram_sign_in_retry">Try again</string>
+    <string name="telegram_sign_in_expired">This session has expired. Close the mini app and open it again.</string>
+    <string name="telegram_sign_in_invalid">Telegram couldn\'t confirm who you are. Close the mini app and open it again from the bot.</string>
+    <string name="telegram_sign_in_unavailable">Signing in with Telegram is unavailable right now. Try again later.</string>
+    <string name="telegram_sign_in_account_creation_failed">We couldn\'t create your account. Try again.</string>
 </resources>

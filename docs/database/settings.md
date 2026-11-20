@@ -6,6 +6,9 @@ The user's notification preferences: one settings row per user plus one row per 
 Written by `CommonNotificationSettingsDataSource`. The color scheme and the pending push token are
 key-value data in DataStore, not tables (see [preferences](preferences.md)).
 
+Every table on this page is an account table: the entities and DAOs live in `:database:account`, and both
+`BusinessDatabase` and `ClientDatabase` hold a copy (see [README](README.md)).
+
 Legal-document acceptance statuses live in the `legal_document_status` Room table, owned by
 `CommonLegalDocumentsDataSource`. Each document has explicit version, URL, effective-time and nullable
 acceptance-time columns. `GetLegalDocumentStatuses.refresh()` replaces the list in one DAO transaction;
@@ -62,8 +65,8 @@ erDiagram
 - Legal statuses are written by [Get legal document statuses](../operations/settings/get-legal-document-statuses.md)
   using `LegalDocumentStatusDao.replaceAll()`: delete stale records and upsert the received list in one
   transaction, with no intermediate empty emission. Reads use `observeAll()` ordered by document type.
-- Added in schema 24 by `AutoMigration(23, 24)`. Domain ↔ entity mapping stays in the feature data module;
-  the database module has no feature-domain dependency.
+- Added to `BusinessDatabase` in schema 24 by `AutoMigration(23, 24)`; part of `ClientDatabase` since version 1.
+  Domain ↔ entity mapping stays in the feature data module; the database modules have no feature-domain dependency.
 - Legal status logout cleanup: `legalDocumentStatusDao.clear()`.
 
 Personal data export status and timestamps live in the singleton `personal_data_export` Room row,
@@ -79,8 +82,8 @@ then call the separate `saveInDb()` write. The database observer alone renders s
 return value is rendered directly. Writes upsert key `0` and retain all observation emissions, including
 unchanged snapshots needed to reconcile retry UI. Network failures preserve the cached row. Logout
 clears the table through `CommonDataExportDataSource` bound as datasource and `LogOutAction`. There is
-no user-profile FK or preferences marker. Schema 25 adds this table with `AutoMigration(24, 25)`;
-existing tables and rows are preserved. Domain mapping stays in the settings data module.
+no user-profile FK or preferences marker. `BusinessDatabase` schema 25 adds this table with
+`AutoMigration(24, 25)`; existing tables and rows are preserved. `ClientDatabase` has it since version 1. Domain mapping stays in the settings data module.
 
 The JSON export payload is stored as one UTF-8 file at
 `personal_data_exports/<requestedAt>-<expiresAt>/bookk-personal-data.json` in the app cache (epoch

@@ -3,6 +3,7 @@ package me.bookk.feature.employees.domain.impl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.bookk.core.coroutine.flatMapLatestOrNull
+import me.bookk.core.domain.fetch.BusinessDataFetchAction
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.employees.domain.api.GetEmployees
 import me.bookk.feature.employees.domain.api.entity.Employee
@@ -12,7 +13,8 @@ import kotlin.uuid.Uuid
 internal class GetEmployeesImpl(
     private val dataSource: EmployeeDataSource,
     private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
-) : GetEmployees {
+) : GetEmployees,
+    BusinessDataFetchAction {
 
     override fun flow(): Flow<List<Employee>> {
         return observeDashboardBusinessChanges()
@@ -30,5 +32,9 @@ internal class GetEmployeesImpl(
         dataSource.saveEmployeesInDb(employees)
         dataSource.saveLastSyncedAt(businessId)
         return employees
+    }
+
+    override suspend fun doOnBusinessDataFetch(businessId: Uuid) {
+        refresh(businessId)
     }
 }

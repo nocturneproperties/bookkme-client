@@ -1,6 +1,6 @@
 package me.bookk.feature.clients.data.mapping
 
-import me.bookk.database.entity.ClientEntity
+import me.bookk.database.business.entity.ClientEntity
 import me.bookk.feature.clients.data.remote.model.ClientRemote
 import me.bookk.feature.clients.data.remote.model.ClientUpdateRemote
 import me.bookk.feature.clients.domain.api.entity.Client

@@ -1,5 +1,8 @@
 package me.bookk.feature.business.domain.impl.di
 
+import me.bookk.core.domain.fetch.AppStartAction
+import me.bookk.core.domain.fetch.BackgroundDataFetchAction
+import me.bookk.core.domain.fetch.DataFetchAction
 import me.bookk.feature.business.domain.api.DeleteExpiredBusinessDataExportFiles
 import me.bookk.feature.business.domain.api.DownloadBusinessDataExport
 import me.bookk.feature.business.domain.api.GetBusinessDataExport
@@ -24,6 +27,7 @@ import me.bookk.feature.business.domain.impl.GetBusinessDataExportImpl
 import me.bookk.feature.business.domain.impl.StartBusinessDataExportImpl
 import me.bookk.feature.business.domain.impl.business.CanEditBusinessImpl
 import me.bookk.feature.business.domain.impl.business.CreateBusinessImpl
+import me.bookk.feature.business.domain.impl.business.DashboardBusinessDataFetch
 import me.bookk.feature.business.domain.impl.business.GetAvailableDashboardFeaturesImpl
 import me.bookk.feature.business.domain.impl.business.JoinBusinessImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessChangesImpl
@@ -38,16 +42,19 @@ import me.bookk.feature.business.domain.impl.plugin.EnableAppointmentsPluginImpl
 import me.bookk.feature.business.domain.impl.plugin.IsAppointmentsPluginEnabledImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun businessDomainModule() = module {
-    factoryOf(::DeleteExpiredBusinessDataExportFilesImpl) bind
-        DeleteExpiredBusinessDataExportFiles::class
+    factoryOf(::DeleteExpiredBusinessDataExportFilesImpl) binds
+        arrayOf(DeleteExpiredBusinessDataExportFiles::class, AppStartAction::class)
     factoryOf(::DownloadBusinessDataExportImpl) bind DownloadBusinessDataExport::class
     factoryOf(::GetBusinessDataExportImpl) bind GetBusinessDataExport::class
     factoryOf(::StartBusinessDataExportImpl) bind StartBusinessDataExport::class
     factoryOf(::CreateBusinessImpl) bind CreateBusiness::class
-    factoryOf(::RefreshBusinessInfoImpl) bind RefreshBusinessInfo::class
+    factoryOf(::RefreshBusinessInfoImpl) binds
+        arrayOf(RefreshBusinessInfo::class, DataFetchAction::class)
+    factory { DashboardBusinessDataFetch(get(), getAll()) } bind BackgroundDataFetchAction::class
     factoryOf(::ObserveDashboardBusinessChangesImpl) bind ObserveDashboardBusinessChanges::class
     factoryOf(::ObserveDashboardBusinessIdChangesImpl) bind ObserveDashboardBusinessIdChanges::class
     factoryOf(::ObserveUserBusinessesChangesImpl) bind ObserveUserBusinessesChanges::class

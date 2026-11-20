@@ -37,8 +37,8 @@ jobs:
 
       - name: Archive
         run: |
-          xcodebuild archive \
-            -project iosApp/iosApp.xcodeproj \
+          .github/scripts/xcodebuild.sh archive archive \
+            -project apps/iosApp/iosApp.xcodeproj \
             -scheme dev \
             -configuration Release \
             -destination 'generic/platform=iOS' \
@@ -46,11 +46,20 @@ jobs:
             -archivePath ${{ runner.temp }}/BookkMe.xcarchive \
             COMPILATION_CACHE_ENABLE_CACHING=YES
 
+      - name: Upload xcodebuild Logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xcodebuild-logs
+          path: ${{ runner.temp }}/xcodebuild-logs
+          if-no-files-found: ignore
+          retention-days: 5
+
       - name: Export
         run: |
           xcodebuild -exportArchive \
             -archivePath ${{ runner.temp }}/BookkMe.xcarchive \
-            -exportOptionsPlist iosApp/ExportOptions.plist \
+            -exportOptionsPlist apps/iosApp/ExportOptions.plist \
             -exportPath ${{ runner.temp }}/export
 
       - name: Upload artifact

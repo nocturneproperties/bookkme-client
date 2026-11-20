@@ -16,10 +16,6 @@ kotlin {
             implementation(projects.feature.business.domain.api)
             implementation(projects.feature.authorization.data.source)
             implementation(projects.feature.settings.domain.api)
-            implementation(projects.feature.clients.domain.api)
-            implementation(projects.feature.employees.domain.api)
-            implementation(projects.feature.services.domain.api)
-            implementation(projects.feature.appointments.domain.api)
             implementation(projects.library.device.api)
         }
         commonTest.dependencies {

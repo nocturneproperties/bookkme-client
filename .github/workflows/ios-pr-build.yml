@@ -4,7 +4,9 @@ on:
     branches: [ develop ]
     types: [ opened, synchronize, reopened, ready_for_review ]
     paths-ignore:
-      - 'androidApp/**'
+      - 'apps/androidApp/**'
+      - 'apps/site/**'
+      - 'kotlin-js-store/**'
       - 'docs/**'
       - '**.md'
 
@@ -30,11 +32,20 @@ jobs:
 
       - name: Build
         run: |
-          xcodebuild build \
-            -project iosApp/iosApp.xcodeproj \
+          .github/scripts/xcodebuild.sh debug build \
+            -project apps/iosApp/iosApp.xcodeproj \
             -scheme dev \
             -configuration Debug \
             -destination 'generic/platform=iOS' \
             -derivedDataPath ${{ runner.temp }}/DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             COMPILATION_CACHE_ENABLE_CACHING=YES
+
+      - name: Upload xcodebuild Logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xcodebuild-logs
+          path: ${{ runner.temp }}/xcodebuild-logs
+          if-no-files-found: ignore
+          retention-days: 5

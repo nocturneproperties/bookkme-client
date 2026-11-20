@@ -1,5 +1,6 @@
 package me.bookk.feature.services.domain.impl.di
 
+import me.bookk.core.domain.fetch.BusinessDataFetchAction
 import me.bookk.feature.services.domain.api.GetBusinessCurrency
 import me.bookk.feature.services.domain.api.GetServicesPermissions
 import me.bookk.feature.services.domain.api.ObserveCurrentBusinessId
@@ -26,18 +27,21 @@ import me.bookk.feature.services.domain.impl.service.GetServiceImpl
 import me.bookk.feature.services.domain.impl.service.GetServicesImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun servicesDomainModule() = module {
     factoryOf(::CreateServiceImpl) bind CreateService::class
     factoryOf(::DeleteServiceImpl) bind DeleteService::class
     factoryOf(::EditServiceImpl) bind EditService::class
-    factoryOf(::GetServicesImpl) bind GetServices::class
+    factoryOf(::GetServicesImpl) binds
+        arrayOf(GetServices::class, BusinessDataFetchAction::class)
     factoryOf(::GetServiceImpl) bind GetService::class
 
     factoryOf(::CreateServiceGroupImpl) bind CreateServiceGroup::class
     factoryOf(::DeleteServiceGroupImpl) bind DeleteServiceGroup::class
-    factoryOf(::GetServiceGroupsImpl) bind GetServiceGroups::class
+    factoryOf(::GetServiceGroupsImpl) binds
+        arrayOf(GetServiceGroups::class, BusinessDataFetchAction::class)
     factoryOf(::GetBusinessCurrencyImpl) bind GetBusinessCurrency::class
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class
     factoryOf(::GetServicesPermissionsImpl) bind GetServicesPermissions::class

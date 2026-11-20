@@ -8,7 +8,7 @@ Three small read-only use cases in `authorization`, all **local only**.
 |---|---|---|
 | `IsUserLoggedIn()` | `access_token != null` | (unused) |
 | `IsUserLoggedIn.asFlow()` | `authorization_prefs.authorized` (always `true` on `mock` variants) | `BootstrapViewModel`, which switches the root destination between `Main` and `Login` |
-| `GetTokenInfo()` | `access_token` + `refresh_token`, or `null` if either is missing | Ktor `bearer { loadTokens / refreshTokens }` in `shared/.../NetworkDI.kt` |
+| `GetTokenInfo()` | `access_token` + `refresh_token`, or `null` if either is missing | Ktor `bearer { loadTokens / refreshTokens }` in `shared/common/.../di/NetworkDI.kt` |
 | `GetSettingsColorScheme()` / `.asFlow()` | wraps `settings`' [GetColorScheme](../settings/get-color-scheme.md), mapped to `AuthColorScheme` | `BootstrapViewModel` (app theme) |
 
 Note that "logged in" is driven by the `authorized` flag and **not** by whether a token exists.

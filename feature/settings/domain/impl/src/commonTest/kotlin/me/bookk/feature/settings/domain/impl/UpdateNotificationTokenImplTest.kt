@@ -178,4 +178,32 @@ class UpdateNotificationTokenImplTest {
             fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, pendingToken)
         }
     }
+
+    @Test
+    fun `sends the pending token when the background data fetch runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val pendingToken = "pending-fcm-token"
+        val deviceUuid = "device-uuid"
+        everySuspend {
+            fixture.notificationSettingsDataSource.getPendingNotificationToken()
+        } returns
+            pendingToken
+        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns deviceUuid
+        everySuspend {
+            fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, pendingToken)
+        } returns Device.stub()
+        everySuspend {
+            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
+        } returns
+            Unit
+
+        whenn()
+        fixture.sut.doOnBackgroundDataFetch()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, pendingToken)
+        }
+    }
 }

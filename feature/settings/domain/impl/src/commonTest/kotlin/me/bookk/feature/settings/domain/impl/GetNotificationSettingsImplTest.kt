@@ -211,4 +211,23 @@ class GetNotificationSettingsImplTest {
             fixture.dataSource.saveNotificationSettingsInDB(any())
         }
     }
+
+    @Test
+    fun `refreshes the settings when the background data fetch runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val userId = Uuid.random()
+        val remote = NotificationSettings.stub(userId)
+        everySuspend { fixture.profileCRUD.get() } returns profile(userId)
+        everySuspend { fixture.dataSource.getNotificationSettings() } returns remote
+        everySuspend { fixture.dataSource.saveNotificationSettingsInDB(remote) } returns Unit
+
+        whenn()
+        fixture.sut.doOnBackgroundDataFetch()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveNotificationSettingsInDB(remote)
+        }
+    }
 }

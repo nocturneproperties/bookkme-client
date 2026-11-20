@@ -5,11 +5,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import library.money.api.Currency
-import me.bookk.database.entity.BusinessDayOffEntity
-import me.bookk.database.entity.BusinessDayScheduleEntity
-import me.bookk.database.entity.BusinessEntity
-import me.bookk.database.entity.BusinessWorkHourEntity
-import me.bookk.database.relation.BusinessLocal
+import me.bookk.database.business.entity.BusinessDayOffEntity
+import me.bookk.database.business.entity.BusinessDayScheduleEntity
+import me.bookk.database.business.entity.BusinessEntity
+import me.bookk.database.business.entity.BusinessWorkHourEntity
+import me.bookk.database.business.relation.BusinessLocal
 import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.BusinessUpdateRemote
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote

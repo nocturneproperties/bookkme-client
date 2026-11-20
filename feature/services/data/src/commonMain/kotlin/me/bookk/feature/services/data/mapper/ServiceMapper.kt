@@ -1,8 +1,8 @@
 package me.bookk.feature.services.data.mapper
 
 import library.money.api.Money
-import me.bookk.database.entity.ServiceEntity
-import me.bookk.database.relation.ServiceLocal
+import me.bookk.database.business.entity.ServiceEntity
+import me.bookk.database.business.relation.ServiceLocal
 import me.bookk.feature.services.domain.api.service.entity.Service
 
 internal fun Service.toDb(): ServiceEntity {

@@ -1,5 +1,6 @@
 package me.bookk.feature.settings.domain.impl
 
+import me.bookk.core.domain.fetch.BackgroundDataFetchAction
 import me.bookk.feature.authorization.domain.datasource.device.DeviceDataSource
 import me.bookk.feature.settings.domain.api.UpdateNotificationToken
 import me.bookk.feature.settings.domain.datasource.NotificationSettingsDataSource
@@ -7,7 +8,8 @@ import me.bookk.feature.settings.domain.datasource.NotificationSettingsDataSourc
 internal class UpdateNotificationTokenImpl(
     private val notificationSettingsDataSource: NotificationSettingsDataSource,
     private val deviceDataSource: DeviceDataSource,
-) : UpdateNotificationToken {
+) : UpdateNotificationToken,
+    BackgroundDataFetchAction {
 
     override suspend fun invoke(token: String) {
         val deviceUuid = deviceDataSource.getOrCreateDeviceUUID()
@@ -24,5 +26,9 @@ internal class UpdateNotificationTokenImpl(
         notificationSettingsDataSource.getPendingNotificationToken()?.let {
             invoke(it)
         }
+    }
+
+    override suspend fun doOnBackgroundDataFetch() {
+        invoke()
     }
 }

@@ -3,6 +3,7 @@ package me.bookk.feature.settings.domain.impl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import me.bookk.core.coroutine.flatMapLatestOrNull
+import me.bookk.core.domain.fetch.BackgroundDataFetchAction
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.settings.domain.api.GetNotificationSettings
 import me.bookk.feature.settings.domain.api.entity.NotificationSettings
@@ -11,7 +12,8 @@ import me.bookk.feature.settings.domain.datasource.NotificationSettingsDataSourc
 internal class GetNotificationSettingsImpl(
     private val notificationSettingsDataSource: NotificationSettingsDataSource,
     private val userProfileCRUD: UserProfileCRUD,
-) : GetNotificationSettings {
+) : GetNotificationSettings,
+    BackgroundDataFetchAction {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun flow(): Flow<NotificationSettings?> {
@@ -25,5 +27,9 @@ internal class GetNotificationSettingsImpl(
         userProfileCRUD.get()
         return notificationSettingsDataSource.getNotificationSettings()
             .also { notificationSettingsDataSource.saveNotificationSettingsInDB(it) }
+    }
+
+    override suspend fun doOnBackgroundDataFetch() {
+        refresh()
     }
 }

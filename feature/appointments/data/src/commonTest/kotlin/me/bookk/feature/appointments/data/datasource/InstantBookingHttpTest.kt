@@ -31,7 +31,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.dao.AppointmentDao
+import me.bookk.database.business.dao.AppointmentDao
 import me.bookk.feature.appointments.data.mapping.toRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.InstantAppointmentDraftRemote

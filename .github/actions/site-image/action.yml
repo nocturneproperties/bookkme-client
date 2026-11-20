@@ -1,5 +1,5 @@
 name: Site Image
-description: Builds the site container image from the exported site/.kobweb and pushes it to GHCR
+description: Builds the site container image from the exported apps/site/.kobweb and pushes it to GHCR
 
 inputs:
   tag:
@@ -19,6 +19,6 @@ runs:
         REGISTRY_TOKEN: ${{ inputs.registry-token }}
       run: |
         echo -n "$REGISTRY_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
-        docker build --tag "$IMAGE" site
+        docker build --tag "$IMAGE" apps/site
         docker push "$IMAGE"
         echo "Published \`$IMAGE\`" >> "$GITHUB_STEP_SUMMARY"

@@ -143,6 +143,19 @@ class DeleteExpiredBusinessDataExportFilesImplTest {
         assertFailsWith<IllegalStateException> { result.getOrThrow() }
     }
 
+    @Test
+    fun `deletes expired export files when the app starts`() = runUnitTest {
+        given()
+        val fixture =
+            Fixture(mapOf(FIRST to DataExport(DataExportStatus.READY, expiresAt = NOW - 1.days)))
+
+        whenn()
+        fixture.sut.doOnAppStart()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteFiles(FIRST) }
+    }
+
     private companion object {
         val NOW = Instant.parse("2026-11-05T12:00:00Z")
         val FIRST = Uuid.parse("00000000-0000-0000-0000-000000000001")

@@ -260,4 +260,24 @@ class GetServicesImplTest {
         verifySuspend(VerifyMode.exactly(0)) { fixture.serviceDataSource.getServiceIdsInDb(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.serviceDataSource.saveServicesInDB(any()) }
     }
+
+    @Test
+    fun `refreshes the business services when the business data fetch runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val remote = listOf(stubService(businessId))
+        everySuspend { fixture.serviceDataSource.getServices(businessId) } returns remote
+        everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns
+            remote.map { it.id }
+        everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
+        everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
+
+        whenn()
+        fixture.sut.doOnBusinessDataFetch(businessId)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.serviceDataSource.saveServicesInDB(remote) }
+    }
 }

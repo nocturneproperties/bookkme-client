@@ -1,5 +1,10 @@
 name: Site Export
-description: Exports the Kobweb site for the Kobweb server into site/.kobweb, reusing the cached Playwright browser the export renders pages with
+description: Exports the Kobweb site for the Kobweb server into apps/site/.kobweb, reusing the cached Playwright browser the export renders pages with
+
+inputs:
+  flavor:
+    description: "BuildKonfig variant that selects the API the site calls: devRelease or prodRelease"
+    required: true
 
 runs:
   using: composite
@@ -17,4 +22,4 @@ runs:
 
     - name: Export
       shell: bash
-      run: ./gradlew :site:kobwebExport -PkobwebBuildTarget=RELEASE -PkobwebExportLayout=FULLSTACK
+      run: ./gradlew :site:kobwebExport -PkobwebBuildTarget=RELEASE -PkobwebExportLayout=FULLSTACK -Pbuildkonfig.flavor=${{ inputs.flavor }}

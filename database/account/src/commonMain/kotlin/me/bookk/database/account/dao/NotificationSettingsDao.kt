@@ -1,0 +1,43 @@
+package me.bookk.database.account.dao
+
+import androidx.room3.Dao
+import androidx.room3.Insert
+import androidx.room3.OnConflictStrategy
+import androidx.room3.Query
+import androidx.room3.Transaction
+import androidx.room3.Upsert
+import kotlinx.coroutines.flow.Flow
+import me.bookk.database.account.entity.NotificationSettingsChannelEntity
+import me.bookk.database.account.entity.NotificationSettingsEntity
+import me.bookk.database.account.relation.NotificationSettingsLocal
+import kotlin.uuid.Uuid
+
+@Dao
+abstract class NotificationSettingsDao {
+
+    @Transaction
+    @Query("SELECT * FROM notification_settings WHERE userId = :userId")
+    abstract fun observeByUserId(userId: Uuid): Flow<NotificationSettingsLocal?>
+
+    @Query("DELETE FROM notification_settings")
+    abstract suspend fun clear()
+
+    @Upsert
+    abstract suspend fun upsertSettings(settings: NotificationSettingsEntity)
+
+    @Query("DELETE FROM notification_settings_channel WHERE settingsId = :settingsId")
+    abstract suspend fun deleteChannels(settingsId: Uuid)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insertChannels(channels: List<NotificationSettingsChannelEntity>)
+
+    @Transaction
+    open suspend fun upsertWithChildren(
+        settings: NotificationSettingsEntity,
+        channels: List<NotificationSettingsChannelEntity>,
+    ) {
+        upsertSettings(settings)
+        deleteChannels(settings.id)
+        insertChannels(channels)
+    }
+}

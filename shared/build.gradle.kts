@@ -1,13 +1,7 @@
 import build_src.constants.ApplicationConfig
-import build_src.constants.ProductFlavour
-import build_src.tools.findLocalProperty
-import build_src.tools.getCurrentVariant
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
-    alias(libs.plugins.buldconfig)
     alias(libs.plugins.kmm.resources)
 }
 
@@ -17,67 +11,13 @@ kotlin {
     }
 }
 
-val proxyUrl = findLocalProperty("bookk.proxyUrl").orEmpty()
-
-buildkonfig {
-    packageName = "me.bookk.shared"
-    defaultConfigs {
-        buildConfigField(STRING, "BASE_URL", "", const = true)
-        buildConfigField(
-            BOOLEAN,
-            "DEBUG",
-            getCurrentVariant().contains("debug", ignoreCase = true).toString(),
-            const = true,
-        )
-        buildConfigField(
-            STRING,
-            "VERSION_NAME",
-            ApplicationConfig.VERSION_NAME,
-            const = true,
-        )
-        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
-        buildConfigField(
-            STRING,
-            "PROXY_URL",
-            if (getCurrentVariant().contains("debug", ignoreCase = true)) proxyUrl else "",
-            const = true,
-        )
-    }
-    defaultConfigs(ProductFlavour.DEV.title + "Debug") {
-        buildConfigField(
-            STRING,
-            "BASE_URL",
-            "https://local.bookkme.app/api",
-            const = true,
-        )
-    }
-    defaultConfigs(ProductFlavour.DEV.title + "Release") {
-        buildConfigField(
-            STRING,
-            "BASE_URL",
-            "https://local.bookkme.app/api",
-            const = true,
-        )
-    }
-    defaultConfigs(ProductFlavour.PROD.title + "Release") {
-        buildConfigField(
-            STRING,
-            "BASE_URL",
-            "https://bookkme.app/api",
-            const = true,
-        )
-    }
-}
-
 kotlin {
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.ktor.client.okhttp)
-        }
         commonMain.dependencies {
             // Core
-            implementation(projects.database)
+            implementation(projects.database.business)
             implementation(projects.core.data)
+            implementation(projects.shared.common)
             api(projects.core)
             api(projects.core.domain)
             api(projects.core.presentation)
@@ -130,21 +70,11 @@ kotlin {
             implementation(projects.feature.appointments.data)
             api(projects.feature.appointments.presentation)
             // Libs
-            implementation(libs.ktor.client.mock)
-            implementation(libs.ktor.client.negotiation)
-            implementation(libs.ktor.client.protobuf)
-            implementation(libs.ktor.client.logging)
-            implementation(libs.ktor.client.resources)
-            implementation(libs.ktor.client.auth)
-            implementation(libs.logger)
             api(libs.kotlinx.datetime)
             api(libs.kmm.resources)
         }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)
-        }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
         }
     }
     listOf(

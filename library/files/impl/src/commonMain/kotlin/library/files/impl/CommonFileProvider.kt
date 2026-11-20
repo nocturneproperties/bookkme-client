@@ -4,11 +4,10 @@ import library.files.api.FileProvider
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
-import okio.SYSTEM
 import kotlin.uuid.Uuid
 
 abstract class CommonFileProvider(
-    private val fileSystem: FileSystem = FileSystem.SYSTEM,
+    private val fileSystem: FileSystem,
 ) : FileProvider {
     override fun exists(file: Path): Boolean {
         return fileSystem.exists(file)

@@ -232,4 +232,23 @@ class GetEmployeesImplTest {
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getEmployeeIdsInDb(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteEmployeesInDb(any()) }
     }
+
+    @Test
+    fun `refreshes the business employees when the business data fetch runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val employees = listOf(stubEmployee(businessId))
+        everySuspend { fixture.dataSource.getEmployees(businessId) } returns employees
+        everySuspend { fixture.dataSource.getEmployeeIdsInDb(businessId) } returns
+            employees.map { it.id }
+        everySuspend { fixture.dataSource.saveEmployeesInDb(employees) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+
+        whenn()
+        fixture.sut.doOnBusinessDataFetch(businessId)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveEmployeesInDb(employees) }
+    }
 }

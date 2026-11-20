@@ -3,6 +3,7 @@ package me.bookk.feature.services.domain.impl.group
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.bookk.core.coroutine.flatMapLatestOrNull
+import me.bookk.core.domain.fetch.BusinessDataFetchAction
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
@@ -12,7 +13,8 @@ import kotlin.uuid.Uuid
 internal class GetServiceGroupsImpl(
     private val dataSource: ServiceGroupDataSource,
     private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
-) : GetServiceGroups {
+) : GetServiceGroups,
+    BusinessDataFetchAction {
 
     override fun flow(): Flow<List<ServiceGroup>> {
         return observeDashboardBusinessChanges()
@@ -32,5 +34,9 @@ internal class GetServiceGroupsImpl(
         dataSource.saveGroupsInDB(groups)
         dataSource.saveLastSyncedAt(businessId)
         return groups.sortedBy { it.createdAt }
+    }
+
+    override suspend fun doOnBusinessDataFetch(businessId: Uuid) {
+        refresh(businessId)
     }
 }

@@ -8,7 +8,7 @@ The flows that every other feature uses to scope its data to the selected busine
 | Use case | Returns | Callers |
 |---|---|---|
 | `ObserveDashboardBusinessIdChanges()` (business) | `Flow<Uuid?>`: raw `dashboard_business.businessId` | none at the moment |
-| `ObserveDashboardBusinessChanges()` (business) | `Flow<Business?>`: the id joined to its `business` row | `BusinessSettingsViewModel`, every `Get*.flow()` list, [Get available dashboard features](get-available-dashboard-features.md), low-priority data fetch |
+| `ObserveDashboardBusinessChanges()` (business) | `Flow<Business?>`: the id joined to its `business` row | `BusinessSettingsViewModel`, every `Get*.flow()` list, [Get available dashboard features](get-available-dashboard-features.md), `DashboardBusinessDataFetch` ([background data fetch](../authorization/initial-app-data-fetch.md)) |
 | `ObserveCurrentBusinessId()` (one copy each in appointments, clients, employees, services) | `Flow<Uuid?>`: `ObserveDashboardBusinessChanges().map { it?.id }` | list screens in those features |
 | `ObserveCurrentBusiness()` (appointments) | `Flow<CurrentBusiness?>`: the business id with the caller's own `employeeId` (`null` while they are not an active employee) and `canViewAppointments` (`permissions.appointments.view`) | `AppointmentListViewModel`, which filters the list by that employee and shows a no-permission message instead of loading, and hides the new-appointment action, when `canViewAppointments` is false |
 

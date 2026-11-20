@@ -36,15 +36,17 @@ jobs:
 
       - name: Export
         uses: ./.github/actions/site-export
+        with:
+          flavor: prodRelease
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: site-${{ env.CLEAN_REF }}
           path: |
-            site/.kobweb/conf.yaml
-            site/.kobweb/server/server.jar
-            site/.kobweb/site
+            apps/site/.kobweb/conf.yaml
+            apps/site/.kobweb/server/server.jar
+            apps/site/.kobweb/site
           include-hidden-files: true
           if-no-files-found: error
           overwrite: true

@@ -13,7 +13,7 @@ import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.database.dao.AppointmentRequestDao
+import me.bookk.database.business.dao.AppointmentRequestDao
 import me.bookk.feature.appointments.data.mapping.toDomain
 import me.bookk.feature.appointments.data.mapping.toRemote
 import me.bookk.feature.appointments.data.mapping.toRequestEntity

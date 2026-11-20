@@ -15,13 +15,14 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.feature.business.domain.api)
             implementation(projects.feature.business.data.source)
-            implementation(projects.database)
+            implementation(projects.database.business)
             implementation(projects.library.cache.api)
             implementation(projects.library.files.api)
             implementation(libs.ktor.client.resources)
         }
         commonTest.dependencies {
             implementation(libs.ktor.client.negotiation)
+            implementation(libs.ktor.client.mock)
             implementation(projects.core.testFixtures)
         }
     }

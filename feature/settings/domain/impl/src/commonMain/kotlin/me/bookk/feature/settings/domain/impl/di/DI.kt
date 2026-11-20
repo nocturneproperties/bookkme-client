@@ -1,5 +1,7 @@
 package me.bookk.feature.settings.domain.impl.di
 
+import me.bookk.core.domain.fetch.AppStartAction
+import me.bookk.core.domain.fetch.BackgroundDataFetchAction
 import me.bookk.feature.settings.domain.api.AcceptLegalDocuments
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.DeleteAccount
@@ -42,11 +44,12 @@ import me.bookk.feature.settings.domain.impl.UpdateNotificationSettingsImpl
 import me.bookk.feature.settings.domain.impl.UpdateNotificationTokenImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun settingsDomainModule() = module {
-    factoryOf(::DeleteExpiredPersonalDataExportFileImpl) bind
-        DeleteExpiredPersonalDataExportFile::class
+    factoryOf(::DeleteExpiredPersonalDataExportFileImpl) binds
+        arrayOf(DeleteExpiredPersonalDataExportFile::class, AppStartAction::class)
     factoryOf(::DownloadPersonalDataExportImpl) bind DownloadPersonalDataExport::class
     factoryOf(::GetPersonalDataExportImpl) bind GetPersonalDataExport::class
     factoryOf(::StartPersonalDataExportImpl) bind StartPersonalDataExport::class
@@ -63,7 +66,9 @@ fun settingsDomainModule() = module {
     factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
     factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class
     factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class
-    factoryOf(::GetNotificationSettingsImpl) bind GetNotificationSettings::class
+    factoryOf(::GetNotificationSettingsImpl) binds
+        arrayOf(GetNotificationSettings::class, BackgroundDataFetchAction::class)
     factoryOf(::UpdateNotificationSettingsImpl) bind UpdateNotificationSettings::class
-    factoryOf(::UpdateNotificationTokenImpl) bind UpdateNotificationToken::class
+    factoryOf(::UpdateNotificationTokenImpl) binds
+        arrayOf(UpdateNotificationToken::class, BackgroundDataFetchAction::class)
 }

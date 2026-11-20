@@ -164,7 +164,7 @@ Validation:
   The reading test exercises both link callbacks and verifies that neither checks the shared checkbox.
 - `:androidApp:assembleDevDebug` passes.
 - `:shared:compileKotlinIosArm64` passes.
-- `xcodebuild -project iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
+- `xcodebuild -project apps/iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
   -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` passes.
 - Spotless formatting is applied to the changed Kotlin files; `git diff --check` passes.
 - Both affected operation diagrams parse with Mermaid. All four translation files have matching keys,
@@ -245,7 +245,7 @@ Validation:
   and preserving rows while blocking stale acceptance during refresh, plus accepted-state coverage.
 - `:androidApp:assembleDevDebug` passes.
 - `:shared:compileKotlinIosArm64` passes.
-- `xcodebuild -project iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
+- `xcodebuild -project apps/iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
   -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` passes.
 - Spotless is applied to changed Kotlin files; `git diff --check` passes. All four translation files
   have matching keys, placeholders and newline markers.
@@ -583,7 +583,7 @@ Validation:
 - Green: all 234 Business tests pass: 91 presentation (55 Business Settings), 122 domain and 21 data.
   Sixteen retention regressions were added; existing permission tests now include the field.
 - `:androidApp:assembleDevDebug` and `:shared:compileKotlinIosArm64` pass.
-- `xcodebuild -project iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
+- `xcodebuild -project apps/iosApp/iosApp.xcodeproj -scheme dev -configuration Debug
   -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` passes.
 - Spotless is applied to all six changed Kotlin files. `git diff --check` passes. All four translation
   files have matching keys, placeholders and newline markers.

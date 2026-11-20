@@ -9,11 +9,11 @@ captures
 .cxx
 local.properties
 xcuserdata
-androidApp/keystore.properties
-iosApp/iosApp/Firebase/*/GoogleService-Info.plist
-androidApp/keystore/debug.jks
-androidApp/keystore/release.jks
-androidApp/keystore/*.jks
-androidApp/google-services.json
+apps/androidApp/keystore.properties
+apps/iosApp/iosApp/Firebase/*/GoogleService-Info.plist
+apps/androidApp/keystore/debug.jks
+apps/androidApp/keystore/release.jks
+apps/androidApp/keystore/*.jks
+apps/androidApp/google-services.json
 **/webpack.config.d/moko-resources-generated.js
 **/karma.config.d/moko-resources-generated.js

@@ -77,7 +77,7 @@ runs:
       shell: bash
       env:
         LIBS_HASH: ${{ hashFiles('gradle/libs.versions.toml') }}
-        PACKAGES_HASH: ${{ hashFiles('iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+        PACKAGES_HASH: ${{ hashFiles('apps/iosApp/iosApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
       run: |
         kotlin_version=$(sed -nE 's/^kotlin = "(.+)"$/\1/p' gradle/libs.versions.toml)
         if [ -z "$kotlin_version" ]; then
@@ -150,13 +150,13 @@ runs:
           echo "::error::GoogleService-Info.plist secret for $ENVIRONMENT is empty or missing"
           exit 1
         fi
-        mkdir -p "iosApp/iosApp/Firebase/$ENVIRONMENT"
-        echo -n "$GOOGLE_SERVICE_INFO" | base64 --decode > "iosApp/iosApp/Firebase/$ENVIRONMENT/GoogleService-Info.plist"
+        mkdir -p "apps/iosApp/iosApp/Firebase/$ENVIRONMENT"
+        echo -n "$GOOGLE_SERVICE_INFO" | base64 --decode > "apps/iosApp/iosApp/Firebase/$ENVIRONMENT/GoogleService-Info.plist"
 
     - name: Apply Build Version
       shell: bash
       run: |
-        plist=iosApp/iosApp/Info.plist
+        plist=apps/iosApp/iosApp/Info.plist
         if [ -n "$BUILD_VERSION_CODE" ]; then
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_VERSION_CODE" "$plist"
         fi

@@ -12,6 +12,7 @@ kotlin {
     sourceSets {
         commonTest.dependencies {
             implementation(libs.ktor.client.negotiation)
+            implementation(libs.ktor.client.mock)
             implementation(projects.core.testFixtures)
         }
         commonMain.dependencies {
@@ -19,7 +20,7 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.feature.settings.domain.api)
             implementation(projects.feature.settings.data.source)
-            implementation(projects.database)
+            implementation(projects.database.account)
             implementation(projects.library.cache.api)
             implementation(projects.library.files.api)
             implementation(libs.ktor.client.resources)

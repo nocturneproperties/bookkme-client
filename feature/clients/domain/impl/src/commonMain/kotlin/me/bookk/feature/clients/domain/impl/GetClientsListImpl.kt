@@ -3,6 +3,7 @@ package me.bookk.feature.clients.domain.impl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.bookk.core.coroutine.flatMapLatestOrNull
+import me.bookk.core.domain.fetch.BusinessDataFetchAction
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.clients.domain.api.entity.Client
@@ -12,7 +13,8 @@ import kotlin.uuid.Uuid
 internal class GetClientsListImpl(
     private val clientsDataSource: ClientsDataSource,
     private val observeDashboardBusinessChanges: ObserveDashboardBusinessChanges,
-) : GetClientsList {
+) : GetClientsList,
+    BusinessDataFetchAction {
 
     override fun flow(): Flow<List<Client>> {
         return observeDashboardBusinessChanges()
@@ -32,5 +34,9 @@ internal class GetClientsListImpl(
         clientsDataSource.saveClientsInDb(clients)
         clientsDataSource.saveLastSyncedAt(businessId)
         return clients
+    }
+
+    override suspend fun doOnBusinessDataFetch(businessId: Uuid) {
+        refresh(businessId)
     }
 }

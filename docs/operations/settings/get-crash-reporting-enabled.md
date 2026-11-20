@@ -6,12 +6,12 @@
 `PrivacySettingsViewModel` (Settings → Account → Privacy, "Send crash reports" switch).
 
 Both go through `library.crashreporting.api.CrashReporter`. The apps implement it with Firebase Crashlytics
-(`AndroidCrashReporter` in `androidApp`, `IOSCrashReporter` in `iosApp/iosApp/Library/CrashReporting`) and
+(`AndroidCrashReporter` in `androidApp`, `IOSCrashReporter` in `apps/iosApp/iosApp/Library/CrashReporting`) and
 provide it through `StateFactoryCreator.createCrashReporter()`, registered as a Koin `single` in `CoreDi`.
 Crashlytics stores the choice itself (Android SharedPreferences, iOS `NSUserDefaults`) and reads it at startup
 before any app code runs, so the app keeps no copy of its own. The choice is a device preference: it is not
 cleared on logout. Collection is off by default (opt-in): `firebase_crashlytics_collection_enabled = false` in
-`androidApp/src/main/AndroidManifest.xml` and `FirebaseCrashlyticsCollectionEnabled = false` in `iosApp/iosApp/Info.plist`.
+`apps/androidApp/src/main/AndroidManifest.xml` and `FirebaseCrashlyticsCollectionEnabled = false` in `apps/iosApp/iosApp/Info.plist`.
 Crashlytics only uses that value until the user flips the switch; its stored override then takes precedence.
 
 Changing the choice always deletes unsent reports, so nothing collected around an opt-out is uploaded later.

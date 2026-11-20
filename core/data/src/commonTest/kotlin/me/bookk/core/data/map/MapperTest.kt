@@ -253,6 +253,36 @@ class MapperTest {
     }
 
     @Test
+    fun `keeps a protobuf 503 as a business error`() = runUnitTest {
+        given()
+        val failure = failureFor(HttpStatusCode.ServiceUnavailable, 16, "Unavailable")
+
+        whenn()
+        val result = failure.toDomain()
+
+        then()
+        assertIs<Error.BusinessError>(result)
+        assertEquals(16, result.errorCode)
+    }
+
+    @Test
+    fun `keeps an html 503 as an unknown API error`() = runUnitTest {
+        given()
+        val failure = failureFor(
+            HttpStatusCode.ServiceUnavailable,
+            "<html>503</html>".encodeToByteArray(),
+            ContentType.Text.Html,
+        )
+
+        whenn()
+        val result = failure.toDomain()
+
+        then()
+        assertIs<Error.UnknownApiError>(result)
+        assertEquals(503, result.errorCode)
+    }
+
+    @Test
     fun `maps a non protobuf 400 to bad request`() = runUnitTest {
         given()
         val failure = failureFor(

@@ -42,15 +42,7 @@ iOS UI for a feature lives in `apps/iosApp/iosApp/Feature/<FeatureCapitalized>/`
 
 ## Screen Creation (the current pattern)
 
-Scaffold with the template script (it generates code in the up-to-date pattern):
-
-```bash
-cd feature/.template
-./screen.template.sh <feature_name> <ScreenName> <screen.package>
-# example: ./screen.template.sh business Plugins screen.plugins
-```
-
-⚠️ The script's DI/factory wiring steps only run if it finds files at its expected paths, and some features use different file names (e.g. it looks for `Ios<Feature>PresentationDi.kt` but business uses `IOS<Feature>Di.kt`). **Always verify every item in the checklist below after running it**, and wire manually whatever the script skipped.
+Create every file and wiring step in the checklist below. Features name their DI and factory files differently (e.g. business uses `BusinessDi.android.kt`, `IOSBusinessDi.kt` and `factory/AndroidBusinessStateFactory.kt`; clients uses `AndroidClientsPresentationDi.kt` and `IosClientsPresentationDi.kt`), so find the feature's existing files before wiring.
 
 ### Checklist — files & wiring for a new screen `Foo` in feature `bar`
 
@@ -261,7 +253,7 @@ Any new persisted marker (prefs bucket or DB table) must be cleared on logout: i
 - Presentation: `di/<Feature>Di.kt` (commonMain) declares `internal expect fun platform<Feature>DiModule(): Module` and a public `<feature>PresentationModule()`; actuals in `androidMain` (`viewModelOf`) and `iosMain` (`factoryOf` + `@UsedInSwift` accessors). ViewModel screen arguments are passed with `@InjectedParam` (`org.koin.core.annotation.InjectedParam`) on the constructor parameter + `parametersOf(...)` at the call site (`koinViewModel { parametersOf(id) }` on Android, `KoinPlatform.getKoin().get(parameters = { parametersOf(id) })` on iOS). **When a parameter is annotated with `@InjectedParam`, always keep `viewModelOf(::FooViewModel)` / `factoryOf(::FooViewModel)` in the DI module — never switch to the manual lambda form `viewModel { FooViewModel(it.get(), get(), ...) }`. Koin resolves `@InjectedParam` fields automatically from the `parametersOf` block.**
 - Domain: `<feature>DomainModule()` in `domain/impl`. Data: `<feature>DataModule()` in `data`.
 - Per-feature aggregation: `shared/src/commonMain/kotlin/me/bookk/di/feature/<Feature>DI.kt` includes presentation + data + domain modules; installed in `shared/.../di/DISetup.kt`.
-- New feature module set: add to `settings.gradle.kts`, `shared/build.gradle.kts` deps, create the `<Feature>DI.kt` aggregator, add the feature's `StateFactory` to `shared/.../presentation/StateFactoryCreator.kt`, and implement it in both `apps/iosApp/iosApp/Core/IOSStateFactoryCreator.swift` and the Android creator. Prefer the scaffold script: `cd feature/.template && ./feature.template.sh <feature_name> <FeatureNameCapitalized>`.
+- New feature module set: add to `settings.gradle.kts`, `shared/build.gradle.kts` deps, create the `<Feature>DI.kt` aggregator, add the feature's `StateFactory` to `shared/.../presentation/StateFactoryCreator.kt`, and implement it in both `apps/iosApp/iosApp/Core/IOSStateFactoryCreator.swift` and the Android creator. Copy the module `build.gradle.kts` files and DI skeletons from an existing feature (e.g. `services`).
 
 ## Commands
 

@@ -19,7 +19,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.ktor.client.core)
-            api(libs.ktor.client.mock)
             api(libs.ktor.client.protobuf)
             api(projects.core.domain)
             implementation(projects.core)
@@ -27,6 +26,7 @@ kotlin {
         commonTest.dependencies {
             implementation(projects.core.testFixtures)
             implementation(libs.ktor.client.negotiation)
+            implementation(libs.ktor.client.mock)
         }
     }
 }

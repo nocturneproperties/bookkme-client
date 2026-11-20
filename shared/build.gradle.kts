@@ -35,7 +35,6 @@ buildkonfig {
             ApplicationConfig.VERSION_NAME,
             const = true,
         )
-        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
         buildConfigField(
             STRING,
             "PROXY_URL",
@@ -130,7 +129,6 @@ kotlin {
             implementation(projects.feature.appointments.data)
             api(projects.feature.appointments.presentation)
             // Libs
-            implementation(libs.ktor.client.mock)
             implementation(libs.ktor.client.negotiation)
             implementation(libs.ktor.client.protobuf)
             implementation(libs.ktor.client.logging)

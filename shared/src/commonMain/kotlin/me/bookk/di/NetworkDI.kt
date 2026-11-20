@@ -32,7 +32,6 @@ import library.device.api.DeviceFacade
 import me.bookk.core.Logger
 import me.bookk.core.data.HttpClientType
 import me.bookk.core.data.dataSerializer
-import me.bookk.data.mock.MockedBackend
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.shared.BuildKonfig
@@ -156,9 +155,5 @@ private fun Scope.buildClient(installAuth: Boolean): HttpClient {
             contentType(ContentType.Application.ProtoBuf)
         }
     }
-    return if (BuildKonfig.VARIANT.startsWith("mock")) {
-        HttpClient(MockedBackend.engine, config)
-    } else {
-        HttpClient(config)
-    }
+    return HttpClient(config)
 }

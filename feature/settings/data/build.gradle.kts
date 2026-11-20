@@ -12,6 +12,7 @@ kotlin {
     sourceSets {
         commonTest.dependencies {
             implementation(libs.ktor.client.negotiation)
+            implementation(libs.ktor.client.mock)
             implementation(projects.core.testFixtures)
         }
         commonMain.dependencies {

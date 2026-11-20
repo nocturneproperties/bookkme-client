@@ -1,11 +1,8 @@
 import build_src.constants.ApplicationConfig
-import build_src.tools.getCurrentVariant
 import build_src.tools.libs
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     id(libs.plugins.convention.kmm.library.kotlin.get().pluginId)
-    alias(libs.plugins.buldconfig)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -36,14 +33,8 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.ktor.client.negotiation)
+            implementation(libs.ktor.client.mock)
             implementation(projects.core.testFixtures)
         }
-    }
-}
-
-buildkonfig {
-    packageName = "me.bookk.feature.authorization.data"
-    defaultConfigs {
-        buildConfigField(STRING, "VARIANT", getCurrentVariant(), const = true)
     }
 }

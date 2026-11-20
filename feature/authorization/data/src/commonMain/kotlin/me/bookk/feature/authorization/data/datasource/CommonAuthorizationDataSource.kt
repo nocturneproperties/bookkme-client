@@ -18,7 +18,6 @@ import library.cache.api.getFlow
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.feature.authorization.data.BuildKonfig
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting.Api.Auth
@@ -72,13 +71,7 @@ class CommonAuthorizationDataSource(
     }
 
     override fun getIsAuthorizedFlow(): Flow<Boolean> {
-        return preferences.getFlow(Key.authorized).map {
-            if (BuildKonfig.VARIANT.contains("mock")) {
-                true
-            } else {
-                it ?: false
-            }
-        }
+        return preferences.getFlow(Key.authorized).map { it ?: false }
     }
 
     override suspend fun getRefreshToken(): String? {

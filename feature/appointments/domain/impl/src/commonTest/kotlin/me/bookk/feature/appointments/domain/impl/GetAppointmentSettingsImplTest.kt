@@ -161,4 +161,23 @@ class GetAppointmentSettingsImplTest {
             fixture.dataSource.saveAppointmentSettingsInDB(any())
         }
     }
+
+    @Test
+    fun `refreshes the business appointment settings when the business data fetch runs`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val businessId = Uuid.random()
+            val remote = AppointmentSettings.stub(businessId)
+            everySuspend { fixture.dataSource.getAppointmentSettings(businessId) } returns remote
+            everySuspend { fixture.dataSource.saveAppointmentSettingsInDB(remote) } returns Unit
+
+            whenn()
+            fixture.sut.doOnBusinessDataFetch(businessId)
+
+            then()
+            verifySuspend(VerifyMode.exactly(1)) {
+                fixture.dataSource.saveAppointmentSettingsInDB(remote)
+            }
+        }
 }

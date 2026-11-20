@@ -28,7 +28,6 @@ import me.bookk.feature.authorization.domain.impl.InitialAppDataFetchImpl
 import me.bookk.feature.authorization.domain.impl.InitiateBusinessSuspendImpl
 import me.bookk.feature.authorization.domain.impl.IsUserLoggedInImpl
 import me.bookk.feature.authorization.domain.impl.LogOutImpl
-import me.bookk.feature.authorization.domain.impl.LowPriorityDataFetch
 import me.bookk.feature.authorization.domain.impl.ObserveSignUpRejectionImpl
 import me.bookk.feature.authorization.domain.impl.RefreshTokenImpl
 import me.bookk.feature.authorization.domain.impl.ResendSignUpCodeImpl
@@ -58,9 +57,10 @@ fun authDomainModule() = module {
     factoryOf(::SignInWithTelegramImpl) bind SignInWithTelegram::class
     factoryOf(::IsUserLoggedInImpl) bind IsUserLoggedIn::class
     factoryOf(::UserProfileCRUDImpl) bind UserProfileCRUD::class
-    factoryOf(::InitialAppDataFetchImpl) bind InitialAppDataFetch::class
+    factory {
+        InitialAppDataFetchImpl(get(), get(), get(), get(), get(), getAll(), getAll(), getAll())
+    } bind InitialAppDataFetch::class
     factory { LogOutImpl(getAll()) } bind LogOut::class
     factoryOf(::InitiateBusinessSuspendImpl) bind InitiateBusinessSuspend::class
     factoryOf(::GetSettingsColorSchemeImpl) bind GetSettingsColorScheme::class
-    factoryOf(::LowPriorityDataFetch)
 }

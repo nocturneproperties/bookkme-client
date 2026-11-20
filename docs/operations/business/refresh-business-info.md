@@ -16,7 +16,7 @@ and domain record and is copied directly during mapping. The selection
 (`dashboard_business`) changes in the same Room transaction as the business list, so observers never see the
 new rows without the new selection or the other way round:
 
-- `invoke(applyDashboardIdFromRemote = true)`, only in `rawFetch()` right after sign-in or sign-up, selects the
+- `invoke(applyDashboardIdFromRemote = true)`, only as the `DataFetchAction` of `rawFetch()` right after sign-in or sign-up, selects the
   server's dashboard id, or clears the selection when that id is `null` or not among the returned businesses.
 - `refreshAndSelect(businessId)` selects `businessId`. Create business and Redeem employee invitation use it so
   the new business row and its selection appear together, without a "Choose a business" frame in between. If

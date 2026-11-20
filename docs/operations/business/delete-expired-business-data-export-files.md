@@ -2,8 +2,8 @@
 
 # Delete expired business data export files
 
-`DeleteExpiredBusinessDataExportFiles()` → local only · called from
-[Initial app data fetch](../authorization/initial-app-data-fetch.md) `timestampProtectedFetch` on every
+`DeleteExpiredBusinessDataExportFiles()` → local only · bound as an `AppStartAction`, so
+[Initial app data fetch](../authorization/initial-app-data-fetch.md) `timestampProtectedFetch` runs it on every
 app start, before its 30-minute throttle and authorization check.
 
 It removes downloaded business JSON files whose export can no longer be downloaded, so a file does not

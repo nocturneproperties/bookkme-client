@@ -2,8 +2,8 @@
 
 # Delete expired personal data export file
 
-`DeleteExpiredPersonalDataExportFile()` → local only · called from
-[Initial app data fetch](../authorization/initial-app-data-fetch.md) `timestampProtectedFetch` on every
+`DeleteExpiredPersonalDataExportFile()` → local only · bound as an `AppStartAction`, so
+[Initial app data fetch](../authorization/initial-app-data-fetch.md) `timestampProtectedFetch` runs it on every
 app start, before its 30-minute throttle and authorization check.
 
 It removes the downloaded personal data JSON when the cached export can no longer be downloaded, so the

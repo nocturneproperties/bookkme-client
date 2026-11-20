@@ -126,4 +126,17 @@ class DeleteExpiredPersonalDataExportFileImplTest {
         then()
         verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteFiles() }
     }
+
+    @Test
+    fun `deletes an expired export file when the app starts`() = runUnitTest {
+        given()
+        val expiresAt = Instant.parse("2026-11-04T12:00:00Z")
+        val fixture = Fixture(DataExport(DataExportStatus.READY, expiresAt = expiresAt))
+
+        whenn()
+        fixture.sut.doOnAppStart()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.deleteFiles() }
+    }
 }

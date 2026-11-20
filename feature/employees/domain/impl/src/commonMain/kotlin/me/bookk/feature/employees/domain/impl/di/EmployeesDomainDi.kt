@@ -1,5 +1,6 @@
 package me.bookk.feature.employees.domain.impl.di
 
+import me.bookk.core.domain.fetch.BusinessDataFetchAction
 import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.CreateEmployeeInvitation
 import me.bookk.feature.employees.domain.api.GetAssignableServices
@@ -26,13 +27,15 @@ import me.bookk.feature.employees.domain.impl.SetEmployeeSuspensionImpl
 import me.bookk.feature.employees.domain.impl.UpdateEmployeeImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun employeesDomainModule() = module {
     factoryOf(::UpdateEmployeeImpl) bind UpdateEmployee::class
     factoryOf(::CreateEmployeeInvitationImpl) bind CreateEmployeeInvitation::class
     factoryOf(::GetEmployeeInvitationsImpl) bind GetEmployeeInvitations::class
-    factoryOf(::GetEmployeesImpl) bind GetEmployees::class
+    factoryOf(::GetEmployeesImpl) binds
+        arrayOf(GetEmployees::class, BusinessDataFetchAction::class)
     factoryOf(::GetEmployeeImpl) bind GetEmployee::class
     factoryOf(::GetAssignableServicesImpl) bind GetAssignableServices::class
     factoryOf(::RevokeEmployeeInvitationImpl) bind RevokeEmployeeInvitation::class

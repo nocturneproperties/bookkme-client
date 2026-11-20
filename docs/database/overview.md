@@ -83,8 +83,8 @@ erDiagram
 - **The appointment feature is a separately enabled plugin** (see [Enable appointments
   plugin](../operations/business/enable-appointments-plugin.md)). Its tables can be populated for a
   business whose other lists were never fetched.
-- **Upsert order is not guaranteed across features.** [Low-priority data fetch](../operations/authorization/initial-app-data-fetch.md)
-  refreshes services, groups, clients and employees one after another. A hard FK from, say,
+- **Upsert order is not guaranteed across features.** [Background data fetch](../operations/authorization/initial-app-data-fetch.md)
+  refreshes services, groups, clients and employees one after another, in Koin registration order. A hard FK from, say,
   `employee_service_snapshot` to `service` would make the employee insert fail whenever services had not been
   cached yet.
 

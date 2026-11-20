@@ -1,5 +1,6 @@
 package me.bookk.feature.appointments.domain.impl.di
 
+import me.bookk.core.domain.fetch.BusinessDataFetchAction
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest
 import me.bookk.feature.appointments.domain.api.CancelAppointment
 import me.bookk.feature.appointments.domain.api.CompleteAppointment
@@ -42,6 +43,7 @@ import me.bookk.feature.appointments.domain.impl.UpdateAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentSettingsImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun appointmentsDomainModule() = module {
@@ -49,7 +51,8 @@ fun appointmentsDomainModule() = module {
     factoryOf(::GetBusinessAppointmentsEnabledImpl) bind GetBusinessAppointmentsEnabled::class
     factoryOf(::GetAppointmentOptionsImpl) bind GetAppointmentOptions::class
     factoryOf(::ObserveAppointmentOptionsImpl) bind ObserveAppointmentOptions::class
-    factoryOf(::GetAppointmentSettingsImpl) bind GetAppointmentSettings::class
+    factoryOf(::GetAppointmentSettingsImpl) binds
+        arrayOf(GetAppointmentSettings::class, BusinessDataFetchAction::class)
     factoryOf(::CreateAppointmentImpl) bind CreateAppointment::class
     factoryOf(::CreateAppointmentRequestImpl) bind CreateAppointmentRequest::class
     factoryOf(::GetAppointmentImpl) bind GetAppointment::class

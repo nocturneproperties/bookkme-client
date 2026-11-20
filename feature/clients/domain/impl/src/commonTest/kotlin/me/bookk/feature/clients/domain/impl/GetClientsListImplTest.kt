@@ -239,4 +239,23 @@ class GetClientsListImplTest {
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getClientIdsInDb(any()) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientsInDb(any()) }
     }
+
+    @Test
+    fun `refreshes the business clients when the business data fetch runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        val clients = listOf(stubClient(businessId))
+        everySuspend { fixture.dataSource.getClients(businessId) } returns clients
+        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns
+            clients.map { it.id }
+        everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
+        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+
+        whenn()
+        fixture.sut.doOnBusinessDataFetch(businessId)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveClientsInDb(clients) }
+    }
 }

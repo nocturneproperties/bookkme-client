@@ -1,44 +1,52 @@
 package me.bookk.feature.authorization.domain.impl
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import me.bookk.core.domain.fetch.AppStartAction
+import me.bookk.core.domain.fetch.BackgroundDataFetchAction
+import me.bookk.core.domain.fetch.DataFetchAction
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
 import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
-import me.bookk.feature.business.domain.api.DeleteExpiredBusinessDataExportFiles
-import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
-import me.bookk.feature.settings.domain.api.DeleteExpiredPersonalDataExportFile
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 
 internal class InitialAppDataFetchImpl(
     private val userProfileCRUD: UserProfileCRUD,
-    private val refreshBusiness: RefreshBusinessInfo,
-    private val lowPriorityDataFetch: LowPriorityDataFetch,
     private val authorizationDataSource: AuthorizationDataSource,
     private val clock: Clock,
     private val getSignUpLegalDocuments: GetSignUpLegalDocuments,
-    private val deleteExpiredPersonalDataExportFile: DeleteExpiredPersonalDataExportFile,
-    private val deleteExpiredBusinessDataExportFiles: DeleteExpiredBusinessDataExportFiles,
+    private val applicationScope: CoroutineScope,
+    private val appStartActions: List<AppStartAction>,
+    private val dataFetchActions: List<DataFetchAction>,
+    private val backgroundDataFetchActions: List<BackgroundDataFetchAction>,
 ) : InitialAppDataFetch {
 
     override suspend fun timestampProtectedFetch() {
-        runCatching { deleteExpiredPersonalDataExportFile() }
-        runCatching { deleteExpiredBusinessDataExportFiles() }
+        appStartActions.forEach { runCatching { it.doOnAppStart() } }
         if (!isFetchDue()) return
         getSignUpLegalDocuments.refresh()
         if (!authorizationDataSource.getIsAuthorizedFlow().first()) return
-        userProfileCRUD.updateFromRemote()
-        runCatching { refreshBusiness(applyDashboardIdFromRemote = false) }
-        lowPriorityDataFetch()
-        authorizationDataSource.saveLastInitialDataFetchAt()
+        fetchUserData(isSignIn = false)
     }
 
     override suspend fun rawFetch() {
+        fetchUserData(isSignIn = true)
+    }
+
+    private suspend fun fetchUserData(isSignIn: Boolean) {
         userProfileCRUD.updateFromRemote()
-        runCatching { refreshBusiness(applyDashboardIdFromRemote = true) }
-        lowPriorityDataFetch()
+        dataFetchActions.forEach { runCatching { it.doOnDataFetch(isSignIn) } }
+        launchBackgroundDataFetch()
         authorizationDataSource.saveLastInitialDataFetchAt()
+    }
+
+    private fun launchBackgroundDataFetch() {
+        applicationScope.launch {
+            backgroundDataFetchActions.forEach { runCatching { it.doOnBackgroundDataFetch() } }
+        }
     }
 
     private suspend fun isFetchDue(): Boolean {

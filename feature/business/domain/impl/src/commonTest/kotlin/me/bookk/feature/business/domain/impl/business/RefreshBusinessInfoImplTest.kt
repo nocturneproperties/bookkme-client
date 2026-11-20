@@ -360,4 +360,45 @@ class RefreshBusinessInfoImplTest {
             then()
             verifySuspend { fixture.isAppointmentsPluginEnabled.refresh(business.id) }
         }
+
+    @Test
+    fun `applies the remote dashboard business when the data fetch follows a sign-in`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val business = stubBusiness()
+            val info = UserBusinessInfo(dashboardId = business.id, businesses = listOf(business))
+            everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
+            everySuspend {
+                fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any())
+            } returns Unit
+            everySuspend { fixture.isAppointmentsPluginEnabled.refresh(any()) } returns true
+
+            whenn()
+            fixture.sut.doOnDataFetch(isSignIn = true)
+
+            then()
+            verifySuspend {
+                fixture.dataSource.saveBusinessListWithDashboardInDB(listOf(business), business.id)
+            }
+        }
+
+    @Test
+    fun `keeps the local dashboard business when the data fetch follows an app start`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val info = UserBusinessInfo(dashboardId = Uuid.random(), businesses = emptyList())
+            everySuspend { fixture.dataSource.getBusinessesFromRemote() } returns info
+            everySuspend { fixture.dataSource.saveBusinessListInDB(emptyList()) } returns Unit
+
+            whenn()
+            fixture.sut.doOnDataFetch(isSignIn = false)
+
+            then()
+            verifySuspend { fixture.dataSource.saveBusinessListInDB(emptyList()) }
+            verifySuspend(VerifyMode.not) {
+                fixture.dataSource.saveBusinessListWithDashboardInDB(any(), any())
+            }
+        }
 }

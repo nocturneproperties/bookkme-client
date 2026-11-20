@@ -1,5 +1,6 @@
 package me.bookk.feature.business.domain.impl.business
 
+import me.bookk.core.domain.fetch.DataFetchAction
 import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
@@ -9,7 +10,8 @@ import kotlin.uuid.Uuid
 internal class RefreshBusinessInfoImpl(
     private val businessDataSource: BusinessDataSource,
     private val isAppointmentsPluginEnabled: IsAppointmentsPluginEnabled,
-) : RefreshBusinessInfo {
+) : RefreshBusinessInfo,
+    DataFetchAction {
     override suspend fun invoke(applyDashboardIdFromRemote: Boolean) {
         val data = businessDataSource.getBusinessesFromRemote()
         deleteRemovedBusinesses(data)
@@ -53,5 +55,9 @@ internal class RefreshBusinessInfoImpl(
 
     private fun UserBusinessInfo.contains(businessId: Uuid): Boolean {
         return businesses.any { it.id == businessId }
+    }
+
+    override suspend fun doOnDataFetch(isSignIn: Boolean) {
+        invoke(applyDashboardIdFromRemote = isSignIn)
     }
 }

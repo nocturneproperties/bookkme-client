@@ -123,13 +123,13 @@ EOF
 fi
 
 # 7. IOS Swift files
-IOS_FEATURE_DIR="../../iosApp/iosApp/Feature/${feature_capital}/${screen_name}"
+IOS_FEATURE_DIR="../../apps/iosApp/iosApp/Feature/${feature_capital}/${screen_name}"
 mkdir -p "$IOS_FEATURE_DIR"
 process_template "screen/IOSState.template" "$IOS_FEATURE_DIR/IOS${screen_name}State.swift"
 process_template "screen/IOSScreen.template" "$IOS_FEATURE_DIR/${screen_name}Screen.swift"
 
 # 8. Wiring IOSStateFactory.swift
-IOS_SF_IMPL="../../iosApp/iosApp/Feature/${feature_capital}/IOS${feature_capital}StateFactory.swift"
+IOS_SF_IMPL="../../apps/iosApp/iosApp/Feature/${feature_capital}/IOS${feature_capital}StateFactory.swift"
 if [ -f "$IOS_SF_IMPL" ]; then
     sed '$d' "$IOS_SF_IMPL" > tmp && mv tmp "$IOS_SF_IMPL"
     cat >> "$IOS_SF_IMPL" << EOF

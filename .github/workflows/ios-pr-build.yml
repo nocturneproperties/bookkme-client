@@ -4,8 +4,8 @@ on:
     branches: [ develop ]
     types: [ opened, synchronize, reopened, ready_for_review ]
     paths-ignore:
-      - 'androidApp/**'
-      - 'site/**'
+      - 'apps/androidApp/**'
+      - 'apps/site/**'
       - 'kotlin-js-store/**'
       - 'docs/**'
       - '**.md'
@@ -33,7 +33,7 @@ jobs:
       - name: Build
         run: |
           .github/scripts/xcodebuild.sh debug build \
-            -project iosApp/iosApp.xcodeproj \
+            -project apps/iosApp/iosApp.xcodeproj \
             -scheme dev \
             -configuration Debug \
             -destination 'generic/platform=iOS' \

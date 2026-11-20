@@ -26,11 +26,15 @@ include(":database")
 
 // App
 include(":androidApp")
+project(":androidApp").projectDir = file("apps/androidApp")
 
 // Web
 include(":site")
 include(":site:designsystem")
 include(":site:domcompat")
+project(":site").projectDir = file("apps/site")
+project(":site:designsystem").projectDir = file("apps/site/designsystem")
+project(":site:domcompat").projectDir = file("apps/site/domcompat")
 
 // Core
 include(":designsystem")
@@ -40,8 +44,6 @@ include(":core:domain")
 include(":core:presentation")
 include(":core:testFixtures")
 include(":designsystem:testFixtures")
-include(":environment:api")
-include(":environment:impl")
 
 // Library
 include(":library:cache:api")

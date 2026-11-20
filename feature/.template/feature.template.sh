@@ -106,7 +106,7 @@ cat >> "$SF_CREATOR" << EOF
 EOF
 
 # 9. Wiring AndroidStateFactoryCreator.kt
-AS_CREATOR="../../androidApp/src/main/kotlin/$root_package/android/AndroidStateFactoryCreator.kt"
+AS_CREATOR="../../apps/androidApp/src/main/kotlin/$root_package/android/AndroidStateFactoryCreator.kt"
 # Add imports
 sed -i '' "/import ${root_package_dotted}.feature.services.presentation.ServicesStateFactory/a\\
 import ${root_package_dotted}.feature.${feature_name}.presentation.Android${feature_capital}StateFactory\\
@@ -137,8 +137,8 @@ EOF
 fi
 
 # 11. IOS
-mkdir -p "../../iosApp/iosApp/Feature/$feature_capital"
-cat > "../../iosApp/iosApp/Feature/$feature_capital/IOS${feature_capital}StateFactory.swift" << EOF
+mkdir -p "../../apps/iosApp/iosApp/Feature/$feature_capital"
+cat > "../../apps/iosApp/iosApp/Feature/$feature_capital/IOS${feature_capital}StateFactory.swift" << EOF
 import shared
 
 @MainActor
@@ -148,7 +148,7 @@ class IOS${feature_capital}StateFactory: @MainActor ${feature_capital}StateFacto
 EOF
 
 # Wiring IOSStateFactoryCreator.swift
-IOS_SF="../../iosApp/iosApp/Core/IOSStateFactoryCreator.swift"
+IOS_SF="../../apps/iosApp/iosApp/Core/IOSStateFactoryCreator.swift"
 sed '$d' "$IOS_SF" > tmp && mv tmp "$IOS_SF"
 cat >> "$IOS_SF" << EOF
 	func create${feature_capital}Factory() -> any ${feature_capital}StateFactory {

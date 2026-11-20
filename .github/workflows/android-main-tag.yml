@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: android-${{ env.CLEAN_REF }}-prod
-          path: androidApp/build/outputs/apk/prod/release/*.apk
+          path: apps/androidApp/build/outputs/apk/prod/release/*.apk
           if-no-files-found: error
           overwrite: true
           retention-days: 5

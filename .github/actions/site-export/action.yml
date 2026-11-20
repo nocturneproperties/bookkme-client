@@ -1,5 +1,5 @@
 name: Site Export
-description: Exports the Kobweb site for the Kobweb server into site/.kobweb, reusing the cached Playwright browser the export renders pages with
+description: Exports the Kobweb site for the Kobweb server into apps/site/.kobweb, reusing the cached Playwright browser the export renders pages with
 
 runs:
   using: composite

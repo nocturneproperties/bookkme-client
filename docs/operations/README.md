@@ -56,6 +56,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `ConfirmEmailChange` | `POST /api/auth/email/confirm`, then writes the confirmed address into the cached `user_profile` | [Confirm email change](authorization/confirm-email-change.md) |
 | `ObserveSignUpRejection` | local only: in-memory sign-up session | [Observe sign-up rejection](authorization/observe-sign-up-rejection.md) |
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
+| `SignInWithTelegram` | `POST /api/auth/telegram/sign_in` with the raw Mini App `initData` and, for a new user, the accepted legal-document versions | [Sign in with Telegram](authorization/sign-in-with-telegram.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
 | `InitialAppDataFetch` (+ internal `LowPriorityDataFetch`) | `timestampProtectedFetch`: local expired personal and business export file cleanup, then `GET /api/user/legal`; private requests only when authorized; `rawFetch`: profile, business, per-feature refreshes | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
 | `LogOut` | `DELETE /api/auth/session`; bound cleanup includes export status and temporary files | [Log out](authorization/log-out.md) |
@@ -179,7 +180,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Calls |
 |---|---|
-| [Finish sign-up](authorization/finish-sign-up.md), [Sign in](authorization/sign-in.md) | `InitialAppDataFetch.rawFetch` |
+| [Finish sign-up](authorization/finish-sign-up.md), [Sign in](authorization/sign-in.md), [Sign in with Telegram](authorization/sign-in-with-telegram.md) | `InitialAppDataFetch.rawFetch` |
 | [Resend sign-up code](authorization/resend-sign-up-code.md) | `StartSignUp` |
 | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) | `refresh`: `GetLegalDocumentVersions` (cross-feature wrapper); `invoke`: local cache only |
 | [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |

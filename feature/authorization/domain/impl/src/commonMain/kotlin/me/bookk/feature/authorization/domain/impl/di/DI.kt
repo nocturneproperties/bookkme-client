@@ -14,6 +14,7 @@ import me.bookk.feature.authorization.domain.api.ObserveSignUpRejection
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.ResendSignUpCode
 import me.bookk.feature.authorization.domain.api.SignIn
+import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.domain.api.StartEmailChange
 import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
@@ -32,6 +33,7 @@ import me.bookk.feature.authorization.domain.impl.ObserveSignUpRejectionImpl
 import me.bookk.feature.authorization.domain.impl.RefreshTokenImpl
 import me.bookk.feature.authorization.domain.impl.ResendSignUpCodeImpl
 import me.bookk.feature.authorization.domain.impl.SignInImpl
+import me.bookk.feature.authorization.domain.impl.SignInWithTelegramImpl
 import me.bookk.feature.authorization.domain.impl.StartEmailChangeImpl
 import me.bookk.feature.authorization.domain.impl.StartSignUpImpl
 import me.bookk.feature.authorization.domain.impl.UserProfileCRUDImpl
@@ -53,6 +55,7 @@ fun authDomainModule() = module {
     factoryOf(::GetTokenInfoImpl) bind GetTokenInfo::class
     factoryOf(::RefreshTokenImpl) bind RefreshToken::class
     factoryOf(::SignInImpl) bind SignIn::class
+    factoryOf(::SignInWithTelegramImpl) bind SignInWithTelegram::class
     factoryOf(::IsUserLoggedInImpl) bind IsUserLoggedIn::class
     factoryOf(::UserProfileCRUDImpl) bind UserProfileCRUD::class
     factoryOf(::InitialAppDataFetchImpl) bind InitialAppDataFetch::class

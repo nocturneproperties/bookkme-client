@@ -29,7 +29,7 @@ suspend fun Throwable.toDomain(): Error {
                     Error.Unauthorized(this)
                 }
 
-                in 400..500 -> {
+                in 400..599 -> {
                     val body = response.protobufBusinessError()
                     when {
                         body != null && body.isAccessSuspended(response.status.value) -> {

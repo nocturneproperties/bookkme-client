@@ -13,6 +13,7 @@ interface AuthorizationDataSource {
     suspend fun refreshToken(refreshToken: String): TokenInfo
     suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge
     suspend fun verifyAuthorization(signInData: SignInData): TokenInfo
+    suspend fun signInWithTelegram(data: TelegramSignInData): TokenInfo
     suspend fun deleteAccount(request: DeleteAccountRequest)
     suspend fun setAuthorizationStatus(isAuthorized: Boolean)
     suspend fun invalidateClientTokens()

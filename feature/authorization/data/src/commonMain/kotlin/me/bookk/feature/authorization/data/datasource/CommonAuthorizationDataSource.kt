@@ -32,6 +32,7 @@ import me.bookk.feature.authorization.domain.datasource.authorization.Authorizat
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
+import me.bookk.feature.authorization.domain.datasource.authorization.TelegramSignInData
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -101,6 +102,15 @@ class CommonAuthorizationDataSource(
         return mapExceptions {
             val response = httpClient.post(Auth.SignIn()) {
                 setBody(signInData.toRemote())
+            }
+            response.body<TokenInfoResponse>().toDomain()
+        }
+    }
+
+    override suspend fun signInWithTelegram(data: TelegramSignInData): TokenInfo {
+        return mapExceptions {
+            val response = httpClient.post(Auth.Telegram.SignIn()) {
+                setBody(data.toRemote())
             }
             response.body<TokenInfoResponse>().toDomain()
         }

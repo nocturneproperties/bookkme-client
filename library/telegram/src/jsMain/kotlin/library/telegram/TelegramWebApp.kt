@@ -1,12 +1,15 @@
-package me.bookk.site.telegram
+package library.telegram
 
 external interface TelegramWebApp {
     val colorScheme: String
+    val initData: String
     val initDataUnsafe: TelegramInitData
 
     fun ready()
 
     fun expand()
+
+    fun openLink(url: String)
 
     fun setHeaderColor(color: String)
 

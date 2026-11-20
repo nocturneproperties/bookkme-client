@@ -3,7 +3,7 @@
 # Sign in with Telegram
 
 `SignInWithTelegram(initData, acceptedDocuments)` → `POST /api/auth/telegram/sign_in`
-· no caller yet (the website's `/telegram` Mini App needs the authorization data layer on JS first)
+· called from `TelegramSignInViewModel` (authorization presentation, web only; the site's `/telegram` Mini App does not render it yet)
 
 `initData` is the raw `Telegram.WebApp.initData` string, passed through unparsed: the server checks
 Telegram's Ed25519 signature for its bot and accepts the data for one hour after `auth_date`. A

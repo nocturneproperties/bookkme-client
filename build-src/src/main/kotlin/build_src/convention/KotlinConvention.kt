@@ -25,6 +25,7 @@ private val modulesWithWebTarget = setOf(
     ":core:testFixtures",
     ":core:presentation",
     ":designsystem",
+    ":designsystem:testFixtures",
     ":library:money",
     ":library:device:api",
     ":library:device:impl",
@@ -34,10 +35,12 @@ private val modulesWithWebTarget = setOf(
     ":library:cache:impl",
     ":library:files:api",
     ":library:files:impl",
+    ":library:validation:api",
     ":database:account",
     ":database:client",
     ":feature:authorization:data",
     ":feature:settings:data",
+    ":feature:authorization:presentation",
     ":shared:common",
 )
 

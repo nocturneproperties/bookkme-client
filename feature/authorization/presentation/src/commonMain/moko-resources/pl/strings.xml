@@ -60,4 +60,13 @@
     <string name="verify_email_change_description">Wysłaliśmy 6-cyfrowy kod na adres %s. Wpisz go poniżej, aby potwierdzić nowy adres e-mail.</string>
     <string name="verify_email_change_success">Adres e-mail został zmieniony.</string>
     <string name="verify_email_change_email_taken">Ten adres e-mail jest już używany przez inne konto. Użyj innego adresu e-mail.</string>
+    <string name="telegram_sign_in_progress">Logujemy Cię przez Telegram…</string>
+    <string name="telegram_sign_in_signed_in">Zalogowano przez Telegram.</string>
+    <string name="telegram_sign_in_legal_prompt">Witamy w BookkMe. Aby utworzyć konto, zapoznaj się z poniższymi dokumentami i zaakceptuj je.</string>
+    <string name="telegram_sign_in_continue">Utwórz konto</string>
+    <string name="telegram_sign_in_retry">Spróbuj ponownie</string>
+    <string name="telegram_sign_in_expired">Sesja wygasła. Zamknij mini aplikację i otwórz ją ponownie.</string>
+    <string name="telegram_sign_in_invalid">Telegram nie mógł potwierdzić Twojej tożsamości. Zamknij mini aplikację i otwórz ją ponownie z bota.</string>
+    <string name="telegram_sign_in_unavailable">Logowanie przez Telegram jest teraz niedostępne. Spróbuj ponownie później.</string>
+    <string name="telegram_sign_in_account_creation_failed">Nie udało się utworzyć konta. Spróbuj ponownie.</string>
 </resources>

@@ -1,4 +1,4 @@
-package me.bookk.site.telegram
+package library.telegram
 
 import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import kotlinx.browser.window

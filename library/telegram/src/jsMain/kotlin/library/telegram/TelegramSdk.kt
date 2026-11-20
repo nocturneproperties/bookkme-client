@@ -1,18 +1,11 @@
-package me.bookk.site.telegram
+package library.telegram
 
-import com.varabyte.kobweb.core.init.InitKobweb
-import com.varabyte.kobweb.core.init.InitKobwebContext
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.events.Event
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-
-@InitKobweb
-fun initTelegramSdk(ctx: InitKobwebContext) {
-    TelegramSdk.rememberLaunchHash()
-}
 
 object TelegramSdk {
     private const val SCRIPT_URL = "https://telegram.org/js/telegram-web-app.js"

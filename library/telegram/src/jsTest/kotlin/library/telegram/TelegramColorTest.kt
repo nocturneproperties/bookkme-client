@@ -1,4 +1,4 @@
-package me.bookk.site.telegram
+package library.telegram
 
 import com.varabyte.kobweb.compose.ui.graphics.Color
 import me.bookk.core.test.given

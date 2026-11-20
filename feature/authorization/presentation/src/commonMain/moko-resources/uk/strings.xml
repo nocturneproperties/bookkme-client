@@ -60,4 +60,13 @@
     <string name="verify_email_change_description">Ми надіслали 6-значний код на %s. Введіть його нижче, щоб підтвердити нову ел. пошту.</string>
     <string name="verify_email_change_success">Ел. пошту змінено.</string>
     <string name="verify_email_change_email_taken">Ця ел. пошта вже використовується іншим обліковим записом. Вкажіть іншу ел. пошту.</string>
+    <string name="telegram_sign_in_progress">Виконуємо вхід через Telegram…</string>
+    <string name="telegram_sign_in_signed_in">Ви увійшли через Telegram.</string>
+    <string name="telegram_sign_in_legal_prompt">Ласкаво просимо до BookkMe. Щоб створити обліковий запис, ознайомтеся з документами нижче та прийміть їх.</string>
+    <string name="telegram_sign_in_continue">Створити обліковий запис</string>
+    <string name="telegram_sign_in_retry">Спробувати ще раз</string>
+    <string name="telegram_sign_in_expired">Сеанс закінчився. Закрийте мініпрограму та відкрийте її знову.</string>
+    <string name="telegram_sign_in_invalid">Telegram не зміг підтвердити вашу особу. Закрийте мініпрограму та знову відкрийте її з бота.</string>
+    <string name="telegram_sign_in_unavailable">Вхід через Telegram зараз недоступний. Спробуйте пізніше.</string>
+    <string name="telegram_sign_in_account_creation_failed">Не вдалося створити обліковий запис. Спробуйте ще раз.</string>
 </resources>

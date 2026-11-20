@@ -40,20 +40,32 @@ val TelegramMessageStyle = CssStyle.base {
 
 @Composable
 fun TelegramMessage(title: StringDesc, body: StringDesc, link: SiteLink? = null) {
+    TelegramMessageLayout {
+        Heading(title, HeadingLevel.H1, HeadlineLargeTextStyle.toModifier())
+        TelegramMessageBody(body)
+        link?.let { MessageLink(it) }
+    }
+}
+
+@Composable
+fun TelegramMessageLayout(content: @Composable () -> Unit) {
     Column(
         TelegramMessageStyle.toModifier(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Logo(Modifier.height(2.5.cssRem))
-        Heading(title, HeadingLevel.H1, HeadlineLargeTextStyle.toModifier())
-        TextBlock(
-            body,
-            BodyLargeTextStyle
-                .toModifier()
-                .secondary(),
-        )
-        link?.let { MessageLink(it) }
+        content()
     }
+}
+
+@Composable
+fun TelegramMessageBody(text: StringDesc) {
+    TextBlock(
+        text,
+        BodyLargeTextStyle
+            .toModifier()
+            .secondary(),
+    )
 }
 
 @Composable

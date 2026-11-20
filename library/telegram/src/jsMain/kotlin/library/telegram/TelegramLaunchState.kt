@@ -1,4 +1,4 @@
-package me.bookk.site.telegram
+package library.telegram
 
 sealed interface TelegramLaunchState {
     data object Loading : TelegramLaunchState

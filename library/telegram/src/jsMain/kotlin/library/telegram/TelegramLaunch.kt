@@ -1,4 +1,4 @@
-package me.bookk.site.telegram
+package library.telegram
 
 object TelegramLaunch {
     private const val WEB_APP_DATA_PARAM = "tgWebAppData"

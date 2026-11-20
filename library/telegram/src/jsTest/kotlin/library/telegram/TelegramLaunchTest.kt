@@ -1,4 +1,4 @@
-package me.bookk.site.telegram
+package library.telegram
 
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest

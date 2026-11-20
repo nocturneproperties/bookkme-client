@@ -15,6 +15,7 @@ import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import com.varabyte.kobweb.silk.theme.colors.loadFromLocalStorage
 import com.varabyte.kobweb.silk.theme.colors.saveToLocalStorage
 import com.varabyte.kobweb.silk.theme.colors.systemPreference
+import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.site.designsystem.resources.LocalizedContent
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.vh
@@ -40,7 +41,7 @@ fun AppEntry(content: @Composable () -> Unit) {
                 .toModifier()
                 .minHeight(100.vh),
         ) {
-            LocalizedContent(SiteRes.strings.stringsLoader) {
+            LocalizedContent(SiteRes.strings.stringsLoader + AuthRes.strings.stringsLoader) {
                 content()
             }
         }

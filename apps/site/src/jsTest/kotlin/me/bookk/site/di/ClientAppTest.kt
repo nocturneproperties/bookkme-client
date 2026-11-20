@@ -1,5 +1,6 @@
 package me.bookk.site.di
 
+import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import me.bookk.core.data.HttpClientType
 import me.bookk.core.presentation.error.ErrorMapper
@@ -7,10 +8,19 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.database.account.AccountDatabase
+import me.bookk.database.account.dao.LegalDocumentStatusDao
+import me.bookk.database.account.dao.NotificationSettingsDao
+import me.bookk.database.account.dao.PersonalDataExportDao
+import me.bookk.database.account.dao.UserProfileDao
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
+import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.api.RefreshToken
+import me.bookk.feature.authorization.domain.api.SignInWithTelegram
+import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -24,10 +34,33 @@ class ClientAppTest {
         stopKoin()
     }
 
+    private fun startClientApp() {
+        initClientApp()
+        loadKoinModules(module { single<AccountDatabase> { FakeAccountDatabase() } })
+    }
+
+    private class FakeAccountDatabase : AccountDatabase {
+        override fun profileDao(): UserProfileDao {
+            return mock()
+        }
+
+        override fun notificationSettingsDao(): NotificationSettingsDao {
+            return mock()
+        }
+
+        override fun legalDocumentStatusDao(): LegalDocumentStatusDao {
+            return mock()
+        }
+
+        override fun personalDataExportDao(): PersonalDataExportDao {
+            return mock()
+        }
+    }
+
     @Test
     fun `provides the authenticated http client`() = runUnitTest {
         given()
-        initClientApp()
+        startClientApp()
 
         whenn()
         val client = KoinPlatform.getKoin().getOrNull<HttpClient>()
@@ -39,7 +72,7 @@ class ClientAppTest {
     @Test
     fun `provides the unauthenticated http client`() = runUnitTest {
         given()
-        initClientApp()
+        startClientApp()
 
         whenn()
         val client = KoinPlatform.getKoin().getOrNull<HttpClient>(named(HttpClientType.NO_AUTH))
@@ -51,7 +84,7 @@ class ClientAppTest {
     @Test
     fun `provides the token reader the client authenticates with`() = runUnitTest {
         given()
-        initClientApp()
+        startClientApp()
 
         whenn()
         val getTokenInfo = KoinPlatform.getKoin().getOrNull<GetTokenInfo>()
@@ -63,7 +96,7 @@ class ClientAppTest {
     @Test
     fun `provides the token refresher the client recovers expired sessions with`() = runUnitTest {
         given()
-        initClientApp()
+        startClientApp()
 
         whenn()
         val refreshToken = KoinPlatform.getKoin().getOrNull<RefreshToken>()
@@ -73,13 +106,37 @@ class ClientAppTest {
     }
 
     @Test
+    fun `provides telegram sign-in with everything it fetches after signing in`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val signInWithTelegram = KoinPlatform.getKoin().getOrNull<SignInWithTelegram>()
+
+        then()
+        assertNotNull(signInWithTelegram)
+    }
+
+    @Test
+    fun `provides log out with every logout action`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val logOut = KoinPlatform.getKoin().getOrNull<LogOut>()
+
+        then()
+        assertNotNull(logOut)
+    }
+
+    @Test
     fun `keeps the started graph when the telegram page opens again`() = runUnitTest {
         given()
-        initClientApp()
+        startClientApp()
         val client = KoinPlatform.getKoin().get<HttpClient>()
 
         whenn()
-        initClientApp()
+        startClientApp()
 
         then()
         assertSame(client, KoinPlatform.getKoin().get<HttpClient>())
@@ -88,7 +145,7 @@ class ClientAppTest {
     @Test
     fun `provides the error mapper for presenting failures`() = runUnitTest {
         given()
-        initClientApp()
+        startClientApp()
 
         whenn()
         val errorMapper = KoinPlatform.getKoin().getOrNull<ErrorMapper>()

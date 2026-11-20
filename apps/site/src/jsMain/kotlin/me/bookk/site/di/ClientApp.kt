@@ -2,9 +2,12 @@ package me.bookk.site.di
 
 import library.cache.impl.di.cacheModule
 import library.device.impl.di.deviceModule
+import library.files.impl.di.filesModule
 import me.bookk.database.client.di.clientDatabaseModule
 import me.bookk.feature.authorization.data.di.authDataModule
 import me.bookk.feature.authorization.domain.impl.di.authDomainModule
+import me.bookk.feature.settings.data.di.settingsDataModule
+import me.bookk.feature.settings.domain.impl.di.settingsDomainModule
 import me.bookk.shared.common.di.commonModule
 import me.bookk.shared.common.di.initLogging
 import org.koin.core.KoinApplication
@@ -20,9 +23,12 @@ fun initClientApp(setup: KoinApplication.() -> Unit = {}) {
             commonModule(),
             deviceModule(),
             cacheModule(),
+            filesModule(),
             clientDatabaseModule(),
             authDomainModule(),
             authDataModule(),
+            settingsDomainModule(),
+            settingsDataModule(),
         )
     }
 }

@@ -33,9 +33,11 @@ private val modulesWithWebTarget = setOf(
     ":library:cache:api",
     ":library:cache:impl",
     ":library:files:api",
+    ":library:files:impl",
     ":database:account",
     ":database:client",
     ":feature:authorization:data",
+    ":feature:settings:data",
     ":shared:common",
 )
 

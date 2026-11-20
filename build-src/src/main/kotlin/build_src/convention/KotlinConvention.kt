@@ -26,6 +26,7 @@ private val modulesWithWebTarget = setOf(
     ":designsystem",
     ":library:money",
     ":library:device:api",
+    ":library:device:impl",
     ":library:crashreporting:api",
     ":library:cache:api",
     ":library:cache:impl",

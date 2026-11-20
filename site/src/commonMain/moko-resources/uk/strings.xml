@@ -163,4 +163,11 @@
     <string name="site_contact_legal_action">Написати команді з конфіденційності</string>
     <string name="site_contact_security_action">Повідомити про проблему безпеки</string>
     <string name="site_contact_subtitle">Питання щодо застосунку, ваших даних чи безпеки? Оберіть відповідну адресу нижче.</string>
+    <string name="site_telegram_title">Міні-застосунок у Telegram</string>
+    <string name="site_telegram_description">Записуйтеся до закладів у BookkMe просто в Telegram.</string>
+    <string name="site_telegram_coming_soon_title">Запис у Telegram уже на підході</string>
+    <string name="site_telegram_coming_soon_body">Незабаром ви просто тут надсилатимете закладам у BookkMe запит на зручний час, а вони його підтверджуватимуть. Нічого не треба встановлювати.</string>
+    <string name="site_telegram_outside_title">Ця сторінка відкривається в Telegram</string>
+    <string name="site_telegram_outside_body">Це міні-застосунок BookkMe. Відкрийте його за посиланням закладу в Telegram.</string>
+    <string name="site_telegram_outside_link">Як працює запис у BookkMe</string>
 </resources>

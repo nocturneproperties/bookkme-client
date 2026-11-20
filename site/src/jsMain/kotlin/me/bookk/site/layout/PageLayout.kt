@@ -99,7 +99,7 @@ fun PageLayout(ctx: PageContext, content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun PageHead(data: PageLayoutData, path: String) {
+internal fun PageHead(data: PageLayoutData, path: String) {
     val title = data.title.localized()
     val page = PageMeta(path, title, data.description.localized(), data.isIndexed)
     val links = if (data.isIndexed) {

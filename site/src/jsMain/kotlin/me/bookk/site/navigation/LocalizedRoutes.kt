@@ -79,7 +79,7 @@ private fun Router.registerPages(language: AppLanguage) {
     }
 }
 
-private fun preferredLanguage(): AppLanguage {
+internal fun preferredLanguage(): AppLanguage {
     if (AppGlobals.isExporting) return AppLanguage.DEFAULT
     return WebLocalization.preferredLanguage()
 }

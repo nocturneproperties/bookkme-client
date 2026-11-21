@@ -10,7 +10,7 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            api(projects.database.account)
+            api(projects.database.schema)
             implementation(projects.core)
         }
     }

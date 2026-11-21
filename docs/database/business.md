@@ -11,6 +11,10 @@ and disappears when that business is deleted.
 schedule tables and to `client`, `employee`, `employee_invitation`, `service` and `service_group`
 (see [overview](overview.md)).
 
+The entities and DAOs on this page live in `:database:schema`, and both `BusinessDatabase` and
+`ClientDatabase` hold a copy (see [README](README.md)). `ClientDatabase` has no `client`, `employee`,
+`employee_invitation`, `service` or `service_group` table yet.
+
 ```mermaid
 erDiagram
     BUSINESS ||--o{ BUSINESS_DAY_SCHEDULE : "has (CASCADE)"

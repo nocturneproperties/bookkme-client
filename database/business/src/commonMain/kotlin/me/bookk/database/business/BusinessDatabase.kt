@@ -7,42 +7,12 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import me.bookk.core.coroutine.DispatcherProvider
-import me.bookk.database.account.AccountDatabase
-import me.bookk.database.account.dao.LegalDocumentStatusDao
-import me.bookk.database.account.dao.NotificationSettingsDao
-import me.bookk.database.account.dao.PersonalDataExportDao
-import me.bookk.database.account.dao.UserProfileDao
-import me.bookk.database.account.entity.LegalDocumentStatusEntity
-import me.bookk.database.account.entity.NotificationSettingsChannelEntity
-import me.bookk.database.account.entity.NotificationSettingsEntity
-import me.bookk.database.account.entity.PersonalDataExportEntity
-import me.bookk.database.account.entity.UserProfileEntity
-import me.bookk.database.business.dao.AppointmentDao
-import me.bookk.database.business.dao.AppointmentRequestDao
-import me.bookk.database.business.dao.AppointmentSettingsDao
-import me.bookk.database.business.dao.BusinessDao
-import me.bookk.database.business.dao.BusinessDataExportDao
 import me.bookk.database.business.dao.ClientsDao
 import me.bookk.database.business.dao.EmployeeDao
 import me.bookk.database.business.dao.EmployeeInvitationDao
 import me.bookk.database.business.dao.ServiceDao
 import me.bookk.database.business.dao.ServiceGroupDao
-import me.bookk.database.business.entity.AppointmentAdjustmentServiceEntity
-import me.bookk.database.business.entity.AppointmentEntity
-import me.bookk.database.business.entity.AppointmentRequestEntity
-import me.bookk.database.business.entity.AppointmentRequestServiceSnapshotEntity
-import me.bookk.database.business.entity.AppointmentServiceSnapshotEntity
-import me.bookk.database.business.entity.AppointmentSettingsDayOffEntity
-import me.bookk.database.business.entity.AppointmentSettingsDayScheduleEntity
-import me.bookk.database.business.entity.AppointmentSettingsEntity
-import me.bookk.database.business.entity.AppointmentSettingsWorkHourEntity
-import me.bookk.database.business.entity.BusinessDataExportEntity
-import me.bookk.database.business.entity.BusinessDayOffEntity
-import me.bookk.database.business.entity.BusinessDayScheduleEntity
-import me.bookk.database.business.entity.BusinessEntity
-import me.bookk.database.business.entity.BusinessWorkHourEntity
 import me.bookk.database.business.entity.ClientEntity
-import me.bookk.database.business.entity.DashboardBusinessEntity
 import me.bookk.database.business.entity.EmployeeDayOffEntity
 import me.bookk.database.business.entity.EmployeeDayScheduleEntity
 import me.bookk.database.business.entity.EmployeeEntity
@@ -56,6 +26,35 @@ import me.bookk.database.business.migration.DeleteEmployeeInvitationEmail
 import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
 import me.bookk.database.converter.UuidConverter
+import me.bookk.database.dao.AppointmentDao
+import me.bookk.database.dao.AppointmentRequestDao
+import me.bookk.database.dao.AppointmentSettingsDao
+import me.bookk.database.dao.BusinessDao
+import me.bookk.database.dao.BusinessDataExportDao
+import me.bookk.database.dao.LegalDocumentStatusDao
+import me.bookk.database.dao.NotificationSettingsDao
+import me.bookk.database.dao.PersonalDataExportDao
+import me.bookk.database.dao.UserProfileDao
+import me.bookk.database.entity.AppointmentAdjustmentServiceEntity
+import me.bookk.database.entity.AppointmentEntity
+import me.bookk.database.entity.AppointmentRequestEntity
+import me.bookk.database.entity.AppointmentRequestServiceSnapshotEntity
+import me.bookk.database.entity.AppointmentServiceSnapshotEntity
+import me.bookk.database.entity.AppointmentSettingsDayOffEntity
+import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
+import me.bookk.database.entity.AppointmentSettingsEntity
+import me.bookk.database.entity.AppointmentSettingsWorkHourEntity
+import me.bookk.database.entity.BusinessDataExportEntity
+import me.bookk.database.entity.BusinessDayOffEntity
+import me.bookk.database.entity.BusinessDayScheduleEntity
+import me.bookk.database.entity.BusinessEntity
+import me.bookk.database.entity.BusinessWorkHourEntity
+import me.bookk.database.entity.DashboardBusinessEntity
+import me.bookk.database.entity.LegalDocumentStatusEntity
+import me.bookk.database.entity.NotificationSettingsChannelEntity
+import me.bookk.database.entity.NotificationSettingsEntity
+import me.bookk.database.entity.PersonalDataExportEntity
+import me.bookk.database.entity.UserProfileEntity
 
 @Database(
     entities = [
@@ -123,11 +122,9 @@ import me.bookk.database.converter.UuidConverter
     InstantConverter::class,
 )
 @ConstructedBy(BusinessDatabaseConstructor::class)
-abstract class BusinessDatabase :
-    RoomDatabase(),
-    AccountDatabase {
+abstract class BusinessDatabase : RoomDatabase() {
 
-    abstract override fun profileDao(): UserProfileDao
+    abstract fun profileDao(): UserProfileDao
     abstract fun businessDao(): BusinessDao
     abstract fun clientDao(): ClientsDao
     abstract fun serviceDao(): ServiceDao
@@ -135,9 +132,9 @@ abstract class BusinessDatabase :
     abstract fun appointmentDao(): AppointmentDao
     abstract fun appointmentRequestDao(): AppointmentRequestDao
     abstract fun appointmentSettingsDao(): AppointmentSettingsDao
-    abstract override fun notificationSettingsDao(): NotificationSettingsDao
-    abstract override fun legalDocumentStatusDao(): LegalDocumentStatusDao
-    abstract override fun personalDataExportDao(): PersonalDataExportDao
+    abstract fun notificationSettingsDao(): NotificationSettingsDao
+    abstract fun legalDocumentStatusDao(): LegalDocumentStatusDao
+    abstract fun personalDataExportDao(): PersonalDataExportDao
     abstract fun businessDataExportDao(): BusinessDataExportDao
     abstract fun employeeInvitationDao(): EmployeeInvitationDao
     abstract fun employeeDao(): EmployeeDao

@@ -20,7 +20,7 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.feature.settings.domain.api)
             implementation(projects.feature.settings.data.source)
-            implementation(projects.database.account)
+            implementation(projects.database.schema)
             implementation(projects.library.cache.api)
             implementation(projects.library.files.api)
             implementation(libs.ktor.client.resources)

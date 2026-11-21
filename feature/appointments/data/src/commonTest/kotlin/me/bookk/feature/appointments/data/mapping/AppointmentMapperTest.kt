@@ -7,7 +7,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.business.relation.AppointmentLocal
+import me.bookk.database.relation.AppointmentLocal
 import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
 import me.bookk.feature.appointments.data.remote.model.RequestedServiceRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment

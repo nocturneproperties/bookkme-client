@@ -14,7 +14,7 @@ import library.files.api.FileProvider
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.entity.DataExport
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.database.account.dao.PersonalDataExportDao
+import me.bookk.database.dao.PersonalDataExportDao
 import me.bookk.feature.settings.data.mapping.toDomain
 import me.bookk.feature.settings.data.mapping.toEntity
 import me.bookk.feature.settings.data.remote.api.UserRouting

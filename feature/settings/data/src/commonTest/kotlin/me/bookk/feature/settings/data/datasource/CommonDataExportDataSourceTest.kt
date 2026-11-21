@@ -26,7 +26,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.account.dao.PersonalDataExportDao
+import me.bookk.database.dao.PersonalDataExportDao
 import me.bookk.feature.settings.data.remote.model.DataExportRemote
 import me.bookk.feature.settings.data.remote.model.DataExportRequestRemote
 import me.bookk.feature.settings.data.remote.model.DataExportStatusRemote

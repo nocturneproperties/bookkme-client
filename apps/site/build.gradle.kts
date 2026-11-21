@@ -156,7 +156,7 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.core.presentation)
             implementation(projects.feature.authorization.domain.api)
-            implementation(projects.database.account)
+            implementation(projects.database.schema)
             implementation(libs.ktor.client.core)
             implementation(libs.koin.core)
             implementation(libs.test.kotlin)

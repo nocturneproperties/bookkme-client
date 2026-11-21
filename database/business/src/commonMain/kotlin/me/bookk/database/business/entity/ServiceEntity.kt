@@ -5,6 +5,7 @@ import androidx.room3.ForeignKey
 import androidx.room3.ForeignKey.Companion.CASCADE
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
+import me.bookk.database.entity.BusinessEntity
 import kotlin.time.Duration
 import kotlin.time.Instant
 import kotlin.uuid.Uuid

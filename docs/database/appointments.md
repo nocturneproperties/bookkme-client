@@ -8,6 +8,9 @@ Booked appointments, pending appointment requests, and a business's booking sett
 These tables have **no foreign key to `business`**. `businessId` is only indexed. Deleting a business row
 does not cascade here, and the client/employee references are denormalized snapshot columns.
 
+The entities and DAOs on this page live in `:database:schema`, and both `BusinessDatabase` and
+`ClientDatabase` hold a copy (see [README](README.md)).
+
 Appointment statuses are stored by name: `SCHEDULED`, `COMPLETED`, `CANCELLED`, `NO_SHOW` and
 `UNRESOLVED`. The unresolved outcome round-trips through the existing text column without a schema
 migration. It is displayed as a neutral status and offers no mutation actions.

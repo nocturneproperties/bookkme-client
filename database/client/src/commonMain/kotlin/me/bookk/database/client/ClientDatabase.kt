@@ -1,23 +1,44 @@
 package me.bookk.database.client
 
+import androidx.room3.AutoMigration
 import androidx.room3.ColumnTypeConverters
 import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import me.bookk.core.coroutine.DispatcherProvider
-import me.bookk.database.account.AccountDatabase
-import me.bookk.database.account.dao.LegalDocumentStatusDao
-import me.bookk.database.account.dao.NotificationSettingsDao
-import me.bookk.database.account.dao.PersonalDataExportDao
-import me.bookk.database.account.dao.UserProfileDao
-import me.bookk.database.account.entity.LegalDocumentStatusEntity
-import me.bookk.database.account.entity.NotificationSettingsChannelEntity
-import me.bookk.database.account.entity.NotificationSettingsEntity
-import me.bookk.database.account.entity.PersonalDataExportEntity
-import me.bookk.database.account.entity.UserProfileEntity
+import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
 import me.bookk.database.converter.UuidConverter
+import me.bookk.database.dao.AppointmentDao
+import me.bookk.database.dao.AppointmentRequestDao
+import me.bookk.database.dao.AppointmentSettingsDao
+import me.bookk.database.dao.BusinessDao
+import me.bookk.database.dao.BusinessDataExportDao
+import me.bookk.database.dao.LegalDocumentStatusDao
+import me.bookk.database.dao.NotificationSettingsDao
+import me.bookk.database.dao.PersonalDataExportDao
+import me.bookk.database.dao.UserProfileDao
+import me.bookk.database.entity.AppointmentAdjustmentServiceEntity
+import me.bookk.database.entity.AppointmentEntity
+import me.bookk.database.entity.AppointmentRequestEntity
+import me.bookk.database.entity.AppointmentRequestServiceSnapshotEntity
+import me.bookk.database.entity.AppointmentServiceSnapshotEntity
+import me.bookk.database.entity.AppointmentSettingsDayOffEntity
+import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
+import me.bookk.database.entity.AppointmentSettingsEntity
+import me.bookk.database.entity.AppointmentSettingsWorkHourEntity
+import me.bookk.database.entity.BusinessDataExportEntity
+import me.bookk.database.entity.BusinessDayOffEntity
+import me.bookk.database.entity.BusinessDayScheduleEntity
+import me.bookk.database.entity.BusinessEntity
+import me.bookk.database.entity.BusinessWorkHourEntity
+import me.bookk.database.entity.DashboardBusinessEntity
+import me.bookk.database.entity.LegalDocumentStatusEntity
+import me.bookk.database.entity.NotificationSettingsChannelEntity
+import me.bookk.database.entity.NotificationSettingsEntity
+import me.bookk.database.entity.PersonalDataExportEntity
+import me.bookk.database.entity.UserProfileEntity
 
 @Database(
     entities = [
@@ -26,22 +47,44 @@ import me.bookk.database.converter.UuidConverter
         NotificationSettingsChannelEntity::class,
         LegalDocumentStatusEntity::class,
         PersonalDataExportEntity::class,
+        BusinessEntity::class,
+        BusinessDayScheduleEntity::class,
+        BusinessWorkHourEntity::class,
+        BusinessDayOffEntity::class,
+        DashboardBusinessEntity::class,
+        BusinessDataExportEntity::class,
+        AppointmentEntity::class,
+        AppointmentServiceSnapshotEntity::class,
+        AppointmentAdjustmentServiceEntity::class,
+        AppointmentRequestEntity::class,
+        AppointmentRequestServiceSnapshotEntity::class,
+        AppointmentSettingsEntity::class,
+        AppointmentSettingsDayScheduleEntity::class,
+        AppointmentSettingsWorkHourEntity::class,
+        AppointmentSettingsDayOffEntity::class,
     ],
-    version = 1,
+    version = 2,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 @ColumnTypeConverters(
     UuidConverter::class,
+    DurationConverter::class,
     InstantConverter::class,
 )
 @ConstructedBy(ClientDatabaseConstructor::class)
-abstract class ClientDatabase :
-    RoomDatabase(),
-    AccountDatabase {
+abstract class ClientDatabase : RoomDatabase() {
 
-    abstract override fun profileDao(): UserProfileDao
-    abstract override fun notificationSettingsDao(): NotificationSettingsDao
-    abstract override fun legalDocumentStatusDao(): LegalDocumentStatusDao
-    abstract override fun personalDataExportDao(): PersonalDataExportDao
+    abstract fun profileDao(): UserProfileDao
+    abstract fun notificationSettingsDao(): NotificationSettingsDao
+    abstract fun legalDocumentStatusDao(): LegalDocumentStatusDao
+    abstract fun personalDataExportDao(): PersonalDataExportDao
+    abstract fun businessDao(): BusinessDao
+    abstract fun businessDataExportDao(): BusinessDataExportDao
+    abstract fun appointmentDao(): AppointmentDao
+    abstract fun appointmentRequestDao(): AppointmentRequestDao
+    abstract fun appointmentSettingsDao(): AppointmentSettingsDao
 
     companion object {
 

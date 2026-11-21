@@ -3,7 +3,7 @@ package me.bookk.database.business.migration
 import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.async.executeSQL
-import me.bookk.database.business.entity.DEFAULT_CLIENT_DATA_RETENTION_MONTHS
+import me.bookk.database.entity.DEFAULT_CLIENT_DATA_RETENTION_MONTHS
 
 internal object DefaultBusinessRetention : Migration(22, 23) {
     override suspend fun migrate(connection: SQLiteConnection) {

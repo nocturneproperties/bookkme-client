@@ -8,7 +8,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.business.entity.BusinessEntity
+import me.bookk.database.entity.BusinessEntity
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

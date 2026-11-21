@@ -8,11 +8,10 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.account.AccountDatabase
-import me.bookk.database.account.dao.LegalDocumentStatusDao
-import me.bookk.database.account.dao.NotificationSettingsDao
-import me.bookk.database.account.dao.PersonalDataExportDao
-import me.bookk.database.account.dao.UserProfileDao
+import me.bookk.database.dao.LegalDocumentStatusDao
+import me.bookk.database.dao.NotificationSettingsDao
+import me.bookk.database.dao.PersonalDataExportDao
+import me.bookk.database.dao.UserProfileDao
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.api.RefreshToken
@@ -39,25 +38,14 @@ class ClientAppTest {
 
     private fun startClientApp() {
         initClientApp()
-        loadKoinModules(module { single<AccountDatabase> { FakeAccountDatabase() } })
-    }
-
-    private class FakeAccountDatabase : AccountDatabase {
-        override fun profileDao(): UserProfileDao {
-            return mock()
-        }
-
-        override fun notificationSettingsDao(): NotificationSettingsDao {
-            return mock()
-        }
-
-        override fun legalDocumentStatusDao(): LegalDocumentStatusDao {
-            return mock()
-        }
-
-        override fun personalDataExportDao(): PersonalDataExportDao {
-            return mock()
-        }
+        loadKoinModules(
+            module {
+                single<UserProfileDao> { mock() }
+                single<NotificationSettingsDao> { mock() }
+                single<LegalDocumentStatusDao> { mock() }
+                single<PersonalDataExportDao> { mock() }
+            },
+        )
     }
 
     @Test

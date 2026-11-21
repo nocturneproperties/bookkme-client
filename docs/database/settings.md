@@ -6,7 +6,7 @@ The user's notification preferences: one settings row per user plus one row per 
 Written by `CommonNotificationSettingsDataSource`. The color scheme and the pending push token are
 key-value data in DataStore, not tables (see [preferences](preferences.md)).
 
-Every table on this page is an account table: the entities and DAOs live in `:database:account`, and both
+Every table on this page is an account table: the entities and DAOs live in `:database:schema`, and both
 `BusinessDatabase` and `ClientDatabase` hold a copy (see [README](README.md)).
 
 Legal-document acceptance statuses live in the `legal_document_status` Room table, owned by

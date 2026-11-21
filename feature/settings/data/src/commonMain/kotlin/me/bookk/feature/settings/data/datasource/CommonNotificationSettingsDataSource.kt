@@ -13,7 +13,7 @@ import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.database.account.dao.NotificationSettingsDao
+import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.feature.settings.data.mapping.toChannelEntities
 import me.bookk.feature.settings.data.mapping.toDomain
 import me.bookk.feature.settings.data.mapping.toEntity

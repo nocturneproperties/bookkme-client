@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.database.business.dao.BusinessDao
+import me.bookk.database.dao.BusinessDao
 import me.bookk.feature.business.data.mapping.toDayOffEntities
 import me.bookk.feature.business.data.mapping.toDayScheduleEntities
 import me.bookk.feature.business.data.mapping.toDomain

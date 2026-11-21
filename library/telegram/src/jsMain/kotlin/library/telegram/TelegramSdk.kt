@@ -2,6 +2,7 @@ package library.telegram
 
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.events.Event
 import kotlin.coroutines.resume
@@ -36,7 +37,7 @@ object TelegramSdk {
         return loadedWebApp
     }
 
-    private suspend fun appendScript() = suspendCoroutine { continuation ->
+    private suspend fun appendScript() = suspendCancellableCoroutine { continuation ->
         val script = document.createElement("script") as HTMLScriptElement
         val onSettled: (Event) -> Unit = { continuation.resume(Unit) }
         script.addEventListener("load", onSettled)

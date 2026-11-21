@@ -26,7 +26,7 @@ import me.bookk.site.designsystem.uistate.WebButtonState
 import org.jetbrains.compose.web.css.cssRem
 
 @Composable
-fun AppTopBar(state: AppBarState, modifier: Modifier = Modifier) {
+fun AppTopBar(state: AppBarState, modifier: Modifier = Modifier, showsBackButton: Boolean = true) {
     if (!state.isVisible) return
     Column(
         Modifier
@@ -41,7 +41,9 @@ fun AppTopBar(state: AppBarState, modifier: Modifier = Modifier) {
                 .gap(0.5.cssRem),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            state.onBackClick?.let { IconButton(onClick = it) { ArrowBackIcon() } }
+            state.onBackClick
+                ?.takeIf { showsBackButton }
+                ?.let { IconButton(onClick = it) { ArrowBackIcon() } }
             if (state.size ==
                 TopBarSize.SMALL
             ) {

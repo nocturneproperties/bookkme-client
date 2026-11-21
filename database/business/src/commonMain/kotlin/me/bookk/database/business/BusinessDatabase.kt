@@ -7,6 +7,9 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.database.AccountDaos
+import me.bookk.database.AppointmentDaos
+import me.bookk.database.BusinessDaos
 import me.bookk.database.business.dao.ClientsDao
 import me.bookk.database.business.dao.EmployeeDao
 import me.bookk.database.business.dao.EmployeeInvitationDao
@@ -122,20 +125,24 @@ import me.bookk.database.entity.UserProfileEntity
     InstantConverter::class,
 )
 @ConstructedBy(BusinessDatabaseConstructor::class)
-abstract class BusinessDatabase : RoomDatabase() {
+abstract class BusinessDatabase :
+    RoomDatabase(),
+    AccountDaos,
+    BusinessDaos,
+    AppointmentDaos {
 
-    abstract fun profileDao(): UserProfileDao
-    abstract fun businessDao(): BusinessDao
+    abstract override fun profileDao(): UserProfileDao
+    abstract override fun businessDao(): BusinessDao
     abstract fun clientDao(): ClientsDao
     abstract fun serviceDao(): ServiceDao
     abstract fun serviceGroupDao(): ServiceGroupDao
-    abstract fun appointmentDao(): AppointmentDao
-    abstract fun appointmentRequestDao(): AppointmentRequestDao
-    abstract fun appointmentSettingsDao(): AppointmentSettingsDao
-    abstract fun notificationSettingsDao(): NotificationSettingsDao
-    abstract fun legalDocumentStatusDao(): LegalDocumentStatusDao
-    abstract fun personalDataExportDao(): PersonalDataExportDao
-    abstract fun businessDataExportDao(): BusinessDataExportDao
+    abstract override fun appointmentDao(): AppointmentDao
+    abstract override fun appointmentRequestDao(): AppointmentRequestDao
+    abstract override fun appointmentSettingsDao(): AppointmentSettingsDao
+    abstract override fun notificationSettingsDao(): NotificationSettingsDao
+    abstract override fun legalDocumentStatusDao(): LegalDocumentStatusDao
+    abstract override fun personalDataExportDao(): PersonalDataExportDao
+    abstract override fun businessDataExportDao(): BusinessDataExportDao
     abstract fun employeeInvitationDao(): EmployeeInvitationDao
     abstract fun employeeDao(): EmployeeDao
 

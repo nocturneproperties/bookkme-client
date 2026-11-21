@@ -8,6 +8,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.database.AccountDaos
 import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.PersonalDataExportDao
@@ -38,14 +39,25 @@ class ClientAppTest {
 
     private fun startClientApp() {
         initClientApp()
-        loadKoinModules(
-            module {
-                single<UserProfileDao> { mock() }
-                single<NotificationSettingsDao> { mock() }
-                single<LegalDocumentStatusDao> { mock() }
-                single<PersonalDataExportDao> { mock() }
-            },
-        )
+        loadKoinModules(module { single<AccountDaos> { FakeAccountDaos() } })
+    }
+
+    private class FakeAccountDaos : AccountDaos {
+        override fun profileDao(): UserProfileDao {
+            return mock()
+        }
+
+        override fun notificationSettingsDao(): NotificationSettingsDao {
+            return mock()
+        }
+
+        override fun legalDocumentStatusDao(): LegalDocumentStatusDao {
+            return mock()
+        }
+
+        override fun personalDataExportDao(): PersonalDataExportDao {
+            return mock()
+        }
     }
 
     @Test

@@ -11,9 +11,11 @@ Entities, relations, DAOs and the type converters that more than one database us
 `:database:schema` (packages `me.bookk.database.entity`, `relation`, `dao`, `converter`): the account tables
 (`user_profile`, `notification_settings` and its channels, `legal_document_status`, `personal_data_export`),
 `business` with its schedule tables, `dashboard_business` and `business_data_export`, and the `appointment*`
-tables. Each database lists the entities it holds in its own `@Database`, declares a getter per DAO whose tables
-it holds and binds those DAOs in its DI module, so each database file holds its own copy of the tables, and
-foreign keys and cascades stay inside that database. Data modules depend on `:database:schema` alone and get
+tables. The shared DAOs come in groups: `AccountDaos`, `BusinessDaos` and `AppointmentDaos`, each an interface
+with one Koin module binding its DAOs (`accountDaoModule()`, `businessDaoModule()`, `appointmentDaoModule()`).
+Each database lists the entities it holds in its own `@Database`, implements the groups whose tables it holds
+and includes their modules, so each database file holds its own copy of the tables, and foreign keys and
+cascades stay inside that database. `BusinessDatabase` implements all three, and so does `ClientDatabase`. Data modules depend on `:database:schema` alone and get
 DAOs from Koin, so `authorization/data`, `settings/data`, `business/data` and `appointments/data` run on both
 apps. The client, service and employee tables are still in `:database:business`; they move to
 `:database:schema` when a web screen needs them. Changing a shared entity changes the schema of every database
@@ -108,7 +110,9 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `business_data_export` and cached JSON (`caches/business_data_exports/`, outside Room) | `CommonDataExportDataSource` (business data module) | ✅ `businessDataExportDao.clear()` and the whole business export directory removed through `FileProvider.deleteRecursively()`; a business's directory is also cleared when a new file is saved, on export start, on refreshes returning a non-downloadable status and when the backend reports the caller no longer owns the business (its row is deleted too); personal export files are unaffected |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
 
-Every table is cleared on logout. The account rows (`user_profile`, `notification_settings`, `legal_document_status`,
-`personal_data_export`) are cleared through the account DAOs, so the same data sources clear them in whichever
-database the app installed. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)
+Every table is cleared on logout by the data source that writes it, which is bound as a `LogOutAction` in its
+feature's data module. Shared tables (account, business and appointment tables) are cleared through the shared
+DAOs, so the same data sources clear them in whichever database the app installed. On the web, `ClientDatabase`
+has the business and appointment tables, but the site does not install the business or appointments data
+modules yet, so nothing writes them and nothing clears them; installing those modules adds their logout actions. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)
 deletes businesses the user no longer has, together with their cascaded rows.

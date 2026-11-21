@@ -7,6 +7,9 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.database.AccountDaos
+import me.bookk.database.AppointmentDaos
+import me.bookk.database.BusinessDaos
 import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
 import me.bookk.database.converter.UuidConverter
@@ -74,17 +77,21 @@ import me.bookk.database.entity.UserProfileEntity
     InstantConverter::class,
 )
 @ConstructedBy(ClientDatabaseConstructor::class)
-abstract class ClientDatabase : RoomDatabase() {
+abstract class ClientDatabase :
+    RoomDatabase(),
+    AccountDaos,
+    BusinessDaos,
+    AppointmentDaos {
 
-    abstract fun profileDao(): UserProfileDao
-    abstract fun notificationSettingsDao(): NotificationSettingsDao
-    abstract fun legalDocumentStatusDao(): LegalDocumentStatusDao
-    abstract fun personalDataExportDao(): PersonalDataExportDao
-    abstract fun businessDao(): BusinessDao
-    abstract fun businessDataExportDao(): BusinessDataExportDao
-    abstract fun appointmentDao(): AppointmentDao
-    abstract fun appointmentRequestDao(): AppointmentRequestDao
-    abstract fun appointmentSettingsDao(): AppointmentSettingsDao
+    abstract override fun profileDao(): UserProfileDao
+    abstract override fun notificationSettingsDao(): NotificationSettingsDao
+    abstract override fun legalDocumentStatusDao(): LegalDocumentStatusDao
+    abstract override fun personalDataExportDao(): PersonalDataExportDao
+    abstract override fun businessDao(): BusinessDao
+    abstract override fun businessDataExportDao(): BusinessDataExportDao
+    abstract override fun appointmentDao(): AppointmentDao
+    abstract override fun appointmentRequestDao(): AppointmentRequestDao
+    abstract override fun appointmentSettingsDao(): AppointmentSettingsDao
 
     companion object {
 

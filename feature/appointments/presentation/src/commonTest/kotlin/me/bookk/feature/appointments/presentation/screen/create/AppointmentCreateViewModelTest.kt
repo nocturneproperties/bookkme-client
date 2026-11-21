@@ -1,6 +1,7 @@
 package me.bookk.feature.appointments.presentation.screen.create
 
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.format
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -37,6 +38,7 @@ import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.ValidationState
+import me.bookk.designsystem.uistate.quantityOf
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
@@ -190,7 +192,7 @@ class AppointmentCreateViewModelTest {
         )
 
         then()
-        assertEquals(listOf(updated), sut.uiState.servicePicker.selectedItems.map { it.item })
+        assertEquals(listOf(updated), sut.uiState.servicePicker.selectedItems.map { it.item.item })
         assertEquals(updated.price.toString(), sut.uiState.subtotalPrice)
         assertTrue(sut.uiState.create.isEnabled)
     }
@@ -212,7 +214,7 @@ class AppointmentCreateViewModelTest {
         then()
         assertEquals(
             listOf(fixture.coloring),
-            sut.uiState.servicePicker.selectedItems.map { it.item },
+            sut.uiState.servicePicker.selectedItems.map { it.item.item },
         )
         assertEquals(fixture.coloring.price.toString(), sut.uiState.subtotalPrice)
         assertTrue(sut.uiState.create.isEnabled)
@@ -427,7 +429,7 @@ class AppointmentCreateViewModelTest {
 
         whenn()
         sut.uiState.servicePicker.onItemsRemoveRequested(
-            sut.uiState.servicePicker.selectedItems.toList(),
+            sut.uiState.servicePicker.selectedItems.map { it.item },
         )
 
         then()
@@ -447,6 +449,103 @@ class AppointmentCreateViewModelTest {
 
         then()
         assertEquals(1, sut.uiState.servicePicker.selectedItems.size)
+    }
+
+    @Test
+    fun `lets the quantity of picked services change`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertTrue(sut.uiState.servicePicker.isQuantityEditable)
+    }
+
+    @Test
+    fun `adds one more of a picked service when its quantity is increased`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+        val haircut = sut.uiState.servicePicker.options.first()
+        sut.uiState.servicePicker.onItemsPicked(listOf(haircut))
+
+        whenn()
+        sut.uiState.servicePicker.onQuantityIncreaseRequested(haircut)
+
+        then()
+        assertEquals(2, sut.uiState.servicePicker.quantityOf(haircut))
+    }
+
+    @Test
+    fun `removes a service when its quantity is decreased from one`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+        val haircut = sut.uiState.servicePicker.options.first()
+        sut.uiState.servicePicker.onItemsPicked(listOf(haircut))
+
+        whenn()
+        sut.uiState.servicePicker.onQuantityDecreaseRequested(haircut)
+
+        then()
+        assertTrue(sut.uiState.servicePicker.selectedItems.isEmpty())
+        assertEquals("", sut.uiState.subtotalPrice)
+    }
+
+    @Test
+    fun `counts quantities in the subtotal`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        val haircut = sut.uiState.servicePicker.options.first()
+        sut.uiState.servicePicker.onItemsPicked(sut.uiState.servicePicker.options.toList())
+
+        whenn()
+        sut.uiState.servicePicker.onQuantityIncreaseRequested(haircut)
+
+        then()
+        assertEquals(
+            (fixture.haircut.price + fixture.haircut.price + fixture.coloring.price).toString(),
+            sut.uiState.subtotalPrice,
+        )
+        assertEquals(
+            AppointmentsRes.strings.appointments_create_subtotal.format(3),
+            sut.uiState.subtotalLabel,
+        )
+    }
+
+    @Test
+    fun `disables create when the last service quantity is decreased away`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+        sut.fillValidForm()
+
+        whenn()
+        sut.uiState.servicePicker.onQuantityDecreaseRequested(
+            sut.uiState.servicePicker.options.first(),
+        )
+
+        then()
+        assertFalse(sut.uiState.create.isEnabled)
+    }
+
+    @Test
+    fun `creates appointment draft with a service repeated by its quantity`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.createAppointment(capture(fixture.drafts)) } returns
+            Appointment.stub()
+        val sut = fixture.sut()
+        sut.fillValidForm()
+        sut.uiState.servicePicker.onQuantityIncreaseRequested(
+            sut.uiState.servicePicker.options.first(),
+        )
+
+        whenn()
+        sut.uiState.create.onClick?.invoke()
+
+        then()
+        assertEquals(listOf(fixture.haircut, fixture.haircut), fixture.drafts.get().services)
     }
 
     @Test

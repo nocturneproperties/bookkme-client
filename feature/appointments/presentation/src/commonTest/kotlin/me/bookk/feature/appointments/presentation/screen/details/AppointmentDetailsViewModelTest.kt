@@ -177,10 +177,22 @@ class AppointmentDetailsViewModelTest {
         picker.onItemsPicked(picker.options.filter { option -> services.any { it == option.item } })
     }
 
+    private fun AppointmentDetailsViewModel.increaseService(service: ServiceSnapshot) {
+        val picker = uiState.completion.servicePicker
+        picker.onQuantityIncreaseRequested(picker.options.first { it.item == service })
+    }
+
+    private fun AppointmentDetailsViewModel.decreaseService(service: ServiceSnapshot) {
+        val picker = uiState.completion.servicePicker
+        picker.onQuantityDecreaseRequested(picker.options.first { it.item == service })
+    }
+
     private fun AppointmentDetailsViewModel.removeServices(vararg services: ServiceSnapshot) {
         val picker = uiState.completion.servicePicker
         picker.onItemsRemoveRequested(
-            picker.selectedItems.filter { option -> services.any { it == option.item } },
+            picker.selectedItems.map {
+                it.item
+            }.filter { option -> services.any { it == option.item } },
         )
     }
 
@@ -868,7 +880,7 @@ class AppointmentDetailsViewModelTest {
         assertEquals("35.50", sut.uiState.completion.price.text)
         assertEquals(
             listOf(fixture.polish, fixture.massage),
-            sut.uiState.completion.servicePicker.selectedItems.map { it.item },
+            sut.uiState.completion.servicePicker.selectedItems.map { it.item.item },
         )
     }
 
@@ -938,6 +950,89 @@ class AppointmentDetailsViewModelTest {
             additionalServiceIds = listOf(fixture.polish.id),
             price = Money(2550L, Money.SupportedCurrency.USD),
             reason = "Extra polish",
+        )
+        verifySuspend { fixture.completeAppointment(fixture.appointmentId, draft) }
+    }
+
+    @Test
+    fun `lets the quantity of picked completion services change`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sutWith(fixture.startedAppointment())
+
+        then()
+        assertTrue(sut.uiState.completion.servicePicker.isQuantityEditable)
+    }
+
+    @Test
+    fun `adds a service to the price again when its quantity is increased`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(fixture.startedAppointment())
+        sut.uiState.completeButton.onClick?.invoke()
+        sut.pickServices(fixture.polish)
+
+        whenn()
+        sut.increaseService(fixture.polish)
+
+        then()
+        assertEquals("51", sut.uiState.completion.price.text)
+    }
+
+    @Test
+    fun `recalculates price when a picked service quantity is decreased`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(fixture.startedAppointment())
+        sut.uiState.completeButton.onClick?.invoke()
+        sut.pickServices(fixture.polish)
+        sut.increaseService(fixture.polish)
+
+        whenn()
+        sut.decreaseService(fixture.polish)
+
+        then()
+        assertEquals("25.50", sut.uiState.completion.price.text)
+    }
+
+    @Test
+    fun `clears price once the last picked service is decreased away`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sutWith(fixture.startedAppointment())
+        sut.uiState.completeButton.onClick?.invoke()
+        sut.pickServices(fixture.polish)
+
+        whenn()
+        sut.decreaseService(fixture.polish)
+
+        then()
+        assertTrue(sut.uiState.completion.servicePicker.selectedItems.isEmpty())
+        assertEquals("", sut.uiState.completion.price.text)
+    }
+
+    @Test
+    fun `completes with a provided service repeated by its quantity`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = fixture.startedAppointment()
+        everySuspend { fixture.completeAppointment(any(), any()) } returns
+            appointment.copy(status = AppointmentStatus.COMPLETED)
+        val sut = fixture.sutWith(appointment)
+        sut.uiState.completeButton.onClick?.invoke()
+        sut.pickServices(fixture.polish)
+        sut.increaseService(fixture.polish)
+
+        whenn()
+        sut.uiState.completion.confirmButton.onClick?.invoke()
+
+        then()
+        val draft = PriceAdjustmentDraft(
+            additionalServiceIds = listOf(fixture.polish.id, fixture.polish.id),
+            price = Money(5100L, Money.SupportedCurrency.USD),
+            reason = null,
         )
         verifySuspend { fixture.completeAppointment(fixture.appointmentId, draft) }
     }
@@ -1135,6 +1230,26 @@ class AppointmentDetailsViewModelTest {
     }
 
     @Test
+    fun `closes sheet and shows message when the picked services are rejected`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.completeAppointment(any(), any()) } throws
+            CompleteAppointment.Error.InvalidServiceSelection()
+        val sut = fixture.sutWith(fixture.startedAppointment())
+
+        whenn()
+        sut.confirmCompletion()
+
+        then()
+        assertFalse(sut.uiState.completion.isSheetVisible)
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            AppointmentsRes.strings.appointments_complete_services_invalid_error.desc(),
+            message.message,
+        )
+    }
+
+    @Test
     fun `keeps sheet input when completion fails`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -1150,7 +1265,7 @@ class AppointmentDetailsViewModelTest {
         then()
         assertEquals(
             listOf(fixture.polish),
-            sut.uiState.completion.servicePicker.selectedItems.map { it.item },
+            sut.uiState.completion.servicePicker.selectedItems.map { it.item.item },
         )
         assertEquals("25.50", sut.uiState.completion.price.text)
     }
@@ -1506,7 +1621,7 @@ class AppointmentDetailsViewModelTest {
             assertFalse(picker.isEditable)
             assertEquals(
                 listOf(fixture.polish, fixture.massage),
-                picker.selectedItems.map { it.item },
+                picker.selectedItems.map { it.item.item },
             )
         }
 
@@ -1525,7 +1640,7 @@ class AppointmentDetailsViewModelTest {
             assertEquals(
                 2,
                 sut.uiState.priceAdjustment.servicePicker.selectedItems
-                    .map { it.pickerItemId }
+                    .map { it.item.pickerItemId }
                     .toSet()
                     .size,
             )
@@ -1742,7 +1857,7 @@ class AppointmentDetailsViewModelTest {
         then()
         assertEquals(
             listOf(haircut, beard),
-            sut.uiState.servicePicker.selectedItems.map { it.item },
+            sut.uiState.servicePicker.selectedItems.map { it.item.item },
         )
         assertFalse(sut.uiState.servicePicker.isEditable)
     }
@@ -1759,7 +1874,7 @@ class AppointmentDetailsViewModelTest {
             val sut = fixture.sutWith(appointment)
 
             then()
-            val ids = sut.uiState.servicePicker.selectedItems.map { it.pickerItemId }
+            val ids = sut.uiState.servicePicker.selectedItems.map { it.item.pickerItemId }
             assertEquals(2, ids.toSet().size)
         }
 

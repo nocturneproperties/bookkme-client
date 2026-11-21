@@ -8,11 +8,8 @@ actual class Currency actual constructor(
     code: String,
 ) {
     private val currencyUnit: CurrencyUnit = CurrencyUnit.of(code)
-    private val formatter by lazy {
-        NumberFormat.getCurrencyInstance().apply {
-            currency = java.util.Currency.getInstance(currencyUnit.code)
-        }
-    }
+    private val fractionFormatter by lazy { formatter(currencyUnit.decimalPlaces) }
+    private val wholeFormatter by lazy { formatter(0) }
 
     actual fun code(): String {
         return currencyUnit.code
@@ -24,6 +21,7 @@ actual class Currency actual constructor(
             divider *= 10
         }
         val doubleValue = value / divider.toDouble()
+        val formatter = if (value % divider == 0L) wholeFormatter else fractionFormatter
         return formatter.format(doubleValue)
     }
 
@@ -47,5 +45,13 @@ actual class Currency actual constructor(
 
     actual override fun hashCode(): Int {
         return code().hashCode()
+    }
+
+    private fun formatter(fractionDigits: Int): NumberFormat {
+        return NumberFormat.getCurrencyInstance().apply {
+            currency = java.util.Currency.getInstance(currencyUnit.code)
+            minimumFractionDigits = fractionDigits
+            maximumFractionDigits = fractionDigits
+        }
     }
 }

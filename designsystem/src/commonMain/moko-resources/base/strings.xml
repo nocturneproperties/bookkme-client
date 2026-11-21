@@ -52,4 +52,7 @@
     <string name="schedule_add_day_off">Add day off</string>
     <string name="schedule_no_day_offs">No days off scheduled.</string>
     <string name="schedule_pick_day_off_title">Pick a start and end date for a vacation/day-off block.</string>
+
+    <string name="quantity_increase">Add one more</string>
+    <string name="quantity_decrease">Remove one</string>
 </resources>

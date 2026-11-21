@@ -41,20 +41,8 @@ struct AppointmentServiceItem: View {
 				.foregroundStyle(AppColors.primary)
 				.padding(.trailing, onRemove == nil ? 16 : 0)
 			if let onRemove {
-				Button(action: onRemove) {
-					ZStack {
-						Circle()
-							.fill(AppColors.primary.opacity(0.1))
-							.frame(width: 28, height: 28)
-						Text("−")
-							.font(.body)
-							.fontWeight(.bold)
-							.foregroundStyle(AppColors.secondary)
-					}
-				}
-				.buttonStyle(.plain)
-				.padding(.leading, 8)
-				.padding(.trailing, 16)
+				CircleSymbolButton(symbol: .minus, action: onRemove)
+					.padding(.trailing, 8)
 			}
 		}
 		.padding(.vertical, 16)

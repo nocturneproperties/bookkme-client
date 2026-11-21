@@ -22,9 +22,14 @@ import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.decreaseQuantity
+import me.bookk.designsystem.uistate.increaseQuantity
+import me.bookk.designsystem.uistate.pick
+import me.bookk.designsystem.uistate.selectedUnits
 import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.designsystem.uistate.unpick
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
@@ -75,8 +80,10 @@ class AppointmentCreateViewModel(
         uiState.clientPicker.replaceOptions(options.clients.map(ClientSnapshot::pickerItem))
         val services = options.services.map(::ServicePickerPresentation)
         val servicesById = services.associateBy { it.pickerItemId }
-        val selected = uiState.servicePicker.selectedItems.mapNotNull {
-            servicesById[it.pickerItemId]
+        val selected = uiState.servicePicker.selectedItems.mapNotNull { picked ->
+            servicesById[picked.item.pickerItemId]?.let {
+                uiState.servicePicker.createPickedItem(it, picked.quantity)
+            }
         }
         uiState.servicePicker.replaceOptions(services)
         uiState.servicePicker.replaceSelected(selected)
@@ -91,21 +98,30 @@ class AppointmentCreateViewModel(
     }
 
     private fun onServicesPicked(services: List<ServicePickerPresentation>) {
-        val list = uiState.servicePicker.selectedItems.toSet()
-        uiState.servicePicker.replaceSelected(list.plus(services.toSet()).toList())
+        uiState.servicePicker.pick(services)
         updateSubtotal()
         invalidateButton()
     }
 
     private fun onServicesRemove(services: List<ServicePickerPresentation>) {
-        val list = uiState.servicePicker.selectedItems.toSet()
-        uiState.servicePicker.replaceSelected(list.minus(services.toSet()).toList())
+        uiState.servicePicker.unpick(services)
+        updateSubtotal()
+        invalidateButton()
+    }
+
+    private fun onServiceQuantityIncreased(service: ServicePickerPresentation) {
+        uiState.servicePicker.increaseQuantity(service)
+        updateSubtotal()
+    }
+
+    private fun onServiceQuantityDecreased(service: ServicePickerPresentation) {
+        uiState.servicePicker.decreaseQuantity(service)
         updateSubtotal()
         invalidateButton()
     }
 
     private fun updateSubtotal() {
-        val items = uiState.servicePicker.selectedItems
+        val items = uiState.servicePicker.selectedUnits()
         if (items.isEmpty()) {
             uiState.subtotalLabel = "".desc()
             uiState.subtotalPrice = ""
@@ -145,7 +161,7 @@ class AppointmentCreateViewModel(
 
     private fun onCreateClick() {
         val client = uiState.clientPicker.selectedItem?.domain ?: return
-        val services = uiState.servicePicker.selectedItems
+        val services = uiState.servicePicker.selectedUnits()
         val date = uiState.datePicker.datePicker.pickedDate ?: return
         val time = uiState.timePicker.timePicker.pickedTime ?: return
 
@@ -340,6 +356,13 @@ class AppointmentCreateViewModel(
         }
         servicePicker.onItemsRemoveRequested = weakVMClosure { vm, items ->
             vm.onServicesRemove(items)
+        }
+        servicePicker.isQuantityEditable = true
+        servicePicker.onQuantityIncreaseRequested = weakVMClosure { vm, item ->
+            vm.onServiceQuantityIncreased(item)
+        }
+        servicePicker.onQuantityDecreaseRequested = weakVMClosure { vm, item ->
+            vm.onServiceQuantityDecreased(item)
         }
 
         datePicker.datePicker.minDate = LocalDate.today()

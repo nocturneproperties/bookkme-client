@@ -18,6 +18,8 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.simple
+import me.bookk.designsystem.uistate.pick
+import me.bookk.designsystem.uistate.replacePicked
 import me.bookk.designsystem.uistate.schedule.DayOffPeriod
 import me.bookk.designsystem.uistate.schedule.ScheduleBinder
 import me.bookk.designsystem.uistate.schedule.WeekSchedule
@@ -26,6 +28,7 @@ import me.bookk.designsystem.uistate.schedule.WorkingHours
 import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.designsystem.uistate.unpick
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.BusinessResource
 import me.bookk.feature.business.domain.api.entity.DayOfWeekSchedule
@@ -187,7 +190,7 @@ class EditEmployeeViewModel(
                 ),
             ),
         )
-        uiState.services.replaceSelected(employee.services.map(::EmployeeServicePresentation))
+        uiState.services.replacePicked(employee.services.map(::EmployeeServicePresentation))
         scheduleBinder.render(employee.schedule.toWeekSchedule())
         permissionStates.forEach { (resource, state) ->
             state.render(employee.permissions.of(resource))
@@ -211,18 +214,12 @@ class EditEmployeeViewModel(
     }
 
     private fun onServicesPicked(items: List<EmployeeServicePresentation>) {
-        val selectedIds = uiState.services.selectedItems.map { it.pickerItemId }.toSet()
-        uiState.services.replaceSelected(
-            uiState.services.selectedItems + items.filterNot { it.pickerItemId in selectedIds },
-        )
+        uiState.services.pick(items)
         invalidateSaveState()
     }
 
     private fun onServicesRemoved(items: List<EmployeeServicePresentation>) {
-        val removedIds = items.map { it.pickerItemId }.toSet()
-        uiState.services.replaceSelected(
-            uiState.services.selectedItems.filterNot { it.pickerItemId in removedIds },
-        )
+        uiState.services.unpick(items)
         invalidateSaveState()
     }
 
@@ -376,7 +373,7 @@ class EditEmployeeViewModel(
 
     private fun snapshotEmployee(): Employee? {
         return referenceEmployee?.copy(
-            services = uiState.services.selectedItems.map { it.service },
+            services = uiState.services.selectedItems.map { it.item.service },
             schedule = scheduleBinder.snapshot().toWorkingSchedule(),
             permissions = snapshotPermissions(),
         )
@@ -406,7 +403,7 @@ class EditEmployeeViewModel(
     }
 
     private fun isChanged(reference: Employee): Boolean {
-        return uiState.services.selectedItems.map { it.service.id }.toSet() !=
+        return uiState.services.selectedItems.map { it.item.service.id }.toSet() !=
             reference.services.map { it.id }.toSet() ||
             scheduleBinder.snapshot() != reference.schedule.toWeekSchedule() ||
             snapshotPermissions() != reference.permissions

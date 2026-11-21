@@ -2,7 +2,6 @@ package me.bookk.feature.employees.presentation.screen.edit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,16 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.desc
@@ -30,6 +26,8 @@ import me.bookk.android.feature.employees.resources.EmployeesRes
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.CircleSymbol
+import me.bookk.designsystem.components.CircleSymbolButton
 import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.InfoSection
 import me.bookk.designsystem.components.OptionsMultiPicker
@@ -37,7 +35,6 @@ import me.bookk.designsystem.components.ScheduleSection
 import me.bookk.designsystem.components.StateSwitch
 import me.bookk.designsystem.components.StateTextButton
 import me.bookk.designsystem.modifier.topShadow
-import me.bookk.designsystem.theme.color.AppColors
 import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
@@ -139,21 +136,11 @@ private fun ServiceItem(service: EmployeeServicePresentation, onItemRemove: (() 
         Spacer(Modifier.weight(1f))
         Text(service.price, style = MaterialTheme.typography.titleMedium.primary())
         if (onItemRemove != null) {
-            TextButton(onClick = onItemRemove) {
-                Box(
-                    modifier = Modifier
-                        .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
-                        .size(28.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        "-",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleMedium.secondary(),
-                    )
-                }
-            }
+            CircleSymbolButton(
+                symbol = CircleSymbol.MINUS,
+                onClick = onItemRemove,
+                modifier = Modifier.padding(horizontal = 8.dp),
+            )
         } else {
             Spacer(Modifier.size(16.dp))
         }

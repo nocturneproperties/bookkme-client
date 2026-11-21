@@ -27,10 +27,16 @@ import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.action
 import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.decreaseQuantity
+import me.bookk.designsystem.uistate.increaseQuantity
+import me.bookk.designsystem.uistate.pick
+import me.bookk.designsystem.uistate.replacePicked
+import me.bookk.designsystem.uistate.selectedUnits
 import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.simple.InfoLine
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.designsystem.uistate.unpick
 import me.bookk.feature.appointments.domain.api.CancelAppointment
 import me.bookk.feature.appointments.domain.api.CancelAppointment.Error
 import me.bookk.feature.appointments.domain.api.CompleteAppointment
@@ -187,20 +193,27 @@ class AppointmentDetailsViewModel(
     }
 
     private fun onCompletionServicesPicked(services: List<ServicePickerPresentation>) {
-        val picker = uiState.completion.servicePicker
-        picker.replaceSelected((picker.selectedItems + services).distinctBy { it.pickerItemId })
+        uiState.completion.servicePicker.pick(services)
         renderCalculatedPrice()
     }
 
     private fun onCompletionServicesRemove(services: List<ServicePickerPresentation>) {
-        val picker = uiState.completion.servicePicker
-        val removedIds = services.map { it.pickerItemId }.toSet()
-        picker.replaceSelected(picker.selectedItems.filterNot { it.pickerItemId in removedIds })
+        uiState.completion.servicePicker.unpick(services)
+        renderCalculatedPrice()
+    }
+
+    private fun onCompletionServiceQuantityIncreased(service: ServicePickerPresentation) {
+        uiState.completion.servicePicker.increaseQuantity(service)
+        renderCalculatedPrice()
+    }
+
+    private fun onCompletionServiceQuantityDecreased(service: ServicePickerPresentation) {
+        uiState.completion.servicePicker.decreaseQuantity(service)
         renderCalculatedPrice()
     }
 
     private fun renderCalculatedPrice() {
-        val provided = uiState.completion.servicePicker.selectedItems
+        val provided = uiState.completion.servicePicker.selectedUnits()
         if (provided.isEmpty()) {
             onPriceChanged("")
         } else {
@@ -246,7 +259,7 @@ class AppointmentDetailsViewModel(
     }
 
     private fun priceAdjustmentDraft(): PriceAdjustmentDraft? {
-        val provided = uiState.completion.servicePicker.selectedItems
+        val provided = uiState.completion.servicePicker.selectedUnits()
         val priceText = uiState.completion.price.text
         val reason = uiState.completion.note.text.trim()
         if (provided.isEmpty() && priceText.isBlank() && reason.isEmpty()) return null
@@ -330,6 +343,12 @@ class AppointmentDetailsViewModel(
                     AppointmentsRes.strings.appointments_complete_service_not_found_error.desc(),
                 )
                 refreshServiceOptions()
+            }
+
+            is CompleteAppointment.Error.InvalidServiceSelection -> {
+                showMessage(
+                    AppointmentsRes.strings.appointments_complete_services_invalid_error.desc(),
+                )
             }
 
             else -> {
@@ -574,7 +593,7 @@ class AppointmentDetailsViewModel(
             } else {
                 AppointmentsRes.strings.appointments_create_services.desc()
             }
-        uiState.servicePicker.replaceSelected(appointment.services.pickerItems())
+        uiState.servicePicker.replacePicked(appointment.services.pickerItems())
     }
 
     private fun renderPriceAdjustment(priceAdjustment: PriceAdjustment?) {
@@ -582,7 +601,7 @@ class AppointmentDetailsViewModel(
         uiState.priceAdjustment.isVisible = providedServices.isNotEmpty()
         uiState.priceAdjustment.reason = priceAdjustment?.reason?.takeIf { it.isNotBlank() }?.desc()
         uiState.priceAdjustment.servicePicker.isVisible = providedServices.isNotEmpty()
-        uiState.priceAdjustment.servicePicker.replaceSelected(providedServices.pickerItems())
+        uiState.priceAdjustment.servicePicker.replacePicked(providedServices.pickerItems())
     }
 
     private fun renderTotal(appointment: Appointment) {
@@ -640,6 +659,13 @@ class AppointmentDetailsViewModel(
         }
         servicePicker.onItemsRemoveRequested = weakVMClosure { vm, items ->
             vm.onCompletionServicesRemove(items)
+        }
+        servicePicker.isQuantityEditable = true
+        servicePicker.onQuantityIncreaseRequested = weakVMClosure { vm, item ->
+            vm.onCompletionServiceQuantityIncreased(item)
+        }
+        servicePicker.onQuantityDecreaseRequested = weakVMClosure { vm, item ->
+            vm.onCompletionServiceQuantityDecreased(item)
         }
         servicesHint = AppointmentsRes.strings.appointments_complete_services_hint.desc()
 

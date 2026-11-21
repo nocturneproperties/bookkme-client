@@ -57,6 +57,7 @@
     <string name="appointments_complete_currency_error">Валюта цены не совпадает с валютой записи.</string>
     <string name="appointments_complete_note_too_long_error">Заметка слишком длинная.</string>
     <string name="appointments_complete_service_not_found_error">Одной или нескольких выбранных услуг больше не существует.</string>
+    <string name="appointments_complete_services_invalid_error">Слишком много услуг. Можно добавить не больше 100.</string>
 
     <string name="appointments_details_cancel">Вы уверены, что хотите отменить эту запись?\nКлиент, зарегистрированный в системе, получит уведомление.</string>
     <string name="appointments_details_cancel_reason">причина (необязательно)</string>

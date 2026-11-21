@@ -10,13 +10,14 @@ import platform.Foundation.numberWithDouble
 actual class Currency actual constructor(
     private val code: String,
 ) {
-    private val formatter = NSNumberFormatter().apply {
-        numberStyle = NSNumberFormatterCurrencyStyle
-        currencyCode = code
-        locale = NSLocale.Companion.currentLocale
+    private val fractionFormatter = formatter()
+
+    private val wholeFormatter = formatter().apply {
+        minimumFractionDigits = 0u
+        maximumFractionDigits = 0u
     }
 
-    private val symbol = formatter.currencySymbol
+    private val symbol = fractionFormatter.currencySymbol
 
     actual fun code(): String {
         return code
@@ -24,6 +25,7 @@ actual class Currency actual constructor(
 
     actual fun format(value: Long): String {
         val doubleValue = value / 100.0
+        val formatter = if (value % 100 == 0L) wholeFormatter else fractionFormatter
         return formatter.stringFromNumber(
             NSNumber.Companion.numberWithDouble(doubleValue),
         ).orEmpty()
@@ -34,7 +36,7 @@ actual class Currency actual constructor(
     }
 
     actual fun decimalSeparator(): Char {
-        return formatter.decimalSeparator().firstOrNull() ?: '.'
+        return fractionFormatter.decimalSeparator().firstOrNull() ?: '.'
     }
 
     actual fun asString(): String {
@@ -49,5 +51,13 @@ actual class Currency actual constructor(
 
     actual override fun hashCode(): Int {
         return code().hashCode()
+    }
+
+    private fun formatter(): NSNumberFormatter {
+        return NSNumberFormatter().apply {
+            numberStyle = NSNumberFormatterCurrencyStyle
+            currencyCode = code
+            locale = NSLocale.Companion.currentLocale
+        }
     }
 }

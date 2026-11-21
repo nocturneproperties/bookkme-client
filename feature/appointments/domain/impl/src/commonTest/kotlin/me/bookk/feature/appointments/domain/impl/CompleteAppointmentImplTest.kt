@@ -194,6 +194,14 @@ class CompleteAppointmentImplTest {
         )
     }
 
+    @Test
+    fun `throws InvalidServiceSelection on SERVICE_SELECTION_INVALID`() = runUnitTest {
+        assertMapped(
+            AppointmentErrorCodes.SERVICE_SELECTION_INVALID,
+            CompleteAppointment.Error.InvalidServiceSelection::class,
+        )
+    }
+
     private suspend fun assertMapped(code: Int, expected: KClass<out Throwable>) {
         given()
         val fixture = Fixture()

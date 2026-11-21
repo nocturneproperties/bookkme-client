@@ -4,14 +4,14 @@ import shared
 struct OptionsMultiPickerField<ItemView: View>: View {
     @Bindable private var state: IOSOptionsMultiPickerState
 
-    private let itemContent: (PickerPresentation, @escaping () -> Void) -> ItemView
+    private let itemContent: (PickerPresentation, (() -> Void)?) -> ItemView
 
     @State private var isSheetPresented = false
     @State private var pickerArgs: PickerScreenArgs? = nil
 
     init(
         _ state: OptionsMultiPickerState,
-        @ViewBuilder itemContent: @escaping (PickerPresentation, @escaping () -> Void) -> ItemView
+        @ViewBuilder itemContent: @escaping (PickerPresentation, (() -> Void)?) -> ItemView
     ) {
         self._state = Bindable(wrappedValue: state.impl())
         self.itemContent = itemContent
@@ -30,12 +30,8 @@ struct OptionsMultiPickerField<ItemView: View>: View {
 					.alignmentGuide(.listRowSeparatorLeading) { d in d[.leading] }
 					.alignmentGuide(.listRowSeparatorTrailing) { d in d[.trailing] }
 			}
-			ForEach(state.selectedItems, id: \.pickerItemId) { item in
-				itemContent(item) {
-					withAnimation {
-						state.onItemsRemoveRequested([item])
-					}
-				}
+			ForEach(state.selectedItems, id: \.item.pickerItemId) { picked in
+				pickedRow(picked)
 			}
 			if state.isEditable {
 				Button {
@@ -74,6 +70,23 @@ struct OptionsMultiPickerField<ItemView: View>: View {
         }
     }
 
+	@ViewBuilder
+	private func pickedRow(_ picked: any PickedItem) -> some View {
+		if state.isEditable && state.isQuantityEditable {
+			HStack(spacing: 0) {
+				itemContent(picked.item, nil)
+				PickedQuantityStepper(state: state, picked: picked)
+					.padding(.trailing, 8)
+			}
+		} else {
+			itemContent(picked.item) {
+				withAnimation {
+					state.onItemsRemoveRequested([picked.item])
+				}
+			}
+		}
+	}
+
 	private func openPicker() {
 		switch state.pickerType {
 		case .screen:
@@ -89,6 +102,19 @@ struct OptionsMultiPickerField<ItemView: View>: View {
 	}
 }
 
+private struct PickedQuantityStepper: View {
+	let state: IOSOptionsMultiPickerState
+	let picked: any PickedItem
+
+	var body: some View {
+		QuantityStepper(
+			quantity: picked.quantity,
+			onIncrease: { withAnimation { state.onQuantityIncreaseRequested(picked.item) } },
+			onDecrease: { withAnimation { state.onQuantityDecreaseRequested(picked.item) } }
+		)
+	}
+}
+
 #Preview {
     @Previewable @State var state = IOSOptionsMultiPickerState(
         pickerTitle: RawStringDesc(string: "Services"),
@@ -98,9 +124,13 @@ struct OptionsMultiPickerField<ItemView: View>: View {
             MinimalPickerPresentation(pickerItemId: "3", displayName: RawStringDesc(string: "Shampoo")),
         ],
         selectedItems: [
-            MinimalPickerPresentation(pickerItemId: "1", displayName: RawStringDesc(string: "Haircut")),
+            IOSPickedItem(
+                item: MinimalPickerPresentation(pickerItemId: "1", displayName: RawStringDesc(string: "Haircut")),
+                quantity: 2
+            ),
         ],
-        addItemText: RawStringDesc(string: "Add service")
+        addItemText: RawStringDesc(string: "Add service"),
+        isQuantityEditable: true
     )
 
     VStack {
@@ -109,11 +139,13 @@ struct OptionsMultiPickerField<ItemView: View>: View {
                 Text(item.displayName.localized())
                     .font(.body)
                 Spacer()
-                Button(action: onRemove) {
-                    Image(systemName: "minus.circle")
-                        .foregroundStyle(AppColors.error)
+                if let onRemove {
+                    Button(action: onRemove) {
+                        Image(systemName: "minus.circle")
+                            .foregroundStyle(AppColors.error)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
             .padding(.horizontal, 16)
             .frame(minHeight: 48)

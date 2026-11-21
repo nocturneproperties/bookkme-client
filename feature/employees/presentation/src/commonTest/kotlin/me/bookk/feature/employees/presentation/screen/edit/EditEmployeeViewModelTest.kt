@@ -191,7 +191,7 @@ class EditEmployeeViewModelTest {
         val sut = fixture.sut()
 
         then()
-        assertEquals(listOf(service), sut.uiState.services.selectedItems.map { it.service })
+        assertEquals(listOf(service), sut.uiState.services.selectedItems.map { it.item.service })
     }
 
     @Test
@@ -574,7 +574,11 @@ class EditEmployeeViewModelTest {
         val sut = fixture.sut()
 
         whenn()
-        sut.uiState.services.onItemsRemoveRequested(sut.uiState.services.selectedItems.toList())
+        sut.uiState.services.onItemsRemoveRequested(
+            sut.uiState.services.selectedItems.map {
+                it.item
+            },
+        )
 
         then()
         assertTrue(sut.uiState.services.selectedItems.isEmpty())

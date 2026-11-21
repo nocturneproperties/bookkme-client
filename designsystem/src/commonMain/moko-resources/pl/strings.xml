@@ -52,4 +52,7 @@
     <string name="schedule_add_day_off">Dodaj dzień wolny</string>
     <string name="schedule_no_day_offs">Brak zaplanowanych dni wolnych.</string>
     <string name="schedule_pick_day_off_title">Wybierz datę początkową i końcową urlopu lub dni wolnych.</string>
+
+    <string name="quantity_increase">Zwiększ liczbę</string>
+    <string name="quantity_decrease">Zmniejsz liczbę</string>
 </resources>

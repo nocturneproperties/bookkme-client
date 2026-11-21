@@ -51,6 +51,7 @@ import me.bookk.feature.business.domain.api.entity.DayOffRange
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkHour
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
+import kotlin.uuid.Uuid
 
 internal fun AppointmentRequestDraft.toRemote(): AppointmentRequestDraftRemote {
     return AppointmentRequestDraftRemote(
@@ -96,12 +97,18 @@ internal fun PriceAdjustmentDraft?.toCompleteRequestRemote(): CompleteAppointmen
     return CompleteAppointmentRequestRemote(
         priceAdjustment = this?.let {
             PriceAdjustmentDraftRemote(
-                additionalServiceIds = it.additionalServiceIds,
                 price = it.price,
                 reason = it.reason,
+                additionalServices = it.additionalServiceIds.toRequestedServices(),
             )
         },
     )
+}
+
+private fun List<Uuid>.toRequestedServices(): List<RequestedServiceRemote> {
+    return groupingBy { it }.eachCount().map { (id, count) ->
+        RequestedServiceRemote(serviceId = id, count = count)
+    }
 }
 
 internal fun AppointmentCancellation.toRemote() = AppointmentCancellationRemote(

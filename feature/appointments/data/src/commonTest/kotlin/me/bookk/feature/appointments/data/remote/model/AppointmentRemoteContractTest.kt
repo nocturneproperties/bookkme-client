@@ -86,7 +86,19 @@ class AppointmentRemoteContractTest {
         val fields = descriptor.protoFields()
 
         then()
-        assertEquals(listOf("additionalServices" to 1, "price" to 2, "reason" to 3), fields)
+        assertEquals(listOf("price" to 2, "reason" to 3, "additionalServices" to 4), fields)
+    }
+
+    @Test
+    fun `AdditionalService field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = AdditionalServiceRemote.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("service" to 1, "count" to 2), fields)
     }
 
     @Test
@@ -137,7 +149,7 @@ class AppointmentRemoteContractTest {
         val fields = descriptor.protoFields()
 
         then()
-        assertEquals(listOf("additionalServiceIds" to 1, "price" to 2, "reason" to 3), fields)
+        assertEquals(listOf("price" to 2, "reason" to 3, "additionalServices" to 4), fields)
     }
 
     @Test

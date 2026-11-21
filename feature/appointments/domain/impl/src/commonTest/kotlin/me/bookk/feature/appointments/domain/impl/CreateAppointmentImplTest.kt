@@ -108,7 +108,7 @@ class CreateAppointmentImplTest {
         then()
         assertEquals(fixture.created, result)
         verifySuspend {
-            fixture.createQuote(fixture.businessId, fixture.draft.services.map { it.id }.distinct())
+            fixture.createQuote(fixture.businessId, fixture.draft.services.map { it.id })
         }
         verifySuspend {
             fixture.appointmentDataSource.createAppointment(
@@ -129,6 +129,8 @@ class CreateAppointmentImplTest {
         given()
         val fixture = Fixture()
         val draft = fixture.draft.copy(services = List(3) { fixture.snapshot })
+        everySuspend { fixture.createQuote(any(), any()) } returns
+            fixture.quote.copy(services = List(3) { fixture.service })
 
         whenn()
         fixture.sut(draft)
@@ -141,6 +143,42 @@ class CreateAppointmentImplTest {
                         it.services.single().count == 3
                 },
             )
+        }
+    }
+
+    @Test
+    fun `quotes a repeated service once per occurrence`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val draft = fixture.draft.copy(services = List(2) { fixture.snapshot })
+        everySuspend { fixture.createQuote(any(), any()) } returns
+            fixture.quote.copy(services = List(2) { fixture.service })
+
+        whenn()
+        fixture.sut(draft)
+
+        then()
+        verifySuspend {
+            fixture.createQuote(
+                fixture.businessId,
+                listOf(fixture.snapshot.id, fixture.snapshot.id),
+            )
+        }
+    }
+
+    @Test
+    fun `rejects a quote whose service counts differ from the draft`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val draft = fixture.draft.copy(services = List(2) { fixture.snapshot })
+
+        whenn()
+        val result = runCatching { fixture.sut(draft) }
+
+        then()
+        assertFailsWith<CreateAppointment.Error.ServicesChanged> { result.getOrThrow() }
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.appointmentDataSource.createAppointment(any())
         }
     }
 

@@ -15,9 +15,9 @@ flowchart TD
     Employee -- no --> Biz[ObserveUserBusinessesChanges.first<br/>find business employeeId]
     Biz -- missing --> NotEmployee([throw Error.NotAnEmployee])
     Biz -- employeeId --> Selected
-    Selected --> Quote[CreateQuote businessId, distinct service ids<br/>POST /api/business/businessId/service/quote]
+    Selected --> Quote[CreateQuote businessId, service ids repeated by quantity<br/>POST /api/business/businessId/service/quote<br/>token signs per-service counts]
     Quote -- ServiceNotFound --> Refresh
-    Quote -- result --> Match{service ids, business, availability,<br/>name, group, price, duration match?}
+    Quote -- result --> Match{per-service counts, business, availability,<br/>name, group, price, duration match?}
     Match -- no --> Refresh[GetServices.refresh businessId<br/>GET services and update Room service cache]
     Refresh --> Changed([throw PriceChanged, DurationChanged,<br/>ServicesChanged or ServiceNotFound])
     Refresh -- failure --> RefreshError([propagate refresh failure])

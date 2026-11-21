@@ -29,7 +29,7 @@ internal class CreateAppointmentImpl(
             ?: businesses().first().firstOrNull { it.id == draft.businessId }?.employeeId
             ?: throw CreateAppointment.Error.NotAnEmployee()
         val quote = runCatching {
-            createQuote(draft.businessId, draft.services.map { it.id }.distinct())
+            createQuote(draft.businessId, draft.services.map { it.id })
         }
             .getOrElse {
                 if (it is CreateQuote.Error.ServiceNotFound) {
@@ -135,10 +135,11 @@ internal class CreateAppointmentImpl(
     }
 
     private fun AppointmentDraft.mismatch(quote: Quote): Throwable? {
-        val current = quote.services.associateBy { it.id }
-        if (current.size != quote.services.size || current.keys != services.map { it.id }.toSet()) {
+        val quotedCounts = quote.services.groupingBy { it.id }.eachCount()
+        if (quotedCounts != services.groupingBy { it.id }.eachCount()) {
             return CreateAppointment.Error.ServicesChanged()
         }
+        val current = quote.services.associateBy { it.id }
         for (selected in services) {
             val service = current.getValue(selected.id)
             if (

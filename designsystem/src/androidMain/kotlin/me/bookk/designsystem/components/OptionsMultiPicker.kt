@@ -1,7 +1,9 @@
 package me.bookk.designsystem.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,6 +28,7 @@ import me.bookk.designsystem.theme.color.LocalColors
 import me.bookk.designsystem.theme.typography.active
 import me.bookk.designsystem.theme.typography.secondary
 import me.bookk.designsystem.uistate.OptionsMultiPickerState
+import me.bookk.designsystem.uistate.PickedItem
 import me.bookk.designsystem.uistate.PickerFieldState.PickerType
 import me.bookk.designsystem.uistate.PickerPresentation
 
@@ -38,7 +42,7 @@ fun <T : PickerPresentation> OptionsMultiPicker(
         onDismiss: () -> Unit,
         onItemsPicked: (List<T>) -> Unit,
     ) -> Unit = { _, _, _ -> },
-    itemContent: @Composable (T, () -> Unit) -> Unit,
+    itemContent: @Composable (T, onItemRemove: (() -> Unit)?) -> Unit,
 ) {
     var isDialogVisible by remember { mutableStateOf(false) }
     Column(modifier) {
@@ -57,10 +61,8 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                         style = MaterialTheme.typography.bodyMedium.secondary(),
                     )
                 }
-                state.selectedItems.forEachIndexed { index, item ->
-                    itemContent(item) {
-                        state.onItemsRemoveRequested(listOf(item))
-                    }
+                state.selectedItems.forEachIndexed { index, picked ->
+                    PickedItemRow(state, picked, itemContent)
                     if (showDividers && index < state.selectedItems.lastIndex) {
                         HorizontalDivider(color = LocalColors.current.divider)
                     }
@@ -121,5 +123,28 @@ fun <T : PickerPresentation> OptionsMultiPicker(
                 onClick = { onClick(item) },
             )
         }
+    }
+}
+
+@Composable
+private fun <T : PickerPresentation> PickedItemRow(
+    state: OptionsMultiPickerState<T>,
+    picked: PickedItem<T>,
+    itemContent: @Composable (T, onItemRemove: (() -> Unit)?) -> Unit,
+) {
+    if (!state.isEditable || !state.isQuantityEditable) {
+        itemContent(picked.item) { state.onItemsRemoveRequested(listOf(picked.item)) }
+        return
+    }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.weight(1f)) {
+            itemContent(picked.item, null)
+        }
+        QuantityStepper(
+            quantity = picked.quantity,
+            onIncrease = { state.onQuantityIncreaseRequested(picked.item) },
+            onDecrease = { state.onQuantityDecreaseRequested(picked.item) },
+            modifier = Modifier.padding(end = 8.dp),
+        )
     }
 }

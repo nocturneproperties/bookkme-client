@@ -1,27 +1,20 @@
 package me.bookk.feature.appointments.presentation.screen.create
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import dev.icerock.moko.resources.desc.StringDesc
@@ -29,13 +22,14 @@ import library.picker.standardOptionsScreenPicker
 import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.CircleSymbol
+import me.bookk.designsystem.components.CircleSymbolButton
 import me.bookk.designsystem.components.DatePickerField
 import me.bookk.designsystem.components.OptionsMultiPicker
 import me.bookk.designsystem.components.PickerField
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.TimePickerField
 import me.bookk.designsystem.modifier.topShadow
-import me.bookk.designsystem.theme.color.AppColors
 import me.bookk.designsystem.theme.typography.primary
 import me.bookk.designsystem.theme.typography.secondary
 
@@ -84,22 +78,11 @@ internal fun ServiceItem(service: ServicePickerPresentation, onItemRemove: (() -
             style = MaterialTheme.typography.titleMedium.primary(),
         )
         if (onItemRemove != null) {
-            TextButton(onClick = onItemRemove) {
-                Box(
-                    modifier = Modifier
-                        .background(AppColors.White.copy(alpha = 0.1f), CircleShape)
-                        .size(28.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        "-",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyLarge.secondary(),
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            }
+            CircleSymbolButton(
+                symbol = CircleSymbol.MINUS,
+                onClick = onItemRemove,
+                modifier = Modifier.padding(horizontal = 8.dp),
+            )
         }
     }
 }

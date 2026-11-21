@@ -26,6 +26,7 @@ import me.bookk.designsystem.uistate.MoneyFieldState
 import me.bookk.designsystem.uistate.MultiPickerState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.OptionsMultiPickerState
+import me.bookk.designsystem.uistate.PickedItem
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.PickerPresentation
 import me.bookk.designsystem.uistate.PresentationNotificationState
@@ -256,6 +257,11 @@ class FakeMultiPickerState<T : PickerPresentation> :
     }
 }
 
+class FakePickedItem<T : PickerPresentation>(
+    override val item: T,
+    override var quantity: Int = 1,
+) : PickedItem<T>
+
 class FakeOptionsMultiPickerState<T : PickerPresentation> :
     FakeViewState(),
     OptionsMultiPickerState<T> {
@@ -263,18 +269,25 @@ class FakeOptionsMultiPickerState<T : PickerPresentation> :
     override var pickerType: PickerFieldState.PickerType = PickerFieldState.PickerType.BOTTOM_SHEET
     override var placeholder: StringDesc? = null
     override val options: MutableList<T> = mutableListOf()
-    override val selectedItems: MutableList<T> = mutableListOf()
+    override val selectedItems: MutableList<PickedItem<T>> = mutableListOf()
     override var onItemsPicked: (List<T>) -> Unit = {}
     override var onItemsRemoveRequested: (List<T>) -> Unit = {}
+    override var onQuantityIncreaseRequested: (T) -> Unit = {}
+    override var onQuantityDecreaseRequested: (T) -> Unit = {}
     override var addItemText: StringDesc = "".desc()
     override var isEditable: Boolean = true
+    override var isQuantityEditable: Boolean = false
+
+    override fun createPickedItem(item: T, quantity: Int): PickedItem<T> {
+        return FakePickedItem(item, quantity)
+    }
 
     override fun replaceOptions(options: List<T>) {
         this.options.clear()
         this.options += options
     }
 
-    override fun replaceSelected(selected: List<T>) {
+    override fun replaceSelected(selected: List<PickedItem<T>>) {
         selectedItems.clear()
         selectedItems += selected
     }

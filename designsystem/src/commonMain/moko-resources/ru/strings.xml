@@ -52,4 +52,7 @@
     <string name="schedule_add_day_off">Добавить выходной</string>
     <string name="schedule_no_day_offs">Выходные не запланированы.</string>
     <string name="schedule_pick_day_off_title">Выберите дату начала и окончания отпуска или выходных.</string>
+
+    <string name="quantity_increase">Увеличить количество</string>
+    <string name="quantity_decrease">Уменьшить количество</string>
 </resources>

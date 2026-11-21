@@ -7,8 +7,10 @@
 
 Marks a **started** `SCHEDULED` appointment as `COMPLETED` with `completedBy = USER`. The backend treats an
 already-completed appointment as a no-op and keeps its status and completer. The optional
-`PriceAdjustmentDraft` (final charged price, extra catalog service ids, optional reason) is sent as
-`CompleteAppointmentRequest.priceAdjustment` and replaces any earlier adjustment. The details screen
+`PriceAdjustmentDraft` (final charged price, extra catalog service ids repeated once per unit, optional reason) is sent as
+`CompleteAppointmentRequest.priceAdjustment` and replaces any earlier adjustment. The data layer groups the repeated ids
+into `additionalServices: [RequestedService{serviceId, count}]` (distinct services, positive counts, at most 100 in total),
+and expands the response's `AdditionalService{service, count}` back into one `ServiceSnapshot` per unit. The details screen
 sends an entered adjustment, or `null` when the booked services and price are kept without a reason.
 
 The network call and the DB write are separate datasource methods, and the use case runs them in order. The
@@ -16,8 +18,9 @@ server result is saved with `upsertWithServices`, which also rewrites the `appoi
 
 ```mermaid
 flowchart TD
-    Start([invoke appointmentId, priceAdjustment?]) --> Net[AppointmentDataSource.completeAppointment<br/>POST /api/appointments/id/complete<br/>body CompleteAppointmentRequest priceAdjustment?]
-    Net -- 2xx result --> Save[(saveAppointmentInDB result<br/>upsertWithServices: appointment, service snapshots, adjustment services)]
+    Start([invoke appointmentId, priceAdjustment?]) --> Net[AppointmentDataSource.completeAppointment<br/>POST /api/appointments/id/complete<br/>body CompleteAppointmentRequest priceAdjustment?<br/>additionalServices = ids grouped into serviceId, count]
+    Net -- 2xx result --> Expand[map priceAdjustment.additionalServices<br/>service × count to repeated ServiceSnapshots]
+    Expand --> Save[(saveAppointmentInDB result<br/>upsertWithServices: appointment, service snapshots, adjustment services)]
     Save --> R([return result])
     Net -- business error --> Code{errorCode}
     Code -- 300005 APPOINTMENT_ALREADY_CANCELED --> E1([throw Error.AppointmentAlreadyCancelled])
@@ -27,6 +30,7 @@ flowchart TD
     Code -- 300022 PRICE_ADJUSTMENT_CURRENCY_MISMATCH --> E5([throw Error.CurrencyMismatch])
     Code -- 300023 PRICE_ADJUSTMENT_REASON_TOO_LONG --> E6([throw Error.ReasonTooLong])
     Code -- 200013 BUSINESS_QUOTE_SERVICE_NOT_FOUND --> E7([throw Error.ServiceNotFound])
+    Code -- 300024 SERVICE_SELECTION_INVALID --> E8([throw Error.InvalidServiceSelection])
     Code -- 300026 --> Added300026([throw Error.EditWindowClosed])
     Code -- other --> EX([rethrow])
 ```

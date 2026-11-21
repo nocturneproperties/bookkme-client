@@ -57,6 +57,7 @@
     <string name="appointments_complete_currency_error">Waluta ceny nie zgadza się z walutą wizyty.</string>
     <string name="appointments_complete_note_too_long_error">Notatka jest za długa.</string>
     <string name="appointments_complete_service_not_found_error">Co najmniej jedna z wybranych usług już nie istnieje.</string>
+    <string name="appointments_complete_services_invalid_error">Za dużo usług. Możesz dodać najwyżej 100.</string>
 
     <string name="appointments_details_cancel">Czy na pewno chcesz anulować tę wizytę?\nKlient zarejestrowany w systemie otrzyma powiadomienie.</string>
     <string name="appointments_details_cancel_reason">powód (opcjonalnie)</string>

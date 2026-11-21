@@ -35,5 +35,8 @@ interface CompleteAppointment {
         class ServiceNotFound :
             Throwable(),
             Error
+        class InvalidServiceSelection :
+            Throwable(),
+            Error
     }
 }

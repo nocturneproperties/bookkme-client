@@ -55,6 +55,10 @@ internal class CompleteAppointmentImpl(
                     AppointmentErrorCodes.BUSINESS_QUOTE_SERVICE_NOT_FOUND -> {
                         throw Error.ServiceNotFound()
                     }
+
+                    AppointmentErrorCodes.SERVICE_SELECTION_INVALID -> {
+                        throw Error.InvalidServiceSelection()
+                    }
                 }
             }
             .getOrThrow()

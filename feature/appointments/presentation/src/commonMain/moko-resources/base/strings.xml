@@ -57,6 +57,7 @@
     <string name="appointments_complete_currency_error">The price currency doesn\'t match the appointment.</string>
     <string name="appointments_complete_note_too_long_error">The note is too long.</string>
     <string name="appointments_complete_service_not_found_error">One or more selected services no longer exist.</string>
+    <string name="appointments_complete_services_invalid_error">Too many services. Keep the total at 100 or fewer.</string>
 
     <string name="appointments_details_cancel">Are you sure you want to cancel this appointment?\nClient attached to the system will receive notification.</string>
     <string name="appointments_details_cancel_reason">reason(optional)</string>

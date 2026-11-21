@@ -5,19 +5,18 @@ import kotlinx.serialization.protobuf.ProtoNumber
 import library.money.api.Money
 import library.money.api.RemoteMoneySerializer
 import me.bookk.feature.appointments.domain.api.entity.PriceAdjustment
-import kotlin.uuid.Uuid
 
 @Serializable
 data class PriceAdjustmentRemote(
-    @ProtoNumber(1) val additionalServices: List<ServiceSnapshotRemote>,
     @ProtoNumber(2)
     @Serializable(with = RemoteMoneySerializer::class)
     val price: Money,
     @ProtoNumber(3) val reason: String? = null,
+    @ProtoNumber(4) val additionalServices: List<AdditionalServiceRemote> = emptyList(),
 ) {
     fun toDomain(): PriceAdjustment {
         return PriceAdjustment(
-            additionalServices = additionalServices.map { it.toDomain() },
+            additionalServices = additionalServices.flatMap { it.toDomainUnits() },
             price = price,
             reason = reason,
         )
@@ -25,12 +24,20 @@ data class PriceAdjustmentRemote(
 }
 
 @Serializable
+data class AdditionalServiceRemote(
+    @ProtoNumber(1) val service: ServiceSnapshotRemote,
+    @ProtoNumber(2) val count: Int,
+) {
+    fun toDomainUnits() = List(count) { service.toDomain() }
+}
+
+@Serializable
 data class PriceAdjustmentDraftRemote(
-    @ProtoNumber(1) val additionalServiceIds: List<Uuid>,
     @ProtoNumber(2)
     @Serializable(with = RemoteMoneySerializer::class)
     val price: Money,
     @ProtoNumber(3) val reason: String?,
+    @ProtoNumber(4) val additionalServices: List<RequestedServiceRemote>,
 )
 
 @Serializable

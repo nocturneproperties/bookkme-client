@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flowOn
 import library.device.api.DeviceFacade
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.core.config.SiteUrl
+import me.bookk.core.config.ClientAppUrl
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.LaunchBehaviour
@@ -33,7 +33,7 @@ class BusinessLinkViewModel(
     private val getBusinessLink: GetBusinessLink,
     private val setBusinessLink: SetBusinessLink,
     private val device: DeviceFacade,
-    private val siteUrl: SiteUrl,
+    private val clientAppUrl: ClientAppUrl,
     stateFactory: BusinessStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
@@ -187,11 +187,11 @@ class BusinessLinkViewModel(
     }
 
     private fun shareLink() {
-        device.share("${siteUrl.value}/$savedName")
+        device.share("${clientAppUrl.value}/$savedName")
     }
 
     private fun previewOf(name: String): StringDesc {
-        val host = siteUrl.value.substringAfter("://")
+        val host = clientAppUrl.value.substringAfter("://")
         return "$host/${BusinessLink.normalizeName(name)}".desc()
     }
 

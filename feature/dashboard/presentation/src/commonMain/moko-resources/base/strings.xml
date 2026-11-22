@@ -65,4 +65,5 @@
     <string name="dashboard_client_home_empty_step_confirm">They confirm, you get a message here</string>
     <string name="dashboard_client_home_save_not_enabled">This business doesn\'t take bookings yet.</string>
     <string name="dashboard_client_home_save_limit">You\'ve saved as many businesses as you can.</string>
+    <string name="dashboard_client_home_link_not_found">No business uses this link. Ask the business for its current link.</string>
 </resources>

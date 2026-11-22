@@ -4,6 +4,7 @@ import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import me.bookk.core.Logger
+import me.bookk.core.config.ClientAppUrl
 import me.bookk.core.config.SiteUrl
 import me.bookk.core.coroutine.createApplicationScope
 import me.bookk.core.presentation.di.presentationCoreModule
@@ -25,6 +26,7 @@ fun commonModule(): Module {
         single<ErrorMapper> { ErrorMapperImpl() }
         single<CoroutineScope> { createApplicationScope() }
         single { SiteUrl(BuildKonfig.SITE_URL) }
+        single { ClientAppUrl(BuildKonfig.CLIENT_APP_URL) }
         single<String>(named("relyingParty")) {
             BuildKonfig.BASE_URL
                 .removeSuffix("/api")

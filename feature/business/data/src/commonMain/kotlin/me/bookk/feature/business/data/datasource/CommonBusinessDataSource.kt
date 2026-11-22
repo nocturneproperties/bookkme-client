@@ -21,11 +21,13 @@ import me.bookk.feature.business.data.mapping.toRemote
 import me.bookk.feature.business.data.mapping.toUserBusinesses
 import me.bookk.feature.business.data.mapping.toWorkHourEntities
 import me.bookk.feature.business.data.remote.api.BusinessRouting
+import me.bookk.feature.business.data.remote.model.BusinessLinkRemote
 import me.bookk.feature.business.data.remote.model.BusinessRemote
 import me.bookk.feature.business.data.remote.model.BusinessesByIdsRequest
 import me.bookk.feature.business.data.remote.model.CreateBusinessRequest
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessLink
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
 import kotlin.uuid.Uuid
@@ -159,6 +161,12 @@ internal class CommonBusinessDataSource(
                 .body<List<BusinessRemote>>()
                 .map { it.toDomain() }
         }
+    }
+
+    override suspend fun resolveLink(name: String): BusinessLink = mapExceptions {
+        httpClient.get(BusinessRouting.Api.Business.LinkName(name = name))
+            .body<BusinessLinkRemote>()
+            .toDomain()
     }
 
     override fun observeBusinessesInDb(ids: Set<Uuid>): Flow<List<Business>> {

@@ -32,6 +32,7 @@ import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapViewModel
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
 import me.bookk.feature.business.domain.api.business.GetBusinesses
+import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
@@ -276,5 +277,17 @@ class ClientAppTest {
 
         then()
         assertNotNull(getBusinesses)
+    }
+
+    @Test
+    fun `provides resolving the business link a client opened`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val resolveBusinessLink = KoinPlatform.getKoin().getOrNull<ResolveBusinessLink>()
+
+        then()
+        assertNotNull(resolveBusinessLink)
     }
 }

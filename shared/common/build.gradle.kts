@@ -51,6 +51,7 @@ buildkonfig {
     defaultConfigs {
         buildConfigField(STRING, "BASE_URL", "", const = true)
         buildConfigField(STRING, "SITE_URL", "https://bookkme.com", const = true)
+        buildConfigField(STRING, "CLIENT_APP_URL", "https://app.bookkme.com", const = true)
         buildConfigField(
             BOOLEAN,
             "DEBUG",
@@ -78,6 +79,12 @@ buildkonfig {
             const = true,
         )
         buildConfigField(STRING, "SITE_URL", "https://local.bookkme.app", const = true)
+        buildConfigField(
+            STRING,
+            "CLIENT_APP_URL",
+            "https://local-app.bookkme.app",
+            const = true,
+        )
     }
     defaultConfigs(ProductFlavour.DEV.title + "Release") {
         buildConfigField(
@@ -87,6 +94,12 @@ buildkonfig {
             const = true,
         )
         buildConfigField(STRING, "SITE_URL", "https://local.bookkme.app", const = true)
+        buildConfigField(
+            STRING,
+            "CLIENT_APP_URL",
+            "https://local-app.bookkme.app",
+            const = true,
+        )
     }
     defaultConfigs(ProductFlavour.PROD.title + "Release") {
         buildConfigField(

@@ -26,6 +26,7 @@ import me.bookk.feature.appointments.domain.api.entity.SavedBusiness
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.domain.api.entity.UpcomingBooking
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.dashboard.presentation.ClientDashboardStateFactory
 import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
@@ -35,6 +36,7 @@ class ClientHomeViewModel(
     private val getUpcomingBookings: GetUpcomingBookings,
     private val getSavedBusinesses: GetSavedBusinesses,
     private val saveBusiness: SaveBusiness,
+    private val resolveBusinessLink: ResolveBusinessLink,
     private val userProfileCRUD: UserProfileCRUD,
     stateFactory: ClientDashboardStateFactory,
     dateLocalizer: DateLocalizer,
@@ -199,11 +201,34 @@ class ClientHomeViewModel(
     }
 
     private fun openLaunchBusinessOrLoadBusinesses() {
-        val businessId = Uuid.parseOrNull(startParameter)
-        if (businessId == null) {
-            loadSavedBusinesses()
-            return
+        val businessId = Uuid.parseHexDashOrNull(startParameter)
+        when {
+            businessId != null -> openLaunchBusiness(businessId)
+            startParameter.isNotBlank() -> openLaunchLink(startParameter)
+            else -> loadSavedBusinesses()
         }
+    }
+
+    private fun openLaunchLink(name: String) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { resolveBusinessLink(name) },
+            onComplete = { openLaunchBusiness(it.businessId) },
+            onError = {
+                uiState.notifications.add(resolveErrorNotification(it))
+                loadSavedBusinesses()
+            },
+        )
+    }
+
+    private fun resolveErrorNotification(error: Throwable): PresentationNotification {
+        if (error !is ResolveBusinessLink.Error.NotFound) return error.notification()
+        return PresentationNotification.Message.simple(
+            DashboardRes.strings.dashboard_client_home_link_not_found.desc(),
+        )
+    }
+
+    private fun openLaunchBusiness(businessId: Uuid) {
         uiState.navigation.push(ClientHomeDestinations.Services(businessId))
         saveLaunchBusiness(businessId)
     }

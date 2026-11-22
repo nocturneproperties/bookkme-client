@@ -47,6 +47,8 @@ import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.domain.api.entity.UpcomingBooking
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.entity.UserProfile
+import me.bookk.feature.business.domain.api.entity.BusinessLink
+import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.dashboard.presentation.FakeClientDashboardStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -92,6 +94,10 @@ class ClientHomeViewModelTest {
         val userProfileCRUD = mock<UserProfileCRUD> {
             every { observe() } returns profile
         }
+        val linkedBusinessId: Uuid = Uuid.random()
+        val resolveBusinessLink = mock<ResolveBusinessLink> {
+            everySuspend { invoke(any()) } returns BusinessLink(linkedBusinessId, "my-salon")
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut(startParameter: String = "") = ClientHomeViewModel(
@@ -99,6 +105,7 @@ class ClientHomeViewModelTest {
             getUpcomingBookings = getUpcomingBookings,
             getSavedBusinesses = getSavedBusinesses,
             saveBusiness = saveBusiness,
+            resolveBusinessLink = resolveBusinessLink,
             userProfileCRUD = userProfileCRUD,
             stateFactory = FakeClientDashboardStateFactory(),
             dateLocalizer = FakeDateLocalizer(),
@@ -652,16 +659,131 @@ class ClientHomeViewModelTest {
     }
 
     @Test
-    fun `ignores a launch parameter that is not a business id`() = runUnitTest {
+    fun `does not look up a link for a launch parameter that is a business id`() = runUnitTest {
         given()
         val fixture = Fixture()
+
+        whenn()
+        loadedSut(fixture, startParameter = Uuid.random().toString())
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) { fixture.resolveBusinessLink(any()) }
+    }
+
+    @Test
+    fun `does not look up a link without a launch parameter`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        loadedSut(fixture)
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) { fixture.resolveBusinessLink(any()) }
+    }
+
+    @Test
+    fun `looks up the launch parameter as a link name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        loadedSut(fixture, startParameter = "my-salon")
+
+        then()
+        verifySuspend { fixture.resolveBusinessLink("my-salon") }
+    }
+
+    @Test
+    fun `looks up an id without dashes as a link name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val name = Uuid.random().toHexString()
+
+        whenn()
+        loadedSut(fixture, startParameter = name)
+
+        then()
+        verifySuspend { fixture.resolveBusinessLink(name) }
+    }
+
+    @Test
+    fun `opens the business behind the launch link`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = loadedSut(fixture, startParameter = "my-salon")
+
+        then()
+        assertEquals(
+            listOf<ClientHomeDestinations>(
+                ClientHomeDestinations.Services(fixture.linkedBusinessId),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `saves the business behind the launch link`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        loadedSut(fixture, startParameter = "my-salon")
+
+        then()
+        verifySuspend { fixture.saveBusiness(fixture.linkedBusinessId) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getSavedBusinesses.refresh() }
+    }
+
+    @Test
+    fun `explains a launch link that leads to no business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.resolveBusinessLink(any()) } throws
+            ResolveBusinessLink.Error.NotFound()
 
         whenn()
         val sut = loadedSut(fixture, startParameter = "promo")
 
         then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            DashboardRes.strings.dashboard_client_home_link_not_found.desc(),
+            message.message,
+        )
         assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
         verifySuspend(VerifyMode.exactly(0)) { fixture.saveBusiness(any()) }
+    }
+
+    @Test
+    fun `refreshes saved businesses itself when the launch link leads nowhere`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.resolveBusinessLink(any()) } throws
+            ResolveBusinessLink.Error.NotFound()
+
+        whenn()
+        loadedSut(fixture, startParameter = "promo")
+
+        then()
+        verifySuspend { fixture.getSavedBusinesses.refresh() }
+    }
+
+    @Test
+    fun `shows a failed launch link lookup and refreshes saved businesses`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.resolveBusinessLink(any()) } throws TestException()
+
+        whenn()
+        val sut = loadedSut(fixture, startParameter = "my-salon")
+
+        then()
+        fixture.errorMapper.assertMappedSingle(TestException::class)
+        sut.uiState.notifications.assertSingle<PresentationNotification>()
+        verifySuspend { fixture.getSavedBusinesses.refresh() }
     }
 
     @Test

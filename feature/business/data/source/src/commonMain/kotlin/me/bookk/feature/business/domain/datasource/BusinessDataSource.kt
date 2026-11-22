@@ -3,6 +3,7 @@ package me.bookk.feature.business.domain.datasource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.TimeZone
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessLink
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import kotlin.uuid.Uuid
 
@@ -21,6 +22,7 @@ interface BusinessDataSource {
     suspend fun getBusinessesFromRemote(): UserBusinessInfo
     suspend fun getBusinessById(id: Uuid): Business?
     suspend fun getBusinessesByIdsFromRemote(ids: Set<Uuid>): List<Business>
+    suspend fun resolveLink(name: String): BusinessLink
     fun observeBusinessesInDb(ids: Set<Uuid>): Flow<List<Business>>
     suspend fun saveDashboardBusinessId(id: Uuid?)
     fun getDashboardBusinessIdFlow(): Flow<Uuid?>

@@ -83,6 +83,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `CanEditBusiness` | local only (`business` table) | [Can edit business](business/can-edit-business.md) |
 | `GetBusinessLink` | `flow()` observes `business_link`; `refresh()` `GET /api/business/{id}/link` → upsert; `BUSINESS_LINK_NOT_FOUND` → delete row, 404 → delete row + `NotOwner` | [Get business link](business/get-business-link.md) |
 | `SetBusinessLink` | local name rule check → `PUT /api/business/{id}/link` → upsert `business_link`; typed errors, 404 → `NotOwner` | [Set business link](business/set-business-link.md) |
+| `ResolveBusinessLink` | local name rule check → `GET /api/business/link/{name}`, no cache; `BUSINESS_LINK_NOT_FOUND` → `NotFound` (client web app) | [Resolve business link](business/resolve-business-link.md) |
 | `GetAvailableDashboardFeatures` | local only; `DATA_EXPORT` and `BUSINESS_LINK` only for the owner (`business.ownerId` = cached profile id) | [Get available dashboard features](business/get-available-dashboard-features.md) |
 | `ObserveDashboardSetupStatus` | local only | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) |
 | `RefreshDashboardSetupStatus` | via `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) |

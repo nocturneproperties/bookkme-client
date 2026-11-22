@@ -65,4 +65,5 @@
     <string name="dashboard_client_home_empty_step_confirm">Firma potwierdza, a Ty dostajesz wiadomość tutaj</string>
     <string name="dashboard_client_home_save_not_enabled">Ta firma nie przyjmuje jeszcze rezerwacji.</string>
     <string name="dashboard_client_home_save_limit">Zapisano już maksymalną liczbę firm.</string>
+    <string name="dashboard_client_home_link_not_found">Ten link nie prowadzi do żadnej firmy. Poproś firmę o aktualny link.</string>
 </resources>

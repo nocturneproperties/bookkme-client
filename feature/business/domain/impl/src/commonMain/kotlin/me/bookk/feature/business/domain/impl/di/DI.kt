@@ -21,6 +21,7 @@ import me.bookk.feature.business.domain.api.business.RefreshDashboardSetupStatus
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
 import me.bookk.feature.business.domain.api.link.GetBusinessLink
+import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.business.domain.api.link.SetBusinessLink
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
@@ -43,6 +44,7 @@ import me.bookk.feature.business.domain.impl.business.RefreshDashboardSetupStatu
 import me.bookk.feature.business.domain.impl.business.SwitchDashboardBusinessImpl
 import me.bookk.feature.business.domain.impl.business.UpdateBusinessImpl
 import me.bookk.feature.business.domain.impl.link.GetBusinessLinkImpl
+import me.bookk.feature.business.domain.impl.link.ResolveBusinessLinkImpl
 import me.bookk.feature.business.domain.impl.link.SetBusinessLinkImpl
 import me.bookk.feature.business.domain.impl.plugin.EnableAppointmentsPluginImpl
 import me.bookk.feature.business.domain.impl.plugin.IsAppointmentsPluginEnabledImpl
@@ -79,4 +81,5 @@ fun businessDomainModule() = module {
 
 fun clientBusinessDomainModule() = module {
     factoryOf(::GetBusinessesImpl) bind GetBusinesses::class
+    factoryOf(::ResolveBusinessLinkImpl) bind ResolveBusinessLink::class
 }

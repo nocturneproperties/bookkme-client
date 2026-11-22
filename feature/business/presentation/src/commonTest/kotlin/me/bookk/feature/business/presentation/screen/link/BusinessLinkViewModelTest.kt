@@ -15,7 +15,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import library.device.api.DeviceFacade
 import me.bookk.android.feature.business.resources.BusinessRes
-import me.bookk.core.config.SiteUrl
+import me.bookk.core.config.ClientAppUrl
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
@@ -73,7 +73,7 @@ class BusinessLinkViewModelTest {
             getBusinessLink = getBusinessLink,
             setBusinessLink = setBusinessLink,
             device = device,
-            siteUrl = SiteUrl("https://bookkme.test"),
+            clientAppUrl = ClientAppUrl("https://app.bookkme.test"),
             stateFactory = FakeBusinessStateFactory(),
             vmArgs = VmArgs(errorMapper),
         )
@@ -134,7 +134,7 @@ class BusinessLinkViewModelTest {
 
         then()
         assertEquals("my-salon", sut.uiState.name.text)
-        assertEquals("bookkme.test/my-salon".desc(), sut.uiState.preview)
+        assertEquals("app.bookkme.test/my-salon".desc(), sut.uiState.preview)
         assertTrue(sut.uiState.share.isVisible)
         assertFalse(sut.uiState.refresh.isRefreshing)
     }
@@ -165,7 +165,7 @@ class BusinessLinkViewModelTest {
 
         then()
         assertEquals("my-salon", sut.uiState.name.text)
-        assertEquals("bookkme.test/my-salon".desc(), sut.uiState.preview)
+        assertEquals("app.bookkme.test/my-salon".desc(), sut.uiState.preview)
     }
 
     @Test
@@ -185,7 +185,7 @@ class BusinessLinkViewModelTest {
 
         then()
         assertEquals("draft", sut.uiState.name.text)
-        assertEquals("bookkme.test/draft".desc(), sut.uiState.preview)
+        assertEquals("app.bookkme.test/draft".desc(), sut.uiState.preview)
         assertTrue(sut.uiState.share.isVisible)
     }
 
@@ -231,7 +231,7 @@ class BusinessLinkViewModelTest {
 
         then()
         assertEquals("", sut.uiState.name.text)
-        assertEquals("bookkme.test/".desc(), sut.uiState.preview)
+        assertEquals("app.bookkme.test/".desc(), sut.uiState.preview)
         assertFalse(sut.uiState.share.isVisible)
     }
 
@@ -450,7 +450,7 @@ class BusinessLinkViewModelTest {
 
         then()
         assertEquals("mysalon", sut.uiState.name.text)
-        assertEquals("bookkme.test/mysalon".desc(), sut.uiState.preview)
+        assertEquals("app.bookkme.test/mysalon".desc(), sut.uiState.preview)
         assertTrue(sut.uiState.save.isEnabled)
     }
 
@@ -465,7 +465,7 @@ class BusinessLinkViewModelTest {
         sut.nameField.type(" My-Salon ")
 
         then()
-        assertEquals("bookkme.test/my-salon".desc(), sut.uiState.preview)
+        assertEquals("app.bookkme.test/my-salon".desc(), sut.uiState.preview)
     }
 
     @Test
@@ -496,7 +496,7 @@ class BusinessLinkViewModelTest {
 
         then()
         assertEquals("my-salon", sut.uiState.name.text)
-        assertEquals("bookkme.test/my-salon".desc(), sut.uiState.preview)
+        assertEquals("app.bookkme.test/my-salon".desc(), sut.uiState.preview)
         assertTrue(sut.uiState.share.isVisible)
         assertEquals(
             BusinessRes.strings.business_link_saved.desc(),
@@ -683,7 +683,7 @@ class BusinessLinkViewModelTest {
         sut.uiState.share.onClick?.invoke()
 
         then()
-        verify { fixture.device.share("https://bookkme.test/my-salon") }
+        verify { fixture.device.share("https://app.bookkme.test/my-salon") }
     }
 
     @Test

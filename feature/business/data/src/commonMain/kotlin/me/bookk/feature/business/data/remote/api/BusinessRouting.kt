@@ -21,6 +21,12 @@ object BusinessRouting {
                 val parent: Business = Business(),
             )
 
+            @Resource("/link/{name}")
+            class LinkName(
+                val parent: Business = Business(),
+                val name: String,
+            )
+
             @Resource("/{id}")
             class Id(
                 val parent: Business = Business(),

@@ -125,7 +125,7 @@
     <string name="business_link_name_label">Название ссылки</string>
     <string name="business_link_name_placeholder">your-business</string>
     <string name="business_link_change_note">Ссылку можно менять до 3 раз за 90 дней. Прежняя ссылка ещё 90 дней открывает вашу страницу, и никто другой не может её занять.</string>
-    <string name="business_link_share">Поделиться ссылкой</string>
+    <string name="business_link_share">Поделиться</string>
     <string name="business_link_saved">Ссылка сохранена</string>
     <string name="business_link_load_error">Не удалось загрузить ссылку на бизнес.</string>
     <string name="business_link_error_invalid">Используйте от 3 до 32 латинских букв или цифр, разделяя их одиночными дефисами.</string>

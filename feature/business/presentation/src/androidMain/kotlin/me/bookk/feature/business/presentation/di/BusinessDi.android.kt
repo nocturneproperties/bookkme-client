@@ -3,6 +3,7 @@ package me.bookk.feature.business.presentation.di
 import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalyticsViewModel
 import me.bookk.feature.business.presentation.screen.dashboard.BusinessDashboardViewModel
 import me.bookk.feature.business.presentation.screen.export.BusinessDataExportViewModel
+import me.bookk.feature.business.presentation.screen.link.BusinessLinkViewModel
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginsViewModel
 import me.bookk.feature.business.presentation.screen.settings.BusinessSettingsViewModel
 import org.koin.core.module.Module
@@ -15,4 +16,5 @@ internal actual fun platformBusinessDiModule(): Module = module {
     viewModelOf(::BusinessSettingsViewModel)
     viewModelOf(::BusinessAnalyticsViewModel)
     viewModelOf(::BusinessDataExportViewModel)
+    viewModelOf(::BusinessLinkViewModel)
 }

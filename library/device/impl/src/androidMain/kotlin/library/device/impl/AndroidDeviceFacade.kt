@@ -82,4 +82,18 @@ class AndroidDeviceFacade(
         val clipboardManager = appContext.getSystemService<ClipboardManager>()
         clipboardManager?.setPrimaryClip(ClipData.newPlainText(text, text))
     }
+
+    override fun share(text: String) {
+        val intent = Intent(Intent.ACTION_SEND)
+            .setType(TEXT_MIME_TYPE)
+            .putExtra(Intent.EXTRA_TEXT, text)
+        val chooser = Intent.createChooser(intent, null)
+            .addFlags(FLAG_ACTIVITY_NEW_TASK)
+        runCatching { appContext.startActivity(chooser) }
+            .onFailure { logger.e(it) }
+    }
+
+    private companion object {
+        const val TEXT_MIME_TYPE = "text/plain"
+    }
 }

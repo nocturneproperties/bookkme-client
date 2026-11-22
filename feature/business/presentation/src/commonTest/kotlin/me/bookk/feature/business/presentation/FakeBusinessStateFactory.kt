@@ -10,6 +10,7 @@ import me.bookk.designsystem.test.FakeListState
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
 import me.bookk.designsystem.test.FakePickerFieldState
+import me.bookk.designsystem.test.FakeRefreshState
 import me.bookk.designsystem.test.FakeScheduleState
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.uistate.simple.Action
@@ -22,6 +23,8 @@ import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDas
 import me.bookk.feature.business.presentation.screen.export.BusinessDataExportDestinations
 import me.bookk.feature.business.presentation.screen.export.BusinessDataExportState
 import me.bookk.feature.business.presentation.screen.export.UIBusinessExportStatus
+import me.bookk.feature.business.presentation.screen.link.BusinessLinkDestinations
+import me.bookk.feature.business.presentation.screen.link.BusinessLinkState
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginListState
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginState
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginsDestinations
@@ -57,6 +60,10 @@ internal class FakeBusinessStateFactory : BusinessStateFactory {
 
     override fun createBusinessDataExportState(): BusinessDataExportState {
         return FakeBusinessDataExportState()
+    }
+
+    override fun createBusinessLinkState(): BusinessLinkState {
+        return FakeBusinessLinkState()
     }
 }
 
@@ -139,4 +146,16 @@ internal class FakeBusinessDataExportState : BusinessDataExportState {
     override val retry = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<BusinessDataExportDestinations>()
+}
+
+internal class FakeBusinessLinkState : BusinessLinkState {
+    override val appBar = FakeAppBarState()
+    override val name = FakeTextFieldState()
+    override var preview: StringDesc = "".desc()
+    override var loadError: StringDesc? = null
+    override val refresh = FakeRefreshState()
+    override val save = FakeButtonState()
+    override val share = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<BusinessLinkDestinations>()
 }

@@ -119,4 +119,18 @@
     <string name="business_export_running_footer">You can leave this screen and return later.</string>
     <string name="business_export_file_title">Business data</string>
     <string name="business_export_file_type">JSON file</string>
+    <string name="business_dashboard_link">Business link</string>
+    <string name="business_link_title">Business link</string>
+    <string name="business_link_description">Clients open your booking page with this link. Use 3 to 32 latin letters or digits, with single hyphens between them.</string>
+    <string name="business_link_name_label">Link name</string>
+    <string name="business_link_name_placeholder">your-business</string>
+    <string name="business_link_change_note">You can change the link up to 3 times in 90 days. The previous link keeps opening your page for 90 days, and no one else can take it.</string>
+    <string name="business_link_share">Share link</string>
+    <string name="business_link_saved">Link saved</string>
+    <string name="business_link_load_error">Could not load the business link.</string>
+    <string name="business_link_error_invalid">Use 3 to 32 latin letters or digits, with single hyphens between them.</string>
+    <string name="business_link_error_reserved">This name is reserved. Choose another one.</string>
+    <string name="business_link_error_taken">This name is already taken. Choose another one.</string>
+    <string name="business_link_error_change_limit">The link was already changed 3 times in the last 90 days. Try again later.</string>
+    <string name="business_link_error_not_owner">Only the business owner can change its link.</string>
 </resources>

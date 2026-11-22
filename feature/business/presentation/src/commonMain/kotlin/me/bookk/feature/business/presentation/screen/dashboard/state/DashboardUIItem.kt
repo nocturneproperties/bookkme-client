@@ -31,6 +31,9 @@ sealed class BusinessDashboardSection(
             }
             if (features.contains(DashboardFeature.BUSINESS)) {
                 add(Analytics)
+                if (features.contains(DashboardFeature.BUSINESS_LINK)) {
+                    add(BusinessLink(id))
+                }
                 add(Settings)
                 add(Plugins(id))
             }
@@ -60,6 +63,13 @@ sealed class BusinessDashboardSection(
         data object Settings : DashboardUIItem(
             BusinessRes.strings.business_dashboard_settings.desc(),
             DashboardNavigationDestination.Settings,
+        )
+
+        data class BusinessLink(
+            val id: Uuid,
+        ) : DashboardUIItem(
+            BusinessRes.strings.business_dashboard_link.desc(),
+            DashboardNavigationDestination.BusinessLink(id),
         )
 
         data object Services : DashboardUIItem(

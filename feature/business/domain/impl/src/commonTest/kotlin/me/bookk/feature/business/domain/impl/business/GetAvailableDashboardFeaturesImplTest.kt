@@ -297,7 +297,7 @@ class GetAvailableDashboardFeaturesImplTest {
     }
 
     @Test
-    fun `DATA_EXPORT feature included when the signed in user owns the business`() = runUnitTest {
+    fun `owner features included when the signed in user owns the business`() = runUnitTest {
         given()
         val fixture = Fixture()
         val business = stubBusiness(permissions = noPermissions).copy(ownerId = USER_ID)
@@ -307,7 +307,39 @@ class GetAvailableDashboardFeaturesImplTest {
         val result = fixture.features()
 
         then()
-        assertEquals(setOf(DashboardFeature.DATA_EXPORT), result)
+        assertEquals(setOf(DashboardFeature.DATA_EXPORT, DashboardFeature.BUSINESS_LINK), result)
+    }
+
+    @Test
+    fun `BUSINESS_LINK feature excluded for a business owned by someone else`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness(permissions = fullPermissions).copy(ownerId = Uuid.random())
+        fixture.stub(business, isAppointmentsEnabled = true)
+
+        whenn()
+        val result = fixture.features()
+
+        then()
+        assertFalse(DashboardFeature.BUSINESS_LINK in result)
+    }
+
+    @Test
+    fun `BUSINESS_LINK feature excluded while the owner or the profile is unknown`() = runUnitTest {
+        given()
+        val unknownOwner = Fixture().apply {
+            stub(stubBusiness(permissions = fullPermissions), isAppointmentsEnabled = false)
+        }
+        val unknownProfile = Fixture().apply {
+            stub(stubBusiness().copy(ownerId = USER_ID), isAppointmentsEnabled = false)
+            profile.tryEmit(null)
+        }
+
+        whenn()
+        val results = listOf(unknownOwner.features(), unknownProfile.features())
+
+        then()
+        results.forEach { assertFalse(DashboardFeature.BUSINESS_LINK in it) }
     }
 
     @Test

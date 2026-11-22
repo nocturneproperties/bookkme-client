@@ -26,11 +26,15 @@ erDiagram
     SERVICE |o..o{ EMPLOYEE : "via employee_service_snapshot.id"
     USER_PROFILE |o..o| NOTIFICATION_SETTINGS : "userId (logical, UK)"
     BUSINESS |o..o| BUSINESS_DATA_EXPORT : "businessId (logical, PK)"
+    BUSINESS |o..o| BUSINESS_LINK : "businessId (logical, PK)"
 
     PERSONAL_DATA_EXPORT {
         int id PK "singleton 0"
     }
     BUSINESS_DATA_EXPORT {
+        uuid businessId PK
+    }
+    BUSINESS_LINK {
         uuid businessId PK
     }
     LEGAL_DOCUMENT_STATUS {

@@ -34,4 +34,8 @@ class IOSBusinessStateFactory: @MainActor BusinessStateFactory {
 	func createBusinessDataExportState() -> any BusinessDataExportState {
 		return IOSBusinessDataExportState()
 	}
+
+	func createBusinessLinkState() -> any BusinessLinkState {
+		return IOSBusinessLinkState()
+	}
 }

@@ -9,7 +9,7 @@ import androidx.room3.RoomDatabaseConstructor
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.database.AccountDaos
 import me.bookk.database.AppointmentDaos
-import me.bookk.database.BusinessDaos
+import me.bookk.database.ClientDaos
 import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
 import me.bookk.database.converter.UuidConverter
@@ -80,7 +80,7 @@ import me.bookk.database.entity.UserProfileEntity
 abstract class ClientDatabase :
     RoomDatabase(),
     AccountDaos,
-    BusinessDaos,
+    ClientDaos,
     AppointmentDaos {
 
     abstract override fun profileDao(): UserProfileDao

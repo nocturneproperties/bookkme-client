@@ -80,7 +80,9 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `EnableAppointmentsPlugin` | `POST /api/appointments/enabled/{businessId}` | [Enable appointments plugin](business/enable-appointments-plugin.md) |
 | `IsAppointmentsPluginEnabled` | `GET /api/appointments/enabled/{businessId}` | [Is appointments plugin enabled](business/is-appointments-plugin-enabled.md) |
 | `CanEditBusiness` | local only (`business` table) | [Can edit business](business/can-edit-business.md) |
-| `GetAvailableDashboardFeatures` | local only; `DATA_EXPORT` only for the owner (`business.ownerId` = cached profile id) | [Get available dashboard features](business/get-available-dashboard-features.md) |
+| `GetBusinessLink` | `flow()` observes `business_link`; `refresh()` `GET /api/business/{id}/link` → upsert; `BUSINESS_LINK_NOT_FOUND` → delete row, 404 → delete row + `NotOwner` | [Get business link](business/get-business-link.md) |
+| `SetBusinessLink` | local name rule check → `PUT /api/business/{id}/link` → upsert `business_link`; typed errors, 404 → `NotOwner` | [Set business link](business/set-business-link.md) |
+| `GetAvailableDashboardFeatures` | local only; `DATA_EXPORT` and `BUSINESS_LINK` only for the owner (`business.ownerId` = cached profile id) | [Get available dashboard features](business/get-available-dashboard-features.md) |
 | `ObserveDashboardSetupStatus` | local only | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) |
 | `RefreshDashboardSetupStatus` | via `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) |
 | `ObserveDashboardBusinessChanges`, `ObserveDashboardBusinessIdChanges`, `ObserveCurrentBusinessId` (×4), `ObserveCurrentBusiness` | local only | [Observe dashboard business](business/observe-dashboard-business-changes.md) |

@@ -45,7 +45,10 @@ internal class GetAvailableDashboardFeaturesImpl(
             if (isAppointmentsEnabled && permissions.appointments.view) {
                 add(DashboardFeature.APPOINTMENTS)
             }
-            if (ownerId != null && ownerId == profile?.id) add(DashboardFeature.DATA_EXPORT)
+            if (ownerId != null && ownerId == profile?.id) {
+                add(DashboardFeature.DATA_EXPORT)
+                add(DashboardFeature.BUSINESS_LINK)
+            }
         }
     }
 }

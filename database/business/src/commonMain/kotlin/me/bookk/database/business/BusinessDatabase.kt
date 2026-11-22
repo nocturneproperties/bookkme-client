@@ -34,6 +34,7 @@ import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.BusinessDataExportDao
+import me.bookk.database.dao.BusinessLinkDao
 import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.PersonalDataExportDao
@@ -51,6 +52,7 @@ import me.bookk.database.entity.BusinessDataExportEntity
 import me.bookk.database.entity.BusinessDayOffEntity
 import me.bookk.database.entity.BusinessDayScheduleEntity
 import me.bookk.database.entity.BusinessEntity
+import me.bookk.database.entity.BusinessLinkEntity
 import me.bookk.database.entity.BusinessWorkHourEntity
 import me.bookk.database.entity.DashboardBusinessEntity
 import me.bookk.database.entity.LegalDocumentStatusEntity
@@ -90,8 +92,9 @@ import me.bookk.database.entity.UserProfileEntity
         LegalDocumentStatusEntity::class,
         PersonalDataExportEntity::class,
         BusinessDataExportEntity::class,
+        BusinessLinkEntity::class,
     ],
-    version = 26,
+    version = 27,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
@@ -117,6 +120,7 @@ import me.bookk.database.entity.UserProfileEntity
         AutoMigration(from = 23, to = 24),
         AutoMigration(from = 24, to = 25),
         AutoMigration(from = 25, to = 26),
+        AutoMigration(from = 26, to = 27),
     ],
 )
 @ColumnTypeConverters(
@@ -143,6 +147,7 @@ abstract class BusinessDatabase :
     abstract override fun legalDocumentStatusDao(): LegalDocumentStatusDao
     abstract override fun personalDataExportDao(): PersonalDataExportDao
     abstract override fun businessDataExportDao(): BusinessDataExportDao
+    abstract override fun businessLinkDao(): BusinessLinkDao
     abstract fun employeeInvitationDao(): EmployeeInvitationDao
     abstract fun employeeDao(): EmployeeDao
 

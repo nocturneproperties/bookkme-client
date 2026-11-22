@@ -19,6 +19,11 @@ sealed class BusinessDestination {
     ) : BusinessDestination()
 
     @Serializable
+    data class BusinessLink(
+        val id: Uuid,
+    ) : BusinessDestination()
+
+    @Serializable
     data class DataExport(
         val id: Uuid,
     ) : BusinessDestination()

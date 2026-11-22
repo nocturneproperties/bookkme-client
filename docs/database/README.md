@@ -11,11 +11,15 @@ Entities, relations, DAOs and the type converters that more than one database us
 `:database:schema` (packages `me.bookk.database.entity`, `relation`, `dao`, `converter`): the account tables
 (`user_profile`, `notification_settings` and its channels, `legal_document_status`, `personal_data_export`),
 `business` with its schedule tables, `dashboard_business` and `business_data_export`, and the `appointment*`
-tables. The shared DAOs come in groups: `AccountDaos`, `BusinessDaos` and `AppointmentDaos`, each an interface
-with one Koin module binding its DAOs (`accountDaoModule()`, `businessDaoModule()`, `appointmentDaoModule()`).
+tables. `business_link` lives there too, although only `BusinessDatabase` holds it, because `business/data`, which
+writes it, also compiles for the web and cannot depend on `:database:business`. The DAOs come in groups, each an interface with one Koin module binding its DAOs: `AccountDaos`
+(`accountDaoModule()`) and `AppointmentDaos` (`appointmentDaoModule()`) are implemented by both databases. The
+business-table DAOs are split per database: `BusinessDaos` (`businessDaoModule()`, `BusinessDatabase` only) has
+`businessDao`, `businessDataExportDao` and `businessLinkDao`; `ClientDaos` (`clientDaoModule()`, `ClientDatabase`
+only) has `businessDao` and `businessDataExportDao`. `business_link` is therefore in `BusinessDatabase` only.
 Each database lists the entities it holds in its own `@Database`, implements the groups whose tables it holds
 and includes their modules, so each database file holds its own copy of the tables, and foreign keys and
-cascades stay inside that database. `BusinessDatabase` implements all three, and so does `ClientDatabase`. Data modules depend on `:database:schema` alone and get
+cascades stay inside that database. `BusinessDatabase` implements `AccountDaos`, `BusinessDaos` and `AppointmentDaos`; `ClientDatabase` implements `AccountDaos`, `ClientDaos` and `AppointmentDaos`. Data modules depend on `:database:schema` alone and get
 DAOs from Koin, so `authorization/data`, `settings/data`, `business/data` and `appointments/data` run on both
 apps. The client, service and employee tables are still in `:database:business`; they move to
 `:database:schema` when a web screen needs them. Changing a shared entity changes the schema of every database
@@ -36,7 +40,7 @@ holds the account tables from [Authorization](authorization.md) and [Settings](s
 [Business](business.md) and [Appointments](appointments.md) tables, with the same columns.
 
 - [Authorization](authorization.md): `user_profile`
-- [Business](business.md): `business`, its schedule tables, `dashboard_business` (the selected business) and `business_data_export`
+- [Business](business.md): `business`, its schedule tables, `dashboard_business` (the selected business), `business_data_export` and `business_link`
 - [Clients](clients.md): `client`
 - [Services](services.md): `service`, `service_group`
 - [Employees](employees.md): `employee` and its schedule and service snapshot tables, `employee_invitation`
@@ -48,7 +52,7 @@ holds the account tables from [Authorization](authorization.md) and [Settings](s
 ## Conventions
 
 - **Version and migrations.** Each database has its own version and migration history. `BusinessDatabase` is
-  at `version = 26`; it kept the schema history of the former single `AppDatabase` (same file, same schema), so
+  at `version = 27`; it kept the schema history of the former single `AppDatabase` (same file, same schema), so
   the split needed no migration. `ClientDatabase` is at `version = 2`: 1 held the account tables, and the additive 1 → 2 auto-migration adds the business and appointment tables. Moving entities into `:database:schema` changed no table, so `BusinessDatabase` stayed at 26.
   In `BusinessDatabase`, every step from 1 to 22 is a Room `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The manual 22 → 23 migration (`DefaultBusinessRetention`) makes business retention non-null,
@@ -56,6 +60,7 @@ holds the account tables from [Authorization](authorization.md) and [Settings](s
   The additive 23 → 24 auto-migration adds the `legal_document_status` table.
   The additive 24 → 25 auto-migration adds the singleton `personal_data_export` table.
   The additive 25 → 26 auto-migration adds the per-business `business_data_export` table.
+  The additive 26 → 27 auto-migration adds the per-business `business_link` table.
   Both builders set `fallbackToDestructiveMigration(true)` and `fallbackToDestructiveMigrationOnDowngrade(true)`.
   If a migration is missing, the cache is wiped instead of the app crashing, which is safe only because every
   table can be refetched.
@@ -109,6 +114,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `personal_data_export` and cached JSON (`caches/personal_data_exports/`, outside Room) | `CommonDataExportDataSource` | ✅ `personalDataExportDao.clear()` and personal export directory removed through `FileProvider.deleteRecursively()`; the directory is also cleared when a new file is saved, on export start and on refreshes returning a non-downloadable status; other export directories are unaffected |
 | `business_data_export` and cached JSON (`caches/business_data_exports/`, outside Room) | `CommonDataExportDataSource` (business data module) | ✅ `businessDataExportDao.clear()` and the whole business export directory removed through `FileProvider.deleteRecursively()`; a business's directory is also cleared when a new file is saved, on export start, on refreshes returning a non-downloadable status and when the backend reports the caller no longer owns the business (its row is deleted too); personal export files are unaffected |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
+| `business_link` | `CommonBusinessLinkDataSource` | ✅ `businessLinkDao.clear()`; a business's row is also deleted when the backend reports it has no link or the caller no longer owns it |
 
 Every table is cleared on logout by the data source that writes it, which is bound as a `LogOutAction` in its
 feature's data module. Shared tables (account, business and appointment tables) are cleared through the shared

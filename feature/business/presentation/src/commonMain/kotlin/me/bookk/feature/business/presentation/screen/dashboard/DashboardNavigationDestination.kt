@@ -8,6 +8,9 @@ sealed class DashboardNavigationDestination : NavigationDestination() {
     data object Clients : DashboardNavigationDestination()
     data object Analytics : DashboardNavigationDestination()
     data object Settings : DashboardNavigationDestination()
+    data class BusinessLink(
+        val businessId: Uuid,
+    ) : DashboardNavigationDestination()
     data class Plugins(
         val id: Uuid,
     ) : DashboardNavigationDestination()

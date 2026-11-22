@@ -50,6 +50,7 @@ buildkonfig {
     packageName = "me.bookk.shared.common"
     defaultConfigs {
         buildConfigField(STRING, "BASE_URL", "", const = true)
+        buildConfigField(STRING, "SITE_URL", "https://bookkme.com", const = true)
         buildConfigField(
             BOOLEAN,
             "DEBUG",
@@ -76,6 +77,7 @@ buildkonfig {
             "https://local.bookkme.app/api",
             const = true,
         )
+        buildConfigField(STRING, "SITE_URL", "https://local.bookkme.app", const = true)
     }
     defaultConfigs(ProductFlavour.DEV.title + "Release") {
         buildConfigField(
@@ -84,6 +86,7 @@ buildkonfig {
             "https://local.bookkme.app/api",
             const = true,
         )
+        buildConfigField(STRING, "SITE_URL", "https://local.bookkme.app", const = true)
     }
     defaultConfigs(ProductFlavour.PROD.title + "Release") {
         buildConfigField(

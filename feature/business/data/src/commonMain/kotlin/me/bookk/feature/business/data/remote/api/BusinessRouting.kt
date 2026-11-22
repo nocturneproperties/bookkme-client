@@ -35,6 +35,11 @@ object BusinessRouting {
                 class Dashboard(
                     val parent: Id,
                 )
+
+                @Resource("/link")
+                class Link(
+                    val parent: Id,
+                )
             }
         }
 

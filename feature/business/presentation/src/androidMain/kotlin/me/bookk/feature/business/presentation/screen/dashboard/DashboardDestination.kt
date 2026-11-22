@@ -61,6 +61,10 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: BusinessNavigation) {
                         navigation.toBusinessSettings()
                     }
 
+                    is DashboardNavigationDestination.BusinessLink -> {
+                        navigation.toBusinessLink(navItem.businessId)
+                    }
+
                     is DashboardNavigationDestination.Plugins -> {
                         navigation.toBusinessPlugins(navItem.id)
                     }

@@ -119,4 +119,18 @@
     <string name="business_export_running_footer">Możesz opuścić ten ekran i wrócić później.</string>
     <string name="business_export_file_title">Dane firmy</string>
     <string name="business_export_file_type">Plik JSON</string>
+    <string name="business_dashboard_link">Link do firmy</string>
+    <string name="business_link_title">Link do firmy</string>
+    <string name="business_link_description">Pod tym linkiem klienci otwierają Twoją stronę rezerwacji. Użyj od 3 do 32 liter łacińskich lub cyfr, oddzielając je pojedynczymi łącznikami.</string>
+    <string name="business_link_name_label">Nazwa linku</string>
+    <string name="business_link_name_placeholder">your-business</string>
+    <string name="business_link_change_note">Link możesz zmienić maksymalnie 3 razy w ciągu 90 dni. Poprzedni link przez 90 dni nadal otwiera Twoją stronę i nikt inny nie może go zająć.</string>
+    <string name="business_link_share">Udostępnij link</string>
+    <string name="business_link_saved">Link zapisany</string>
+    <string name="business_link_load_error">Nie udało się wczytać linku do firmy.</string>
+    <string name="business_link_error_invalid">Użyj od 3 do 32 liter łacińskich lub cyfr, oddzielając je pojedynczymi łącznikami.</string>
+    <string name="business_link_error_reserved">Ta nazwa jest zarezerwowana. Wybierz inną.</string>
+    <string name="business_link_error_taken">Ta nazwa jest już zajęta. Wybierz inną.</string>
+    <string name="business_link_error_change_limit">Link był już zmieniany 3 razy w ciągu ostatnich 90 dni. Spróbuj później.</string>
+    <string name="business_link_error_not_owner">Tylko właściciel firmy może zmienić jej link.</string>
 </resources>

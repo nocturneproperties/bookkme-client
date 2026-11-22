@@ -1,4 +1,4 @@
-package me.bookk.site.di
+package me.bookk.client.di
 
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
@@ -161,7 +161,7 @@ class ClientAppTest {
     }
 
     @Test
-    fun `keeps the started graph when the telegram page opens again`() = runUnitTest {
+    fun `keeps the started graph when the page opens again`() = runUnitTest {
         given()
         startClientApp()
         val client = KoinPlatform.getKoin().get<HttpClient>()

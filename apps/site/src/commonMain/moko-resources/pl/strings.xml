@@ -163,11 +163,4 @@
     <string name="site_contact_legal_action">Napisz do zespołu ds. prywatności</string>
     <string name="site_contact_security_action">Zgłoś problem z bezpieczeństwem</string>
     <string name="site_contact_subtitle">Pytania o aplikację, Twoje dane lub bezpieczeństwo? Wybierz odpowiedni adres poniżej.</string>
-    <string name="site_telegram_title">Mini aplikacja w Telegramie</string>
-    <string name="site_telegram_description">Umawiaj się z firmami w BookkMe bezpośrednio w Telegramie.</string>
-    <string name="site_telegram_signed_in_title">Zalogowano przez Telegram.</string>
-    <string name="site_telegram_coming_soon_body">Już wkrótce poprosisz tutaj firmy w BookkMe o dogodny termin, a one go potwierdzą. Nic nie trzeba instalować.</string>
-    <string name="site_telegram_outside_title">Ta strona otwiera się w Telegramie</string>
-    <string name="site_telegram_outside_body">To mini aplikacja BookkMe. Otwórz ją z linku firmy w Telegramie.</string>
-    <string name="site_telegram_outside_link">Jak działa rezerwacja w BookkMe</string>
 </resources>

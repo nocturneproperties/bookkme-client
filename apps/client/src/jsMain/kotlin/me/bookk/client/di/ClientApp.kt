@@ -1,4 +1,4 @@
-package me.bookk.site.di
+package me.bookk.client.di
 
 import library.cache.impl.di.cacheModule
 import library.device.impl.di.deviceModule

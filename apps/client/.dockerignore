@@ -1,0 +1,4 @@
+*
+!.kobweb/conf.yaml
+!.kobweb/server/server.jar
+!.kobweb/site

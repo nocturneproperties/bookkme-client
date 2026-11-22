@@ -1,0 +1,53 @@
+name: Client Develop Auto-assemble
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: client-develop
+      cancel-in-progress: true
+    timeout-minutes: 30
+
+    steps:
+      - name: Set dynamic variables
+        run: |
+          clean_ref=${GITHUB_REF_NAME//\//_}
+          echo "CLEAN_REF=${clean_ref}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v7
+
+      - name: Setup Android
+        uses: ./.github/actions/android-setup
+        with:
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-key-job: client
+          gradle-cache-read-only: "false"
+          keystore-properties: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          debug-keystore: ${{ secrets.ANDROID_DEBUG_KEYSTORE_FILE }}
+          google-services: ${{ secrets.ANDROID_GOOGLE_SERVICES_FILE }}
+
+      - name: Export
+        uses: ./.github/actions/kobweb-export
+        with:
+          app: client
+          flavor: devRelease
+
+      - name: Build image
+        run: docker build --tag bookkme-webapp:${{ env.CLEAN_REF }} apps/client
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: client-${{ env.CLEAN_REF }}
+          path: |
+            apps/client/.kobweb/conf.yaml
+            apps/client/.kobweb/server/server.jar
+            apps/client/.kobweb/site
+          include-hidden-files: true
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 5

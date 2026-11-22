@@ -5,7 +5,7 @@ There are two on-device Room databases, one per audience. Each app opens exactly
 | Database | Module | File | Platforms | Tables |
 |---|---|---|---|---|
 | `BusinessDatabase` | `:database:business` | `bookk_me.db` | Android, iOS (bundled SQLite driver) | account tables + every business table below |
-| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web (SQLite WASM worker, see `apps/site/README.md`) | account tables + `business` (with schedules, `dashboard_business`, `business_data_export`) + every `appointment*` table |
+| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web, the client web app (SQLite WASM worker, see `apps/client/README.md`) | account tables + `business` (with schedules, `dashboard_business`, `business_data_export`) + every `appointment*` table |
 
 Entities, relations, DAOs and the type converters that more than one database uses live once in
 `:database:schema` (packages `me.bookk.database.entity`, `relation`, `dao`, `converter`): the account tables
@@ -119,6 +119,6 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 Every table is cleared on logout by the data source that writes it, which is bound as a `LogOutAction` in its
 feature's data module. Shared tables (account, business and appointment tables) are cleared through the shared
 DAOs, so the same data sources clear them in whichever database the app installed. On the web, `ClientDatabase`
-has the business and appointment tables, but the site does not install the business or appointments data
+has the business and appointment tables, but the client web app does not install the business or appointments data
 modules yet, so nothing writes them and nothing clears them; installing those modules adds their logout actions. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)
 deletes businesses the user no longer has, together with their cascaded rows.

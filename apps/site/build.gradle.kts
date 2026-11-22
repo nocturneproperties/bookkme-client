@@ -15,7 +15,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.kmm.resources)
-    alias(libs.plugins.mockery)
     id(libs.plugins.convention.site.legal.get().pluginId)
     id(libs.plugins.convention.site.securitytxt.get().pluginId)
     id(libs.plugins.convention.site.webmanifest.get().pluginId)
@@ -97,20 +96,6 @@ kobweb {
     }
 }
 
-val sqliteWasmResources = layout.buildDirectory.dir("generated/sqliteWasm")
-
-val copySqliteWasm = tasks.register<Copy>("copySqliteWasm") {
-    group = "build"
-    description =
-        "Copies the SQLite WASM runtime from npm into the site's public/sqlite resources for the Room web worker"
-    dependsOn(":kotlinNpmInstall")
-    from(rootProject.layout.buildDirectory.dir("js/node_modules/@sqlite.org/sqlite-wasm/dist")) {
-        include("index.mjs", "sqlite3.wasm", "sqlite3-opfs-async-proxy.js")
-        rename("index.mjs", "sqlite3.js")
-    }
-    into(sqliteWasmResources.map { it.dir("public/sqlite") })
-}
-
 kotlin {
     configAsKobwebApplication("site")
     js {
@@ -121,29 +106,14 @@ kotlin {
 
     sourceSets {
         jsMain {
-            resources.srcDir(copySqliteWasm.map { sqliteWasmResources.get() })
             resources.srcDir(generateWebManifest)
             resources.srcDir(generateSitemap)
             kotlin.srcDir(tasks.named("generateLegalTexts"))
             kotlin.srcDir(generateSiteBuildConfig)
         }
         jsMain.dependencies {
-            implementation(npm("@sqlite.org/sqlite-wasm", libs.versions.npm.sqlite.wasm.get()))
             implementation(projects.site.designsystem)
             implementation(projects.site.domcompat)
-            implementation(projects.library.telegram)
-            implementation(projects.shared.common)
-            implementation(projects.library.device.impl)
-            implementation(projects.library.cache.impl)
-            implementation(projects.library.files.impl)
-            implementation(projects.database.client)
-            implementation(projects.feature.authorization.domain.impl)
-            implementation(projects.feature.authorization.data)
-            implementation(projects.feature.settings.domain.impl)
-            implementation(projects.feature.settings.data)
-            implementation(projects.feature.authorization.presentation)
-            implementation(projects.feature.authorization.domain.api)
-            implementation(libs.koin.core)
             implementation(libs.kmm.resources)
             implementation(libs.kobweb.compose.runtime)
             implementation(libs.compose.html.core)
@@ -153,12 +123,6 @@ kotlin {
         }
         jsTest.dependencies {
             implementation(projects.core.testFixtures)
-            implementation(projects.core.data)
-            implementation(projects.core.presentation)
-            implementation(projects.feature.authorization.domain.api)
-            implementation(projects.database.schema)
-            implementation(libs.ktor.client.core)
-            implementation(libs.koin.core)
             implementation(libs.test.kotlin)
             implementation(libs.kotlinx.coroutines.test)
         }

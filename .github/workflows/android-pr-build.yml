@@ -1,4 +1,4 @@
-name: Android & Site Pull Request Verification
+name: Android & Web Pull Request Verification
 on:
   pull_request:
     branches: [ develop ]
@@ -35,8 +35,14 @@ jobs:
       - name: Test & Build Site
         if: ${{ !cancelled() }}
         run: |
-          ./gradlew :site:jsNodeTest -Pbuildkonfig.flavor=devDebug
-          ./gradlew :site:jsBrowserProductionWebpack -Pbuildkonfig.flavor=devDebug
+          ./gradlew :site:jsNodeTest
+          ./gradlew :site:jsBrowserProductionWebpack
+
+      - name: Test & Build Client
+        if: ${{ !cancelled() }}
+        run: |
+          ./gradlew :client:jsNodeTest -Pbuildkonfig.flavor=devDebug
+          ./gradlew :client:jsBrowserProductionWebpack -Pbuildkonfig.flavor=devDebug
 
       - name: Upload test reports
         if: failure()

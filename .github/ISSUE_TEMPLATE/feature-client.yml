@@ -1,0 +1,34 @@
+name: Client web app feature
+description: New screen or improvement in the BookkMe client web app on app.bookkme.com (the Telegram mini app).
+labels: ["enhancement", "client"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this is needed and who it is for.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] Strings in EN, UK and PL
+        - [ ] Screens in the feature's `jsMain`, built from `:site:designsystem` components; missing ones added there
+        - [ ] Inside Telegram, uses the native controls from `:library:telegram` instead of in-page buttons, back arrow and notifications
+        - [ ] Icons are Google Material Icons only
+        - [ ] Works at phone width without horizontal scroll
+        - [ ] Checked in Telegram on iOS and Android
+    validations:
+      required: true

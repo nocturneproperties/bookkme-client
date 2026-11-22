@@ -147,6 +147,13 @@ If you publish your own build, also change the application ID (`ROOT_PACKAGE` in
 
 With the [Kobweb CLI](https://github.com/varabyte/kobweb-cli) installed, `cd apps/site && kobweb run` does the same, and `kobweb export --layout static` produces a static site in `apps/site/.kobweb/site`.
 
+**Client web app** — the Telegram Mini App in `apps/client/` is a second Kobweb app, on its own host, where people who book sign in. It calls the API, so pass the build flavor. Run it locally at http://localhost:8081:
+
+```bash
+./gradlew :client:kobwebStart -t -Pbuildkonfig.flavor=devDebug
+./gradlew :client:kobwebStop
+```
+
 ### Run the tests
 
 ```bash
@@ -158,13 +165,14 @@ With the [Kobweb CLI](https://github.com/varabyte/kobweb-cli) installed, `cd app
 
 ## Project structure
 
-BookkMe is written in Kotlin Multiplatform: the business logic, data handling and screen state are written once and shared, while the UI is native on each platform — Jetpack Compose on Android and SwiftUI on iOS. The domain layer is also compiled for the web, so the website can reuse it.
+BookkMe is written in Kotlin Multiplatform: the business logic, data handling and screen state are written once and shared, while the UI is native on each platform — Jetpack Compose on Android and SwiftUI on iOS. The domain layer is also compiled for the web, so the client web app can reuse it.
 
 ```
 apps/          The applications
   androidApp/  Android app
   iosApp/      iOS app
   site/        Website (Kobweb, Kotlin/JS) and its web design system
+  client/      Client web app: the Telegram Mini App (Kobweb, Kotlin/JS)
 shared/        Wiring that puts the shared modules together
 feature/       One folder per feature: appointments, business, clients,
                employees, services, dashboard, settings, authorization

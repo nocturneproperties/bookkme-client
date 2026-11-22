@@ -1,4 +1,4 @@
-package me.bookk.site.telegram
+package me.bookk.client.telegram
 
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.TextAlign
@@ -15,18 +15,19 @@ import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
+import dev.icerock.moko.resources.desc.desc
+import me.bookk.client.navigation.ClientLink
+import me.bookk.client.resources.ClientRes
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
+import me.bookk.site.designsystem.components.Logo
 import me.bookk.site.designsystem.components.TextBlock
 import me.bookk.site.designsystem.components.TextLink
-import me.bookk.site.designsystem.resources.WebLocalization
 import me.bookk.site.designsystem.theme.BodyLargeTextStyle
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.designsystem.theme.active
 import me.bookk.site.designsystem.theme.secondary
-import me.bookk.site.layout.Logo
-import me.bookk.site.navigation.SiteLink
 import org.jetbrains.compose.web.css.cssRem
 
 val TelegramMessageStyle = CssStyle.base {
@@ -39,7 +40,7 @@ val TelegramMessageStyle = CssStyle.base {
 }
 
 @Composable
-fun TelegramMessage(title: StringDesc, body: StringDesc, link: SiteLink? = null) {
+fun TelegramMessage(title: StringDesc, body: StringDesc, link: ClientLink? = null) {
     TelegramMessageLayout {
         Heading(title, HeadingLevel.H1, HeadlineLargeTextStyle.toModifier())
         TelegramMessageBody(body)
@@ -53,7 +54,7 @@ fun TelegramMessageLayout(content: @Composable () -> Unit) {
         TelegramMessageStyle.toModifier(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Logo(Modifier.height(2.5.cssRem))
+        Logo(ClientRes.strings.client_app_name.desc(), Modifier.height(2.5.cssRem))
         content()
     }
 }
@@ -69,10 +70,10 @@ fun TelegramMessageBody(text: StringDesc) {
 }
 
 @Composable
-private fun MessageLink(link: SiteLink) {
+private fun MessageLink(link: ClientLink) {
     TextLink(
         link.title,
-        WebLocalization.localize(link.path),
+        link.url,
         BodyMediumTextStyle
             .toModifier()
             .active(),

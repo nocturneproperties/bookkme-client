@@ -28,6 +28,7 @@ fun clientDaoModule(): Module {
     return module {
         factory { get<ClientDaos>().businessDao() }
         factory { get<ClientDaos>().businessDataExportDao() }
+        factory { get<ClientDaos>().savedBusinessDao() }
     }
 }
 

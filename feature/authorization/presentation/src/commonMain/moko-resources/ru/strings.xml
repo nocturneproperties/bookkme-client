@@ -32,7 +32,7 @@
     <string name="troubleshoot_passkey_missing">Ключи доступа отсутствуют или недоступны</string>
     <string name="troubleshoot_passkey_missing_description">Если в вашем аккаунте есть ключи доступа, но при входе ключ не предлагается, убедитесь, что на устройстве с ключом включена блокировка экрана. Если блокировка экрана отключена, вы не сможете использовать ключ доступа на этом устройстве, пока снова её не включите. \nВы можете восстановить ключ доступа через своего поставщика учётных данных, например Google или Apple.</string>
     <string name="troubleshoot_contact_support_button">Связаться с поддержкой</string>
-    <string name="sign_up_accept_legal_documents">Я принимаю Условия использования и подтверждаю, что прочитал(а) Политику конфиденциальности</string>
+    <string name="sign_up_accept_legal_documents">Я принимаю Условия использования и прочитал(а) Политику конфиденциальности</string>
     <string name="sign_up_privacy_policy_link">Политику конфиденциальности</string>
     <string name="sign_up_terms_of_service_link">Условия использования</string>
     <string name="sign_up_legal_loading">Загрузка юридических документов…</string>
@@ -61,7 +61,9 @@
     <string name="verify_email_change_success">Эл. почта изменена.</string>
     <string name="verify_email_change_email_taken">Эта эл. почта уже используется другим аккаунтом. Укажите другую эл. почту.</string>
     <string name="telegram_sign_in_progress">Выполняем вход через Telegram…</string>
-    <string name="telegram_sign_in_legal_prompt">Добро пожаловать в BookkMe. Чтобы создать аккаунт, ознакомьтесь с документами ниже и примите их.</string>
+    <string name="telegram_sign_in_welcome_title">Добро пожаловать в BookkMe</string>
+    <string name="telegram_sign_in_legal_prompt">Записывайтесь в места, куда вы ходите, прямо в Telegram.</string>
+    <string name="telegram_sign_in_legal_section">Перед началом</string>
     <string name="telegram_sign_in_continue">Создать аккаунт</string>
     <string name="telegram_sign_in_retry">Повторить</string>
     <string name="telegram_sign_in_expired">Сеанс истёк. Закройте мини-приложение и откройте его снова.</string>

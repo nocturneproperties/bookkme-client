@@ -22,3 +22,8 @@ fun businessDataModule() = module {
         arrayOf(BusinessLinkDataSource::class, LogOutAction::class)
     singleOf(::CommonPluginDataSource) binds arrayOf(PluginDataSource::class, LogOutAction::class)
 }
+
+fun clientBusinessDataModule() = module {
+    singleOf(::CommonBusinessDataSource) binds
+        arrayOf(BusinessDataSource::class, LogOutAction::class)
+}

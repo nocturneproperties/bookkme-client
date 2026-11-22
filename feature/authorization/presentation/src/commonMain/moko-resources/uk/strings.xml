@@ -32,7 +32,7 @@
     <string name="troubleshoot_passkey_missing">Ключі доступу відсутні або недоступні</string>
     <string name="troubleshoot_passkey_missing_description">Якщо у вашому обліковому записі є ключі доступу, але під час входу ключ не пропонується, переконайтеся, що на пристрої з ключем увімкнено блокування екрана. Якщо блокування екрана вимкнено, ви не зможете використовувати ключ доступу на цьому пристрої, доки знову його не ввімкнете. \nВи можете відновити ключ доступу через свого постачальника облікових даних, наприклад Google або Apple.</string>
     <string name="troubleshoot_contact_support_button">Звʼязатися з підтримкою</string>
-    <string name="sign_up_accept_legal_documents">Я приймаю Умови використання та підтверджую, що прочитав(-ла) Політику конфіденційності</string>
+    <string name="sign_up_accept_legal_documents">Я приймаю Умови використання та прочитав(-ла) Політику конфіденційності</string>
     <string name="sign_up_privacy_policy_link">Політику конфіденційності</string>
     <string name="sign_up_terms_of_service_link">Умови використання</string>
     <string name="sign_up_legal_loading">Завантаження юридичних документів…</string>
@@ -61,7 +61,9 @@
     <string name="verify_email_change_success">Ел. пошту змінено.</string>
     <string name="verify_email_change_email_taken">Ця ел. пошта вже використовується іншим обліковим записом. Вкажіть іншу ел. пошту.</string>
     <string name="telegram_sign_in_progress">Виконуємо вхід через Telegram…</string>
-    <string name="telegram_sign_in_legal_prompt">Ласкаво просимо до BookkMe. Щоб створити обліковий запис, ознайомтеся з документами нижче та прийміть їх.</string>
+    <string name="telegram_sign_in_welcome_title">Ласкаво просимо до BookkMe</string>
+    <string name="telegram_sign_in_legal_prompt">Записуйтеся до місць, куди ви ходите, просто в Telegram.</string>
+    <string name="telegram_sign_in_legal_section">Перед початком</string>
     <string name="telegram_sign_in_continue">Створити обліковий запис</string>
     <string name="telegram_sign_in_retry">Спробувати ще раз</string>
     <string name="telegram_sign_in_expired">Сеанс закінчився. Закрийте мініпрограму та відкрийте її знову.</string>

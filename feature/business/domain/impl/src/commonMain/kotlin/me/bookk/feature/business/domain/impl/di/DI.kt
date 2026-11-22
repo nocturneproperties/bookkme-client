@@ -10,6 +10,7 @@ import me.bookk.feature.business.domain.api.StartBusinessDataExport
 import me.bookk.feature.business.domain.api.business.CanEditBusiness
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
+import me.bookk.feature.business.domain.api.business.GetBusinesses
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessIdChanges
@@ -31,6 +32,7 @@ import me.bookk.feature.business.domain.impl.business.CanEditBusinessImpl
 import me.bookk.feature.business.domain.impl.business.CreateBusinessImpl
 import me.bookk.feature.business.domain.impl.business.DashboardBusinessDataFetch
 import me.bookk.feature.business.domain.impl.business.GetAvailableDashboardFeaturesImpl
+import me.bookk.feature.business.domain.impl.business.GetBusinessesImpl
 import me.bookk.feature.business.domain.impl.business.JoinBusinessImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessChangesImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessIdChangesImpl
@@ -73,4 +75,8 @@ fun businessDomainModule() = module {
     factoryOf(::CanEditBusinessImpl) bind CanEditBusiness::class
     factoryOf(::GetBusinessLinkImpl) bind GetBusinessLink::class
     factoryOf(::SetBusinessLinkImpl) bind SetBusinessLink::class
+}
+
+fun clientBusinessDomainModule() = module {
+    factoryOf(::GetBusinessesImpl) bind GetBusinesses::class
 }

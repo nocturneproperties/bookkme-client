@@ -1,7 +1,6 @@
 package me.bookk.client.pages
 
 import androidx.compose.runtime.Composable
-import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -50,7 +49,6 @@ fun IndexPage() {
     )
     Column(
         TelegramPageStyle.toModifier(),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         TelegramMiniApp()

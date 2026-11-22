@@ -12,10 +12,21 @@ object AppointmentRouting {
             val parent: Api = Api(),
         ) {
 
-            @Resource("/enabled")
-            class Enabled(
+            @Resource("/upcoming")
+            class Upcoming(
                 val parent: Appointment = Appointment(),
             )
+
+            @Resource("/businesses")
+            class SavedBusinesses(
+                val parent: Appointment = Appointment(),
+            ) {
+                @Resource("/{businessId}")
+                class Id(
+                    val parent: SavedBusinesses = SavedBusinesses(),
+                    val businessId: Uuid,
+                )
+            }
 
             @Resource("/instant")
             class Instant(

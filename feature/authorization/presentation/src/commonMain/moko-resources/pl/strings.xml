@@ -32,7 +32,7 @@
     <string name="troubleshoot_passkey_missing">Brakujące lub niedostępne klucze dostępu</string>
     <string name="troubleshoot_passkey_missing_description">Jeśli masz klucze dostępu na koncie, ale podczas logowania nie jest proponowany żaden klucz, upewnij się, że na urządzeniu z kluczem włączona jest blokada ekranu. Jeśli blokada ekranu jest wyłączona, nie będzie można użyć klucza dostępu na tym urządzeniu, dopóki ponownie jej nie włączysz. \nKlucz dostępu możesz odzyskać u swojego dostawcy danych logowania, np. Google lub Apple.</string>
     <string name="troubleshoot_contact_support_button">Skontaktuj się z pomocą techniczną</string>
-    <string name="sign_up_accept_legal_documents">Akceptuję Warunki korzystania i potwierdzam, że przeczytałem(-am) Politykę prywatności</string>
+    <string name="sign_up_accept_legal_documents">Akceptuję Warunki korzystania i przeczytałem(-am) Politykę prywatności</string>
     <string name="sign_up_privacy_policy_link">Politykę prywatności</string>
     <string name="sign_up_terms_of_service_link">Warunki korzystania</string>
     <string name="sign_up_legal_loading">Ładowanie dokumentów prawnych…</string>
@@ -61,7 +61,9 @@
     <string name="verify_email_change_success">Adres e-mail został zmieniony.</string>
     <string name="verify_email_change_email_taken">Ten adres e-mail jest już używany przez inne konto. Użyj innego adresu e-mail.</string>
     <string name="telegram_sign_in_progress">Logujemy Cię przez Telegram…</string>
-    <string name="telegram_sign_in_legal_prompt">Witamy w BookkMe. Aby utworzyć konto, zapoznaj się z poniższymi dokumentami i zaakceptuj je.</string>
+    <string name="telegram_sign_in_welcome_title">Witamy w BookkMe</string>
+    <string name="telegram_sign_in_legal_prompt">Umawiaj wizyty w miejscach, które odwiedzasz, bezpośrednio w Telegramie.</string>
+    <string name="telegram_sign_in_legal_section">Zanim zaczniesz</string>
     <string name="telegram_sign_in_continue">Utwórz konto</string>
     <string name="telegram_sign_in_retry">Spróbuj ponownie</string>
     <string name="telegram_sign_in_expired">Sesja wygasła. Zamknij mini aplikację i otwórz ją ponownie.</string>

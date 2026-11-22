@@ -19,6 +19,13 @@ abstract class AppointmentRequestDao {
     @Query("SELECT * FROM appointment_request WHERE businessId = :businessId")
     abstract fun observeForBusiness(businessId: Uuid): Flow<List<AppointmentRequestLocal>>
 
+    @Transaction
+    @Query("SELECT * FROM appointment_request WHERE status = 'PENDING' ORDER BY date")
+    abstract fun observePending(): Flow<List<AppointmentRequestLocal>>
+
+    @Query("SELECT id FROM appointment_request WHERE status = 'PENDING'")
+    abstract suspend fun getPendingIds(): List<Uuid>
+
     @Query("SELECT id FROM appointment_request WHERE businessId = :businessId")
     abstract suspend fun getIdsForBusiness(businessId: Uuid): List<Uuid>
 

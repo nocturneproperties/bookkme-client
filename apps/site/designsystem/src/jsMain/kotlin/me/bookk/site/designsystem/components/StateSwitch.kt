@@ -6,16 +6,21 @@ import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
+import com.varabyte.kobweb.compose.ui.modifiers.flexShrink
 import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.setVariable
 import com.varabyte.kobweb.silk.components.forms.Checkbox
+import com.varabyte.kobweb.silk.components.forms.CheckboxSize
 import com.varabyte.kobweb.silk.components.forms.CheckboxVars
 import com.varabyte.kobweb.silk.components.forms.Switch
 import com.varabyte.kobweb.silk.components.forms.SwitchVars
+import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.toModifier
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.BooleanState
+import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.site.designsystem.resources.localized
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.themed
@@ -41,6 +46,10 @@ fun StateSwitch(state: BooleanState, modifier: Modifier = Modifier) {
     }
 }
 
+val CheckBoxStyle = CssStyle {
+    cssRule(" > div") { Modifier.flexShrink(0) }
+}
+
 @Composable
 fun CheckBox(state: BooleanState, modifier: Modifier = Modifier) {
     if (!state.isVisible) return
@@ -48,12 +57,37 @@ fun CheckBox(state: BooleanState, modifier: Modifier = Modifier) {
         Checkbox(
             checked = state.isChecked,
             onCheckedChange = { state.onCheckedChange?.invoke(it) },
-            modifier = Modifier.setVariable(CheckboxVars.Spacing, 0.75.cssRem),
+            modifier = checkBoxModifier(),
             enabled = state.isEnabled,
-            borderColor = ColorToken.Divider.themed,
+            size = CheckboxSize.LG,
+            borderColor = checkBoxBorder(state.validationState).themed,
+            uncheckedColor = Colors.Transparent,
+            iconColor = ColorToken.OnAction.themed,
         ) {
             Text(state.text.localized())
         }
         SupportingText(state.supportingTextRes, state.validationState)
+    }
+}
+
+@Composable
+private fun checkBoxModifier(): Modifier {
+    val checkedColor = ColorToken.ButtonActive.themed
+    return CheckBoxStyle
+        .toModifier()
+        .setVariable(CheckboxVars.Spacing, 0.75.cssRem)
+        .setVariable(CheckboxVars.FontSize, 1.cssRem)
+        .setVariable(CheckboxVars.BorderRadius, 0.375.cssRem)
+        .setVariable(CheckboxVars.IconBackgroundColor, checkedColor)
+        .setVariable(CheckboxVars.IconBackgroundHoverColor, checkedColor)
+}
+
+private fun checkBoxBorder(validationState: ValidationState): ColorToken {
+    return if (validationState ==
+        ValidationState.ERROR
+    ) {
+        ColorToken.Error
+    } else {
+        ColorToken.SecondaryText
     }
 }

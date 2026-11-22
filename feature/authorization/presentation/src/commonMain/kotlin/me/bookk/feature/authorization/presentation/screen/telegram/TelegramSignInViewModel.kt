@@ -9,8 +9,10 @@ import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.uistate.clearError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
+import me.bookk.designsystem.uistate.validate
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
@@ -42,7 +44,7 @@ class TelegramSignInViewModel(
             vm.onLegalAcceptanceChanged(checked)
         }
         continueButton.text = AuthRes.strings.telegram_sign_in_continue.desc()
-        continueButton.onClick = weakVMClosure { it.signInWithAcceptedDocuments() }
+        continueButton.onClick = weakVMClosure { it.onContinueClick() }
         retryButton.text = AuthRes.strings.telegram_sign_in_retry.desc()
         retryButton.onClick = weakVMClosure { it.signIn() }
     }
@@ -52,8 +54,11 @@ class TelegramSignInViewModel(
         launchSignIn(acceptedDocuments = null)
     }
 
-    private fun signInWithAcceptedDocuments() {
-        launchSignIn(acceptedDocuments())
+    private fun onContinueClick() {
+        val isAccepted = uiState.legalAcceptance.validate(
+            ACCEPTANCE_REQUIRED.desc().takeUnless { uiState.legalAcceptance.isChecked },
+        )
+        if (isAccepted) launchSignIn(acceptedDocuments())
     }
 
     private fun launchSignIn(acceptedDocuments: AcceptedLegalDocuments?) {
@@ -64,9 +69,7 @@ class TelegramSignInViewModel(
             onStart = { uiState.continueButton.startLoading() },
             call = { signInWithTelegram(initData, acceptedDocuments) },
             onError = ::onSignInFailed,
-            onTerminate = {
-                uiState.continueButton.stopLoading(enable = uiState.legalAcceptance.isChecked)
-            },
+            onTerminate = { uiState.continueButton.stopLoading() },
         )
     }
 
@@ -135,7 +138,7 @@ class TelegramSignInViewModel(
 
     private fun onLegalAcceptanceChanged(checked: Boolean) {
         uiState.legalAcceptance.isChecked = checked
-        uiState.continueButton.isEnabled = checked
+        uiState.legalAcceptance.clearError()
     }
 
     private fun acceptedDocuments(): AcceptedLegalDocuments {
@@ -168,5 +171,6 @@ class TelegramSignInViewModel(
         val UNAVAILABLE = AuthRes.strings.telegram_sign_in_unavailable
         val ACCOUNT_CREATION_FAILED = AuthRes.strings.telegram_sign_in_account_creation_failed
         val LEGAL_LOAD_ERROR = AuthRes.strings.sign_up_legal_load_error
+        val ACCEPTANCE_REQUIRED = AuthRes.strings.sign_up_legal_acceptance_error
     }
 }

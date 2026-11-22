@@ -20,6 +20,8 @@ interface BusinessDataSource {
     suspend fun deleteBusinessesInDb(ids: List<Uuid>)
     suspend fun getBusinessesFromRemote(): UserBusinessInfo
     suspend fun getBusinessById(id: Uuid): Business?
+    suspend fun getBusinessesByIdsFromRemote(ids: Set<Uuid>): List<Business>
+    fun observeBusinessesInDb(ids: Set<Uuid>): Flow<List<Business>>
     suspend fun saveDashboardBusinessId(id: Uuid?)
     fun getDashboardBusinessIdFlow(): Flow<Uuid?>
     fun observeBusinessDBChanges(businessId: Uuid): Flow<Business?>

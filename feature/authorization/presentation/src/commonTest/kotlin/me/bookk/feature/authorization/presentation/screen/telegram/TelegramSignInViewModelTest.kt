@@ -21,6 +21,7 @@ import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
+import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.authorization.domain.api.GetSignUpLegalDocuments
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.domain.entity.AcceptedLegalDocuments
@@ -32,6 +33,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class TelegramSignInViewModelTest {
@@ -146,19 +148,70 @@ class TelegramSignInViewModelTest {
     }
 
     @Test
-    fun `keeps continue disabled until the legal documents are accepted`() = runUnitTest {
+    fun `keeps create account enabled before the legal documents are accepted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.requireLegalAcceptance()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.legalAcceptance.isChecked)
+        assertTrue(sut.uiState.continueButton.isEnabled)
+    }
+
+    @Test
+    fun `asks to accept the legal documents when creating an account without them`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.requireLegalAcceptance()
         val sut = fixture.sut()
-        val disabledBeforeAcceptance = !sut.uiState.continueButton.isEnabled
+
+        whenn()
+        sut.uiState.continueButton.onClick?.invoke()
+
+        then()
+        assertEquals(ValidationState.ERROR, sut.uiState.legalAcceptance.validationState)
+        assertEquals(
+            AuthRes.strings.sign_up_legal_acceptance_error.desc(),
+            sut.uiState.legalAcceptance.supportingTextRes,
+        )
+        verifySuspend(VerifyMode.exactly(1)) { fixture.signInWithTelegram(any(), any()) }
+    }
+
+    @Test
+    fun `clears the acceptance error once the legal documents are accepted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.requireLegalAcceptance()
+        val sut = fixture.sut()
+        sut.uiState.continueButton.onClick?.invoke()
 
         whenn()
         sut.uiState.legalAcceptance.onCheckedChange?.invoke(true)
 
         then()
-        assertTrue(disabledBeforeAcceptance)
         assertTrue(sut.uiState.legalAcceptance.isChecked)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.legalAcceptance.validationState)
+        assertNull(sut.uiState.legalAcceptance.supportingTextRes)
+    }
+
+    @Test
+    fun `keeps create account enabled after a failed account creation`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.signInWithTelegram(any(), any()) } sequentially {
+            throws(SignInWithTelegram.Error.LegalDocumentsNotAccepted())
+            throws(SignInWithTelegram.Error.LegalDocumentVersionUnknown())
+        }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.acceptLegalDocuments()
+
+        then()
+        assertFalse(sut.uiState.continueButton.isLoading)
         assertTrue(sut.uiState.continueButton.isEnabled)
     }
 
@@ -199,7 +252,6 @@ class TelegramSignInViewModelTest {
         assertEquals(TelegramSignInPhase.LEGAL_ACCEPTANCE, sut.uiState.phase)
         assertEquals(AuthRes.strings.sign_up_legal_documents_changed.desc(), sut.uiState.message)
         assertFalse(sut.uiState.legalAcceptance.isChecked)
-        assertFalse(sut.uiState.continueButton.isEnabled)
     }
 
     @Test

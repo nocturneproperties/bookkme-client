@@ -21,6 +21,7 @@ import me.bookk.database.dao.BusinessDataExportDao
 import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.PersonalDataExportDao
+import me.bookk.database.dao.SavedBusinessDao
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.database.entity.AppointmentAdjustmentServiceEntity
 import me.bookk.database.entity.AppointmentEntity
@@ -41,6 +42,7 @@ import me.bookk.database.entity.LegalDocumentStatusEntity
 import me.bookk.database.entity.NotificationSettingsChannelEntity
 import me.bookk.database.entity.NotificationSettingsEntity
 import me.bookk.database.entity.PersonalDataExportEntity
+import me.bookk.database.entity.SavedBusinessEntity
 import me.bookk.database.entity.UserProfileEntity
 
 @Database(
@@ -65,10 +67,12 @@ import me.bookk.database.entity.UserProfileEntity
         AppointmentSettingsDayScheduleEntity::class,
         AppointmentSettingsWorkHourEntity::class,
         AppointmentSettingsDayOffEntity::class,
+        SavedBusinessEntity::class,
     ],
-    version = 2,
+    version = 3,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
     ],
 )
 @ColumnTypeConverters(
@@ -89,6 +93,7 @@ abstract class ClientDatabase :
     abstract override fun personalDataExportDao(): PersonalDataExportDao
     abstract override fun businessDao(): BusinessDao
     abstract override fun businessDataExportDao(): BusinessDataExportDao
+    abstract override fun savedBusinessDao(): SavedBusinessDao
     abstract override fun appointmentDao(): AppointmentDao
     abstract override fun appointmentRequestDao(): AppointmentRequestDao
     abstract override fun appointmentSettingsDao(): AppointmentSettingsDao

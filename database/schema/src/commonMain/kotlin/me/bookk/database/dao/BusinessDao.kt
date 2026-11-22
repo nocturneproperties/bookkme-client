@@ -31,6 +31,10 @@ abstract class BusinessDao {
     abstract fun observeAllBusinesses(): Flow<List<BusinessLocal>>
 
     @Transaction
+    @Query("select * from business where id in (:ids)")
+    abstract fun observeBusinesses(ids: List<Uuid>): Flow<List<BusinessLocal>>
+
+    @Transaction
     @Query(
         "select business.*, exists(select 1 from dashboard_business " +
             "where dashboard_business.businessId = business.id) as isDashboard " +

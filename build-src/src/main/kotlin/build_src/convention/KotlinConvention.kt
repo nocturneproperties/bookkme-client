@@ -43,6 +43,7 @@ private val modulesWithWebTarget = setOf(
     ":feature:business:data",
     ":feature:settings:data",
     ":feature:authorization:presentation",
+    ":feature:dashboard:presentation",
     ":shared:common",
 )
 

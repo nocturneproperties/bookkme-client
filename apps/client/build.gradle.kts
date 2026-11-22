@@ -82,6 +82,11 @@ kotlin {
             implementation(projects.feature.settings.data)
             implementation(projects.feature.authorization.presentation)
             implementation(projects.feature.authorization.domain.api)
+            implementation(projects.feature.appointments.domain.impl)
+            implementation(projects.feature.appointments.data)
+            implementation(projects.feature.business.domain.impl)
+            implementation(projects.feature.business.data)
+            implementation(projects.feature.dashboard.presentation)
             implementation(libs.koin.core)
             implementation(libs.kmm.resources)
             implementation(libs.kobweb.compose.runtime)
@@ -91,6 +96,8 @@ kotlin {
         }
         jsTest.dependencies {
             implementation(projects.core.testFixtures)
+            implementation(projects.feature.appointments.domain.api)
+            implementation(projects.feature.business.domain.api)
             implementation(projects.core.data)
             implementation(projects.core.presentation)
             implementation(projects.feature.authorization.domain.api)

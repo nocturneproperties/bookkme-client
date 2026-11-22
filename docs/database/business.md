@@ -97,6 +97,8 @@ erDiagram
 
 - Written by: [Refresh business info](../operations/business/refresh-business-info.md) (`upsertAllWithChildren`
   for the whole list) and [Update business](../operations/business/update-business.md) (`upsertWithChildren` for one).
+  In the client web app, [Get businesses](../operations/business/get-businesses.md) upserts the businesses the client
+  booked with or saved (`upsertAllWithChildren`, nothing deleted); there `RefreshBusinessInfo` is not installed.
 - Read by: [Observe dashboard business changes](../operations/business/observe-dashboard-business-changes.md)
   (which many features use to scope their lists), [Observe user businesses
   changes](../operations/business/observe-user-businesses-changes.md), [Update business](../operations/business/update-business.md)

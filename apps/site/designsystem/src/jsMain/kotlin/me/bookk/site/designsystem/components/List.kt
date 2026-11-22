@@ -21,7 +21,7 @@ fun <T> List(state: ListState<T>, modifier: Modifier = Modifier, item: @Composab
         val errorState = state.errorState
         val emptyState = state.emptyState
         when {
-            state.isInitialLoading -> LinearProgress()
+            state.isInitialLoading -> InitialLoadingView()
             errorState != null -> ErrorStateView(errorState)
             state.items.isEmpty() && emptyState != null -> EmptyStateView(emptyState)
             else -> ListContent(state, item)

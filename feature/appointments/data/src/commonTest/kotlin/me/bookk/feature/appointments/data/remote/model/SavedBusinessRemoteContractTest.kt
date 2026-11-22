@@ -8,11 +8,11 @@ import me.bookk.core.test.whenn
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class BusinessAppointmentsEnabledRemoteContractTest {
+class SavedBusinessRemoteContractTest {
     @Test
     fun `wire fields match the monolith schema`() = runUnitTest {
         given()
-        val descriptor = BusinessAppointmentsEnabledRemote.serializer().descriptor
+        val descriptor = SavedBusinessRemote.serializer().descriptor
 
         whenn()
         val fields = (0 until descriptor.elementsCount).map {
@@ -21,6 +21,9 @@ class BusinessAppointmentsEnabledRemoteContractTest {
         }
 
         then()
-        assertEquals(listOf("businessId" to 1, "enabled" to 2), fields)
+        assertEquals(
+            listOf("businessId" to 1, "enabled" to 2, "savedAt" to 3, "lastVisitAt" to 4),
+            fields,
+        )
     }
 }

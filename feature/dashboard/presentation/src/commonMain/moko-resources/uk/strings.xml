@@ -44,4 +44,25 @@
     <string name="dashboard_join_error_employees_limit">У цьому бізнесі вже максимальна кількість працівників.</string>
     <string name="create_business_limit_reached_error">Ви вже володієте максимальною кількістю бізнесів.</string>
     <string name="create_business_invalid_name_error">Введіть коректну назву бізнесу.</string>
+    <string name="dashboard_client_home_greeting">Привіт, %s</string>
+    <string name="dashboard_client_home_greeting_default">Привіт</string>
+    <string name="dashboard_client_home_settings">Налаштування</string>
+    <string name="dashboard_client_home_upcoming">Найближчі</string>
+    <string name="dashboard_client_home_all_bookings">Усі записи</string>
+    <string name="dashboard_client_home_no_upcoming">Найближчих записів немає</string>
+    <string name="dashboard_client_home_time_with_specialist">%1$s · майстер %2$s</string>
+    <string name="dashboard_client_home_status_confirmed">Підтверджено</string>
+    <string name="dashboard_client_home_status_waiting">Чекає на підтвердження</string>
+    <string name="dashboard_client_home_book_again">Записатися знову</string>
+    <string name="dashboard_client_home_all_businesses">Усі заклади</string>
+    <string name="dashboard_client_home_last_visit">Останній візит %s</string>
+    <string name="dashboard_client_home_no_visits">Візитів ще не було</string>
+    <string name="dashboard_client_home_not_taking_bookings">Не приймає записів</string>
+    <string name="dashboard_client_home_empty_title">Поки нікуди записатися</string>
+    <string name="dashboard_client_home_empty_body">Сюди потрапляють за посиланням бізнесу. Попросіть посилання у свого салону, барбера чи студії, і ви одразу побачите їхні послуги.</string>
+    <string name="dashboard_client_home_empty_step_link">Відкрийте посилання бізнесу</string>
+    <string name="dashboard_client_home_empty_step_pick">Оберіть послуги та час</string>
+    <string name="dashboard_client_home_empty_step_confirm">Бізнес підтверджує, а ви отримуєте повідомлення тут</string>
+    <string name="dashboard_client_home_save_not_enabled">Цей бізнес поки не приймає записів.</string>
+    <string name="dashboard_client_home_save_limit">Ви зберегли максимальну кількість бізнесів.</string>
 </resources>

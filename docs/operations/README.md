@@ -75,6 +75,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `CreateBusiness` | `POST /api/business`; typed backend errors | [Create business](business/create-business.md) |
 | `UpdateBusiness` | `PUT /api/business/{id}`; Business Settings retention (12–120 months; cache default 36) + inline validation errors | [Update business](business/update-business.md) |
 | `RefreshBusinessInfo` | `GET /api/business/mine`; cache retention defaults to 36 months | [Refresh business info](business/refresh-business-info.md) |
+| `GetBusinesses` | `POST /api/business/bulk` (ids in chunks of 100), saved into `business`; client web app only | [Get businesses](business/get-businesses.md) |
 | `SwitchDashboardBusiness` | `PUT /api/business/{id}/dashboard` (best-effort) | [Switch dashboard business](business/switch-dashboard-business.md) |
 | `JoinBusiness` | via `RedeemEmployeeInvitation` | [Join business](business/join-business.md) |
 | `EnableAppointmentsPlugin` | `POST /api/appointments/enabled/{businessId}` | [Enable appointments plugin](business/enable-appointments-plugin.md) |
@@ -138,7 +139,6 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetBusinessAppointmentRequests` | `GET /api/appointments/request/{businessId}` | [Get business appointment requests](appointments/get-business-appointment-requests.md) |
-| `GetBusinessAppointmentsEnabled` | `GET /api/appointments/enabled` | [Get business appointments enabled](appointments/get-business-appointments-enabled.md) |
 | `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=[&employeeId=]` | [Get appointments for business](appointments/get-appointments-for-business.md) |
 | `GetAppointment` | local read; `refresh(id)` fetches and caches `GET /api/appointments/{id}`; shared `NotFound` → use-case `NotFound` | [Get appointment](appointments/get-appointment.md) |
 | `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}` (paged) | [Get appointment history](appointments/get-appointment-history.md) |
@@ -155,6 +155,9 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `UpdateAppointmentSettings` | `PUT /api/appointments/settings/{businessId}` | [Update appointment settings](appointments/update-appointment-settings.md) |
 | `GetAppointmentOptions` | composes two refreshes | [Get appointment options](appointments/get-appointment-options.md) |
 | `ObserveAppointmentOptions` | local only | [Observe appointment options](appointments/observe-appointment-options.md) |
+| `GetUpcomingBookings` | `GET /api/appointments/upcoming` + `GetBusinesses.refresh` (client web app) | [Get upcoming bookings](appointments/get-upcoming-bookings.md) |
+| `GetSavedBusinesses` | `GET /api/appointments/businesses` + `GetBusinesses.refresh` (client web app) | [Get saved businesses](appointments/get-saved-businesses.md) |
+| `SaveBusiness` | `POST /api/appointments/businesses/{businessId}`, then refreshes the saved list (client web app) | [Save business](appointments/save-business.md) |
 
 ## Settings
 
@@ -197,6 +200,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) | `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` (cross-feature) |
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |
 | [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
+| [Save business](appointments/save-business.md) | `GetSavedBusinesses.refresh` |
+| [Get upcoming bookings](appointments/get-upcoming-bookings.md), [Get saved businesses](appointments/get-saved-businesses.md) | `GetBusinesses.flow`, `GetBusinesses.refresh` (cross-feature, business) |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Create appointment](appointments/create-appointment.md) | `CreateQuote`, `GetServices.refresh` on mismatch, `ObserveUserBusinessesChanges` for the default employee |

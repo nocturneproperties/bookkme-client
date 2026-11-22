@@ -1,7 +1,10 @@
 package me.bookk.client.di
 
+import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.emptyFlow
 import me.bookk.core.data.HttpClientType
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.test.given
@@ -9,16 +12,27 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.database.AccountDaos
+import me.bookk.database.AppointmentDaos
+import me.bookk.database.ClientDaos
+import me.bookk.database.dao.AppointmentDao
+import me.bookk.database.dao.AppointmentRequestDao
+import me.bookk.database.dao.AppointmentSettingsDao
+import me.bookk.database.dao.BusinessDao
+import me.bookk.database.dao.BusinessDataExportDao
 import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.PersonalDataExportDao
+import me.bookk.database.dao.SavedBusinessDao
 import me.bookk.database.dao.UserProfileDao
+import me.bookk.feature.appointments.domain.api.SaveBusiness
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapViewModel
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
+import me.bookk.feature.business.domain.api.business.GetBusinesses
+import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
@@ -39,12 +53,54 @@ class ClientAppTest {
 
     private fun startClientApp() {
         initClientApp()
-        loadKoinModules(module { single<AccountDaos> { FakeAccountDaos() } })
+        loadKoinModules(
+            module {
+                single<AccountDaos> { FakeAccountDaos() }
+                single<ClientDaos> { FakeClientDaos() }
+                single<AppointmentDaos> { FakeAppointmentDaos() }
+            },
+        )
+    }
+
+    private class FakeClientDaos : ClientDaos {
+        override fun businessDao(): BusinessDao {
+            return mock()
+        }
+
+        override fun businessDataExportDao(): BusinessDataExportDao {
+            return mock()
+        }
+
+        override fun savedBusinessDao(): SavedBusinessDao {
+            return mock {
+                every { observeAll() } returns emptyFlow()
+            }
+        }
+    }
+
+    private class FakeAppointmentDaos : AppointmentDaos {
+        override fun appointmentDao(): AppointmentDao {
+            return mock {
+                every { observeScheduled() } returns emptyFlow()
+            }
+        }
+
+        override fun appointmentRequestDao(): AppointmentRequestDao {
+            return mock {
+                every { observePending() } returns emptyFlow()
+            }
+        }
+
+        override fun appointmentSettingsDao(): AppointmentSettingsDao {
+            return mock()
+        }
     }
 
     private class FakeAccountDaos : AccountDaos {
         override fun profileDao(): UserProfileDao {
-            return mock()
+            return mock {
+                every { observeProfile() } returns emptyFlow()
+            }
         }
 
         override fun notificationSettingsDao(): NotificationSettingsDao {
@@ -183,5 +239,42 @@ class ClientAppTest {
 
         then()
         assertNotNull(errorMapper)
+    }
+
+    @Test
+    fun `provides the client home view model for the launch parameter`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<ClientHomeViewModel> { parametersOf("") }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides saving the business a client opened`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val saveBusiness = KoinPlatform.getKoin().getOrNull<SaveBusiness>()
+
+        then()
+        assertNotNull(saveBusiness)
+    }
+
+    @Test
+    fun `provides the business reader the client home names businesses with`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val getBusinesses = KoinPlatform.getKoin().getOrNull<GetBusinesses>()
+
+        then()
+        assertNotNull(getBusinesses)
     }
 }

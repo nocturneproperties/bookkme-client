@@ -359,7 +359,7 @@ class ClientHomeViewModelTest {
     }
 
     @Test
-    fun `renders a saved business with initials and last visit`() = runUnitTest {
+    fun `renders a saved business with its last visit`() = runUnitTest {
         given()
         val fixture = Fixture()
         val lastVisitAt = LocalDate(2026, 11, 12).atStartOfDayIn(TimeZone.currentSystemDefault())
@@ -372,7 +372,6 @@ class ClientHomeViewModelTest {
         then()
         val item = sut.uiState.businesses.items.single()
         assertEquals(business.id.toString(), item.id)
-        assertEquals("SL", item.initials)
         assertEquals("studio lumen", item.name)
         assertEquals(
             DashboardRes.strings.dashboard_client_home_last_visit.format("2026-11-12"),
@@ -411,19 +410,6 @@ class ClientHomeViewModelTest {
             DashboardRes.strings.dashboard_client_home_not_taking_bookings.desc(),
             sut.uiState.businesses.items.single().subtitle,
         )
-    }
-
-    @Test
-    fun `takes initials from a single word name`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = loadedSut(fixture)
-
-        whenn()
-        fixture.businesses.value = listOf(savedBusiness(name = "Barbershop"))
-
-        then()
-        assertEquals("B", sut.uiState.businesses.items.single().initials)
     }
 
     @Test
@@ -560,6 +546,21 @@ class ClientHomeViewModelTest {
         then()
         assertFalse(sut.uiState.hasNoBusiness)
         assertTrue(sut.uiState.hasNoUpcomingBookings)
+    }
+
+    @Test
+    fun `describes an empty upcoming list`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = loadedSut(fixture)
+
+        then()
+        assertEquals(
+            DashboardRes.strings.dashboard_client_home_no_upcoming.desc(),
+            sut.uiState.upcoming.emptyState?.label,
+        )
     }
 
     @Test

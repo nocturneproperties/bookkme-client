@@ -98,7 +98,7 @@ class SensitiveActionHttpTest {
             install(ContentNegotiation) { protobuf(dataSerializer) }
             defaultRequest { contentType(ContentType.Application.ProtoBuf) }
         }
-        val dataSource = CommonAuthorizationDataSource(client, client, fixture.provider)
+        val dataSource = CommonAuthorizationDataSource(client, client, fixture.provider, mock())
 
         whenn()
         val result = try {
@@ -145,7 +145,7 @@ class SensitiveActionHttpTest {
                 install(ContentNegotiation) { protobuf(dataSerializer) }
                 defaultRequest { contentType(ContentType.Application.ProtoBuf) }
             }
-            val dataSource = CommonAuthorizationDataSource(client, client, fixture.provider)
+            val dataSource = CommonAuthorizationDataSource(client, client, fixture.provider, mock())
             val expectedBody = dataSerializer.encodeToByteArray(
                 AccountDeletionBody.serializer(),
                 AccountDeletionBody("delete-account-confirmed"),

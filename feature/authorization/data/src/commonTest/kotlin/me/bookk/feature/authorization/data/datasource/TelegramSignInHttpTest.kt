@@ -86,7 +86,7 @@ class TelegramSignInHttpTest {
             every { provider.get(any()) } returns preferences
         }
 
-        val sut = CommonAuthorizationDataSource(client, client, provider)
+        val sut = CommonAuthorizationDataSource(client, client, provider, mock())
     }
 
     private fun signInData(documents: AcceptedLegalDocuments?) = TelegramSignInData(

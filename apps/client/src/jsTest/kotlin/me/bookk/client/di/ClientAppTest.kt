@@ -14,6 +14,7 @@ import me.bookk.core.test.whenn
 import me.bookk.database.AccountDaos
 import me.bookk.database.AppointmentDaos
 import me.bookk.database.ClientDaos
+import me.bookk.database.DatabaseStorage
 import me.bookk.database.dao.AppointmentDao
 import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.AppointmentSettingsDao
@@ -59,8 +60,15 @@ class ClientAppTest {
                 single<AccountDaos> { FakeAccountDaos() }
                 single<ClientDaos> { FakeClientDaos() }
                 single<AppointmentDaos> { FakeAppointmentDaos() }
+                single<DatabaseStorage> { FakeDatabaseStorage() }
             },
         )
+    }
+
+    private class FakeDatabaseStorage : DatabaseStorage {
+        override suspend fun isPersistent(): Boolean {
+            return true
+        }
     }
 
     private class FakeClientDaos : ClientDaos {

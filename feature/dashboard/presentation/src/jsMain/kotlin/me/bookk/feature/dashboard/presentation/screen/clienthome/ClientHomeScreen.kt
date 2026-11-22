@@ -3,6 +3,7 @@ package me.bookk.feature.dashboard.presentation.screen.clienthome
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.varabyte.kobweb.compose.css.BoxSizing
+import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextAlign
 import com.varabyte.kobweb.compose.css.dvh
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.boxSizing
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flex
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
+import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.margin
@@ -39,13 +41,14 @@ import me.bookk.site.designsystem.components.AppCard
 import me.bookk.site.designsystem.components.BannerErrorView
 import me.bookk.site.designsystem.components.CardButton
 import me.bookk.site.designsystem.components.DateTile
+import me.bookk.site.designsystem.components.EmptyStateView
 import me.bookk.site.designsystem.components.FittingList
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
 import me.bookk.site.designsystem.components.HorizontalDivider
 import me.bookk.site.designsystem.components.IconButton
+import me.bookk.site.designsystem.components.IconTile
 import me.bookk.site.designsystem.components.InitialLoadingView
-import me.bookk.site.designsystem.components.InitialsTile
 import me.bookk.site.designsystem.components.ListRowButton
 import me.bookk.site.designsystem.components.NumberedSteps
 import me.bookk.site.designsystem.components.ObserveNavigation
@@ -153,14 +156,8 @@ private fun UpcomingSection(state: ClientHomeState) {
             DashboardRes.strings.dashboard_client_home_upcoming.desc(),
             state.allBookingsButton,
         )
-        if (state.hasNoUpcomingBookings) {
-            TextBlock(
-                DashboardRes.strings.dashboard_client_home_no_upcoming.desc(),
-                BodyMediumTextStyle
-                    .toModifier()
-                    .secondary(),
-            )
-        }
+        val emptyState = state.upcoming.emptyState
+        if (state.hasNoUpcomingBookings && emptyState != null) EmptyStateView(emptyState)
         ListContent(state.upcoming) { bookings ->
             FittingList(bookings, Modifier.gap(0.5.cssRem)) { visibleBookings ->
                 visibleBookings.forEach { UpcomingBookingCard(it) }
@@ -212,6 +209,7 @@ private fun SavedBusinessesCard(businesses: List<SavedBusinessItem>) {
     if (businesses.isEmpty()) return
     AppCard(
         Modifier
+            .fillMaxWidth()
             .padding(0.px)
             .gap(0.px),
     ) {
@@ -224,12 +222,13 @@ private fun SavedBusinessesCard(businesses: List<SavedBusinessItem>) {
 @Composable
 private fun SavedBusinessRow(item: SavedBusinessItem, isLast: Boolean) {
     ListRowButton(onClick = item.onClick, modifier = Modifier.fittingItem()) {
-        InitialsTile(item.initials)
+        IconTile(WebDesignSystem.images.material_business)
         Column(Modifier.fillMaxWidth()) {
             TextBlock(
                 item.name.desc(),
                 BodyLargeTextStyle
                     .toModifier()
+                    .fontWeight(FontWeight.Medium)
                     .margin(0.px),
             )
             TextBlock(

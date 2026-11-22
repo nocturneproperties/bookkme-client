@@ -96,6 +96,7 @@ class InitialAppDataFetchImplTest {
 
         init {
             every { authorizationDataSource.getIsAuthorizedFlow() } returns flowOf(true)
+            everySuspend { authorizationDataSource.isDatabasePersistent() } returns true
         }
 
         val sut = InitialAppDataFetchImpl(
@@ -358,6 +359,22 @@ class InitialAppDataFetchImplTest {
 
             then()
             fixture.verifyNoPrivateFetch()
+        }
+
+    @Test
+    fun `timestampProtectedFetch fetches on every start while the database is not persistent`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
+            everySuspend { fixture.authorizationDataSource.isDatabasePersistent() } returns false
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
+            verifySuspend { fixture.firstDataFetch.doOnDataFetch(false) }
         }
 
     @Test

@@ -32,7 +32,6 @@ class UpcomingBookingItem(
 
 class SavedBusinessItem(
     val id: String,
-    val initials: String,
     val name: String,
     val subtitle: StringDesc,
     val onClick: () -> Unit,

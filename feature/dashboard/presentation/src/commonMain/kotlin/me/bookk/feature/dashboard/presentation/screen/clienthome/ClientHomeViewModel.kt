@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
@@ -19,6 +20,7 @@ import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.simple
+import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.appointments.domain.api.GetSavedBusinesses
 import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
 import me.bookk.feature.appointments.domain.api.SaveBusiness
@@ -67,6 +69,10 @@ class ClientHomeViewModel(
         allBookingsButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Bookings)
         }
+        upcoming.emptyState = EmptyState(
+            image = DesignSystem.images.empty,
+            label = DashboardRes.strings.dashboard_client_home_no_upcoming.desc(),
+        )
         allBusinessesButton.text =
             DashboardRes.strings.dashboard_client_home_all_businesses.desc()
         allBusinessesButton.onClick = weakVMClosure {
@@ -148,20 +154,12 @@ class ClientHomeViewModel(
     private fun savedBusinessItem(business: SavedBusiness): SavedBusinessItem {
         return SavedBusinessItem(
             id = business.id.toString(),
-            initials = initials(business.name),
             name = business.name,
             subtitle = savedBusinessSubtitle(business),
             onClick = weakVMClosure {
                 it.uiState.navigation.push(ClientHomeDestinations.Services(business.id))
             },
         )
-    }
-
-    private fun initials(name: String): String {
-        return name.split(' ')
-            .filter { it.isNotBlank() }
-            .take(MAX_INITIALS)
-            .joinToString("") { it.first().uppercase() }
     }
 
     private fun savedBusinessSubtitle(business: SavedBusiness): StringDesc {
@@ -282,6 +280,5 @@ class ClientHomeViewModel(
 
     private companion object {
         const val WEEKDAY_PATTERN = "EEE"
-        const val MAX_INITIALS = 2
     }
 }

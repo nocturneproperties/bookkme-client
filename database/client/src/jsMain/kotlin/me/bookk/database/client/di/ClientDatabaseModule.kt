@@ -3,6 +3,8 @@ package me.bookk.database.client.di
 import me.bookk.database.AccountDaos
 import me.bookk.database.AppointmentDaos
 import me.bookk.database.ClientDaos
+import me.bookk.database.DatabaseStorage
+import me.bookk.database.RoomDatabaseStorage
 import me.bookk.database.client.ClientDatabase
 import me.bookk.database.client.getDatabaseBuilder
 import me.bookk.database.di.accountDaoModule
@@ -17,5 +19,6 @@ fun clientDatabaseModule(): Module {
         includes(accountDaoModule(), clientDaoModule(), appointmentDaoModule())
         single { ClientDatabase.create(getDatabaseBuilder()) } binds
             arrayOf(AccountDaos::class, ClientDaos::class, AppointmentDaos::class)
+        single<DatabaseStorage> { RoomDatabaseStorage(get<ClientDatabase>()) }
     }
 }

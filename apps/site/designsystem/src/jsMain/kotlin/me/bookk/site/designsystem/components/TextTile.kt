@@ -4,11 +4,9 @@ import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextTransform
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
-import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
 import com.varabyte.kobweb.compose.ui.modifiers.color
@@ -17,7 +15,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.fontSize
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.lineHeight
-import com.varabyte.kobweb.compose.ui.modifiers.size
 import com.varabyte.kobweb.compose.ui.modifiers.textTransform
 import com.varabyte.kobweb.compose.ui.modifiers.width
 import com.varabyte.kobweb.compose.ui.toAttrs
@@ -51,25 +48,6 @@ val TextTileAccentStyle = CssStyle.base {
     Modifier
         .color(ColorToken.ActionText.resolve(colorMode.webColors()))
         .fontWeight(FontWeight.Bold)
-}
-
-@Composable
-fun InitialsTile(initials: String, modifier: Modifier = Modifier) {
-    Box(
-        TextTileStyle
-            .toModifier()
-            .size(2.5.cssRem)
-            .attrsModifier { attr("aria-hidden", "true") }
-            .then(modifier),
-        contentAlignment = Alignment.Center,
-    ) {
-        Span(
-            TextTileAccentStyle
-                .toModifier()
-                .fontSize(0.9375.cssRem)
-                .toAttrs(),
-        ) { Text(initials) }
-    }
 }
 
 @Composable

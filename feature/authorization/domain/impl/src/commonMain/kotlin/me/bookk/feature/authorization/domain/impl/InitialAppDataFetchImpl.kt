@@ -50,6 +50,7 @@ internal class InitialAppDataFetchImpl(
     }
 
     private suspend fun isFetchDue(): Boolean {
+        if (!authorizationDataSource.isDatabasePersistent()) return true
         val lastFetchAt = authorizationDataSource.getLastInitialDataFetchAt() ?: return true
         return clock.now() - lastFetchAt >= MIN_FETCH_INTERVAL
     }

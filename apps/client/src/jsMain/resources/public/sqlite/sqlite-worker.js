@@ -30,10 +30,12 @@ let nextStatementId = 0;
 
 async function createDatabaseOpener(instance) {
     if (instance.oo1.OpfsDb) {
+        console.info('SQLite storage: OPFS, shared between tabs.');
         return (fileName) => new instance.oo1.OpfsDb(fileName);
     }
     try {
         const pool = await instance.installOpfsSAHPoolVfs({name: 'bookk-sahpool'});
+        console.info('SQLite storage: OPFS SAH pool, this tab only (page is not cross-origin isolated).');
         return (fileName) => new pool.OpfsSAHPoolDb('/' + fileName);
     } catch (error) {
         console.warn('SQLite OPFS storage is unavailable, using an in-memory database.', error);

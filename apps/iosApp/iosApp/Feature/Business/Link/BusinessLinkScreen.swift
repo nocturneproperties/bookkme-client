@@ -34,7 +34,7 @@ struct BusinessLinkContent: View {
         List {
             description
             nameSection
-            actionsSection
+            changeNote
         }
         .listStyle(.automatic)
         .refreshable { await state.refresh.impl().awaitRefresh() }
@@ -53,10 +53,17 @@ struct BusinessLinkContent: View {
 
     private var nameSection: some View {
         Section {
-            StateTextField(state.name)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .textFieldStyle(.inList)
+            HStack(spacing: 8) {
+                StateTextField(state.name)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .textFieldStyle(.inList)
+                if state.share.isVisible {
+                    TextButton(state.share)
+                        .buttonStyle(.textAction)
+                        .fixedSize()
+                }
+            }
         } header: {
             Text(BusinessRes.strings().business_link_name_label.desc().localized())
                 .textCase(nil)
@@ -73,13 +80,8 @@ struct BusinessLinkContent: View {
         }
     }
 
-    private var actionsSection: some View {
+    private var changeNote: some View {
         Section {
-            if state.share.isVisible {
-                TextButton(state.share)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-            }
         } footer: {
             Text(BusinessRes.strings().business_link_change_note.desc().localized())
         }

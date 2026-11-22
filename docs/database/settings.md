@@ -86,7 +86,7 @@ no user-profile FK or preferences marker. `BusinessDatabase` schema 25 adds this
 `AutoMigration(24, 25)`; existing tables and rows are preserved. `ClientDatabase` has it since version 1. Domain mapping stays in the settings data module.
 
 The JSON export payload is stored as one UTF-8 file at
-`personal_data_exports/<requestedAt>-<expiresAt>/bookk-personal-data.json` in the app cache (epoch
+`personal_data_exports/<requestedAt>-<expiresAt>/bookkme-personal-data.json` in the app cache (epoch
 milliseconds), not in Room or preferences. `DownloadPersonalDataExport` reuses the file matching the
 current READY export or downloads and saves JSON through separate datasource calls; `saveFile()`
 clears the directory first, so only one export is kept. The cache survives screen recreation; OS

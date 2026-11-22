@@ -52,7 +52,7 @@ class CommonFileProviderTest {
 
     private class Fixture {
         val directory =
-            FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "bookk-file-provider-test-${Uuid.random()}"
+            FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "bookkme-file-provider-test-${Uuid.random()}"
         val fileSystem = FailingFileSystem()
         val sut = object : CommonFileProvider(fileSystem) {
             override fun touchPrefsFile(fileName: String): Path {

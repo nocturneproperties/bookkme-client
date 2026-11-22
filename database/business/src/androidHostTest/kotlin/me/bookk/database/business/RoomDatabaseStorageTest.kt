@@ -39,7 +39,7 @@ class RoomDatabaseStorageTest {
     @Test
     fun `reports a file database as persistent`() = runUnitTest {
         given()
-        val directory = Files.createTempDirectory("bookk-storage-test").toFile()
+        val directory = Files.createTempDirectory("bookkme-storage-test").toFile()
         directory.deleteOnExit()
         val database = Room.databaseBuilder<BusinessDatabase>(
             name = File(directory, "storage.db").absolutePath,

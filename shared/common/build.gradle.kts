@@ -44,7 +44,7 @@ kotlin {
     }
 }
 
-val proxyUrl = findLocalProperty("bookk.proxyUrl").orEmpty()
+val proxyUrl = findLocalProperty("bookkme.proxyUrl").orEmpty()
 
 buildkonfig {
     packageName = "me.bookk.shared.common"

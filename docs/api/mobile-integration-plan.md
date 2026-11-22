@@ -324,7 +324,7 @@ Implemented:
   explicit retry or refresh. One stable launch key excludes overlapping reads, confirmations and
   downloads; presentation flags are not used as concurrency guards.
 - The download use case caches successful JSON as one file,
-  `personal_data_exports/<requestedAt>-<expiresAt>/bookk-personal-data.json`, and returns its path.
+  `personal_data_exports/<requestedAt>-<expiresAt>/bookkme-personal-data.json`, and returns its path.
   Further presses reuse the file, including after screen recreation. New export requests, refreshes
   returning a non-downloadable status and logout clear the directory; saving a new file replaces the
   previous one. Other export directories are unaffected. Failed downloads remain retryable through the

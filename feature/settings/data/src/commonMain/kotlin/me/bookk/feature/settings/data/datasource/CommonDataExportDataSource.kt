@@ -87,6 +87,6 @@ internal class CommonDataExportDataSource(
     }
 
     private companion object {
-        const val FILE_NAME = "bookk-personal-data.json"
+        const val FILE_NAME = "bookkme-personal-data.json"
     }
 }

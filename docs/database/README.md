@@ -51,6 +51,16 @@ holds the account tables from [Authorization](authorization.md) and [Settings](s
 
 ## Conventions
 
+- **Storage and other tabs (`ClientDatabase`).** `DatabaseStorage` (`:database:schema`, bound by both database
+  modules) reports whether the main database is a file (`pragma_database_list`); the web worker falls back to an
+  in-memory database when it gets no OPFS storage, and `InitialAppDataFetch` then fetches on every start. Room
+  tracks changes with `TEMP` triggers on its own connection, so it never sees a commit another tab makes to the
+  shared OPFS file. The worker posts `changed` on the `bookkme-db-changes` `BroadcastChannel` once a write is
+  committed, and `CrossTabInvalidation` (`:database:client` `jsMain`, started when the database is created) runs
+  `ExternalChangeInvalidator`: when `PRAGMA data_version` moved (another connection committed), it sets
+  `room_table_modification_log.invalidated = 1` and calls `invalidationTracker.refreshAsync()`, so every observed
+  `flow()` re-queries. `ExternalChangeInvalidatorTest` (two Room instances on one file) pins Room's internal table
+  name.
 - **Version and migrations.** Each database has its own version and migration history. `BusinessDatabase` is
   at `version = 27`; it kept the schema history of the former single `AppDatabase` (same file, same schema), so
   the split needed no migration. `ClientDatabase` is at `version = 3`: 1 held the account tables, the additive 1 → 2 auto-migration adds the business and appointment tables, and the additive 2 → 3 auto-migration adds `saved_business`. Moving entities into `:database:schema` changed no table, so `BusinessDatabase` stayed at 26.

@@ -215,7 +215,7 @@ class CommonBusinessDataExportCacheTest {
             val key = "${fixture.ready.requestedAt?.toEpochMilliseconds()}-" +
                 "${fixture.ready.expiresAt?.toEpochMilliseconds()}"
             val expected = fixture.files.touchCacheFile("business_data_exports") /
-                fixture.first.toString() / key / "bookk-business-data.json"
+                fixture.first.toString() / key / "bookkme-business-data.json"
             assertEquals(expected, result)
             assertEquals("{\"records\":[]}", fixture.files.files[expected])
         }

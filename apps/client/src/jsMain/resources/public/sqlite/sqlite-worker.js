@@ -23,6 +23,8 @@ let sqlite3 = null;
 let openDatabase = null;
 
 const databases = new Map();
+const databasesWithPendingWrites = new Set();
+const databaseChanges = new BroadcastChannel('bookkme-db-changes');
 const statements = new Map();
 
 let nextDatabaseId = 0;
@@ -34,7 +36,7 @@ async function createDatabaseOpener(instance) {
         return (fileName) => new instance.oo1.OpfsDb(fileName);
     }
     try {
-        const pool = await instance.installOpfsSAHPoolVfs({name: 'bookk-sahpool'});
+        const pool = await instance.installOpfsSAHPoolVfs({name: 'bookkme-sahpool'});
         console.info('SQLite storage: OPFS SAH pool, this tab only (page is not cross-origin isolated).');
         return (fileName) => new pool.OpfsSAHPoolDb('/' + fileName);
     } catch (error) {
@@ -102,10 +104,20 @@ function stepRequest(id, requestData) {
             }
             resultData.rows.push(statement.get([]));
         }
+        announceCommittedWrites(statement);
         postMessage({'id': id, data: resultData});
     } catch (error) {
         postMessage({'id': id, error: error.message});
     }
+}
+
+function announceCommittedWrites(statement) {
+    const database = statement.db;
+    if (!statement.isReadOnly()) databasesWithPendingWrites.add(database);
+    if (!databasesWithPendingWrites.has(database)) return;
+    if (!sqlite3.capi.sqlite3_get_autocommit(database.pointer)) return;
+    databasesWithPendingWrites.delete(database);
+    databaseChanges.postMessage('changed');
 }
 
 function closeRequest(id, requestData) {

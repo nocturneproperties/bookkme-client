@@ -2,6 +2,7 @@ package me.bookk.database
 
 import androidx.room3.RoomDatabase
 import androidx.room3.useReaderConnection
+import androidx.sqlite.async.step
 
 interface DatabaseStorage {
     suspend fun isPersistent(): Boolean

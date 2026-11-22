@@ -161,7 +161,7 @@ explicitly instead (lost ownership and logout).
 - Cleared on logout: yes (`businessDataExportDao.clear()` and the whole `business_data_exports/` directory).
 
 The JSON export payload is stored as one UTF-8 file per business at
-`business_data_exports/<businessId>/<requestedAt>-<expiresAt>/bookk-business-data.json` in the app cache
+`business_data_exports/<businessId>/<requestedAt>-<expiresAt>/bookkme-business-data.json` in the app cache
 (epoch milliseconds), not in Room or preferences. [Download business data
 export](../operations/business/download-business-data-export.md) reuses the file matching the current READY
 export or downloads and saves it; `saveFile()` clears that business's directory first, so one file per

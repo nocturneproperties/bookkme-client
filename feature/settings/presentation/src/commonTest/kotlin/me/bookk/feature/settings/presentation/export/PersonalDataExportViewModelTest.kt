@@ -62,7 +62,7 @@ class PersonalDataExportViewModelTest {
         val cache = FakeExportCache()
         val getExport = FakeGetPersonalDataExport(cache)
         val startExport = FakeStartPersonalDataExport(cache)
-        val file = "/cache/personal_data_exports/1-2/bookk-personal-data.json".toPath()
+        val file = "/cache/personal_data_exports/1-2/bookkme-personal-data.json".toPath()
         val downloadExport = FakeDownloadPersonalDataExport { file }
         val errorMapper = FakeErrorMapper()
 
@@ -1050,7 +1050,7 @@ class PersonalDataExportViewModelTest {
         val sut = fixture.sut()
         sut.uiState.download.onClick?.invoke()
         fixture.cache.value = fixture.ready(expiresAt = fixture.now + 2.days)
-        val updated = "/cache/personal_data_exports/3-4/bookk-personal-data.json".toPath()
+        val updated = "/cache/personal_data_exports/3-4/bookkme-personal-data.json".toPath()
         fixture.downloadExport.file = { updated }
 
         whenn()

@@ -11,6 +11,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.room.runtime)
+            implementation(libs.room.sqlite.async)
         }
     }
 }

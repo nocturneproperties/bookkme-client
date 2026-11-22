@@ -52,7 +52,13 @@ internal class InitialAppDataFetchImpl(
     private suspend fun isFetchDue(): Boolean {
         if (!authorizationDataSource.isDatabasePersistent()) return true
         val lastFetchAt = authorizationDataSource.getLastInitialDataFetchAt() ?: return true
-        return clock.now() - lastFetchAt >= MIN_FETCH_INTERVAL
+        if (clock.now() - lastFetchAt >= MIN_FETCH_INTERVAL) return true
+        return isSignedInWithoutProfile()
+    }
+
+    private suspend fun isSignedInWithoutProfile(): Boolean {
+        return authorizationDataSource.getIsAuthorizedFlow().first() &&
+            userProfileCRUD.observe().first() == null
     }
 
     private companion object {

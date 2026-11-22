@@ -206,7 +206,7 @@ class CommonPersonalDataExportCacheTest {
         val key = "${fixture.ready.requestedAt?.toEpochMilliseconds()}-" +
             "${fixture.ready.expiresAt?.toEpochMilliseconds()}"
         val expected = fixture.files.touchCacheFile("personal_data_exports") / key /
-            "bookk-personal-data.json"
+            "bookkme-personal-data.json"
         assertEquals(expected, result)
         assertEquals("{\"records\":[]}", fixture.files.files[expected])
     }

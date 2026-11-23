@@ -23,7 +23,7 @@ let sqlite3 = null;
 let openDatabase = null;
 
 const databases = new Map();
-const databasesWithPendingWrites = new Set();
+const announcedTotalChanges = new Map();
 const databaseChanges = new BroadcastChannel('bookkme-db-changes');
 const statements = new Map();
 
@@ -113,10 +113,10 @@ function stepRequest(id, requestData) {
 
 function announceCommittedWrites(statement) {
     const database = statement.db;
-    if (!statement.isReadOnly()) databasesWithPendingWrites.add(database);
-    if (!databasesWithPendingWrites.has(database)) return;
     if (!sqlite3.capi.sqlite3_get_autocommit(database.pointer)) return;
-    databasesWithPendingWrites.delete(database);
+    const totalChanges = sqlite3.capi.sqlite3_total_changes(database.pointer);
+    if (totalChanges === (announcedTotalChanges.get(database) ?? 0)) return;
+    announcedTotalChanges.set(database, totalChanges);
     databaseChanges.postMessage('changed');
 }
 
@@ -186,6 +186,8 @@ onmessage = (e) => {
         handleMessage(e);
     }
 };
+
+globalThis.sqlite3ApiConfig = {disable: {vfs: {'opfs-wl': true}}};
 
 sqlite3InitModule().then(async instance => {
     sqlite3 = instance;

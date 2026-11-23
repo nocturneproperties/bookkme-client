@@ -45,6 +45,9 @@
     <string name="common_from">С</string>
     <string name="common_to">До</string>
     <string name="common_min">мин.</string>
+    <string name="common_duration_minutes">%1$d мин</string>
+    <string name="common_duration_hours">%1$d ч</string>
+    <string name="common_duration_hours_minutes">%1$d ч %2$d мин</string>
 
     <string name="schedule_title">Расписание</string>
     <string name="schedule_add_working_time">Добавить рабочее время</string>

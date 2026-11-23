@@ -14,7 +14,6 @@ import me.bookk.site.designsystem.uistate.WebOptionsMultiPickerState
 internal class WebBookingServicesState : BookingServicesState {
     override val appBar = WebAppBarState()
     override var businessName: StringDesc? by mutableStateOf(null)
-    override var businessInitials: String by mutableStateOf("")
     override val groups = WebListState<ServiceGroupItem>()
     override val services = WebOptionsMultiPickerState<ServiceOption>()
     override val continueButton = WebButtonState()

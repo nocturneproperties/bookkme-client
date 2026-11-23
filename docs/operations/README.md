@@ -40,6 +40,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 - [Employees](#employees)
 - [Appointments](#appointments)
 - [Settings](#settings)
+- [Booking](#booking)
 - [Use cases composed of other use cases](#use-cases-composed-of-other-use-cases)
 - [Known issues found while documenting](#known-issues-found-while-documenting)
 
@@ -183,6 +184,17 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `CreateNewPasskey` | `GET /api/auth/passkey/add/challenge`, `POST /api/auth/passkey/add/finish`; typed backend errors | [Create new passkey](settings/create-new-passkey.md) |
 | `DeleteAccount` | Action confirmation + `DELETE /api/auth/account`; typed backend errors | [Delete account](settings/delete-account.md) |
 
+## Booking
+
+The client web app's booking flow. Booking presentation depends only on these use cases; they wrap the business and
+services use cases and keep the services the client approved per business in memory.
+
+| Use case | Network | Diagram |
+|---|---|---|
+| `GetBookingCatalog` | via `GetBusinesses` (`POST /api/business/bulk`) and `GetBusinessServices` (`GET /api/business/{businessId}/service`), refreshed in parallel; available services only | [Get booking catalog](booking/get-booking-catalog.md) |
+| `GetBookingPreparation` | local only: in-memory approved services per business (`InMemoryBookingPreparationDataSource`, cleared on logout) matched against `GetBusinessServices.flow` | [Get booking preparation](booking/get-booking-preparation.md) |
+| `SetBookingServices` | local only: replaces the business's in-memory services with the ones approved on Continue | [Set booking services](booking/set-booking-services.md) |
+
 ## Use cases composed of other use cases
 
 | Use case | Calls |
@@ -214,6 +226,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | [Update employee](employees/update-employee.md) | `IsBusinessOwner` |
 | [Is business owner](employees/is-business-owner.md), [Get settings](settings/get-settings.md), [Edit profile](settings/edit-profile.md), [Get notification settings](settings/get-notification-settings.md) | `UserProfileCRUD` |
 | [Create new passkey](settings/create-new-passkey.md) | `GetAvailablePasskeys` |
+| [Get booking catalog](booking/get-booking-catalog.md) | `GetBusinesses.flow`/`refresh` (business), `GetBusinessServices.flow`/`refresh` (services) (cross-feature wrapper) |
+| [Get booking preparation](booking/get-booking-preparation.md) | `GetBusinessServices.flow` (cross-feature) |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
 | [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut` |
 | [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |

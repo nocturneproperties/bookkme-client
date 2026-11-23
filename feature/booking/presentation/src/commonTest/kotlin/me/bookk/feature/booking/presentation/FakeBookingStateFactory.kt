@@ -21,7 +21,6 @@ class FakeBookingStateFactory : BookingStateFactory {
 class FakeBookingServicesState : BookingServicesState {
     override val appBar = FakeAppBarState()
     override var businessName: StringDesc? = null
-    override var businessInitials: String = ""
     override val groups = FakeListState<ServiceGroupItem>()
     override val services = FakeOptionsMultiPickerState<ServiceOption>()
     override val continueButton = FakeButtonState()

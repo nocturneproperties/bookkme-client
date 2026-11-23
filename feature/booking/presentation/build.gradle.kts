@@ -15,9 +15,7 @@ kotlin {
             implementation(projects.core.presentation)
             implementation(projects.designsystem)
             implementation(projects.library.money)
-            implementation(projects.feature.business.domain.api)
-            implementation(projects.feature.services.domain.api)
-            implementation(projects.feature.appointments.domain.api)
+            implementation(projects.feature.booking.domain.api)
         }
         jsMain.dependencies {
             implementation(projects.site.designsystem)

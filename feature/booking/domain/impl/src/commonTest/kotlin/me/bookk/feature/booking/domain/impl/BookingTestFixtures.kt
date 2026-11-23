@@ -1,0 +1,97 @@
+package me.bookk.feature.booking.domain.impl
+
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import kotlinx.datetime.TimeZone
+import library.money.api.Currency
+import library.money.api.Money
+import me.bookk.feature.booking.domain.api.entity.BookingService
+import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
+import me.bookk.feature.booking.domain.datasource.BookingSelection
+import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessPermissions
+import me.bookk.feature.business.domain.api.entity.ResourcePermission
+import me.bookk.feature.business.domain.api.entity.WorkingSchedule
+import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
+import me.bookk.feature.services.domain.api.service.entity.Service
+import kotlin.time.Duration
+import kotlin.time.Instant
+import kotlin.uuid.Uuid
+
+internal class FakeBookingPreparationDataSource : BookingPreparationDataSource {
+    private val selections = MutableStateFlow<Map<Uuid, BookingSelection>>(emptyMap())
+
+    fun selectionOf(businessId: Uuid): BookingSelection {
+        return selections.value[businessId] ?: BookingSelection()
+    }
+
+    fun select(businessId: Uuid, vararg services: Pair<Uuid, Int>) {
+        val selected = services.map { (id, quantity) ->
+            BookingSelection.SelectedService(id, quantity)
+        }
+        selections.update { it + (businessId to BookingSelection(selected)) }
+    }
+
+    override fun observeSelection(businessId: Uuid): Flow<BookingSelection> {
+        return selections.map { it[businessId] ?: BookingSelection() }
+    }
+
+    override suspend fun saveSelection(businessId: Uuid, selection: BookingSelection) {
+        selections.update { it + (businessId to selection) }
+    }
+}
+
+internal fun stubGroup(businessId: Uuid, name: String, createdAtMs: Long): ServiceGroup {
+    return ServiceGroup(
+        id = Uuid.random(),
+        businessId = businessId,
+        name = name,
+        createdAt = Instant.fromEpochMilliseconds(createdAtMs),
+    )
+}
+
+internal fun stubService(
+    group: ServiceGroup,
+    name: String,
+    duration: Duration,
+    priceCents: Long,
+    isAvailable: Boolean = true,
+): Service {
+    return Service(
+        id = Uuid.random(),
+        businessId = group.businessId,
+        group = group,
+        name = name,
+        duration = duration,
+        price = Money(priceCents, Money.SupportedCurrency.UAH),
+        isAvailable = isAvailable,
+        createdAt = Instant.fromEpochMilliseconds(0),
+    )
+}
+
+internal fun Service.toExpectedBookingService(): BookingService {
+    return BookingService(id = id, name = name, duration = duration, price = price)
+}
+
+internal fun stubBusiness(id: Uuid, name: String): Business {
+    return Business(
+        id = id,
+        name = name,
+        description = "",
+        address = "",
+        location = null,
+        currency = Currency("UAH"),
+        timeZone = TimeZone.UTC,
+        socials = emptyMap(),
+        schedule = WorkingSchedule(),
+        permissions = BusinessPermissions(
+            business = ResourcePermission(),
+            employees = ResourcePermission(),
+            clients = ResourcePermission(),
+            services = ResourcePermission(),
+            appointments = ResourcePermission(),
+        ),
+    )
+}

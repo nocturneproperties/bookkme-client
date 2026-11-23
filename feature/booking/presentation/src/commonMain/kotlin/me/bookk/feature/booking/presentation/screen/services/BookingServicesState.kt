@@ -8,12 +8,11 @@ import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.OptionsMultiPickerState
 import me.bookk.designsystem.uistate.PickerPresentation
 import me.bookk.designsystem.uistate.PresentationNotificationState
-import me.bookk.feature.services.domain.api.service.entity.Service
+import me.bookk.feature.booking.domain.api.entity.BookingService
 
 interface BookingServicesState {
     val appBar: AppBarState
     var businessName: StringDesc?
-    var businessInitials: String
     val groups: ListState<ServiceGroupItem>
     val services: OptionsMultiPickerState<ServiceOption>
     val continueButton: ButtonState
@@ -31,5 +30,5 @@ data class ServiceOption(
     override val pickerItemId: String,
     override val displayName: StringDesc,
     val details: StringDesc,
-    val service: Service,
+    val service: BookingService,
 ) : PickerPresentation()

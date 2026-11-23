@@ -10,8 +10,17 @@ import me.bookk.designsystem.uistate.ListState
 import org.jetbrains.compose.web.css.cssRem
 
 @Composable
-fun <T> List(state: ListState<T>, modifier: Modifier = Modifier, item: @Composable (T) -> Unit) {
+fun <T> List(
+    state: ListState<T>,
+    key: (T) -> Any,
+    modifier: Modifier = Modifier,
+    item: @Composable (T) -> Unit,
+) {
     if (!state.isVisible) return
+    val appearance = rememberItemAppearance(
+        isShown =
+        !state.isInitialLoading || state.errorState != null,
+    )
     Column(
         Modifier
             .fillMaxWidth()
@@ -24,15 +33,22 @@ fun <T> List(state: ListState<T>, modifier: Modifier = Modifier, item: @Composab
             errorState != null -> ErrorStateView(errorState)
             state.isInitialLoading -> InitialLoadingView()
             state.items.isEmpty() && emptyState != null -> EmptyStateView(emptyState)
-            else -> ListContent(state, item)
+            else -> ListContent(state, appearance, key, item)
         }
     }
 }
 
 @Composable
-private fun <T> ListContent(state: ListState<T>, item: @Composable (T) -> Unit) {
+private fun <T> ListContent(
+    state: ListState<T>,
+    appearance: ItemAppearance,
+    key: (T) -> Any,
+    item: @Composable (T) -> Unit,
+) {
     state.bannerError?.let { BannerErrorView(it) }
-    state.items.forEach { item(it) }
+    state.items.forEach {
+        AppearingItem(appearance, key(it)) { item(it) }
+    }
     val loadMore = state.loadMore ?: return
     LaunchedEffect(state.items.size) { loadMore() }
 }

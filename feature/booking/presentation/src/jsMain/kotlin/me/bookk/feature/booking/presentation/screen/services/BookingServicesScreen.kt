@@ -50,7 +50,7 @@ internal fun BookingServicesScreen(state: BookingServicesState, webApp: Telegram
     TelegramMainButton(webApp, state.continueButton)
     Column(BookingServicesModifier) {
         state.businessName?.let { BusinessHeader(it, state.businessInitials) }
-        List(state.groups, Modifier.gap(1.25.cssRem)) { group ->
+        List(state.groups, key = { it.id }, Modifier.gap(1.25.cssRem)) { group ->
             OptionsQuantityList(state.services, group.name, group.services) { ServiceRow(it) }
         }
     }

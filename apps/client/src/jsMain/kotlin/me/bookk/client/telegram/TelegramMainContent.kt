@@ -4,12 +4,12 @@ import androidx.compose.runtime.Composable
 import library.telegram.TelegramWebApp
 import me.bookk.client.navigation.ClientScreen
 import me.bookk.core.presentation.navigation.BackStack
-import me.bookk.core.presentation.navigation.BackStackHost
 import me.bookk.core.presentation.navigation.rememberBackStack
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestination
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestinations
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestination
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestinations
+import me.bookk.site.designsystem.components.BackStackHost
 
 @Composable
 internal fun TelegramMainContent(webApp: TelegramWebApp) {

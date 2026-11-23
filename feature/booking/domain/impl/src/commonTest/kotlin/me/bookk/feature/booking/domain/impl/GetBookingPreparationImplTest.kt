@@ -112,4 +112,21 @@ class GetBookingPreparationImplTest {
         then()
         assertEquals(BookingPreparation(emptyList()), preparation)
     }
+
+    @Test
+    fun `carries the specialist picked for the business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val specialistId = Uuid.random()
+        fixture.dataSource.select(businessId, haircut.id to 1, specialistId = specialistId)
+
+        whenn()
+        val preparation = fixture.sut.flow(businessId).first()
+
+        then()
+        assertEquals(
+            BookingPreparation(listOf(prepared(haircut, 1)), specialistId),
+            preparation,
+        )
+    }
 }

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="booking_services_subtitle">Выберите одну или несколько услуг</string>
-    <string name="booking_services_continue">Далее · %1$s · %2$s</string>
-    <string name="booking_services_pick">Выберите услугу</string>
+    <string name="booking_services_title">Выберите услуги.</string>
+    <string name="booking_services_summary">%1$s · %2$s</string>
     <string name="booking_services_empty">У этого бизнеса пока нет услуг для записи</string>
     <string name="booking_services_details">%1$s · %2$s</string>
+    <string name="booking_specialist_title">К кому записаться?</string>
+    <string name="booking_specialist_continue">Продолжить: %s</string>
+    <string name="booking_specialist_empty">Здесь нет никого, кто оказывает все выбранные услуги. Вернитесь и выберите меньше услуг.</string>
 </resources>

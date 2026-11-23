@@ -4,10 +4,13 @@ import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.TextAlign
 import com.varabyte.kobweb.compose.css.Transition
+import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.ColumnScope
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.RowScope
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.border
@@ -32,6 +35,7 @@ import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.ImageResource
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.site.designsystem.resources.WebDesignSystem
+import me.bookk.site.designsystem.theme.resolve
 import me.bookk.site.designsystem.theme.webColors
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.cssRem
@@ -66,6 +70,30 @@ val CardButtonStyle = CssStyle {
     cssRule(":active") { Modifier.scale(BUTTON_PRESSED_SCALE) }
 }
 
+val SelectableCardButtonStyle = CssStyle {
+    base {
+        val colors = colorMode.webColors()
+        PressableBase
+            .backgroundColor(colors.elevated)
+            .color(colors.primaryText)
+            .border(2.px, LineStyle.Solid, Colors.Transparent)
+            .borderRadius(1.cssRem)
+            .padding(topBottom = 1.25.cssRem, leftRight = 0.75.cssRem)
+            .textAlign(TextAlign.Center)
+            .transition(
+                Transition.of("opacity", BUTTON_TRANSITION_MS.ms),
+                Transition.of("scale", BUTTON_TRANSITION_MS.ms),
+                Transition.of("border-color", BUTTON_TRANSITION_MS.ms),
+            )
+    }
+    cssRule(":hover") { Modifier.opacity(PRESSABLE_HOVER_OPACITY) }
+    cssRule(":active") { Modifier.scale(BUTTON_PRESSED_SCALE) }
+}
+
+val SelectableCardButtonSelectedStyle = CssStyle.base {
+    Modifier.border(2.px, LineStyle.Solid, ColorToken.ActionText.resolve(colorMode.webColors()))
+}
+
 val ListRowButtonStyle = CssStyle {
     base {
         PressableBase
@@ -90,6 +118,28 @@ fun CardButton(
             .toAttrs { onClick { onClick() } },
     ) {
         Row(Modifier.fillMaxWidth().gap(0.75.cssRem)) { content() }
+    }
+}
+
+@Composable
+fun SelectableCardButton(
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Button(
+        SelectableCardButtonStyle
+            .toModifier()
+            .then(if (isSelected) SelectableCardButtonSelectedStyle.toModifier() else Modifier)
+            .attrsModifier { attr("aria-pressed", isSelected.toString()) }
+            .then(modifier)
+            .toAttrs { onClick { onClick() } },
+    ) {
+        Column(
+            Modifier.fillMaxWidth().gap(0.75.cssRem),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) { content() }
     }
 }
 

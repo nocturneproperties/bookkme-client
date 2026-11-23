@@ -12,6 +12,7 @@ erDiagram
     BUSINESS ||--o{ CLIENT : "businessId FK"
     BUSINESS ||--o{ EMPLOYEE : "businessId FK"
     BUSINESS ||--o{ EMPLOYEE_INVITATION : "businessId FK"
+    BUSINESS ||--o{ BOOKABLE_EMPLOYEE : "businessId FK (ClientDatabase)"
     BUSINESS ||--o{ SERVICE_GROUP : "businessId FK"
     BUSINESS ||--o{ SERVICE : "businessId FK"
     BUSINESS ||--o| DASHBOARD_BUSINESS : "businessId FK"
@@ -24,6 +25,7 @@ erDiagram
     EMPLOYEE |o..o{ APPOINTMENT : "employeeId (logical, snapshot cols)"
     SERVICE |o..o{ APPOINTMENT : "via appointment_service_snapshot.id"
     SERVICE |o..o{ EMPLOYEE : "via employee_service_snapshot.id"
+    SERVICE |o..o{ BOOKABLE_EMPLOYEE : "via bookable_employee_service.id"
     USER_PROFILE |o..o| NOTIFICATION_SETTINGS : "userId (logical, UK)"
     BUSINESS |o..o| BUSINESS_DATA_EXPORT : "businessId (logical, PK)"
     BUSINESS |o..o| BUSINESS_LINK : "businessId (logical, PK)"
@@ -95,7 +97,7 @@ erDiagram
 ## Cascade consequences
 
 Deleting one `business` row removes all of its clients, employees (and their schedules/snapshots),
-invitations, service groups and services. Its appointments, requests and appointment settings **survive**.
+invitations, service groups and services, and in `ClientDatabase` its bookable employees (and their services and schedules). Its appointments, requests and appointment settings **survive**.
 Business rows are deleted on logout (`businessDao.clear()`), which empties every table anyway, and by
 [Refresh business info](../operations/business/refresh-business-info.md) for businesses missing from
 `GET /api/business/mine` (`businessDao.deleteByIds`), which fires the cascade above and leaves that business's

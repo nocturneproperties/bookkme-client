@@ -5,7 +5,7 @@ There are two on-device Room databases, one per audience. Each app opens exactly
 | Database | Module | File | Platforms | Tables |
 |---|---|---|---|---|
 | `BusinessDatabase` | `:database:business` | `bookk_me.db` | Android, iOS (bundled SQLite driver) | account tables + every business table below |
-| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web, the client web app (SQLite WASM worker, see `apps/client/README.md`) | account tables + `business` (with schedules, `dashboard_business`, `business_data_export`) + `service_group` and `service` + every `appointment*` table + `saved_business` |
+| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web, the client web app (SQLite WASM worker, see `apps/client/README.md`) | account tables + `business` (with schedules, `dashboard_business`, `business_data_export`) + `service_group` and `service` + every `appointment*` table + `saved_business` + `bookable_employee` and its child tables |
 
 Every entity, relation, DAO and type converter lives in `:database:schema` (packages `me.bookk.database.entity`,
 `relation`, `dao`, `converter`), whichever databases hold the table; the database modules hold only the
@@ -13,12 +13,12 @@ Every entity, relation, DAO and type converter lives in `:database:schema` (pack
 (`businessDaoModule()`) for `BusinessDatabase` and `ClientDaos` (`clientDaoModule()`) for `ClientDatabase`. Both
 declare the account DAOs (`profileDao`, `notificationSettingsDao`, `legalDocumentStatusDao`, `personalDataExportDao`),
 `businessDao`, `businessDataExportDao`, `serviceDao`, `serviceGroupDao` and the appointment DAOs (`appointmentDao`,
-`appointmentRequestDao`, `appointmentSettingsDao`); only `BusinessDaos` has `businessLinkDao`, `clientDao`, `employeeDao` and `employeeInvitationDao`, and only `ClientDaos` has `savedBusinessDao`. `business_link`, `client` and the `employee*` tables are therefore in `BusinessDatabase` only, and `saved_business` (the client's saved businesses, written by `appointments/data`) in `ClientDatabase` only.
+`appointmentRequestDao`, `appointmentSettingsDao`); only `BusinessDaos` has `businessLinkDao`, `clientDao`, `employeeDao` and `employeeInvitationDao`, and only `ClientDaos` has `savedBusinessDao` and `bookableEmployeeDao`. `business_link`, `client` and the `employee*` tables are therefore in `BusinessDatabase` only, and `saved_business` (the client's saved businesses, written by `appointments/data`) and the `bookable_employee*` tables (the people a client can book, written by `employees/data`) in `ClientDatabase` only.
 Each database lists the entities it holds in its own `@Database`, implements its interface
 and includes its module, so each database file holds its own copy of the tables, and foreign keys and
 cascades stay inside that database. `BusinessDatabase` implements `BusinessDaos`; `ClientDatabase` implements `ClientDaos`. Data modules depend on `:database:schema` alone and get
-DAOs from Koin, so `authorization/data`, `settings/data`, `business/data`, `appointments/data` and `services/data` run on both
-apps; `clients/data` and `employees/data` are mobile-only. Changing a shared entity changes the schema of every database
+DAOs from Koin, so `authorization/data`, `settings/data`, `business/data`, `appointments/data`, `services/data` and `employees/data` run on both
+apps (the web installs only `employees/data`'s `clientEmployeesDataModule()`); `clients/data` is mobile-only. Changing a shared entity changes the schema of every database
 that lists it, so each one needs its own version bump and migration.
 
 Room generates the DAO implementations (for example `UserProfileDao_Impl` in the DAO package) inside
@@ -39,7 +39,7 @@ holds the account tables from [Authorization](authorization.md) and [Settings](s
 - [Business](business.md): `business`, its schedule tables, `dashboard_business` (the selected business), `business_data_export` and `business_link`
 - [Clients](clients.md): `client`
 - [Services](services.md): `service`, `service_group`
-- [Employees](employees.md): `employee` and its schedule and service snapshot tables, `employee_invitation`
+- [Employees](employees.md): `employee` and its schedule and service snapshot tables, `employee_invitation`; `bookable_employee` and its child tables (`ClientDatabase` only)
 - [Appointments](appointments.md): `appointment`, `appointment_request`, `appointment_settings` and their child tables; `saved_business` (`ClientDatabase` only)
 - [Settings](settings.md): `notification_settings`, `notification_settings_channel`, `legal_document_status`, `personal_data_export`
 - [Whole-database overview](overview.md): real foreign keys compared with logical references
@@ -61,7 +61,7 @@ holds the account tables from [Authorization](authorization.md) and [Settings](s
   name.
 - **Version and migrations.** Each database has its own version and migration history. `BusinessDatabase` is
   at `version = 27`; it kept the schema history of the former single `AppDatabase` (same file, same schema), so
-  the split needed no migration. `ClientDatabase` is at `version = 4`: 1 held the account tables, the additive 1 → 2 auto-migration adds the business and appointment tables, the additive 2 → 3 auto-migration adds `saved_business`, and the additive 3 → 4 auto-migration adds `service_group` and `service` for the Mini App's services step. Moving `service`/`service_group` into `:database:schema` changed no table of `BusinessDatabase`, which stayed at 27. Moving entities into `:database:schema` changed no table, so `BusinessDatabase` stayed at 26.
+  the split needed no migration. `ClientDatabase` is at `version = 5`: 1 held the account tables, the additive 1 → 2 auto-migration adds the business and appointment tables, the additive 2 → 3 auto-migration adds `saved_business`, and the additive 3 → 4 auto-migration adds `service_group` and `service` for the Mini App's services step, and the additive 4 → 5 auto-migration adds `bookable_employee` and its four child tables for the specialist step. Moving `service`/`service_group` into `:database:schema` changed no table of `BusinessDatabase`, which stayed at 27. Moving entities into `:database:schema` changed no table, so `BusinessDatabase` stayed at 26.
   In `BusinessDatabase`, every step from 1 to 22 is a Room `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The manual 22 → 23 migration (`DefaultBusinessRetention`) makes business retention non-null,
   backfills missing values with 36 months and preserves custom periods and dependent rows.
@@ -109,7 +109,8 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `user_profile` | `CommonUserProfileDataSource` | ✅ `profileDao.clear()` |
 | `signup_legal_documents_prefs` (public legal metadata) | No `LogOutAction` binding for `CommonSignUpLegalDocumentsDataSource` | ❌ intentionally retained for cache-only signup |
 | In-memory sign-up session (user data, challenge, attestation, rejection; never persisted) | `InMemorySignUpSessionDataSource` | ✅ `clear()` |
-| In-memory booking preparation (the client web app's approved services per business; never persisted) | `InMemoryBookingPreparationDataSource` | ✅ every business's services |
+| In-memory booking preparation (the client web app's approved services and specialist per business; never persisted) | `InMemoryBookingPreparationDataSource` | ✅ every business's services and specialist |
+| `bookable_employee` (+ 4 child tables; `ClientDatabase` only) | `CommonBookableEmployeeDataSource` (bound by `clientEmployeesDataModule()`, client web app only) | ✅ `bookableEmployeeDao.clear()` (cascades to the child tables) |
 | `client` | `CommonClientsDataSource` | ✅; confirmed deletion also evicts associated appointment/request snapshots |
 | `service` (both databases) | `ServiceDataSourceImpl` | ✅ |
 | `service_group` (both databases) | `ServiceGroupDataSourceImpl` | ✅ (also cascades to `service`) |

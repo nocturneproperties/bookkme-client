@@ -14,6 +14,7 @@ import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
+import me.bookk.feature.employees.domain.api.entity.BookableEmployee
 import me.bookk.feature.services.domain.api.group.entity.ServiceGroup
 import me.bookk.feature.services.domain.api.service.entity.Service
 import kotlin.time.Duration
@@ -27,11 +28,11 @@ internal class FakeBookingPreparationDataSource : BookingPreparationDataSource {
         return selections.value[businessId] ?: BookingSelection()
     }
 
-    fun select(businessId: Uuid, vararg services: Pair<Uuid, Int>) {
+    fun select(businessId: Uuid, vararg services: Pair<Uuid, Int>, specialistId: Uuid? = null) {
         val selected = services.map { (id, quantity) ->
             BookingSelection.SelectedService(id, quantity)
         }
-        selections.update { it + (businessId to BookingSelection(selected)) }
+        selections.update { it + (businessId to BookingSelection(selected, specialistId)) }
     }
 
     override fun observeSelection(businessId: Uuid): Flow<BookingSelection> {
@@ -93,5 +94,21 @@ internal fun stubBusiness(id: Uuid, name: String): Business {
             services = ResourcePermission(),
             appointments = ResourcePermission(),
         ),
+    )
+}
+
+internal fun stubEmployee(
+    businessId: Uuid,
+    name: String,
+    lastName: String,
+    services: List<Service>,
+): BookableEmployee {
+    return BookableEmployee(
+        id = Uuid.random(),
+        businessId = businessId,
+        name = name,
+        lastName = lastName,
+        services = services,
+        schedule = WorkingSchedule(),
     )
 }

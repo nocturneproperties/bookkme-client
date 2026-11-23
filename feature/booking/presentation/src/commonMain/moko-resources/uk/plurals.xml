@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="booking_services_count">
+        <item quantity="one">%d послуга</item>
+        <item quantity="few">%d послуги</item>
+        <item quantity="many">%d послуг</item>
+        <item quantity="other">%d послуги</item>
+    </plurals>
+</resources>

@@ -9,12 +9,14 @@ import me.bookk.designsystem.uistate.OptionsMultiPickerState
 import me.bookk.designsystem.uistate.PickerPresentation
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.feature.booking.domain.api.entity.BookingService
+import me.bookk.feature.booking.presentation.screen.BookingTotal
 
 interface BookingServicesState {
     val appBar: AppBarState
     var businessName: StringDesc?
     val groups: ListState<ServiceGroupItem>
     val services: OptionsMultiPickerState<ServiceOption>
+    var total: BookingTotal?
     val continueButton: ButtonState
     val notifications: PresentationNotificationState
     val navigation: NavigationState<BookingServicesDestinations>

@@ -1,11 +1,15 @@
 package me.bookk.site.designsystem.components
 
 import androidx.compose.runtime.Composable
+import com.varabyte.kobweb.compose.css.BoxSizing
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
+import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
+import com.varabyte.kobweb.compose.ui.modifiers.boxSizing
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
 import com.varabyte.kobweb.compose.ui.modifiers.gap
@@ -21,15 +25,19 @@ import me.bookk.designsystem.uistate.PickerPresentation
 import me.bookk.designsystem.uistate.quantityOf
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.secondary
+import me.bookk.site.designsystem.theme.webColors
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 
 val OptionsQuantityRowStyle = CssStyle.base {
     Modifier
         .fillMaxWidth()
-        .minHeight(4.cssRem)
+        .boxSizing(BoxSizing.BorderBox)
+        .backgroundColor(colorMode.webColors().elevated)
+        .borderRadius(1.cssRem)
+        .minHeight(4.5.cssRem)
         .gap(0.75.cssRem)
-        .padding(top = 0.5.cssRem, right = 0.75.cssRem, bottom = 0.5.cssRem, left = 1.cssRem)
+        .padding(top = 0.75.cssRem, right = 0.75.cssRem, bottom = 0.75.cssRem, left = 1.cssRem)
 }
 
 @Composable
@@ -57,19 +65,11 @@ fun <T : PickerPresentation> OptionsQuantityList(
             .then(modifier),
     ) {
         Header(title)
-        AppCard(
-            Modifier
-                .fillMaxWidth()
-                .padding(0.px)
-                .gap(0.px),
-        ) {
-            OptionsQuantityPlaceholder(state.placeholder, options)
-            val appearance = rememberItemAppearance()
-            options.forEachIndexed { index, option ->
-                AppearingItem(appearance, option.pickerItemId) {
-                    if (index > 0) HorizontalDivider()
-                    OptionsQuantityRow(state, option, itemContent)
-                }
+        OptionsQuantityPlaceholder(state.placeholder, options)
+        val appearance = rememberItemAppearance()
+        options.forEach { option ->
+            AppearingItem(appearance, option.pickerItemId) {
+                OptionsQuantityRow(state, option, itemContent)
             }
         }
     }
@@ -78,13 +78,18 @@ fun <T : PickerPresentation> OptionsQuantityList(
 @Composable
 private fun OptionsQuantityPlaceholder(placeholder: StringDesc?, options: List<*>) {
     if (placeholder == null || options.isNotEmpty()) return
-    TextBlock(
-        placeholder,
-        BodyMediumTextStyle
-            .toModifier()
-            .secondary()
+    AppCard(
+        Modifier
+            .fillMaxWidth()
             .padding(1.cssRem),
-    )
+    ) {
+        TextBlock(
+            placeholder,
+            BodyMediumTextStyle
+                .toModifier()
+                .secondary(),
+        )
+    }
 }
 
 @Composable

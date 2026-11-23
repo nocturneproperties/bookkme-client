@@ -3,6 +3,7 @@ package me.bookk.database
 import me.bookk.database.dao.AppointmentDao
 import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.AppointmentSettingsDao
+import me.bookk.database.dao.BookableEmployeeDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.BusinessDataExportDao
 import me.bookk.database.dao.LegalDocumentStatusDao
@@ -26,4 +27,5 @@ interface ClientDaos {
     fun appointmentDao(): AppointmentDao
     fun appointmentRequestDao(): AppointmentRequestDao
     fun appointmentSettingsDao(): AppointmentSettingsDao
+    fun bookableEmployeeDao(): BookableEmployeeDao
 }

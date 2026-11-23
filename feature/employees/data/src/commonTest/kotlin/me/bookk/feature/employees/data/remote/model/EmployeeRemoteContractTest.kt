@@ -233,4 +233,26 @@ class EmployeeRemoteContractTest {
             fields,
         )
     }
+
+    @Test
+    fun `BookableEmployee field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = BookableEmployeeRemote.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(
+            listOf(
+                "id" to 1,
+                "businessId" to 2,
+                "name" to 3,
+                "lastName" to 4,
+                "services" to 5,
+                "schedule" to 6,
+            ),
+            fields,
+        )
+    }
 }

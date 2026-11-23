@@ -109,3 +109,73 @@ employee, or `null` while the employee is active (`Employee.isSuspended`).
 - Migration notes: 11 → 12 dropped `employee_invitation.email` (`DeleteEmployeeInvitationEmail` spec).
   14 → 15 added the 15 `employee.*Permission*` columns (auto-migration, all `DEFAULT 0`).
   16 → 17 added the nullable `employee.suspendedAt` column (auto-migration).
+
+## Bookable employees (`ClientDatabase` only)
+
+The people a client can book at a business, as `GET /api/business/{businessId}/employee/bookable` returns them:
+name, the services they provide and their schedule, without contacts or permissions. Only the client web app
+keeps them (`bookableEmployeeDao` is in `ClientDaos` alone), written by `CommonBookableEmployeeDataSource`.
+
+```mermaid
+erDiagram
+    BUSINESS ||--o{ BOOKABLE_EMPLOYEE : "can be booked with (CASCADE)"
+    BOOKABLE_EMPLOYEE ||--o{ BOOKABLE_EMPLOYEE_SERVICE : "provides (CASCADE)"
+    BOOKABLE_EMPLOYEE ||--o{ BOOKABLE_EMPLOYEE_DAY_SCHEDULE : "has (CASCADE)"
+    BOOKABLE_EMPLOYEE ||--o{ BOOKABLE_EMPLOYEE_WORKING_TIME : "has (CASCADE)"
+    BOOKABLE_EMPLOYEE ||--o{ BOOKABLE_EMPLOYEE_DAY_OFF : "has (CASCADE)"
+
+    BUSINESS {
+        uuid id PK
+    }
+
+    BOOKABLE_EMPLOYEE {
+        uuid id PK
+        uuid businessId FK "indexed"
+        string name
+        string lastName
+        int position "index in the backend's list, the order flow() emits"
+    }
+
+    BOOKABLE_EMPLOYEE_SERVICE {
+        uuid employeeId PK,FK
+        uuid id PK "logical FK -> service.id (not enforced)"
+        uuid businessId
+        uuid groupId "logical FK -> service_group.id"
+        uuid groupBusinessId
+        string groupName
+        instant groupCreatedAt
+        string name
+        duration duration
+        string priceCurrency
+        long priceValue
+        bool isAvailable
+        instant createdAt
+    }
+
+    BOOKABLE_EMPLOYEE_DAY_SCHEDULE {
+        uuid employeeId PK,FK
+        string dayOfWeek PK
+        bool isActive
+    }
+
+    BOOKABLE_EMPLOYEE_WORKING_TIME {
+        uuid employeeId PK,FK
+        string dayOfWeek PK
+        string from PK
+        string to PK
+    }
+
+    BOOKABLE_EMPLOYEE_DAY_OFF {
+        uuid employeeId PK,FK
+        string start PK
+        string end PK
+    }
+```
+
+- Written by: [Get bookable employees](../operations/employees/get-bookable-employees.md) `refresh()`
+  (`replaceForBusiness`: deletes the business's rows, cascading to the child tables, and inserts the fetched list
+  in one transaction).
+- Read by: `observeEmployees(businessId)`, ordered by `position`.
+- No sync marker: the specialist step treats an empty emission as "not loaded yet" until its first refresh finishes.
+- Cleared on logout: yes (`bookableEmployeeDao.clear()`).
+- Migration notes: added to `ClientDatabase` by the 4 → 5 auto-migration.

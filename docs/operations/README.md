@@ -126,6 +126,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetEmployees` | `GET /api/business/{businessId}/employee` | [Get employees](employees/get-employees.md) |
+| `GetBookableEmployees` | `flow`: Room `bookable_employee` (+ services, schedule; `ClientDatabase` only), in the backend's order; `refresh`: `GET /api/business/{businessId}/employee/bookable` (client web app, any signed-in user), then replaces the business's rows | [Get bookable employees](employees/get-bookable-employees.md) |
 | `GetEmployee` | local only (`employee` tables) | [Get employee](employees/get-employee.md) |
 | `UpdateEmployee` | `PUT /api/business/{businessId}/employee/{id}` + `PUT /api/business/{businessId}/employee/{id}/permissions` (parallel; permissions skipped for the owner) | [Update employee](employees/update-employee.md) |
 | `SetEmployeeSuspension` | `PUT /api/business/{businessId}/employee/{id}/suspension` | [Set employee suspension](employees/set-employee-suspension.md) |
@@ -187,13 +188,15 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 ## Booking
 
 The client web app's booking flow. Booking presentation depends only on these use cases; they wrap the business and
-services use cases and keep the services the client approved per business in memory.
+services (and the employees') use cases and keep what the client approved per business in memory.
 
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetBookingCatalog` | via `GetBusinesses` (`POST /api/business/bulk`) and `GetBusinessServices` (`GET /api/business/{businessId}/service`), refreshed in parallel; available services only | [Get booking catalog](booking/get-booking-catalog.md) |
 | `GetBookingPreparation` | local only: in-memory approved services per business (`InMemoryBookingPreparationDataSource`, cleared on logout) matched against `GetBusinessServices.flow` | [Get booking preparation](booking/get-booking-preparation.md) |
-| `SetBookingServices` | local only: replaces the business's in-memory services with the ones approved on Continue | [Set booking services](booking/set-booking-services.md) |
+| `SetBookingServices` | local only: replaces the business's in-memory services with the ones approved on Continue (forgets the specialist) | [Set booking services](booking/set-booking-services.md) |
+| `GetBookingSpecialists` | `flow`: `GetBookableEmployees.flow` (Room `bookable_employee`) combined with the in-memory approved services (`InMemoryBookingPreparationDataSource`), keeping those who do every approved service; `refresh`: `GetBookableEmployees.refresh` (`GET /api/business/{businessId}/employee/bookable`, saved to Room), filtered the same way | [Get booking specialists](booking/get-booking-specialists.md) |
+| `SetBookingSpecialist` | local only: saves the tapped specialist in the business's in-memory booking preparation | [Set booking specialist](booking/set-booking-specialist.md) |
 
 ## Use cases composed of other use cases
 
@@ -228,6 +231,7 @@ services use cases and keep the services the client approved per business in mem
 | [Create new passkey](settings/create-new-passkey.md) | `GetAvailablePasskeys` |
 | [Get booking catalog](booking/get-booking-catalog.md) | `GetBusinesses.flow`/`refresh` (business), `GetBusinessServices.flow`/`refresh` (services) (cross-feature wrapper) |
 | [Get booking preparation](booking/get-booking-preparation.md) | `GetBusinessServices.flow` (cross-feature) |
+| [Get booking specialists](booking/get-booking-specialists.md) | `GetBookableEmployees` (employees) (cross-feature wrapper) |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
 | [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut` |
 | [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |

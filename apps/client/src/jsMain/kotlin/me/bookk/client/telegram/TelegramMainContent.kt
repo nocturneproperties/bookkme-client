@@ -7,6 +7,8 @@ import me.bookk.core.presentation.navigation.BackStack
 import me.bookk.core.presentation.navigation.rememberBackStack
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestination
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestinations
+import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistDestination
+import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistDestinations
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestination
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestinations
 import me.bookk.site.designsystem.components.BackStackHost
@@ -23,6 +25,12 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
             is ClientScreen.Services -> {
                 BookingServicesDestination(webApp, screen.businessId) {
                     stack.navigateFromServices(it)
+                }
+            }
+
+            is ClientScreen.Specialist -> {
+                BookingSpecialistDestination(webApp, screen.businessId) {
+                    stack.navigateFromSpecialist(it)
                 }
             }
         }
@@ -44,6 +52,18 @@ private fun BackStack<ClientScreen>.navigateFromHome(destination: ClientHomeDest
 private fun BackStack<ClientScreen>.navigateFromServices(destination: BookingServicesDestinations) {
     when (destination) {
         BookingServicesDestinations.Back -> pop()
-        is BookingServicesDestinations.Specialist -> Unit
+
+        is BookingServicesDestinations.Specialist -> push(
+            ClientScreen.Specialist(destination.businessId),
+        )
+    }
+}
+
+private fun BackStack<ClientScreen>.navigateFromSpecialist(
+    destination: BookingSpecialistDestinations,
+) {
+    when (destination) {
+        BookingSpecialistDestinations.Back -> pop()
+        is BookingSpecialistDestinations.DateTime -> Unit
     }
 }

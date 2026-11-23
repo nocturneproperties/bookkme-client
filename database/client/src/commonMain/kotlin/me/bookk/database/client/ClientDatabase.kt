@@ -14,6 +14,7 @@ import me.bookk.database.converter.UuidConverter
 import me.bookk.database.dao.AppointmentDao
 import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.AppointmentSettingsDao
+import me.bookk.database.dao.BookableEmployeeDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.BusinessDataExportDao
 import me.bookk.database.dao.LegalDocumentStatusDao
@@ -32,6 +33,11 @@ import me.bookk.database.entity.AppointmentSettingsDayOffEntity
 import me.bookk.database.entity.AppointmentSettingsDayScheduleEntity
 import me.bookk.database.entity.AppointmentSettingsEntity
 import me.bookk.database.entity.AppointmentSettingsWorkHourEntity
+import me.bookk.database.entity.BookableEmployeeDayOffEntity
+import me.bookk.database.entity.BookableEmployeeDayScheduleEntity
+import me.bookk.database.entity.BookableEmployeeEntity
+import me.bookk.database.entity.BookableEmployeeServiceEntity
+import me.bookk.database.entity.BookableEmployeeWorkHourEntity
 import me.bookk.database.entity.BusinessDataExportEntity
 import me.bookk.database.entity.BusinessDayOffEntity
 import me.bookk.database.entity.BusinessDayScheduleEntity
@@ -72,12 +78,18 @@ import me.bookk.database.entity.UserProfileEntity
         SavedBusinessEntity::class,
         ServiceGroupEntity::class,
         ServiceEntity::class,
+        BookableEmployeeEntity::class,
+        BookableEmployeeServiceEntity::class,
+        BookableEmployeeDayScheduleEntity::class,
+        BookableEmployeeWorkHourEntity::class,
+        BookableEmployeeDayOffEntity::class,
     ],
-    version = 4,
+    version = 5,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
     ],
 )
 @ColumnTypeConverters(
@@ -102,6 +114,7 @@ abstract class ClientDatabase :
     abstract override fun appointmentDao(): AppointmentDao
     abstract override fun appointmentRequestDao(): AppointmentRequestDao
     abstract override fun appointmentSettingsDao(): AppointmentSettingsDao
+    abstract override fun bookableEmployeeDao(): BookableEmployeeDao
 
     companion object {
 

@@ -17,6 +17,7 @@ import me.bookk.database.DatabaseStorage
 import me.bookk.database.dao.AppointmentDao
 import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.AppointmentSettingsDao
+import me.bookk.database.dao.BookableEmployeeDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.BusinessDataExportDao
 import me.bookk.database.dao.LegalDocumentStatusDao
@@ -35,12 +36,16 @@ import me.bookk.feature.authorization.presentation.screen.clientbootstrap.Client
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
 import me.bookk.feature.booking.domain.api.GetBookingCatalog
 import me.bookk.feature.booking.domain.api.GetBookingPreparation
+import me.bookk.feature.booking.domain.api.GetBookingSpecialists
 import me.bookk.feature.booking.domain.api.SetBookingServices
+import me.bookk.feature.booking.domain.api.SetBookingSpecialist
 import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesViewModel
+import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistViewModel
 import me.bookk.feature.business.domain.api.business.GetBusinesses
 import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewModel
+import me.bookk.feature.employees.domain.api.GetBookableEmployees
 import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
@@ -136,6 +141,12 @@ class ClientAppTest {
 
         override fun appointmentSettingsDao(): AppointmentSettingsDao {
             return mock()
+        }
+
+        override fun bookableEmployeeDao(): BookableEmployeeDao {
+            return mock {
+                every { observeEmployees(any()) } returns emptyFlow()
+            }
         }
     }
 
@@ -373,6 +384,49 @@ class ClientAppTest {
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<BookingServicesViewModel> {
+            parametersOf(Uuid.random())
+        }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the bookable employees the specialist step lists`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val getBookableEmployees = KoinPlatform.getKoin().getOrNull<GetBookableEmployees>()
+
+        then()
+        assertNotNull(getBookableEmployees)
+    }
+
+    @Test
+    fun `provides the booking specialists the specialist step lists and saves`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val koin = KoinPlatform.getKoin()
+        val useCases = listOf(
+            koin.getOrNull<GetBookingSpecialists>(),
+            koin.getOrNull<SetBookingSpecialist>(),
+        )
+
+        then()
+        useCases.forEach { assertNotNull(it) }
+    }
+
+    @Test
+    fun `provides the specialist view model for the opened business`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<BookingSpecialistViewModel> {
             parametersOf(Uuid.random())
         }
 

@@ -83,4 +83,17 @@ class SetBookingServicesImplTest {
             fixture.dataSource.selectionOf(otherBusinessId),
         )
     }
+
+    @Test
+    fun `forgets the specialist picked for the services saved before`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.dataSource.select(businessId, beardTrim.id to 1, specialistId = Uuid.random())
+
+        whenn()
+        fixture.sut(businessId, listOf(PreparedService(haircut, 1)))
+
+        then()
+        assertEquals(null, fixture.dataSource.selectionOf(businessId).specialistId)
+    }
 }

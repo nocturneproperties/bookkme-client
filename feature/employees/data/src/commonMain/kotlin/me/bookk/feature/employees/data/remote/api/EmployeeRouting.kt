@@ -11,6 +11,11 @@ object EmployeeRouting {
             val parent: Api = Api(),
             val businessId: Uuid,
         ) {
+            @Resource("/bookable")
+            class Bookable(
+                val parent: Employee,
+            )
+
             @Resource("/{id}")
             class Id(
                 val parent: Employee,

@@ -4,6 +4,7 @@ import me.bookk.core.domain.fetch.BusinessDataFetchAction
 import me.bookk.feature.employees.domain.api.CanEditEmployees
 import me.bookk.feature.employees.domain.api.CreateEmployeeInvitation
 import me.bookk.feature.employees.domain.api.GetAssignableServices
+import me.bookk.feature.employees.domain.api.GetBookableEmployees
 import me.bookk.feature.employees.domain.api.GetEmployee
 import me.bookk.feature.employees.domain.api.GetEmployeeInvitations
 import me.bookk.feature.employees.domain.api.GetEmployees
@@ -16,6 +17,7 @@ import me.bookk.feature.employees.domain.api.UpdateEmployee
 import me.bookk.feature.employees.domain.impl.CanEditEmployeesImpl
 import me.bookk.feature.employees.domain.impl.CreateEmployeeInvitationImpl
 import me.bookk.feature.employees.domain.impl.GetAssignableServicesImpl
+import me.bookk.feature.employees.domain.impl.GetBookableEmployeesImpl
 import me.bookk.feature.employees.domain.impl.GetEmployeeImpl
 import me.bookk.feature.employees.domain.impl.GetEmployeeInvitationsImpl
 import me.bookk.feature.employees.domain.impl.GetEmployeesImpl
@@ -44,4 +46,8 @@ fun employeesDomainModule() = module {
     factoryOf(::IsBusinessOwnerImpl) bind IsBusinessOwner::class
     factoryOf(::CanEditEmployeesImpl) bind CanEditEmployees::class
     factoryOf(::SetEmployeeSuspensionImpl) bind SetEmployeeSuspension::class
+}
+
+fun clientEmployeesDomainModule() = module {
+    factoryOf(::GetBookableEmployeesImpl) bind GetBookableEmployees::class
 }

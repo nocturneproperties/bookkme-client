@@ -39,5 +39,6 @@ fun clientDaoModule(): Module {
         factory { get<ClientDaos>().appointmentDao() }
         factory { get<ClientDaos>().appointmentRequestDao() }
         factory { get<ClientDaos>().appointmentSettingsDao() }
+        factory { get<ClientDaos>().bookableEmployeeDao() }
     }
 }

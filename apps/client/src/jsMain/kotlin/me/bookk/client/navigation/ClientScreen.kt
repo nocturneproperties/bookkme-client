@@ -7,4 +7,8 @@ sealed interface ClientScreen {
     data class Services(
         val businessId: Uuid,
     ) : ClientScreen
+
+    data class Specialist(
+        val businessId: Uuid,
+    ) : ClientScreen
 }

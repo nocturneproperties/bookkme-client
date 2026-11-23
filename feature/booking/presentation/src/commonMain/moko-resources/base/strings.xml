@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="booking_services_subtitle">Pick one or more services</string>
-    <string name="booking_services_continue">Continue · %1$s · %2$s</string>
+    <string name="booking_services_title">Pick your services.</string>
+    <string name="booking_services_summary">%1$s · %2$s</string>
     <string name="booking_services_pick">Pick a service</string>
     <string name="booking_services_empty">This business has no services to book yet</string>
     <string name="booking_services_details">%1$s · %2$s</string>
+    <string name="booking_specialist_title">Who should do it?</string>
+    <string name="booking_specialist_summary">%1$s · %2$s · %3$s</string>
+    <string name="booking_specialist_service_count">%1$s × %2$d</string>
+    <string name="booking_specialist_hint">Don’t see the person you’re looking for? They probably don’t do one of the services you picked.</string>
+    <string name="booking_specialist_empty">Nobody here does every service you picked. Go back and pick fewer services.</string>
 </resources>

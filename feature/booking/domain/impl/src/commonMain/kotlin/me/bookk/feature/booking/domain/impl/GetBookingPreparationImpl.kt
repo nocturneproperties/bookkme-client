@@ -35,6 +35,7 @@ internal class GetBookingPreparationImpl(
                     BookingPreparation.PreparedService(it.toBookingService(), picked.quantity)
                 }
             },
+            specialistId = selection.specialistId,
         )
     }
 }

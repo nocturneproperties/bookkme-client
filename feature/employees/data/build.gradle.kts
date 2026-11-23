@@ -20,6 +20,8 @@ kotlin {
             implementation(libs.ktor.client.resources)
         }
         commonTest.dependencies {
+            implementation(libs.ktor.client.negotiation)
+            implementation(libs.ktor.client.mock)
             implementation(projects.core.testFixtures)
         }
     }

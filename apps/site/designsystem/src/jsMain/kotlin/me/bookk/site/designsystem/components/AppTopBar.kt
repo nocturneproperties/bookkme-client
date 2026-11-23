@@ -17,6 +17,7 @@ import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.AppBarActionState
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.site.designsystem.resources.localized
 import me.bookk.site.designsystem.theme.BodySmallTextStyle
 import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.designsystem.theme.TitleMediumTextStyle
@@ -27,7 +28,9 @@ import org.jetbrains.compose.web.css.cssRem
 
 @Composable
 fun AppTopBar(state: AppBarState, modifier: Modifier = Modifier, showsBackButton: Boolean = true) {
-    if (!state.isVisible) return
+    val onBackClick = state.onBackClick?.takeIf { showsBackButton }
+    val actions = state.actions.items.filter { it.isVisible }
+    if (!state.isVisible || isEmptySmallBar(state, onBackClick, actions)) return
     Column(
         Modifier
             .fillMaxWidth()
@@ -41,19 +44,27 @@ fun AppTopBar(state: AppBarState, modifier: Modifier = Modifier, showsBackButton
                 .gap(0.5.cssRem),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            state.onBackClick
-                ?.takeIf { showsBackButton }
-                ?.let { IconButton(onClick = it) { ArrowBackIcon() } }
+            onBackClick?.let { IconButton(onClick = it) { ArrowBackIcon() } }
             if (state.size ==
                 TopBarSize.SMALL
             ) {
                 TextBlock(state.title, TitleMediumTextStyle.toModifier())
             }
             Spacer()
-            state.actions.items.filter { it.isVisible }.forEach { AppBarAction(it) }
+            actions.forEach { AppBarAction(it) }
         }
         if (state.size == TopBarSize.LARGE) LargeTitle(state)
     }
+}
+
+@Composable
+private fun isEmptySmallBar(
+    state: AppBarState,
+    onBackClick: (() -> Unit)?,
+    actions: List<AppBarActionState>,
+): Boolean {
+    val hasTitle = state.size == TopBarSize.LARGE || state.title.localized().isNotEmpty()
+    return !hasTitle && onBackClick == null && actions.isEmpty()
 }
 
 @Composable

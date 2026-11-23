@@ -16,6 +16,7 @@ internal class WebBookingServicesState : BookingServicesState {
     override var businessName: StringDesc? by mutableStateOf(null)
     override val groups = WebListState<ServiceGroupItem>()
     override val services = WebOptionsMultiPickerState<ServiceOption>()
+    override var total: ServicesTotal? by mutableStateOf(null)
     override val continueButton = WebButtonState()
     override val notifications = WebNotificationState()
     override val navigation = WebNavigationState<BookingServicesDestinations>()

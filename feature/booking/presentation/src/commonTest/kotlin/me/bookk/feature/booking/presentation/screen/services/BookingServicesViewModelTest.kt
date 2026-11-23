@@ -111,6 +111,16 @@ class BookingServicesViewModelTest {
         )
     }
 
+    private fun total(count: Int, hours: Int, minutes: Int, priceCents: Long): ServicesTotal {
+        return ServicesTotal(
+            summary = BookingRes.strings.booking_services_summary.format(
+                BookingRes.plurals.booking_services_count.format(count, count),
+                DesignSystem.strings.common_duration_hours_minutes.format(hours, minutes),
+            ),
+            price = Money(priceCents, Money.SupportedCurrency.UAH).toString().desc(),
+        )
+    }
+
     private fun BookingServicesState.option(service: BookingService): ServiceOption {
         return services.options.first { it.service.id == service.id }
     }
@@ -247,7 +257,7 @@ class BookingServicesViewModelTest {
     }
 
     @Test
-    fun `disables continue and asks to pick a service while nothing is picked`() = runUnitTest {
+    fun `disables continue while nothing is picked`() = runUnitTest {
         given()
         val fixture = Fixture()
 
@@ -257,11 +267,39 @@ class BookingServicesViewModelTest {
 
         then()
         assertFalse(state.continueButton.isEnabled)
-        assertEquals(BookingRes.strings.booking_services_pick.desc(), state.continueButton.text)
+        assertEquals(DesignSystem.strings.action_continue.desc(), state.continueButton.text)
     }
 
     @Test
-    fun `shows the total duration and price of the picked services on continue`() = runUnitTest {
+    fun `has no total while nothing is picked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val state = fixture.sut().uiState
+        fixture.catalogs.value = catalog
+
+        then()
+        assertNull(state.total)
+    }
+
+    @Test
+    fun `enables continue once a service is picked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val state = fixture.sut().uiState
+        fixture.catalogs.value = catalog
+
+        whenn()
+        state.pick(haircut)
+
+        then()
+        assertTrue(state.continueButton.isEnabled)
+        assertEquals(DesignSystem.strings.action_continue.desc(), state.continueButton.text)
+    }
+
+    @Test
+    fun `shows the count, duration and price of the picked services`() = runUnitTest {
         given()
         val fixture = Fixture()
         val state = fixture.sut().uiState
@@ -272,18 +310,11 @@ class BookingServicesViewModelTest {
         state.pick(beardTrim, times = 2)
 
         then()
-        assertTrue(state.continueButton.isEnabled)
-        assertEquals(
-            BookingRes.strings.booking_services_continue.format(
-                DesignSystem.strings.common_duration_hours_minutes.format(1, 25),
-                Money(120_000, Money.SupportedCurrency.UAH).toString(),
-            ),
-            state.continueButton.text,
-        )
+        assertEquals(total(count = 3, hours = 1, minutes = 25, priceCents = 120_000), state.total)
     }
 
     @Test
-    fun `shows the total of the saved services on continue`() = runUnitTest {
+    fun `shows the total of the saved services`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.catalogs.value = catalog
@@ -294,13 +325,7 @@ class BookingServicesViewModelTest {
 
         then()
         assertTrue(state.continueButton.isEnabled)
-        assertEquals(
-            BookingRes.strings.booking_services_continue.format(
-                DesignSystem.strings.common_duration_hours_minutes.format(1, 25),
-                Money(120_000, Money.SupportedCurrency.UAH).toString(),
-            ),
-            state.continueButton.text,
-        )
+        assertEquals(total(count = 3, hours = 1, minutes = 25, priceCents = 120_000), state.total)
     }
 
     @Test
@@ -316,7 +341,8 @@ class BookingServicesViewModelTest {
 
         then()
         assertFalse(state.continueButton.isEnabled)
-        assertEquals(BookingRes.strings.booking_services_pick.desc(), state.continueButton.text)
+        assertEquals(DesignSystem.strings.action_continue.desc(), state.continueButton.text)
+        assertNull(state.total)
     }
 
     @Test
@@ -409,13 +435,7 @@ class BookingServicesViewModelTest {
 
         then()
         assertEquals(2, state.services.quantityOf(state.option(repriced)))
-        assertEquals(
-            BookingRes.strings.booking_services_continue.format(
-                DesignSystem.strings.common_duration_hours_minutes.format(1, 30),
-                Money(140_000, Money.SupportedCurrency.UAH).toString(),
-            ),
-            state.continueButton.text,
-        )
+        assertEquals(total(count = 2, hours = 1, minutes = 30, priceCents = 140_000), state.total)
     }
 
     @Test

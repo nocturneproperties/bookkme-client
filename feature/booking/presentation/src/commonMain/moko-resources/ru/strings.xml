@@ -2,7 +2,6 @@
 <resources>
     <string name="booking_services_title">Выберите услуги.</string>
     <string name="booking_services_summary">%1$s · %2$s</string>
-    <string name="booking_services_pick">Выберите услугу</string>
     <string name="booking_services_empty">У этого бизнеса пока нет услуг для записи</string>
     <string name="booking_services_details">%1$s · %2$s</string>
     <string name="booking_specialist_title">Кто это сделает?</string>

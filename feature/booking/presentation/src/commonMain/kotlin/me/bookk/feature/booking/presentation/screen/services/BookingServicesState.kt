@@ -15,6 +15,7 @@ interface BookingServicesState {
     var businessName: StringDesc?
     val groups: ListState<ServiceGroupItem>
     val services: OptionsMultiPickerState<ServiceOption>
+    var total: ServicesTotal?
     val continueButton: ButtonState
     val notifications: PresentationNotificationState
     val navigation: NavigationState<BookingServicesDestinations>
@@ -32,3 +33,8 @@ data class ServiceOption(
     val details: StringDesc,
     val service: BookingService,
 ) : PickerPresentation()
+
+data class ServicesTotal(
+    val summary: StringDesc,
+    val price: StringDesc,
+)

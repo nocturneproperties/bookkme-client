@@ -47,7 +47,7 @@ fun AppEntry(content: @Composable () -> Unit) {
                 ClientRes.strings.stringsLoader +
                     AuthRes.strings.stringsLoader +
                     DashboardRes.strings.stringsLoader +
-                    BookingRes.strings.stringsLoader,
+                    BookingRes.stringsLoader,
             ) {
                 content()
             }

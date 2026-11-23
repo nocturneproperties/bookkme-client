@@ -1,6 +1,5 @@
 package me.bookk.feature.booking.presentation.screen.services
 
-import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
@@ -61,14 +60,15 @@ class BookingServicesViewModel(
         services.isQuantityEditable = true
         services.onQuantityIncreaseRequested = weakVMClosure { vm, option ->
             vm.uiState.services.increaseQuantity(option)
-            vm.uiState.updateContinueButton()
+            vm.uiState.renderSelection()
         }
         services.onQuantityDecreaseRequested = weakVMClosure { vm, option ->
             vm.uiState.services.decreaseQuantity(option)
-            vm.uiState.updateContinueButton()
+            vm.uiState.renderSelection()
         }
+        continueButton.text = DesignSystem.strings.action_continue.desc()
         continueButton.onClick = weakVMClosure { it.saveServicesAndContinue() }
-        updateContinueButton()
+        renderSelection()
     }
 
     private fun observeCatalog() {
@@ -119,7 +119,7 @@ class BookingServicesViewModel(
         uiState.services.replaceOptions(options)
         uiState.services.replaceSelected(stillOffered(options))
         uiState.groups.replace(groups)
-        uiState.updateContinueButton()
+        uiState.renderSelection()
     }
 
     private fun renderSavedServices(preparation: BookingPreparation) {
@@ -128,7 +128,7 @@ class BookingServicesViewModel(
                 uiState.services.createPickedItem(serviceOption(it.service), it.quantity)
             },
         )
-        uiState.updateContinueButton()
+        uiState.renderSelection()
     }
 
     private fun groupItem(group: BookingServiceGroup): ServiceGroupItem {
@@ -160,11 +160,10 @@ class BookingServicesViewModel(
         }
     }
 
-    private fun BookingServicesState.updateContinueButton() {
+    private fun BookingServicesState.renderSelection() {
         val picked = services.selectedUnits().map { it.service }
         total = servicesTotal(picked)
         continueButton.isEnabled = picked.isNotEmpty()
-        continueButton.text = continueText(picked)
     }
 
     private fun servicesTotal(picked: List<BookingService>): ServicesTotal? {
@@ -176,13 +175,6 @@ class BookingServicesViewModel(
             ),
             price = picked.totalPrice().toString().desc(),
         )
-    }
-
-    private fun continueText(picked: List<BookingService>): StringDesc {
-        if (picked.isEmpty()) {
-            return BookingRes.strings.booking_services_pick.desc()
-        }
-        return DesignSystem.strings.action_continue.desc()
     }
 
     private companion object {

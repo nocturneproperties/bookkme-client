@@ -2,7 +2,6 @@
 <resources>
     <string name="booking_services_title">Wybierz usługi.</string>
     <string name="booking_services_summary">%1$s · %2$s</string>
-    <string name="booking_services_pick">Wybierz usługę</string>
     <string name="booking_services_empty">Ta firma nie ma jeszcze usług do rezerwacji</string>
     <string name="booking_services_details">%1$s · %2$s</string>
     <string name="booking_specialist_title">Kto ma to zrobić?</string>

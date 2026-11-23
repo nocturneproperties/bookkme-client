@@ -19,8 +19,8 @@ data class BandSurfaces(
     val inset: ColorToken,
 )
 
-val SurfaceCardColor by StyleVariable<CSSColorValue>(prefix = "bookk")
-val SurfaceInsetColor by StyleVariable<CSSColorValue>(prefix = "bookk")
+val SurfaceCardColor by StyleVariable<CSSColorValue>(prefix = "bookkme")
+val SurfaceInsetColor by StyleVariable<CSSColorValue>(prefix = "bookkme")
 
 fun BandTone.surfaces(): BandSurfaces {
     return when (this) {

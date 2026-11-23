@@ -44,12 +44,14 @@ kotlin {
     }
 }
 
-val proxyUrl = findLocalProperty("bookk.proxyUrl").orEmpty()
+val proxyUrl = findLocalProperty("bookkme.proxyUrl").orEmpty()
 
 buildkonfig {
     packageName = "me.bookk.shared.common"
     defaultConfigs {
         buildConfigField(STRING, "BASE_URL", "", const = true)
+        buildConfigField(STRING, "SITE_URL", "https://bookkme.com", const = true)
+        buildConfigField(STRING, "CLIENT_APP_URL", "https://app.bookkme.com", const = true)
         buildConfigField(
             BOOLEAN,
             "DEBUG",
@@ -76,12 +78,26 @@ buildkonfig {
             "https://local.bookkme.app/api",
             const = true,
         )
+        buildConfigField(STRING, "SITE_URL", "https://local.bookkme.app", const = true)
+        buildConfigField(
+            STRING,
+            "CLIENT_APP_URL",
+            "https://local-app.bookkme.app",
+            const = true,
+        )
     }
     defaultConfigs(ProductFlavour.DEV.title + "Release") {
         buildConfigField(
             STRING,
             "BASE_URL",
             "https://local.bookkme.app/api",
+            const = true,
+        )
+        buildConfigField(STRING, "SITE_URL", "https://local.bookkme.app", const = true)
+        buildConfigField(
+            STRING,
+            "CLIENT_APP_URL",
+            "https://local-app.bookkme.app",
             const = true,
         )
     }

@@ -8,6 +8,9 @@ Booked appointments, pending appointment requests, and a business's booking sett
 These tables have **no foreign key to `business`**. `businessId` is only indexed. Deleting a business row
 does not cascade here, and the client/employee references are denormalized snapshot columns.
 
+The entities and DAOs on this page live in `:database:schema`, and both `BusinessDatabase` and
+`ClientDatabase` hold a copy (see [README](README.md)).
+
 Appointment statuses are stored by name: `SCHEDULED`, `COMPLETED`, `CANCELLED`, `NO_SHOW` and
 `UNRESOLVED`. The unresolved outcome round-trips through the existing text column without a schema
 migration. It is displayed as a neutral status and offers no mutation actions.
@@ -162,14 +165,33 @@ erDiagram
 - **Settings** are written by [Get appointment settings](../operations/appointments/get-appointment-settings.md)
   `refresh()` and [Update appointment settings](../operations/appointments/update-appointment-settings.md). They have no sync marker, because
   a `null` row is itself unambiguous.
+- **Client web app.** In `ClientDatabase`, `appointment` and `appointment_request` hold only the signed-in client's
+  own upcoming bookings, written by [Get upcoming bookings](../operations/appointments/get-upcoming-bookings.md)
+  (`CommonClientBookingDataSource`). Its refresh deletes cached `SCHEDULED` appointments and `PENDING` requests the
+  response no longer returns (`getScheduledIds`/`getPendingIds`) and upserts the rest; `observeScheduled` and
+  `observePending` read them back by `date`. These queries are not scoped by business, so they are used only on the
+  web. `appointment_request_service_snapshot` has no `count` column, so a request with a repeated service is cached
+  with that service once.
 - Cleared on logout: yes, all of them.
 
-Schema 21 adds nullable `clientUserId` to `appointment` and `appointment_request` with an automatic
-20 → 21 migration. Older rows retain `null` until refreshed. Both datasource logout hooks clear the
-entire parent row, including the linked user snapshot. `userId` remains the initiator of the booking,
-which the API names `initiatorUserId`; it is distinct from `clientUserId`.
+## Client web app table (`ClientDatabase` only)
 
-After a confirmed client deletion, `CommonClientsDataSource.deleteClientInDb` also evicts cached
-`appointment` and `appointment_request` aggregates by `clientId` through `ClientsDao` in the same
-transaction as client removal. This removes personal snapshots until refreshed backend data returns.
-No cross-feature foreign key is introduced. Logout still clears these tables through their owning datasources.
+Written by `CommonClientBookingDataSource` through `SavedBusinessDao` (in `ClientDaos`, so `BusinessDatabase`
+does not hold it). No foreign key: the business it refers to is read separately into `business` by
+[Get businesses](../operations/business/get-businesses.md) and may be missing locally.
+
+```mermaid
+erDiagram
+    SAVED_BUSINESS {
+        uuid businessId PK "logical FK -> business.id, no constraint"
+        bool enabled "takes appointments now"
+        instant savedAt "observed ORDER BY savedAt DESC"
+        instant lastVisitAt "nullable; start of the last COMPLETED appointment"
+    }
+```
+
+- **`saved_business`** is replaced as a whole by [Get saved businesses](../operations/appointments/get-saved-businesses.md)
+  `refresh()` (`replaceAll`: clear + upsert in one transaction), also run by
+  [Save business](../operations/appointments/save-business.md).
+- No sync marker: the Home screen treats an empty emission as "not loaded yet" until its first refresh finishes.
+- Cleared on logout: yes (`savedBusinessDao.clear()`).

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="client_app_name">BookkMe</string>
+    <string name="client_telegram_title">Mini aplikacja w Telegramie</string>
+    <string name="client_telegram_description">Umawiaj się z firmami w BookkMe bezpośrednio w Telegramie.</string>
+    <string name="client_telegram_outside_title">Ta strona otwiera się w Telegramie</string>
+    <string name="client_telegram_outside_body">To mini aplikacja BookkMe. Otwórz ją z linku firmy w Telegramie.</string>
+    <string name="client_telegram_outside_link">Jak działa rezerwacja w BookkMe</string>
+</resources>

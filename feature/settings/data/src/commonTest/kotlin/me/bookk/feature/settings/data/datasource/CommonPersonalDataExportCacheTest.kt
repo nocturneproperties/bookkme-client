@@ -17,8 +17,8 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.account.dao.PersonalDataExportDao
-import me.bookk.database.account.entity.PersonalDataExportEntity
+import me.bookk.database.dao.PersonalDataExportDao
+import me.bookk.database.entity.PersonalDataExportEntity
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -206,7 +206,7 @@ class CommonPersonalDataExportCacheTest {
         val key = "${fixture.ready.requestedAt?.toEpochMilliseconds()}-" +
             "${fixture.ready.expiresAt?.toEpochMilliseconds()}"
         val expected = fixture.files.touchCacheFile("personal_data_exports") / key /
-            "bookk-personal-data.json"
+            "bookkme-personal-data.json"
         assertEquals(expected, result)
         assertEquals("{\"records\":[]}", fixture.files.files[expected])
     }

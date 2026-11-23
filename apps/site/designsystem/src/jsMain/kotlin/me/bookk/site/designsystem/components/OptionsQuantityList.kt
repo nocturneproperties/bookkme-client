@@ -15,6 +15,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
+import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.OptionsMultiPickerState
 import me.bookk.designsystem.uistate.PickerPresentation
 import me.bookk.designsystem.uistate.quantityOf
@@ -22,12 +23,6 @@ import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
-
-val OptionsQuantityCardStyle = CssStyle.base {
-    Modifier
-        .padding(0.px)
-        .gap(0.px)
-}
 
 val OptionsQuantityRowStyle = CssStyle.base {
     Modifier
@@ -43,12 +38,33 @@ fun <T : PickerPresentation> OptionsQuantityList(
     modifier: Modifier = Modifier,
     itemContent: @Composable (T) -> Unit,
 ) {
+    OptionsQuantityList(state, state.pickerTitle, state.options, modifier, itemContent)
+}
+
+@Composable
+fun <T : PickerPresentation> OptionsQuantityList(
+    state: OptionsMultiPickerState<T>,
+    title: StringDesc,
+    options: List<T>,
+    modifier: Modifier = Modifier,
+    itemContent: @Composable (T) -> Unit,
+) {
     if (!state.isVisible) return
-    Column(modifier.gap(0.5.cssRem)) {
-        Header(state.pickerTitle)
-        AppCard(OptionsQuantityCardStyle.toModifier()) {
-            OptionsQuantityPlaceholder(state)
-            state.options.forEachIndexed { index, option ->
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .gap(0.5.cssRem)
+            .then(modifier),
+    ) {
+        Header(title)
+        AppCard(
+            Modifier
+                .fillMaxWidth()
+                .padding(0.px)
+                .gap(0.px),
+        ) {
+            OptionsQuantityPlaceholder(state.placeholder, options)
+            options.forEachIndexed { index, option ->
                 if (index > 0) HorizontalDivider()
                 OptionsQuantityRow(state, option, itemContent)
             }
@@ -57,9 +73,8 @@ fun <T : PickerPresentation> OptionsQuantityList(
 }
 
 @Composable
-private fun <T : PickerPresentation> OptionsQuantityPlaceholder(state: OptionsMultiPickerState<T>) {
-    val placeholder = state.placeholder ?: return
-    if (state.options.isNotEmpty()) return
+private fun OptionsQuantityPlaceholder(placeholder: StringDesc?, options: List<*>) {
+    if (placeholder == null || options.isNotEmpty()) return
     TextBlock(
         placeholder,
         BodyMediumTextStyle

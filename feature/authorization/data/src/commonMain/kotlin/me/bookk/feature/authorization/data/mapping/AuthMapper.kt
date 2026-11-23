@@ -1,6 +1,6 @@
 package me.bookk.feature.authorization.data.mapping
 
-import me.bookk.database.account.entity.UserProfileEntity
+import me.bookk.database.entity.UserProfileEntity
 import me.bookk.feature.authorization.data.remote.model.AcceptedLegalDocumentsRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.DeleteAccountRequestRemote

@@ -10,6 +10,7 @@ import kotlin.coroutines.suspendCoroutine
 
 object TelegramSdk {
     private const val SCRIPT_URL = "https://telegram.org/js/telegram-web-app.js"
+    private const val SCRIPT_CROSS_ORIGIN = "anonymous"
 
     private var launchHash = ""
 
@@ -42,6 +43,7 @@ object TelegramSdk {
         val onSettled: (Event) -> Unit = { continuation.resume(Unit) }
         script.addEventListener("load", onSettled)
         script.addEventListener("error", onSettled)
+        script.crossOrigin = SCRIPT_CROSS_ORIGIN
         script.src = SCRIPT_URL
         document.head?.appendChild(script)
     }

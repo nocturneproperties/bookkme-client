@@ -2,6 +2,7 @@ package library.device.impl
 
 import kotlinx.browser.window
 import library.device.api.DeviceFacade
+import kotlin.js.json
 
 class JsDeviceFacade : DeviceFacade {
 
@@ -39,6 +40,15 @@ class JsDeviceFacade : DeviceFacade {
 
     override fun copyToClipboard(text: String) {
         window.navigator.clipboard.writeText(text)
+    }
+
+    override fun share(text: String) {
+        val navigator = window.navigator.asDynamic()
+        if (navigator.share == undefined) {
+            copyToClipboard(text)
+        } else {
+            navigator.share(json("text" to text)).`catch` { _: dynamic -> }
+        }
     }
 
     override fun openAppSettings() {

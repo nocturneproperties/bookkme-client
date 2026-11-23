@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.database.business.dao.BusinessDao
+import me.bookk.database.dao.BusinessDao
 import me.bookk.feature.business.data.mapping.toDayOffEntities
 import me.bookk.feature.business.data.mapping.toDayScheduleEntities
 import me.bookk.feature.business.data.mapping.toDomain
@@ -21,10 +21,13 @@ import me.bookk.feature.business.data.mapping.toRemote
 import me.bookk.feature.business.data.mapping.toUserBusinesses
 import me.bookk.feature.business.data.mapping.toWorkHourEntities
 import me.bookk.feature.business.data.remote.api.BusinessRouting
+import me.bookk.feature.business.data.remote.model.BusinessLinkRemote
 import me.bookk.feature.business.data.remote.model.BusinessRemote
+import me.bookk.feature.business.data.remote.model.BusinessesByIdsRequest
 import me.bookk.feature.business.data.remote.model.CreateBusinessRequest
 import me.bookk.feature.business.data.remote.model.UserBusinessesRemote
 import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.business.domain.api.entity.BusinessLink
 import me.bookk.feature.business.domain.api.entity.UserBusinessInfo
 import me.bookk.feature.business.domain.datasource.BusinessDataSource
 import kotlin.uuid.Uuid
@@ -150,6 +153,28 @@ internal class CommonBusinessDataSource(
         return businessDao.queryBusiness(id)?.toDomain()
     }
 
+    override suspend fun getBusinessesByIdsFromRemote(ids: Set<Uuid>) = mapExceptions {
+        ids.chunked(BULK_READ_LIMIT).flatMap { chunk ->
+            httpClient.post(BusinessRouting.Api.Business.Bulk()) {
+                setBody(BusinessesByIdsRequest(chunk))
+            }
+                .body<List<BusinessRemote>>()
+                .map { it.toDomain() }
+        }
+    }
+
+    override suspend fun resolveLink(name: String): BusinessLink = mapExceptions {
+        httpClient.get(BusinessRouting.Api.Business.LinkName(name = name))
+            .body<BusinessLinkRemote>()
+            .toDomain()
+    }
+
+    override fun observeBusinessesInDb(ids: Set<Uuid>): Flow<List<Business>> {
+        return businessDao.observeBusinesses(ids.toList())
+            .map { businesses -> businesses.map { it.toDomain() } }
+            .mapErrors()
+    }
+
     override suspend fun saveDashboardBusinessId(id: Uuid?) {
         mapExceptions {
             businessDao.setDashboardBusiness(id)
@@ -167,3 +192,5 @@ internal class CommonBusinessDataSource(
         businessDao.clear()
     }
 }
+
+private const val BULK_READ_LIMIT = 100

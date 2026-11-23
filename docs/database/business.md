@@ -11,6 +11,10 @@ and disappears when that business is deleted.
 schedule tables and to `client`, `employee`, `employee_invitation`, `service` and `service_group`
 (see [overview](overview.md)).
 
+The entities and DAOs on this page live in `:database:schema`, and both `BusinessDatabase` and
+`ClientDatabase` hold a copy (see [README](README.md)), except `business_link`, which is in `BusinessDatabase`
+only. `ClientDatabase` has no `client`, `employee`, `employee_invitation`, `service` or `service_group` table yet.
+
 ```mermaid
 erDiagram
     BUSINESS ||--o{ BUSINESS_DAY_SCHEDULE : "has (CASCADE)"
@@ -84,10 +88,17 @@ erDiagram
         int expiresAt "nullable epoch milliseconds"
         int availableAgainAt "nullable epoch milliseconds"
     }
+
+    BUSINESS_LINK {
+        uuid businessId PK "logical reference to business.id; no FK"
+        string name "normalized link name, opened as bookkme.com/name"
+    }
 ```
 
 - Written by: [Refresh business info](../operations/business/refresh-business-info.md) (`upsertAllWithChildren`
   for the whole list) and [Update business](../operations/business/update-business.md) (`upsertWithChildren` for one).
+  In the client web app, [Get businesses](../operations/business/get-businesses.md) upserts the businesses the client
+  booked with or saved (`upsertAllWithChildren`, nothing deleted); there `RefreshBusinessInfo` is not installed.
 - Read by: [Observe dashboard business changes](../operations/business/observe-dashboard-business-changes.md)
   (which many features use to scope their lists), [Observe user businesses
   changes](../operations/business/observe-user-businesses-changes.md), [Update business](../operations/business/update-business.md)
@@ -150,7 +161,7 @@ explicitly instead (lost ownership and logout).
 - Cleared on logout: yes (`businessDataExportDao.clear()` and the whole `business_data_exports/` directory).
 
 The JSON export payload is stored as one UTF-8 file per business at
-`business_data_exports/<businessId>/<requestedAt>-<expiresAt>/bookk-business-data.json` in the app cache
+`business_data_exports/<businessId>/<requestedAt>-<expiresAt>/bookkme-business-data.json` in the app cache
 (epoch milliseconds), not in Room or preferences. [Download business data
 export](../operations/business/download-business-data-export.md) reuses the file matching the current READY
 export or downloads and saves it; `saveFile()` clears that business's directory first, so one file per
@@ -158,3 +169,20 @@ business is kept and other businesses are unaffected. New export requests and re
 that is not READY or already expired clear the business's directory. All filesystem access goes through
 `FileProvider`. Android shares the file through the business presentation module's non-exported
 `BusinessDataExportFileProvider`, which exposes only `cache/business_data_exports/`.
+
+## Business link
+
+The owner-only business link name lives in `business_link`, one row per business, owned by
+`CommonBusinessLinkDataSource` in the business data module. Only `BusinessDatabase` holds it: its DAO is in the
+`BusinessDaos`, which `ClientDatabase` does not implement. `BusinessDatabase` 27 adds the table with the
+additive auto-migration 26 → 27; existing tables and rows are preserved. Like
+`business_data_export`, the row has no foreign key to `business` and is removed explicitly.
+
+- `BusinessLinkDao.observe(businessId)` emits the nullable row of one business; a missing row means the
+  business has no link or it was never fetched, and the screen shows an empty name for both.
+- [Get business link](../operations/business/get-business-link.md) `refresh(businessId)` upserts the fetched
+  row, or deletes it when the backend answers `BUSINESS_LINK_NOT_FOUND` or a plain 404 (caller is not the
+  owner). Network failures keep the cached row, so the screen works offline.
+- [Set business link](../operations/business/set-business-link.md) upserts the row the backend returns after
+  a successful save; a rejected save leaves it unchanged.
+- Cleared on logout: yes (`businessLinkDao.clear()`).

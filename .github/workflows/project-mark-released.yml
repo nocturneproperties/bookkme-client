@@ -1,12 +1,12 @@
 name: Mark Released Issues
 on:
   workflow_run:
-    workflows: ["Android Release", "iOS Release", "Site Release"]
+    workflows: ["Android Release", "iOS Release", "Site Release", "Client Release"]
     types: [completed]
   workflow_dispatch:
     inputs:
       release:
-        description: Release tag to mention in issue comments (e.g. prod-v1.2.3 or site-v1.0.0)
+        description: Release tag to mention in issue comments (e.g. prod-v1.2.3, site-v1.0.0 or client-v1.0.0)
         required: true
         type: string
 
@@ -72,6 +72,8 @@ jobs:
         run: |
           if [[ "$RELEASE_TAG" == site-* ]]; then
             label=site
+          elif [[ "$RELEASE_TAG" == client-* ]]; then
+            label=client
           else
             label=mobile
           fi

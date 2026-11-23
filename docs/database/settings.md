@@ -6,7 +6,7 @@ The user's notification preferences: one settings row per user plus one row per 
 Written by `CommonNotificationSettingsDataSource`. The color scheme and the pending push token are
 key-value data in DataStore, not tables (see [preferences](preferences.md)).
 
-Every table on this page is an account table: the entities and DAOs live in `:database:account`, and both
+Every table on this page is an account table: the entities and DAOs live in `:database:schema`, and both
 `BusinessDatabase` and `ClientDatabase` hold a copy (see [README](README.md)).
 
 Legal-document acceptance statuses live in the `legal_document_status` Room table, owned by
@@ -86,7 +86,7 @@ no user-profile FK or preferences marker. `BusinessDatabase` schema 25 adds this
 `AutoMigration(24, 25)`; existing tables and rows are preserved. `ClientDatabase` has it since version 1. Domain mapping stays in the settings data module.
 
 The JSON export payload is stored as one UTF-8 file at
-`personal_data_exports/<requestedAt>-<expiresAt>/bookk-personal-data.json` in the app cache (epoch
+`personal_data_exports/<requestedAt>-<expiresAt>/bookkme-personal-data.json` in the app cache (epoch
 milliseconds), not in Room or preferences. `DownloadPersonalDataExport` reuses the file matching the
 current READY export or downloads and saves JSON through separate datasource calls; `saveFile()`
 clears the directory first, so only one export is kept. The cache survives screen recreation; OS

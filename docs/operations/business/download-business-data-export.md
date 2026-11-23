@@ -9,7 +9,7 @@
 flowchart TD
     Start([invoke businessId]) --> Status[GetBusinessDataExport.flow businessId .first]
     Status -- null or not READY --> NotReady([throw Error.NotReady])
-    Status -- READY --> Cached[DataExportDataSource.getFile businessId, export<br/>business_data_exports/businessId/requestedAt-expiresAt/bookk-business-data.json]
+    Status -- READY --> Cached[DataExportDataSource.getFile businessId, export<br/>business_data_exports/businessId/requestedAt-expiresAt/bookkme-business-data.json]
     Cached -- exists --> Path([return cached Path])
     Cached -- missing --> Net["DataExportDataSource.download<br/>GET /api/business/{id}/export/download<br/>Accept application/json"]
     Net -- 404 shared Error.NotFound --> NotReady

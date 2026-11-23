@@ -1,0 +1,35 @@
+name: Kobweb Export
+description: Exports a Kobweb app for the Kobweb server into apps/<app>/.kobweb, reusing the cached Playwright browser the export renders pages with
+
+inputs:
+  app:
+    description: "Kobweb app to export, named like its Gradle project and its folder under apps/: site or client"
+    required: true
+  flavor:
+    description: "BuildKonfig variant that selects the API the app calls (devRelease or prodRelease); only apps depending on :shared:common need it"
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Query Browser Cache ID
+      id: browser
+      shell: bash
+      run: echo "cache-id=$(./gradlew -q :${{ inputs.app }}:kobwebBrowserCacheId)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Browser
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ steps.browser.outputs.cache-id }}
+
+    - name: Export
+      shell: bash
+      env:
+        APP: ${{ inputs.app }}
+        FLAVOR: ${{ inputs.flavor }}
+      run: |
+        flavor_argument=()
+        [ -z "$FLAVOR" ] || flavor_argument=("-Pbuildkonfig.flavor=$FLAVOR")
+        ./gradlew ":$APP:kobwebExport" -PkobwebBuildTarget=RELEASE -PkobwebExportLayout=FULLSTACK "${flavor_argument[@]}"

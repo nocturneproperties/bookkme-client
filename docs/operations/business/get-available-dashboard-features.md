@@ -8,8 +8,9 @@
 Derives the set of dashboard tiles from the selected business's permission columns, the cached plugin
 flag and the signed-in profile. It re-emits whenever the dashboard id, the business row, the plugin
 preference or the cached profile changes. `APPOINTMENTS` needs the plugin flag to be exactly `true`.
-`null` ("not fetched yet") hides the tile. `DATA_EXPORT` (the owner-only business data export) needs
-a known `business.ownerId` equal to the cached `user_profile` id; an unknown owner or profile hides it.
+`null` ("not fetched yet") hides the tile. `DATA_EXPORT` (the owner-only business data export) and
+`BUSINESS_LINK` (the owner-only [business link](set-business-link.md) editor) need a known
+`business.ownerId` equal to the cached `user_profile` id; an unknown owner or profile hides them.
 
 ```mermaid
 flowchart TD
@@ -23,6 +24,6 @@ flowchart TD
     Build --> P3{permissions.clients.view} -- yes --> F3[+ CLIENTS]
     Build --> P4{permissions.services.view} -- yes --> F4[+ SERVICES]
     Build --> P5{plugin == true AND permissions.appointments.view} -- yes --> F5[+ APPOINTMENTS]
-    Build --> P6{business.ownerId != null AND == profile.id} -- yes --> F6[+ DATA_EXPORT]
+    Build --> P6{business.ownerId != null AND == profile.id} -- yes --> F6[+ DATA_EXPORT, BUSINESS_LINK]
     F1 & F2 & F3 & F4 & F5 & F6 --> R([emit DashboardOverview business, features])
 ```

@@ -7,7 +7,6 @@ object LanguageRedirect {
     private const val LEGAL_LANGUAGE_SEGMENTS = 3
 
     fun target(path: String, preferred: AppLanguage): String {
-        if (path == SiteNavigation.TELEGRAM_PATH) return path
         legalLanguagePath(path)?.let { return it }
         if (AppLanguage.fromPath(path) != null) return path
         return preferred.localize(path)

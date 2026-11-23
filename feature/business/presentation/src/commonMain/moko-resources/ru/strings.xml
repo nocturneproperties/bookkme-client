@@ -119,4 +119,18 @@
     <string name="business_export_running_footer">Вы можете покинуть этот экран и вернуться позже.</string>
     <string name="business_export_file_title">Данные бизнеса</string>
     <string name="business_export_file_type">Файл JSON</string>
+    <string name="business_dashboard_link">Ссылка на бизнес</string>
+    <string name="business_link_title">Ссылка на бизнес</string>
+    <string name="business_link_description">По этой ссылке клиенты открывают вашу страницу записи. Используйте от 3 до 32 латинских букв или цифр, разделяя их одиночными дефисами.</string>
+    <string name="business_link_name_label">Название ссылки</string>
+    <string name="business_link_name_placeholder">your-business</string>
+    <string name="business_link_change_note">Ссылку можно менять до 3 раз за 90 дней. Прежняя ссылка ещё 90 дней открывает вашу страницу, и никто другой не может её занять.</string>
+    <string name="business_link_share">Поделиться</string>
+    <string name="business_link_saved">Ссылка сохранена</string>
+    <string name="business_link_load_error">Не удалось загрузить ссылку на бизнес.</string>
+    <string name="business_link_error_invalid">Используйте от 3 до 32 латинских букв или цифр, разделяя их одиночными дефисами.</string>
+    <string name="business_link_error_reserved">Это название зарезервировано. Выберите другое.</string>
+    <string name="business_link_error_taken">Это название уже занято. Выберите другое.</string>
+    <string name="business_link_error_change_limit">Ссылку уже меняли 3 раза за последние 90 дней. Попробуйте позже.</string>
+    <string name="business_link_error_not_owner">Менять ссылку бизнеса может только его владелец.</string>
 </resources>

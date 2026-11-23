@@ -47,6 +47,9 @@ fun BusinessTab(
                 toBusinessDataExport = {
                     businessController.navigate(BusinessDestination.DataExport(it))
                 },
+                toBusinessLink = {
+                    businessController.navigate(BusinessDestination.BusinessLink(it))
+                },
                 toShopOrders = {},
                 toShopAssortment = {},
                 toShopWarehouse = {},

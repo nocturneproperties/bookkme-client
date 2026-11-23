@@ -32,6 +32,7 @@ fun authDataModule() = module {
             get(),
             get(named(HttpClientType.NO_AUTH)),
             get(),
+            get(),
         )
     } binds arrayOf(AuthorizationDataSource::class, LogOutAction::class)
     singleOf(::CommonRegistrationDataSource) bind RegistrationDataSource::class

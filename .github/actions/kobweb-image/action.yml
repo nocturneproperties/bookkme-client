@@ -1,0 +1,31 @@
+name: Kobweb Image
+description: Builds a Kobweb app's container image from the exported apps/<app>/.kobweb and pushes it to GHCR
+
+inputs:
+  app:
+    description: "Kobweb app to publish, named like its folder under apps/: site or client"
+    required: true
+  image:
+    description: "GHCR image name under ghcr.io/nocturneproperties: bookkme-site or bookkme-webapp"
+    required: true
+  tag:
+    description: Image tag to publish
+    required: true
+  registry-token:
+    description: Token allowed to write packages to ghcr.io
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Publish Image
+      shell: bash
+      env:
+        APP: ${{ inputs.app }}
+        IMAGE: ghcr.io/nocturneproperties/${{ inputs.image }}:${{ inputs.tag }}
+        REGISTRY_TOKEN: ${{ inputs.registry-token }}
+      run: |
+        echo -n "$REGISTRY_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+        docker build --tag "$IMAGE" "apps/$APP"
+        docker push "$IMAGE"
+        echo "Published \`$IMAGE\`" >> "$GITHUB_STEP_SUMMARY"

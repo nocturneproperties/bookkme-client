@@ -19,7 +19,6 @@ object SiteNavigation {
     const val CLIENTS_PATH = "/clients"
     const val GUIDES_PATH = "/guides"
     const val CONTACT_PATH = "/contact"
-    const val TELEGRAM_PATH = "/telegram"
 
     val audiences = listOf(
         SiteLink(SiteRes.strings.site_nav_business.desc(), HOME_PATH),

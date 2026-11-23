@@ -183,6 +183,51 @@ class BusinessDashboardViewModelTest {
     }
 
     @Test
+    fun `offers the business link right before the business settings to owners`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.overview.value = DashboardOverview(
+            business,
+            setOf(DashboardFeature.BUSINESS, DashboardFeature.BUSINESS_LINK),
+        )
+
+        then()
+        val destinations = sut.uiState.sections.single().items.map { it.navigation }
+        val linkIndex = destinations.indexOf(
+            DashboardNavigationDestination.BusinessLink(business.id),
+        )
+        assertEquals(DashboardNavigationDestination.Settings, destinations[linkIndex + 1])
+        assertEquals(
+            BusinessRes.strings.business_dashboard_link.desc(),
+            sut.uiState.sections.single().items[linkIndex].text,
+        )
+    }
+
+    @Test
+    fun `hides the business link from non owners`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.overview.value = DashboardOverview(
+            stubBusiness(),
+            setOf(DashboardFeature.BUSINESS),
+        )
+
+        then()
+        assertFalse(
+            sut.uiState.sections.single().items.any {
+                it.navigation is DashboardNavigationDestination.BusinessLink
+            },
+        )
+    }
+
+    @Test
     fun `shows no sections when no section feature is available`() = runUnitTest {
         given()
         val fixture = Fixture()

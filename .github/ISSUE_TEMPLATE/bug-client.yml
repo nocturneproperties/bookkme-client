@@ -1,0 +1,68 @@
+name: Client web app bug
+description: Something is broken in the BookkMe client web app on app.bookkme.com (the Telegram mini app).
+labels: ["bug", "client"]
+body:
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Opened in
+      options:
+        - Telegram on iOS
+        - Telegram on Android
+        - Telegram Desktop
+        - Telegram Web
+        - A browser, outside Telegram
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App and browser version
+      placeholder: e.g. Telegram 11.5 on iOS 18, Chrome 131 on Windows
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - EN
+        - UK
+        - PL
+        - All
+    validations:
+      required: true
+  - type: dropdown
+    id: color-mode
+    attributes:
+      label: Color mode
+      options:
+        - Light
+        - Dark
+        - Both
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the business link in Telegram
+        2. Tap ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots

@@ -58,7 +58,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `SignIn` | `GET /api/auth/passkey/sign_in/challenge`, `POST /api/auth/sign_in` | [Sign in](authorization/sign-in.md) |
 | `SignInWithTelegram` | `POST /api/auth/telegram/sign_in` with the raw Mini App `initData` and, for a new user, the accepted legal-document versions | [Sign in with Telegram](authorization/sign-in-with-telegram.md) |
 | `InitiateBusinessSuspend` | via `SwitchDashboardBusiness(null)` (local only) and `RefreshBusinessInfo` (`GET /api/business/mine`) | [Initiate business suspend](authorization/initiate-business-suspend.md) |
-| `InitialAppDataFetch` | `timestampProtectedFetch`: every `AppStartAction` (local export file cleanup), then `GET /api/user/legal`; private requests only when authorized; `rawFetch`: profile, then every `DataFetchAction` (business refresh), then every `BackgroundDataFetchAction` in the application scope (notifications and per-business `BusinessDataFetchAction` refreshes) | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
+| `InitialAppDataFetch` | `timestampProtectedFetch`: every `AppStartAction` (local export file cleanup), then `GET /api/user/legal` (every 30 min, or on every start while the local database is in memory); private requests only when authorized; `rawFetch`: profile, then every `DataFetchAction` (business refresh), then every `BackgroundDataFetchAction` in the application scope (notifications and per-business `BusinessDataFetchAction` refreshes) | [Initial app data fetch](authorization/initial-app-data-fetch.md) |
 | `LogOut` | `DELETE /api/auth/session`; bound cleanup includes export status and temporary files | [Log out](authorization/log-out.md) |
 | `RefreshToken` | `POST /api/auth/refresh` | [Refresh token](authorization/refresh-token.md) |
 | `UserProfileCRUD` | `GET` / `PATCH /api/user/me` | [User profile CRUD](authorization/user-profile-crud.md) |
@@ -75,12 +75,16 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `CreateBusiness` | `POST /api/business`; typed backend errors | [Create business](business/create-business.md) |
 | `UpdateBusiness` | `PUT /api/business/{id}`; Business Settings retention (12–120 months; cache default 36) + inline validation errors | [Update business](business/update-business.md) |
 | `RefreshBusinessInfo` | `GET /api/business/mine`; cache retention defaults to 36 months | [Refresh business info](business/refresh-business-info.md) |
+| `GetBusinesses` | `POST /api/business/bulk` (ids in chunks of 100), saved into `business`; client web app only | [Get businesses](business/get-businesses.md) |
 | `SwitchDashboardBusiness` | `PUT /api/business/{id}/dashboard` (best-effort) | [Switch dashboard business](business/switch-dashboard-business.md) |
 | `JoinBusiness` | via `RedeemEmployeeInvitation` | [Join business](business/join-business.md) |
 | `EnableAppointmentsPlugin` | `POST /api/appointments/enabled/{businessId}` | [Enable appointments plugin](business/enable-appointments-plugin.md) |
 | `IsAppointmentsPluginEnabled` | `GET /api/appointments/enabled/{businessId}` | [Is appointments plugin enabled](business/is-appointments-plugin-enabled.md) |
 | `CanEditBusiness` | local only (`business` table) | [Can edit business](business/can-edit-business.md) |
-| `GetAvailableDashboardFeatures` | local only; `DATA_EXPORT` only for the owner (`business.ownerId` = cached profile id) | [Get available dashboard features](business/get-available-dashboard-features.md) |
+| `GetBusinessLink` | `flow()` observes `business_link`; `refresh()` `GET /api/business/{id}/link` → upsert; `BUSINESS_LINK_NOT_FOUND` → delete row, 404 → delete row + `NotOwner` | [Get business link](business/get-business-link.md) |
+| `SetBusinessLink` | local name rule check → `PUT /api/business/{id}/link` → upsert `business_link`; typed errors, 404 → `NotOwner` | [Set business link](business/set-business-link.md) |
+| `ResolveBusinessLink` | local name rule check → `GET /api/business/link/{name}`, no cache; `BUSINESS_LINK_NOT_FOUND` → `NotFound` (client web app) | [Resolve business link](business/resolve-business-link.md) |
+| `GetAvailableDashboardFeatures` | local only; `DATA_EXPORT` and `BUSINESS_LINK` only for the owner (`business.ownerId` = cached profile id) | [Get available dashboard features](business/get-available-dashboard-features.md) |
 | `ObserveDashboardSetupStatus` | local only | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) |
 | `RefreshDashboardSetupStatus` | via `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) |
 | `ObserveDashboardBusinessChanges`, `ObserveDashboardBusinessIdChanges`, `ObserveCurrentBusinessId` (×4), `ObserveCurrentBusiness` | local only | [Observe dashboard business](business/observe-dashboard-business-changes.md) |
@@ -103,7 +107,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `GetServices` | `GET /api/business/{businessId}/service` | [Get services](services/get-services.md) |
+| `GetServices` | `GET /api/business/{businessId}/service` through `GetBusinessServices`, for the dashboard business | [Get services](services/get-services.md) |
+| `GetBusinessServices` | `GET /api/business/{businessId}/service` for any business (business app and client web app) | [Get business services](services/get-business-services.md) |
 | `GetService` | local only | [Get service](services/get-service.md) |
 | `CreateService` | `POST /api/business/{businessId}/service`; typed validation errors | [Create service](services/create-service.md) |
 | `EditService` | `PUT /api/business/{businessId}/service/{id}`; typed validation errors | [Edit service](services/edit-service.md) |
@@ -136,7 +141,6 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetBusinessAppointmentRequests` | `GET /api/appointments/request/{businessId}` | [Get business appointment requests](appointments/get-business-appointment-requests.md) |
-| `GetBusinessAppointmentsEnabled` | `GET /api/appointments/enabled` | [Get business appointments enabled](appointments/get-business-appointments-enabled.md) |
 | `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=[&employeeId=]` | [Get appointments for business](appointments/get-appointments-for-business.md) |
 | `GetAppointment` | local read; `refresh(id)` fetches and caches `GET /api/appointments/{id}`; shared `NotFound` → use-case `NotFound` | [Get appointment](appointments/get-appointment.md) |
 | `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}` (paged) | [Get appointment history](appointments/get-appointment-history.md) |
@@ -153,6 +157,9 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `UpdateAppointmentSettings` | `PUT /api/appointments/settings/{businessId}` | [Update appointment settings](appointments/update-appointment-settings.md) |
 | `GetAppointmentOptions` | composes two refreshes | [Get appointment options](appointments/get-appointment-options.md) |
 | `ObserveAppointmentOptions` | local only | [Observe appointment options](appointments/observe-appointment-options.md) |
+| `GetUpcomingBookings` | `GET /api/appointments/upcoming` + `GetBusinesses.refresh` (client web app) | [Get upcoming bookings](appointments/get-upcoming-bookings.md) |
+| `GetSavedBusinesses` | `GET /api/appointments/businesses` + `GetBusinesses.refresh` (client web app) | [Get saved businesses](appointments/get-saved-businesses.md) |
+| `SaveBusiness` | `POST /api/appointments/businesses/{businessId}`, then refreshes the saved list (client web app) | [Save business](appointments/save-business.md) |
 
 ## Settings
 
@@ -195,6 +202,9 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) | `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` (cross-feature) |
 | [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |
 | [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
+| [Save business](appointments/save-business.md) | `GetSavedBusinesses.refresh` |
+| [Get upcoming bookings](appointments/get-upcoming-bookings.md), [Get saved businesses](appointments/get-saved-businesses.md) | `GetBusinesses.flow`, `GetBusinesses.refresh` (cross-feature, business) |
+| [Get services](services/get-services.md) | `ObserveDashboardBusinessChanges`, `GetBusinessServices` |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Create appointment](appointments/create-appointment.md) | `CreateQuote`, `GetServices.refresh` on mismatch, `ObserveUserBusinessesChanges` for the default employee |

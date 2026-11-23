@@ -64,7 +64,7 @@ class BusinessDataExportViewModelTest {
         val cache = FakeExportCache()
         val getExport = FakeGetBusinessDataExport(cache)
         val startExport = FakeStartBusinessDataExport(cache)
-        val file = "/cache/business_data_exports/1-2/bookk-business-data.json".toPath()
+        val file = "/cache/business_data_exports/1-2/bookkme-business-data.json".toPath()
         val downloadExport = FakeDownloadBusinessDataExport { file }
         val errorMapper = FakeErrorMapper()
 
@@ -1053,7 +1053,7 @@ class BusinessDataExportViewModelTest {
         val sut = fixture.sut()
         sut.uiState.download.onClick?.invoke()
         fixture.cache.value = fixture.ready(expiresAt = fixture.now + 2.days)
-        val updated = "/cache/business_data_exports/3-4/bookk-business-data.json".toPath()
+        val updated = "/cache/business_data_exports/3-4/bookkme-business-data.json".toPath()
         fixture.downloadExport.file = { updated }
 
         whenn()

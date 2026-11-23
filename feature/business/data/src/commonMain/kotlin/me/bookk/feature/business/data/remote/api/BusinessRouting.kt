@@ -16,6 +16,17 @@ object BusinessRouting {
                 val parent: Business = Business(),
             )
 
+            @Resource("/bulk")
+            class Bulk(
+                val parent: Business = Business(),
+            )
+
+            @Resource("/link/{name}")
+            class LinkName(
+                val parent: Business = Business(),
+                val name: String,
+            )
+
             @Resource("/{id}")
             class Id(
                 val parent: Business = Business(),
@@ -33,6 +44,11 @@ object BusinessRouting {
 
                 @Resource("/dashboard")
                 class Dashboard(
+                    val parent: Id,
+                )
+
+                @Resource("/link")
+                class Link(
                     val parent: Id,
                 )
             }

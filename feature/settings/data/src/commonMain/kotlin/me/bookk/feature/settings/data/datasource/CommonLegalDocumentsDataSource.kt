@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.database.account.dao.LegalDocumentStatusDao
+import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.feature.settings.data.mapping.toDomain
 import me.bookk.feature.settings.data.mapping.toEntity
 import me.bookk.feature.settings.data.remote.api.UserRouting

@@ -29,6 +29,7 @@ import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocuments
+import me.bookk.feature.authorization.domain.entity.UserProfile
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -37,6 +38,7 @@ import kotlin.test.assertFailsWith
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class InitialAppDataFetchImplTest {
@@ -58,6 +60,14 @@ class InitialAppDataFetchImplTest {
     private class Fixture {
         val userProfileCRUD = mock<UserProfileCRUD> {
             everySuspend { updateFromRemote() } returns Unit
+            every { observe() } returns flowOf(
+                UserProfile(
+                    id = Uuid.parse("00000000-0000-0000-0000-000000000001"),
+                    firstName = "Jane",
+                    lastName = "Doe",
+                    email = "jane@example.com",
+                ),
+            )
         }
         val authorizationDataSource = mock<AuthorizationDataSource>(MockMode.autofill)
         val clock = mock<Clock>()
@@ -96,6 +106,7 @@ class InitialAppDataFetchImplTest {
 
         init {
             every { authorizationDataSource.getIsAuthorizedFlow() } returns flowOf(true)
+            everySuspend { authorizationDataSource.isDatabasePersistent() } returns true
         }
 
         val sut = InitialAppDataFetchImpl(
@@ -358,6 +369,54 @@ class InitialAppDataFetchImplTest {
 
             then()
             fixture.verifyNoPrivateFetch()
+        }
+
+    @Test
+    fun `timestampProtectedFetch fetches on every start while the database is not persistent`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
+            everySuspend { fixture.authorizationDataSource.isDatabasePersistent() } returns false
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
+            verifySuspend { fixture.firstDataFetch.doOnDataFetch(false) }
+        }
+
+    @Test
+    fun `timestampProtectedFetch fetches when the profile is missing although the last fetch was recent`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
+            every { fixture.userProfileCRUD.observe() } returns flowOf(null)
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend { fixture.userProfileCRUD.updateFromRemote() }
+            verifySuspend { fixture.firstDataFetch.doOnDataFetch(false) }
+        }
+
+    @Test
+    fun `timestampProtectedFetch skips the fetch for a missing profile while unauthorized`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubFetchDue(lastFetchAt = now - 10.minutes)
+            every { fixture.userProfileCRUD.observe() } returns flowOf(null)
+            every { fixture.authorizationDataSource.getIsAuthorizedFlow() } returns flowOf(false)
+
+            whenn()
+            fixture.sut.timestampProtectedFetch()
+
+            then()
+            verifySuspend(VerifyMode.not) { fixture.getSignUpLegalDocuments.refresh() }
         }
 
     @Test

@@ -3,8 +3,8 @@ package me.bookk.feature.business.data.datasource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
-import me.bookk.database.business.dao.BusinessDataExportDao
-import me.bookk.database.business.entity.BusinessDataExportEntity
+import me.bookk.database.dao.BusinessDataExportDao
+import me.bookk.database.entity.BusinessDataExportEntity
 import kotlin.uuid.Uuid
 
 internal class FakeBusinessDataExportDao : BusinessDataExportDao() {

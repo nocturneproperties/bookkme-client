@@ -192,4 +192,28 @@ class BusinessRemoteContractTest {
         then()
         assertEquals(listOf("start" to 1, "end" to 2), fields)
     }
+
+    @Test
+    fun `BusinessLink field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = BusinessLinkRemote.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("businessId" to 1, "name" to 2), fields)
+    }
+
+    @Test
+    fun `BusinessLinkRequest field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = BusinessLinkRequest.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("name" to 1), fields)
+    }
 }

@@ -27,7 +27,7 @@ flowchart TD
 ```
 
 JSON is stored unchanged; no export schema leaks into domain. The file lives at
-`personal_data_exports/<requestedAt>-<expiresAt>/bookk-personal-data.json` in the app cache (epoch
+`personal_data_exports/<requestedAt>-<expiresAt>/bookkme-personal-data.json` in the app cache (epoch
 milliseconds), so a new request or expiry misses the old file and the share sheet always offers the
 same file name. `saveFile()` clears the directory before writing, so at most one export is kept.
 Refreshes that return a non-downloadable status, new export requests and logout remove the

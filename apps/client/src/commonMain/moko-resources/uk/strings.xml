@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="client_app_name">BookkMe</string>
+    <string name="client_telegram_title">Міні-застосунок у Telegram</string>
+    <string name="client_telegram_description">Записуйтеся до закладів у BookkMe просто в Telegram.</string>
+    <string name="client_telegram_outside_title">Ця сторінка відкривається в Telegram</string>
+    <string name="client_telegram_outside_body">Це міні-застосунок BookkMe. Відкрийте його за посиланням закладу в Telegram.</string>
+    <string name="client_telegram_outside_link">Як працює запис у BookkMe</string>
+</resources>

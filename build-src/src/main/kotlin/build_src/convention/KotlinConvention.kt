@@ -36,11 +36,16 @@ private val modulesWithWebTarget = setOf(
     ":library:files:api",
     ":library:files:impl",
     ":library:validation:api",
-    ":database:account",
+    ":database:schema",
     ":database:client",
     ":feature:authorization:data",
+    ":feature:appointments:data",
+    ":feature:business:data",
     ":feature:settings:data",
+    ":feature:services:data",
     ":feature:authorization:presentation",
+    ":feature:dashboard:presentation",
+    ":feature:booking:presentation",
     ":shared:common",
 )
 

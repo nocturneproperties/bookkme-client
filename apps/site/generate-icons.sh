@@ -3,9 +3,10 @@ set -euo pipefail
 
 site_dir=$(cd "$(dirname "$0")" && pwd)
 public="$site_dir/src/jsMain/resources/public"
+shared_public="$site_dir/designsystem/src/jsMain/resources/public"
 colors="$site_dir/../../designsystem/src/commonMain/moko-resources/colors/colors.xml"
-favicon_svg="$public/favicon.svg"
-app_icon_svg="$public/logo-dark.svg"
+favicon_svg="$shared_public/favicon.svg"
+app_icon_svg="$shared_public/logo-dark.svg"
 glyph_ratio=56
 logo_width=247
 logo_height=238
@@ -72,11 +73,11 @@ favicon_sizes=(16 32 48)
 for size in "${favicon_sizes[@]}"; do
     render "$favicon_svg" "$size" "$size" "$size" "$work/favicon-$size.png"
 done
-write_ico "$public/favicon.ico" "${favicon_sizes[@]}"
+write_ico "$shared_public/favicon.ico" "${favicon_sizes[@]}"
 
 render_app_icon 180 "$public/apple-touch-icon.png"
 render_app_icon 192 "$public/icon-192.png"
 render_app_icon 512 "$public/icon-512.png"
 render "$app_icon_svg" 1200 630 290 "$public/share-image.png" "$background"
 
-echo "Generated favicon.ico, apple-touch-icon.png, icon-192.png, icon-512.png and share-image.png in $public"
+echo "Generated favicon.ico in $shared_public and apple-touch-icon.png, icon-192.png, icon-512.png and share-image.png in $public"

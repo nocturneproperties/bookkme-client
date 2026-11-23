@@ -44,4 +44,26 @@
     <string name="dashboard_join_error_employees_limit">This business already has the maximum number of employees.</string>
     <string name="create_business_limit_reached_error">You already own the maximum number of businesses.</string>
     <string name="create_business_invalid_name_error">Enter a valid business name.</string>
+    <string name="dashboard_client_home_greeting">Hi, %s</string>
+    <string name="dashboard_client_home_greeting_default">Hi</string>
+    <string name="dashboard_client_home_settings">Settings</string>
+    <string name="dashboard_client_home_upcoming">Upcoming</string>
+    <string name="dashboard_client_home_all_bookings">All bookings</string>
+    <string name="dashboard_client_home_no_upcoming">No upcoming bookings</string>
+    <string name="dashboard_client_home_time_with_specialist">%1$s · with %2$s</string>
+    <string name="dashboard_client_home_status_confirmed">Confirmed</string>
+    <string name="dashboard_client_home_status_waiting">Waiting for confirmation</string>
+    <string name="dashboard_client_home_book_again">Book again</string>
+    <string name="dashboard_client_home_all_businesses">All businesses</string>
+    <string name="dashboard_client_home_last_visit">Last visit %s</string>
+    <string name="dashboard_client_home_no_visits">No visits yet</string>
+    <string name="dashboard_client_home_not_taking_bookings">Not taking bookings</string>
+    <string name="dashboard_client_home_empty_title">Nothing to book yet</string>
+    <string name="dashboard_client_home_empty_body">You get here through a business\'s link. Ask your salon, barber or studio for theirs and you\'ll land right on their services.</string>
+    <string name="dashboard_client_home_empty_step_link">Open the business\'s link</string>
+    <string name="dashboard_client_home_empty_step_pick">Pick services and a time</string>
+    <string name="dashboard_client_home_empty_step_confirm">They confirm, you get a message here</string>
+    <string name="dashboard_client_home_save_not_enabled">This business doesn\'t take bookings yet.</string>
+    <string name="dashboard_client_home_save_limit">You\'ve saved as many businesses as you can.</string>
+    <string name="dashboard_client_home_link_not_found">No business uses this link. Ask the business for its current link.</string>
 </resources>

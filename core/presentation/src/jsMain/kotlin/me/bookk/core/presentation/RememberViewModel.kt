@@ -11,6 +11,14 @@ inline fun <reified T : ViewModel> rememberViewModel(
     key: Any? = Unit,
     noinline parameters: ParametersDefinition? = null,
 ): T {
+    val store = LocalViewModelStore.current
+    if (store != null) {
+        return remember(store, key) {
+            store.getOrPut("${T::class.simpleName}:$key") {
+                KoinPlatform.getKoin().get<T>(parameters = parameters)
+            }
+        }
+    }
     val viewModel = remember(key) { KoinPlatform.getKoin().get<T>(parameters = parameters) }
     DisposableEffect(viewModel) {
         onDispose { viewModel.onCleared() }

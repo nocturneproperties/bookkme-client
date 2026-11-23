@@ -10,6 +10,7 @@ import me.bookk.feature.business.domain.api.StartBusinessDataExport
 import me.bookk.feature.business.domain.api.business.CanEditBusiness
 import me.bookk.feature.business.domain.api.business.CreateBusiness
 import me.bookk.feature.business.domain.api.business.GetAvailableDashboardFeatures
+import me.bookk.feature.business.domain.api.business.GetBusinesses
 import me.bookk.feature.business.domain.api.business.JoinBusiness
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessChanges
 import me.bookk.feature.business.domain.api.business.ObserveDashboardBusinessIdChanges
@@ -19,6 +20,9 @@ import me.bookk.feature.business.domain.api.business.RefreshBusinessInfo
 import me.bookk.feature.business.domain.api.business.RefreshDashboardSetupStatus
 import me.bookk.feature.business.domain.api.business.SwitchDashboardBusiness
 import me.bookk.feature.business.domain.api.business.UpdateBusiness
+import me.bookk.feature.business.domain.api.link.GetBusinessLink
+import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
+import me.bookk.feature.business.domain.api.link.SetBusinessLink
 import me.bookk.feature.business.domain.api.plugin.EnableAppointmentsPlugin
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.business.domain.impl.DeleteExpiredBusinessDataExportFilesImpl
@@ -29,6 +33,7 @@ import me.bookk.feature.business.domain.impl.business.CanEditBusinessImpl
 import me.bookk.feature.business.domain.impl.business.CreateBusinessImpl
 import me.bookk.feature.business.domain.impl.business.DashboardBusinessDataFetch
 import me.bookk.feature.business.domain.impl.business.GetAvailableDashboardFeaturesImpl
+import me.bookk.feature.business.domain.impl.business.GetBusinessesImpl
 import me.bookk.feature.business.domain.impl.business.JoinBusinessImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessChangesImpl
 import me.bookk.feature.business.domain.impl.business.ObserveDashboardBusinessIdChangesImpl
@@ -38,6 +43,9 @@ import me.bookk.feature.business.domain.impl.business.RefreshBusinessInfoImpl
 import me.bookk.feature.business.domain.impl.business.RefreshDashboardSetupStatusImpl
 import me.bookk.feature.business.domain.impl.business.SwitchDashboardBusinessImpl
 import me.bookk.feature.business.domain.impl.business.UpdateBusinessImpl
+import me.bookk.feature.business.domain.impl.link.GetBusinessLinkImpl
+import me.bookk.feature.business.domain.impl.link.ResolveBusinessLinkImpl
+import me.bookk.feature.business.domain.impl.link.SetBusinessLinkImpl
 import me.bookk.feature.business.domain.impl.plugin.EnableAppointmentsPluginImpl
 import me.bookk.feature.business.domain.impl.plugin.IsAppointmentsPluginEnabledImpl
 import org.koin.core.module.dsl.factoryOf
@@ -67,4 +75,11 @@ fun businessDomainModule() = module {
     factoryOf(::EnableAppointmentsPluginImpl) bind EnableAppointmentsPlugin::class
     factoryOf(::IsAppointmentsPluginEnabledImpl) bind IsAppointmentsPluginEnabled::class
     factoryOf(::CanEditBusinessImpl) bind CanEditBusiness::class
+    factoryOf(::GetBusinessLinkImpl) bind GetBusinessLink::class
+    factoryOf(::SetBusinessLinkImpl) bind SetBusinessLink::class
+}
+
+fun clientBusinessDomainModule() = module {
+    factoryOf(::GetBusinessesImpl) bind GetBusinesses::class
+    factoryOf(::ResolveBusinessLinkImpl) bind ResolveBusinessLink::class
 }

@@ -4,7 +4,6 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
@@ -28,16 +27,14 @@ import me.bookk.feature.business.domain.api.entity.Business
 import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
+import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import me.bookk.feature.services.domain.api.service.entity.Service
-import me.bookk.feature.services.domain.datasource.ServiceDataSource
-import me.bookk.feature.services.domain.datasource.ServiceGroupDataSource
 import me.bookk.feature.services.domain.impl.stubService
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,11 +53,9 @@ class GetServicesImplTest {
     }
 
     private class Fixture {
-        val serviceDataSource = mock<ServiceDataSource>()
-        val groupDataSource = mock<ServiceGroupDataSource>()
+        val getBusinessServices = mock<GetBusinessServices>()
         val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
-        val sut =
-            GetServicesImpl(serviceDataSource, groupDataSource, observeDashboardBusinessChanges)
+        val sut = GetServicesImpl(getBusinessServices, observeDashboardBusinessChanges)
     }
 
     private fun stubBusiness(id: Uuid = Uuid.random()) = Business(
@@ -82,20 +77,6 @@ class GetServicesImplTest {
         ),
     )
 
-    private fun stubTimedService(businessId: Uuid, createdAtMs: Long) =
-        stubService(businessId).let { s ->
-            Service(
-                id = s.id,
-                businessId = s.businessId,
-                group = s.group,
-                name = s.name,
-                duration = s.duration,
-                price = s.price,
-                isAvailable = s.isAvailable,
-                createdAt = Instant.fromEpochMilliseconds(createdAtMs),
-            )
-        }
-
     @Test
     fun `flow emits empty list when there is no dashboard business`() = runUnitTest {
         given()
@@ -110,23 +91,20 @@ class GetServicesImplTest {
     }
 
     @Test
-    fun `flow emits the db services sorted by createdAt for the current dashboard business`() =
-        runUnitTest {
-            given()
-            val fixture = Fixture()
-            val business = stubBusiness()
-            val older = stubTimedService(business.id, 1000L)
-            val newer = stubTimedService(business.id, 2000L)
-            every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-            every { fixture.serviceDataSource.observeServicesDBChanges(business.id) } returns
-                flowOf(listOf(newer, older))
+    fun `flow emits the services of the current dashboard business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val business = stubBusiness()
+        val services = listOf(stubService(business.id), stubService(business.id))
+        every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
+        every { fixture.getBusinessServices.flow(business.id) } returns flowOf(services)
 
-            whenn()
-            val result = fixture.sut.flow().first()
+        whenn()
+        val result = fixture.sut.flow().first()
 
-            then()
-            assertEquals(listOf(older, newer), result)
-        }
+        then()
+        assertEquals(services, result)
+    }
 
     @Test
     fun `flow re-resolves the db observation when the dashboard business changes`() = runUnitTest {
@@ -139,9 +117,9 @@ class GetServicesImplTest {
         val secondServices = listOf(stubService(secondBusiness.id))
         businesses.tryEmit(firstBusiness)
         every { fixture.observeDashboardBusinessChanges() } returns businesses
-        every { fixture.serviceDataSource.observeServicesDBChanges(firstBusiness.id) } returns
+        every { fixture.getBusinessServices.flow(firstBusiness.id) } returns
             flowOf(firstServices)
-        every { fixture.serviceDataSource.observeServicesDBChanges(secondBusiness.id) } returns
+        every { fixture.getBusinessServices.flow(secondBusiness.id) } returns
             flowOf(secondServices)
         val results = mutableListOf<List<Service>>()
         val job = launch(Dispatchers.Unconfined) {
@@ -158,90 +136,18 @@ class GetServicesImplTest {
     }
 
     @Test
-    fun `flow never triggers a network fetch as a side effect of being collected`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val business = stubBusiness()
-        every { fixture.observeDashboardBusinessChanges() } returns flowOf(business)
-        every { fixture.serviceDataSource.observeServicesDBChanges(business.id) } returns
-            flowOf(emptyList())
-
-        whenn()
-        fixture.sut.flow().first()
-
-        then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.serviceDataSource.getServices(any()) }
-    }
-
-    @Test
-    fun `refresh fetches services from remote, saves them and their groups, and returns them sorted`() =
-        runUnitTest {
-            given()
-            val fixture = Fixture()
-            val businessId = Uuid.random()
-            val older = stubTimedService(businessId, 1000L)
-            val newer = stubTimedService(businessId, 2000L)
-            everySuspend { fixture.serviceDataSource.getServices(businessId) } returns
-                listOf(newer, older)
-            everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns
-                listOf(older.id, newer.id)
-            everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
-            everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
-            everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
-
-            whenn()
-            val result = fixture.sut.refresh(businessId)
-
-            then()
-            assertEquals(listOf(older, newer), result)
-            verifySuspend { fixture.serviceDataSource.saveServicesInDB(listOf(newer, older)) }
-            verifySuspend { fixture.groupDataSource.saveGroupsInDB(any()) }
-            verifySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) }
-        }
-
-    @Test
-    fun `refresh deletes local services that are no longer present remotely`() = runUnitTest {
+    fun `refresh refreshes the services of the given business`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        val stillPresent = stubService(businessId)
-        val remote = listOf(stillPresent)
-        val staleId = Uuid.random()
-        everySuspend { fixture.serviceDataSource.getServices(businessId) } returns remote
-        everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns
-            listOf(stillPresent.id, staleId)
-        everySuspend { fixture.serviceDataSource.deleteServicesInDb(listOf(staleId)) } returns Unit
-        everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
-        everySuspend { fixture.serviceDataSource.saveServicesInDB(remote) } returns Unit
-        everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
+        val remote = listOf(stubService(businessId))
+        everySuspend { fixture.getBusinessServices.refresh(businessId) } returns remote
 
         whenn()
-        fixture.sut.refresh(businessId)
+        val result = fixture.sut.refresh(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) {
-            fixture.serviceDataSource.deleteServicesInDb(listOf(staleId))
-        }
-    }
-
-    @Test
-    fun `refresh does not call delete when nothing is stale`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        val service = stubService(businessId)
-        everySuspend { fixture.serviceDataSource.getServices(businessId) } returns listOf(service)
-        everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns
-            listOf(service.id)
-        everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
-        everySuspend { fixture.serviceDataSource.saveServicesInDB(listOf(service)) } returns Unit
-        everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
-
-        whenn()
-        fixture.sut.refresh(businessId)
-
-        then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.serviceDataSource.deleteServicesInDb(any()) }
+        assertEquals(remote, result)
     }
 
     @Test
@@ -250,15 +156,13 @@ class GetServicesImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val error = IllegalStateException("network down")
-        everySuspend { fixture.serviceDataSource.getServices(businessId) } throws error
+        everySuspend { fixture.getBusinessServices.refresh(businessId) } throws error
 
         whenn()
         val thrown = assertFailsWith<IllegalStateException> { fixture.sut.refresh(businessId) }
 
         then()
         assertEquals(error, thrown)
-        verifySuspend(VerifyMode.exactly(0)) { fixture.serviceDataSource.getServiceIdsInDb(any()) }
-        verifySuspend(VerifyMode.exactly(0)) { fixture.serviceDataSource.saveServicesInDB(any()) }
     }
 
     @Test
@@ -266,18 +170,12 @@ class GetServicesImplTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        val remote = listOf(stubService(businessId))
-        everySuspend { fixture.serviceDataSource.getServices(businessId) } returns remote
-        everySuspend { fixture.serviceDataSource.getServiceIdsInDb(businessId) } returns
-            remote.map { it.id }
-        everySuspend { fixture.groupDataSource.saveGroupsInDB(any()) } returns Unit
-        everySuspend { fixture.serviceDataSource.saveServicesInDB(any()) } returns Unit
-        everySuspend { fixture.serviceDataSource.saveLastSyncedAt(businessId) } returns Unit
+        everySuspend { fixture.getBusinessServices.refresh(businessId) } returns emptyList()
 
         whenn()
         fixture.sut.doOnBusinessDataFetch(businessId)
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.serviceDataSource.saveServicesInDB(remote) }
+        verifySuspend(VerifyMode.exactly(1)) { fixture.getBusinessServices.refresh(businessId) }
     }
 }

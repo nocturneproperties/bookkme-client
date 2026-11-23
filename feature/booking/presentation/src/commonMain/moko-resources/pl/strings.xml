@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="booking_services_subtitle">Wybierz jedną lub kilka usług</string>
+    <string name="booking_services_continue">Dalej · %1$s · %2$s</string>
+    <string name="booking_services_pick">Wybierz usługę</string>
+    <string name="booking_services_empty">Ta firma nie ma jeszcze usług do rezerwacji</string>
+    <string name="booking_services_details">%1$s · %2$s</string>
+    <string name="booking_duration_minutes">%1$d min</string>
+    <string name="booking_duration_hours">%1$d godz.</string>
+    <string name="booking_duration_hours_minutes">%1$d godz. %2$d min</string>
+</resources>

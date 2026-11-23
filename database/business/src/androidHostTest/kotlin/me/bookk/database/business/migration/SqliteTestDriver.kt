@@ -16,7 +16,7 @@ internal fun prepareSqliteTestDriver() {
         else -> "x64"
     }
     val name = checkNotNull(System.mapLibraryName("sqliteJni"))
-    val path = Files.createTempDirectory("bookk-sqlite-test").toFile()
+    val path = Files.createTempDirectory("bookkme-sqlite-test").toFile()
     path.deleteOnExit()
     val library = File(path, name)
     library.deleteOnExit()

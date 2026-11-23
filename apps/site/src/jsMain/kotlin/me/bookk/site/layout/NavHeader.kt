@@ -29,6 +29,7 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.site.designsystem.components.ColorModeButton
 import me.bookk.site.designsystem.components.ContentMaxWidth
 import me.bookk.site.designsystem.components.LanguagePicker
+import me.bookk.site.designsystem.components.Logo
 import me.bookk.site.designsystem.components.NavigationBar
 import me.bookk.site.designsystem.components.NavigationMenuButton
 import me.bookk.site.designsystem.components.SegmentedLinkItem
@@ -94,7 +95,7 @@ private fun HomeLink() {
         WebLocalization.localize("/"),
         variant = UndecoratedLinkVariant.then(UncoloredLinkVariant),
     ) {
-        Logo(Modifier.height(1.5.cssRem))
+        Logo(SiteRes.strings.site_app_name.desc(), Modifier.height(1.5.cssRem))
     }
 }
 

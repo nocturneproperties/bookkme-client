@@ -44,4 +44,26 @@
     <string name="dashboard_join_error_employees_limit">В этом бизнесе уже максимальное количество сотрудников.</string>
     <string name="create_business_limit_reached_error">Вы уже владеете максимальным количеством бизнесов.</string>
     <string name="create_business_invalid_name_error">Введите корректное название бизнеса.</string>
+    <string name="dashboard_client_home_greeting">Привет, %s</string>
+    <string name="dashboard_client_home_greeting_default">Привет</string>
+    <string name="dashboard_client_home_settings">Настройки</string>
+    <string name="dashboard_client_home_upcoming">Ближайшие</string>
+    <string name="dashboard_client_home_all_bookings">Все записи</string>
+    <string name="dashboard_client_home_no_upcoming">Ближайших записей нет</string>
+    <string name="dashboard_client_home_time_with_specialist">%1$s · мастер %2$s</string>
+    <string name="dashboard_client_home_status_confirmed">Подтверждено</string>
+    <string name="dashboard_client_home_status_waiting">Ждёт подтверждения</string>
+    <string name="dashboard_client_home_book_again">Записаться снова</string>
+    <string name="dashboard_client_home_all_businesses">Все заведения</string>
+    <string name="dashboard_client_home_last_visit">Последний визит %s</string>
+    <string name="dashboard_client_home_no_visits">Визитов пока не было</string>
+    <string name="dashboard_client_home_not_taking_bookings">Не принимает записи</string>
+    <string name="dashboard_client_home_empty_title">Пока некуда записаться</string>
+    <string name="dashboard_client_home_empty_body">Сюда попадают по ссылке бизнеса. Попросите ссылку у своего салона, барбера или студии, и вы сразу увидите их услуги.</string>
+    <string name="dashboard_client_home_empty_step_link">Откройте ссылку бизнеса</string>
+    <string name="dashboard_client_home_empty_step_pick">Выберите услуги и время</string>
+    <string name="dashboard_client_home_empty_step_confirm">Бизнес подтверждает, а вы получаете сообщение здесь</string>
+    <string name="dashboard_client_home_save_not_enabled">Этот бизнес пока не принимает записи.</string>
+    <string name="dashboard_client_home_save_limit">Вы сохранили максимальное число бизнесов.</string>
+    <string name="dashboard_client_home_link_not_found">Эта ссылка не ведёт ни к одному бизнесу. Попросите у бизнеса актуальную ссылку.</string>
 </resources>

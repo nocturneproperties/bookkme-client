@@ -30,7 +30,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.business.dao.ClientsDao
+import me.bookk.database.dao.ClientsDao
 import me.bookk.feature.clients.data.remote.model.DeleteClientRequest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

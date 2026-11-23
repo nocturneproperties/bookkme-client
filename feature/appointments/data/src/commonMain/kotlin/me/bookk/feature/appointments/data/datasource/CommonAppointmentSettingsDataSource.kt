@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
-import me.bookk.database.business.dao.AppointmentSettingsDao
+import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.feature.appointments.data.mapping.toDayOffEntities
 import me.bookk.feature.appointments.data.mapping.toDayScheduleEntities
 import me.bookk.feature.appointments.data.mapping.toDomain

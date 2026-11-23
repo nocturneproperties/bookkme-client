@@ -1,0 +1,101 @@
+name: Client Manual Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      cache:
+        description: "Use latest artifact"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: client-manual-${{ github.ref }}
+      cancel-in-progress: true
+    timeout-minutes: 30
+    steps:
+      - name: Set dynamic variables
+        run: |
+          clean_ref=${GITHUB_REF_NAME//\//_}
+          image_tag=$clean_ref
+          flavor=devRelease
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            image_tag=${GITHUB_REF_NAME##*-v}
+            flavor=prodRelease
+          fi
+          echo "CLEAN_REF=${clean_ref}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${image_tag}" >> $GITHUB_ENV
+          echo "CLIENT_FLAVOR=${flavor}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v7
+
+      - name: Find Latest Artifact
+        id: latest
+        if: inputs.cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: client-${{ env.CLEAN_REF }}
+        run: |
+          run_id=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$ARTIFACT_NAME" \
+            --jq '[.artifacts[] | select(.expired | not)][0].workflow_run.id // empty')
+          echo "run-id=$run_id" >> $GITHUB_OUTPUT
+
+      - name: Download Artifacts
+        id: download
+        if: steps.latest.outputs.run-id != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: client-${{ env.CLEAN_REF }}
+          path: apps/client/.kobweb
+          run-id: ${{ steps.latest.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      - name: Setup Android
+        if: steps.download.outcome != 'success'
+        uses: ./.github/actions/android-setup
+        with:
+          gradle-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-key-job: client
+          gradle-cache-read-only: "false"
+          keystore-properties: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          debug-keystore: ${{ secrets.ANDROID_DEBUG_KEYSTORE_FILE }}
+          google-services: ${{ secrets.ANDROID_GOOGLE_SERVICES_FILE }}
+
+      - name: Export
+        id: export
+        if: steps.download.outcome != 'success'
+        uses: ./.github/actions/kobweb-export
+        with:
+          app: client
+          flavor: ${{ env.CLIENT_FLAVOR }}
+
+      - name: Upload artifact
+        if: steps.export.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: client-${{ env.CLEAN_REF }}
+          path: |
+            apps/client/.kobweb/conf.yaml
+            apps/client/.kobweb/server/server.jar
+            apps/client/.kobweb/site
+          include-hidden-files: true
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 5
+
+      - name: Publish
+        uses: ./.github/actions/kobweb-image
+        with:
+          app: client
+          image: bookkme-webapp
+          tag: ${{ env.IMAGE_TAG }}
+          registry-token: ${{ github.token }}

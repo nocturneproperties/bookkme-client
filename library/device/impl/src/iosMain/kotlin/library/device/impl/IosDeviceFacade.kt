@@ -7,10 +7,12 @@ import platform.Foundation.canonicalLanguageIdentifierFromString
 import platform.Foundation.currencyCode
 import platform.Foundation.currentLocale
 import platform.Foundation.localeIdentifier
+import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
 import platform.UIKit.UIDevice
 import platform.UIKit.UIPasteboard
+import platform.UIKit.UIViewController
 
 class IosDeviceFacade : DeviceFacade {
 
@@ -61,5 +63,21 @@ class IosDeviceFacade : DeviceFacade {
 
     override fun copyToClipboard(text: String) {
         UIPasteboard.generalPasteboard.string = text
+    }
+
+    override fun share(text: String) {
+        val controller = UIActivityViewController(
+            activityItems = listOf(text),
+            applicationActivities = null,
+        )
+        topViewController()?.presentViewController(controller, animated = true, completion = null)
+    }
+
+    private fun topViewController(): UIViewController? {
+        var controller = UIApplication.sharedApplication.keyWindow?.rootViewController
+        while (controller?.presentedViewController != null) {
+            controller = controller.presentedViewController
+        }
+        return controller
     }
 }

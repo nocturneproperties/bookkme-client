@@ -13,12 +13,14 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
 import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
 import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentRequests
-import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentsEnabled
 import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetSavedBusinesses
+import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
 import me.bookk.feature.appointments.domain.api.MarkAppointmentNoShow
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusiness
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
+import me.bookk.feature.appointments.domain.api.SaveBusiness
 import me.bookk.feature.appointments.domain.api.UpdateAppointment
 import me.bookk.feature.appointments.domain.api.UpdateAppointmentSettings
 import me.bookk.feature.appointments.domain.impl.ApproveAppointmentRequestImpl
@@ -33,12 +35,14 @@ import me.bookk.feature.appointments.domain.impl.GetAppointmentOptionsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentSettingsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentsForBusinessImpl
 import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentRequestsImpl
-import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentsEnabledImpl
 import me.bookk.feature.appointments.domain.impl.GetOwnAppointmentRequestsImpl
+import me.bookk.feature.appointments.domain.impl.GetSavedBusinessesImpl
+import me.bookk.feature.appointments.domain.impl.GetUpcomingBookingsImpl
 import me.bookk.feature.appointments.domain.impl.MarkAppointmentNoShowImpl
 import me.bookk.feature.appointments.domain.impl.ObserveAppointmentOptionsImpl
 import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessIdImpl
 import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessImpl
+import me.bookk.feature.appointments.domain.impl.SaveBusinessImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentSettingsImpl
 import org.koin.core.module.dsl.factoryOf
@@ -48,7 +52,6 @@ import org.koin.dsl.module
 
 fun appointmentsDomainModule() = module {
     factoryOf(::GetBusinessAppointmentRequestsImpl) bind GetBusinessAppointmentRequests::class
-    factoryOf(::GetBusinessAppointmentsEnabledImpl) bind GetBusinessAppointmentsEnabled::class
     factoryOf(::GetAppointmentOptionsImpl) bind GetAppointmentOptions::class
     factoryOf(::ObserveAppointmentOptionsImpl) bind ObserveAppointmentOptions::class
     factoryOf(::GetAppointmentSettingsImpl) binds
@@ -68,4 +71,10 @@ fun appointmentsDomainModule() = module {
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class
     factoryOf(::ObserveCurrentBusinessImpl) bind ObserveCurrentBusiness::class
     factoryOf(::GetAppointmentsForBusinessImpl) bind GetAppointmentsForBusiness::class
+}
+
+fun clientAppointmentsDomainModule() = module {
+    factoryOf(::GetUpcomingBookingsImpl) bind GetUpcomingBookings::class
+    factoryOf(::GetSavedBusinessesImpl) bind GetSavedBusinesses::class
+    factoryOf(::SaveBusinessImpl) bind SaveBusiness::class
 }

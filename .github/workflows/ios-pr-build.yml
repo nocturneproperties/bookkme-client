@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - 'apps/androidApp/**'
       - 'apps/site/**'
+      - 'apps/client/**'
       - 'kotlin-js-store/**'
       - 'docs/**'
       - '**.md'

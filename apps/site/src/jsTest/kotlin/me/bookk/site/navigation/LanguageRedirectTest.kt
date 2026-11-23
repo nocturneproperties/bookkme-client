@@ -82,16 +82,4 @@ class LanguageRedirectTest {
         then()
         assertEquals("/terms/2026-12-01/ru", target)
     }
-
-    @Test
-    fun `keeps the telegram mini app path unprefixed`() = runUnitTest {
-        given()
-        val path = "/telegram"
-
-        whenn()
-        val target = LanguageRedirect.target(path, AppLanguage.UK)
-
-        then()
-        assertEquals("/telegram", target)
-    }
 }

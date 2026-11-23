@@ -7,12 +7,14 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
+import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.presentation.ClientStateFactory
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 
 class ClientBootstrapViewModel(
     private val isUserLoggedIn: IsUserLoggedIn,
     private val initialAppDataFetch: InitialAppDataFetch,
+    private val logOut: LogOut,
     stateFactory: ClientStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
@@ -22,6 +24,14 @@ class ClientBootstrapViewModel(
     init {
         observeAuthorizationStatus()
         fetchInitialData()
+    }
+
+    fun logOut() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { logOut.invoke() },
+            onError = {},
+        )
     }
 
     private fun observeAuthorizationStatus() {

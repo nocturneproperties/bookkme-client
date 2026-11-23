@@ -18,6 +18,7 @@ import library.cache.api.getFlow
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
+import me.bookk.database.DatabaseStorage
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting.Api.Auth
@@ -40,6 +41,7 @@ class CommonAuthorizationDataSource(
     private val httpClient: HttpClient,
     private val noAuthHttpClient: HttpClient,
     preferenceProvider: PreferenceProvider,
+    private val databaseStorage: DatabaseStorage,
 ) : DataSource(),
     AuthorizationDataSource,
     LogOutAction {
@@ -138,6 +140,10 @@ class CommonAuthorizationDataSource(
 
     override suspend fun saveLastInitialDataFetchAt() {
         preferences.set(Key.lastInitialDataFetchAt, Clock.System.now().toEpochMilliseconds())
+    }
+
+    override suspend fun isDatabasePersistent() = mapExceptions {
+        databaseStorage.isPersistent()
     }
 
     private object Key {

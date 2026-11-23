@@ -19,4 +19,5 @@ interface AuthorizationDataSource {
     suspend fun invalidateClientTokens()
     suspend fun getLastInitialDataFetchAt(): Instant?
     suspend fun saveLastInitialDataFetchAt()
+    suspend fun isDatabasePersistent(): Boolean
 }

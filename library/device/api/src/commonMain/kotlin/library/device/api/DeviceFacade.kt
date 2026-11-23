@@ -10,5 +10,6 @@ interface DeviceFacade {
     fun dial(number: String)
     fun mail(email: String)
     fun copyToClipboard(text: String)
+    fun share(text: String)
     fun openAppSettings()
 }

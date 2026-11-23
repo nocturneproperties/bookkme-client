@@ -1,7 +1,6 @@
 package me.bookk.site.designsystem.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +51,6 @@ import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Div
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.events.Event
 
 private val GalleryInlinePadding = "max(1rem, calc((100% - $ContentMaxWidth) / 2 + 1rem))"
 
@@ -164,15 +162,6 @@ class GalleryNavigation(
     val previousIcon: ImageResource,
     val nextIcon: ImageResource,
 )
-
-@Composable
-private fun ObserveWindowResize(onResize: () -> Unit) {
-    DisposableEffect(Unit) {
-        val listener: (Event) -> Unit = { onResize() }
-        window.addEventListener("resize", listener)
-        onDispose { window.removeEventListener("resize", listener) }
-    }
-}
 
 @Composable
 private fun GalleryControls(

@@ -18,6 +18,7 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertNothingMapped
 import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
 import me.bookk.feature.authorization.domain.api.IsUserLoggedIn
+import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.presentation.FakeClientStateFactory
 import me.bookk.feature.authorization.presentation.bootstrap.BootstrapNavigationDestination
 import kotlin.test.AfterTest
@@ -47,12 +48,16 @@ class ClientBootstrapViewModelTest {
         val initialAppDataFetch = mock<InitialAppDataFetch> {
             everySuspend { timestampProtectedFetch() } returns Unit
         }
+        val logOut = mock<LogOut> {
+            everySuspend { invoke() } returns Unit
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut(): ClientBootstrapViewModel {
             return ClientBootstrapViewModel(
                 isUserLoggedIn = isUserLoggedIn,
                 initialAppDataFetch = initialAppDataFetch,
+                logOut = logOut,
                 stateFactory = FakeClientStateFactory(),
                 vmArgs = VmArgs(errorMapper),
             )
@@ -135,6 +140,33 @@ class ClientBootstrapViewModelTest {
 
         then()
         assertEquals(BootstrapNavigationDestination.Login, sut.uiState.startDestination)
+        fixture.errorMapper.assertNothingMapped()
+    }
+
+    @Test
+    fun `logs the user out when the session is no longer authorized`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.logOut()
+
+        then()
+        verifySuspend { fixture.logOut() }
+    }
+
+    @Test
+    fun `does not surface a log out failure`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.logOut() } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.logOut()
+
+        then()
         fixture.errorMapper.assertNothingMapped()
     }
 }

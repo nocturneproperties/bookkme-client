@@ -3,6 +3,7 @@ package me.bookk.feature.business.presentation
 import me.bookk.feature.business.presentation.screen.analytics.BusinessAnalyticsState
 import me.bookk.feature.business.presentation.screen.dashboard.state.BusinessDashboardState
 import me.bookk.feature.business.presentation.screen.export.BusinessDataExportState
+import me.bookk.feature.business.presentation.screen.link.BusinessLinkState
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginListState
 import me.bookk.feature.business.presentation.screen.plugins.BusinessPluginState
 import me.bookk.feature.business.presentation.screen.settings.state.BusinessSettingsState
@@ -14,4 +15,5 @@ interface BusinessStateFactory {
     fun createBusinessPluginState(): BusinessPluginState
     fun createBusinessAnalyticsState(): BusinessAnalyticsState
     fun createBusinessDataExportState(): BusinessDataExportState
+    fun createBusinessLinkState(): BusinessLinkState
 }

@@ -35,9 +35,9 @@ jobs:
           google-services: ${{ secrets.ANDROID_GOOGLE_SERVICES_FILE }}
 
       - name: Export
-        uses: ./.github/actions/site-export
+        uses: ./.github/actions/kobweb-export
         with:
-          flavor: prodRelease
+          app: site
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -53,7 +53,9 @@ jobs:
           retention-days: 5
 
       - name: Publish
-        uses: ./.github/actions/site-image
+        uses: ./.github/actions/kobweb-image
         with:
+          app: site
+          image: bookkme-site
           tag: ${{ env.BUILD_VERSION }}
           registry-token: ${{ github.token }}

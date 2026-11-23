@@ -23,7 +23,7 @@ rootProject.name = "Bookk"
 // Shared
 include(":shared")
 include(":shared:common")
-include(":database:account")
+include(":database:schema")
 include(":database:business")
 include(":database:client")
 
@@ -35,9 +35,11 @@ project(":androidApp").projectDir = file("apps/androidApp")
 include(":site")
 include(":site:designsystem")
 include(":site:domcompat")
+include(":client")
 project(":site").projectDir = file("apps/site")
 project(":site:designsystem").projectDir = file("apps/site/designsystem")
 project(":site:domcompat").projectDir = file("apps/site/domcompat")
+project(":client").projectDir = file("apps/client")
 
 // Core
 include(":designsystem")
@@ -121,3 +123,4 @@ include(":feature:appointments:data:source")
 include(":feature:appointments:domain:api")
 include(":feature:appointments:domain:impl")
 include(":feature:appointments:presentation")
+include(":feature:booking:presentation")

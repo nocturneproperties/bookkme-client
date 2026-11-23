@@ -8,4 +8,5 @@ enum class DashboardFeature {
     APPOINTMENTS,
     SHOP,
     DATA_EXPORT,
+    BUSINESS_LINK,
 }

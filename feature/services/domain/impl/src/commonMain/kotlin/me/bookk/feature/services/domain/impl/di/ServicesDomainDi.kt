@@ -11,6 +11,7 @@ import me.bookk.feature.services.domain.api.quote.CreateQuote
 import me.bookk.feature.services.domain.api.service.CreateService
 import me.bookk.feature.services.domain.api.service.DeleteService
 import me.bookk.feature.services.domain.api.service.EditService
+import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import me.bookk.feature.services.domain.api.service.GetService
 import me.bookk.feature.services.domain.api.service.GetServices
 import me.bookk.feature.services.domain.impl.GetBusinessCurrencyImpl
@@ -23,6 +24,7 @@ import me.bookk.feature.services.domain.impl.quote.CreateQuoteImpl
 import me.bookk.feature.services.domain.impl.service.CreateServiceImpl
 import me.bookk.feature.services.domain.impl.service.DeleteServiceImpl
 import me.bookk.feature.services.domain.impl.service.EditServiceImpl
+import me.bookk.feature.services.domain.impl.service.GetBusinessServicesImpl
 import me.bookk.feature.services.domain.impl.service.GetServiceImpl
 import me.bookk.feature.services.domain.impl.service.GetServicesImpl
 import org.koin.core.module.dsl.factoryOf
@@ -31,6 +33,7 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun servicesDomainModule() = module {
+    includes(clientServicesDomainModule())
     factoryOf(::CreateServiceImpl) bind CreateService::class
     factoryOf(::DeleteServiceImpl) bind DeleteService::class
     factoryOf(::EditServiceImpl) bind EditService::class
@@ -47,4 +50,8 @@ fun servicesDomainModule() = module {
     factoryOf(::GetServicesPermissionsImpl) bind GetServicesPermissions::class
 
     factoryOf(::CreateQuoteImpl) bind CreateQuote::class
+}
+
+fun clientServicesDomainModule() = module {
+    factoryOf(::GetBusinessServicesImpl) bind GetBusinessServices::class
 }

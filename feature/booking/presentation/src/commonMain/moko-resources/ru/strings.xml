@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="booking_services_subtitle">Выберите одну или несколько услуг</string>
+    <string name="booking_services_continue">Далее · %1$s · %2$s</string>
+    <string name="booking_services_pick">Выберите услугу</string>
+    <string name="booking_services_empty">У этого бизнеса пока нет услуг для записи</string>
+    <string name="booking_services_details">%1$s · %2$s</string>
+    <string name="booking_duration_minutes">%1$d мин</string>
+    <string name="booking_duration_hours">%1$d ч</string>
+    <string name="booking_duration_hours_minutes">%1$d ч %2$d мин</string>
+</resources>

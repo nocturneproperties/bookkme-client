@@ -107,7 +107,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `GetServices` | `GET /api/business/{businessId}/service` | [Get services](services/get-services.md) |
+| `GetServices` | `GET /api/business/{businessId}/service` through `GetBusinessServices`, for the dashboard business | [Get services](services/get-services.md) |
+| `GetBusinessServices` | `GET /api/business/{businessId}/service` for any business (business app and client web app) | [Get business services](services/get-business-services.md) |
 | `GetService` | local only | [Get service](services/get-service.md) |
 | `CreateService` | `POST /api/business/{businessId}/service`; typed validation errors | [Create service](services/create-service.md) |
 | `EditService` | `PUT /api/business/{businessId}/service/{id}`; typed validation errors | [Edit service](services/edit-service.md) |
@@ -203,6 +204,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
 | [Save business](appointments/save-business.md) | `GetSavedBusinesses.refresh` |
 | [Get upcoming bookings](appointments/get-upcoming-bookings.md), [Get saved businesses](appointments/get-saved-businesses.md) | `GetBusinesses.flow`, `GetBusinesses.refresh` (cross-feature, business) |
+| [Get services](services/get-services.md) | `ObserveDashboardBusinessChanges`, `GetBusinessServices` |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
 | [Create appointment](appointments/create-appointment.md) | `CreateQuote`, `GetServices.refresh` on mismatch, `ObserveUserBusinessesChanges` for the default employee |

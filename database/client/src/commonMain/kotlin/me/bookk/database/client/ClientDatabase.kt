@@ -7,8 +7,6 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import me.bookk.core.coroutine.DispatcherProvider
-import me.bookk.database.AccountDaos
-import me.bookk.database.AppointmentDaos
 import me.bookk.database.ClientDaos
 import me.bookk.database.converter.DurationConverter
 import me.bookk.database.converter.InstantConverter
@@ -22,6 +20,8 @@ import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.PersonalDataExportDao
 import me.bookk.database.dao.SavedBusinessDao
+import me.bookk.database.dao.ServiceDao
+import me.bookk.database.dao.ServiceGroupDao
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.database.entity.AppointmentAdjustmentServiceEntity
 import me.bookk.database.entity.AppointmentEntity
@@ -43,6 +43,8 @@ import me.bookk.database.entity.NotificationSettingsChannelEntity
 import me.bookk.database.entity.NotificationSettingsEntity
 import me.bookk.database.entity.PersonalDataExportEntity
 import me.bookk.database.entity.SavedBusinessEntity
+import me.bookk.database.entity.ServiceEntity
+import me.bookk.database.entity.ServiceGroupEntity
 import me.bookk.database.entity.UserProfileEntity
 
 @Database(
@@ -68,11 +70,14 @@ import me.bookk.database.entity.UserProfileEntity
         AppointmentSettingsWorkHourEntity::class,
         AppointmentSettingsDayOffEntity::class,
         SavedBusinessEntity::class,
+        ServiceGroupEntity::class,
+        ServiceEntity::class,
     ],
-    version = 3,
+    version = 4,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4),
     ],
 )
 @ColumnTypeConverters(
@@ -83,9 +88,7 @@ import me.bookk.database.entity.UserProfileEntity
 @ConstructedBy(ClientDatabaseConstructor::class)
 abstract class ClientDatabase :
     RoomDatabase(),
-    AccountDaos,
-    ClientDaos,
-    AppointmentDaos {
+    ClientDaos {
 
     abstract override fun profileDao(): UserProfileDao
     abstract override fun notificationSettingsDao(): NotificationSettingsDao
@@ -94,6 +97,8 @@ abstract class ClientDatabase :
     abstract override fun businessDao(): BusinessDao
     abstract override fun businessDataExportDao(): BusinessDataExportDao
     abstract override fun savedBusinessDao(): SavedBusinessDao
+    abstract override fun serviceDao(): ServiceDao
+    abstract override fun serviceGroupDao(): ServiceGroupDao
     abstract override fun appointmentDao(): AppointmentDao
     abstract override fun appointmentRequestDao(): AppointmentRequestDao
     abstract override fun appointmentSettingsDao(): AppointmentSettingsDao

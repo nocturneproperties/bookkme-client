@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextTransform
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
+import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -15,6 +16,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.fontSize
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.lineHeight
+import com.varabyte.kobweb.compose.ui.modifiers.size
 import com.varabyte.kobweb.compose.ui.modifiers.textTransform
 import com.varabyte.kobweb.compose.ui.modifiers.width
 import com.varabyte.kobweb.compose.ui.toAttrs
@@ -76,5 +78,24 @@ fun DateTile(weekday: String, day: String, modifier: Modifier = Modifier) {
                 .fontWeight(FontWeight.Bold)
                 .toAttrs(),
         ) { Text(day) }
+    }
+}
+
+@Composable
+fun InitialsTile(initials: String, modifier: Modifier = Modifier) {
+    Box(
+        TextTileStyle
+            .toModifier()
+            .size(3.5.cssRem)
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Span(
+            TextTileAccentStyle
+                .toModifier()
+                .fontSize(1.25.cssRem)
+                .lineHeight(1.5.cssRem)
+                .toAttrs(),
+        ) { Text(initials) }
     }
 }

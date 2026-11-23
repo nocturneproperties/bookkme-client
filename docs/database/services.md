@@ -2,9 +2,11 @@
 
 # Services
 
-Service groups and the services inside them. `service` is written by `ServiceDataSourceImpl` and
-`service_group` by `ServiceGroupDataSourceImpl`. [Get services](../operations/services/get-services.md) also
-upserts the groups embedded in each service, so the `service.groupId` foreign key is always satisfied, even
+Service groups and the services inside them. The entities and DAOs live in `:database:schema`, and both
+`BusinessDatabase` and `ClientDatabase` (since version 4, for the Mini App's services step) hold the tables.
+`service` is written by `ServiceDataSourceImpl` and `service_group` by `ServiceGroupDataSourceImpl`.
+[Get business services](../operations/services/get-business-services.md) (which [Get services](../operations/services/get-services.md)
+delegates to) also upserts the groups embedded in each service, so the `service.groupId` foreign key is always satisfied, even
 when groups were never fetched on their own.
 
 ```mermaid

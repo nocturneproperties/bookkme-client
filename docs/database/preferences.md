@@ -15,8 +15,8 @@ On the website (JS), each bucket is the localStorage entry `<name>.preferences_p
 | `device_prefs` | `CommonDeviceDataSource` | `device_uuid` (String) | Stable per-install device id sent on sign-in/sign-up and used for push token registration | ❌ intentionally kept, since it identifies the install and not the user |
 | `plugin_prefs` | `CommonPluginDataSource` | `appointment_plugin_available_<businessId>` (Boolean) | Whether the appointments plugin is enabled. It is nullable, so "unknown" and "disabled" are different values. | ✅ |
 | `clients_prefs` | `CommonClientsDataSource` | `last_synced_at_<businessId>` (epoch ms) | List sync marker | ✅ |
-| `services_prefs` | `ServiceDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker | ✅ |
-| `service_groups_prefs` | `ServiceGroupDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker | ✅ |
+| `services_prefs` | `ServiceDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker (business app and client web app) | ✅ |
+| `service_groups_prefs` | `ServiceGroupDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker (business app and client web app) | ✅ |
 | `employees_prefs` | `EmployeeDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker | ✅ |
 | `employee_invitations_prefs` | `EmployeeInvitationDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker | ✅ |
 | `appointments_prefs` | `CommonAppointmentDataSource` | `last_synced_at_<businessId>_<yyyy-MM-dd>` | Per-day sync marker | ✅ |

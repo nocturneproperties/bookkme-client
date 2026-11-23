@@ -9,9 +9,12 @@ import me.bookk.feature.appointments.domain.impl.di.clientAppointmentsDomainModu
 import me.bookk.feature.authorization.data.di.authDataModule
 import me.bookk.feature.authorization.domain.impl.di.authDomainModule
 import me.bookk.feature.authorization.presentation.di.authPresentationModule
+import me.bookk.feature.booking.presentation.di.bookingPresentationModule
 import me.bookk.feature.business.data.di.clientBusinessDataModule
 import me.bookk.feature.business.domain.impl.di.clientBusinessDomainModule
 import me.bookk.feature.dashboard.presentation.di.dashboardPresentationModule
+import me.bookk.feature.services.data.di.servicesDataModule
+import me.bookk.feature.services.domain.impl.di.clientServicesDomainModule
 import me.bookk.feature.settings.data.di.settingsDataModule
 import me.bookk.feature.settings.domain.impl.di.settingsDomainModule
 import me.bookk.shared.common.di.commonModule
@@ -40,7 +43,10 @@ fun initClientApp(setup: KoinApplication.() -> Unit = {}) {
             clientAppointmentsDataModule(),
             clientBusinessDomainModule(),
             clientBusinessDataModule(),
+            clientServicesDomainModule(),
+            servicesDataModule(),
             dashboardPresentationModule(),
+            bookingPresentationModule(),
         )
     }
 }

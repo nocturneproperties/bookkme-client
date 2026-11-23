@@ -2,6 +2,7 @@ package me.bookk.client.di
 
 import dev.mokkery.answering.returns
 import dev.mokkery.every
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.emptyFlow
@@ -11,8 +12,6 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.database.AccountDaos
-import me.bookk.database.AppointmentDaos
 import me.bookk.database.ClientDaos
 import me.bookk.database.DatabaseStorage
 import me.bookk.database.dao.AppointmentDao
@@ -24,6 +23,8 @@ import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.PersonalDataExportDao
 import me.bookk.database.dao.SavedBusinessDao
+import me.bookk.database.dao.ServiceDao
+import me.bookk.database.dao.ServiceGroupDao
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.feature.appointments.domain.api.SaveBusiness
 import me.bookk.feature.authorization.domain.api.GetTokenInfo
@@ -32,9 +33,11 @@ import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapViewModel
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
+import me.bookk.feature.booking.presentation.screen.services.BookingServicesViewModel
 import me.bookk.feature.business.domain.api.business.GetBusinesses
 import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewModel
+import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
@@ -45,6 +48,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertSame
+import kotlin.uuid.Uuid
 
 class ClientAppTest {
 
@@ -57,9 +61,7 @@ class ClientAppTest {
         initClientApp()
         loadKoinModules(
             module {
-                single<AccountDaos> { FakeAccountDaos() }
                 single<ClientDaos> { FakeClientDaos() }
-                single<AppointmentDaos> { FakeAppointmentDaos() }
                 single<DatabaseStorage> { FakeDatabaseStorage() }
             },
         )
@@ -72,40 +74,6 @@ class ClientAppTest {
     }
 
     private class FakeClientDaos : ClientDaos {
-        override fun businessDao(): BusinessDao {
-            return mock()
-        }
-
-        override fun businessDataExportDao(): BusinessDataExportDao {
-            return mock()
-        }
-
-        override fun savedBusinessDao(): SavedBusinessDao {
-            return mock {
-                every { observeAll() } returns emptyFlow()
-            }
-        }
-    }
-
-    private class FakeAppointmentDaos : AppointmentDaos {
-        override fun appointmentDao(): AppointmentDao {
-            return mock {
-                every { observeScheduled() } returns emptyFlow()
-            }
-        }
-
-        override fun appointmentRequestDao(): AppointmentRequestDao {
-            return mock {
-                every { observePending() } returns emptyFlow()
-            }
-        }
-
-        override fun appointmentSettingsDao(): AppointmentSettingsDao {
-            return mock()
-        }
-    }
-
-    private class FakeAccountDaos : AccountDaos {
         override fun profileDao(): UserProfileDao {
             return mock {
                 every { observeProfile() } returns emptyFlow()
@@ -121,6 +89,48 @@ class ClientAppTest {
         }
 
         override fun personalDataExportDao(): PersonalDataExportDao {
+            return mock()
+        }
+
+        override fun businessDao(): BusinessDao {
+            return mock {
+                every { observeBusinesses(any()) } returns emptyFlow()
+            }
+        }
+
+        override fun businessDataExportDao(): BusinessDataExportDao {
+            return mock()
+        }
+
+        override fun savedBusinessDao(): SavedBusinessDao {
+            return mock {
+                every { observeAll() } returns emptyFlow()
+            }
+        }
+
+        override fun serviceDao(): ServiceDao {
+            return mock {
+                every { observe(any()) } returns emptyFlow()
+            }
+        }
+
+        override fun serviceGroupDao(): ServiceGroupDao {
+            return mock()
+        }
+
+        override fun appointmentDao(): AppointmentDao {
+            return mock {
+                every { observeScheduled() } returns emptyFlow()
+            }
+        }
+
+        override fun appointmentRequestDao(): AppointmentRequestDao {
+            return mock {
+                every { observePending() } returns emptyFlow()
+            }
+        }
+
+        override fun appointmentSettingsDao(): AppointmentSettingsDao {
             return mock()
         }
     }
@@ -297,5 +307,32 @@ class ClientAppTest {
 
         then()
         assertNotNull(resolveBusinessLink)
+    }
+
+    @Test
+    fun `provides the business services the services step lists`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val getBusinessServices = KoinPlatform.getKoin().getOrNull<GetBusinessServices>()
+
+        then()
+        assertNotNull(getBusinessServices)
+    }
+
+    @Test
+    fun `provides the services view model for the opened business`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<BookingServicesViewModel> {
+            parametersOf(Uuid.random())
+        }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
     }
 }

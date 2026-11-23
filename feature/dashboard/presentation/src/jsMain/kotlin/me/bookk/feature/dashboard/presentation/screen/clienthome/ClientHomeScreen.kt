@@ -29,10 +29,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.textAlign
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
-import library.telegram.ObserveTelegramNotifications
-import library.telegram.TelegramWebApp
 import me.bookk.android.feature.dashboard.resources.DashboardRes
-import me.bookk.core.presentation.rememberViewModel
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.ListState
@@ -51,7 +48,6 @@ import me.bookk.site.designsystem.components.IconTile
 import me.bookk.site.designsystem.components.InitialLoadingView
 import me.bookk.site.designsystem.components.ListRowButton
 import me.bookk.site.designsystem.components.NumberedSteps
-import me.bookk.site.designsystem.components.ObserveNavigation
 import me.bookk.site.designsystem.components.StatusPill
 import me.bookk.site.designsystem.components.TextBlock
 import me.bookk.site.designsystem.components.TextButton
@@ -68,7 +64,6 @@ import me.bookk.site.designsystem.theme.secondary
 import me.bookk.site.designsystem.theme.themed
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
-import org.koin.core.parameter.parametersOf
 
 private val BookAgainMinHeight = 7.cssRem
 
@@ -86,20 +81,7 @@ private val SectionModifier = Modifier
     .gap(0.5.cssRem)
 
 @Composable
-fun ClientHomeScreen(webApp: TelegramWebApp) {
-    val startParameter = webApp.initDataUnsafe.startParam.orEmpty()
-    val state = rememberViewModel<ClientHomeViewModel> { parametersOf(startParameter) }.uiState
-    ObserveTelegramNotifications(webApp, state.notifications)
-    ObserveNavigation(state.navigation) { destination ->
-        when (destination) {
-            ClientHomeDestinations.Settings,
-            ClientHomeDestinations.Bookings,
-            ClientHomeDestinations.Businesses,
-            is ClientHomeDestinations.BookingDetails,
-            is ClientHomeDestinations.Services,
-            -> Unit
-        }
-    }
+internal fun ClientHomeScreen(state: ClientHomeState) {
     Column(ClientHomeModifier) {
         if (state.isLoading) {
             InitialLoadingView(Modifier.flexGrow(1))

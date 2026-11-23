@@ -13,9 +13,8 @@ import library.telegram.rememberTelegramLaunch
 import me.bookk.client.navigation.ClientLink
 import me.bookk.client.resources.ClientRes
 import me.bookk.core.config.SiteUrl
-import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapScreen
-import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInScreen
-import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeScreen
+import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapDestination
+import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInDestination
 import org.koin.mp.KoinPlatform
 
 @InitKobweb
@@ -35,15 +34,15 @@ fun TelegramMiniApp() {
 @Composable
 private fun InsideTelegram(webApp: TelegramWebApp) {
     TelegramHost(webApp) {
-        ClientBootstrapScreen(
+        ClientBootstrapDestination(
             loginContent = {
-                TelegramSignInScreen(
+                TelegramSignInDestination(
                     webApp,
                     messageLayout = { TelegramMessageLayout(it) },
                     formLayout = { TelegramFormLayout(it) },
                 )
             },
-            mainContent = { ClientHomeScreen(webApp) },
+            mainContent = { TelegramMainContent(webApp) },
         )
     }
 }

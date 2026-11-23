@@ -15,7 +15,6 @@ import dev.icerock.moko.resources.desc.desc
 import library.telegram.TelegramMainButton
 import library.telegram.TelegramWebApp
 import me.bookk.android.feature.authorization.resources.AuthRes
-import me.bookk.core.presentation.rememberViewModel
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentState
@@ -35,17 +34,14 @@ import me.bookk.site.designsystem.theme.TitleMediumTextStyle
 import me.bookk.site.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
-import org.koin.core.parameter.parametersOf
 
 @Composable
-fun TelegramSignInScreen(
+internal fun TelegramSignInScreen(
+    state: TelegramSignInState,
     webApp: TelegramWebApp,
     messageLayout: @Composable (content: @Composable () -> Unit) -> Unit,
     formLayout: @Composable (content: @Composable () -> Unit) -> Unit,
 ) {
-    val state = rememberViewModel<TelegramSignInViewModel>(webApp.initData) {
-        parametersOf(webApp.initData)
-    }.uiState
     when (state.phase) {
         TelegramSignInPhase.SIGNING_IN -> messageLayout { MessageText(state.message) }
         TelegramSignInPhase.LEGAL_ACCEPTANCE -> formLayout { LegalAcceptance(state, webApp) }

@@ -27,8 +27,7 @@ import me.bookk.feature.booking.domain.api.entity.BookingPreparation.PreparedSer
 import me.bookk.feature.booking.domain.api.entity.BookingService
 import me.bookk.feature.booking.domain.api.entity.BookingServiceGroup
 import me.bookk.feature.booking.presentation.BookingStateFactory
-import me.bookk.feature.booking.presentation.screen.totalDuration
-import me.bookk.feature.booking.presentation.screen.totalPrice
+import me.bookk.feature.booking.presentation.screen.bookingTotal
 import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
@@ -162,19 +161,8 @@ class BookingServicesViewModel(
 
     private fun BookingServicesState.renderSelection() {
         val picked = services.selectedUnits().map { it.service }
-        total = servicesTotal(picked)
+        total = picked.bookingTotal()
         continueButton.isEnabled = picked.isNotEmpty()
-    }
-
-    private fun servicesTotal(picked: List<BookingService>): ServicesTotal? {
-        if (picked.isEmpty()) return null
-        return ServicesTotal(
-            summary = BookingRes.strings.booking_services_summary.format(
-                BookingRes.plurals.booking_services_count.format(picked.size, picked.size),
-                picked.totalDuration().toStringDesc(),
-            ),
-            price = picked.totalPrice().toString().desc(),
-        )
     }
 
     private companion object {

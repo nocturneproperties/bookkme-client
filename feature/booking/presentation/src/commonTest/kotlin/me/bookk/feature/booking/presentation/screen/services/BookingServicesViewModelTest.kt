@@ -36,6 +36,7 @@ import me.bookk.feature.booking.domain.api.entity.BookingPreparation.PreparedSer
 import me.bookk.feature.booking.domain.api.entity.BookingService
 import me.bookk.feature.booking.domain.api.entity.BookingServiceGroup
 import me.bookk.feature.booking.presentation.FakeBookingStateFactory
+import me.bookk.feature.booking.presentation.screen.BookingTotal
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -111,8 +112,8 @@ class BookingServicesViewModelTest {
         )
     }
 
-    private fun total(count: Int, hours: Int, minutes: Int, priceCents: Long): ServicesTotal {
-        return ServicesTotal(
+    private fun total(count: Int, hours: Int, minutes: Int, priceCents: Long): BookingTotal {
+        return BookingTotal(
             summary = BookingRes.strings.booking_services_summary.format(
                 BookingRes.plurals.booking_services_count.format(count, count),
                 DesignSystem.strings.common_duration_hours_minutes.format(hours, minutes),

@@ -1,7 +1,5 @@
 package me.bookk.feature.booking.presentation.screen.specialist
 
-import dev.icerock.moko.resources.desc.Composition
-import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import dev.mokkery.answering.returns
@@ -27,14 +25,17 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertEmpty
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
+import me.bookk.feature.booking.domain.api.GetBookingCatalog
 import me.bookk.feature.booking.domain.api.GetBookingPreparation
 import me.bookk.feature.booking.domain.api.GetBookingSpecialists
 import me.bookk.feature.booking.domain.api.SetBookingSpecialist
+import me.bookk.feature.booking.domain.api.entity.BookingCatalog
 import me.bookk.feature.booking.domain.api.entity.BookingPreparation
 import me.bookk.feature.booking.domain.api.entity.BookingPreparation.PreparedService
 import me.bookk.feature.booking.domain.api.entity.BookingService
 import me.bookk.feature.booking.domain.api.entity.BookingSpecialist
 import me.bookk.feature.booking.presentation.FakeBookingStateFactory
+import me.bookk.feature.booking.presentation.screen.BookingTotal
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -71,7 +72,11 @@ class BookingSpecialistViewModelTest {
         val preparation = MutableStateFlow(
             BookingPreparation(listOf(PreparedService(haircut, 1))),
         )
+        val catalog = MutableStateFlow(BookingCatalog("Studio Lumen", emptyList()))
         val specialists = MutableStateFlow(emptyList<BookingSpecialist>())
+        val getBookingCatalog = mock<GetBookingCatalog> {
+            every { flow(businessId) } returns catalog
+        }
         val getBookingPreparation = mock<GetBookingPreparation> {
             every { flow(businessId) } returns preparation
         }
@@ -86,6 +91,7 @@ class BookingSpecialistViewModelTest {
 
         fun sut() = BookingSpecialistViewModel(
             businessId = businessId,
+            getBookingCatalog = getBookingCatalog,
             getBookingPreparation = getBookingPreparation,
             getBookingSpecialists = getBookingSpecialists,
             setBookingSpecialist = setBookingSpecialist,
@@ -105,8 +111,24 @@ class BookingSpecialistViewModelTest {
         return specialists.items.first { it.id == specialist.id.toString() }
     }
 
+    private fun BookingSpecialistState.selectedIds(): List<String> {
+        return specialists.items.filter { it.isSelected }.map { it.id }
+    }
+
     @Test
-    fun `sums up the picked services with their total duration and price`() = runUnitTest {
+    fun `shows the business name above the title`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val state = fixture.sut().uiState
+
+        then()
+        assertEquals("Studio Lumen".desc(), state.businessName)
+    }
+
+    @Test
+    fun `totals the approved services by count, duration and price`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.preparation.value = BookingPreparation(
@@ -118,23 +140,19 @@ class BookingSpecialistViewModelTest {
 
         then()
         assertEquals(
-            BookingRes.strings.booking_specialist_summary.format(
-                StringDesc.Composition(
-                    listOf(
-                        "Haircut".desc(),
-                        BookingRes.strings.booking_specialist_service_count.format("Beard trim", 2),
-                    ),
-                    ", ",
+            BookingTotal(
+                summary = BookingRes.strings.booking_services_summary.format(
+                    BookingRes.plurals.booking_services_count.format(3, 3),
+                    DesignSystem.strings.common_duration_hours_minutes.format(1, 25),
                 ),
-                DesignSystem.strings.common_duration_hours_minutes.format(1, 25),
-                Money(120_000, Money.SupportedCurrency.UAH).toString(),
+                price = Money(120_000, Money.SupportedCurrency.UAH).toString().desc(),
             ),
-            state.summary,
+            state.total,
         )
     }
 
     @Test
-    fun `has no summary while nothing is picked`() = runUnitTest {
+    fun `has no total while nothing is approved`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.preparation.value = BookingPreparation(emptyList())
@@ -143,7 +161,7 @@ class BookingSpecialistViewModelTest {
         val state = fixture.sut().uiState
 
         then()
-        assertNull(state.summary)
+        assertNull(state.total)
     }
 
     @Test
@@ -164,17 +182,159 @@ class BookingSpecialistViewModelTest {
     }
 
     @Test
-    fun `uses the first name's initial alone when there is no last name`() = runUnitTest {
+    fun `uses the first name alone and one initial when there is no last name`() = runUnitTest {
         given()
         val fixture = Fixture()
         val state = fixture.sut().uiState
 
         whenn()
-        fixture.specialists.value = listOf(BookingSpecialist(Uuid.random(), "olena", ""))
+        fixture.specialists.value = listOf(BookingSpecialist(Uuid.random(), "olena", " "))
 
         then()
         assertEquals("olena".desc(), state.specialists.items.single().name)
         assertEquals("O", state.specialists.items.single().initials)
+    }
+
+    @Test
+    fun `preselects the first specialist`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val state = fixture.sut().uiState
+
+        whenn()
+        fixture.specialists.value = listOf(andrii, maria)
+
+        then()
+        assertEquals(listOf(andrii.id.toString()), state.selectedIds())
+    }
+
+    @Test
+    fun `preselects the approved specialist when they are still listed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.preparation.value = BookingPreparation(
+            listOf(PreparedService(haircut, 1)),
+            specialistId = maria.id,
+        )
+        val state = fixture.sut().uiState
+
+        whenn()
+        fixture.specialists.value = listOf(andrii, maria)
+
+        then()
+        assertEquals(listOf(maria.id.toString()), state.selectedIds())
+    }
+
+    @Test
+    fun `preselects the approved specialist even when they load after the list`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val state = fixture.sut().uiState
+        fixture.specialists.value = listOf(andrii, maria)
+
+        whenn()
+        fixture.preparation.value = BookingPreparation(
+            listOf(PreparedService(haircut, 1)),
+            specialistId = maria.id,
+        )
+
+        then()
+        assertEquals(listOf(maria.id.toString()), state.selectedIds())
+    }
+
+    @Test
+    fun `preselects the first specialist when the approved one is no longer listed`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.preparation.value = BookingPreparation(
+                listOf(PreparedService(haircut, 1)),
+                specialistId = Uuid.random(),
+            )
+            val state = fixture.sut().uiState
+
+            whenn()
+            fixture.specialists.value = listOf(andrii, maria)
+
+            then()
+            assertEquals(listOf(andrii.id.toString()), state.selectedIds())
+        }
+
+    @Test
+    fun `selects the tapped specialist`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val state = fixture.sut().uiState
+        fixture.specialists.value = listOf(andrii, maria)
+
+        whenn()
+        state.item(maria).onClick()
+
+        then()
+        assertEquals(listOf(maria.id.toString()), state.selectedIds())
+    }
+
+    @Test
+    fun `keeps the tapped specialist selected when the list refreshes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val state = fixture.sut().uiState
+        fixture.specialists.value = listOf(andrii, maria)
+        state.item(maria).onClick()
+
+        whenn()
+        fixture.specialists.value = listOf(andrii, maria.copy(lastName = "Shevchenko"))
+
+        then()
+        assertEquals(listOf(maria.id.toString()), state.selectedIds())
+    }
+
+    @Test
+    fun `does not save the tapped specialist before continue is pressed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val state = fixture.sut().uiState
+        fixture.specialists.value = listOf(andrii, maria)
+
+        whenn()
+        state.item(maria).onClick()
+
+        then()
+        verifySuspend(dev.mokkery.verify.VerifyMode.not) {
+            fixture.setBookingSpecialist(any(), any())
+        }
+    }
+
+    @Test
+    fun `names the selected specialist on the continue button`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val state = fixture.sut().uiState
+        fixture.specialists.value = listOf(andrii, maria)
+
+        whenn()
+        state.item(maria).onClick()
+
+        then()
+        assertEquals(
+            BookingRes.strings.booking_specialist_continue.format("Maria"),
+            state.continueButton.text,
+        )
+        assertTrue(state.continueButton.isEnabled)
+    }
+
+    @Test
+    fun `disables continue while nobody is listed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getBookingSpecialists.refresh(businessId) } returns emptyList()
+
+        whenn()
+        val state = fixture.sut().uiState
+
+        then()
+        assertFalse(state.continueButton.isEnabled)
+        assertEquals(DesignSystem.strings.action_continue.desc(), state.continueButton.text)
     }
 
     @Test
@@ -224,14 +384,15 @@ class BookingSpecialistViewModelTest {
     }
 
     @Test
-    fun `saves the tapped specialist`() = runUnitTest {
+    fun `saves the selected specialist when continue is pressed`() = runUnitTest {
         given()
         val fixture = Fixture()
         val state = fixture.sut().uiState
         fixture.specialists.value = listOf(andrii, maria)
+        state.item(maria).onClick()
 
         whenn()
-        state.item(maria).onClick()
+        state.continueButton.onClick?.invoke()
 
         then()
         verifySuspend { fixture.setBookingSpecialist(businessId, maria.id) }
@@ -245,7 +406,7 @@ class BookingSpecialistViewModelTest {
         fixture.specialists.value = listOf(andrii)
 
         whenn()
-        state.item(andrii).onClick()
+        state.continueButton.onClick?.invoke()
 
         then()
         assertEquals(
@@ -265,7 +426,7 @@ class BookingSpecialistViewModelTest {
         everySuspend { fixture.setBookingSpecialist(any(), any()) } throws TestException()
 
         whenn()
-        state.item(andrii).onClick()
+        state.continueButton.onClick?.invoke()
 
         then()
         assertTrue(state.navigation.navigationDestination.isEmpty())

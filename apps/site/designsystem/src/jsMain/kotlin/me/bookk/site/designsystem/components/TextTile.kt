@@ -83,12 +83,25 @@ fun DateTile(weekday: String, day: String, modifier: Modifier = Modifier) {
     }
 }
 
+enum class InitialsAvatarSize(
+    val diameterRem: Double,
+    val fontSizeRem: Double,
+    val lineHeightRem: Double,
+) {
+    REGULAR(diameterRem = 2.75, fontSizeRem = 1.0, lineHeightRem = 1.25),
+    LARGE(diameterRem = 4.5, fontSizeRem = 1.5, lineHeightRem = 1.75),
+}
+
 @Composable
-fun InitialsAvatar(initials: String, modifier: Modifier = Modifier) {
+fun InitialsAvatar(
+    initials: String,
+    modifier: Modifier = Modifier,
+    size: InitialsAvatarSize = InitialsAvatarSize.REGULAR,
+) {
     Box(
         TextTileStyle
             .toModifier()
-            .size(2.75.cssRem)
+            .size(size.diameterRem.cssRem)
             .borderRadius(50.percent)
             .then(modifier),
         contentAlignment = Alignment.Center,
@@ -96,8 +109,8 @@ fun InitialsAvatar(initials: String, modifier: Modifier = Modifier) {
         Span(
             TextTileAccentStyle
                 .toModifier()
-                .fontSize(1.cssRem)
-                .lineHeight(1.25.cssRem)
+                .fontSize(size.fontSizeRem.cssRem)
+                .lineHeight(size.lineHeightRem.cssRem)
                 .attrsModifier { attr("aria-hidden", "true") }
                 .toAttrs(),
         ) { Text(initials) }

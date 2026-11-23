@@ -1,7 +1,5 @@
 package me.bookk.feature.booking.presentation.screen.specialist
 
-import dev.icerock.moko.resources.desc.Composition
-import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
@@ -13,21 +11,22 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
-import me.bookk.designsystem.resources.toStringDesc
 import me.bookk.designsystem.uistate.simple.EmptyState
+import me.bookk.feature.booking.domain.api.GetBookingCatalog
 import me.bookk.feature.booking.domain.api.GetBookingPreparation
 import me.bookk.feature.booking.domain.api.GetBookingSpecialists
 import me.bookk.feature.booking.domain.api.SetBookingSpecialist
-import me.bookk.feature.booking.domain.api.entity.BookingPreparation.PreparedService
+import me.bookk.feature.booking.domain.api.entity.BookingPreparation
 import me.bookk.feature.booking.domain.api.entity.BookingSpecialist
 import me.bookk.feature.booking.presentation.BookingStateFactory
-import me.bookk.feature.booking.presentation.screen.totalDuration
-import me.bookk.feature.booking.presentation.screen.totalPrice
+import me.bookk.feature.booking.presentation.screen.bookingTotal
+import me.bookk.feature.booking.presentation.screen.units
 import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
 class BookingSpecialistViewModel(
     @InjectedParam private val businessId: Uuid,
+    private val getBookingCatalog: GetBookingCatalog,
     private val getBookingPreparation: GetBookingPreparation,
     private val getBookingSpecialists: GetBookingSpecialists,
     private val setBookingSpecialist: SetBookingSpecialist,
@@ -35,10 +34,15 @@ class BookingSpecialistViewModel(
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
+    private var specialists: List<BookingSpecialist>? = null
+    private var approvedSpecialistId: Uuid? = null
+    private var tappedSpecialistId: Uuid? = null
+
     val uiState: BookingSpecialistState = stateFactory.createBookingSpecialistState().setup()
 
     init {
-        observeSummary()
+        observeBusinessName()
+        observePreparation()
         observeSpecialists()
         loadSpecialists()
     }
@@ -51,12 +55,21 @@ class BookingSpecialistViewModel(
             image = DesignSystem.images.empty,
             label = BookingRes.strings.booking_specialist_empty.desc(),
         )
+        continueButton.onClick = weakVMClosure { it.saveSpecialistAndContinue() }
+        renderContinueButton(null)
     }
 
-    private fun observeSummary() {
+    private fun observeBusinessName() {
+        getBookingCatalog.flow(businessId)
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { uiState.businessName = it.businessName?.desc() }
+            .observe()
+    }
+
+    private fun observePreparation() {
         getBookingPreparation.flow(businessId)
             .flowOn(DispatcherProvider.io)
-            .safeOnEach { uiState.summary = summary(it.services) }
+            .safeOnEach { renderPreparation(it) }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
     }
@@ -77,7 +90,8 @@ class BookingSpecialistViewModel(
         )
     }
 
-    private fun saveSpecialistAndContinue(specialist: BookingSpecialist) {
+    private fun saveSpecialistAndContinue() {
+        val specialist = selectedSpecialist() ?: return
         launch(
             key = SAVE_SPECIALIST_KEY,
             launchBehaviour = LaunchBehaviour.DropLatest,
@@ -90,40 +104,61 @@ class BookingSpecialistViewModel(
         )
     }
 
-    private fun renderSpecialists(specialists: List<BookingSpecialist>) {
-        if (specialists.isEmpty() && uiState.specialists.isInitialLoading) return
-        uiState.specialists.replace(specialists.map(::specialistItem))
+    private fun renderPreparation(preparation: BookingPreparation) {
+        uiState.total = preparation.services.units().bookingTotal()
+        approvedSpecialistId = preparation.specialistId
+        renderSelection()
     }
 
-    private fun specialistItem(specialist: BookingSpecialist): SpecialistItem {
+    private fun renderSpecialists(specialists: List<BookingSpecialist>) {
+        if (specialists.isEmpty() && uiState.specialists.isInitialLoading) return
+        this.specialists = specialists
+        renderSelection()
+    }
+
+    private fun selectSpecialist(specialist: BookingSpecialist) {
+        tappedSpecialistId = specialist.id
+        renderSelection()
+    }
+
+    private fun renderSelection() {
+        val specialists = specialists ?: return
+        val selected = selectedSpecialist()
+        uiState.specialists.replace(specialists.map { specialistItem(it, it == selected) })
+        uiState.renderContinueButton(selected)
+    }
+
+    private fun BookingSpecialistState.renderContinueButton(selected: BookingSpecialist?) {
+        continueButton.isEnabled = selected != null
+        continueButton.text = selected
+            ?.let { BookingRes.strings.booking_specialist_continue.format(it.name.trim()) }
+            ?: DesignSystem.strings.action_continue.desc()
+    }
+
+    private fun selectedSpecialist(): BookingSpecialist? {
+        return listed(tappedSpecialistId) ?: listed(approvedSpecialistId)
+            ?: specialists?.firstOrNull()
+    }
+
+    private fun listed(id: Uuid?): BookingSpecialist? {
+        return specialists?.firstOrNull { it.id == id }
+    }
+
+    private fun specialistItem(specialist: BookingSpecialist, isSelected: Boolean): SpecialistItem {
         return SpecialistItem(
             id = specialist.id.toString(),
             name = specialist.fullName().desc(),
             initials = specialist.initials(),
-            onClick = weakVMClosure { it.saveSpecialistAndContinue(specialist) },
-        )
-    }
-
-    private fun summary(services: List<PreparedService>): StringDesc? {
-        if (services.isEmpty()) return null
-        val units = services.flatMap { prepared -> List(prepared.quantity) { prepared.service } }
-        return BookingRes.strings.booking_specialist_summary.format(
-            StringDesc.Composition(services.map(::serviceName), SERVICE_SEPARATOR),
-            units.totalDuration().toStringDesc(),
-            units.totalPrice().toString(),
-        )
-    }
-
-    private fun serviceName(prepared: PreparedService): StringDesc {
-        if (prepared.quantity == 1) return prepared.service.name.desc()
-        return BookingRes.strings.booking_specialist_service_count.format(
-            prepared.service.name,
-            prepared.quantity,
+            isSelected = isSelected,
+            onClick = weakVMClosure { it.selectSpecialist(specialist) },
         )
     }
 
     private fun BookingSpecialist.fullName(): String {
-        return listOf(name, lastName).filter { it.isNotBlank() }.joinToString(" ")
+        return listOf(name, lastName)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .joinToString(" ")
     }
 
     private fun BookingSpecialist.initials(): String {
@@ -134,6 +169,5 @@ class BookingSpecialistViewModel(
 
     private companion object {
         const val SAVE_SPECIALIST_KEY = "saveSpecialist"
-        const val SERVICE_SEPARATOR = ", "
     }
 }

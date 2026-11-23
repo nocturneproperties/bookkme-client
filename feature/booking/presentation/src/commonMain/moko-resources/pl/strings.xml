@@ -4,9 +4,7 @@
     <string name="booking_services_summary">%1$s · %2$s</string>
     <string name="booking_services_empty">Ta firma nie ma jeszcze usług do rezerwacji</string>
     <string name="booking_services_details">%1$s · %2$s</string>
-    <string name="booking_specialist_title">Kto ma to zrobić?</string>
-    <string name="booking_specialist_summary">%1$s · %2$s · %3$s</string>
-    <string name="booking_specialist_service_count">%1$s × %2$d</string>
-    <string name="booking_specialist_hint">Nie widzisz osoby, której szukasz? Prawdopodobnie nie wykonuje jednej z wybranych usług.</string>
+    <string name="booking_specialist_title">Do kogo się zapisać?</string>
+    <string name="booking_specialist_continue">Dalej: %s</string>
     <string name="booking_specialist_empty">Nikt tutaj nie wykonuje wszystkich wybranych usług. Wróć i wybierz mniej usług.</string>
 </resources>

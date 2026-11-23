@@ -1,4 +1,4 @@
-package me.bookk.database.business.dao
+package me.bookk.database.dao
 
 import androidx.room3.Dao
 import androidx.room3.Delete
@@ -6,7 +6,7 @@ import androidx.room3.Query
 import androidx.room3.Update
 import androidx.room3.Upsert
 import kotlinx.coroutines.flow.Flow
-import me.bookk.database.business.entity.ServiceGroupEntity
+import me.bookk.database.entity.ServiceGroupEntity
 import kotlin.uuid.Uuid
 
 @Dao

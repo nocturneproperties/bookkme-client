@@ -1,16 +1,16 @@
-package me.bookk.database.business.entity
+package me.bookk.database.entity
 
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.ForeignKey.Companion.CASCADE
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
-import me.bookk.database.entity.BusinessEntity
+import kotlin.time.Duration
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "service_group",
+    tableName = "service",
     foreignKeys = [
         ForeignKey(
             entity = BusinessEntity::class,
@@ -18,13 +18,27 @@ import kotlin.uuid.Uuid
             childColumns = ["businessId"],
             onDelete = CASCADE,
         ),
+        ForeignKey(
+            entity = ServiceGroupEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["groupId"],
+            onDelete = CASCADE,
+        ),
     ],
-    indices = [Index("businessId")],
+    indices = [
+        Index("businessId"),
+        Index("groupId"),
+    ],
 )
-class ServiceGroupEntity(
+class ServiceEntity(
     @PrimaryKey
     val id: Uuid,
     val businessId: Uuid,
+    val groupId: Uuid,
     val name: String,
+    val duration: Duration,
+    val priceCurrency: String,
+    val priceValue: Long,
+    val isAvailable: Boolean,
     val createdAt: Instant,
 )

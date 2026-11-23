@@ -7,23 +7,7 @@ import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import me.bookk.core.coroutine.DispatcherProvider
-import me.bookk.database.AccountDaos
-import me.bookk.database.AppointmentDaos
 import me.bookk.database.BusinessDaos
-import me.bookk.database.business.dao.ClientsDao
-import me.bookk.database.business.dao.EmployeeDao
-import me.bookk.database.business.dao.EmployeeInvitationDao
-import me.bookk.database.business.dao.ServiceDao
-import me.bookk.database.business.dao.ServiceGroupDao
-import me.bookk.database.business.entity.ClientEntity
-import me.bookk.database.business.entity.EmployeeDayOffEntity
-import me.bookk.database.business.entity.EmployeeDayScheduleEntity
-import me.bookk.database.business.entity.EmployeeEntity
-import me.bookk.database.business.entity.EmployeeInvitationEntity
-import me.bookk.database.business.entity.EmployeeServiceSnapshotEntity
-import me.bookk.database.business.entity.EmployeeWorkHourEntity
-import me.bookk.database.business.entity.ServiceEntity
-import me.bookk.database.business.entity.ServiceGroupEntity
 import me.bookk.database.business.migration.DefaultBusinessRetention
 import me.bookk.database.business.migration.DeleteEmployeeInvitationEmail
 import me.bookk.database.converter.DurationConverter
@@ -35,9 +19,14 @@ import me.bookk.database.dao.AppointmentSettingsDao
 import me.bookk.database.dao.BusinessDao
 import me.bookk.database.dao.BusinessDataExportDao
 import me.bookk.database.dao.BusinessLinkDao
+import me.bookk.database.dao.ClientsDao
+import me.bookk.database.dao.EmployeeDao
+import me.bookk.database.dao.EmployeeInvitationDao
 import me.bookk.database.dao.LegalDocumentStatusDao
 import me.bookk.database.dao.NotificationSettingsDao
 import me.bookk.database.dao.PersonalDataExportDao
+import me.bookk.database.dao.ServiceDao
+import me.bookk.database.dao.ServiceGroupDao
 import me.bookk.database.dao.UserProfileDao
 import me.bookk.database.entity.AppointmentAdjustmentServiceEntity
 import me.bookk.database.entity.AppointmentEntity
@@ -54,11 +43,20 @@ import me.bookk.database.entity.BusinessDayScheduleEntity
 import me.bookk.database.entity.BusinessEntity
 import me.bookk.database.entity.BusinessLinkEntity
 import me.bookk.database.entity.BusinessWorkHourEntity
+import me.bookk.database.entity.ClientEntity
 import me.bookk.database.entity.DashboardBusinessEntity
+import me.bookk.database.entity.EmployeeDayOffEntity
+import me.bookk.database.entity.EmployeeDayScheduleEntity
+import me.bookk.database.entity.EmployeeEntity
+import me.bookk.database.entity.EmployeeInvitationEntity
+import me.bookk.database.entity.EmployeeServiceSnapshotEntity
+import me.bookk.database.entity.EmployeeWorkHourEntity
 import me.bookk.database.entity.LegalDocumentStatusEntity
 import me.bookk.database.entity.NotificationSettingsChannelEntity
 import me.bookk.database.entity.NotificationSettingsEntity
 import me.bookk.database.entity.PersonalDataExportEntity
+import me.bookk.database.entity.ServiceEntity
+import me.bookk.database.entity.ServiceGroupEntity
 import me.bookk.database.entity.UserProfileEntity
 
 @Database(
@@ -131,15 +129,13 @@ import me.bookk.database.entity.UserProfileEntity
 @ConstructedBy(BusinessDatabaseConstructor::class)
 abstract class BusinessDatabase :
     RoomDatabase(),
-    AccountDaos,
-    BusinessDaos,
-    AppointmentDaos {
+    BusinessDaos {
 
     abstract override fun profileDao(): UserProfileDao
     abstract override fun businessDao(): BusinessDao
-    abstract fun clientDao(): ClientsDao
-    abstract fun serviceDao(): ServiceDao
-    abstract fun serviceGroupDao(): ServiceGroupDao
+    abstract override fun clientDao(): ClientsDao
+    abstract override fun serviceDao(): ServiceDao
+    abstract override fun serviceGroupDao(): ServiceGroupDao
     abstract override fun appointmentDao(): AppointmentDao
     abstract override fun appointmentRequestDao(): AppointmentRequestDao
     abstract override fun appointmentSettingsDao(): AppointmentSettingsDao
@@ -148,8 +144,8 @@ abstract class BusinessDatabase :
     abstract override fun personalDataExportDao(): PersonalDataExportDao
     abstract override fun businessDataExportDao(): BusinessDataExportDao
     abstract override fun businessLinkDao(): BusinessLinkDao
-    abstract fun employeeInvitationDao(): EmployeeInvitationDao
-    abstract fun employeeDao(): EmployeeDao
+    abstract override fun employeeInvitationDao(): EmployeeInvitationDao
+    abstract override fun employeeDao(): EmployeeDao
 
     companion object {
 

@@ -1,4 +1,4 @@
-package me.bookk.database.business.dao
+package me.bookk.database.dao
 
 import androidx.room3.Dao
 import androidx.room3.Insert
@@ -7,12 +7,12 @@ import androidx.room3.Query
 import androidx.room3.Transaction
 import androidx.room3.Upsert
 import kotlinx.coroutines.flow.Flow
-import me.bookk.database.business.entity.EmployeeDayOffEntity
-import me.bookk.database.business.entity.EmployeeDayScheduleEntity
-import me.bookk.database.business.entity.EmployeeEntity
-import me.bookk.database.business.entity.EmployeeServiceSnapshotEntity
-import me.bookk.database.business.entity.EmployeeWorkHourEntity
-import me.bookk.database.business.relation.EmployeeLocal
+import me.bookk.database.entity.EmployeeDayOffEntity
+import me.bookk.database.entity.EmployeeDayScheduleEntity
+import me.bookk.database.entity.EmployeeEntity
+import me.bookk.database.entity.EmployeeServiceSnapshotEntity
+import me.bookk.database.entity.EmployeeWorkHourEntity
+import me.bookk.database.relation.EmployeeLocal
 import kotlin.uuid.Uuid
 
 @Dao

@@ -1,4 +1,4 @@
-package me.bookk.database.business.entity
+package me.bookk.database.entity
 
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
@@ -6,7 +6,6 @@ import androidx.room3.ForeignKey
 import androidx.room3.ForeignKey.Companion.CASCADE
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
-import me.bookk.database.entity.BusinessEntity
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 

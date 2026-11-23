@@ -1,4 +1,4 @@
-package me.bookk.database.business.dao
+package me.bookk.database.dao
 
 import androidx.room3.Dao
 import androidx.room3.Delete
@@ -7,8 +7,8 @@ import androidx.room3.Transaction
 import androidx.room3.Update
 import androidx.room3.Upsert
 import kotlinx.coroutines.flow.Flow
-import me.bookk.database.business.entity.ServiceEntity
-import me.bookk.database.business.relation.ServiceLocal
+import me.bookk.database.entity.ServiceEntity
+import me.bookk.database.relation.ServiceLocal
 import kotlin.uuid.Uuid
 
 @Dao

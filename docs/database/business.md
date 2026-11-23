@@ -174,7 +174,7 @@ that is not READY or already expired clear the business's directory. All filesys
 
 The owner-only business link name lives in `business_link`, one row per business, owned by
 `CommonBusinessLinkDataSource` in the business data module. Only `BusinessDatabase` holds it: its DAO is in the
-`BusinessDaos` group, which `ClientDatabase` does not implement. `BusinessDatabase` 27 adds the table with the
+`BusinessDaos`, which `ClientDatabase` does not implement. `BusinessDatabase` 27 adds the table with the
 additive auto-migration 26 → 27; existing tables and rows are preserved. Like
 `business_data_export`, the row has no foreign key to `business` and is removed explicitly.
 

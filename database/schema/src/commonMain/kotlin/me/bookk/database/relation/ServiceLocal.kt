@@ -1,9 +1,9 @@
-package me.bookk.database.business.relation
+package me.bookk.database.relation
 
 import androidx.room3.Embedded
 import androidx.room3.Relation
-import me.bookk.database.business.entity.ServiceEntity
-import me.bookk.database.business.entity.ServiceGroupEntity
+import me.bookk.database.entity.ServiceEntity
+import me.bookk.database.entity.ServiceGroupEntity
 
 class ServiceLocal(
     @Embedded

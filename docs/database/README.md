@@ -5,24 +5,20 @@ There are two on-device Room databases, one per audience. Each app opens exactly
 | Database | Module | File | Platforms | Tables |
 |---|---|---|---|---|
 | `BusinessDatabase` | `:database:business` | `bookk_me.db` | Android, iOS (bundled SQLite driver) | account tables + every business table below |
-| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web, the client web app (SQLite WASM worker, see `apps/client/README.md`) | account tables + `business` (with schedules, `dashboard_business`, `business_data_export`) + every `appointment*` table + `saved_business` |
+| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web, the client web app (SQLite WASM worker, see `apps/client/README.md`) | account tables + `business` (with schedules, `dashboard_business`, `business_data_export`) + `service_group` and `service` + every `appointment*` table + `saved_business` |
 
-Entities, relations, DAOs and the type converters that more than one database uses live once in
-`:database:schema` (packages `me.bookk.database.entity`, `relation`, `dao`, `converter`): the account tables
-(`user_profile`, `notification_settings` and its channels, `legal_document_status`, `personal_data_export`),
-`business` with its schedule tables, `dashboard_business` and `business_data_export`, and the `appointment*`
-tables. `business_link` lives there too, although only `BusinessDatabase` holds it, because `business/data`, which
-writes it, also compiles for the web and cannot depend on `:database:business`. The DAOs come in groups, each an interface with one Koin module binding its DAOs: `AccountDaos`
-(`accountDaoModule()`) and `AppointmentDaos` (`appointmentDaoModule()`) are implemented by both databases. The
-business-table DAOs are split per database: `BusinessDaos` (`businessDaoModule()`, `BusinessDatabase` only) has
-`businessDao`, `businessDataExportDao` and `businessLinkDao`; `ClientDaos` (`clientDaoModule()`, `ClientDatabase`
-only) has `businessDao`, `businessDataExportDao` and `savedBusinessDao`. `business_link` is therefore in `BusinessDatabase` only, and `saved_business` (the client's saved businesses, written by `appointments/data`) in `ClientDatabase` only.
-Each database lists the entities it holds in its own `@Database`, implements the groups whose tables it holds
-and includes their modules, so each database file holds its own copy of the tables, and foreign keys and
-cascades stay inside that database. `BusinessDatabase` implements `AccountDaos`, `BusinessDaos` and `AppointmentDaos`; `ClientDatabase` implements `AccountDaos`, `ClientDaos` and `AppointmentDaos`. Data modules depend on `:database:schema` alone and get
-DAOs from Koin, so `authorization/data`, `settings/data`, `business/data` and `appointments/data` run on both
-apps. The client, service and employee tables are still in `:database:business`; they move to
-`:database:schema` when a web screen needs them. Changing a shared entity changes the schema of every database
+Every entity, relation, DAO and type converter lives in `:database:schema` (packages `me.bookk.database.entity`,
+`relation`, `dao`, `converter`), whichever databases hold the table; the database modules hold only the
+`@Database` class, its builders and migrations. Each database has one DAO interface with one Koin module binding its DAOs: `BusinessDaos`
+(`businessDaoModule()`) for `BusinessDatabase` and `ClientDaos` (`clientDaoModule()`) for `ClientDatabase`. Both
+declare the account DAOs (`profileDao`, `notificationSettingsDao`, `legalDocumentStatusDao`, `personalDataExportDao`),
+`businessDao`, `businessDataExportDao`, `serviceDao`, `serviceGroupDao` and the appointment DAOs (`appointmentDao`,
+`appointmentRequestDao`, `appointmentSettingsDao`); only `BusinessDaos` has `businessLinkDao`, `clientDao`, `employeeDao` and `employeeInvitationDao`, and only `ClientDaos` has `savedBusinessDao`. `business_link`, `client` and the `employee*` tables are therefore in `BusinessDatabase` only, and `saved_business` (the client's saved businesses, written by `appointments/data`) in `ClientDatabase` only.
+Each database lists the entities it holds in its own `@Database`, implements its interface
+and includes its module, so each database file holds its own copy of the tables, and foreign keys and
+cascades stay inside that database. `BusinessDatabase` implements `BusinessDaos`; `ClientDatabase` implements `ClientDaos`. Data modules depend on `:database:schema` alone and get
+DAOs from Koin, so `authorization/data`, `settings/data`, `business/data`, `appointments/data` and `services/data` run on both
+apps; `clients/data` and `employees/data` are mobile-only. Changing a shared entity changes the schema of every database
 that lists it, so each one needs its own version bump and migration.
 
 Room generates the DAO implementations (for example `UserProfileDao_Impl` in the DAO package) inside
@@ -55,15 +51,17 @@ holds the account tables from [Authorization](authorization.md) and [Settings](s
   modules) reports whether the main database is a file (`pragma_database_list`); the web worker falls back to an
   in-memory database when it gets no OPFS storage, and `InitialAppDataFetch` then fetches on every start. Room
   tracks changes with `TEMP` triggers on its own connection, so it never sees a commit another tab makes to the
-  shared OPFS file. The worker posts `changed` on the `bookkme-db-changes` `BroadcastChannel` once a write is
-  committed, and `CrossTabInvalidation` (`:database:client` `jsMain`, started when the database is created) runs
+  shared OPFS file. The worker posts `changed` on the `bookkme-db-changes` `BroadcastChannel` once a transaction
+  that changed rows is committed (`sqlite3_total_changes` moved), not after every statement that merely is not
+  read-only: Room's own invalidation refresh runs `BEGIN IMMEDIATE … END` without changing anything, and the tab
+  hears its own announcements, so announcing those would re-trigger the check forever. `CrossTabInvalidation` (`:database:client` `jsMain`, started when the database is created) runs
   `ExternalChangeInvalidator`: when `PRAGMA data_version` moved (another connection committed), it sets
   `room_table_modification_log.invalidated = 1` and calls `invalidationTracker.refreshAsync()`, so every observed
   `flow()` re-queries. `ExternalChangeInvalidatorTest` (two Room instances on one file) pins Room's internal table
   name.
 - **Version and migrations.** Each database has its own version and migration history. `BusinessDatabase` is
   at `version = 27`; it kept the schema history of the former single `AppDatabase` (same file, same schema), so
-  the split needed no migration. `ClientDatabase` is at `version = 3`: 1 held the account tables, the additive 1 → 2 auto-migration adds the business and appointment tables, and the additive 2 → 3 auto-migration adds `saved_business`. Moving entities into `:database:schema` changed no table, so `BusinessDatabase` stayed at 26.
+  the split needed no migration. `ClientDatabase` is at `version = 4`: 1 held the account tables, the additive 1 → 2 auto-migration adds the business and appointment tables, the additive 2 → 3 auto-migration adds `saved_business`, and the additive 3 → 4 auto-migration adds `service_group` and `service` for the Mini App's services step. Moving `service`/`service_group` into `:database:schema` changed no table of `BusinessDatabase`, which stayed at 27. Moving entities into `:database:schema` changed no table, so `BusinessDatabase` stayed at 26.
   In `BusinessDatabase`, every step from 1 to 22 is a Room `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The manual 22 → 23 migration (`DefaultBusinessRetention`) makes business retention non-null,
   backfills missing values with 36 months and preserves custom periods and dependent rows.
@@ -112,8 +110,8 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `signup_legal_documents_prefs` (public legal metadata) | No `LogOutAction` binding for `CommonSignUpLegalDocumentsDataSource` | ❌ intentionally retained for cache-only signup |
 | In-memory sign-up session (user data, challenge, attestation, rejection; never persisted) | `InMemorySignUpSessionDataSource` | ✅ `clear()` |
 | `client` | `CommonClientsDataSource` | ✅; confirmed deletion also evicts associated appointment/request snapshots |
-| `service` | `ServiceDataSourceImpl` | ✅ |
-| `service_group` | `ServiceGroupDataSourceImpl` | ✅ (also cascades to `service`) |
+| `service` (both databases) | `ServiceDataSourceImpl` | ✅ |
+| `service_group` (both databases) | `ServiceGroupDataSourceImpl` | ✅ (also cascades to `service`) |
 | `employee` (+ 4 child tables) | `EmployeeDataSourceImpl` | ✅ |
 | `employee_invitation` | `EmployeeInvitationDataSourceImpl` | ✅ |
 | `appointment` (+ service snapshot, adjustment services) | `CommonAppointmentDataSource` | ✅ `appointmentDao.clear()`, including single-appointment refresh results and `clientUserId`; children cascade |
@@ -134,6 +132,6 @@ has the business and appointment tables. The client web app installs only `clien
 `CommonClientBookingDataSource` writes the client's upcoming bookings into `appointment`/`appointment_request` and
 clears them and `saved_business` on logout, and `clientBusinessDataModule()`, whose `CommonBusinessDataSource`
 writes the businesses the client booked with or saved ([Get businesses](../operations/business/get-businesses.md))
-into `business` and clears the business tables on logout. It does not install the full business modules, whose
+into `business` and clears the business tables on logout, and the full `servicesDataModule()`, whose `ServiceDataSourceImpl`/`ServiceGroupDataSourceImpl` write the services of a business the client opens ([Get business services](../operations/services/get-business-services.md), called by booking presentation) into `service`/`service_group` and clear them and their `services_prefs`/`service_groups_prefs` markers on logout. It does not install the full business modules, whose
 `RefreshBusinessInfo` would delete every business missing from `/business/mine`. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)
 deletes businesses the user no longer has, together with their cascaded rows.

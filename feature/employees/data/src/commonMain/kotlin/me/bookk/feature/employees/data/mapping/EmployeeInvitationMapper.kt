@@ -3,7 +3,7 @@ package me.bookk.feature.employees.data.mapping
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import me.bookk.database.business.entity.EmployeeInvitationEntity
+import me.bookk.database.entity.EmployeeInvitationEntity
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitation
 import me.bookk.feature.employees.domain.api.entity.EmployeeInvitationStatus
 

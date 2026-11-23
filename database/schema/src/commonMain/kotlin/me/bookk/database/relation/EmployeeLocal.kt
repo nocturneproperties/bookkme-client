@@ -1,12 +1,12 @@
-package me.bookk.database.business.relation
+package me.bookk.database.relation
 
 import androidx.room3.Embedded
 import androidx.room3.Relation
-import me.bookk.database.business.entity.EmployeeDayOffEntity
-import me.bookk.database.business.entity.EmployeeDayScheduleEntity
-import me.bookk.database.business.entity.EmployeeEntity
-import me.bookk.database.business.entity.EmployeeServiceSnapshotEntity
-import me.bookk.database.business.entity.EmployeeWorkHourEntity
+import me.bookk.database.entity.EmployeeDayOffEntity
+import me.bookk.database.entity.EmployeeDayScheduleEntity
+import me.bookk.database.entity.EmployeeEntity
+import me.bookk.database.entity.EmployeeServiceSnapshotEntity
+import me.bookk.database.entity.EmployeeWorkHourEntity
 
 class EmployeeLocal(
     @Embedded val entity: EmployeeEntity,

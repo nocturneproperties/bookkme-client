@@ -1,15 +1,15 @@
-package me.bookk.database.business.entity
+package me.bookk.database.entity
 
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.ForeignKey.Companion.CASCADE
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
-import me.bookk.database.entity.BusinessEntity
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Entity(
-    tableName = "client",
+    tableName = "employee_invitation",
     foreignKeys = [
         ForeignKey(
             entity = BusinessEntity::class,
@@ -20,14 +20,12 @@ import kotlin.uuid.Uuid
     ],
     indices = [Index("businessId")],
 )
-class ClientEntity(
+class EmployeeInvitationEntity(
     @PrimaryKey
     val id: Uuid,
-    val name: String,
-    val lastName: String,
-    val phone: String?,
-    val email: String?,
     val businessId: Uuid,
-    val userId: Uuid?,
-    val description: String? = null,
+    val invitedBy: Uuid,
+    val code: String?,
+    val status: String,
+    val createdAt: Instant,
 )

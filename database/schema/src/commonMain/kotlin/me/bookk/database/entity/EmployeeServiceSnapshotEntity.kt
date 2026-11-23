@@ -1,4 +1,4 @@
-package me.bookk.database.business.entity
+package me.bookk.database.entity
 
 import androidx.room3.Entity
 import androidx.room3.ForeignKey

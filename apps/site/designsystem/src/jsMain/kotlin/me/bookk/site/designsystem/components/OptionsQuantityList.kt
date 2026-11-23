@@ -64,9 +64,12 @@ fun <T : PickerPresentation> OptionsQuantityList(
                 .gap(0.px),
         ) {
             OptionsQuantityPlaceholder(state.placeholder, options)
+            val appearance = rememberItemAppearance()
             options.forEachIndexed { index, option ->
-                if (index > 0) HorizontalDivider()
-                OptionsQuantityRow(state, option, itemContent)
+                AppearingItem(appearance, option.pickerItemId) {
+                    if (index > 0) HorizontalDivider()
+                    OptionsQuantityRow(state, option, itemContent)
+                }
             }
         }
     }
@@ -112,14 +115,9 @@ private fun <T : PickerPresentation> OptionQuantityControl(
     state: OptionsMultiPickerState<T>,
     option: T,
 ) {
-    val quantity = state.quantityOf(option)
-    if (quantity == 0) {
-        QuantityAddButton(onClick = { state.onQuantityIncreaseRequested(option) })
-    } else {
-        QuantityStepper(
-            quantity = quantity,
-            onIncrease = { state.onQuantityIncreaseRequested(option) },
-            onDecrease = { state.onQuantityDecreaseRequested(option) },
-        )
-    }
+    QuantityControl(
+        quantity = state.quantityOf(option),
+        onIncrease = { state.onQuantityIncreaseRequested(option) },
+        onDecrease = { state.onQuantityDecreaseRequested(option) },
+    )
 }

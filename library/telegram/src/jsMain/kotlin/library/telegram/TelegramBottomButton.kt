@@ -5,6 +5,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import me.bookk.core.presentation.navigation.LocalIsCurrentScreen
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.site.designsystem.components.TextButton
@@ -73,6 +74,7 @@ fun TelegramSecondaryButton(webApp: TelegramWebApp, state: ButtonState) {
 
 @Composable
 private fun BottomButton(button: TelegramBottomButton, state: ButtonState) {
+    if (!LocalIsCurrentScreen.current) return
     val spec = state.bottomButtonSpec(state.text.localized(), bottomButtonColors())
     val onClick by rememberUpdatedState(state.onClick)
     DisposableEffect(button) {

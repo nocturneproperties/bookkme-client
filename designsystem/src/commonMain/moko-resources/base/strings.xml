@@ -45,6 +45,9 @@
     <string name="common_from">From</string>
     <string name="common_to">To</string>
     <string name="common_min">min.</string>
+    <string name="common_duration_minutes">%1$d min</string>
+    <string name="common_duration_hours">%1$d h</string>
+    <string name="common_duration_hours_minutes">%1$d h %2$d min</string>
 
     <string name="schedule_title">Schedule</string>
     <string name="schedule_add_working_time">Add time block</string>

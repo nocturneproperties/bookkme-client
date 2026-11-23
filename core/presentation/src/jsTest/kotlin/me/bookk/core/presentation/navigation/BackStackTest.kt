@@ -9,6 +9,7 @@ import me.bookk.core.test.whenn
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class BackStackTest {
@@ -68,7 +69,7 @@ class BackStackTest {
     }
 
     @Test
-    fun `clears the view models of a popped screen`() = runUnitTest {
+    fun `keeps the view models of a popped screen while it slides away`() = runUnitTest {
         given()
         val fixture = Fixture()
         fixture.sut.push("services")
@@ -76,6 +77,134 @@ class BackStackTest {
 
         whenn()
         fixture.sut.pop()
+
+        then()
+        assertTrue(services.isActive)
+    }
+
+    @Test
+    fun `clears the view models of a popped screen once its transition finishes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+        val services = fixture.viewModelOfCurrent()
+        fixture.sut.pop()
+
+        whenn()
+        fixture.sut.finishTransition()
+
+        then()
+        assertFalse(services.isActive)
+    }
+
+    @Test
+    fun `slides forward from the previous screen when a screen is pushed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.sut.push("services")
+
+        then()
+        assertEquals(BackStackDirection.FORWARD, fixture.sut.transition?.direction)
+        assertEquals("home", fixture.sut.transition?.from?.route)
+        assertEquals("services", fixture.sut.transition?.to?.route)
+    }
+
+    @Test
+    fun `slides back to the previous screen when popped`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+        fixture.sut.finishTransition()
+
+        whenn()
+        fixture.sut.pop()
+
+        then()
+        assertEquals(BackStackDirection.BACKWARD, fixture.sut.transition?.direction)
+        assertEquals("services", fixture.sut.transition?.from?.route)
+        assertEquals("home", fixture.sut.transition?.to?.route)
+    }
+
+    @Test
+    fun `shows both screens in stack order while sliding forward`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.sut.push("services")
+
+        then()
+        assertEquals(listOf("home", "services"), fixture.sut.visibleRoutes())
+    }
+
+    @Test
+    fun `shows both screens in stack order while sliding back`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+        fixture.sut.finishTransition()
+
+        whenn()
+        fixture.sut.pop()
+
+        then()
+        assertEquals(listOf("home", "services"), fixture.sut.visibleRoutes())
+    }
+
+    @Test
+    fun `shows only the current screen once the transition finishes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+
+        whenn()
+        fixture.sut.finishTransition()
+
+        then()
+        assertNull(fixture.sut.transition)
+        assertEquals(listOf("services"), fixture.sut.visibleRoutes())
+    }
+
+    @Test
+    fun `finishes the running transition when another screen is pushed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+        val services = fixture.viewModelOfCurrent()
+        fixture.sut.pop()
+
+        whenn()
+        fixture.sut.push("specialist")
+
+        then()
+        assertFalse(services.isActive)
+        assertEquals(listOf("home", "specialist"), fixture.sut.visibleRoutes())
+    }
+
+    @Test
+    fun `does not slide when the initial screen is popped`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.sut.pop()
+
+        then()
+        assertNull(fixture.sut.transition)
+    }
+
+    @Test
+    fun `clears the view models of a screen still sliding away when cleared`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+        val services = fixture.viewModelOfCurrent()
+        fixture.sut.pop()
+
+        whenn()
+        fixture.sut.clear()
 
         then()
         assertFalse(services.isActive)
@@ -110,4 +239,8 @@ class BackStackTest {
         assertFalse(home.isActive)
         assertFalse(services.isActive)
     }
+}
+
+private fun BackStack<String>.visibleRoutes(): List<String> {
+    return visibleEntries.map { it.route }
 }

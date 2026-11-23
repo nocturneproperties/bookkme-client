@@ -33,6 +33,10 @@ import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapViewModel
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
+import me.bookk.feature.booking.domain.api.GetBookingCatalog
+import me.bookk.feature.booking.domain.api.GetBookingPreparation
+import me.bookk.feature.booking.domain.api.SetBookingServices
+import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesViewModel
 import me.bookk.feature.business.domain.api.business.GetBusinesses
 import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
@@ -319,6 +323,47 @@ class ClientAppTest {
 
         then()
         assertNotNull(getBusinessServices)
+    }
+
+    @Test
+    fun `provides the booking catalog the services step lists`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val getBookingCatalog = KoinPlatform.getKoin().getOrNull<GetBookingCatalog>()
+
+        then()
+        assertNotNull(getBookingCatalog)
+    }
+
+    @Test
+    fun `provides the booking preparation the services step saves into`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val koin = KoinPlatform.getKoin()
+        val useCases = listOf(
+            koin.getOrNull<GetBookingPreparation>(),
+            koin.getOrNull<SetBookingServices>(),
+        )
+
+        then()
+        useCases.forEach { assertNotNull(it) }
+    }
+
+    @Test
+    fun `keeps one booking preparation for every screen of the app`() = runUnitTest {
+        given()
+        startClientApp()
+        val first = KoinPlatform.getKoin().get<BookingPreparationDataSource>()
+
+        whenn()
+        val second = KoinPlatform.getKoin().get<BookingPreparationDataSource>()
+
+        then()
+        assertSame(first, second)
     }
 
     @Test

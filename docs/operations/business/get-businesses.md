@@ -3,7 +3,8 @@
 # Get businesses
 
 `GetBusinesses.flow(ids)` / `.refresh(ids)` → `POST /api/business/bulk`
-· called from `GetUpcomingBookings` and `GetSavedBusinesses` (client web app Home); bound only by `clientBusinessDomainModule()`
+· called from `GetUpcomingBookings` and `GetSavedBusinesses` (client web app Home) and
+[Get booking catalog](../booking/get-booking-catalog.md) (the services step); bound only by `clientBusinessDomainModule()`
 
 Reads up to 100 businesses at once with the caller's permissions, employee id and client id in each, like the single
 business read. Ids with no business are left out and a repeated id is returned once. `CommonBusinessDataSource`

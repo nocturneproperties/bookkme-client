@@ -109,6 +109,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `user_profile` | `CommonUserProfileDataSource` | ✅ `profileDao.clear()` |
 | `signup_legal_documents_prefs` (public legal metadata) | No `LogOutAction` binding for `CommonSignUpLegalDocumentsDataSource` | ❌ intentionally retained for cache-only signup |
 | In-memory sign-up session (user data, challenge, attestation, rejection; never persisted) | `InMemorySignUpSessionDataSource` | ✅ `clear()` |
+| In-memory booking preparation (the client web app's approved services per business; never persisted) | `InMemoryBookingPreparationDataSource` | ✅ every business's services |
 | `client` | `CommonClientsDataSource` | ✅; confirmed deletion also evicts associated appointment/request snapshots |
 | `service` (both databases) | `ServiceDataSourceImpl` | ✅ |
 | `service_group` (both databases) | `ServiceGroupDataSourceImpl` | ✅ (also cascades to `service`) |
@@ -132,6 +133,6 @@ has the business and appointment tables. The client web app installs only `clien
 `CommonClientBookingDataSource` writes the client's upcoming bookings into `appointment`/`appointment_request` and
 clears them and `saved_business` on logout, and `clientBusinessDataModule()`, whose `CommonBusinessDataSource`
 writes the businesses the client booked with or saved ([Get businesses](../operations/business/get-businesses.md))
-into `business` and clears the business tables on logout, and the full `servicesDataModule()`, whose `ServiceDataSourceImpl`/`ServiceGroupDataSourceImpl` write the services of a business the client opens ([Get business services](../operations/services/get-business-services.md), called by booking presentation) into `service`/`service_group` and clear them and their `services_prefs`/`service_groups_prefs` markers on logout. It does not install the full business modules, whose
+into `business` and clears the business tables on logout, and the full `servicesDataModule()`, whose `ServiceDataSourceImpl`/`ServiceGroupDataSourceImpl` write the services of a business the client opens ([Get business services](../operations/services/get-business-services.md), called by booking's `GetBookingCatalog` and `GetBookingPreparation`) into `service`/`service_group` and clear them and their `services_prefs`/`service_groups_prefs` markers on logout. It does not install the full business modules, whose
 `RefreshBusinessInfo` would delete every business missing from `/business/mine`. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)
 deletes businesses the user no longer has, together with their cascaded rows.

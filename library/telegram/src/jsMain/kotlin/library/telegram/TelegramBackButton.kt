@@ -5,6 +5,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
+import me.bookk.core.presentation.navigation.LocalIsCurrentScreen
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.site.designsystem.components.AppTopBar
 
@@ -19,6 +20,7 @@ fun TelegramAppTopBar(webApp: TelegramWebApp, state: AppBarState) {
 
 @Composable
 fun TelegramBackButton(webApp: TelegramWebApp, onBackClick: (() -> Unit)?) {
+    if (!LocalIsCurrentScreen.current) return
     val backButton = webApp.backButton
     val onClick by rememberUpdatedState(onBackClick)
     DisposableEffect(backButton) {

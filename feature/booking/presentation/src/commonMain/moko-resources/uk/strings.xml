@@ -5,7 +5,4 @@
     <string name="booking_services_pick">Оберіть послугу</string>
     <string name="booking_services_empty">Цей бізнес ще не має послуг для запису</string>
     <string name="booking_services_details">%1$s · %2$s</string>
-    <string name="booking_duration_minutes">%1$d хв</string>
-    <string name="booking_duration_hours">%1$d год</string>
-    <string name="booking_duration_hours_minutes">%1$d год %2$d хв</string>
 </resources>

@@ -26,10 +26,11 @@ import library.telegram.TelegramWebApp
 import me.bookk.android.feature.booking.resources.BookingRes
 import me.bookk.site.designsystem.components.Heading
 import me.bookk.site.designsystem.components.HeadingLevel
-import me.bookk.site.designsystem.components.InitialsTile
+import me.bookk.site.designsystem.components.IconTile
 import me.bookk.site.designsystem.components.List
 import me.bookk.site.designsystem.components.OptionsQuantityList
 import me.bookk.site.designsystem.components.TextBlock
+import me.bookk.site.designsystem.resources.WebDesignSystem
 import me.bookk.site.designsystem.theme.BodyMediumTextStyle
 import me.bookk.site.designsystem.theme.BodySmallTextStyle
 import me.bookk.site.designsystem.theme.HeadlineSmallTextStyle
@@ -49,22 +50,22 @@ internal fun BookingServicesScreen(state: BookingServicesState, webApp: Telegram
     TelegramAppTopBar(webApp, state.appBar)
     TelegramMainButton(webApp, state.continueButton)
     Column(BookingServicesModifier) {
-        state.businessName?.let { BusinessHeader(it, state.businessInitials) }
-        List(state.groups, Modifier.gap(1.25.cssRem)) { group ->
+        state.businessName?.let { BusinessHeader(it) }
+        List(state.groups, key = { it.id }, Modifier.gap(1.25.cssRem)) { group ->
             OptionsQuantityList(state.services, group.name, group.services) { ServiceRow(it) }
         }
     }
 }
 
 @Composable
-private fun BusinessHeader(name: StringDesc, initials: String) {
+private fun BusinessHeader(name: StringDesc) {
     Row(
         Modifier
             .fillMaxWidth()
             .gap(0.75.cssRem),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        InitialsTile(initials)
+        IconTile(WebDesignSystem.images.material_business)
         Column(
             Modifier
                 .minWidth(0.px)

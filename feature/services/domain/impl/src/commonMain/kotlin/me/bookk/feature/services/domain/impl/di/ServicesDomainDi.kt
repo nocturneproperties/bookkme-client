@@ -48,10 +48,9 @@ fun servicesDomainModule() = module {
     factoryOf(::GetBusinessCurrencyImpl) bind GetBusinessCurrency::class
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class
     factoryOf(::GetServicesPermissionsImpl) bind GetServicesPermissions::class
-
-    factoryOf(::CreateQuoteImpl) bind CreateQuote::class
 }
 
 fun clientServicesDomainModule() = module {
     factoryOf(::GetBusinessServicesImpl) bind GetBusinessServices::class
+    factoryOf(::CreateQuoteImpl) bind CreateQuote::class
 }

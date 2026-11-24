@@ -15,4 +15,8 @@ sealed interface ClientScreen {
     data class DateTime(
         val businessId: Uuid,
     ) : ClientScreen
+
+    data class Review(
+        val businessId: Uuid,
+    ) : ClientScreen
 }

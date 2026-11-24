@@ -18,4 +18,24 @@
     <string name="booking_date_time_unavailable">%s сейчас не принимает онлайн-записи.</string>
     <string name="booking_date_time_pick_time">Выберите время</string>
     <string name="booking_date_time_summary">%1$s · %2$s</string>
+    <string name="booking_review_title">Почти готово.</string>
+    <string name="booking_review_time_range">%1$s–%2$s</string>
+    <string name="booking_review_details">%1$s · %2$s</string>
+    <string name="booking_review_service_count">%1$s × %2$d</string>
+    <string name="booking_review_total">Итого</string>
+    <string name="booking_review_note_label">Заметка для бизнеса</string>
+    <string name="booking_review_note_placeholder">Что им стоит знать? Необязательно</string>
+    <string name="booking_review_confirmation_notice">%s подтвердит запрос. Сообщение придёт сюда же.</string>
+    <string name="booking_review_send">Отправить запрос</string>
+    <string name="booking_review_time_unavailable_title">Это время уже занято</string>
+    <string name="booking_review_time_unavailable_message">Вернитесь и выберите другое время.</string>
+    <string name="booking_review_requests_limit_title">Слишком много запросов в ожидании</string>
+    <string name="booking_review_requests_limit_message">Вы ещё ждёте ответа от %s на прежние запросы. Запишитесь снова, когда его получите.</string>
+    <string name="booking_review_prices_changed_title">Цены изменились</string>
+    <string name="booking_review_prices_changed_message">Проверьте новые цены и отправьте запрос ещё раз.</string>
+    <string name="booking_review_services_changed_title">Услуги изменились</string>
+    <string name="booking_review_services_changed_message">В %s изменились услуги с тех пор, как вы их выбрали. Вернитесь и выберите их снова.</string>
+    <string name="booking_review_specialist_unavailable_title">К этому специалисту сейчас нельзя записаться</string>
+    <string name="booking_review_specialist_unavailable_message">Вернитесь и выберите кого-то другого.</string>
+    <string name="booking_review_business_message_title">От %s</string>
 </resources>

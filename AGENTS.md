@@ -418,8 +418,8 @@ Label text                  [ ● ]   StateSwitch(state, onCheckedChange)  (gree
 
 ╭─────────────────────────────────╮
 │ (i) Optional title              │  InfoNote(text, title = null)  — informational text block:
-│     Informational text          │    actionText info icon, actionText 12% tint background,
-╰─────────────────────────────────╯    large shape; iOS `InfoNote(text:title:)` (clear list row)
+│     Informational text          │    actionText info icon, actionText 20% tint background,
+╰─────────────────────────────────╯    large shape; iOS `InfoNote(text:title:)` (clear list row), web `InfoNote(text, title)`
 ```
 
 ### Lists

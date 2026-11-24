@@ -48,5 +48,8 @@ interface CreateAppointmentRequest {
         class PendingRequestsLimitReached :
             Throwable(),
             Error
+        class EmployeeBusy :
+            Throwable(),
+            Error
     }
 }

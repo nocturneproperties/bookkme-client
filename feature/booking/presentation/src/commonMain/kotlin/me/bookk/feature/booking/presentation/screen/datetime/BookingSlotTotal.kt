@@ -7,14 +7,16 @@ import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.feature.booking.domain.api.entity.BookingPreparation.PreparedService
 import me.bookk.feature.booking.domain.api.entity.BookingSlot
 import me.bookk.feature.booking.presentation.screen.BookingTotal
+import me.bookk.feature.booking.presentation.screen.bookingDayFormat
 import me.bookk.feature.booking.presentation.screen.bookingTotal
+import me.bookk.feature.booking.presentation.screen.slotTimeFormat
 import me.bookk.feature.booking.presentation.screen.units
 
 internal class BookingSlotTotal(
     dateLocalizer: DateLocalizer,
 ) {
 
-    private val dateFormat = dateLocalizer.strict(DATE_PATTERN, respectUserSettings = true)
+    private val dateFormat = dateLocalizer.bookingDayFormat()
     private val timeFormat = dateLocalizer.slotTimeFormat()
 
     fun total(services: List<PreparedService>, date: LocalDate, slot: BookingSlot?): BookingTotal? {
@@ -26,9 +28,5 @@ internal class BookingSlotTotal(
                 timeFormat.format(slot.time),
             ),
         )
-    }
-
-    private companion object {
-        const val DATE_PATTERN = "EEE d MMM"
     }
 }

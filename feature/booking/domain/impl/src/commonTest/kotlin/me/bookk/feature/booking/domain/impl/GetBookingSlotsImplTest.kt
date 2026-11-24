@@ -7,6 +7,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.CancellationException
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -212,5 +213,21 @@ class GetBookingSlotsImplTest {
         then()
         assertFailsWith<Error.SelectionInvalid> { call() }
         verifySuspend(VerifyMode.exactly(0)) { fixture.getFreeSlots(any()) }
+    }
+
+    @Test
+    fun `propagates cancellation unchanged`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.dataSource.select(businessId, haircutId to 1, specialistId = specialistId)
+        val cancellation = CancellationException("cancelled")
+        fixture.fail(cancellation)
+
+        whenn()
+        val result = runCatching { fixture.loadWeek() }
+
+        then()
+        assertEquals(cancellation.message, result.exceptionOrNull()?.message)
+        assertFailsWith<CancellationException> { result.getOrThrow() }
     }
 }

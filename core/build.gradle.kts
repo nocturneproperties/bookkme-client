@@ -15,6 +15,9 @@ kotlin {
         androidMain.dependencies {
             api(libs.androidx.activity)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
         jsMain.dependencies {
             implementation(npm("@js-joda/timezone", libs.versions.js.joda.timezone.get()))
         }

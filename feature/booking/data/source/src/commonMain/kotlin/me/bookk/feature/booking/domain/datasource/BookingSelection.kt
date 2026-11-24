@@ -1,5 +1,6 @@
 package me.bookk.feature.booking.domain.datasource
 
+import library.money.api.Money
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -11,5 +12,6 @@ data class BookingSelection(
     data class SelectedService(
         val serviceId: Uuid,
         val quantity: Int,
+        val approvedPrice: Money,
     )
 }

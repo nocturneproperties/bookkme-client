@@ -30,8 +30,10 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.database.dao.AppointmentDao
 import me.bookk.database.dao.AppointmentRequestDao
+import me.bookk.database.dao.BookingInfoDao
 import me.bookk.database.dao.SavedBusinessDao
 import me.bookk.feature.appointments.data.mapping.toRemote
+import me.bookk.feature.appointments.data.remote.model.BookingInfoRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotsDayRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotsRequestRemote
@@ -39,6 +41,7 @@ import me.bookk.feature.appointments.data.remote.model.RequestedServiceRemote
 import me.bookk.feature.appointments.data.remote.model.SavedBusinessRemote
 import me.bookk.feature.appointments.data.remote.model.UpcomingBookingsRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.BookingInfo
 import me.bookk.feature.appointments.domain.api.entity.FreeSlot
 import me.bookk.feature.appointments.domain.api.entity.FreeSlotsDay
 import me.bookk.feature.appointments.domain.api.entity.FreeSlotsQuery
@@ -98,6 +101,7 @@ class ClientBookingHttpTest {
             mock<AppointmentDao>(),
             mock<AppointmentRequestDao>(),
             mock<SavedBusinessDao>(),
+            mock<BookingInfoDao>(),
         )
 
         suspend fun <T> call(action: suspend CommonClientBookingDataSource.() -> T): T {
@@ -269,5 +273,44 @@ class ClientBookingHttpTest {
             ),
             result,
         )
+    }
+
+    @Test
+    fun `fetches the booking info of a business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        fixture.body = dataSerializer.encodeToByteArray(
+            BookingInfoRemote.serializer(),
+            BookingInfoRemote(businessId, "Please come 5 minutes early."),
+        )
+
+        whenn()
+        val result = fixture.call { getBookingInfo(businessId) }
+
+        then()
+        assertEquals(HttpMethod.Get, fixture.request?.method)
+        assertEquals(
+            "/api/appointments/booking-info/$businessId",
+            fixture.request?.url?.encodedPath,
+        )
+        assertEquals(BookingInfo(businessId, "Please come 5 minutes early."), result)
+    }
+
+    @Test
+    fun `reads booking info without a note as an empty note`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val businessId = Uuid.random()
+        fixture.body = dataSerializer.encodeToByteArray(
+            BookingInfoRemote.serializer(),
+            BookingInfoRemote(businessId, ""),
+        )
+
+        whenn()
+        val result = fixture.call { getBookingInfo(businessId) }
+
+        then()
+        assertEquals(BookingInfo(businessId, ""), result)
     }
 }

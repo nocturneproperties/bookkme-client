@@ -5,7 +5,7 @@ There are two on-device Room databases, one per audience. Each app opens exactly
 | Database | Module | File | Platforms | Tables |
 |---|---|---|---|---|
 | `BusinessDatabase` | `:database:business` | `bookk_me.db` | Android, iOS (bundled SQLite driver) | account tables + every business table below |
-| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web, the client web app (SQLite WASM worker, see `apps/client/README.md`) | account tables + `business` (with schedules, `dashboard_business`, `business_data_export`) + `service_group` and `service` + every `appointment*` table + `saved_business` + `bookable_employee` and its child tables |
+| `ClientDatabase` | `:database:client` | `bookk_me_client.db` | Web, the client web app (SQLite WASM worker, see `apps/client/README.md`) | account tables + `business` (with schedules, `dashboard_business`, `business_data_export`) + `service_group` and `service` + every `appointment*` table + `saved_business` + `booking_info` + `bookable_employee` and its child tables |
 
 Every entity, relation, DAO and type converter lives in `:database:schema` (packages `me.bookk.database.entity`,
 `relation`, `dao`, `converter`), whichever databases hold the table; the database modules hold only the
@@ -13,7 +13,7 @@ Every entity, relation, DAO and type converter lives in `:database:schema` (pack
 (`businessDaoModule()`) for `BusinessDatabase` and `ClientDaos` (`clientDaoModule()`) for `ClientDatabase`. Both
 declare the account DAOs (`profileDao`, `notificationSettingsDao`, `legalDocumentStatusDao`, `personalDataExportDao`),
 `businessDao`, `businessDataExportDao`, `serviceDao`, `serviceGroupDao` and the appointment DAOs (`appointmentDao`,
-`appointmentRequestDao`, `appointmentSettingsDao`); only `BusinessDaos` has `businessLinkDao`, `clientDao`, `employeeDao` and `employeeInvitationDao`, and only `ClientDaos` has `savedBusinessDao` and `bookableEmployeeDao`. `business_link`, `client` and the `employee*` tables are therefore in `BusinessDatabase` only, and `saved_business` (the client's saved businesses, written by `appointments/data`) and the `bookable_employee*` tables (the people a client can book, written by `employees/data`) in `ClientDatabase` only.
+`appointmentRequestDao`, `appointmentSettingsDao`); only `BusinessDaos` has `businessLinkDao`, `clientDao`, `employeeDao` and `employeeInvitationDao`, and only `ClientDaos` has `savedBusinessDao`, `bookingInfoDao` and `bookableEmployeeDao`. `business_link`, `client` and the `employee*` tables are therefore in `BusinessDatabase` only, and `saved_business` (the client's saved businesses) and `booking_info` (the businesses' notes to clients), both written by `appointments/data`, and the `bookable_employee*` tables (the people a client can book, written by `employees/data`) in `ClientDatabase` only.
 Each database lists the entities it holds in its own `@Database`, implements its interface
 and includes its module, so each database file holds its own copy of the tables, and foreign keys and
 cascades stay inside that database. `BusinessDatabase` implements `BusinessDaos`; `ClientDatabase` implements `ClientDaos`. Data modules depend on `:database:schema` alone and get
@@ -61,7 +61,7 @@ holds the account tables from [Authorization](authorization.md) and [Settings](s
   name.
 - **Version and migrations.** Each database has its own version and migration history. `BusinessDatabase` is
   at `version = 27`; it kept the schema history of the former single `AppDatabase` (same file, same schema), so
-  the split needed no migration. `ClientDatabase` is at `version = 5`: 1 held the account tables, the additive 1 → 2 auto-migration adds the business and appointment tables, the additive 2 → 3 auto-migration adds `saved_business`, and the additive 3 → 4 auto-migration adds `service_group` and `service` for the Mini App's services step, and the additive 4 → 5 auto-migration adds `bookable_employee` and its four child tables for the specialist step. Moving `service`/`service_group` into `:database:schema` changed no table of `BusinessDatabase`, which stayed at 27. Moving entities into `:database:schema` changed no table, so `BusinessDatabase` stayed at 26.
+  the split needed no migration. `ClientDatabase` is at `version = 6`: 1 held the account tables, the additive 1 → 2 auto-migration adds the business and appointment tables, the additive 2 → 3 auto-migration adds `saved_business`, and the additive 3 → 4 auto-migration adds `service_group` and `service` for the Mini App's services step, and the additive 4 → 5 auto-migration adds `bookable_employee` and its four child tables for the specialist step, and the additive 5 → 6 auto-migration adds `booking_info` (the business's note to clients) for the Review step. Moving `service`/`service_group` into `:database:schema` changed no table of `BusinessDatabase`, which stayed at 27. Moving entities into `:database:schema` changed no table, so `BusinessDatabase` stayed at 26.
   In `BusinessDatabase`, every step from 1 to 22 is a Room `AutoMigration`. Only 11 → 12 needs a spec (`DeleteEmployeeInvitationEmail` drops `employee_invitation.email`).
   The manual 22 → 23 migration (`DefaultBusinessRetention`) makes business retention non-null,
   backfills missing values with 36 months and preserves custom periods and dependent rows.
@@ -109,7 +109,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `user_profile` | `CommonUserProfileDataSource` | ✅ `profileDao.clear()` |
 | `signup_legal_documents_prefs` (public legal metadata) | No `LogOutAction` binding for `CommonSignUpLegalDocumentsDataSource` | ❌ intentionally retained for cache-only signup |
 | In-memory sign-up session (user data, challenge, attestation, rejection; never persisted) | `InMemorySignUpSessionDataSource` | ✅ `clear()` |
-| In-memory booking preparation (the client web app's approved services and specialist per business; never persisted) | `InMemoryBookingPreparationDataSource` | ✅ every business's services and specialist |
+| In-memory booking preparation (the client web app's approved services, specialist and time per business; never persisted; a business's preparation is also cleared once its booking request is sent) | `InMemoryBookingPreparationDataSource` | ✅ every business's services, specialist and time |
 | `bookable_employee` (+ 4 child tables; `ClientDatabase` only) | `CommonBookableEmployeeDataSource` (bound by `clientEmployeesDataModule()`, client web app only) | ✅ `bookableEmployeeDao.clear()` (cascades to the child tables) |
 | `client` | `CommonClientsDataSource` | ✅; confirmed deletion also evicts associated appointment/request snapshots |
 | `service` (both databases) | `ServiceDataSourceImpl` | ✅ |
@@ -117,7 +117,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `employee` (+ 4 child tables) | `EmployeeDataSourceImpl` | ✅ |
 | `employee_invitation` | `EmployeeInvitationDataSourceImpl` | ✅ |
 | `appointment` (+ service snapshot, adjustment services) | `CommonAppointmentDataSource` | ✅ `appointmentDao.clear()`, including single-appointment refresh results and `clientUserId`; children cascade |
-| `appointment_request` (+ snapshot) | `CommonAppointmentRequestDataSource` | ✅ including `clientUserId` |
+| `appointment_request` (+ snapshot) | `CommonAppointmentRequestDataSource` (also bound by `clientAppointmentsDataModule()` in the client web app, which uses it only to send booking requests) | ✅ including `clientUserId` |
 | `business` (+ 3 schedule tables, `dashboard_business`) | `CommonBusinessDataSource` | ✅ `clearDashboardBusiness()` then `businessDao.clear()` (including retention, default 36 months), which also cascades to any client/employee/service rows still left |
 | `appointment_settings` (+ 3 child tables) | `CommonAppointmentSettingsDataSource` | ✅ `appointmentSettingsDao.clear()` |
 | `legal_document_status` | `CommonLegalDocumentsDataSource` | ✅ `legalDocumentStatusDao.clear()` |
@@ -125,14 +125,15 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | `business_data_export` and cached JSON (`caches/business_data_exports/`, outside Room) | `CommonDataExportDataSource` (business data module) | ✅ `businessDataExportDao.clear()` and the whole business export directory removed through `FileProvider.deleteRecursively()`; a business's directory is also cleared when a new file is saved, on export start, on refreshes returning a non-downloadable status and when the backend reports the caller no longer owns the business (its row is deleted too); personal export files are unaffected |
 | `notification_settings` (+ channels) | `CommonNotificationSettingsDataSource` | ✅ `notificationSettingsDao.clear()` |
 | `business_link` | `CommonBusinessLinkDataSource` | ✅ `businessLinkDao.clear()`; a business's row is also deleted when the backend reports it has no link or the caller no longer owns it |
-| `saved_business` (`ClientDatabase` only) and, on the web, `appointment`/`appointment_request` | `CommonClientBookingDataSource` (bound by `clientAppointmentsDataModule()`, client web app only) | ✅ `appointmentDao.clear()`, `appointmentRequestDao.clear()`, `savedBusinessDao.clear()` |
+| `saved_business` and `booking_info` (`ClientDatabase` only) and, on the web, `appointment`/`appointment_request` | `CommonClientBookingDataSource` (bound by `clientAppointmentsDataModule()`, client web app only) | ✅ `appointmentDao.clear()`, `appointmentRequestDao.clear()`, `savedBusinessDao.clear()`, `bookingInfoDao.clear()` |
 
 Every table is cleared on logout by the data source that writes it, which is bound as a `LogOutAction` in its
 feature's data module. Shared tables (account, business and appointment tables) are cleared through the shared
 DAOs, so the same data sources clear them in whichever database the app installed. On the web, `ClientDatabase`
 has the business and appointment tables. The client web app installs only `clientAppointmentsDataModule()`, whose
-`CommonClientBookingDataSource` writes the client's upcoming bookings into `appointment`/`appointment_request` and
-clears them and `saved_business` on logout, and `clientBusinessDataModule()`, whose `CommonBusinessDataSource`
+`CommonClientBookingDataSource` writes the client's upcoming bookings into `appointment`/`appointment_request` and the businesses' notes to clients into
+`booking_info`, and clears them and `saved_business` on logout, and whose `CommonAppointmentRequestDataSource` only sends booking requests
+(writing nothing) and clears `appointment_request` and `appointment_requests_prefs` on logout, and `clientBusinessDataModule()`, whose `CommonBusinessDataSource`
 writes the businesses the client booked with or saved ([Get businesses](../operations/business/get-businesses.md))
 into `business` and clears the business tables on logout, and the full `servicesDataModule()`, whose `ServiceDataSourceImpl`/`ServiceGroupDataSourceImpl` write the services of a business the client opens ([Get business services](../operations/services/get-business-services.md), called by booking's `GetBookingCatalog` and `GetBookingPreparation`) into `service`/`service_group` and clear them and their `services_prefs`/`service_groups_prefs` markers on logout. It does not install the full business modules, whose
 `RefreshBusinessInfo` would delete every business missing from `/business/mine`. While signed in, [Refresh business info](../operations/business/refresh-business-info.md)

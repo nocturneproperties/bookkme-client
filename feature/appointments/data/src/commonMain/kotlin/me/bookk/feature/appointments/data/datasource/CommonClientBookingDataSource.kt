@@ -11,6 +11,7 @@ import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.database.dao.AppointmentDao
 import me.bookk.database.dao.AppointmentRequestDao
+import me.bookk.database.dao.BookingInfoDao
 import me.bookk.database.dao.SavedBusinessDao
 import me.bookk.feature.appointments.data.mapping.toAdjustmentServiceEntities
 import me.bookk.feature.appointments.data.mapping.toDomain
@@ -19,12 +20,14 @@ import me.bookk.feature.appointments.data.mapping.toRequestEntity
 import me.bookk.feature.appointments.data.mapping.toRequestServiceEntities
 import me.bookk.feature.appointments.data.mapping.toServiceEntities
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
+import me.bookk.feature.appointments.data.remote.model.BookingInfoRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotsDayRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotsRequestRemote
 import me.bookk.feature.appointments.data.remote.model.SavedBusinessRemote
 import me.bookk.feature.appointments.data.remote.model.UpcomingBookingsRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.BookingInfo
 import me.bookk.feature.appointments.domain.api.entity.FreeSlotsQuery
 import me.bookk.feature.appointments.domain.api.entity.SavedBusinessEntry
 import me.bookk.feature.appointments.domain.api.entity.UpcomingBookings
@@ -36,6 +39,7 @@ internal class CommonClientBookingDataSource(
     private val appointmentDao: AppointmentDao,
     private val appointmentRequestDao: AppointmentRequestDao,
     private val savedBusinessDao: SavedBusinessDao,
+    private val bookingInfoDao: BookingInfoDao,
 ) : DataSource(),
     ClientBookingDataSource,
     LogOutAction {
@@ -118,9 +122,30 @@ internal class CommonClientBookingDataSource(
             .map { it.toDomain() }
     }
 
+    override suspend fun getBookingInfo(businessId: Uuid) = mapExceptions {
+        httpClient.get(Api.Appointment.BookingInfo(businessId = businessId))
+            .body<BookingInfoRemote>()
+            .toDomain()
+    }
+
+    override suspend fun saveBookingInfoInDb(info: BookingInfo) {
+        mapExceptions { bookingInfoDao.upsert(info.toEntity()) }
+    }
+
+    override suspend fun deleteBookingInfoInDb(businessId: Uuid) {
+        mapExceptions { bookingInfoDao.delete(businessId) }
+    }
+
+    override fun observeBookingInfo(businessId: Uuid): Flow<BookingInfo?> {
+        return bookingInfoDao.observe(businessId)
+            .map { it?.toDomain() }
+            .mapErrors()
+    }
+
     override suspend fun doOnLogOut() {
         appointmentDao.clear()
         appointmentRequestDao.clear()
         savedBusinessDao.clear()
+        bookingInfoDao.clear()
     }
 }

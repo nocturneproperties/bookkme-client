@@ -20,7 +20,7 @@ On the website (JS), each bucket is the localStorage entry `<name>.preferences_p
 | `employees_prefs` | `EmployeeDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker | ✅ |
 | `employee_invitations_prefs` | `EmployeeInvitationDataSourceImpl` | `last_synced_at_<businessId>` | List sync marker | ✅ |
 | `appointments_prefs` | `CommonAppointmentDataSource` | `last_synced_at_<businessId>_<yyyy-MM-dd>` | Per-day sync marker | ✅ |
-| `appointment_requests_prefs` | `CommonAppointmentRequestDataSource` | `last_synced_at_<businessId>` | List sync marker | ✅ |
+| `appointment_requests_prefs` | `CommonAppointmentRequestDataSource` | `last_synced_at_<businessId>` | List sync marker (business app; the client web app opens the bucket but never writes it) | ✅ |
 | `notification_prefs` | `CommonNotificationSettingsDataSource` | `pending_notification_token` (String) | Push token that failed to upload and is retried by [Update notification token](../operations/settings/update-notification-token.md) | ❌ kept; the datasource's `doOnLogOut()` clears only the `notification_settings` table |
 | `settings_prefs` | `CommonSettingsDataSource` | `color_scheme` (Long id) | Light, dark or system theme | ❌ intentionally kept as a device preference |
 | `biometry_prefs` | `library/biometry` `BiometryCore` | `biometry_opt_in` (Boolean) | Biometric unlock opt-in | ✅ set to `null` |

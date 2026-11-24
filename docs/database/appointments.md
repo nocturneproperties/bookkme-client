@@ -174,10 +174,10 @@ erDiagram
   with that service once.
 - Cleared on logout: yes, all of them.
 
-## Client web app table (`ClientDatabase` only)
+## Client web app tables (`ClientDatabase` only)
 
-Written by `CommonClientBookingDataSource` through `SavedBusinessDao` (in `ClientDaos`, so `BusinessDatabase`
-does not hold it). No foreign key: the business it refers to is read separately into `business` by
+Written by `CommonClientBookingDataSource` through `SavedBusinessDao` and `BookingInfoDao` (both in `ClientDaos`, so
+`BusinessDatabase` does not hold them). No foreign keys: the business they refer to is read separately into `business` by
 [Get businesses](../operations/business/get-businesses.md) and may be missing locally.
 
 ```mermaid
@@ -188,6 +188,10 @@ erDiagram
         instant savedAt "observed ORDER BY savedAt DESC"
         instant lastVisitAt "nullable; start of the last COMPLETED appointment"
     }
+    BOOKING_INFO {
+        uuid businessId PK "logical FK -> business.id, no constraint"
+        string appointmentNote "the business's note to clients; empty when it wrote none"
+    }
 ```
 
 - **`saved_business`** is replaced as a whole by [Get saved businesses](../operations/appointments/get-saved-businesses.md)
@@ -195,3 +199,9 @@ erDiagram
   [Save business](../operations/appointments/save-business.md).
 - No sync marker: the Home screen treats an empty emission as "not loaded yet" until its first refresh finishes.
 - Cleared on logout: yes (`savedBusinessDao.clear()`).
+- **`booking_info`** holds one row per business a client opened the Review step of, upserted by
+  [Get booking info](../operations/appointments/get-booking-info.md) `refresh()`
+  (`GET /api/appointments/booking-info/{businessId}`) and deleted for that business when the backend answers 404
+  (it no longer takes appointments). `flow()` observes the business's row, `null` until the first refresh.
+- No sync marker: a single row per business, so a missing row already means "not loaded yet".
+- Cleared on logout: yes (`bookingInfoDao.clear()`).

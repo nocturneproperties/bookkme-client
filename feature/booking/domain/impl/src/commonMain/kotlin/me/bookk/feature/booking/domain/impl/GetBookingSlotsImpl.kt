@@ -1,5 +1,6 @@
 package me.bookk.feature.booking.domain.impl
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDateTime
@@ -35,6 +36,8 @@ internal class GetBookingSlotsImpl(
     private suspend fun freeSlots(query: FreeSlotsQuery): List<FreeSlotsDay> {
         return try {
             getFreeSlots(query)
+        } catch (error: CancellationException) {
+            throw error
         } catch (error: Throwable) {
             throw error.toBookingError()
         }

@@ -8,11 +8,16 @@ import me.bookk.designsystem.test.FakeListState
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
 import me.bookk.designsystem.test.FakeOptionsMultiPickerState
+import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.feature.booking.presentation.screen.BookingTotal
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeDestinations
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeState
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDayItem
 import me.bookk.feature.booking.presentation.screen.datetime.SlotGroupItem
+import me.bookk.feature.booking.presentation.screen.review.BookingReviewDestinations
+import me.bookk.feature.booking.presentation.screen.review.BookingReviewState
+import me.bookk.feature.booking.presentation.screen.review.BusinessMessage
+import me.bookk.feature.booking.presentation.screen.review.ReviewSummary
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestinations
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesState
 import me.bookk.feature.booking.presentation.screen.services.ServiceGroupItem
@@ -32,6 +37,10 @@ class FakeBookingStateFactory : BookingStateFactory {
 
     override fun createBookingDateTimeState(): BookingDateTimeState {
         return FakeBookingDateTimeState()
+    }
+
+    override fun createBookingReviewState(): BookingReviewState {
+        return FakeBookingReviewState()
     }
 }
 
@@ -69,4 +78,16 @@ class FakeBookingDateTimeState : BookingDateTimeState {
     override val continueButton = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<BookingDateTimeDestinations>()
+}
+
+class FakeBookingReviewState : BookingReviewState {
+    override val appBar = FakeAppBarState()
+    override var businessName: StringDesc? = null
+    override var summary: ReviewSummary? = null
+    override var businessMessage: BusinessMessage? = null
+    override val note = FakeTextFieldState()
+    override var confirmationNotice: StringDesc? = null
+    override val sendButton = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<BookingReviewDestinations>()
 }

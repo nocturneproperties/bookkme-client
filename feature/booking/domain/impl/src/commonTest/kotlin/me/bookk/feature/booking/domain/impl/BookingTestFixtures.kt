@@ -21,7 +21,11 @@ import kotlin.time.Duration
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
-internal class FakeBookingPreparationDataSource : BookingPreparationDataSource {
+internal val STUB_APPROVED_PRICE = Money(1_000, Money.SupportedCurrency.UAH)
+
+internal class FakeBookingPreparationDataSource(
+    private val approvedPrices: Map<Uuid, Money> = emptyMap(),
+) : BookingPreparationDataSource {
     private val selections = MutableStateFlow<Map<Uuid, BookingSelection>>(emptyMap())
 
     fun selectionOf(businessId: Uuid): BookingSelection {
@@ -35,7 +39,11 @@ internal class FakeBookingPreparationDataSource : BookingPreparationDataSource {
         slotStart: Instant? = null,
     ) {
         val selected = services.map { (id, quantity) ->
-            BookingSelection.SelectedService(id, quantity)
+            BookingSelection.SelectedService(
+                id,
+                quantity,
+                approvedPrices[id] ?: STUB_APPROVED_PRICE,
+            )
         }
         val selection = BookingSelection(selected, specialistId, slotStart)
         selections.update { it + (businessId to selection) }
@@ -76,6 +84,10 @@ internal fun stubService(
         isAvailable = isAvailable,
         createdAt = Instant.fromEpochMilliseconds(0),
     )
+}
+
+internal fun approvedPricesOf(vararg services: Service): Map<Uuid, Money> {
+    return services.associate { it.id to it.price }
 }
 
 internal fun Service.toExpectedBookingService(): BookingService {

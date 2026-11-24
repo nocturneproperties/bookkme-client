@@ -18,4 +18,24 @@
     <string name="booking_date_time_unavailable">%s зараз не приймає онлайн-записів.</string>
     <string name="booking_date_time_pick_time">Оберіть час</string>
     <string name="booking_date_time_summary">%1$s · %2$s</string>
+    <string name="booking_review_title">Майже готово.</string>
+    <string name="booking_review_time_range">%1$s–%2$s</string>
+    <string name="booking_review_details">%1$s · %2$s</string>
+    <string name="booking_review_service_count">%1$s × %2$d</string>
+    <string name="booking_review_total">Разом</string>
+    <string name="booking_review_note_label">Нотатка для бізнесу</string>
+    <string name="booking_review_note_placeholder">Що їм варто знати? Необовʼязково</string>
+    <string name="booking_review_confirmation_notice">%s підтвердить запит. Повідомлення прийде сюди ж.</string>
+    <string name="booking_review_send">Надіслати запит</string>
+    <string name="booking_review_time_unavailable_title">Цей час уже зайнятий</string>
+    <string name="booking_review_time_unavailable_message">Поверніться й оберіть інший час.</string>
+    <string name="booking_review_requests_limit_title">Забагато запитів в очікуванні</string>
+    <string name="booking_review_requests_limit_message">Ви ще чекаєте на відповідь від %s на попередні запити. Запишіться знову, коли її отримаєте.</string>
+    <string name="booking_review_prices_changed_title">Ціни змінилися</string>
+    <string name="booking_review_prices_changed_message">Перевірте нові ціни й надішліть запит ще раз.</string>
+    <string name="booking_review_services_changed_title">Послуги змінилися</string>
+    <string name="booking_review_services_changed_message">У %s змінилися послуги, відколи ви їх обрали. Поверніться й оберіть їх знову.</string>
+    <string name="booking_review_specialist_unavailable_title">До цього спеціаліста зараз не можна записатися</string>
+    <string name="booking_review_specialist_unavailable_message">Поверніться й оберіть когось іншого.</string>
+    <string name="booking_review_business_message_title">Від %s</string>
 </resources>

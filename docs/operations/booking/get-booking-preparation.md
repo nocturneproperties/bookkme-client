@@ -15,7 +15,9 @@ holding one `BookingSelection` per business id in a `MutableStateFlow`, so the a
 restores them, and later steps read them from here. Nothing is persisted; they last until the page reloads or the
 user logs out (the datasource is a `LogOutAction`). Each pick is matched against the business's
 current services, so the emitted service carries the current name, duration and price, and a pick the business no
-longer offers (deleted or unavailable) is left out.
+longer offers (deleted or unavailable) is left out. Each prepared service also carries the `approvedPrice` it was
+picked at; when the cached services were refreshed with a new price since (e.g. by
+[Send booking request](send-booking-request.md)), the two differ and the Review step shows both.
 
 ```mermaid
 flowchart TD
@@ -24,5 +26,5 @@ flowchart TD
     Sel --> C[combine]
     Svc --> C
     C --> Match[each picked serviceId → offered service where isAvailable<br/>not offered → left out]
-    Match --> Out([BookingPreparation services with quantity, specialistId, slotStart])
+    Match --> Out([BookingPreparation services with quantity and approvedPrice, specialistId, slotStart])
 ```

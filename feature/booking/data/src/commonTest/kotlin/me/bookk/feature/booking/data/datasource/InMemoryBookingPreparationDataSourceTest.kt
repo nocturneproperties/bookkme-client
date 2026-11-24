@@ -1,6 +1,7 @@
 package me.bookk.feature.booking.data.datasource
 
 import kotlinx.coroutines.flow.first
+import library.money.api.Money
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -14,7 +15,10 @@ import kotlin.uuid.Uuid
 class InMemoryBookingPreparationDataSourceTest {
 
     private val businessId = Uuid.random()
-    private val picked = BookingSelection(listOf(SelectedService(Uuid.random(), 2)))
+    private val picked =
+        BookingSelection(
+            listOf(SelectedService(Uuid.random(), 2, Money(60_000, Money.SupportedCurrency.UAH))),
+        )
 
     @Test
     fun `has nothing saved for a business initially`() = runUnitTest {
@@ -45,7 +49,12 @@ class InMemoryBookingPreparationDataSourceTest {
         given()
         val sut = InMemoryBookingPreparationDataSource()
         sut.saveSelection(businessId, picked)
-        val replacement = BookingSelection(listOf(SelectedService(Uuid.random(), 1)))
+        val replacement =
+            BookingSelection(
+                listOf(
+                    SelectedService(Uuid.random(), 1, Money(15_000, Money.SupportedCurrency.UAH)),
+                ),
+            )
 
         whenn()
         sut.saveSelection(businessId, replacement)

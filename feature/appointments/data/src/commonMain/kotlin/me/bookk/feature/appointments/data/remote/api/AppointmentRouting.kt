@@ -33,6 +33,12 @@ object AppointmentRouting {
                 val parent: Appointment = Appointment(),
             )
 
+            @Resource("/booking-info/{businessId}")
+            class BookingInfo(
+                val parent: Appointment = Appointment(),
+                val businessId: Uuid,
+            )
+
             @Resource("/instant")
             class Instant(
                 val parent: Appointment = Appointment(),

@@ -18,4 +18,24 @@
     <string name="booking_date_time_unavailable">%s doesn’t take online bookings right now.</string>
     <string name="booking_date_time_pick_time">Pick a time</string>
     <string name="booking_date_time_summary">%1$s · %2$s</string>
+    <string name="booking_review_title">Almost there.</string>
+    <string name="booking_review_time_range">%1$s–%2$s</string>
+    <string name="booking_review_details">%1$s · %2$s</string>
+    <string name="booking_review_service_count">%1$s × %2$d</string>
+    <string name="booking_review_total">Total</string>
+    <string name="booking_review_note_label">Note for the business</string>
+    <string name="booking_review_note_placeholder">Anything they should know? Optional</string>
+    <string name="booking_review_confirmation_notice">%s confirms it. You get a message right here.</string>
+    <string name="booking_review_send">Send request</string>
+    <string name="booking_review_time_unavailable_title">This time is no longer free</string>
+    <string name="booking_review_time_unavailable_message">Go back and pick another time.</string>
+    <string name="booking_review_requests_limit_title">Too many requests waiting</string>
+    <string name="booking_review_requests_limit_message">%s still has to answer your earlier requests. Book again once they reply.</string>
+    <string name="booking_review_prices_changed_title">The prices have changed</string>
+    <string name="booking_review_prices_changed_message">Check the new prices and send the request again.</string>
+    <string name="booking_review_services_changed_title">The services have changed</string>
+    <string name="booking_review_services_changed_message">%s changed its services since you picked them. Go back and pick them again.</string>
+    <string name="booking_review_specialist_unavailable_title">This specialist can’t be booked now</string>
+    <string name="booking_review_specialist_unavailable_message">Go back and pick someone else.</string>
+    <string name="booking_review_business_message_title">From %s</string>
 </resources>

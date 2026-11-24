@@ -12,6 +12,7 @@ import me.bookk.designsystem.uistate.ListState
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.booking.domain.api.entity.BookingDay
 import me.bookk.feature.booking.domain.api.entity.BookingSlot
+import me.bookk.feature.booking.presentation.screen.slotTimeFormat
 
 internal class BookingSlotGroups(
     dateLocalizer: DateLocalizer,
@@ -100,9 +101,3 @@ private fun slotsEmptyState(label: StringDesc): EmptyState {
 private fun BookingSlot.itemId(): String {
     return start.toString()
 }
-
-internal fun DateLocalizer.slotTimeFormat(): DateLocalizer.Formatter {
-    return strict(SLOT_TIME_PATTERN, respectUserSettings = true)
-}
-
-private const val SLOT_TIME_PATTERN = "HH:mm"

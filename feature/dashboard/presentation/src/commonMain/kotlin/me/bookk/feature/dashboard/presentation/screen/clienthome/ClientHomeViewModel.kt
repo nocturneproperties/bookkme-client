@@ -127,7 +127,7 @@ class ClientHomeViewModel(
 
     private fun timeAndSpecialist(booking: UpcomingBooking): StringDesc {
         val time = timeFormatter.format(booking.date.time)
-        val format = DashboardRes.strings.dashboard_client_home_time_with_specialist
+        val format = DashboardRes.strings.dashboard_client_home_time_and_specialist
         return format.format(time, booking.employee.fullName)
     }
 

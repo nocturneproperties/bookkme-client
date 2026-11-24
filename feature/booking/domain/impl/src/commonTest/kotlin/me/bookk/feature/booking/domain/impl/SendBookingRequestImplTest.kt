@@ -16,6 +16,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.CreateAppointmentRequest
+import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
 import me.bookk.feature.appointments.domain.api.entity.RequestedService
 import me.bookk.feature.booking.domain.api.SendBookingRequest.Error
@@ -53,12 +54,16 @@ class SendBookingRequestImplTest {
         }
         val createQuote = mock<CreateQuote>()
         val createAppointmentRequest = mock<CreateAppointmentRequest>()
+        val getUpcomingBookings = mock<GetUpcomingBookings> {
+            everySuspend { refresh() } returns emptyList()
+        }
         val sut = SendBookingRequestImpl(
             dataSource = dataSource,
             getBookingPreparation = GetBookingPreparationImpl(dataSource, getBusinessServices),
             createQuote = createQuote,
             createAppointmentRequest = createAppointmentRequest,
             getBusinessServices = getBusinessServices,
+            getUpcomingBookings = getUpcomingBookings,
         )
 
         fun selectAll() {
@@ -144,6 +149,49 @@ class SendBookingRequestImplTest {
 
         then()
         assertEquals(BookingSelection(), fixture.dataSource.selectionOf(businessId))
+    }
+
+    @Test
+    fun `refreshes the upcoming bookings once the request is sent`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.selectAll()
+        fixture.respond()
+
+        whenn()
+        fixture.sut(businessId, "")
+
+        then()
+        verifySuspend { fixture.getUpcomingBookings.refresh() }
+    }
+
+    @Test
+    fun `completes the booking when refreshing the upcoming bookings fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.selectAll()
+        fixture.respond()
+        everySuspend { fixture.getUpcomingBookings.refresh() } throws IllegalStateException()
+
+        whenn()
+        fixture.sut(businessId, "")
+
+        then()
+        assertEquals(BookingSelection(), fixture.dataSource.selectionOf(businessId))
+    }
+
+    @Test
+    fun `leaves the upcoming bookings alone when the request fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.selectAll()
+        fixture.failRequest(CreateAppointmentRequest.Error.EmployeeBusy())
+
+        whenn()
+        runCatching { fixture.sut(businessId, "") }
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) { fixture.getUpcomingBookings.refresh() }
     }
 
     @Test

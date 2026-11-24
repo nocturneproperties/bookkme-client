@@ -50,7 +50,7 @@
     <string name="dashboard_client_home_upcoming">Nadchodzące</string>
     <string name="dashboard_client_home_all_bookings">Wszystkie rezerwacje</string>
     <string name="dashboard_client_home_no_upcoming">Brak nadchodzących rezerwacji</string>
-    <string name="dashboard_client_home_time_with_specialist">%1$s · u %2$s</string>
+    <string name="dashboard_client_home_time_and_specialist">%1$s · %2$s</string>
     <string name="dashboard_client_home_status_confirmed">Potwierdzona</string>
     <string name="dashboard_client_home_status_waiting">Czeka na potwierdzenie</string>
     <string name="dashboard_client_home_book_again">Zarezerwuj ponownie</string>

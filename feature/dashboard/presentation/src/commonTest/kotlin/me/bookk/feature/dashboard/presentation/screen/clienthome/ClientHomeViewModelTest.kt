@@ -233,7 +233,7 @@ class ClientHomeViewModelTest {
         assertEquals("Studio Lumen", item.businessName)
         assertEquals("Haircut, Beard trim", item.services)
         assertEquals(
-            DashboardRes.strings.dashboard_client_home_time_with_specialist.format(
+            DashboardRes.strings.dashboard_client_home_time_and_specialist.format(
                 "14:30",
                 "Andrii",
             ),

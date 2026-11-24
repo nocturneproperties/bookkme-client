@@ -65,9 +65,9 @@ internal class CommonAppointmentRequestDataSource(
             .map { it.toDomain() }
     }
 
-    override suspend fun getOwnAppointmentRequests(businessId: Uuid) = mapExceptions {
+    override suspend fun getAssignedAppointmentRequests(businessId: Uuid) = mapExceptions {
         httpClient.get(
-            Api.Appointment.Requests.Own(Api.Appointment.Requests(businessId = businessId)),
+            Api.Appointment.Requests.Assigned(Api.Appointment.Requests(businessId = businessId)),
         )
             .body<List<AppointmentRequestRemote>>()
             .map { it.toDomain() }

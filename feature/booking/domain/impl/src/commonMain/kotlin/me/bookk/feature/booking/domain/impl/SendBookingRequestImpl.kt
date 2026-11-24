@@ -1,10 +1,10 @@
 package me.bookk.feature.booking.domain.impl
 
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import library.money.api.Money
 import me.bookk.core.coroutine.runSuspendCatching
 import me.bookk.feature.appointments.domain.api.CreateAppointmentRequest
+import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
 import me.bookk.feature.appointments.domain.api.entity.RequestedService
 import me.bookk.feature.booking.domain.api.GetBookingPreparation
@@ -26,21 +26,24 @@ internal class SendBookingRequestImpl(
     private val createQuote: CreateQuote,
     private val createAppointmentRequest: CreateAppointmentRequest,
     private val getBusinessServices: GetBusinessServices,
+    private val getUpcomingBookings: GetUpcomingBookings,
 ) : SendBookingRequest {
 
     override suspend fun invoke(businessId: Uuid, note: String) {
         val preparation = shownPreparation(businessId)
         val draft = preparation.draft(businessId, note.trim()) ?: throw Error.SelectionIncomplete()
-        try {
-            val quote = createQuote(businessId, preparation.quotedServiceIds())
-            quote.checkAgainst(preparation)
-            createAppointmentRequest(draft.copy(offerToken = quote.token))
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Throwable) {
-            throw error.toBookingError().also { refreshServicesIfChanged(businessId, it) }
-        }
+        runSuspendCatching { send(preparation, draft) }
+            .onFailure { error ->
+                throw error.toBookingError().also { refreshServicesIfChanged(businessId, it) }
+            }
         dataSource.saveSelection(businessId, BookingSelection())
+        runSuspendCatching { getUpcomingBookings.refresh() }
+    }
+
+    private suspend fun send(preparation: BookingPreparation, draft: AppointmentRequestDraft) {
+        val quote = createQuote(draft.businessId, preparation.quotedServiceIds())
+        quote.checkAgainst(preparation)
+        createAppointmentRequest(draft.copy(offerToken = quote.token))
     }
 
     private suspend fun refreshServicesIfChanged(businessId: Uuid, error: Throwable) {

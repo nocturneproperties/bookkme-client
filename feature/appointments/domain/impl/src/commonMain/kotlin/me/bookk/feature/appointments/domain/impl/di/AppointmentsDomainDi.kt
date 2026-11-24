@@ -12,10 +12,10 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentHistory
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
 import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
+import me.bookk.feature.appointments.domain.api.GetAssignedAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetBookingInfo
 import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetFreeSlots
-import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetSavedBusinesses
 import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
 import me.bookk.feature.appointments.domain.api.MarkAppointmentNoShow
@@ -36,10 +36,10 @@ import me.bookk.feature.appointments.domain.impl.GetAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentOptionsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentSettingsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentsForBusinessImpl
+import me.bookk.feature.appointments.domain.impl.GetAssignedAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.GetBookingInfoImpl
 import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.GetFreeSlotsImpl
-import me.bookk.feature.appointments.domain.impl.GetOwnAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.GetSavedBusinessesImpl
 import me.bookk.feature.appointments.domain.impl.GetUpcomingBookingsImpl
 import me.bookk.feature.appointments.domain.impl.MarkAppointmentNoShowImpl
@@ -69,7 +69,7 @@ fun appointmentsDomainModule() = module {
     factoryOf(::MarkAppointmentNoShowImpl) bind MarkAppointmentNoShow::class
     factoryOf(::UpdateAppointmentImpl) bind UpdateAppointment::class
     factoryOf(::UpdateAppointmentSettingsImpl) bind UpdateAppointmentSettings::class
-    factoryOf(::GetOwnAppointmentRequestsImpl) bind GetOwnAppointmentRequests::class
+    factoryOf(::GetAssignedAppointmentRequestsImpl) bind GetAssignedAppointmentRequests::class
     factoryOf(::ApproveAppointmentRequestImpl) bind ApproveAppointmentRequest::class
     factoryOf(::DeclineAppointmentRequestImpl) bind DeclineAppointmentRequest::class
     factoryOf(::ObserveCurrentBusinessIdImpl) bind ObserveCurrentBusinessId::class

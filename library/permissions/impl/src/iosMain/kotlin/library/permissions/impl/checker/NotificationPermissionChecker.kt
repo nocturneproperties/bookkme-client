@@ -1,8 +1,10 @@
 package library.permissions.impl.checker
 
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import library.permissions.api.PermissionChecker
 import library.permissions.api.PermissionType
+import me.bookk.core.coroutine.DispatcherProvider
 import platform.UIKit.UIApplication
 import platform.UIKit.registerForRemoteNotifications
 import platform.UserNotifications.UNAuthorizationOptionAlert
@@ -17,16 +19,23 @@ internal actual class NotificationPermissionChecker : PermissionChecker {
 
     actual override val type: PermissionType = PermissionType.NOTIFICATIONS
 
-    actual override suspend fun requestPermission(): Boolean = suspendCancellableCoroutine {
+    actual override suspend fun requestPermission(): Boolean {
+        val hasPermissions = requestAuthorization()
+        if (hasPermissions) {
+            withContext(DispatcherProvider.main) {
+                UIApplication.sharedApplication.registerForRemoteNotifications()
+            }
+        }
+        return hasPermissions
+    }
+
+    private suspend fun requestAuthorization(): Boolean = suspendCancellableCoroutine {
         notificationCenter
             .requestAuthorizationWithOptions(
                 UNAuthorizationOptionAlert or
                     UNAuthorizationOptionSound or
                     UNAuthorizationOptionBadge,
             ) { hasPermissions, _ ->
-                if (hasPermissions) {
-                    UIApplication.sharedApplication.registerForRemoteNotifications()
-                }
                 it.resume(hasPermissions)
             }
     }

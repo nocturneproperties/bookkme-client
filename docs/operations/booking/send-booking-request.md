@@ -4,7 +4,8 @@
 
 `SendBookingRequest(businessId, note)` → services' [Create quote](../services/create-quote.md)
 (`POST /api/business/{businessId}/service/quote`), then appointments'
-[Create appointment request](../appointments/create-appointment-request.md) (`POST /api/appointments/request`)
+[Create appointment request](../appointments/create-appointment-request.md) (`POST /api/appointments/request`), then appointments'
+[Get upcoming bookings](../appointments/get-upcoming-bookings.md) refresh (`GET /api/appointments/upcoming`)
 · called by `BookingReviewViewModel` when the client presses "Send request"; bound by `bookingDomainModule()`
 
 Sends exactly what the Review step shows. It reads the business's [booking preparation](get-booking-preparation.md)
@@ -27,8 +28,11 @@ original error is thrown. Then it sends the request with the
 quote's token, the counts, the time's start and the trimmed note. The quote is issued right before the request
 because its token lives 10 minutes. Once the request is sent, the business's booking preparation is cleared, so the
 next booking there starts from nothing; a failure keeps it, so the client can try again. A cancellation passes through
-unchanged and also keeps the preparation. Nothing is written to the database: the sent request reaches the client's
-upcoming bookings through their next refresh.
+unchanged and also keeps the preparation. The backend answers the request with `204` and no body, so there is no
+request to save: once it is sent, appointments' `GetUpcomingBookings.refresh` fetches the client's upcoming bookings
+and saves them to Room (the new request lands in `appointment_request` as `PENDING`), so Home's
+`appointmentRequestDao.observePending` shows it. A failed refresh is dropped (a cancellation passes through): the
+request is already sent, and Home's next refresh picks it up.
 
 The appointments and services errors are folded into the few the Review step tells apart, each shown as one popup.
 
@@ -59,5 +63,6 @@ flowchart TD
     Request -- CancellationException --> C
     Request -- other error --> EX
     Request -- 204 --> Clear[BookingPreparationDataSource.saveSelection businessId, BookingSelection empty]
-    Clear --> Done([return Unit])
+    Clear --> Upcoming[GetUpcomingBookings.refresh<br/>GET /api/appointments/upcoming, saved to Room<br/>failure dropped]
+    Upcoming --> Done([return Unit])
 ```

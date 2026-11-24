@@ -42,6 +42,7 @@ import me.bookk.feature.booking.domain.api.entity.BookingPreparation.PreparedSer
 import me.bookk.feature.booking.domain.api.entity.BookingService
 import me.bookk.feature.booking.domain.api.entity.BookingSpecialist
 import me.bookk.feature.booking.domain.api.entity.BookingTimetable
+import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import me.bookk.feature.booking.presentation.FakeBookingStateFactory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -106,8 +107,9 @@ class BookingReviewViewModelTest {
             every { flow(businessId) } returns message
             everySuspend { refresh(businessId) } returns Unit
         }
+        val sentRequest = SentBookingRequest(businessId, andrii.id, slotStart)
         val sendBookingRequest = mock<SendBookingRequest> {
-            everySuspend { invoke(any(), any()) } returns Unit
+            everySuspend { invoke(any(), any()) } returns sentRequest
         }
         val errorMapper = FakeErrorMapper()
 
@@ -439,7 +441,9 @@ class BookingReviewViewModelTest {
 
         then()
         assertEquals(
-            listOf<BookingReviewDestinations>(BookingReviewDestinations.Sent(businessId)),
+            listOf<BookingReviewDestinations>(
+                BookingReviewDestinations.Sent(fixture.sentRequest),
+            ),
             state.navigation.navigationDestination,
         )
     }

@@ -32,7 +32,9 @@ unchanged and also keeps the preparation. The backend answers the request with `
 request to save: once it is sent, appointments' `GetUpcomingBookings.refresh` fetches the client's upcoming bookings
 and saves them to Room (the new request lands in `appointment_request` as `PENDING`), so Home's
 `appointmentRequestDao.observePending` shows it. A failed refresh is dropped (a cancellation passes through): the
-request is already sent, and Home's next refresh picks it up.
+request is already sent, and Home's next refresh picks it up. It returns the sent request's business, specialist and
+time's start as a `SentBookingRequest`, which the Request sent step passes to [Get sent booking](get-sent-booking.md)
+to find the request among the cached upcoming bookings.
 
 The appointments and services errors are folded into the few the Review step tells apart, each shown as one popup.
 
@@ -64,5 +66,5 @@ flowchart TD
     Request -- other error --> EX
     Request -- 204 --> Clear[BookingPreparationDataSource.saveSelection businessId, BookingSelection empty]
     Clear --> Upcoming[GetUpcomingBookings.refresh<br/>GET /api/appointments/upcoming, saved to Room<br/>failure dropped]
-    Upcoming --> Done([return Unit])
+    Upcoming --> Done([return SentBookingRequest businessId, specialistId, slotStart])
 ```

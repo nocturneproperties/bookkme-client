@@ -20,6 +20,7 @@ import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
 import me.bookk.feature.appointments.domain.api.entity.RequestedService
 import me.bookk.feature.booking.domain.api.SendBookingRequest.Error
+import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import me.bookk.feature.booking.domain.datasource.BookingSelection
 import me.bookk.feature.services.domain.api.quote.CreateQuote
 import me.bookk.feature.services.domain.api.quote.entity.Quote
@@ -136,6 +137,20 @@ class SendBookingRequestImplTest {
                 )
             }
         }
+
+    @Test
+    fun `returns the business, specialist and time of the sent request`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.selectAll()
+        fixture.respond()
+
+        whenn()
+        val sent = fixture.sut(businessId, "")
+
+        then()
+        assertEquals(SentBookingRequest(businessId, specialistId, slotStart), sent)
+    }
 
     @Test
     fun `forgets the business's booking preparation once the request is sent`() = runUnitTest {

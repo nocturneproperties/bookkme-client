@@ -24,7 +24,7 @@ fun BookingReviewDestination(
         when (it) {
             BookingReviewDestinations.Back -> navigation.onBack()
             BookingReviewDestinations.Leave -> navigation.onLeave()
-            is BookingReviewDestinations.Sent -> navigation.toSent(it.businessId)
+            is BookingReviewDestinations.Sent -> navigation.toSent(it.request)
         }
     }
 }

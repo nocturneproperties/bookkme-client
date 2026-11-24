@@ -12,6 +12,7 @@ import me.bookk.feature.booking.domain.api.SendBookingRequest
 import me.bookk.feature.booking.domain.api.SendBookingRequest.Error
 import me.bookk.feature.booking.domain.api.entity.BookingPreparation
 import me.bookk.feature.booking.domain.api.entity.BookingPreparation.PreparedService
+import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
 import me.bookk.feature.booking.domain.datasource.BookingSelection
 import me.bookk.feature.services.domain.api.quote.CreateQuote
@@ -29,7 +30,7 @@ internal class SendBookingRequestImpl(
     private val getUpcomingBookings: GetUpcomingBookings,
 ) : SendBookingRequest {
 
-    override suspend fun invoke(businessId: Uuid, note: String) {
+    override suspend fun invoke(businessId: Uuid, note: String): SentBookingRequest {
         val preparation = shownPreparation(businessId)
         val draft = preparation.draft(businessId, note.trim()) ?: throw Error.SelectionIncomplete()
         runSuspendCatching { send(preparation, draft) }
@@ -38,6 +39,7 @@ internal class SendBookingRequestImpl(
             }
         dataSource.saveSelection(businessId, BookingSelection())
         runSuspendCatching { getUpcomingBookings.refresh() }
+        return SentBookingRequest(businessId, draft.employeeId, draft.date)
     }
 
     private suspend fun send(preparation: BookingPreparation, draft: AppointmentRequestDraft) {

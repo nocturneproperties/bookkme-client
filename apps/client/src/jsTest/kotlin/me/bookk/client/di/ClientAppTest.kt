@@ -41,13 +41,16 @@ import me.bookk.feature.booking.domain.api.GetBookingSlots
 import me.bookk.feature.booking.domain.api.GetBookingSpecialists
 import me.bookk.feature.booking.domain.api.GetBookingTimetable
 import me.bookk.feature.booking.domain.api.GetBusinessMessage
+import me.bookk.feature.booking.domain.api.GetSentBooking
 import me.bookk.feature.booking.domain.api.SendBookingRequest
 import me.bookk.feature.booking.domain.api.SetBookingServices
 import me.bookk.feature.booking.domain.api.SetBookingSlot
 import me.bookk.feature.booking.domain.api.SetBookingSpecialist
+import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeViewModel
 import me.bookk.feature.booking.presentation.screen.review.BookingReviewViewModel
+import me.bookk.feature.booking.presentation.screen.sent.BookingSentViewModel
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesViewModel
 import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistViewModel
 import me.bookk.feature.business.domain.api.business.GetBusinesses
@@ -65,6 +68,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertSame
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class ClientAppTest {
@@ -507,6 +511,34 @@ class ClientAppTest {
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<BookingReviewViewModel> {
             parametersOf(Uuid.random())
+        }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the sent request the request sent step shows`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val useCase = KoinPlatform.getKoin().getOrNull<GetSentBooking>()
+
+        then()
+        assertNotNull(useCase)
+    }
+
+    @Test
+    fun `provides the request sent view model for the sent request`() = runUnitTest {
+        given()
+        startClientApp()
+        val request = SentBookingRequest(Uuid.random(), Uuid.random(), Instant.fromEpochSeconds(0))
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<BookingSentViewModel> {
+            parametersOf(request)
         }
 
         then()

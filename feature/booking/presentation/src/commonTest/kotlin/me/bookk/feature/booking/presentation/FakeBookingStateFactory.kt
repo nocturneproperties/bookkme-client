@@ -18,6 +18,9 @@ import me.bookk.feature.booking.presentation.screen.review.BookingReviewDestinat
 import me.bookk.feature.booking.presentation.screen.review.BookingReviewState
 import me.bookk.feature.booking.presentation.screen.review.BusinessMessage
 import me.bookk.feature.booking.presentation.screen.review.ReviewSummary
+import me.bookk.feature.booking.presentation.screen.sent.BookingSentDestinations
+import me.bookk.feature.booking.presentation.screen.sent.BookingSentState
+import me.bookk.feature.booking.presentation.screen.sent.SentBookingItem
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestinations
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesState
 import me.bookk.feature.booking.presentation.screen.services.ServiceGroupItem
@@ -41,6 +44,10 @@ class FakeBookingStateFactory : BookingStateFactory {
 
     override fun createBookingReviewState(): BookingReviewState {
         return FakeBookingReviewState()
+    }
+
+    override fun createBookingSentState(): BookingSentState {
+        return FakeBookingSentState()
     }
 }
 
@@ -90,4 +97,13 @@ class FakeBookingReviewState : BookingReviewState {
     override val sendButton = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<BookingReviewDestinations>()
+}
+
+class FakeBookingSentState : BookingSentState {
+    override val appBar = FakeAppBarState()
+    override var booking: SentBookingItem? = null
+    override val bookAgainButton = FakeButtonState()
+    override val doneButton = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<BookingSentDestinations>()
 }

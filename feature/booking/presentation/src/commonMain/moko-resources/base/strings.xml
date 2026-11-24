@@ -38,4 +38,10 @@
     <string name="booking_review_specialist_unavailable_title">This specialist can’t be booked now</string>
     <string name="booking_review_specialist_unavailable_message">Go back and pick someone else.</string>
     <string name="booking_review_business_message_title">From %s</string>
+    <string name="booking_sent_title">Request sent.</string>
+    <string name="booking_sent_message">You’ll get a message in this chat the moment they confirm.</string>
+    <string name="booking_sent_status_waiting">Waiting for confirmation</string>
+    <string name="booking_sent_status_confirmed">Confirmed</string>
+    <string name="booking_sent_book_again">Book something else</string>
+    <string name="booking_sent_done">Done</string>
 </resources>

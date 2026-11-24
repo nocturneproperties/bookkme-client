@@ -133,7 +133,7 @@ class BookingReviewViewModel(
             call = { sendBookingRequest(businessId, note) },
             onComplete = {
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
-                uiState.navigation.push(BookingReviewDestinations.Sent(businessId))
+                uiState.navigation.push(BookingReviewDestinations.Sent(it))
             },
             onError = { showSendError(it) },
             onTerminate = { uiState.sendButton.stopLoading() },

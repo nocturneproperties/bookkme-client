@@ -32,7 +32,11 @@ internal class GetBookingPreparationImpl(
         return BookingPreparation(
             services = selection.services.mapNotNull { picked ->
                 offered[picked.serviceId]?.let {
-                    BookingPreparation.PreparedService(it.toBookingService(), picked.quantity)
+                    BookingPreparation.PreparedService(
+                        service = it.toBookingService(),
+                        quantity = picked.quantity,
+                        approvedPrice = picked.approvedPrice,
+                    )
                 }
             },
             specialistId = selection.specialistId,

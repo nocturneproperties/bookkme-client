@@ -151,7 +151,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `CancelAppointment` | `POST /api/appointments/{id}/cancel`; UI reloads after closed edit window | [Cancel appointment](appointments/cancel-appointment.md) |
 | `CompleteAppointment` | `POST /api/appointments/{id}/complete`; UI reloads after closed edit window | [Complete appointment](appointments/complete-appointment.md) |
 | `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show`; UI reloads after closed edit window | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
-| `GetOwnAppointmentRequests` | `GET /api/appointments/request/{businessId}/mine` | [Get own appointment requests](appointments/get-own-appointment-requests.md) |
+| `GetAssignedAppointmentRequests` | `GET /api/appointments/request/{businessId}/assigned` | [Get assigned appointment requests](appointments/get-assigned-appointment-requests.md) |
 | `CreateAppointmentRequest` | `POST /api/appointments/request` | [Create appointment request](appointments/create-appointment-request.md) |
 | `ApproveAppointmentRequest` | `POST /api/appointments` | [Approve appointment request](appointments/approve-appointment-request.md) |
 | `DeclineAppointmentRequest` | `POST /api/appointments/request/{id}/decline` | [Decline appointment request](appointments/decline-appointment-request.md) |
@@ -163,6 +163,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `GetSavedBusinesses` | `GET /api/appointments/businesses` + `GetBusinesses.refresh` (client web app) | [Get saved businesses](appointments/get-saved-businesses.md) |
 | `SaveBusiness` | `POST /api/appointments/businesses/{businessId}`, then refreshes the saved list (client web app) | [Save business](appointments/save-business.md) |
 | `GetFreeSlots` | `POST /api/appointments/slots` (network only, not cached: free slots go stale quickly; client web app) | [Get free slots](appointments/get-free-slots.md) |
+| `GetBookingInfo` | `flow`: Room `booking_info` (`ClientDatabase`); `refresh`: `GET /api/appointments/booking-info/{businessId}`, upserted, row deleted and `Error.AppointmentsNotEnabled` on 404 (client web app) | [Get booking info](appointments/get-booking-info.md) |
 
 ## Settings
 
@@ -194,13 +195,15 @@ services (and the employees') use cases and keep what the client approved per bu
 | Use case | Network | Diagram |
 |---|---|---|
 | `GetBookingCatalog` | via `GetBusinesses` (`POST /api/business/bulk`) and `GetBusinessServices` (`GET /api/business/{businessId}/service`), refreshed in parallel; available services only | [Get booking catalog](booking/get-booking-catalog.md) |
-| `GetBookingPreparation` | local only: in-memory approved services per business (`InMemoryBookingPreparationDataSource`, cleared on logout) matched against `GetBusinessServices.flow` | [Get booking preparation](booking/get-booking-preparation.md) |
-| `SetBookingServices` | local only: replaces the business's in-memory services with the ones approved on Continue (forgets the specialist) | [Set booking services](booking/set-booking-services.md) |
+| `GetBookingPreparation` | local only: in-memory approved services per business (`InMemoryBookingPreparationDataSource`, cleared on logout) matched against `GetBusinessServices.flow`, each with the price it was approved at beside its current one | [Get booking preparation](booking/get-booking-preparation.md) |
+| `SetBookingServices` | local only: replaces the business's in-memory services with the ones approved on Continue, each with the price it was shown at (forgets the specialist) | [Set booking services](booking/set-booking-services.md) |
 | `GetBookingSpecialists` | `flow`: `GetBookableEmployees.flow` (Room `bookable_employee`) combined with the in-memory approved services (`InMemoryBookingPreparationDataSource`), keeping those who do every approved service; `refresh`: `GetBookableEmployees.refresh` (`GET /api/business/{businessId}/employee/bookable`, saved to Room), filtered the same way | [Get booking specialists](booking/get-booking-specialists.md) |
 | `SetBookingSpecialist` | local only: saves the picked specialist in the business's in-memory booking preparation (forgets a time picked for another specialist) | [Set booking specialist](booking/set-booking-specialist.md) |
 | `GetBookingTimetable` | `flow`: local only: business name, time zone and closed days (`GetBusinesses.flow`, Room `business`) and the picked specialist (`GetBookableEmployees.flow`, Room `bookable_employee`); `refresh`: `GetBusinesses.refresh` (`POST /api/business/bulk`) and `GetBookableEmployees.refresh` (`GET /api/business/{businessId}/employee/bookable`) in parallel, `Error.BusinessNotFound` when no business returns | [Get booking timetable](booking/get-booking-timetable.md) |
 | `GetBookingSlots` | via `GetFreeSlots` (`POST /api/appointments/slots`) for the approved services and specialist (`Error.SelectionInvalid` when either is missing or the backend rejects the services); times in the passed timetable's time zone, business-closed days marked from it | [Get booking slots](booking/get-booking-slots.md) |
 | `SetBookingSlot` | local only: saves the picked time's start in the business's in-memory booking preparation | [Set booking slot](booking/set-booking-slot.md) |
+| `GetBusinessMessage` | via `GetBookingInfo`: `flow` the business's cached note to clients (trimmed, `null` when blank or not cached), `refresh` `GET /api/appointments/booking-info/{businessId}` saved to Room (`Error.BookingUnavailable` on 404) | [Get business message](booking/get-business-message.md) |
+| `SendBookingRequest` | via `CreateQuote` (`POST /api/business/{businessId}/service/quote`, each service once per unit, checked against the shown prices and durations before use) and `CreateAppointmentRequest` (`POST /api/appointments/request`) for the services, specialist and time `GetBookingPreparation` shows (`ServicesChanged` when a picked service is no longer offered); errors folded into `TimeUnavailable`, `PendingRequestsLimitReached`, `PricesChanged`, `ServicesChanged`, `SpecialistUnavailable`, the last but two refreshing the business's services through `GetBusinessServices.refresh` (`GET /api/business/{businessId}/service`, saved to Room) first (`SelectionIncomplete` when anything is missing); clears the business's in-memory booking preparation on success, then refreshes the client's upcoming bookings through `GetUpcomingBookings.refresh` (`GET /api/appointments/upcoming`, saved to Room, failure dropped) so Home shows the pending request | [Send booking request](booking/send-booking-request.md) |
 
 ## Use cases composed of other use cases
 
@@ -238,6 +241,8 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Get booking specialists](booking/get-booking-specialists.md) | `GetBookableEmployees` (employees) (cross-feature wrapper) |
 | [Get booking timetable](booking/get-booking-timetable.md) | `GetBusinesses.flow`/`refresh` (business), `GetBookableEmployees.flow`/`refresh` (employees) (cross-feature) |
 | [Get booking slots](booking/get-booking-slots.md) | `GetFreeSlots` (appointments) (cross-feature wrapper) |
+| [Send booking request](booking/send-booking-request.md) | `GetBookingPreparation`, `CreateQuote` and `GetBusinessServices.refresh` (services), `CreateAppointmentRequest` and `GetUpcomingBookings.refresh` (appointments) (cross-feature wrapper) |
+| [Get business message](booking/get-business-message.md) | `GetBookingInfo` (appointments) (cross-feature wrapper) |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
 | [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut` |
 | [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |
@@ -250,7 +255,7 @@ These are recorded here and in the linked diagrams and are currently accepted as
 
 | Where | Issue |
 |---|---|
-| [Refresh business info](business/refresh-business-info.md) | Deleting a business the user has left does not remove its appointment rows, which reference the business only logically. The `notification_prefs` pending push token also survives logout. |
+| [Refresh business info](business/refresh-business-info.md) | Deleting a business the user has left does not remove its appointment rows, which reference the business only logically. |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | A refresh or switch failure after a successful redeem surfaces as an error, even though the user has joined. |
 | [preferences](../database/preferences.md) | `last_synced_at_*` markers are written by every list refresh but never read. |
-| Unused use cases | `EditService`, `IsUserLoggedIn()` (non-flow) and `CreateAppointmentRequest` have no production caller. |
+| Unused use cases | `EditService` and `IsUserLoggedIn()` (non-flow) have no production caller. |

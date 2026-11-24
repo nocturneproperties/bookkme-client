@@ -21,6 +21,7 @@ import me.bookk.feature.settings.domain.datasource.NotificationSettingsDataSourc
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
 class UpdateNotificationTokenImplTest {
 
@@ -40,170 +41,164 @@ class UpdateNotificationTokenImplTest {
         val notificationSettingsDataSource = mock<NotificationSettingsDataSource>()
         val deviceDataSource = mock<DeviceDataSource>()
         val sut = UpdateNotificationTokenImpl(notificationSettingsDataSource, deviceDataSource)
-    }
 
-    @Test
-    fun `updates notification token for the current device`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val deviceUuid = "device-uuid"
-        val token = "fcm-token"
-        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns deviceUuid
-        everySuspend {
-            fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, token)
-        } returns Device.stub()
-        everySuspend {
-            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
-        } returns
-            Unit
+        fun stubUpload(deviceUuid: String = "device-uuid") {
+            everySuspend { deviceDataSource.getOrCreateDeviceUUID() } returns deviceUuid
+            everySuspend {
+                notificationSettingsDataSource.updateNotificationToken(any(), any())
+            } returns Device.stub()
+        }
 
-        whenn()
-        fixture.sut(token)
-
-        then()
-        verifySuspend(VerifyMode.exactly(1)) {
-            fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, token)
+        fun stubSave() {
+            everySuspend { notificationSettingsDataSource.saveNotificationToken(any()) } returns
+                Unit
         }
     }
 
     @Test
-    fun `retrieves the device uuid before sending the token`() = runUnitTest {
+    fun `uploads the issued token for the current device`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
-        everySuspend {
-            fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
-        } returns Device.stub()
-        everySuspend {
-            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
-        } returns
-            Unit
+        fixture.stubSave()
+        fixture.stubUpload(deviceUuid = "device-uuid")
 
         whenn()
         fixture.sut("fcm-token")
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.deviceDataSource.getOrCreateDeviceUUID() }
-    }
-
-    @Test
-    fun `clears the pending token once the update succeeds`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val token = "fcm-token"
-        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
-        everySuspend {
-            fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
-        } returns Device.stub()
-        everySuspend {
-            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
-        } returns
-            Unit
-
-        whenn()
-        fixture.sut(token)
-
-        then()
         verifySuspend(VerifyMode.exactly(1)) {
-            fixture.notificationSettingsDataSource.savePendingNotificationToken(null)
+            fixture.notificationSettingsDataSource.updateNotificationToken(
+                "device-uuid",
+                "fcm-token",
+            )
         }
     }
 
     @Test
-    fun `saves the token as pending when the update fails`() = runUnitTest {
+    fun `keeps the issued token for later uploads`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val token = "fcm-token"
+        fixture.stubSave()
+        fixture.stubUpload()
+
+        whenn()
+        fixture.sut("fcm-token")
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.notificationSettingsDataSource.saveNotificationToken("fcm-token")
+        }
+    }
+
+    @Test
+    fun `keeps the issued token when the upload fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSave()
         everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
         everySuspend {
             fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
         } throws IllegalStateException("network unavailable")
-        everySuspend {
-            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
-        } returns
-            Unit
 
         whenn()
-        runCatching { fixture.sut(token) }
+        runCatching { fixture.sut("fcm-token") }
 
         then()
         verifySuspend(VerifyMode.exactly(1)) {
-            fixture.notificationSettingsDataSource.savePendingNotificationToken(token)
+            fixture.notificationSettingsDataSource.saveNotificationToken("fcm-token")
         }
     }
 
     @Test
-    fun `does nothing when there is no pending token`() = runUnitTest {
+    fun `rethrows when the upload of the issued token fails`() = runUnitTest {
         given()
         val fixture = Fixture()
+        fixture.stubSave()
+        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
         everySuspend {
-            fixture.notificationSettingsDataSource.getPendingNotificationToken()
-        } returns
-            null
+            fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
+        } throws IllegalStateException("network unavailable")
+
+        whenn()
+        val result = runCatching { fixture.sut("fcm-token") }
+
+        then()
+        assertFailsWith<IllegalStateException> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `does nothing when no token was issued`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.notificationSettingsDataSource.getNotificationToken() } returns null
 
         whenn()
         fixture.sut()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.deviceDataSource.getOrCreateDeviceUUID() }
         verifySuspend(VerifyMode.exactly(0)) {
             fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
         }
     }
 
     @Test
-    fun `retries with the pending token when one exists`() = runUnitTest {
+    fun `uploads the stored token again`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val pendingToken = "pending-fcm-token"
-        val deviceUuid = "device-uuid"
         everySuspend {
-            fixture.notificationSettingsDataSource.getPendingNotificationToken()
-        } returns
-            pendingToken
-        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns deviceUuid
-        everySuspend {
-            fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, pendingToken)
-        } returns Device.stub()
-        everySuspend {
-            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
-        } returns
-            Unit
+            fixture.notificationSettingsDataSource.getNotificationToken()
+        } returns "stored-fcm-token"
+        fixture.stubUpload(deviceUuid = "device-uuid")
 
         whenn()
         fixture.sut()
 
         then()
         verifySuspend(VerifyMode.exactly(1)) {
-            fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, pendingToken)
+            fixture.notificationSettingsDataSource.updateNotificationToken(
+                "device-uuid",
+                "stored-fcm-token",
+            )
         }
     }
 
     @Test
-    fun `sends the pending token when the background data fetch runs`() = runUnitTest {
+    fun `rethrows when the upload of the stored token fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val pendingToken = "pending-fcm-token"
-        val deviceUuid = "device-uuid"
         everySuspend {
-            fixture.notificationSettingsDataSource.getPendingNotificationToken()
-        } returns
-            pendingToken
-        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns deviceUuid
+            fixture.notificationSettingsDataSource.getNotificationToken()
+        } returns "stored-fcm-token"
+        everySuspend { fixture.deviceDataSource.getOrCreateDeviceUUID() } returns "device-uuid"
         everySuspend {
-            fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, pendingToken)
-        } returns Device.stub()
+            fixture.notificationSettingsDataSource.updateNotificationToken(any(), any())
+        } throws IllegalStateException("network unavailable")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<IllegalStateException> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `uploads the stored token when the background data fetch runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
         everySuspend {
-            fixture.notificationSettingsDataSource.savePendingNotificationToken(any())
-        } returns
-            Unit
+            fixture.notificationSettingsDataSource.getNotificationToken()
+        } returns "stored-fcm-token"
+        fixture.stubUpload(deviceUuid = "device-uuid")
 
         whenn()
         fixture.sut.doOnBackgroundDataFetch()
 
         then()
         verifySuspend(VerifyMode.exactly(1)) {
-            fixture.notificationSettingsDataSource.updateNotificationToken(deviceUuid, pendingToken)
+            fixture.notificationSettingsDataSource.updateNotificationToken(
+                "device-uuid",
+                "stored-fcm-token",
+            )
         }
     }
 }

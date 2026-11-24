@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.client.resources.ClientRes
-import me.bookk.site.designsystem.head.HeadMeta
-import me.bookk.site.designsystem.head.HeadTags
-import me.bookk.site.designsystem.resources.localized
+import me.bookk.designsystem.head.HeadMeta
+import me.bookk.designsystem.head.HeadTags
+import me.bookk.designsystem.resources.localized
 
 @Composable
 fun ClientPageHead(title: StringDesc, description: StringDesc) {

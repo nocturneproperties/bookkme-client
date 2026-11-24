@@ -15,9 +15,9 @@ import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.site.designsystem.components.Heading
-import me.bookk.site.designsystem.components.HeadingLevel
-import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.components.Heading
+import me.bookk.designsystem.components.HeadingLevel
+import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.cssRem
 

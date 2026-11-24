@@ -77,15 +77,15 @@ internal class CommonNotificationSettingsDataSource(
                 .toDomain()
         }
 
-    override suspend fun savePendingNotificationToken(token: String?) {
+    override suspend fun saveNotificationToken(token: String) {
         mapExceptions {
-            preferences.set(Key.pendingNotificationToken, token)
+            preferences.set(Key.notificationToken, token)
         }
     }
 
-    override suspend fun getPendingNotificationToken(): String? {
+    override suspend fun getNotificationToken(): String? {
         return mapExceptions {
-            preferences.get(Key.pendingNotificationToken)
+            preferences.get(Key.notificationToken)
         }
     }
 
@@ -94,6 +94,6 @@ internal class CommonNotificationSettingsDataSource(
     }
 
     private object Key {
-        val pendingNotificationToken = Preferences.Key<String>("pending_notification_token")
+        val notificationToken = Preferences.Key<String>("notification_token")
     }
 }

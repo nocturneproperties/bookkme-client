@@ -35,7 +35,7 @@ import me.bookk.designsystem.test.assertEmpty
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
-import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetAssignedAppointmentRequests
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
@@ -86,7 +86,7 @@ class AppointmentListViewModelTest {
             every { flow(any(), any()) } returns appointments
             everySuspend { refresh(any(), any(), any()) } returns emptyList()
         }
-        val getOwnAppointmentRequests = mock<GetOwnAppointmentRequests> {
+        val getAssignedAppointmentRequests = mock<GetAssignedAppointmentRequests> {
             every { flow(any()) } returns requests
             everySuspend { refresh(any()) } returns emptyList()
         }
@@ -95,7 +95,7 @@ class AppointmentListViewModelTest {
         fun sut() = AppointmentListViewModel(
             observeCurrentBusiness = observeCurrentBusiness,
             getAppointmentsForBusiness = getAppointmentsForBusiness,
-            getOwnAppointmentRequests = getOwnAppointmentRequests,
+            getAssignedAppointmentRequests = getAssignedAppointmentRequests,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeAppointmentsStateFactory(),
             vmArgs = VmArgs(errorMapper),
@@ -387,7 +387,7 @@ class AppointmentListViewModelTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getOwnAppointmentRequests.refresh(fixture.businessId) }
+        verifySuspend { fixture.getAssignedAppointmentRequests.refresh(fixture.businessId) }
     }
 
     @Test
@@ -410,7 +410,8 @@ class AppointmentListViewModelTest {
     fun `ignores request count failure`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getOwnAppointmentRequests.refresh(any()) } throws TestException()
+        everySuspend { fixture.getAssignedAppointmentRequests.refresh(any()) } throws
+            TestException()
 
         whenn()
         val sut = fixture.sut()

@@ -50,7 +50,7 @@
     <string name="dashboard_client_home_upcoming">Ближайшие</string>
     <string name="dashboard_client_home_all_bookings">Все записи</string>
     <string name="dashboard_client_home_no_upcoming">Ближайших записей нет</string>
-    <string name="dashboard_client_home_time_with_specialist">%1$s · мастер %2$s</string>
+    <string name="dashboard_client_home_time_and_specialist">%1$s · %2$s</string>
     <string name="dashboard_client_home_status_confirmed">Подтверждено</string>
     <string name="dashboard_client_home_status_waiting">Ждёт подтверждения</string>
     <string name="dashboard_client_home_book_again">Записаться снова</string>

@@ -1,6 +1,6 @@
 package me.bookk.site.legal
 
-import me.bookk.site.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.AppLanguage
 import kotlin.time.Instant
 
 class LegalDocumentHistory private constructor(

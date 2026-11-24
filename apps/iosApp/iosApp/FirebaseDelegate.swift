@@ -20,9 +20,17 @@ class FirebaseDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCente
 		FirebaseApp.configure()
 		Messaging.messaging().delegate = self
 		UNUserNotificationCenter.current().delegate = self
+		application.registerForRemoteNotifications()
 		return true
 	}
-	
+
+	func application(
+		_ application: UIApplication,
+		didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+	) {
+		Messaging.messaging().apnsToken = deviceToken
+	}
+
 	func messaging(_ messaging: Messaging, didReceiveRegistration installationId: String?) {
 		if let id = installationId {
 			TokenBridge.shared.updateInstallationId(token: id)

@@ -203,6 +203,11 @@ class CreateAppointmentRequestImplTest {
     }
 
     @Test
+    fun `throws EmployeeBusy on EMPLOYEE_BUSY`() = runUnitTest {
+        assertMapped(AppointmentErrorCodes.EMPLOYEE_BUSY, Error.EmployeeBusy::class)
+    }
+
+    @Test
     fun `rethrows unmapped business errors`() = runUnitTest {
         given()
         val fixture = Fixture()

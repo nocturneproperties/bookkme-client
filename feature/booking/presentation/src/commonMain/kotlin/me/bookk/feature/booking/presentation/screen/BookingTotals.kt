@@ -24,10 +24,10 @@ internal fun List<PreparedService>.units(): List<BookingService> {
     return flatMap { prepared -> List(prepared.quantity) { prepared.service } }
 }
 
-private fun List<BookingService>.totalDuration(): Duration {
+internal fun List<BookingService>.totalDuration(): Duration {
     return fold(Duration.ZERO) { total, service -> total + service.duration }
 }
 
-private fun List<BookingService>.totalPrice(): Money {
+internal fun List<BookingService>.totalPrice(): Money {
     return map { it.price }.reduce { total, price -> total + price }
 }

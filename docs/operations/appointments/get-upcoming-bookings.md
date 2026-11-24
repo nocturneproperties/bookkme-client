@@ -3,7 +3,7 @@
 # Get upcoming bookings
 
 `GetUpcomingBookings.flow()` / `.refresh()` → `GET /api/appointments/upcoming` + [`GetBusinesses`](../business/get-businesses.md)
-· called from `ClientHomeViewModel` (client web app Home in dashboard presentation, "Upcoming")
+· called from `ClientHomeViewModel` (client web app Home in dashboard presentation, "Upcoming") and, for `refresh` after a sent request, booking's [Send booking request](../booking/send-booking-request.md)
 
 Client-facing: the route returns the caller's 2 nearest `SCHEDULED` appointments that have not ended (client
 linked to the caller) and 2 nearest `PENDING` requests that have not started (made by the caller), across every

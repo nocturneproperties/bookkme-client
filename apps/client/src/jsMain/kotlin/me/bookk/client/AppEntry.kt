@@ -19,7 +19,7 @@ import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.android.feature.booking.resources.BookingRes
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.client.resources.ClientRes
-import me.bookk.site.designsystem.resources.LocalizedContent
+import me.bookk.designsystem.resources.LocalizedContent
 import org.jetbrains.compose.web.css.vh
 
 private const val COLOR_MODE_KEY = "bookkme:colorMode"

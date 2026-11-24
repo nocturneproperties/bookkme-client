@@ -19,8 +19,8 @@ import me.bookk.client.di.initClientApp
 import me.bookk.client.layout.ClientPageHead
 import me.bookk.client.resources.ClientRes
 import me.bookk.client.telegram.TelegramMiniApp
-import me.bookk.site.designsystem.resources.AppLanguage
-import me.bookk.site.designsystem.resources.WebLocalization
+import me.bookk.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.WebLocalization
 import org.jetbrains.compose.web.css.vh
 
 val TelegramPageStyle = CssStyle.base {

@@ -1,6 +1,8 @@
 package me.bookk.feature.appointments.data.mapping
 
+import me.bookk.database.entity.BookingInfoEntity
 import me.bookk.database.entity.SavedBusinessEntity
+import me.bookk.feature.appointments.domain.api.entity.BookingInfo
 import me.bookk.feature.appointments.domain.api.entity.SavedBusinessEntry
 
 internal fun SavedBusinessEntry.toEntity(): SavedBusinessEntity {
@@ -19,4 +21,12 @@ internal fun SavedBusinessEntity.toDomain(): SavedBusinessEntry {
         savedAt = savedAt,
         lastVisitAt = lastVisitAt,
     )
+}
+
+internal fun BookingInfo.toEntity(): BookingInfoEntity {
+    return BookingInfoEntity(businessId = businessId, appointmentNote = appointmentNote)
+}
+
+internal fun BookingInfoEntity.toDomain(): BookingInfo {
+    return BookingInfo(businessId = businessId, appointmentNote = appointmentNote)
 }

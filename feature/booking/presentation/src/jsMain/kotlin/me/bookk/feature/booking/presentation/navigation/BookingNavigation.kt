@@ -8,4 +8,5 @@ class BookingNavigation(
     val toSpecialist: (Uuid) -> Unit,
     val toDateTime: (Uuid) -> Unit,
     val toReview: (Uuid) -> Unit,
+    val toSent: (Uuid) -> Unit,
 )

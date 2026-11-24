@@ -3,7 +3,9 @@
 # Create quote
 
 `CreateQuote(businessId, serviceIds)` → `POST /api/business/{businessId}/service/quote`
-· called from [Create appointment](../appointments/create-appointment.md)
+· called from [Create appointment](../appointments/create-appointment.md) and booking's
+[Send booking request](../booking/send-booking-request.md); bound by `clientServicesDomainModule()`, which the
+full `servicesDomainModule()` includes
 
 Asks the server for full current service models and a signed price/duration token for the selected
 service ids. Instant booking compares this result with the caller's displayed snapshots before using

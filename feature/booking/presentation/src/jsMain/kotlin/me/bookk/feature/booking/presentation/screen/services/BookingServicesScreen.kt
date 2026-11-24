@@ -23,16 +23,16 @@ import library.telegram.TelegramAppTopBar
 import library.telegram.TelegramMainButton
 import library.telegram.TelegramWebApp
 import me.bookk.android.feature.booking.resources.BookingRes
+import me.bookk.designsystem.components.Heading
+import me.bookk.designsystem.components.HeadingLevel
+import me.bookk.designsystem.components.List
+import me.bookk.designsystem.components.OptionsQuantityList
+import me.bookk.designsystem.components.TextBlock
+import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.secondary
 import me.bookk.feature.booking.presentation.screen.BookingTotalBar
-import me.bookk.site.designsystem.components.Heading
-import me.bookk.site.designsystem.components.HeadingLevel
-import me.bookk.site.designsystem.components.List
-import me.bookk.site.designsystem.components.OptionsQuantityList
-import me.bookk.site.designsystem.components.TextBlock
-import me.bookk.site.designsystem.theme.BodyMediumTextStyle
-import me.bookk.site.designsystem.theme.BodySmallTextStyle
-import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
-import me.bookk.site.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 

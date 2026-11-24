@@ -12,6 +12,6 @@ flowchart TD
     Net -- failure --> Other([propagate mapped error])
 ```
 
-Reads the business-wide list, separately from `/mine`. It does not overwrite the cache currently used
-by `GetOwnAppointmentRequests`, so caller-owned and business-wide refreshes cannot remove each other's rows.
+Reads the business-wide list, separately from `/assigned`. It does not overwrite the cache currently used
+by `GetAssignedAppointmentRequests`, so caller-assigned and business-wide refreshes cannot remove each other's rows.
 Suspended-caller error 200034 is handled by the shared HTTP mapper.

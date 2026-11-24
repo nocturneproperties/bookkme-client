@@ -22,7 +22,6 @@ kotlin {
             implementation(projects.feature.authorization.domain.api)
         }
         jsMain.dependencies {
-            implementation(projects.site.designsystem)
             implementation(projects.library.telegram)
             implementation(libs.kobweb.compose.runtime)
             implementation(libs.compose.html.core)

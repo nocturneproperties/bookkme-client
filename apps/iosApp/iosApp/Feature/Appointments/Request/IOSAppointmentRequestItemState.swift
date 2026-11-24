@@ -14,11 +14,12 @@ import SwiftUI
 class IOSAppointmentRequestItemState: IOSViewState, @MainActor AppointmentRequestItemState {
 
     var clientName: String = ""
-    var serviceName: String = ""
-    var scheduledDate: String = ""
-    var scheduledTime: String = ""
+    var clientInitials: String = ""
+    var schedule: any StringDesc = RawStringDesc(string: "")
+    var services: [any StringDesc] = []
+    var price: String = ""
     var note: String = ""
-    var earnings: String = ""
+    var onCallClick: (() -> Void)?
     let approveButton: any ButtonState
     let declineButton: any ButtonState
 

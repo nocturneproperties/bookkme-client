@@ -2,7 +2,7 @@ package library.telegram
 
 import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import kotlinx.browser.window
-import me.bookk.site.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.AppLanguage
 
 class TelegramSession(
     val colorMode: ColorMode,

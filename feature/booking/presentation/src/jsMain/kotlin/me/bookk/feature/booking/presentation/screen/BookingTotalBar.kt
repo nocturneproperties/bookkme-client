@@ -17,11 +17,11 @@ import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.minWidth
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.silk.style.toModifier
-import me.bookk.site.designsystem.components.RevealingBottomBar
-import me.bookk.site.designsystem.components.TextBlock
-import me.bookk.site.designsystem.theme.BodyMediumTextStyle
-import me.bookk.site.designsystem.theme.HeadlineSmallTextStyle
-import me.bookk.site.designsystem.theme.secondary
+import me.bookk.designsystem.components.RevealingBottomBar
+import me.bookk.designsystem.components.TextBlock
+import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.HeadlineSmallTextStyle
+import me.bookk.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 

@@ -34,7 +34,7 @@ import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
-import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetAssignedAppointmentRequests
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusiness
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.CurrentBusiness
@@ -46,7 +46,7 @@ import kotlin.uuid.Uuid
 class AppointmentListViewModel(
     private val observeCurrentBusiness: ObserveCurrentBusiness,
     private val getAppointmentsForBusiness: GetAppointmentsForBusiness,
-    private val getOwnAppointmentRequests: GetOwnAppointmentRequests,
+    private val getAssignedAppointmentRequests: GetAssignedAppointmentRequests,
     private val dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
     vmArgs: VmArgs,
@@ -122,7 +122,7 @@ class AppointmentListViewModel(
 
     private fun observeRequestCount() {
         currentBusinessId()
-            .flatMapLatest { getOwnAppointmentRequests.flow(it) }
+            .flatMapLatest { getAssignedAppointmentRequests.flow(it) }
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderRequestCount(it.size) }
             .observe()
@@ -177,7 +177,7 @@ class AppointmentListViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.requestsButton.startLoading() },
-            call = { getOwnAppointmentRequests.refresh(businessId) },
+            call = { getAssignedAppointmentRequests.refresh(businessId) },
             onError = { /* Silently ignore */ },
             onTerminate = { uiState.requestsButton.stopLoading() },
         )

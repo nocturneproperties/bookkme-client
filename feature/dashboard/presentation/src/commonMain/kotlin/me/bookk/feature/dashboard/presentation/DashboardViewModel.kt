@@ -307,7 +307,6 @@ class DashboardViewModel(
             DashboardSetupStatus.NoBusiness,
             DashboardSetupStatus.Ready,
             -> {
-                Unit
             }
         }
     }

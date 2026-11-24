@@ -93,6 +93,37 @@ struct StateButton: View {
     }
 }
 
+struct NegativeStateButton: View {
+	@Bindable
+	var state: IOSButtonState
+
+	init(_ state: ButtonState) {
+		self._state = Bindable(wrappedValue: state.impl())
+	}
+
+	var body: some View {
+		Button(
+			action: {
+				withAnimation {
+					state.onClick?()
+				}
+			}
+		) {
+			if (state.isLoading) {
+				ProgressView()
+					.tint(AppColors.error)
+					.frame(maxWidth: .infinity, minHeight: 36)
+			} else {
+				Text(state.text.localized())
+					.frame(maxWidth: .infinity, minHeight: 36)
+			}
+		}
+		.disabled(!state.isEnabled)
+		.tint(AppColors.error)
+		.buttonStyle(.bordered)
+	}
+}
+
 struct IconButton: View {
 	@Bindable
 	var state: IOSButtonState

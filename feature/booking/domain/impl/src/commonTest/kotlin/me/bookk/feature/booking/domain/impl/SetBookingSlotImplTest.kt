@@ -34,7 +34,11 @@ class SetBookingSlotImplTest {
 
         then()
         assertEquals(
-            BookingSelection(listOf(SelectedService(haircutId, 2)), specialistId, start),
+            BookingSelection(
+                listOf(SelectedService(haircutId, 2, STUB_APPROVED_PRICE)),
+                specialistId,
+                start,
+            ),
             fixture.dataSource.selectionOf(businessId),
         )
     }

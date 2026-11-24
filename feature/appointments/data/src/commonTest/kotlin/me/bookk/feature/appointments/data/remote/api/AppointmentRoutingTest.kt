@@ -50,9 +50,9 @@ class AppointmentRoutingTest {
     }
 
     @Test
-    fun `own requests point to the mine endpoint of the business`() = runUnitTest {
+    fun `assigned requests point to the assigned endpoint of the business`() = runUnitTest {
         given()
-        val resource = Api.Appointment.Requests.Own(
+        val resource = Api.Appointment.Requests.Assigned(
             Api.Appointment.Requests(businessId = businessId),
         )
 
@@ -60,6 +60,6 @@ class AppointmentRoutingTest {
         val url = href(ResourcesFormat(), resource)
 
         then()
-        assertEquals("/api/appointments/request/$businessId/mine", url)
+        assertEquals("/api/appointments/request/$businessId/assigned", url)
     }
 }

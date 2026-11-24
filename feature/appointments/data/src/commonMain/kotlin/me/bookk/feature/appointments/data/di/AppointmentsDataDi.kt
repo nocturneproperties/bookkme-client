@@ -25,4 +25,6 @@ fun appointmentsDataModule() = module {
 fun clientAppointmentsDataModule() = module {
     singleOf(::CommonClientBookingDataSource) binds
         arrayOf(ClientBookingDataSource::class, LogOutAction::class)
+    singleOf(::CommonAppointmentRequestDataSource) binds
+        arrayOf(AppointmentRequestDataSource::class, LogOutAction::class)
 }

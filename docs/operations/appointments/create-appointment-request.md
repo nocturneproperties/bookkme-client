@@ -3,7 +3,8 @@
 # Create appointment request
 
 `CreateAppointmentRequest(draft)` → `POST /api/appointments/request`
-· not called from any screen yet (no client-side booking flow exists)
+· called by booking's [Send booking request](../booking/send-booking-request.md) (client web app's Review step);
+bound by `appointmentsDomainModule()` and `clientAppointmentsDomainModule()`
 
 A client asks a business for a slot. The `AppointmentRequestDraft` carries only ids and the slot:
 `businessId` (#1), `employeeId` (#2), `services` (#3) as `RequestedService(serviceId, count)`, `date` (#4),
@@ -35,6 +36,7 @@ flowchart TD
     Code -- 200024 BUSINESS_EMPLOYEE_NOT_EXISTS --> E10([throw Error.EmployeeNotFound])
     Code -- 200033 BUSINESS_EMPLOYEE_SUSPENDED --> E11([throw Error.EmployeeSuspended])
     Code -- 300029 PENDING_REQUESTS_LIMIT_REACHED --> E14([throw Error.PendingRequestsLimitReached])
+    Code -- 300032 EMPLOYEE_BUSY --> E15([throw Error.EmployeeBusy])
     Code -- other --> EX([rethrow])
 ```
 
@@ -44,3 +46,6 @@ token after fixing the slot is fine.
 
 `PendingRequestsLimitReached` means the caller already has the business's maximum of requests waiting there
 (`maxPendingRequestsPerClient`, 10 by default); one has to be answered or withdrawn first.
+
+`EmployeeBusy` means the employee already has a booking at that time: someone else's request for it was approved
+since the client saw the slot.

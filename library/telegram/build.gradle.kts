@@ -18,7 +18,7 @@ kotlin {
 
     sourceSets {
         jsMain.dependencies {
-            api(projects.site.designsystem)
+            api(projects.designsystem)
             implementation(libs.kobweb.compose.runtime)
             implementation(libs.compose.html.core)
             implementation(libs.kobweb.core)

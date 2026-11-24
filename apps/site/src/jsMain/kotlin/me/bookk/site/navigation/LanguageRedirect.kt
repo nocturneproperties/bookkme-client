@@ -1,6 +1,6 @@
 package me.bookk.site.navigation
 
-import me.bookk.site.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.AppLanguage
 import me.bookk.site.legal.LegalDocument
 
 object LanguageRedirect {

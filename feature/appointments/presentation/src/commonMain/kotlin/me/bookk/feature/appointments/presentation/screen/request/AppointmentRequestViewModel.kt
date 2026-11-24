@@ -1,6 +1,8 @@
 package me.bookk.feature.appointments.presentation.screen.request
 
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -8,6 +10,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import library.device.api.DeviceFacade
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
@@ -19,6 +22,7 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.resources.toStringDesc
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.designsystem.uistate.startLoading
@@ -26,17 +30,20 @@ import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest
 import me.bookk.feature.appointments.domain.api.ApproveAppointmentRequest.Error
 import me.bookk.feature.appointments.domain.api.DeclineAppointmentRequest
-import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetAssignedAppointmentRequests
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
+import kotlin.time.Duration
 import kotlin.uuid.Uuid
 
 class AppointmentRequestViewModel(
-    private val getOwnAppointmentRequests: GetOwnAppointmentRequests,
+    private val getAssignedAppointmentRequests: GetAssignedAppointmentRequests,
     private val approveAppointmentRequest: ApproveAppointmentRequest,
     private val declineAppointmentRequest: DeclineAppointmentRequest,
     private val observeCurrentBusinessId: ObserveCurrentBusinessId,
+    private val device: DeviceFacade,
     stateFactory: AppointmentsStateFactory,
     dateLocalizer: DateLocalizer,
     vmArgs: VmArgs,
@@ -57,6 +64,7 @@ class AppointmentRequestViewModel(
     }
 
     private fun AppointmentRequestState.setup() = apply {
+        title = AppointmentsRes.strings.appointments_requests.desc()
         requests.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = AppointmentsRes.strings.appointments_request_empty.desc(),
@@ -67,7 +75,7 @@ class AppointmentRequestViewModel(
         observeCurrentBusinessId()
             .filterNotNull()
             .distinctUntilChanged()
-            .flatMapLatest { getOwnAppointmentRequests.flow(it) }
+            .flatMapLatest { getAssignedAppointmentRequests.flow(it) }
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderRequests(it) }
             .onError { uiState.notifications.add(it.notification()) }
@@ -85,28 +93,55 @@ class AppointmentRequestViewModel(
             notifications = uiState.notifications,
             call = {
                 val businessId = observeCurrentBusinessId().filterNotNull().first()
-                getOwnAppointmentRequests.refresh(businessId)
+                getAssignedAppointmentRequests.refresh(businessId)
             },
         )
     }
 
-    private fun createRequestItemState(request: AppointmentRequest) =
-        uiState.createAppointmentRequestItemState().apply {
-            val localDateTime = request.date.toLocalDateTime(TimeZone.currentSystemDefault())
+    private fun createRequestItemState(request: AppointmentRequest): AppointmentRequestItemState {
+        return uiState.createAppointmentRequestItemState().apply {
             id = request.id.toString()
             clientName = request.client.fullName
-            serviceName = request.services.joinToString("\n") {
-                "${it.name} · ${it.duration.inWholeMinutes} min"
-            }
-            scheduledDate = dateFormatter.format(localDateTime.date, relative = true)
-            scheduledTime = timeFormatter.format(localDateTime.time)
+            clientInitials = initialsOf(request.client.fullName)
+            schedule = scheduleOf(request)
+            services = request.services.map(::serviceLabelOf)
+            price = request.total
             note = request.note
-            earnings = request.total
+            onCallClick = request.client.phone
+                ?.takeIf { it.isNotBlank() }
+                ?.let { phone -> weakVMClosure { it.device.dial(phone) } }
             approveButton.text = DesignSystem.strings.action_approve.desc()
             approveButton.onClick = weakVMClosure { it.onApprove(request.id) }
             declineButton.text = DesignSystem.strings.action_decline.desc()
             declineButton.onClick = weakVMClosure { it.onDeclineRequested(request.id) }
         }
+    }
+
+    private fun initialsOf(fullName: String): String {
+        val words = fullName.split(" ").filter { it.isNotBlank() }
+        return listOfNotNull(words.firstOrNull(), words.drop(1).lastOrNull())
+            .map { it.first().uppercaseChar() }
+            .joinToString("")
+    }
+
+    private fun scheduleOf(request: AppointmentRequest): StringDesc {
+        val timeZone = TimeZone.currentSystemDefault()
+        val start = request.date.toLocalDateTime(timeZone)
+        val totalDuration = request.services.fold(Duration.ZERO) { acc, it -> acc + it.duration }
+        val end = (request.date + totalDuration).toLocalDateTime(timeZone)
+        return AppointmentsRes.strings.appointments_request_schedule.format(
+            dateFormatter.format(start.date, relative = true),
+            timeFormatter.format(start.time),
+            timeFormatter.format(end.time),
+        )
+    }
+
+    private fun serviceLabelOf(service: ServiceSnapshot): StringDesc {
+        return AppointmentsRes.strings.appointments_request_service.format(
+            service.name,
+            service.duration.toStringDesc(),
+        )
+    }
 
     private fun onApprove(requestId: Uuid) {
         val item = uiState.requests.items.find { it.id == requestId.toString() } ?: return

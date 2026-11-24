@@ -1,5 +1,6 @@
 package me.bookk.feature.booking.domain.impl
 
+import library.money.api.Money
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -45,9 +46,28 @@ class SetBookingServicesImplTest {
         then()
         assertEquals(
             BookingSelection(
-                listOf(SelectedService(beardTrim.id, 2), SelectedService(haircut.id, 1)),
+                listOf(
+                    SelectedService(beardTrim.id, 2, beardTrim.price),
+                    SelectedService(haircut.id, 1, haircut.price),
+                ),
             ),
             fixture.dataSource.selectionOf(businessId),
+        )
+    }
+
+    @Test
+    fun `approves each service at the price it is shown at`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val raised = haircut.copy(price = Money(70_000, Money.SupportedCurrency.UAH))
+
+        whenn()
+        fixture.sut(businessId, listOf(PreparedService(raised, 1, approvedPrice = haircut.price)))
+
+        then()
+        assertEquals(
+            raised.price,
+            fixture.dataSource.selectionOf(businessId).services.single().approvedPrice,
         )
     }
 
@@ -62,7 +82,7 @@ class SetBookingServicesImplTest {
 
         then()
         assertEquals(
-            BookingSelection(listOf(SelectedService(haircut.id, 1))),
+            BookingSelection(listOf(SelectedService(haircut.id, 1, haircut.price))),
             fixture.dataSource.selectionOf(businessId),
         )
     }
@@ -79,7 +99,7 @@ class SetBookingServicesImplTest {
 
         then()
         assertEquals(
-            BookingSelection(listOf(SelectedService(beardTrim.id, 1))),
+            BookingSelection(listOf(SelectedService(beardTrim.id, 1, STUB_APPROVED_PRICE))),
             fixture.dataSource.selectionOf(otherBusinessId),
         )
     }

@@ -30,7 +30,7 @@ class GetBookingPreparationImplTest {
 
     private inner class Fixture {
         val services = MutableStateFlow(listOf(haircut, beardTrim))
-        val dataSource = FakeBookingPreparationDataSource()
+        val dataSource = FakeBookingPreparationDataSource(approvedPricesOf(haircut, beardTrim))
         val getBusinessServices = mock<GetBusinessServices> {
             every { flow(any()) } returns services
         }
@@ -82,7 +82,22 @@ class GetBookingPreparationImplTest {
         val preparation = fixture.sut.flow(businessId).first()
 
         then()
-        assertEquals(BookingPreparation(listOf(prepared(repriced, 1))), preparation)
+        assertEquals(repriced.toExpectedBookingService(), preparation.services.single().service)
+    }
+
+    @Test
+    fun `keeps the price a repriced service was approved at`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.dataSource.select(businessId, haircut.id to 1)
+        val repriced = haircut.copy(price = Money(70_000, Money.SupportedCurrency.UAH))
+
+        whenn()
+        fixture.services.value = listOf(repriced)
+        val preparation = fixture.sut.flow(businessId).first()
+
+        then()
+        assertEquals(haircut.price, preparation.services.single().approvedPrice)
     }
 
     @Test

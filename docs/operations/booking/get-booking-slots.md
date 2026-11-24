@@ -25,7 +25,7 @@ flowchart TD
     Free -- Error.AppointmentsNotEnabled --> E1([throw Error.BookingUnavailable])
     Free -- Error.InvalidServiceSelection 422 300024 --> E2([throw Error.SelectionInvalid])
     Free -- Error.InvalidRange 422 300033 --> E3([throw Error.InvalidRange])
-    Free -- other error --> E4([rethrow])
+    Free -- CancellationException or other error --> E4([rethrow unchanged])
     Free -- days --> Map[BookingDay date,<br/>slots: start + start.toLocalDateTime timetable.timeZone .time,<br/>isBusinessClosed: timetable.isClosedOn date]
     Map --> Done([return days])
 ```

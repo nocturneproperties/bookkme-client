@@ -78,6 +78,8 @@
 
     <string name="appointments_requests_count">Prośby (%s)</string>
     <string name="appointments_request_empty">Brak oczekujących próśb</string>
+    <string name="appointments_request_schedule">%1$s · %2$s–%3$s</string>
+    <string name="appointments_request_service">%1$s · %2$s</string>
     <string name="appointments_request_decline">Czy na pewno chcesz odrzucić tę wizytę?</string>
     <string name="appointments_request_overlap_error">Wizyty się nakładają. Wygląda na to, że w tym dniu istnieje już inna wizyta.</string>
     <string name="appointments_request_in_past">Termin wizyty już minął. Ta prośba wkrótce zostanie automatycznie anulowana, możesz też odrzucić ją ręcznie</string>

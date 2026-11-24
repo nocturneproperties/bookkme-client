@@ -112,7 +112,7 @@ kotlin {
             kotlin.srcDir(generateSiteBuildConfig)
         }
         jsMain.dependencies {
-            implementation(projects.site.designsystem)
+            implementation(projects.designsystem)
             implementation(projects.site.domcompat)
             implementation(libs.kmm.resources)
             implementation(libs.kobweb.compose.runtime)

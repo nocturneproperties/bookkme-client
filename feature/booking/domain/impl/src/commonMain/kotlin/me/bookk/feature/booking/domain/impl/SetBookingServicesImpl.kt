@@ -11,7 +11,15 @@ internal class SetBookingServicesImpl(
 ) : SetBookingServices {
 
     override suspend fun invoke(businessId: Uuid, services: List<PreparedService>) {
-        val selected = services.map { BookingSelection.SelectedService(it.service.id, it.quantity) }
+        val selected = services.map { it.toSelected() }
         dataSource.saveSelection(businessId, BookingSelection(selected))
+    }
+
+    private fun PreparedService.toSelected(): BookingSelection.SelectedService {
+        return BookingSelection.SelectedService(
+            serviceId = service.id,
+            quantity = quantity,
+            approvedPrice = service.price,
+        )
     }
 }

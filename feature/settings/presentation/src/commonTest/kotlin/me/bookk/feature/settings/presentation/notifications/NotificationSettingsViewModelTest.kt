@@ -26,6 +26,7 @@ import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.settings.domain.api.GetNotificationSettings
 import me.bookk.feature.settings.domain.api.UpdateNotificationSettings
+import me.bookk.feature.settings.domain.api.UpdateNotificationToken
 import me.bookk.feature.settings.domain.api.entity.NotificationChannel
 import me.bookk.feature.settings.domain.api.entity.NotificationSettings
 import me.bookk.feature.settings.presentation.FakePermissionChecker
@@ -59,6 +60,9 @@ class NotificationSettingsViewModelTest {
             everySuspend { refresh() } returns NotificationSettings.stub()
         }
         val updateNotificationSettings = mock<UpdateNotificationSettings>()
+        val updateNotificationToken = mock<UpdateNotificationToken> {
+            everySuspend { invoke() } returns Unit
+        }
         val permissionChecker = FakePermissionChecker()
         val errorMapper = FakeErrorMapper()
         val saved = Capture.slot<NotificationSettings>()
@@ -66,6 +70,7 @@ class NotificationSettingsViewModelTest {
         fun sut() = NotificationSettingsViewModel(
             getNotificationSettings = getNotificationSettings,
             updateNotificationSettings = updateNotificationSettings,
+            updateNotificationToken = updateNotificationToken,
             permissionManager = permissionChecker.asManager(),
             settingsStateFactory = FakeSettingsStateFactory(),
             vmArgs = VmArgs(errorMapper),
@@ -255,6 +260,71 @@ class NotificationSettingsViewModelTest {
         then()
         assertFalse(sut.uiState.pushNotificationsEnabled.isChecked)
         verifySuspend(VerifyMode.not) { fixture.updateNotificationSettings(any()) }
+    }
+
+    @Test
+    fun `uploads the push token when push is enabled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveEcho()
+        val sut = fixture.sut()
+        fixture.cached.value =
+            NotificationSettings.stub().withToggled(NotificationChannel.PUSH_NOTIFICATIONS, false)
+
+        whenn()
+        sut.uiState.pushNotificationsEnabled.onCheckedChange?.invoke(true)
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) { fixture.updateNotificationToken() }
+    }
+
+    @Test
+    fun `does not upload the push token when permission is denied`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.permissionChecker.granted = false
+        val sut = fixture.sut()
+        fixture.cached.value =
+            NotificationSettings.stub().withToggled(NotificationChannel.PUSH_NOTIFICATIONS, false)
+
+        whenn()
+        sut.uiState.pushNotificationsEnabled.onCheckedChange?.invoke(true)
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.updateNotificationToken() }
+    }
+
+    @Test
+    fun `does not upload the push token when push is disabled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveEcho()
+        val sut = fixture.sut()
+        fixture.cached.value = NotificationSettings.stub()
+
+        whenn()
+        sut.uiState.pushNotificationsEnabled.onCheckedChange?.invoke(false)
+
+        then()
+        verifySuspend(VerifyMode.not) { fixture.updateNotificationToken() }
+    }
+
+    @Test
+    fun `keeps push enabled without an error when the push token upload fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveEcho()
+        everySuspend { fixture.updateNotificationToken() } throws TestException()
+        val sut = fixture.sut()
+        fixture.cached.value =
+            NotificationSettings.stub().withToggled(NotificationChannel.PUSH_NOTIFICATIONS, false)
+
+        whenn()
+        sut.uiState.pushNotificationsEnabled.onCheckedChange?.invoke(true)
+
+        then()
+        assertTrue(sut.uiState.pushNotificationsEnabled.isChecked)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
     @Test

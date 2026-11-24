@@ -36,6 +36,7 @@ internal class GetBookingPreparationImpl(
                 }
             },
             specialistId = selection.specialistId,
+            slotStart = selection.slotStart,
         )
     }
 }

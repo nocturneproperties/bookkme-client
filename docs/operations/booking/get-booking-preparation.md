@@ -3,12 +3,12 @@
 # Get booking preparation
 
 `GetBookingPreparation.flow(businessId)` → local only (`BookingPreparationDataSource`, in memory) and
-[Get business services](../services/get-business-services.md) `flow` · called from `BookingServicesViewModel` and
-`BookingSpecialistViewModel`;
+[Get business services](../services/get-business-services.md) `flow` · called from `BookingServicesViewModel`,
+`BookingSpecialistViewModel` and `BookingDateTimeViewModel`;
 bound by `bookingDomainModule()`
 
 The booking a client is putting together at one business: the services they approved with Continue
-([Set booking services](set-booking-services.md)) and how many of each, in that order, and the specialist they picked ([Set booking specialist](set-booking-specialist.md)), if any. Picks
+([Set booking services](set-booking-services.md)) and how many of each, in that order, the specialist they picked ([Set booking specialist](set-booking-specialist.md)) and the start of the time they picked ([Set booking slot](set-booking-slot.md)), if any. Picks
 not yet approved stay on
 the screen and never reach it. `InMemoryBookingPreparationDataSource`, the one datasource behind every booking step, is a `single`
 holding one `BookingSelection` per business id in a `MutableStateFlow`, so the approved services outlive the screens: opening the business again
@@ -24,5 +24,5 @@ flowchart TD
     Sel --> C[combine]
     Svc --> C
     C --> Match[each picked serviceId → offered service where isAvailable<br/>not offered → left out]
-    Match --> Out([BookingPreparation services with quantity, specialistId])
+    Match --> Out([BookingPreparation services with quantity, specialistId, slotStart])
 ```

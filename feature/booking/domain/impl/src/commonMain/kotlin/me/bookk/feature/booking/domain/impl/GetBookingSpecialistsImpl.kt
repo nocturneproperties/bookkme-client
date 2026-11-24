@@ -37,6 +37,6 @@ internal class GetBookingSpecialistsImpl(
         val picked = selection.services.map { it.serviceId }
         return employees
             .filter { employee -> employee.services.map { it.id }.containsAll(picked) }
-            .map { BookingSpecialist(id = it.id, name = it.name, lastName = it.lastName) }
+            .map { it.toBookingSpecialist() }
     }
 }

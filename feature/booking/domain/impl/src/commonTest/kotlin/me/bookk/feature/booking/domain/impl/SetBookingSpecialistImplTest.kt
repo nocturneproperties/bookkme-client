@@ -8,6 +8,7 @@ import me.bookk.feature.booking.domain.datasource.BookingSelection
 import me.bookk.feature.booking.domain.datasource.BookingSelection.SelectedService
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class SetBookingSpecialistImplTest {
@@ -66,5 +67,43 @@ class SetBookingSpecialistImplTest {
             otherSpecialistId,
             fixture.dataSource.selectionOf(otherBusinessId).specialistId,
         )
+    }
+
+    @Test
+    fun `forgets the slot picked for another specialist`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val slotStart = Instant.parse("2026-11-24T12:30:00Z")
+        fixture.dataSource.select(
+            businessId,
+            haircutId to 1,
+            specialistId = Uuid.random(),
+            slotStart = slotStart,
+        )
+
+        whenn()
+        fixture.sut(businessId, specialistId)
+
+        then()
+        assertEquals(null, fixture.dataSource.selectionOf(businessId).slotStart)
+    }
+
+    @Test
+    fun `keeps the slot when the same specialist is picked again`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val slotStart = Instant.parse("2026-11-24T12:30:00Z")
+        fixture.dataSource.select(
+            businessId,
+            haircutId to 1,
+            specialistId = specialistId,
+            slotStart = slotStart,
+        )
+
+        whenn()
+        fixture.sut(businessId, specialistId)
+
+        then()
+        assertEquals(slotStart, fixture.dataSource.selectionOf(businessId).slotStart)
     }
 }

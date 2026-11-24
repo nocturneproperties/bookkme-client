@@ -11,6 +11,10 @@ internal class SetBookingSpecialistImpl(
 
     override suspend fun invoke(businessId: Uuid, specialistId: Uuid) {
         val selection = dataSource.observeSelection(businessId).first()
-        dataSource.saveSelection(businessId, selection.copy(specialistId = specialistId))
+        val slotStart = selection.slotStart.takeIf { selection.specialistId == specialistId }
+        dataSource.saveSelection(
+            businessId,
+            selection.copy(specialistId = specialistId, slotStart = slotStart),
+        )
     }
 }

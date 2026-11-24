@@ -4,13 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
+import me.bookk.designsystem.uistate.WebAppBarState
+import me.bookk.designsystem.uistate.WebButtonState
+import me.bookk.designsystem.uistate.WebListState
+import me.bookk.designsystem.uistate.WebNavigationState
+import me.bookk.designsystem.uistate.WebNotificationState
+import me.bookk.designsystem.uistate.WebOptionsMultiPickerState
 import me.bookk.feature.booking.presentation.screen.BookingTotal
-import me.bookk.site.designsystem.uistate.WebAppBarState
-import me.bookk.site.designsystem.uistate.WebButtonState
-import me.bookk.site.designsystem.uistate.WebListState
-import me.bookk.site.designsystem.uistate.WebNavigationState
-import me.bookk.site.designsystem.uistate.WebNotificationState
-import me.bookk.site.designsystem.uistate.WebOptionsMultiPickerState
 
 internal class WebBookingServicesState : BookingServicesState {
     override val appBar = WebAppBarState()

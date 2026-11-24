@@ -67,7 +67,7 @@ kotlin {
         }
         jsMain.dependencies {
             implementation(npm("@sqlite.org/sqlite-wasm", libs.versions.npm.sqlite.wasm.get()))
-            implementation(projects.site.designsystem)
+            implementation(projects.designsystem)
             implementation(projects.site.domcompat)
             implementation(projects.library.telegram)
             implementation(projects.core)

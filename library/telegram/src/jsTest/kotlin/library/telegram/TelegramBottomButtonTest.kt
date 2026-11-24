@@ -5,8 +5,8 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.designsystem.uistate.WebButtonState
 import me.bookk.designsystem.uistate.startLoading
-import me.bookk.site.designsystem.uistate.WebButtonState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

@@ -6,8 +6,8 @@ import com.varabyte.kobweb.core.data.add
 import com.varabyte.kobweb.core.init.InitRouteContext
 import com.varabyte.kobweb.core.rememberPageContext
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.site.designsystem.resources.AppLanguage
-import me.bookk.site.designsystem.resources.WebLocalization
+import me.bookk.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.WebLocalization
 import me.bookk.site.layout.NotFoundMessage
 import me.bookk.site.layout.PageLayoutData
 import me.bookk.site.legal.LegalDocument

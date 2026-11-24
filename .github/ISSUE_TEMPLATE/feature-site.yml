@@ -25,7 +25,7 @@ body:
       label: Acceptance criteria
       value: |
         - [ ] Strings in EN, UK and PL
-        - [ ] Built from `:site:designsystem` components; missing ones added there
+        - [ ] Built from `:designsystem` web components; missing ones added to its `jsMain`
         - [ ] Icons are Google Material Icons only
         - [ ] Works at phone width without horizontal scroll
         - [ ] Static export checked

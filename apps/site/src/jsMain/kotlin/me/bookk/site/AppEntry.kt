@@ -15,7 +15,7 @@ import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import com.varabyte.kobweb.silk.theme.colors.loadFromLocalStorage
 import com.varabyte.kobweb.silk.theme.colors.saveToLocalStorage
 import com.varabyte.kobweb.silk.theme.colors.systemPreference
-import me.bookk.site.designsystem.resources.LocalizedContent
+import me.bookk.designsystem.resources.LocalizedContent
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.vh
 

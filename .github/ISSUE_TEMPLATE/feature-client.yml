@@ -25,7 +25,7 @@ body:
       label: Acceptance criteria
       value: |
         - [ ] Strings in EN, UK and PL
-        - [ ] Screens in the feature's `jsMain`, built from `:site:designsystem` components; missing ones added there
+        - [ ] Screens in the feature's `jsMain`, built from `:designsystem` web components; missing ones added to its `jsMain`
         - [ ] Inside Telegram, uses the native controls from `:library:telegram` instead of in-page buttons, back arrow and notifications
         - [ ] Icons are Google Material Icons only
         - [ ] Works at phone width without horizontal scroll

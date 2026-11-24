@@ -1,7 +1,7 @@
 package me.bookk.site.legal
 
 import kotlinx.datetime.LocalDate
-import me.bookk.site.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.AppLanguage
 import kotlin.time.Instant
 
 internal const val FIRST_VERSION = "2026-12-01"

@@ -3,7 +3,7 @@ set -euo pipefail
 
 site_dir=$(cd "$(dirname "$0")" && pwd)
 public="$site_dir/src/jsMain/resources/public"
-shared_public="$site_dir/designsystem/src/jsMain/resources/public"
+shared_public="$site_dir/../../designsystem/src/jsMain/resources/public"
 colors="$site_dir/../../designsystem/src/commonMain/moko-resources/colors/colors.xml"
 favicon_svg="$shared_public/favicon.svg"
 app_icon_svg="$shared_public/logo-dark.svg"

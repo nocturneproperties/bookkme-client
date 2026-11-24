@@ -5,11 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.designsystem.uistate.WebBooleanState
+import me.bookk.designsystem.uistate.WebButtonState
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentsState
-import me.bookk.site.designsystem.uistate.WebBooleanState
-import me.bookk.site.designsystem.uistate.WebButtonState
 
 internal class WebTelegramSignInState : TelegramSignInState {
     override var phase: TelegramSignInPhase by mutableStateOf(TelegramSignInPhase.SIGNING_IN)

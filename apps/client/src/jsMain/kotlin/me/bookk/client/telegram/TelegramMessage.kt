@@ -19,16 +19,16 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.client.navigation.ClientLink
 import me.bookk.client.resources.ClientRes
-import me.bookk.site.designsystem.components.Heading
-import me.bookk.site.designsystem.components.HeadingLevel
-import me.bookk.site.designsystem.components.Logo
-import me.bookk.site.designsystem.components.TextBlock
-import me.bookk.site.designsystem.components.TextLink
-import me.bookk.site.designsystem.theme.BodyLargeTextStyle
-import me.bookk.site.designsystem.theme.BodyMediumTextStyle
-import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
-import me.bookk.site.designsystem.theme.active
-import me.bookk.site.designsystem.theme.secondary
+import me.bookk.designsystem.components.Heading
+import me.bookk.designsystem.components.HeadingLevel
+import me.bookk.designsystem.components.Logo
+import me.bookk.designsystem.components.TextBlock
+import me.bookk.designsystem.components.TextLink
+import me.bookk.designsystem.theme.BodyLargeTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.active
+import me.bookk.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
 
 val TelegramMessageStyle = CssStyle.base {

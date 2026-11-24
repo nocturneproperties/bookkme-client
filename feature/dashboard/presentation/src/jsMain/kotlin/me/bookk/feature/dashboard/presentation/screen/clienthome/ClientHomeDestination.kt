@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import library.telegram.ObserveTelegramNotifications
 import library.telegram.TelegramWebApp
 import me.bookk.core.presentation.rememberViewModel
+import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.feature.dashboard.presentation.navigation.ClientHomeNavigation
-import me.bookk.site.designsystem.components.ObserveNavigation
 import org.koin.core.parameter.parametersOf
 
 @Composable

@@ -9,8 +9,8 @@ import androidx.compose.runtime.setValue
 import me.bookk.core.presentation.LocalUnauthorizedHandler
 import me.bookk.core.presentation.UnauthorizedHandler
 import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.designsystem.resources.localized
 import me.bookk.designsystem.uistate.PresentationNotificationState
-import me.bookk.site.designsystem.resources.localized
 
 @Composable
 fun ObserveTelegramNotifications(webApp: TelegramWebApp, state: PresentationNotificationState) {

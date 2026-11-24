@@ -3,7 +3,7 @@ package me.bookk.site.legal
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import me.bookk.site.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.AppLanguage
 import kotlin.time.Instant
 
 class LegalDocumentVersion(

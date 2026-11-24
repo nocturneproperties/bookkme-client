@@ -2,7 +2,7 @@ package me.bookk.client.navigation
 
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.core.config.SiteUrl
-import me.bookk.site.designsystem.resources.WebLocalization
+import me.bookk.designsystem.resources.WebLocalization
 
 class ClientLink(
     val title: StringDesc,

@@ -10,9 +10,9 @@ import androidx.compose.runtime.setValue
 import com.varabyte.kobweb.core.AppGlobals
 import com.varabyte.kobweb.core.isExporting
 import com.varabyte.kobweb.silk.theme.colors.ColorMode
+import me.bookk.designsystem.resources.WebLocalization
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.site.designsystem.resources.WebLocalization
-import me.bookk.site.designsystem.theme.themed
+import me.bookk.designsystem.theme.themed
 
 @Composable
 fun rememberTelegramLaunch(): TelegramLaunchState {

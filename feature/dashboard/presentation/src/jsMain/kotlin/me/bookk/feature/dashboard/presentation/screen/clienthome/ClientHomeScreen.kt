@@ -29,39 +29,39 @@ import com.varabyte.kobweb.compose.ui.modifiers.textAlign
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.dashboard.resources.DashboardRes
+import me.bookk.designsystem.components.AppCard
+import me.bookk.designsystem.components.BannerErrorView
+import me.bookk.designsystem.components.CardButton
+import me.bookk.designsystem.components.DateTile
+import me.bookk.designsystem.components.EmptyStateView
+import me.bookk.designsystem.components.FittingList
+import me.bookk.designsystem.components.Heading
+import me.bookk.designsystem.components.HeadingLevel
+import me.bookk.designsystem.components.HorizontalDivider
+import me.bookk.designsystem.components.IconButton
+import me.bookk.designsystem.components.IconTile
+import me.bookk.designsystem.components.InitialLoadingView
+import me.bookk.designsystem.components.ListRowButton
+import me.bookk.designsystem.components.NumberedSteps
+import me.bookk.designsystem.components.StatusPill
+import me.bookk.designsystem.components.TextBlock
+import me.bookk.designsystem.components.TextButton
+import me.bookk.designsystem.components.TintedIcon
+import me.bookk.designsystem.components.fittingItem
 import me.bookk.designsystem.resources.color.ColorToken
+import me.bookk.designsystem.theme.BodyLargeTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.HeadlineSmallTextStyle
+import me.bookk.designsystem.theme.TitleMediumTextStyle
+import me.bookk.designsystem.theme.secondary
+import me.bookk.designsystem.theme.themed
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.ListState
 import me.bookk.designsystem.uistate.simple.BannerErrorState
-import me.bookk.site.designsystem.components.AppCard
-import me.bookk.site.designsystem.components.BannerErrorView
-import me.bookk.site.designsystem.components.CardButton
-import me.bookk.site.designsystem.components.DateTile
-import me.bookk.site.designsystem.components.EmptyStateView
-import me.bookk.site.designsystem.components.FittingList
-import me.bookk.site.designsystem.components.Heading
-import me.bookk.site.designsystem.components.HeadingLevel
-import me.bookk.site.designsystem.components.HorizontalDivider
-import me.bookk.site.designsystem.components.IconButton
-import me.bookk.site.designsystem.components.IconTile
-import me.bookk.site.designsystem.components.InitialLoadingView
-import me.bookk.site.designsystem.components.ListRowButton
-import me.bookk.site.designsystem.components.NumberedSteps
-import me.bookk.site.designsystem.components.StatusPill
-import me.bookk.site.designsystem.components.TextBlock
-import me.bookk.site.designsystem.components.TextButton
-import me.bookk.site.designsystem.components.TintedIcon
-import me.bookk.site.designsystem.components.fittingItem
-import me.bookk.site.designsystem.resources.WebDesignSystem
-import me.bookk.site.designsystem.theme.BodyLargeTextStyle
-import me.bookk.site.designsystem.theme.BodyMediumTextStyle
-import me.bookk.site.designsystem.theme.BodySmallTextStyle
-import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
-import me.bookk.site.designsystem.theme.HeadlineSmallTextStyle
-import me.bookk.site.designsystem.theme.TitleMediumTextStyle
-import me.bookk.site.designsystem.theme.secondary
-import me.bookk.site.designsystem.theme.themed
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 
@@ -126,7 +126,7 @@ private fun Greeting(greeting: StringDesc, settingsButton: ButtonState) {
                 .minWidth(2.75.cssRem)
                 .backgroundColor(ColorToken.Elevated.themed),
         ) {
-            TintedIcon(WebDesignSystem.images.material_settings, ColorToken.PrimaryText)
+            TintedIcon(DesignSystem.images.material_settings, ColorToken.PrimaryText)
         }
     }
 }
@@ -204,7 +204,7 @@ private fun SavedBusinessesCard(businesses: List<SavedBusinessItem>) {
 @Composable
 private fun SavedBusinessRow(item: SavedBusinessItem, isLast: Boolean) {
     ListRowButton(onClick = item.onClick, modifier = Modifier.fittingItem()) {
-        IconTile(WebDesignSystem.images.material_business)
+        IconTile(DesignSystem.images.material_business)
         Column(Modifier.fillMaxWidth()) {
             TextBlock(
                 item.name.desc(),

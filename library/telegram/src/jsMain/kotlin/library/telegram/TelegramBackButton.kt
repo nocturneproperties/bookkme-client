@@ -6,8 +6,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import me.bookk.core.presentation.navigation.LocalIsCurrentScreen
+import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.uistate.AppBarState
-import me.bookk.site.designsystem.components.AppTopBar
 
 @Composable
 fun TelegramAppTopBar(webApp: TelegramWebApp, state: AppBarState) {

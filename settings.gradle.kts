@@ -33,11 +33,9 @@ project(":androidApp").projectDir = file("apps/androidApp")
 
 // Web
 include(":site")
-include(":site:designsystem")
 include(":site:domcompat")
 include(":client")
 project(":site").projectDir = file("apps/site")
-project(":site:designsystem").projectDir = file("apps/site/designsystem")
 project(":site:domcompat").projectDir = file("apps/site/domcompat")
 project(":client").projectDir = file("apps/client")
 

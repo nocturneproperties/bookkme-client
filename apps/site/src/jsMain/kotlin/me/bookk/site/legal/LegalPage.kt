@@ -1,7 +1,7 @@
 package me.bookk.site.legal
 
 import kotlinx.datetime.LocalDate
-import me.bookk.site.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.AppLanguage
 import me.bookk.site.legal.markdown.MarkdownBlock
 
 class LegalPageRequest(

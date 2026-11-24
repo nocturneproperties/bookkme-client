@@ -4,10 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
-import me.bookk.site.designsystem.uistate.WebButtonState
-import me.bookk.site.designsystem.uistate.WebListState
-import me.bookk.site.designsystem.uistate.WebNavigationState
-import me.bookk.site.designsystem.uistate.WebNotificationState
+import me.bookk.designsystem.uistate.WebButtonState
+import me.bookk.designsystem.uistate.WebListState
+import me.bookk.designsystem.uistate.WebNavigationState
+import me.bookk.designsystem.uistate.WebNotificationState
 
 internal class WebClientHomeState : ClientHomeState {
     override var greeting: StringDesc? by mutableStateOf(null)

@@ -14,24 +14,24 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import library.telegram.TelegramMainButton
 import library.telegram.TelegramWebApp
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.authorization.resources.AuthRes
+import me.bookk.designsystem.components.AppCard
+import me.bookk.designsystem.components.CheckBox
+import me.bookk.designsystem.components.Heading
+import me.bookk.designsystem.components.HeadingLevel
+import me.bookk.designsystem.components.HorizontalDivider
+import me.bookk.designsystem.components.ListRowButton
+import me.bookk.designsystem.components.TextBlock
+import me.bookk.designsystem.components.TintedIcon
 import me.bookk.designsystem.resources.color.ColorToken
+import me.bookk.designsystem.theme.BodyLargeTextStyle
+import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.TitleMediumTextStyle
+import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpLegalDocumentsState
-import me.bookk.site.designsystem.components.AppCard
-import me.bookk.site.designsystem.components.CheckBox
-import me.bookk.site.designsystem.components.Heading
-import me.bookk.site.designsystem.components.HeadingLevel
-import me.bookk.site.designsystem.components.HorizontalDivider
-import me.bookk.site.designsystem.components.ListRowButton
-import me.bookk.site.designsystem.components.TextBlock
-import me.bookk.site.designsystem.components.TintedIcon
-import me.bookk.site.designsystem.resources.WebDesignSystem
-import me.bookk.site.designsystem.theme.BodyLargeTextStyle
-import me.bookk.site.designsystem.theme.HeadlineLargeTextStyle
-import me.bookk.site.designsystem.theme.TitleMediumTextStyle
-import me.bookk.site.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 
@@ -121,13 +121,13 @@ private fun LegalDocuments(
         ) {
             LegalDocumentRow(
                 documents.privacyPolicy,
-                WebDesignSystem.images.material_policy,
+                DesignSystem.images.material_policy,
                 webApp,
             )
             HorizontalDivider()
             LegalDocumentRow(
                 documents.termsOfService,
-                WebDesignSystem.images.material_description,
+                DesignSystem.images.material_description,
                 webApp,
             )
             HorizontalDivider()
@@ -145,7 +145,7 @@ private fun LegalDocumentRow(
     ListRowButton(
         onClick = { webApp.openLink(document.linkUrl) },
         modifier = Modifier.minHeight(3.25.cssRem),
-        endIcon = WebDesignSystem.images.material_open_in_new,
+        endIcon = DesignSystem.images.material_open_in_new,
     ) {
         TintedIcon(icon, ColorToken.SecondaryText)
         TextBlock(

@@ -7,8 +7,8 @@ import com.varabyte.kobweb.core.init.InitKobwebContext
 import com.varabyte.kobweb.core.isExporting
 import com.varabyte.kobweb.navigation.InitRouteMethod
 import com.varabyte.kobweb.navigation.Router
-import me.bookk.site.designsystem.resources.AppLanguage
-import me.bookk.site.designsystem.resources.WebLocalization
+import me.bookk.designsystem.resources.AppLanguage
+import me.bookk.designsystem.resources.WebLocalization
 import me.bookk.site.layout.PAGE_LAYOUT_ID
 import me.bookk.site.legal.LegalDocument
 import me.bookk.site.pages.ClientsPage

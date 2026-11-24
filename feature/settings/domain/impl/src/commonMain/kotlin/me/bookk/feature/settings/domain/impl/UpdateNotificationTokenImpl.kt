@@ -12,23 +12,20 @@ internal class UpdateNotificationTokenImpl(
     BackgroundDataFetchAction {
 
     override suspend fun invoke(token: String) {
-        val deviceUuid = deviceDataSource.getOrCreateDeviceUUID()
-        runCatching {
-            notificationSettingsDataSource.updateNotificationToken(deviceUuid, token)
-        }.onSuccess {
-            notificationSettingsDataSource.savePendingNotificationToken(null)
-        }.onFailure {
-            notificationSettingsDataSource.savePendingNotificationToken(token)
-        }.getOrThrow()
+        notificationSettingsDataSource.saveNotificationToken(token)
+        upload(token)
     }
 
     override suspend fun invoke() {
-        notificationSettingsDataSource.getPendingNotificationToken()?.let {
-            invoke(it)
-        }
+        notificationSettingsDataSource.getNotificationToken()?.let { upload(it) }
     }
 
     override suspend fun doOnBackgroundDataFetch() {
         invoke()
+    }
+
+    private suspend fun upload(token: String) {
+        val deviceUuid = deviceDataSource.getOrCreateDeviceUUID()
+        notificationSettingsDataSource.updateNotificationToken(deviceUuid, token)
     }
 }

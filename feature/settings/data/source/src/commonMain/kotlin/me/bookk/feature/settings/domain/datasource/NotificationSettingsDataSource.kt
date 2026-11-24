@@ -16,6 +16,7 @@ interface NotificationSettingsDataSource {
 
     suspend fun updateNotificationToken(deviceUuid: String, token: String): Device
 
-    suspend fun savePendingNotificationToken(token: String?)
-    suspend fun getPendingNotificationToken(): String?
+    suspend fun saveNotificationToken(token: String)
+
+    suspend fun getNotificationToken(): String?
 }

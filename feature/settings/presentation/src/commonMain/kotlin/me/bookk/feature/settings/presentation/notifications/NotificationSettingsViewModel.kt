@@ -12,6 +12,7 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.feature.settings.domain.api.GetNotificationSettings
 import me.bookk.feature.settings.domain.api.UpdateNotificationSettings
+import me.bookk.feature.settings.domain.api.UpdateNotificationToken
 import me.bookk.feature.settings.domain.api.entity.NotificationChannel
 import me.bookk.feature.settings.domain.api.entity.NotificationChannel.EMAIL
 import me.bookk.feature.settings.domain.api.entity.NotificationChannel.PUSH_NOTIFICATIONS
@@ -22,6 +23,7 @@ import me.bookk.feature.settings.presentation.SettingsStateFactory
 class NotificationSettingsViewModel(
     private val getNotificationSettings: GetNotificationSettings,
     private val updateNotificationSettings: UpdateNotificationSettings,
+    private val updateNotificationToken: UpdateNotificationToken,
     private val permissionManager: PermissionManager,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs,
@@ -79,11 +81,20 @@ class NotificationSettingsViewModel(
             onComplete = { permissionGranted ->
                 if (permissionGranted) {
                     save(loadedSettings.withToggled(PUSH_NOTIFICATIONS, true))
+                    uploadNotificationToken()
                 } else {
                     renderSettings(loadedSettings)
                 }
             },
             onError = { uiState.notifications.add(it.notification()) },
+        )
+    }
+
+    private fun uploadNotificationToken() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { updateNotificationToken() },
+            onError = { handleError(it) },
         )
     }
 

@@ -255,7 +255,7 @@ These are recorded here and in the linked diagrams and are currently accepted as
 
 | Where | Issue |
 |---|---|
-| [Refresh business info](business/refresh-business-info.md) | Deleting a business the user has left does not remove its appointment rows, which reference the business only logically. The `notification_prefs` pending push token also survives logout. |
+| [Refresh business info](business/refresh-business-info.md) | Deleting a business the user has left does not remove its appointment rows, which reference the business only logically. |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | A refresh or switch failure after a successful redeem surfaces as an error, even though the user has joined. |
 | [preferences](../database/preferences.md) | `last_synced_at_*` markers are written by every list refresh but never read. |
 | Unused use cases | `EditService` and `IsUserLoggedIn()` (non-flow) have no production caller. |

@@ -28,6 +28,11 @@ object AppointmentRouting {
                 )
             }
 
+            @Resource("/slots")
+            class Slots(
+                val parent: Appointment = Appointment(),
+            )
+
             @Resource("/instant")
             class Instant(
                 val parent: Appointment = Appointment(),

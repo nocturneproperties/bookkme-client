@@ -9,6 +9,7 @@ import me.bookk.feature.booking.presentation.navigation.BookingNavigation
 internal fun rememberBookingNavigation(stack: BackStack<ClientScreen>) = remember(stack) {
     BookingNavigation(
         onBack = { stack.pop() },
+        onLeave = { stack.popToRoot() },
         toSpecialist = { stack.push(ClientScreen.Specialist(it)) },
         toDateTime = { stack.push(ClientScreen.DateTime(it)) },
         toReview = {},

@@ -4,6 +4,7 @@ import kotlin.uuid.Uuid
 
 class BookingNavigation(
     val onBack: () -> Unit,
+    val onLeave: () -> Unit,
     val toSpecialist: (Uuid) -> Unit,
     val toDateTime: (Uuid) -> Unit,
     val toReview: (Uuid) -> Unit,

@@ -36,10 +36,14 @@ import me.bookk.feature.authorization.presentation.screen.clientbootstrap.Client
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
 import me.bookk.feature.booking.domain.api.GetBookingCatalog
 import me.bookk.feature.booking.domain.api.GetBookingPreparation
+import me.bookk.feature.booking.domain.api.GetBookingSlots
 import me.bookk.feature.booking.domain.api.GetBookingSpecialists
+import me.bookk.feature.booking.domain.api.GetBookingTimetable
 import me.bookk.feature.booking.domain.api.SetBookingServices
+import me.bookk.feature.booking.domain.api.SetBookingSlot
 import me.bookk.feature.booking.domain.api.SetBookingSpecialist
 import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
+import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeViewModel
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesViewModel
 import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistViewModel
 import me.bookk.feature.business.domain.api.business.GetBusinesses
@@ -427,6 +431,39 @@ class ClientAppTest {
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<BookingSpecialistViewModel> {
+            parametersOf(Uuid.random())
+        }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the timetable and free slots the date and time step shows and saves`() =
+        runUnitTest {
+            given()
+            startClientApp()
+
+            whenn()
+            val koin = KoinPlatform.getKoin()
+            val useCases = listOf(
+                koin.getOrNull<GetBookingTimetable>(),
+                koin.getOrNull<GetBookingSlots>(),
+                koin.getOrNull<SetBookingSlot>(),
+            )
+
+            then()
+            useCases.forEach { assertNotNull(it) }
+        }
+
+    @Test
+    fun `provides the date and time view model for the opened business`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<BookingDateTimeViewModel> {
             parametersOf(Uuid.random())
         }
 

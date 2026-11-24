@@ -11,4 +11,8 @@ sealed interface ClientScreen {
     data class Specialist(
         val businessId: Uuid,
     ) : ClientScreen
+
+    data class DateTime(
+        val businessId: Uuid,
+    ) : ClientScreen
 }

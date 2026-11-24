@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -72,6 +73,7 @@ abstract class ViewModel(
                 }
                 onComplete?.invoke(result)
             } catch (e: Throwable) {
+                ensureActive()
                 onError.invoke(e)
             } finally {
                 onTerminate?.invoke()

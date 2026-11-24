@@ -20,6 +20,7 @@ import me.bookk.feature.booking.domain.api.entity.BookingPreparation
 import me.bookk.feature.booking.domain.api.entity.BookingSpecialist
 import me.bookk.feature.booking.presentation.BookingStateFactory
 import me.bookk.feature.booking.presentation.screen.bookingTotal
+import me.bookk.feature.booking.presentation.screen.fullName
 import me.bookk.feature.booking.presentation.screen.units
 import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
@@ -152,13 +153,6 @@ class BookingSpecialistViewModel(
             isSelected = isSelected,
             onClick = weakVMClosure { it.selectSpecialist(specialist) },
         )
-    }
-
-    private fun BookingSpecialist.fullName(): String {
-        return listOf(name, lastName)
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .joinToString(" ")
     }
 
     private fun BookingSpecialist.initials(): String {

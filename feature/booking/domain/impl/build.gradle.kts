@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.feature.business.domain.api)
             implementation(projects.feature.services.domain.api)
             implementation(projects.feature.employees.domain.api)
+            implementation(projects.feature.appointments.domain.api)
         }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)

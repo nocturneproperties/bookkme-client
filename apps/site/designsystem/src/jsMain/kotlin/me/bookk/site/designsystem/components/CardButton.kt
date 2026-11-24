@@ -31,12 +31,14 @@ import com.varabyte.kobweb.compose.ui.modifiers.transition
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
+import com.varabyte.kobweb.silk.style.selectors.disabled
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.ImageResource
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.site.designsystem.resources.WebDesignSystem
 import me.bookk.site.designsystem.theme.resolve
 import me.bookk.site.designsystem.theme.webColors
+import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.ms
@@ -44,6 +46,7 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Button
 
 private const val PRESSABLE_HOVER_OPACITY = 0.85
+private const val DISABLED_CARD_OPACITY = 0.45
 
 private val PressableBase = Modifier
     .fillMaxWidth()
@@ -86,8 +89,13 @@ val SelectableCardButtonStyle = CssStyle {
                 Transition.of("border-color", BUTTON_TRANSITION_MS.ms),
             )
     }
-    cssRule(":hover") { Modifier.opacity(PRESSABLE_HOVER_OPACITY) }
-    cssRule(":active") { Modifier.scale(BUTTON_PRESSED_SCALE) }
+    cssRule(":hover:not(:disabled)") { Modifier.opacity(PRESSABLE_HOVER_OPACITY) }
+    cssRule(":active:not(:disabled)") { Modifier.scale(BUTTON_PRESSED_SCALE) }
+    disabled {
+        Modifier
+            .opacity(DISABLED_CARD_OPACITY)
+            .cursor(Cursor.Default)
+    }
 }
 
 val SelectableCardButtonSelectedStyle = CssStyle.base {
@@ -126,6 +134,7 @@ fun SelectableCardButton(
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Button(
@@ -134,7 +143,10 @@ fun SelectableCardButton(
             .then(if (isSelected) SelectableCardButtonSelectedStyle.toModifier() else Modifier)
             .attrsModifier { attr("aria-pressed", isSelected.toString()) }
             .then(modifier)
-            .toAttrs { onClick { onClick() } },
+            .toAttrs {
+                if (!isEnabled) disabled()
+                onClick { onClick() }
+            },
     ) {
         Column(
             Modifier.fillMaxWidth().gap(0.75.cssRem),

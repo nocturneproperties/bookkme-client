@@ -7,4 +7,15 @@
     <string name="booking_specialist_title">До кого записатися?</string>
     <string name="booking_specialist_continue">Продовжити: %s</string>
     <string name="booking_specialist_empty">Тут немає нікого, хто надає всі обрані послуги. Поверніться й оберіть менше послуг.</string>
+    <string name="booking_date_time_title">Оберіть час.</string>
+    <string name="booking_date_time_pick_date">Обрати іншу дату</string>
+    <string name="booking_date_time_today">Сьогодні</string>
+    <string name="booking_date_time_morning">Ранок</string>
+    <string name="booking_date_time_afternoon">День</string>
+    <string name="booking_date_time_evening">Вечір</string>
+    <string name="booking_date_time_closed">%s не працює цього дня.</string>
+    <string name="booking_date_time_no_slots">Цього дня вільного часу немає.</string>
+    <string name="booking_date_time_unavailable">%s зараз не приймає онлайн-записів.</string>
+    <string name="booking_date_time_pick_time">Оберіть час</string>
+    <string name="booking_date_time_summary">%1$s · %2$s</string>
 </resources>

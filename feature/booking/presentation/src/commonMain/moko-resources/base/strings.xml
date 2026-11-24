@@ -7,4 +7,15 @@
     <string name="booking_specialist_title">Who would you like?</string>
     <string name="booking_specialist_continue">Continue with %s</string>
     <string name="booking_specialist_empty">Nobody here does every service you picked. Go back and pick fewer services.</string>
+    <string name="booking_date_time_title">Choose a time.</string>
+    <string name="booking_date_time_pick_date">Pick another date</string>
+    <string name="booking_date_time_today">Today</string>
+    <string name="booking_date_time_morning">Morning</string>
+    <string name="booking_date_time_afternoon">Afternoon</string>
+    <string name="booking_date_time_evening">Evening</string>
+    <string name="booking_date_time_closed">%s is closed on this day.</string>
+    <string name="booking_date_time_no_slots">No free times on this day.</string>
+    <string name="booking_date_time_unavailable">%s doesn’t take online bookings right now.</string>
+    <string name="booking_date_time_pick_time">Pick a time</string>
+    <string name="booking_date_time_summary">%1$s · %2$s</string>
 </resources>

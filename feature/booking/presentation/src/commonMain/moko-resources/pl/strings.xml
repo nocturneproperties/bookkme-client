@@ -7,4 +7,15 @@
     <string name="booking_specialist_title">Do kogo się zapisać?</string>
     <string name="booking_specialist_continue">Dalej: %s</string>
     <string name="booking_specialist_empty">Nikt tutaj nie wykonuje wszystkich wybranych usług. Wróć i wybierz mniej usług.</string>
+    <string name="booking_date_time_title">Wybierz godzinę.</string>
+    <string name="booking_date_time_pick_date">Wybierz inną datę</string>
+    <string name="booking_date_time_today">Dzisiaj</string>
+    <string name="booking_date_time_morning">Rano</string>
+    <string name="booking_date_time_afternoon">Popołudnie</string>
+    <string name="booking_date_time_evening">Wieczór</string>
+    <string name="booking_date_time_closed">%s: w tym dniu zamknięte.</string>
+    <string name="booking_date_time_no_slots">W tym dniu nie ma wolnych terminów.</string>
+    <string name="booking_date_time_unavailable">%s nie przyjmuje teraz rezerwacji online.</string>
+    <string name="booking_date_time_pick_time">Wybierz godzinę</string>
+    <string name="booking_date_time_summary">%1$s · %2$s</string>
 </resources>

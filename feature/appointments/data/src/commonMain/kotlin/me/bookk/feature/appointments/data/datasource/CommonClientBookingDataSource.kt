@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
+import io.ktor.client.request.setBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.bookk.core.data.DataSource
@@ -18,10 +19,13 @@ import me.bookk.feature.appointments.data.mapping.toRequestEntity
 import me.bookk.feature.appointments.data.mapping.toRequestServiceEntities
 import me.bookk.feature.appointments.data.mapping.toServiceEntities
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
+import me.bookk.feature.appointments.data.remote.model.FreeSlotsDayRemote
+import me.bookk.feature.appointments.data.remote.model.FreeSlotsRequestRemote
 import me.bookk.feature.appointments.data.remote.model.SavedBusinessRemote
 import me.bookk.feature.appointments.data.remote.model.UpcomingBookingsRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.FreeSlotsQuery
 import me.bookk.feature.appointments.domain.api.entity.SavedBusinessEntry
 import me.bookk.feature.appointments.domain.api.entity.UpcomingBookings
 import me.bookk.feature.appointments.domain.datasource.ClientBookingDataSource
@@ -104,6 +108,14 @@ internal class CommonClientBookingDataSource(
         mapExceptions {
             httpClient.post(Api.Appointment.SavedBusinesses.Id(businessId = businessId))
         }
+    }
+
+    override suspend fun getFreeSlots(query: FreeSlotsQuery) = mapExceptions {
+        httpClient.post(Api.Appointment.Slots()) {
+            setBody(FreeSlotsRequestRemote.fromDomain(query))
+        }
+            .body<List<FreeSlotsDayRemote>>()
+            .map { it.toDomain() }
     }
 
     override suspend fun doOnLogOut() {

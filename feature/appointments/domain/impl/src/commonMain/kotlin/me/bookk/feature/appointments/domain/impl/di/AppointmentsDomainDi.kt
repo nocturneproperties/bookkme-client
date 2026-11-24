@@ -13,6 +13,7 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
 import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
 import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetFreeSlots
 import me.bookk.feature.appointments.domain.api.GetOwnAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetSavedBusinesses
 import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
@@ -35,6 +36,7 @@ import me.bookk.feature.appointments.domain.impl.GetAppointmentOptionsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentSettingsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentsForBusinessImpl
 import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentRequestsImpl
+import me.bookk.feature.appointments.domain.impl.GetFreeSlotsImpl
 import me.bookk.feature.appointments.domain.impl.GetOwnAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.GetSavedBusinessesImpl
 import me.bookk.feature.appointments.domain.impl.GetUpcomingBookingsImpl
@@ -77,4 +79,5 @@ fun clientAppointmentsDomainModule() = module {
     factoryOf(::GetUpcomingBookingsImpl) bind GetUpcomingBookings::class
     factoryOf(::GetSavedBusinessesImpl) bind GetSavedBusinesses::class
     factoryOf(::SaveBusinessImpl) bind SaveBusiness::class
+    factoryOf(::GetFreeSlotsImpl) bind GetFreeSlots::class
 }

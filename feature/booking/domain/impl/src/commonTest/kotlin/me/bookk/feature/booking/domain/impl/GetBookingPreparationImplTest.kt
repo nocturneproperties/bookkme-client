@@ -18,6 +18,7 @@ import me.bookk.feature.services.domain.api.service.entity.Service
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class GetBookingPreparationImplTest {
@@ -128,5 +129,25 @@ class GetBookingPreparationImplTest {
             BookingPreparation(listOf(prepared(haircut, 1)), specialistId),
             preparation,
         )
+    }
+
+    @Test
+    fun `carries the slot picked for the business`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val specialistId = Uuid.random()
+        val slotStart = Instant.parse("2026-11-24T12:30:00Z")
+        fixture.dataSource.select(
+            businessId,
+            haircut.id to 1,
+            specialistId = specialistId,
+            slotStart = slotStart,
+        )
+
+        whenn()
+        val preparation = fixture.sut.flow(businessId).first()
+
+        then()
+        assertEquals(slotStart, preparation.slotStart)
     }
 }

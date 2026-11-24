@@ -3,11 +3,16 @@ package me.bookk.feature.booking.presentation
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.test.FakeAppBarState
 import me.bookk.designsystem.test.FakeButtonState
+import me.bookk.designsystem.test.FakeDatePickerState
 import me.bookk.designsystem.test.FakeListState
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
 import me.bookk.designsystem.test.FakeOptionsMultiPickerState
 import me.bookk.feature.booking.presentation.screen.BookingTotal
+import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeDestinations
+import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeState
+import me.bookk.feature.booking.presentation.screen.datetime.BookingDayItem
+import me.bookk.feature.booking.presentation.screen.datetime.SlotGroupItem
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestinations
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesState
 import me.bookk.feature.booking.presentation.screen.services.ServiceGroupItem
@@ -23,6 +28,10 @@ class FakeBookingStateFactory : BookingStateFactory {
 
     override fun createBookingSpecialistState(): BookingSpecialistState {
         return FakeBookingSpecialistState()
+    }
+
+    override fun createBookingDateTimeState(): BookingDateTimeState {
+        return FakeBookingDateTimeState()
     }
 }
 
@@ -45,4 +54,19 @@ class FakeBookingSpecialistState : BookingSpecialistState {
     override val continueButton = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<BookingSpecialistDestinations>()
+}
+
+class FakeBookingDateTimeState : BookingDateTimeState {
+    override val appBar = FakeAppBarState()
+    override var businessName: StringDesc? = null
+    override var specialistName: StringDesc? = null
+    override var monthTitle: StringDesc? = null
+    override val pickDateButton = FakeButtonState()
+    override val datePicker = FakeDatePickerState()
+    override var days: List<BookingDayItem> = emptyList()
+    override val slots = FakeListState<SlotGroupItem>()
+    override var total: BookingTotal? = null
+    override val continueButton = FakeButtonState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<BookingDateTimeDestinations>()
 }

@@ -28,11 +28,17 @@ internal class FakeBookingPreparationDataSource : BookingPreparationDataSource {
         return selections.value[businessId] ?: BookingSelection()
     }
 
-    fun select(businessId: Uuid, vararg services: Pair<Uuid, Int>, specialistId: Uuid? = null) {
+    fun select(
+        businessId: Uuid,
+        vararg services: Pair<Uuid, Int>,
+        specialistId: Uuid? = null,
+        slotStart: Instant? = null,
+    ) {
         val selected = services.map { (id, quantity) ->
             BookingSelection.SelectedService(id, quantity)
         }
-        selections.update { it + (businessId to BookingSelection(selected, specialistId)) }
+        val selection = BookingSelection(selected, specialistId, slotStart)
+        selections.update { it + (businessId to selection) }
     }
 
     override fun observeSelection(businessId: Uuid): Flow<BookingSelection> {
@@ -76,7 +82,12 @@ internal fun Service.toExpectedBookingService(): BookingService {
     return BookingService(id = id, name = name, duration = duration, price = price)
 }
 
-internal fun stubBusiness(id: Uuid, name: String): Business {
+internal fun stubBusiness(
+    id: Uuid,
+    name: String,
+    timeZone: TimeZone = TimeZone.UTC,
+    schedule: WorkingSchedule = WorkingSchedule(),
+): Business {
     return Business(
         id = id,
         name = name,
@@ -84,9 +95,9 @@ internal fun stubBusiness(id: Uuid, name: String): Business {
         address = "",
         location = null,
         currency = Currency("UAH"),
-        timeZone = TimeZone.UTC,
+        timeZone = timeZone,
         socials = emptyMap(),
-        schedule = WorkingSchedule(),
+        schedule = schedule,
         permissions = BusinessPermissions(
             business = ResourcePermission(),
             employees = ResourcePermission(),

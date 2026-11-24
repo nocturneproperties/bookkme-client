@@ -184,6 +184,44 @@ class BackStackTest {
     }
 
     @Test
+    fun `returns to the initial screen and slides back from the current one`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+        fixture.sut.push("specialist")
+        fixture.sut.finishTransition()
+
+        whenn()
+        fixture.sut.popToRoot()
+
+        then()
+        assertEquals("home", fixture.sut.current)
+        assertFalse(fixture.sut.canGoBack)
+        assertEquals(BackStackDirection.BACKWARD, fixture.sut.transition?.direction)
+        assertEquals("specialist", fixture.sut.transition?.from?.route)
+        assertEquals("home", fixture.sut.transition?.to?.route)
+    }
+
+    @Test
+    fun `clears the view models of the screens skipped on the way to the root`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val home = fixture.viewModelOfCurrent()
+        fixture.sut.push("services")
+        val services = fixture.viewModelOfCurrent()
+        fixture.sut.push("specialist")
+        val specialist = fixture.viewModelOfCurrent()
+
+        whenn()
+        fixture.sut.popToRoot()
+
+        then()
+        assertTrue(home.isActive)
+        assertFalse(services.isActive)
+        assertTrue(specialist.isActive)
+    }
+
+    @Test
     fun `does not slide when the initial screen is popped`() = runUnitTest {
         given()
         val fixture = Fixture()

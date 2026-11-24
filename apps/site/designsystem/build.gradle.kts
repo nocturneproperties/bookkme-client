@@ -23,6 +23,7 @@ kotlin {
             api(projects.designsystem)
             api(projects.core.presentation)
             implementation(projects.core)
+            implementation(libs.kotlinx.datetime)
             api(libs.kmm.resources)
             implementation(libs.kobweb.compose.runtime)
             implementation(libs.compose.html.core)

@@ -29,10 +29,11 @@ fun AccentHeading(
     accent: StringDesc,
     level: HeadingLevel,
     modifier: Modifier = Modifier,
+    accentModifier: Modifier = Modifier.active(),
 ) {
     HeadingElement(level, modifier) {
         Text("${text.localized()} ")
-        Span(Modifier.active().toAttrs()) { Text(accent.localized()) }
+        Span(accentModifier.toAttrs()) { Text(accent.localized()) }
     }
 }
 

@@ -138,6 +138,7 @@ internal class FakeAppointmentHistoryState : AppointmentHistoryState {
 }
 
 internal class FakeAppointmentRequestState : AppointmentRequestState {
+    override var title: StringDesc = "".desc()
     override val requests = FakeListState<AppointmentRequestItemState>()
     override val notifications = FakeNotificationState()
 
@@ -150,11 +151,12 @@ internal class FakeAppointmentRequestItemState :
     FakeViewState(),
     AppointmentRequestItemState {
     override var clientName: String = ""
-    override var serviceName: String = ""
-    override var scheduledDate: String = ""
-    override var scheduledTime: String = ""
+    override var clientInitials: String = ""
+    override var schedule: StringDesc = "".desc()
+    override var services: List<StringDesc> = emptyList()
+    override var price: String = ""
     override var note: String = ""
-    override var earnings: String = ""
+    override var onCallClick: (() -> Unit)? = null
     override val approveButton = FakeButtonState()
     override val declineButton = FakeButtonState()
 }

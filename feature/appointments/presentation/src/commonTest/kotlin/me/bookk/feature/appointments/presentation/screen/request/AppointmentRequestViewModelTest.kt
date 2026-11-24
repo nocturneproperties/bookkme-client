@@ -1,15 +1,21 @@
 package me.bookk.feature.appointments.presentation.screen.request
 
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.format
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import library.device.api.DeviceFacade
 import library.money.api.Money
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.presentation.VmArgs
@@ -18,6 +24,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.designsystem.resources.toStringDesc
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
@@ -31,6 +38,7 @@ import me.bookk.feature.appointments.domain.api.GetAssignedAppointmentRequests
 import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
+import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.presentation.FakeAppointmentsStateFactory
 import kotlin.test.AfterTest
@@ -38,6 +46,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
@@ -68,6 +77,9 @@ class AppointmentRequestViewModelTest {
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
             every { invoke() } returns MutableStateFlow<Uuid?>(businessId)
         }
+        val device = mock<DeviceFacade> {
+            every { dial(any()) } returns Unit
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = AppointmentRequestViewModel(
@@ -75,6 +87,7 @@ class AppointmentRequestViewModelTest {
             approveAppointmentRequest = approveAppointmentRequest,
             declineAppointmentRequest = declineAppointmentRequest,
             observeCurrentBusinessId = observeCurrentBusinessId,
+            device = device,
             stateFactory = FakeAppointmentsStateFactory(),
             dateLocalizer = FakeDateLocalizer(),
             vmArgs = VmArgs(errorMapper),
@@ -105,19 +118,24 @@ class AppointmentRequestViewModelTest {
         verifySuspend { fixture.getAssignedAppointmentRequests.refresh(fixture.businessId) }
     }
 
+    private fun service(name: String, minutes: Int): ServiceSnapshot {
+        return ServiceSnapshot(
+            Uuid.random(),
+            name,
+            Uuid.random(),
+            Money(1000L, Money.SupportedCurrency.UAH),
+            minutes.minutes,
+        )
+    }
+
+    private fun client(fullName: String = "Anna Kowalska", phone: String? = "+48501234567") =
+        ClientSnapshot.stub().copy(fullName = fullName, phone = phone)
+
     @Test
-    fun `renders request with services and duration in minutes`() = runUnitTest {
+    fun `renders client name and note`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val service =
-            ServiceSnapshot(
-                Uuid.random(),
-                "Haircut",
-                Uuid.random(),
-                Money(1000L, Money.SupportedCurrency.UAH),
-                45.minutes,
-            )
-        val request = AppointmentRequest.stub().copy(services = listOf(service), note = "Window")
+        val request = AppointmentRequest.stub().copy(client = client(), note = "Window")
 
         whenn()
         val sut = presentedSutWith(fixture, request)
@@ -125,8 +143,152 @@ class AppointmentRequestViewModelTest {
         then()
         val item = sut.uiState.requests.items.single()
         assertEquals(request.id.toString(), item.id)
-        assertEquals("Haircut · 45 min", item.serviceName)
+        assertEquals("Anna Kowalska", item.clientName)
         assertEquals("Window", item.note)
+    }
+
+    @Test
+    fun `renders initials of first and last name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub().copy(client = client("anna maria kowalska"))
+
+        whenn()
+        val sut = presentedSutWith(fixture, request)
+
+        then()
+        assertEquals("AK", sut.uiState.requests.items.single().clientInitials)
+    }
+
+    @Test
+    fun `renders single initial when client has one name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub().copy(client = client(" Anna "))
+
+        whenn()
+        val sut = presentedSutWith(fixture, request)
+
+        then()
+        assertEquals("A", sut.uiState.requests.items.single().clientInitials)
+    }
+
+    @Test
+    fun `renders date with start and end time of all services`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val start = LocalDateTime(2030, 1, 2, 14, 0)
+        val request = AppointmentRequest.stub().copy(
+            date = start.toInstant(TimeZone.currentSystemDefault()),
+            services = listOf(service("Haircut", 45), service("Coloring", 90)),
+        )
+
+        whenn()
+        val sut = presentedSutWith(fixture, request)
+
+        then()
+        assertEquals(
+            AppointmentsRes.strings.appointments_request_schedule.format(
+                "2030-01-02",
+                "14:00",
+                "16:15",
+            ),
+            sut.uiState.requests.items.single().schedule,
+        )
+    }
+
+    @Test
+    fun `renders each service with its duration`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub().copy(
+            services = listOf(service("Haircut", 45), service("Coloring", 90)),
+        )
+
+        whenn()
+        val sut = presentedSutWith(fixture, request)
+
+        then()
+        assertEquals(
+            listOf(
+                AppointmentsRes.strings.appointments_request_service.format(
+                    "Haircut",
+                    45.minutes.toStringDesc(),
+                ),
+                AppointmentsRes.strings.appointments_request_service.format(
+                    "Coloring",
+                    90.minutes.toStringDesc(),
+                ),
+            ),
+            sut.uiState.requests.items.single().services,
+        )
+    }
+
+    @Test
+    fun `renders total price of all services`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub().copy(
+            services = listOf(service("Haircut", 45), service("Coloring", 90)),
+        )
+
+        whenn()
+        val sut = presentedSutWith(fixture, request)
+
+        then()
+        assertEquals(request.total, sut.uiState.requests.items.single().price)
+    }
+
+    @Test
+    fun `dials client phone when call is clicked`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub().copy(client = client(phone = "+48501234567"))
+        val sut = presentedSutWith(fixture, request)
+
+        whenn()
+        sut.uiState.requests.items.single().onCallClick?.invoke()
+
+        then()
+        verify { fixture.device.dial("+48501234567") }
+    }
+
+    @Test
+    fun `hides call action when client has no phone`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub().copy(client = client(phone = null))
+
+        whenn()
+        val sut = presentedSutWith(fixture, request)
+
+        then()
+        assertNull(sut.uiState.requests.items.single().onCallClick)
+    }
+
+    @Test
+    fun `hides call action when client phone is blank`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val request = AppointmentRequest.stub().copy(client = client(phone = " "))
+
+        whenn()
+        val sut = presentedSutWith(fixture, request)
+
+        then()
+        assertNull(sut.uiState.requests.items.single().onCallClick)
+    }
+
+    @Test
+    fun `shows requests title`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = presentedSutWith(fixture, AppointmentRequest.stub(), AppointmentRequest.stub())
+
+        then()
+        assertEquals(AppointmentsRes.strings.appointments_requests.desc(), sut.uiState.title)
     }
 
     @Test

@@ -16,6 +16,7 @@ class IOSAppointmentRequestState: @MainActor AppointmentRequestState, NativeStat
     typealias SwiftType = IOSAppointmentRequestState
     typealias KotlinType = AppointmentRequestState
 
+    var title: any StringDesc = RawStringDesc(string: "")
     let requests: any ListState
     let notifications: any PresentationNotificationState
 

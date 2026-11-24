@@ -78,6 +78,8 @@
 
     <string name="appointments_requests_count">Запити (%s)</string>
     <string name="appointments_request_empty">Немає запитів, що очікують</string>
+    <string name="appointments_request_schedule">%1$s · %2$s–%3$s</string>
+    <string name="appointments_request_service">%1$s · %2$s</string>
     <string name="appointments_request_decline">Ви впевнені, що хочете відхилити цей запис?</string>
     <string name="appointments_request_overlap_error">Накладання записів. Схоже, на цей день уже є інший запис.</string>
     <string name="appointments_request_in_past">Час запису вже минув. Цей запит незабаром буде скасовано автоматично, або ви можете відхилити його вручну</string>

@@ -78,6 +78,8 @@
 
     <string name="appointments_requests_count">Запросы (%s)</string>
     <string name="appointments_request_empty">Нет ожидающих запросов</string>
+    <string name="appointments_request_schedule">%1$s · %2$s–%3$s</string>
+    <string name="appointments_request_service">%1$s · %2$s</string>
     <string name="appointments_request_decline">Вы уверены, что хотите отклонить эту запись?</string>
     <string name="appointments_request_overlap_error">Пересечение записей. Похоже, на этот день уже есть другая запись.</string>
     <string name="appointments_request_in_past">Время записи уже прошло. Этот запрос скоро будет отменён автоматически, или вы можете отклонить его вручную</string>

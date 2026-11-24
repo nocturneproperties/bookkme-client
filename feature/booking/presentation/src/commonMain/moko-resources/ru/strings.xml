@@ -38,4 +38,10 @@
     <string name="booking_review_specialist_unavailable_title">К этому специалисту сейчас нельзя записаться</string>
     <string name="booking_review_specialist_unavailable_message">Вернитесь и выберите кого-то другого.</string>
     <string name="booking_review_business_message_title">От %s</string>
+    <string name="booking_sent_title">Запрос отправлен.</string>
+    <string name="booking_sent_message">Как только запрос подтвердят, вы получите сообщение в этом чате.</string>
+    <string name="booking_sent_status_waiting">Ждёт подтверждения</string>
+    <string name="booking_sent_status_confirmed">Подтверждено</string>
+    <string name="booking_sent_book_again">Записаться на что-то ещё</string>
+    <string name="booking_sent_done">Готово</string>
 </resources>

@@ -13,6 +13,8 @@ internal fun rememberBookingNavigation(stack: BackStack<ClientScreen>) = remembe
         toSpecialist = { stack.push(ClientScreen.Specialist(it)) },
         toDateTime = { stack.push(ClientScreen.DateTime(it)) },
         toReview = { stack.push(ClientScreen.Review(it)) },
-        toSent = { stack.popToRoot() },
+        toSent = { stack.replaceAboveRoot(ClientScreen.Sent(it)) },
+        toNewBooking = { stack.replaceAboveRoot(ClientScreen.Services(it)) },
+        toBookingDetails = {},
     )
 }

@@ -204,6 +204,7 @@ services (and the employees') use cases and keep what the client approved per bu
 | `SetBookingSlot` | local only: saves the picked time's start in the business's in-memory booking preparation | [Set booking slot](booking/set-booking-slot.md) |
 | `GetBusinessMessage` | via `GetBookingInfo`: `flow` the business's cached note to clients (trimmed, `null` when blank or not cached), `refresh` `GET /api/appointments/booking-info/{businessId}` saved to Room (`Error.BookingUnavailable` on 404) | [Get business message](booking/get-business-message.md) |
 | `SendBookingRequest` | via `CreateQuote` (`POST /api/business/{businessId}/service/quote`, each service once per unit, checked against the shown prices and durations before use) and `CreateAppointmentRequest` (`POST /api/appointments/request`) for the services, specialist and time `GetBookingPreparation` shows (`ServicesChanged` when a picked service is no longer offered); errors folded into `TimeUnavailable`, `PendingRequestsLimitReached`, `PricesChanged`, `ServicesChanged`, `SpecialistUnavailable`, the last but two refreshing the business's services through `GetBusinessServices.refresh` (`GET /api/business/{businessId}/service`, saved to Room) first (`SelectionIncomplete` when anything is missing); clears the business's in-memory booking preparation on success, then refreshes the client's upcoming bookings through `GetUpcomingBookings.refresh` (`GET /api/appointments/upcoming`, saved to Room, failure dropped) so Home shows the pending request | [Send booking request](booking/send-booking-request.md) |
+| `GetSentBooking` | local only: finds the sent request (business, specialist, start) among `GetUpcomingBookings.flow` (Room `appointment`/`appointment_request`), its time, services and status; `null` until cached | [Get sent booking](booking/get-sent-booking.md) |
 
 ## Use cases composed of other use cases
 
@@ -243,6 +244,7 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Get booking slots](booking/get-booking-slots.md) | `GetFreeSlots` (appointments) (cross-feature wrapper) |
 | [Send booking request](booking/send-booking-request.md) | `GetBookingPreparation`, `CreateQuote` and `GetBusinessServices.refresh` (services), `CreateAppointmentRequest` and `GetUpcomingBookings.refresh` (appointments) (cross-feature wrapper) |
 | [Get business message](booking/get-business-message.md) | `GetBookingInfo` (appointments) (cross-feature wrapper) |
+| [Get sent booking](booking/get-sent-booking.md) | `GetUpcomingBookings.flow` (appointments) (cross-feature wrapper) |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
 | [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut` |
 | [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |

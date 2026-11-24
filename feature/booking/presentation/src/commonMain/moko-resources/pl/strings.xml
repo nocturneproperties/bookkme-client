@@ -38,4 +38,10 @@
     <string name="booking_review_specialist_unavailable_title">Tego specjalisty nie można teraz zarezerwować</string>
     <string name="booking_review_specialist_unavailable_message">Wróć i wybierz kogoś innego.</string>
     <string name="booking_review_business_message_title">Od %s</string>
+    <string name="booking_sent_title">Prośba wysłana.</string>
+    <string name="booking_sent_message">Gdy tylko prośba zostanie potwierdzona, dostaniesz wiadomość w tym czacie.</string>
+    <string name="booking_sent_status_waiting">Czeka na potwierdzenie</string>
+    <string name="booking_sent_status_confirmed">Potwierdzona</string>
+    <string name="booking_sent_book_again">Zarezerwuj coś innego</string>
+    <string name="booking_sent_done">Gotowe</string>
 </resources>

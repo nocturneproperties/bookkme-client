@@ -1,9 +1,10 @@
 package me.bookk.feature.booking.domain.api
 
+import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import kotlin.uuid.Uuid
 
 interface SendBookingRequest {
-    suspend operator fun invoke(businessId: Uuid, note: String)
+    suspend operator fun invoke(businessId: Uuid, note: String): SentBookingRequest
 
     sealed interface Error {
         class SelectionIncomplete :

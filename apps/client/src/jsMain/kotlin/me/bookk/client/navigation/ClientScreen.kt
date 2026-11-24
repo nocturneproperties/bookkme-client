@@ -1,5 +1,6 @@
 package me.bookk.client.navigation
 
+import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import kotlin.uuid.Uuid
 
 sealed interface ClientScreen {
@@ -18,5 +19,9 @@ sealed interface ClientScreen {
 
     data class Review(
         val businessId: Uuid,
+    ) : ClientScreen
+
+    data class Sent(
+        val request: SentBookingRequest,
     ) : ClientScreen
 }

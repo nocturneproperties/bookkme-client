@@ -222,6 +222,90 @@ class BackStackTest {
     }
 
     @Test
+    fun `replaces every screen above the initial one`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+        fixture.sut.push("review")
+        fixture.sut.finishTransition()
+
+        whenn()
+        fixture.sut.replaceAboveRoot("sent")
+        fixture.sut.pop()
+
+        then()
+        assertEquals("home", fixture.sut.current)
+        assertFalse(fixture.sut.canGoBack)
+    }
+
+    @Test
+    fun `slides forward from the current screen to the one replacing it`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("services")
+        fixture.sut.push("review")
+        fixture.sut.finishTransition()
+
+        whenn()
+        fixture.sut.replaceAboveRoot("sent")
+
+        then()
+        assertEquals(BackStackDirection.FORWARD, fixture.sut.transition?.direction)
+        assertEquals("review", fixture.sut.transition?.from?.route)
+        assertEquals("sent", fixture.sut.transition?.to?.route)
+    }
+
+    @Test
+    fun `clears the view models of the screens skipped when replacing above the root`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val home = fixture.viewModelOfCurrent()
+            fixture.sut.push("services")
+            val services = fixture.viewModelOfCurrent()
+            fixture.sut.push("review")
+            val review = fixture.viewModelOfCurrent()
+
+            whenn()
+            fixture.sut.replaceAboveRoot("sent")
+
+            then()
+            assertTrue(home.isActive)
+            assertFalse(services.isActive)
+            assertTrue(review.isActive)
+        }
+
+    @Test
+    fun `clears the view models of a replaced screen once its transition finishes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("review")
+        val review = fixture.viewModelOfCurrent()
+        fixture.sut.replaceAboveRoot("sent")
+
+        whenn()
+        fixture.sut.finishTransition()
+
+        then()
+        assertFalse(review.isActive)
+    }
+
+    @Test
+    fun `keeps the view models of the initial screen when it is replaced above`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val home = fixture.viewModelOfCurrent()
+        fixture.sut.replaceAboveRoot("sent")
+
+        whenn()
+        fixture.sut.finishTransition()
+
+        then()
+        assertTrue(home.isActive)
+        assertEquals("sent", fixture.sut.current)
+    }
+
+    @Test
     fun `does not slide when the initial screen is popped`() = runUnitTest {
         given()
         val fixture = Fixture()

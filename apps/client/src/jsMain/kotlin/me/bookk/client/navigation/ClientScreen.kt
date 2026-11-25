@@ -24,4 +24,12 @@ sealed interface ClientScreen {
     data class Sent(
         val request: SentBookingRequest,
     ) : ClientScreen
+
+    data class BookingRequestDetails(
+        val requestId: Uuid,
+    ) : ClientScreen
+
+    data class BookingAppointmentDetails(
+        val appointmentId: Uuid,
+    ) : ClientScreen
 }

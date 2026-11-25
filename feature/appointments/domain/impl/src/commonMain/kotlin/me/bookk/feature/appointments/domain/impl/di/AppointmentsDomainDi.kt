@@ -15,6 +15,8 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
 import me.bookk.feature.appointments.domain.api.GetAssignedAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetBookingInfo
 import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentRequests
+import me.bookk.feature.appointments.domain.api.GetClientAppointment
+import me.bookk.feature.appointments.domain.api.GetClientAppointmentRequest
 import me.bookk.feature.appointments.domain.api.GetFreeSlots
 import me.bookk.feature.appointments.domain.api.GetSavedBusinesses
 import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
@@ -25,6 +27,7 @@ import me.bookk.feature.appointments.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.appointments.domain.api.SaveBusiness
 import me.bookk.feature.appointments.domain.api.UpdateAppointment
 import me.bookk.feature.appointments.domain.api.UpdateAppointmentSettings
+import me.bookk.feature.appointments.domain.api.WithdrawAppointmentRequest
 import me.bookk.feature.appointments.domain.impl.ApproveAppointmentRequestImpl
 import me.bookk.feature.appointments.domain.impl.CancelAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.CompleteAppointmentImpl
@@ -39,6 +42,8 @@ import me.bookk.feature.appointments.domain.impl.GetAppointmentsForBusinessImpl
 import me.bookk.feature.appointments.domain.impl.GetAssignedAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.GetBookingInfoImpl
 import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentRequestsImpl
+import me.bookk.feature.appointments.domain.impl.GetClientAppointmentImpl
+import me.bookk.feature.appointments.domain.impl.GetClientAppointmentRequestImpl
 import me.bookk.feature.appointments.domain.impl.GetFreeSlotsImpl
 import me.bookk.feature.appointments.domain.impl.GetSavedBusinessesImpl
 import me.bookk.feature.appointments.domain.impl.GetUpcomingBookingsImpl
@@ -49,6 +54,7 @@ import me.bookk.feature.appointments.domain.impl.ObserveCurrentBusinessImpl
 import me.bookk.feature.appointments.domain.impl.SaveBusinessImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.UpdateAppointmentSettingsImpl
+import me.bookk.feature.appointments.domain.impl.WithdrawAppointmentRequestImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.binds
@@ -84,4 +90,7 @@ fun clientAppointmentsDomainModule() = module {
     factoryOf(::GetFreeSlotsImpl) bind GetFreeSlots::class
     factoryOf(::CreateAppointmentRequestImpl) bind CreateAppointmentRequest::class
     factoryOf(::GetBookingInfoImpl) bind GetBookingInfo::class
+    factoryOf(::WithdrawAppointmentRequestImpl) bind WithdrawAppointmentRequest::class
+    factoryOf(::GetClientAppointmentRequestImpl) bind GetClientAppointmentRequest::class
+    factoryOf(::GetClientAppointmentImpl) bind GetClientAppointment::class
 }

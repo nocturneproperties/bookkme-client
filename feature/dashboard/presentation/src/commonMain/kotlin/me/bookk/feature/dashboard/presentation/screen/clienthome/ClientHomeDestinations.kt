@@ -7,8 +7,11 @@ sealed class ClientHomeDestinations : NavigationDestination() {
     data object Settings : ClientHomeDestinations()
     data object Bookings : ClientHomeDestinations()
     data object Businesses : ClientHomeDestinations()
-    data class BookingDetails(
-        val bookingId: Uuid,
+    data class RequestDetails(
+        val requestId: Uuid,
+    ) : ClientHomeDestinations()
+    data class AppointmentDetails(
+        val appointmentId: Uuid,
     ) : ClientHomeDestinations()
     data class Services(
         val businessId: Uuid,

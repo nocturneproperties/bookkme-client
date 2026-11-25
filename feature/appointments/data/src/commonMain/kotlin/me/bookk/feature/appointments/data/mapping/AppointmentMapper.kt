@@ -171,6 +171,7 @@ internal fun Appointment.toEntity(): AppointmentEntity {
         adjustedPriceCurrency = priceAdjustment?.price?.currencyType?.code,
         adjustedPriceValue = priceAdjustment?.price?.value,
         priceAdjustmentReason = priceAdjustment?.reason,
+        clientNote = clientNote,
     )
 }
 
@@ -262,6 +263,7 @@ internal fun AppointmentLocal.toDomain(): Appointment {
         cancellationReason = entity.cancellationReason,
         completedBy = entity.completedBy?.let { AppointmentCompletedBy.valueOf(it) },
         priceAdjustment = priceAdjustment(),
+        clientNote = entity.clientNote,
     )
 }
 

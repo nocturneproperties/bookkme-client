@@ -26,6 +26,7 @@ import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSource
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -106,11 +107,21 @@ internal class CommonAppointmentRequestDataSource(
         requestId: Uuid,
         businessId: Uuid,
         reason: String,
-    ) = mapExceptions {
+    ) = mapExceptions<Unit> {
         httpClient.post(Api.Appointment.RequestDecline(id = requestId)) {
             setBody(AppointmentCancellationRemote(id = requestId, reason = reason))
         }
-        Unit
+    }
+
+    override suspend fun withdrawAppointmentRequest(requestId: Uuid) = mapExceptions<Unit> {
+        httpClient.post(Api.Appointment.RequestWithdraw(id = requestId))
+    }
+
+    override suspend fun saveAppointmentRequestStatusInDb(
+        requestId: Uuid,
+        status: AppointmentRequestStatus,
+    ) {
+        mapExceptions { appointmentRequestDao.updateStatus(requestId, status.name) }
     }
 
     override suspend fun getLastSyncedAt(businessId: Uuid): Instant? {

@@ -42,6 +42,18 @@ external interface TelegramBottomButtonParams {
     var isVisible: Boolean?
 }
 
+enum class TelegramButtonStyle {
+    PRIMARY,
+    DESTRUCTIVE,
+}
+
+internal data class BottomButtonTokens(
+    val active: ColorToken,
+    val onActive: ColorToken,
+    val inactive: ColorToken,
+    val onInactive: ColorToken,
+)
+
 internal class BottomButtonColors(
     val active: String,
     val onActive: String,
@@ -59,23 +71,31 @@ internal data class BottomButtonSpec(
 )
 
 @Composable
-fun TelegramMainButton(webApp: TelegramWebApp, state: ButtonState) {
-    BottomButton(webApp.mainButton, state)
+fun TelegramMainButton(
+    webApp: TelegramWebApp,
+    state: ButtonState,
+    style: TelegramButtonStyle = TelegramButtonStyle.PRIMARY,
+) {
+    BottomButton(webApp.mainButton, state, style)
 }
 
 @Composable
 fun TelegramSecondaryButton(webApp: TelegramWebApp, state: ButtonState) {
     if (webApp.supports(TelegramFeature.SECONDARY_BUTTON)) {
-        BottomButton(webApp.secondaryButton, state)
+        BottomButton(webApp.secondaryButton, state, TelegramButtonStyle.PRIMARY)
     } else {
         TextButton(state)
     }
 }
 
 @Composable
-private fun BottomButton(button: TelegramBottomButton, state: ButtonState) {
+private fun BottomButton(
+    button: TelegramBottomButton,
+    state: ButtonState,
+    style: TelegramButtonStyle,
+) {
     if (!LocalIsCurrentScreen.current) return
-    val spec = state.bottomButtonSpec(state.text.localized(), bottomButtonColors())
+    val spec = state.bottomButtonSpec(state.text.localized(), style.tokens().themed())
     val onClick by rememberUpdatedState(state.onClick)
     DisposableEffect(button) {
         val onPressed = { onClick?.invoke() ?: Unit }
@@ -90,13 +110,31 @@ private fun BottomButton(button: TelegramBottomButton, state: ButtonState) {
     }
 }
 
+internal fun TelegramButtonStyle.tokens(): BottomButtonTokens {
+    return when (this) {
+        TelegramButtonStyle.PRIMARY -> BottomButtonTokens(
+            active = ColorToken.ButtonActive,
+            onActive = ColorToken.OnAction,
+            inactive = ColorToken.ButtonInactive,
+            onInactive = ColorToken.ActionTextDisabled,
+        )
+
+        TelegramButtonStyle.DESTRUCTIVE -> BottomButtonTokens(
+            active = ColorToken.Elevated,
+            onActive = ColorToken.Error,
+            inactive = ColorToken.ButtonInactive,
+            onInactive = ColorToken.ActionTextDisabled,
+        )
+    }
+}
+
 @Composable
-private fun bottomButtonColors(): BottomButtonColors {
+private fun BottomButtonTokens.themed(): BottomButtonColors {
     return BottomButtonColors(
-        active = ColorToken.ButtonActive.themed.toTelegramColor(),
-        onActive = ColorToken.OnAction.themed.toTelegramColor(),
-        inactive = ColorToken.ButtonInactive.themed.toTelegramColor(),
-        onInactive = ColorToken.ActionTextDisabled.themed.toTelegramColor(),
+        active = active.themed.toTelegramColor(),
+        onActive = onActive.themed.toTelegramColor(),
+        inactive = inactive.themed.toTelegramColor(),
+        onInactive = onInactive.themed.toTelegramColor(),
     )
 }
 

@@ -8,6 +8,8 @@ import me.bookk.client.navigation.rememberClientHomeNavigation
 import me.bookk.core.presentation.navigation.rememberBackStack
 import me.bookk.designsystem.components.BackStackHost
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeDestination
+import me.bookk.feature.booking.presentation.screen.details.BookingAppointmentDetailsDestination
+import me.bookk.feature.booking.presentation.screen.details.BookingRequestDetailsDestination
 import me.bookk.feature.booking.presentation.screen.review.BookingReviewDestination
 import me.bookk.feature.booking.presentation.screen.sent.BookingSentDestination
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestination
@@ -43,6 +45,18 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
 
             is ClientScreen.Sent -> {
                 BookingSentDestination(webApp, screen.request, bookingNavigation)
+            }
+
+            is ClientScreen.BookingRequestDetails -> {
+                BookingRequestDetailsDestination(webApp, screen.requestId, bookingNavigation)
+            }
+
+            is ClientScreen.BookingAppointmentDetails -> {
+                BookingAppointmentDetailsDestination(
+                    webApp,
+                    screen.appointmentId,
+                    bookingNavigation,
+                )
             }
         }
     }

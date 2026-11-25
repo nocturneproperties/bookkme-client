@@ -44,6 +44,7 @@ erDiagram
         string adjustedPriceCurrency "nullable; set iff a price adjustment exists"
         long adjustedPriceValue "nullable"
         string priceAdjustmentReason "nullable"
+        string clientNote "default ''; the client's note from the request"
     }
 
     APPOINTMENT_SERVICE_SNAPSHOT {
@@ -142,6 +143,10 @@ erDiagram
   `appointment_service_snapshot` row per service id with a `count` (its PK is `(appointmentId, id)`), and
   `AppointmentLocal.toDomain()` expands it again. Without `count`, a service booked twice would come back once,
   and a reschedule built from the cached row would drop the extra booking on the server.
+- **Client's note.** `clientNote` holds the note the client wrote on the request the appointment came from (wire
+  field 13). The client-facing `GET /api/appointments/upcoming` blanks the business's own `note` and sends only this
+  one, which the client web app shows as "Your note" on Booking details. Added by `AutoMigration(27, 28)` in
+  `BusinessDatabase` and `AutoMigration(6, 7)` in `ClientDatabase` (an additive column, default `''`).
 - **Price adjustment** is spread over the nullable `adjusted*`/`priceAdjustmentReason` columns plus
   `appointment_adjustment_service` (ordered by `position`). `adjustedPriceValue`/`adjustedPriceCurrency` being
   non-null is what marks an adjustment as present.
@@ -157,7 +162,10 @@ erDiagram
   the table.
   [Approve request](../operations/appointments/approve-appointment-request.md) and
   [Decline request](../operations/appointments/decline-appointment-request.md) also delete the handled
-  `appointment_request` row (`deleteByIds`), so request `flow()` subscribers drop it at once.
+  `appointment_request` row (`deleteByIds`), so request `flow()` subscribers drop it at once. In the client web app,
+  [Withdraw appointment request](../operations/appointments/withdraw-appointment-request.md) instead sets the
+  client's withdrawn request to `CANCELLED` (`updateStatus`), so its details screen shows it closed; upcoming
+  refreshes only delete stale `PENDING` rows, so it stays cached until logout.
   [Get appointment](../operations/appointments/get-appointment.md) `invoke(id)` reads only from the
   database (`getById` is non-nullable). Its `refresh(id)` fetches one appointment and saves the returned
   aggregate with the same `upsertWithServices` path. Failed reads do not overwrite the cache; no per-day

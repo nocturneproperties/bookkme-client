@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -25,6 +26,10 @@ interface AppointmentRequestDataSource {
     suspend fun saveAppointmentRequestsInDB(requests: List<AppointmentRequest>)
 
     suspend fun declineAppointmentRequest(requestId: Uuid, businessId: Uuid, reason: String)
+
+    suspend fun withdrawAppointmentRequest(requestId: Uuid)
+
+    suspend fun saveAppointmentRequestStatusInDb(requestId: Uuid, status: AppointmentRequestStatus)
 
     suspend fun getLastSyncedAt(businessId: Uuid): Instant?
 

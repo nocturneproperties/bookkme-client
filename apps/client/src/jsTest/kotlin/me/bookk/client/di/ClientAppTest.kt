@@ -35,8 +35,10 @@ import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapViewModel
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
+import me.bookk.feature.booking.domain.api.GetBookingAppointmentDetails
 import me.bookk.feature.booking.domain.api.GetBookingCatalog
 import me.bookk.feature.booking.domain.api.GetBookingPreparation
+import me.bookk.feature.booking.domain.api.GetBookingRequestDetails
 import me.bookk.feature.booking.domain.api.GetBookingSlots
 import me.bookk.feature.booking.domain.api.GetBookingSpecialists
 import me.bookk.feature.booking.domain.api.GetBookingTimetable
@@ -46,9 +48,12 @@ import me.bookk.feature.booking.domain.api.SendBookingRequest
 import me.bookk.feature.booking.domain.api.SetBookingServices
 import me.bookk.feature.booking.domain.api.SetBookingSlot
 import me.bookk.feature.booking.domain.api.SetBookingSpecialist
+import me.bookk.feature.booking.domain.api.WithdrawBookingRequest
 import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeViewModel
+import me.bookk.feature.booking.presentation.screen.details.BookingAppointmentDetailsViewModel
+import me.bookk.feature.booking.presentation.screen.details.BookingRequestDetailsViewModel
 import me.bookk.feature.booking.presentation.screen.review.BookingReviewViewModel
 import me.bookk.feature.booking.presentation.screen.sent.BookingSentViewModel
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesViewModel
@@ -142,12 +147,14 @@ class ClientAppTest {
         override fun appointmentDao(): AppointmentDao {
             return mock {
                 every { observeScheduled() } returns emptyFlow()
+                every { observeById(any()) } returns emptyFlow()
             }
         }
 
         override fun appointmentRequestDao(): AppointmentRequestDao {
             return mock {
                 every { observePending() } returns emptyFlow()
+                every { observeById(any()) } returns emptyFlow()
             }
         }
 
@@ -539,6 +546,54 @@ class ClientAppTest {
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<BookingSentViewModel> {
             parametersOf(request)
+        }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the request, the appointment and the withdrawal the details screens use`() =
+        runUnitTest {
+            given()
+            startClientApp()
+
+            whenn()
+            val koin = KoinPlatform.getKoin()
+            val useCases = listOf(
+                koin.getOrNull<GetBookingRequestDetails>(),
+                koin.getOrNull<GetBookingAppointmentDetails>(),
+                koin.getOrNull<WithdrawBookingRequest>(),
+            )
+
+            then()
+            useCases.forEach { assertNotNull(it) }
+        }
+
+    @Test
+    fun `provides the request details view model for the opened request`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<BookingRequestDetailsViewModel> {
+            parametersOf(Uuid.random())
+        }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the appointment details view model for the opened appointment`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<BookingAppointmentDetailsViewModel> {
+            parametersOf(Uuid.random())
         }
 
         then()

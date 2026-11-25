@@ -169,7 +169,7 @@ class BookingSentViewModelTest {
     }
 
     @Test
-    fun `opens the booking details when the request is tapped`() = runUnitTest {
+    fun `opens the request details when the waiting request is tapped`() = runUnitTest {
         given()
         val fixture = Fixture()
         val state = fixture.sut().uiState
@@ -179,7 +179,26 @@ class BookingSentViewModelTest {
 
         then()
         assertEquals(
-            listOf<BookingSentDestinations>(BookingSentDestinations.BookingDetails(sentBooking.id)),
+            listOf<BookingSentDestinations>(BookingSentDestinations.RequestDetails(sentBooking.id)),
+            state.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `opens the appointment details when the confirmed booking is tapped`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.booking.value = sentBooking.copy(status = SentBooking.Status.CONFIRMED)
+        val state = fixture.sut().uiState
+
+        whenn()
+        state.booking?.onClick?.invoke()
+
+        then()
+        assertEquals(
+            listOf<BookingSentDestinations>(
+                BookingSentDestinations.AppointmentDetails(sentBooking.id),
+            ),
             state.navigation.navigationDestination,
         )
     }

@@ -53,6 +53,10 @@ abstract class AppointmentDao {
     ): List<Uuid>
 
     @Transaction
+    @Query("SELECT * FROM appointment WHERE id = :id")
+    abstract fun observeById(id: Uuid): Flow<AppointmentLocal?>
+
+    @Transaction
     @Query("SELECT * FROM appointment WHERE status = 'SCHEDULED' ORDER BY date")
     abstract fun observeScheduled(): Flow<List<AppointmentLocal>>
 

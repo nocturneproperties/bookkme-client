@@ -45,6 +45,7 @@ class AppointmentRemoteContractTest {
                 "cancellationReason" to 10,
                 "completedBy" to 11,
                 "priceAdjustment" to 12,
+                "clientNote" to 13,
             ),
             fields,
         )

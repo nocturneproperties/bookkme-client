@@ -22,6 +22,7 @@ data class AppointmentRemote(
     @ProtoNumber(10) val cancellationReason: String,
     @ProtoNumber(11) val completedBy: AppointmentCompletedByRemote? = null,
     @ProtoNumber(12) val priceAdjustment: PriceAdjustmentRemote? = null,
+    @ProtoNumber(13) val clientNote: String = "",
 ) {
     fun toDomain(): Appointment {
         return Appointment(
@@ -37,6 +38,7 @@ data class AppointmentRemote(
             cancellationReason = cancellationReason,
             completedBy = completedBy?.toDomain(),
             priceAdjustment = priceAdjustment?.toDomain(),
+            clientNote = clientNote,
         )
     }
 }

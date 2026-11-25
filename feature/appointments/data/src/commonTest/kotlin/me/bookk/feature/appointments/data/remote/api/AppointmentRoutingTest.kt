@@ -62,4 +62,17 @@ class AppointmentRoutingTest {
         then()
         assertEquals("/api/appointments/request/$businessId/assigned", url)
     }
+
+    @Test
+    fun `withdrawing a request points to the withdraw endpoint of the request`() = runUnitTest {
+        given()
+        val requestId = Uuid.parse("6f1c2d3e-0000-4000-8000-000000000003")
+        val resource = Api.Appointment.RequestWithdraw(id = requestId)
+
+        whenn()
+        val url = href(ResourcesFormat(), resource)
+
+        then()
+        assertEquals("/api/appointments/request/$requestId/withdraw", url)
+    }
 }

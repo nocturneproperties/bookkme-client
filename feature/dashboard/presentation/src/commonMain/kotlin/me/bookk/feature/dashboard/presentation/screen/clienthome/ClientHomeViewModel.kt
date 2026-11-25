@@ -119,10 +119,20 @@ class ClientHomeViewModel(
             timeAndSpecialist = timeAndSpecialist(booking),
             status = booking.status.label(),
             statusColor = booking.status.color(),
-            onClick = weakVMClosure {
-                it.uiState.navigation.push(ClientHomeDestinations.BookingDetails(booking.id))
-            },
+            onClick = weakVMClosure { it.uiState.navigation.push(booking.detailsDestination()) },
         )
+    }
+
+    private fun UpcomingBooking.detailsDestination(): ClientHomeDestinations {
+        return when (status) {
+            UpcomingBooking.Status.WAITING_FOR_CONFIRMATION -> {
+                ClientHomeDestinations.RequestDetails(id)
+            }
+
+            UpcomingBooking.Status.CONFIRMED -> {
+                ClientHomeDestinations.AppointmentDetails(id)
+            }
+        }
     }
 
     private fun timeAndSpecialist(booking: UpcomingBooking): StringDesc {

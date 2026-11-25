@@ -34,16 +34,23 @@ fun StateSwitch(state: BooleanState, modifier: Modifier = Modifier) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             TextBlock(state.text, BodyMediumTextStyle.toModifier())
             Spacer()
-            val track = if (state.isChecked) ColorToken.Success else ColorToken.InactiveToggle
-            Switch(
-                checked = state.isChecked,
-                onCheckedChange = { state.onCheckedChange?.invoke(it) },
-                modifier = Modifier.setVariable(SwitchVars.TrackBackgroundColor, track.themed),
-                enabled = state.isEnabled,
-            )
+            StateToggle(state)
         }
         SupportingText(state.supportingTextRes, state.validationState)
     }
+}
+
+@Composable
+internal fun StateToggle(state: BooleanState) {
+    val track = if (state.isChecked) ColorToken.Success else ColorToken.InactiveToggle
+    Switch(
+        checked = state.isChecked,
+        onCheckedChange = { state.onCheckedChange?.invoke(it) },
+        modifier = Modifier
+            .flexShrink(0)
+            .setVariable(SwitchVars.TrackBackgroundColor, track.themed),
+        enabled = state.isEnabled,
+    )
 }
 
 val CheckBoxStyle = CssStyle {

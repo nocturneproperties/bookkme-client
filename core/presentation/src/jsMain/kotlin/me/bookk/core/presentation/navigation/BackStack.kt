@@ -63,6 +63,20 @@ class BackStack<R : Any>(
         transition = BackStackTransition(from, currentEntry, BackStackDirection.FORWARD)
     }
 
+    fun returnTo(route: R) {
+        val target = entries.dropLast(1).lastOrNull { it.route == route }
+        if (target == null) {
+            replaceAboveRoot(route)
+            return
+        }
+        finishTransition()
+        val leaving = entries.removeAt(entries.lastIndex)
+        while (currentEntry != target) {
+            entries.removeAt(entries.lastIndex).viewModelStore.clear()
+        }
+        transition = BackStackTransition(leaving, currentEntry, BackStackDirection.BACKWARD)
+    }
+
     fun finishTransition() {
         val finished = transition ?: return
         transition = null

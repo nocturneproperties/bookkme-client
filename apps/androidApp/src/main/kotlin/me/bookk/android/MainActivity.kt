@@ -24,6 +24,7 @@ import me.bookk.android.navigation.rememberAuthNavigation
 import me.bookk.android.navigation.rememberClientsNavigation
 import me.bookk.android.navigation.rememberEmployeesNavigation
 import me.bookk.android.navigation.rememberServicesNavigation
+import me.bookk.android.navigation.selectClientPicker
 import me.bookk.core.android.AndroidActivityAware
 import me.bookk.core.presentation.BusinessAccessSuspendedHandler
 import me.bookk.core.presentation.LocalBusinessAccessSuspendedHandler
@@ -160,7 +161,7 @@ private fun NavigationRoot(
                 servicesGraph(navigation = servicesNavigation)
                 appointmentsGraph(navigation = appointmentsNavigation)
                 dashboardGraph(
-                    homeTab = { AppointmentsTab() },
+                    homeTab = { AppointmentsTab(clientPicker = selectClientPicker) },
                     businessTab = {
                         BusinessTab(
                             showEmployees = {

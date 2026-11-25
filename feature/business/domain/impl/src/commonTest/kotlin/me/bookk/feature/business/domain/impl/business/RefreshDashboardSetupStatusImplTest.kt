@@ -11,12 +11,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import me.bookk.core.domain.pagination.Page
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.business.domain.api.plugin.IsAppointmentsPluginEnabled
 import me.bookk.feature.clients.domain.api.GetClientsList
+import me.bookk.feature.clients.domain.api.entity.ClientsQuery
 import me.bookk.feature.services.domain.api.group.GetServiceGroups
 import me.bookk.feature.services.domain.api.service.GetServices
 import kotlin.test.AfterTest
@@ -53,7 +55,7 @@ class RefreshDashboardSetupStatusImplTest {
             everySuspend { refresh(any()) } returns emptyList()
         }
         val getClientsList = mock<GetClientsList> {
-            everySuspend { refresh(any()) } returns emptyList()
+            everySuspend { refresh(any()) } returns Page(emptyList(), nextCursor = null)
         }
         val sut =
             RefreshDashboardSetupStatusImpl(
@@ -78,7 +80,7 @@ class RefreshDashboardSetupStatusImplTest {
             fixture.isAppointmentsPluginEnabled.refresh(businessId)
             fixture.getServiceGroups.refresh(businessId)
             fixture.getServices.refresh(businessId)
-            fixture.getClientsList.refresh(businessId)
+            fixture.getClientsList.refresh(ClientsQuery(businessId))
         }
     }
 
@@ -96,7 +98,7 @@ class RefreshDashboardSetupStatusImplTest {
         verifySuspend {
             fixture.getServiceGroups.refresh(businessId)
             fixture.getServices.refresh(businessId)
-            fixture.getClientsList.refresh(businessId)
+            fixture.getClientsList.refresh(ClientsQuery(businessId))
         }
     }
 

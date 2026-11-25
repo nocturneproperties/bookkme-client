@@ -85,6 +85,19 @@ class ResetListOnChangeTest {
     }
 
     @Test
+    fun `stops offering the next page of the previous key when the key changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.listState.loadMore = {}
+
+        whenn()
+        flowOf(1, 2).resetListOnChange(fixture.listState).toList()
+
+        then()
+        assertNull(fixture.listState.loadMore)
+    }
+
+    @Test
     fun `resets the list before the new key reaches downstream`() = runUnitTest {
         given()
         val fixture = Fixture()

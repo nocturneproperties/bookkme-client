@@ -12,7 +12,6 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
-import me.bookk.feature.clients.domain.api.GetClientsList
 import me.bookk.feature.services.domain.api.service.GetServices
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -36,49 +35,24 @@ class GetAppointmentOptionsImplTest {
     }
 
     private class Fixture {
-        val getClients = mock<GetClientsList>()
         val getServices = mock<GetServices>()
-        val sut = GetAppointmentOptionsImpl(getClients, getServices)
+        val sut = GetAppointmentOptionsImpl(getServices)
     }
 
     @Test
-    fun `returns options combining refreshed clients and services`() = runUnitTest {
+    fun `returns options of the refreshed services`() = runUnitTest {
         given()
         val fixture = Fixture()
         val businessId = Uuid.random()
-        val clients = listOf(stubClient(businessId))
         val services = listOf(stubService(businessId))
-        everySuspend { fixture.getClients.refresh(businessId) } returns clients
         everySuspend { fixture.getServices.refresh(businessId) } returns services
 
         whenn()
         val result = fixture.sut(businessId)
 
         then()
-        assertEquals(1, result.clients.size)
-        assertEquals(clients[0].id, result.clients[0].id)
         assertEquals(1, result.services.size)
         assertEquals(services[0].id, result.services[0].id)
-    }
-
-    @Test
-    fun `maps client to ClientSnapshot correctly`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val businessId = Uuid.random()
-        val client = stubClient(businessId)
-        everySuspend { fixture.getClients.refresh(businessId) } returns listOf(client)
-        everySuspend { fixture.getServices.refresh(businessId) } returns emptyList()
-
-        whenn()
-        val result = fixture.sut(businessId)
-
-        then()
-        val snapshot = result.clients.first()
-        assertEquals(client.id, snapshot.id)
-        assertEquals(client.fullName, snapshot.fullName)
-        assertEquals(client.phone, snapshot.phone)
-        assertEquals(client.email, snapshot.email)
     }
 
     @Test
@@ -87,7 +61,6 @@ class GetAppointmentOptionsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val service = stubService(businessId)
-        everySuspend { fixture.getClients.refresh(businessId) } returns emptyList()
         everySuspend { fixture.getServices.refresh(businessId) } returns listOf(service)
 
         whenn()

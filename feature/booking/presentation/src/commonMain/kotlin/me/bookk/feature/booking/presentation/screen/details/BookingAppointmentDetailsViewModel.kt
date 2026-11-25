@@ -1,5 +1,6 @@
 package me.bookk.feature.booking.presentation.screen.details
 
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.flowOn
@@ -9,11 +10,11 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.feature.booking.domain.api.GetBookingAppointmentDetails
 import me.bookk.feature.booking.domain.api.entity.BookingAppointmentDetails
 import me.bookk.feature.booking.domain.api.entity.BookingAppointmentDetails.Status
 import me.bookk.feature.booking.presentation.BookingStateFactory
+import me.bookk.feature.booking.presentation.screen.label
 import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
@@ -60,31 +61,17 @@ class BookingAppointmentDetailsViewModel(
     }
 
     private fun Status.presentation(businessName: String): BookingStatusPresentation {
+        val label = label()
+        return BookingStatusPresentation(label.text, label.color, explanation(businessName))
+    }
+
+    private fun Status.explanation(businessName: String): StringDesc {
         val strings = BookingRes.strings
         return when (this) {
-            Status.CONFIRMED -> BookingStatusPresentation(
-                strings.booking_sent_status_confirmed.desc(),
-                ColorToken.Success,
-                strings.booking_details_confirmed_explanation.format(businessName),
-            )
-
-            Status.COMPLETED -> BookingStatusPresentation(
-                strings.booking_details_status_done.desc(),
-                ColorToken.SecondaryText,
-                strings.booking_details_done_explanation.desc(),
-            )
-
-            Status.CANCELLED -> BookingStatusPresentation(
-                strings.booking_details_status_cancelled.desc(),
-                ColorToken.Error,
-                strings.booking_details_cancelled_explanation.desc(),
-            )
-
-            Status.MISSED -> BookingStatusPresentation(
-                strings.booking_details_status_missed.desc(),
-                ColorToken.Error,
-                strings.booking_details_missed_explanation.desc(),
-            )
+            Status.CONFIRMED -> strings.booking_details_confirmed_explanation.format(businessName)
+            Status.COMPLETED -> strings.booking_details_done_explanation.desc()
+            Status.CANCELLED -> strings.booking_details_cancelled_explanation.desc()
+            Status.MISSED -> strings.booking_details_missed_explanation.desc()
         }
     }
 }

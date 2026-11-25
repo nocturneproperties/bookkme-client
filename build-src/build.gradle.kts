@@ -21,6 +21,7 @@ dependencies {
     compileOnly(libs.firebase.crashlytics.gradlePlugin)
     compileOnly(libs.buildkonfig.compiler)
     compileOnly(libs.compose.compiler.gradlePlugin)
+    compileOnly(libs.room.gradlePlugin)
     testImplementation(kotlin("test"))
 }
 

@@ -21,13 +21,16 @@ erDiagram
         uuid businessId FK "indexed"
         uuid userId "nullable; logical FK -> backend user.profile.id (Integrated client)"
         string description "nullable; owner's private note"
+        instant createdAt "nullable; server's creation time, the list order (null for rows cached before v29)"
     }
 ```
 
-- Written by: [Get clients list](../operations/clients/get-clients-list.md) `refresh()` (stale-id delete and upsert),
+- Written by: [Get clients list](../operations/clients/get-clients-list.md) `refresh()` without a search (stale-id
+  delete and upsert of the first page), `refresh()` with a search and `loadMore()` (upsert only),
   [Create client](../operations/clients/create-client.md), [Edit client](../operations/clients/edit-client.md)
   (upsert one), and [Delete client](../operations/clients/delete-client.md) (`deleteWithAppointmentCaches`).
-- Read by: `GetClientsList.flow()` (observes by the dashboard business id) and [Get client](../operations/clients/get-client.md)
+- Read by: `GetClientsList.flow(search)` (observes by the dashboard business id, `order by createdAt desc, id desc`,
+  then filters by the search on the device) and [Get client](../operations/clients/get-client.md)
   (`flow` observes one row with `observeById`, which emits `null` while it is missing; `invoke` uses `getById`,
   which is **not** nullable, so an unknown id throws).
 - Sync marker: `clients_prefs` / `last_synced_at_<businessId>`.

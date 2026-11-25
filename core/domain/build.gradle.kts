@@ -17,5 +17,8 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlin.serialization.core)
         }
+        commonTest.dependencies {
+            implementation(projects.core.testFixtures)
+        }
     }
 }

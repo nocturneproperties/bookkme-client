@@ -7,6 +7,7 @@ import me.bookk.feature.booking.domain.api.GetBookingRequestDetails
 import me.bookk.feature.booking.domain.api.GetBookingSlots
 import me.bookk.feature.booking.domain.api.GetBookingSpecialists
 import me.bookk.feature.booking.domain.api.GetBookingTimetable
+import me.bookk.feature.booking.domain.api.GetBookings
 import me.bookk.feature.booking.domain.api.GetBusinessMessage
 import me.bookk.feature.booking.domain.api.GetSentBooking
 import me.bookk.feature.booking.domain.api.SendBookingRequest
@@ -21,6 +22,7 @@ import me.bookk.feature.booking.domain.impl.GetBookingRequestDetailsImpl
 import me.bookk.feature.booking.domain.impl.GetBookingSlotsImpl
 import me.bookk.feature.booking.domain.impl.GetBookingSpecialistsImpl
 import me.bookk.feature.booking.domain.impl.GetBookingTimetableImpl
+import me.bookk.feature.booking.domain.impl.GetBookingsImpl
 import me.bookk.feature.booking.domain.impl.GetBusinessMessageImpl
 import me.bookk.feature.booking.domain.impl.GetSentBookingImpl
 import me.bookk.feature.booking.domain.impl.SendBookingRequestImpl
@@ -48,6 +50,7 @@ fun bookingDomainModule(): Module {
         factoryOf(::GetSentBookingImpl) bind GetSentBooking::class
         factoryOf(::GetBookingRequestDetailsImpl) bind GetBookingRequestDetails::class
         factoryOf(::GetBookingAppointmentDetailsImpl) bind GetBookingAppointmentDetails::class
+        factoryOf(::GetBookingsImpl) bind GetBookings::class
         factoryOf(::WithdrawBookingRequestImpl) bind WithdrawBookingRequest::class
     }
 }

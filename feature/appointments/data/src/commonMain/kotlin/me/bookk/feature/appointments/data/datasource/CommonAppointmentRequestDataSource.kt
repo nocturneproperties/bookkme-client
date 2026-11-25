@@ -13,6 +13,7 @@ import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
+import me.bookk.core.domain.pagination.Page
 import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.feature.appointments.data.mapping.toDomain
 import me.bookk.feature.appointments.data.mapping.toRemote
@@ -22,7 +23,9 @@ import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.appointments.data.remote.model.AppointmentCancellationRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestIdRemote
-import me.bookk.feature.appointments.data.remote.model.AppointmentRequestRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentRequestPageRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentRequestStatusRemote
+import me.bookk.feature.appointments.data.remote.model.HistoryOrderRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestDraft
@@ -58,20 +61,21 @@ internal class CommonAppointmentRequestDataSource(
                 .toDomain()
         }
 
-    override suspend fun getBusinessAppointmentRequests(
+    override suspend fun getAssignedAppointmentRequests(
         businessId: Uuid,
-    ): List<AppointmentRequest> = mapExceptions {
-        httpClient.get(Api.Appointment.Requests(businessId = businessId))
-            .body<List<AppointmentRequestRemote>>()
-            .map { it.toDomain() }
-    }
-
-    override suspend fun getAssignedAppointmentRequests(businessId: Uuid) = mapExceptions {
-        httpClient.get(
-            Api.Appointment.Requests.Assigned(Api.Appointment.Requests(businessId = businessId)),
+        employeeId: Uuid,
+        cursor: String?,
+    ): Page<AppointmentRequest> = mapExceptions {
+        val resource = Api.Appointment.RequestHistory(
+            businessId = businessId,
+            cursor = cursor,
+            employeeId = employeeId,
+            status = listOf(AppointmentRequestStatusRemote.PENDING),
+            order = HistoryOrderRemote.SOONEST_FIRST,
         )
-            .body<List<AppointmentRequestRemote>>()
-            .map { it.toDomain() }
+        httpClient.get(resource)
+            .body<AppointmentRequestPageRemote>()
+            .toDomain()
     }
 
     override fun observeAppointmentRequestsDBChanges(

@@ -1,0 +1,65 @@
+import SwiftUI
+import shared
+
+struct SelectClientScreen: View {
+
+	@StateViewModel var viewModel: SelectClientViewModel
+	let onSelected: (KotlinUuid) -> Void
+	let onDismiss: () -> Void
+	@State private var newClientBusinessId: KotlinUuid?
+
+	init(onSelected: @escaping (KotlinUuid) -> Void, onDismiss: @escaping () -> Void) {
+		_viewModel = StateViewModel(wrappedValue: IosClientsPresentationDiKt.selectClientVM())
+		self.onSelected = onSelected
+		self.onDismiss = onDismiss
+	}
+
+	var body: some View {
+		let uiState = IOSSelectClientState.cast(viewModel.uiState)
+		let listState = IOSListState<ClientListItem>.cast(uiState.clients)
+		NavigationStack {
+			ListGroup(listState: listState) { item in
+				ClientListRow(item: item)
+					.listRowSeparator(.hidden)
+					.listRowInsets(EdgeInsets())
+			}
+			.refreshable { await uiState.refreshState.impl().awaitRefresh() }
+			.searchable(
+				text: uiState.searchField.binding(),
+				placement: .navigationBarDrawer(displayMode: .always),
+				prompt: uiState.searchField.placeholder.localized()
+			)
+			.withNavigationBar(uiState.appBar)
+			.navigationDestination(isPresented: isAddingClient) {
+				if let businessId = newClientBusinessId {
+					CreateClientScreen(
+						businessId: businessId,
+						onCreated: onSelected,
+						onBack: { newClientBusinessId = nil }
+					)
+				}
+			}
+		}
+		.sendLifecycleEventsTo(viewModel)
+		.handleNotifications(uiState.notifications)
+		.handleNavigation(uiState.navigation) { destination in
+			switch destination {
+			case let destination as SelectClientDestination.Selected:
+				onSelected(destination.clientId)
+			case let destination as SelectClientDestination.AddClient:
+				newClientBusinessId = destination.businessId
+			case is SelectClientDestination.Back:
+				onDismiss()
+			default:
+				break
+			}
+		}
+	}
+
+	private var isAddingClient: Binding<Bool> {
+		Binding(
+			get: { newClientBusinessId != nil },
+			set: { if !$0 { newClientBusinessId = nil } }
+		)
+	}
+}

@@ -14,12 +14,16 @@ import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import library.device.api.DeviceFacade
 import library.permissions.api.PermissionType
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.clients.resources.ClientsRes
+import me.bookk.core.domain.pagination.Page
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
@@ -47,6 +51,7 @@ import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.entity.ClientImportResult
 import me.bookk.feature.clients.domain.api.entity.ClientsPermissions
+import me.bookk.feature.clients.domain.api.entity.ClientsQuery
 import me.bookk.feature.clients.domain.api.entity.RejectedClientImport
 import me.bookk.feature.clients.presentation.FakeClientsStateFactory
 import me.bookk.feature.clients.presentation.FakePermissionChecker
@@ -59,6 +64,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.Uuid
 
 class ClientsListViewModelTest {
@@ -83,8 +89,8 @@ class ClientsListViewModelTest {
         val clients = MutableStateFlow<List<Client>>(emptyList())
         val currentBusinessId = MutableStateFlow<Uuid?>(businessId)
         val getClientsList = mock<GetClientsList> {
-            every { flow() } returns clients
-            everySuspend { refresh(any()) } returns emptyList()
+            every { flow(any()) } calls { (search: String?) -> clients.matching(search) }
+            everySuspend { refresh(any()) } returns Page(emptyList(), nextCursor = null)
         }
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
             every { invoke() } returns currentBusinessId
@@ -144,11 +150,11 @@ class ClientsListViewModelTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.getClientsList.refresh(fixture.businessId) }
+        verifySuspend { fixture.getClientsList.refresh(ClientsQuery(fixture.businessId)) }
     }
 
     @Test
-    fun `groups clients by capitalized first letter sorted by name`() = runUnitTest {
+    fun `lists clients in the order the clients flow emits them`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
@@ -156,15 +162,51 @@ class ClientsListViewModelTest {
 
         whenn()
         fixture.clients.value = listOf(
-            stubDetachedClient(name = "bob"),
-            stubDetachedClient(name = "Anna"),
-            stubDetachedClient(name = "Alex"),
+            stubDetachedClient(name = "Olga", lastName = "Nowak"),
+            stubDetachedClient(name = "anna", lastName = "Smith"),
         )
 
         then()
-        val sections = sut.uiState.clientsList.items
-        assertEquals(listOf("A", "B"), sections.map { it.header })
-        assertEquals(listOf("Alex", "Anna"), sections[0].items.map { it.name })
+        assertEquals(
+            listOf("Olga Nowak", "anna Smith"),
+            sut.uiState.clientsList.items.map { it.fullName },
+        )
+    }
+
+    @Test
+    fun `offers more clients when the first page has more`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getClientsList.refresh(any()) } returns
+            Page(listOf(stubDetachedClient()), nextCursor = "after-1")
+
+        whenn()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        assertNotNull(sut.uiState.clientsList.loadMore)
+    }
+
+    @Test
+    fun `loads the next page of the current search at the end of the list`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getClientsList.refresh(any()) } returns
+            Page(listOf(stubDetachedClient()), nextCursor = "after-1")
+        everySuspend { fixture.getClientsList.loadMore(any(), any()) } returns
+            Page(emptyList(), nextCursor = null)
+        val sut = fixture.sut()
+        (sut.uiState.searchField as FakeTextFieldState).type("anna")
+        advanceUntilIdle()
+
+        whenn()
+        sut.uiState.clientsList.loadMore?.invoke()
+
+        then()
+        verifySuspend {
+            fixture.getClientsList.loadMore(ClientsQuery(fixture.businessId, "anna"), "after-1")
+        }
     }
 
     @Test
@@ -182,7 +224,7 @@ class ClientsListViewModelTest {
     }
 
     @Test
-    fun `filters clients by search query`() = runUnitTest {
+    fun `shows the clients the flow finds for the typed search at once`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
@@ -196,8 +238,46 @@ class ClientsListViewModelTest {
         (sut.uiState.searchField as FakeTextFieldState).type("smi")
 
         then()
-        val sections = sut.uiState.clientsList.items
-        assertEquals(listOf("Anna"), sections.flatMap { it.items }.map { it.name })
+        assertEquals(listOf("Anna Smith"), sut.uiState.clientsList.items.map { it.fullName })
+    }
+
+    @Test
+    fun `searches the server once typing pauses`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        (sut.uiState.searchField as FakeTextFieldState).type("an")
+        advanceTimeBy(100.milliseconds)
+        (sut.uiState.searchField as FakeTextFieldState).type("anna")
+        advanceUntilIdle()
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.getClientsList.refresh(ClientsQuery(fixture.businessId, "an"))
+        }
+        verifySuspend {
+            fixture.getClientsList.refresh(ClientsQuery(fixture.businessId, "anna"))
+        }
+    }
+
+    @Test
+    fun `does not search the server for a single letter`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        (sut.uiState.searchField as FakeTextFieldState).type(" a ")
+        advanceUntilIdle()
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.getClientsList.refresh(ClientsQuery(fixture.businessId, "a"))
+        }
     }
 
     @Test
@@ -214,7 +294,7 @@ class ClientsListViewModelTest {
         (sut.uiState.searchField as FakeTextFieldState).type("")
 
         then()
-        assertEquals(2, sut.uiState.clientsList.items.flatMap { it.items }.size)
+        assertEquals(2, sut.uiState.clientsList.items.size)
     }
 
     @Test
@@ -227,7 +307,7 @@ class ClientsListViewModelTest {
         fixture.clients.value = listOf(client)
 
         whenn()
-        sut.uiState.clientsList.items.single().onItemClick(client)
+        sut.uiState.clientsList.items.single().onClick()
 
         then()
         assertEquals(
@@ -929,7 +1009,7 @@ class ClientsListViewModelTest {
         fixture.currentBusinessId.value = otherBusiness
 
         then()
-        verifySuspend { fixture.getClientsList.refresh(otherBusiness) }
+        verifySuspend { fixture.getClientsList.refresh(ClientsQuery(otherBusiness)) }
         assertTrue(sut.uiState.clientsList.items.isEmpty())
     }
 
@@ -952,7 +1032,7 @@ class ClientsListViewModelTest {
     fun `shows mapped error when clients observation fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        every { fixture.getClientsList.flow() } returns failOnceThenSuspend()
+        every { fixture.getClientsList.flow(any()) } returns failOnceThenSuspend()
 
         whenn()
         fixture.sut()
@@ -996,5 +1076,11 @@ class ClientsListViewModelTest {
         val options = uiState.contactsPicker.options
         val picked = if (contacts.isEmpty()) options else options.filter { it.domain in contacts }
         uiState.contactsPicker.onItemsPicked(picked)
+    }
+}
+
+private fun MutableStateFlow<List<Client>>.matching(search: String?): Flow<List<Client>> {
+    return map { clients ->
+        clients.filter { search.isNullOrBlank() || it.fullName.contains(search.trim(), true) }
     }
 }

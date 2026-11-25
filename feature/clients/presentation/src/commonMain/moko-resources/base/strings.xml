@@ -2,6 +2,7 @@
 <resources>
     <string name="clients_title">Clients</string>
     <string name="clients_empty">You have no clients at the moment</string>
+    <string name="clients_select_title">Select client</string>
 
     <string name="clients_create_title">Add client</string>
     <string name="clients_create_name">Name</string>

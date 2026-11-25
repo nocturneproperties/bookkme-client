@@ -27,4 +27,5 @@ class AppointmentRequestEntity(
     val clientPhone: String?,
     val clientEmail: String?,
     val clientUserId: Uuid? = null,
+    @ColumnInfo(defaultValue = "") val businessName: String = "",
 )

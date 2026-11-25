@@ -2,6 +2,10 @@ package me.bookk.feature.appointments.data.remote.api
 
 import io.ktor.resources.Resource
 import kotlinx.datetime.LocalDate
+import me.bookk.feature.appointments.data.remote.model.AppointmentRequestStatusRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
+import me.bookk.feature.appointments.data.remote.model.BookingPeriodRemote
+import me.bookk.feature.appointments.data.remote.model.HistoryOrderRemote
 import kotlin.uuid.Uuid
 
 object AppointmentRouting {
@@ -15,6 +19,24 @@ object AppointmentRouting {
             @Resource("/upcoming")
             class Upcoming(
                 val parent: Appointment = Appointment(),
+            )
+
+            @Resource("/mine")
+            class Mine(
+                val parent: Appointment = Appointment(),
+                val limit: Int? = null,
+                val cursor: String? = null,
+                val period: BookingPeriodRemote? = null,
+                val status: kotlin.collections.List<AppointmentStatusRemote> = emptyList(),
+            )
+
+            @Resource("/request/mine")
+            class RequestMine(
+                val parent: Appointment = Appointment(),
+                val limit: Int? = null,
+                val cursor: String? = null,
+                val period: BookingPeriodRemote? = null,
+                val status: kotlin.collections.List<AppointmentRequestStatusRemote> = emptyList(),
             )
 
             @Resource("/businesses")
@@ -62,21 +84,21 @@ object AppointmentRouting {
             class History(
                 val parent: Appointment = Appointment(),
                 val businessId: Uuid,
-                val limit: Int,
-                val offset: Long,
+                val limit: Int? = null,
+                val cursor: String? = null,
                 val query: String? = null,
             )
 
-            @Resource("/request/{businessId}")
-            class Requests(
+            @Resource("/request/history/{businessId}")
+            class RequestHistory(
                 val parent: Appointment = Appointment(),
                 val businessId: Uuid,
-            ) {
-                @Resource("/assigned")
-                class Assigned(
-                    val parent: Requests,
-                )
-            }
+                val limit: Int? = null,
+                val cursor: String? = null,
+                val employeeId: Uuid? = null,
+                val status: kotlin.collections.List<AppointmentRequestStatusRemote> = emptyList(),
+                val order: HistoryOrderRemote? = null,
+            )
 
             @Resource("/request")
             class Request(

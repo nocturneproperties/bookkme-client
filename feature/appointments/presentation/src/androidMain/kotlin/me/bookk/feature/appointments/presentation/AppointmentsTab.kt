@@ -9,10 +9,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import me.bookk.feature.appointments.presentation.navigation.AppointmentNavigation
 import me.bookk.feature.appointments.presentation.navigation.AppointmentsDestination
+import me.bookk.feature.appointments.presentation.navigation.ClientPicker
 import me.bookk.feature.appointments.presentation.navigation.appointmentsGraph
 
 @Composable
-fun AppointmentsTab() {
+fun AppointmentsTab(clientPicker: ClientPicker) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -30,6 +31,7 @@ fun AppointmentsTab() {
                     navController.navigate(AppointmentsDestination.Settings(it))
                 },
                 onBack = { navController.popBackStack() },
+                clientPicker = clientPicker,
             ),
         )
     }

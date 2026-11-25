@@ -53,7 +53,7 @@ import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Div
 
-private const val TRACK_INSET_PX = 3
+internal const val TRACK_INSET_PX = 3
 private const val SWITCH_TRANSITION_MS = 250
 
 class SegmentedLinkItem(
@@ -122,20 +122,19 @@ fun SegmentedLinks(
             .then(modifier)
             .toAttrs(),
     ) {
-        SegmentIndicator(items)
+        SegmentIndicator(items.size, items.indexOfFirst { it.isSelected })
         items.forEach { SegmentLink(it) }
     }
 }
 
 @Composable
-private fun SegmentIndicator(items: List<SegmentedLinkItem>) {
-    val selectedIndex = items.indexOfFirst { it.isSelected }
+internal fun SegmentIndicator(count: Int, selectedIndex: Int) {
     val duration = switchTransitionDuration()
     Box(
         SegmentIndicatorStyle
             .toModifier()
             .styleModifier {
-                property("width", "calc((100% - ${TRACK_INSET_PX * 2}px) / ${items.size})")
+                property("width", "calc((100% - ${TRACK_INSET_PX * 2}px) / $count)")
             }
             .translateX((selectedIndex.coerceAtLeast(0) * 100).percent)
             .opacity(if (selectedIndex >= 0) 1 else 0)
@@ -178,7 +177,7 @@ private fun segmentBase(): Modifier {
         .textDecorationLine(TextDecorationLine.None)
 }
 
-private fun switchTransitionDuration(): CSSTimeNumericValue {
+internal fun switchTransitionDuration(): CSSTimeNumericValue {
     return if (window.matchMedia(
             "(prefers-reduced-motion: reduce)",
         ).matches

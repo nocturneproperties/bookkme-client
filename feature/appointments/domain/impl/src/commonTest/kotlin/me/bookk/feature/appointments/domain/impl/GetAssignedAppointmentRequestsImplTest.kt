@@ -17,6 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import me.bookk.core.domain.entity.Error
+import me.bookk.core.domain.pagination.Page
+import me.bookk.core.domain.pagination.PageErrorCodes
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -24,6 +27,7 @@ import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
 import me.bookk.feature.appointments.domain.datasource.AppointmentRequestDataSource
+import me.bookk.feature.business.domain.api.business.ObserveUserBusinessesChanges
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -47,16 +51,40 @@ class GetAssignedAppointmentRequestsImplTest {
         Dispatchers.resetMain()
     }
 
-    private class Fixture {
+    private class Fixture(
+        val employeeId: Uuid? = Uuid.random(),
+    ) {
+        val businessId = Uuid.random()
         val dataSource = mock<AppointmentRequestDataSource>()
-        val sut = GetAssignedAppointmentRequestsImpl(dataSource)
+        val businesses = mock<ObserveUserBusinessesChanges> {
+            every { invoke() } returns flowOf(listOf(stubBusiness(businessId, employeeId)))
+        }
+        val sut = GetAssignedAppointmentRequestsImpl(dataSource, businesses)
+
+        fun stubPage(cursor: String?, page: Page<AppointmentRequest>) {
+            everySuspend {
+                dataSource.getAssignedAppointmentRequests(businessId, employeeId!!, cursor)
+            } returns page
+        }
+
+        fun stubCachedIds(ids: List<Uuid>) {
+            everySuspend { dataSource.getAppointmentRequestIdsInDb(businessId) } returns ids
+        }
+
+        fun stubWrites() {
+            everySuspend { dataSource.deleteAppointmentRequestsInDb(any()) } returns Unit
+            everySuspend { dataSource.saveAppointmentRequestsInDB(any()) } returns Unit
+            everySuspend { dataSource.saveLastSyncedAt(any()) } returns Unit
+        }
+
+        fun request() = stubAppointmentRequest(businessId = businessId)
     }
 
     @Test
     fun `flow emits pending requests from db sorted by date`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
+        val businessId = fixture.businessId
         val earlier = stubAppointmentRequest(businessId = businessId)
             .copy(date = Instant.fromEpochMilliseconds(0))
         val later = stubAppointmentRequest(businessId = businessId)
@@ -76,7 +104,7 @@ class GetAssignedAppointmentRequestsImplTest {
     fun `flow excludes requests that are not pending`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
+        val businessId = fixture.businessId
         val pending = stubAppointmentRequest(businessId = businessId)
         val approved = stubAppointmentRequest(businessId = businessId)
             .copy(status = AppointmentRequestStatus.APPROVED)
@@ -95,7 +123,7 @@ class GetAssignedAppointmentRequestsImplTest {
     fun `flow re-resolves when the db observation emits again`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
+        val businessId = fixture.businessId
         val emissions = MutableSharedFlow<List<AppointmentRequest>>(replay = 1)
         val first = listOf(stubAppointmentRequest(businessId = businessId))
         val second = listOf(stubAppointmentRequest(businessId = businessId))
@@ -120,7 +148,7 @@ class GetAssignedAppointmentRequestsImplTest {
     fun `flow never triggers a network fetch as a side effect of being collected`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
+        val businessId = fixture.businessId
         every { fixture.dataSource.observeAppointmentRequestsDBChanges(businessId) } returns
             flowOf(emptyList())
 
@@ -129,86 +157,44 @@ class GetAssignedAppointmentRequestsImplTest {
 
         then()
         verifySuspend(VerifyMode.exactly(0)) {
-            fixture.dataSource.getAssignedAppointmentRequests(any())
+            fixture.dataSource.getAssignedAppointmentRequests(any(), any(), any())
         }
     }
 
     @Test
-    fun `refresh fetches requests from remote and saves them`() = runUnitTest {
+    fun `refresh fetches the first page of the employee's requests and saves it`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val requests = listOf(stubAppointmentRequest(businessId = businessId))
-        everySuspend { fixture.dataSource.getAssignedAppointmentRequests(businessId) } returns
-            requests
-        everySuspend {
-            fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
-        } returns requests.map { it.id }
-        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(requests) } returns Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+        val page = Page(listOf(fixture.request()), nextCursor = null)
+        fixture.stubPage(cursor = null, page)
+        fixture.stubCachedIds(page.items.map { it.id })
+        fixture.stubWrites()
 
         whenn()
-        val result = fixture.sut.refresh(businessId)
+        val result = fixture.sut.refresh(fixture.businessId)
 
         then()
-        assertEquals(requests, result)
+        assertEquals(page, result)
         verifySuspend(VerifyMode.exactly(1)) {
-            fixture.dataSource.saveAppointmentRequestsInDB(requests)
+            fixture.dataSource.saveAppointmentRequestsInDB(page.items)
         }
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveLastSyncedAt(businessId) }
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveLastSyncedAt(fixture.businessId)
+        }
     }
 
     @Test
-    fun `refresh saves every fetched request but returns only pending ones sorted by date`() =
-        runUnitTest {
-            given()
-            val fixture = Fixture()
-            val businessId = Uuid.random()
-            val earlier = stubAppointmentRequest(businessId = businessId)
-                .copy(date = Instant.fromEpochMilliseconds(0))
-            val later = stubAppointmentRequest(businessId = businessId)
-                .copy(date = Instant.fromEpochMilliseconds(1000))
-            val approved = stubAppointmentRequest(businessId = businessId)
-                .copy(status = AppointmentRequestStatus.APPROVED)
-            val remote = listOf(later, approved, earlier)
-            everySuspend { fixture.dataSource.getAssignedAppointmentRequests(businessId) } returns
-                remote
-            everySuspend {
-                fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
-            } returns remote.map { it.id }
-            everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(remote) } returns Unit
-            everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
-
-            whenn()
-            val result = fixture.sut.refresh(businessId)
-
-            then()
-            assertEquals(listOf(earlier, later), result)
-            verifySuspend(VerifyMode.exactly(1)) {
-                fixture.dataSource.saveAppointmentRequestsInDB(remote)
-            }
-        }
-
-    @Test
-    fun `refresh deletes local requests that are no longer present remotely`() = runUnitTest {
+    fun `refresh deletes cached requests missing from the first page`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val stillPresent = stubAppointmentRequest(businessId = businessId)
-        val remote = listOf(stillPresent)
+        val stillPresent = fixture.request()
         val staleId = Uuid.random()
-        everySuspend { fixture.dataSource.getAssignedAppointmentRequests(businessId) } returns
-            remote
-        everySuspend {
-            fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
-        } returns listOf(stillPresent.id, staleId)
-        everySuspend { fixture.dataSource.deleteAppointmentRequestsInDb(listOf(staleId)) } returns
-            Unit
-        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(remote) } returns Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+        fixture.stubPage(cursor = null, Page(listOf(stillPresent), nextCursor = "after-1"))
+        fixture.stubCachedIds(listOf(stillPresent.id, staleId))
+        fixture.stubWrites()
 
         whenn()
-        fixture.sut.refresh(businessId)
+        fixture.sut.refresh(fixture.businessId)
 
         then()
         verifySuspend(VerifyMode.exactly(1)) {
@@ -220,19 +206,13 @@ class GetAssignedAppointmentRequestsImplTest {
     fun `refresh does not call delete when nothing is stale`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val request = stubAppointmentRequest(businessId = businessId)
-        everySuspend { fixture.dataSource.getAssignedAppointmentRequests(businessId) } returns
-            listOf(request)
-        everySuspend {
-            fixture.dataSource.getAppointmentRequestIdsInDb(businessId)
-        } returns listOf(request.id)
-        everySuspend { fixture.dataSource.saveAppointmentRequestsInDB(listOf(request)) } returns
-            Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+        val request = fixture.request()
+        fixture.stubPage(cursor = null, Page(listOf(request), nextCursor = null))
+        fixture.stubCachedIds(listOf(request.id))
+        fixture.stubWrites()
 
         whenn()
-        fixture.sut.refresh(businessId)
+        fixture.sut.refresh(fixture.businessId)
 
         then()
         verifySuspend(VerifyMode.exactly(0)) {
@@ -241,23 +221,85 @@ class GetAssignedAppointmentRequestsImplTest {
     }
 
     @Test
-    fun `refresh propagates a fetch error to the caller`() = runUnitTest {
+    fun `refresh propagates a fetch error and keeps the cache`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
         val error = IllegalStateException("network down")
-        everySuspend { fixture.dataSource.getAssignedAppointmentRequests(businessId) } throws error
+        everySuspend {
+            fixture.dataSource.getAssignedAppointmentRequests(any(), any(), any())
+        } throws error
 
         whenn()
-        val thrown = assertFailsWith<IllegalStateException> { fixture.sut.refresh(businessId) }
+        val thrown = assertFailsWith<IllegalStateException> {
+            fixture.sut.refresh(fixture.businessId)
+        }
 
         then()
         assertEquals(error, thrown)
         verifySuspend(VerifyMode.exactly(0)) {
-            fixture.dataSource.getAppointmentRequestIdsInDb(any())
-        }
-        verifySuspend(VerifyMode.exactly(0)) {
             fixture.dataSource.saveAppointmentRequestsInDB(any())
+        }
+    }
+
+    @Test
+    fun `refresh fails when the user is not an employee of the business`() = runUnitTest {
+        given()
+        val fixture = Fixture(employeeId = null)
+
+        whenn()
+        assertFailsWith<Error.InvalidApplicationState> { fixture.sut.refresh(fixture.businessId) }
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) {
+            fixture.dataSource.getAssignedAppointmentRequests(any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `load more fetches the page after the given cursor and adds it to the cache`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val page = Page(listOf(fixture.request()), nextCursor = "after-2")
+            fixture.stubPage(cursor = "after-1", page)
+            fixture.stubWrites()
+
+            whenn()
+            val result = fixture.sut.loadMore(fixture.businessId, cursor = "after-1")
+
+            then()
+            assertEquals(page, result)
+            verifySuspend(VerifyMode.exactly(1)) {
+                fixture.dataSource.saveAppointmentRequestsInDB(page.items)
+            }
+            verifySuspend(VerifyMode.exactly(0)) {
+                fixture.dataSource.deleteAppointmentRequestsInDb(any())
+            }
+        }
+
+    @Test
+    fun `load more restarts from the first page when the cursor is rejected`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val firstPage = Page(listOf(fixture.request()), nextCursor = "after-1")
+        everySuspend {
+            fixture.dataSource.getAssignedAppointmentRequests(
+                fixture.businessId,
+                fixture.employeeId!!,
+                "stale",
+            )
+        } throws Error.BusinessError(PageErrorCodes.CURSOR_INVALID, "")
+        fixture.stubPage(cursor = null, firstPage)
+        fixture.stubCachedIds(emptyList())
+        fixture.stubWrites()
+
+        whenn()
+        val result = fixture.sut.loadMore(fixture.businessId, cursor = "stale")
+
+        then()
+        assertEquals(firstPage, result)
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.dataSource.saveAppointmentRequestsInDB(firstPage.items)
         }
     }
 }

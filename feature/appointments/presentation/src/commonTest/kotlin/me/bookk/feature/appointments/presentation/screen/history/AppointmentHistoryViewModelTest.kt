@@ -1,15 +1,21 @@
 package me.bookk.feature.appointments.presentation.screen.history
 
+import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import library.money.api.Money
+import me.bookk.core.domain.pagination.Page
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -20,9 +26,10 @@ import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
-import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.feature.appointments.domain.api.GetAppointmentHistory
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentHistoryQuery
+import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.PriceAdjustment
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
 import me.bookk.feature.appointments.presentation.FakeAppointmentsStateFactory
@@ -31,6 +38,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
 class AppointmentHistoryViewModelTest {
@@ -49,8 +58,12 @@ class AppointmentHistoryViewModelTest {
 
     private class Fixture {
         val businessId = Uuid.random()
+        val appointments = MutableStateFlow<List<Appointment>>(emptyList())
         val getAppointmentHistory = mock<GetAppointmentHistory> {
-            everySuspend { reload(any(), any()) } returns emptyList()
+            every { flow(any(), any()) } calls { (_: Uuid, search: String?) ->
+                appointments.matching(search)
+            }
+            everySuspend { refresh(any()) } returns Page(emptyList(), nextCursor = null)
         }
         val errorMapper = FakeErrorMapper()
 
@@ -64,41 +77,93 @@ class AppointmentHistoryViewModelTest {
     }
 
     @Test
-    fun `loads first page without query on start`() = runUnitTest {
+    fun `loads the first page of the business history on start`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val appointment = Appointment.stub()
-        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns
-            listOf(appointment)
 
         whenn()
-        val sut = fixture.sut()
+        fixture.sut()
 
         then()
-        verifySuspend { fixture.getAppointmentHistory.reload(fixture.businessId, null) }
-        assertEquals(listOf(appointment.id), sut.uiState.appointments.items.map { it.id })
-        assertFalse(sut.uiState.appointments.isInitialLoading)
+        verifySuspend {
+            fixture.getAppointmentHistory.refresh(AppointmentHistoryQuery(fixture.businessId))
+        }
     }
 
     @Test
-    fun `appends next page on load more`() = runUnitTest {
+    fun `lists the appointments the history flow emits`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val first = Appointment.stub()
-        val second = Appointment.stub()
-        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns listOf(first)
-        everySuspend { fixture.getAppointmentHistory.loadMore() } returns listOf(second)
+        val newer = Appointment.stub()
+        val older = Appointment.stub()
         val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.appointments.value = listOf(newer, older)
+
+        then()
+        assertEquals(listOf(newer.id, older.id), sut.uiState.appointments.items.map { it.id })
+    }
+
+    @Test
+    fun `offers more appointments when the first page has more`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getAppointmentHistory.refresh(any()) } returns
+            Page(listOf(Appointment.stub()), nextCursor = "after-1")
+
+        whenn()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        assertNotNull(sut.uiState.appointments.loadMore)
+    }
+
+    @Test
+    fun `loads the next page of the current search at the end of the list`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getAppointmentHistory.refresh(any()) } returns
+            Page(listOf(Appointment.stub()), nextCursor = "after-1")
+        everySuspend { fixture.getAppointmentHistory.loadMore(any(), any()) } returns
+            Page(emptyList(), nextCursor = null)
+        val sut = fixture.sut()
+        (sut.uiState.searchField as FakeTextFieldState).type("anna")
+        advanceUntilIdle()
 
         whenn()
         sut.uiState.appointments.loadMore?.invoke()
 
         then()
-        assertEquals(listOf(first.id, second.id), sut.uiState.appointments.items.map { it.id })
+        verifySuspend {
+            fixture.getAppointmentHistory.loadMore(
+                AppointmentHistoryQuery(fixture.businessId, "anna"),
+                "after-1",
+            )
+        }
     }
 
     @Test
-    fun `searches by trimmed query after debounce`() = runUnitTest {
+    fun `shows the appointments the flow finds for the typed search at once`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val anna = Appointment.stub().copy(client = ClientSnapshot.stub().copy(fullName = "Anna"))
+        val olga = Appointment.stub().copy(client = ClientSnapshot.stub().copy(fullName = "Olga"))
+        val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.appointments.value = listOf(anna, olga)
+
+        whenn()
+        (sut.uiState.searchField as FakeTextFieldState).type("ann")
+
+        then()
+        assertEquals(listOf(anna.id), sut.uiState.appointments.items.map { it.id })
+    }
+
+    @Test
+    fun `searches the server by the trimmed query after a pause`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
@@ -108,11 +173,15 @@ class AppointmentHistoryViewModelTest {
         advanceUntilIdle()
 
         then()
-        verifySuspend { fixture.getAppointmentHistory.reload(fixture.businessId, "anna") }
+        verifySuspend {
+            fixture.getAppointmentHistory.refresh(
+                AppointmentHistoryQuery(fixture.businessId, "anna"),
+            )
+        }
     }
 
     @Test
-    fun `does not search before debounce elapses`() = runUnitTest {
+    fun `does not search the server before the pause elapses`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
@@ -122,36 +191,32 @@ class AppointmentHistoryViewModelTest {
         advanceTimeBy(100)
 
         then()
-        verifySuspend(VerifyMode.not) { fixture.getAppointmentHistory.reload(any(), "anna") }
+        verifySuspend(VerifyMode.not) {
+            fixture.getAppointmentHistory.refresh(
+                AppointmentHistoryQuery(fixture.businessId, "anna"),
+            )
+        }
     }
 
     @Test
-    fun `refresh reloads with current query and stops refreshing`() = runUnitTest {
+    fun `pull to refresh reloads the first page of the current search`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
-        sut.uiState.searchField.text = "anna"
+        (sut.uiState.searchField as FakeTextFieldState).type("anna")
+        advanceUntilIdle()
 
         whenn()
         sut.uiState.refresh.onRefresh()
+        advanceUntilIdle()
 
         then()
-        verifySuspend { fixture.getAppointmentHistory.reload(fixture.businessId, "anna") }
+        verifySuspend(VerifyMode.exactly(2)) {
+            fixture.getAppointmentHistory.refresh(
+                AppointmentHistoryQuery(fixture.businessId, "anna"),
+            )
+        }
         assertFalse(sut.uiState.refresh.isRefreshing)
-    }
-
-    @Test
-    fun `refresh reloads with trimmed query`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = fixture.sut()
-        sut.uiState.searchField.text = "  anna "
-
-        whenn()
-        sut.uiState.refresh.onRefresh()
-
-        then()
-        verifySuspend { fixture.getAppointmentHistory.reload(fixture.businessId, "anna") }
     }
 
     @Test
@@ -165,11 +230,11 @@ class AppointmentHistoryViewModelTest {
                 reason = null,
             ),
         )
-        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns
-            listOf(appointment)
+        val sut = fixture.sut()
+        advanceUntilIdle()
 
         whenn()
-        val sut = fixture.sut()
+        fixture.appointments.value = listOf(appointment)
 
         then()
         val item = sut.uiState.appointments.items.single()
@@ -182,9 +247,9 @@ class AppointmentHistoryViewModelTest {
         given()
         val fixture = Fixture()
         val appointment = Appointment.stub()
-        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } returns
-            listOf(appointment)
         val sut = fixture.sut()
+        advanceUntilIdle()
+        fixture.appointments.value = listOf(appointment)
 
         whenn()
         sut.uiState.appointments.items.single().onItemClick()
@@ -199,17 +264,17 @@ class AppointmentHistoryViewModelTest {
     }
 
     @Test
-    fun `shows mapped error when history cannot be loaded`() = runUnitTest {
+    fun `shows a full screen error when the first page cannot be loaded`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.getAppointmentHistory.reload(any(), any()) } throws TestException()
+        everySuspend { fixture.getAppointmentHistory.refresh(any()) } throws TestException()
 
         whenn()
         val sut = fixture.sut()
 
         then()
-        fixture.errorMapper.assertMappedSingle(TestException::class)
-        assertFalse(sut.uiState.appointments.isInitialLoading)
+        assertNotNull(sut.uiState.appointments.errorState)
+        assertTrue(sut.uiState.appointments.items.isEmpty())
     }
 
     @Test
@@ -225,5 +290,13 @@ class AppointmentHistoryViewModelTest {
             listOf<AppointmentHistoryDestinations>(AppointmentHistoryDestinations.Back),
             sut.uiState.navigation.navigationDestination,
         )
+    }
+}
+
+private fun MutableStateFlow<List<Appointment>>.matching(search: String?): Flow<List<Appointment>> {
+    return map { appointments ->
+        appointments.filter {
+            search.isNullOrBlank() || it.client.fullName.contains(search.trim(), ignoreCase = true)
+        }
     }
 }

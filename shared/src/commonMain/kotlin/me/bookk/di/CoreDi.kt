@@ -7,6 +7,7 @@ import library.picker.PickOptionStateFactory
 import me.bookk.database.business.di.businessDatabaseModule
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.authorization.presentation.AuthStateFactory
+import me.bookk.feature.authorization.presentation.EmailVerificationStateFactory
 import me.bookk.feature.business.presentation.BusinessStateFactory
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.dashboard.presentation.DashboardStateFactory
@@ -15,6 +16,7 @@ import me.bookk.feature.services.presentation.ServicesStateFactory
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.presentation.StateFactoryCreator
 import me.bookk.shared.common.di.commonModule
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal fun coreModule(creator: StateFactoryCreator) = module {
@@ -27,7 +29,8 @@ internal fun coreModule(creator: StateFactoryCreator) = module {
 }
 
 private fun stateModule() = module {
-    factory<AuthStateFactory> { get<StateFactoryCreator>().createAuthFactory() }
+    factory<AuthStateFactory> { get<StateFactoryCreator>().createAuthFactory() } bind
+        EmailVerificationStateFactory::class
     factory<DashboardStateFactory> { get<StateFactoryCreator>().createDashboardFactory() }
     factory<SettingsStateFactory> { get<StateFactoryCreator>().createSettingsFactory() }
     factory<BusinessStateFactory> { get<StateFactoryCreator>().createBusinessFactory() }

@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
-import me.bookk.designsystem.uistate.ButtonState
 
 class WebButtonState(
     text: StringDesc = "".desc(),
@@ -15,9 +14,11 @@ class WebButtonState(
     isVisible: Boolean = true,
     onClick: (() -> Unit)? = null,
     icon: ImageResource? = null,
+    endIcon: ImageResource? = null,
 ) : WebViewState(isVisible),
     ButtonState {
     override var icon: ImageResource? by mutableStateOf(icon)
+    override var endIcon: ImageResource? by mutableStateOf(endIcon)
     override var text: StringDesc by mutableStateOf(text)
     override var isLoading: Boolean by mutableStateOf(isLoading)
     override var isEnabled: Boolean by mutableStateOf(isEnabled)

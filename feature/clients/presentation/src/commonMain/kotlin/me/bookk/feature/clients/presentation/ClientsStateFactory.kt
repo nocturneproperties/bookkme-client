@@ -4,10 +4,12 @@ import me.bookk.feature.clients.presentation.create.CreateClientState
 import me.bookk.feature.clients.presentation.details.ClientDetailsState
 import me.bookk.feature.clients.presentation.edit.EditClientState
 import me.bookk.feature.clients.presentation.list.ClientsListState
+import me.bookk.feature.clients.presentation.select.SelectClientState
 
 interface ClientsStateFactory {
     fun createClientsListState(): ClientsListState
     fun createClientState(): CreateClientState
     fun createClientDetailsState(): ClientDetailsState
     fun createEditClientState(): EditClientState
+    fun createSelectClientState(): SelectClientState
 }

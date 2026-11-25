@@ -20,6 +20,7 @@ import kotlinx.datetime.plus
 import library.money.api.Money
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
+import me.bookk.core.domain.pagination.Page
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.today
 import me.bookk.core.test.given
@@ -88,7 +89,7 @@ class AppointmentListViewModelTest {
         }
         val getAssignedAppointmentRequests = mock<GetAssignedAppointmentRequests> {
             every { flow(any()) } returns requests
-            everySuspend { refresh(any()) } returns emptyList()
+            everySuspend { refresh(any()) } returns Page(emptyList(), nextCursor = null)
         }
         val errorMapper = FakeErrorMapper()
 

@@ -23,7 +23,7 @@ import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 internal class AndroidClientsListState : ClientsListState {
     override val appBar: AppBarState = AndroidAppBarState()
     override val searchField: TextFieldState = AndroidTextFieldState()
-    override val clientsList: ListState<ClientSection> = AndroidListState()
+    override val clientsList: ListState<ClientListItem> = AndroidListState()
     override val refreshState: RefreshState = AndroidRefreshState()
     override val contactsPicker:
         OptionsMultiPickerState<SimplePickerPresentation<ClientImportEntry>> =

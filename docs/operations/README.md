@@ -95,7 +95,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `GetClientsList` | `GET /api/business/{businessId}/clients` | [Get clients list](clients/get-clients-list.md) (reference list steps) |
+| `GetClientsList` | `GET /api/business/{businessId}/clients[?cursor=][&query=]` (cursor-paged `PagedSource<ClientsQuery, Client>`; `flow(search)` filters the cache on the device) | [Get clients list](clients/get-clients-list.md) (reference list steps) |
 | `GetClient` | local only (`flow` observes the row) | [Get client](clients/get-client.md) |
 | `CreateClient` | `POST /api/business/{businessId}/clients` | [Create client](clients/create-client.md) |
 | `ImportClients` | `POST /api/business/{businessId}/clients/import` (one request per 500 entries) | [Import clients](clients/import-clients.md) |
@@ -142,27 +142,28 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `GetBusinessAppointmentRequests` | `GET /api/appointments/request/{businessId}` | [Get business appointment requests](appointments/get-business-appointment-requests.md) |
 | `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=[&employeeId=]` | [Get appointments for business](appointments/get-appointments-for-business.md) |
 | `GetAppointment` | local read; `refresh(id)` fetches and caches `GET /api/appointments/{id}`; shared `NotFound` → use-case `NotFound` | [Get appointment](appointments/get-appointment.md) |
-| `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}` (paged) | [Get appointment history](appointments/get-appointment-history.md) |
+| `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}[?cursor=][&query=]` (cursor-paged `PagedSource<AppointmentHistoryQuery, Appointment>`, cached in `appointment` within each page's dates; `flow(businessId, search)` filters on the device) | [Get appointment history](appointments/get-appointment-history.md) |
 | `CreateAppointment` | fresh service quote + `POST /api/appointments/instant`; refresh on mismatch; UI reconciles selected services from cache | [Create appointment](appointments/create-appointment.md) |
 | `UpdateAppointment` | `PUT /api/appointments/{id}`; UI reloads after conflict or closed edit window | [Update appointment](appointments/update-appointment.md) |
 | `CancelAppointment` | `POST /api/appointments/{id}/cancel`; UI reloads after closed edit window | [Cancel appointment](appointments/cancel-appointment.md) |
 | `CompleteAppointment` | `POST /api/appointments/{id}/complete`; UI reloads after closed edit window | [Complete appointment](appointments/complete-appointment.md) |
 | `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show`; UI reloads after closed edit window | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
-| `GetAssignedAppointmentRequests` | `GET /api/appointments/request/{businessId}/assigned` | [Get assigned appointment requests](appointments/get-assigned-appointment-requests.md) |
+| `GetAssignedAppointmentRequests` | `GET /api/appointments/request/history/{businessId}?employeeId=&status=PENDING&order=SOONEST_FIRST[&cursor=]` (cursor-paged: `refresh` replaces the cache with the first page, `loadMore(cursor)` appends; the screen's `ListPager` holds the cursor) | [Get assigned appointment requests](appointments/get-assigned-appointment-requests.md) |
 | `CreateAppointmentRequest` | `POST /api/appointments/request` | [Create appointment request](appointments/create-appointment-request.md) |
 | `ApproveAppointmentRequest` | `POST /api/appointments` | [Approve appointment request](appointments/approve-appointment-request.md) |
 | `DeclineAppointmentRequest` | `POST /api/appointments/request/{id}/decline` | [Decline appointment request](appointments/decline-appointment-request.md) |
-| `GetClientAppointmentRequest` | local only: one of the client's requests by id, any status (Room `appointment_request`), named through `GetBusinesses.flow`; no client route reads one request (client web app) | [Get client appointment request](appointments/get-client-appointment-request.md) |
-| `GetClientAppointment` | local only: one of the client's appointments by id, any status (Room `appointment`), named through `GetBusinesses.flow`; no client route reads one appointment (client web app) | [Get client appointment](appointments/get-client-appointment.md) |
+| `GetClientAppointmentRequest` | local only: one of the client's requests by id, any status (Room `appointment_request`), with the `businessName` the backend sent; no client route reads one request (client web app) | [Get client appointment request](appointments/get-client-appointment-request.md) |
+| `GetClientAppointment` | local only: one of the client's appointments by id, any status (Room `appointment`), with the `businessName` the backend sent; no client route reads one appointment (client web app) | [Get client appointment](appointments/get-client-appointment.md) |
 | `WithdrawAppointmentRequest` | `POST /api/appointments/request/{id}/withdraw`, then sets the cached request to `CANCELLED` (best effort); 404 → `NotFound`, 300008 → `AlreadyApproved`, 300007 → `AlreadyDeclined` (client web app) | [Withdraw appointment request](appointments/withdraw-appointment-request.md) |
 | `GetAppointmentSettings` | `GET /api/appointments/settings/{businessId}` | [Get appointment settings](appointments/get-appointment-settings.md) |
 | `UpdateAppointmentSettings` | `PUT /api/appointments/settings/{businessId}` | [Update appointment settings](appointments/update-appointment-settings.md) |
-| `GetAppointmentOptions` | composes two refreshes | [Get appointment options](appointments/get-appointment-options.md) |
+| `GetAppointmentOptions` | composes `GetServices.refresh` | [Get appointment options](appointments/get-appointment-options.md) |
+| `GetClientSnapshot` | local only: the picked client from Room through `GetClient` | [Get client snapshot](appointments/get-client-snapshot.md) |
 | `ObserveAppointmentOptions` | local only | [Observe appointment options](appointments/observe-appointment-options.md) |
-| `GetUpcomingBookings` | `GET /api/appointments/upcoming` + `GetBusinesses.refresh` (client web app) | [Get upcoming bookings](appointments/get-upcoming-bookings.md) |
+| `GetUpcomingBookings` | `GET /api/appointments/upcoming` (each booking with its `businessName`); deletes missing cached bookings only within the dates the 2 + 2 response covers (client web app) | [Get upcoming bookings](appointments/get-upcoming-bookings.md) |
+| `GetClientBookings` | `GET /api/appointments/mine` and `GET /api/appointments/request/mine` (each cursor-paged, merged into one page cut at the last date of a list with more pages; `UPCOMING` by `period=UPCOMING` and active statuses, `PAST` by finished statuses); each booking carries its `businessName`; each page replaces the cached dates it covers (client web app) | [Get client bookings](appointments/get-client-bookings.md) |
 | `GetSavedBusinesses` | `GET /api/appointments/businesses` + `GetBusinesses.refresh` (client web app) | [Get saved businesses](appointments/get-saved-businesses.md) |
 | `SaveBusiness` | `POST /api/appointments/businesses/{businessId}`, then refreshes the saved list (client web app) | [Save business](appointments/save-business.md) |
 | `GetFreeSlots` | `POST /api/appointments/slots` (network only, not cached: free slots go stale quickly; client web app) | [Get free slots](appointments/get-free-slots.md) |
@@ -210,6 +211,7 @@ services (and the employees') use cases and keep what the client approved per bu
 | `GetSentBooking` | local only: finds the sent request (business, specialist, start) among `GetUpcomingBookings.flow` (Room `appointment`/`appointment_request`), its time, services and status; `null` until cached | [Get sent booking](booking/get-sent-booking.md) |
 | `GetBookingRequestDetails` | local only: one request by id, any status, via `GetClientAppointmentRequest` (Room `appointment_request`): business, specialist, times, the client's note, services with their prices, total and status (waiting, confirmed, declined, closed); `null` while not cached | [Get booking request details](booking/get-booking-request-details.md) |
 | `GetBookingAppointmentDetails` | local only: one appointment by id, any status, via `GetClientAppointment` (Room `appointment`): the same summary with the client's `clientNote`, status (confirmed, completed, cancelled, missed); `null` while not cached | [Get booking appointment details](booking/get-booking-appointment-details.md) |
+| `GetBookings` | via `GetClientBookings` (`GET /api/appointments/mine`, `GET /api/appointments/request/mine`, Room `appointment`/`appointment_request`): the client's upcoming or past bookings as `BookingOverview`s (summary and request or appointment status), paged with one cursor | [Get bookings](booking/get-bookings.md) |
 | `WithdrawBookingRequest` | via `WithdrawAppointmentRequest` (`POST /api/appointments/request/{id}/withdraw`, cached request set to `CANCELLED`); an already answered request folds into `AlreadyConfirmed` or `NoLongerPending` after refreshing the upcoming bookings through `GetUpcomingBookings.refresh` (`GET /api/appointments/upcoming`, failure dropped) | [Withdraw booking request](booking/withdraw-booking-request.md) |
 
 ## Use cases composed of other use cases
@@ -229,11 +231,11 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Download business data export](business/download-business-data-export.md) | `GetBusinessDataExport.flow` |
 | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `BusinessDataSource.observeUserBusinessInfoInDb` (business + selection snapshot), `IsAppointmentsPluginEnabled.flow`, `GetServiceGroups.flow`, `GetServices.flow`, `GetClientsList.flow` (cross-feature) |
 | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) | `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` (cross-feature) |
-| [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |
-| [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
+| [Get appointment options](appointments/get-appointment-options.md) | `GetServices.refresh` |
+| [Get client snapshot](appointments/get-client-snapshot.md) | `GetClient` (clients feature, cross-feature wrapper) |
+| [Observe appointment options](appointments/observe-appointment-options.md) | `GetServices.flow` |
 | [Save business](appointments/save-business.md) | `GetSavedBusinesses.refresh` |
-| [Get upcoming bookings](appointments/get-upcoming-bookings.md), [Get saved businesses](appointments/get-saved-businesses.md) | `GetBusinesses.flow`, `GetBusinesses.refresh` (cross-feature, business) |
-| [Get client appointment request](appointments/get-client-appointment-request.md), [Get client appointment](appointments/get-client-appointment.md) | `GetBusinesses.flow` (cross-feature, business) |
+| [Get saved businesses](appointments/get-saved-businesses.md) | `GetBusinesses.flow`, `GetBusinesses.refresh` (cross-feature, business) |
 | [Get services](services/get-services.md) | `ObserveDashboardBusinessChanges`, `GetBusinessServices` |
 | [Get assignable services](employees/get-assignable-services.md) | `GetServices` (cross-feature wrapper) |
 | [Is business owner](employees/is-business-owner.md) | `ObserveUserBusinessesChanges` (cross-feature wrapper) |
@@ -254,6 +256,7 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Get sent booking](booking/get-sent-booking.md) | `GetUpcomingBookings.flow` (appointments) (cross-feature wrapper) |
 | [Get booking request details](booking/get-booking-request-details.md) | `GetClientAppointmentRequest.flow` (appointments) (cross-feature wrapper) |
 | [Get booking appointment details](booking/get-booking-appointment-details.md) | `GetClientAppointment.flow` (appointments) (cross-feature wrapper) |
+| [Get bookings](booking/get-bookings.md) | `GetClientBookings.flow`/`refresh`/`loadMore` (appointments) (cross-feature wrapper) |
 | [Withdraw booking request](booking/withdraw-booking-request.md) | `WithdrawAppointmentRequest` and `GetUpcomingBookings.refresh` (appointments) (cross-feature wrapper) |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
 | [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut` |

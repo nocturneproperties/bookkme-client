@@ -3,7 +3,7 @@
 # Get sent booking
 
 `GetSentBooking.flow(request)` → appointments' [Get upcoming bookings](../appointments/get-upcoming-bookings.md)
-`flow()` (local only: Room `appointment` and `appointment_request`, named through `business`)
+`flow()` (local only: Room `appointment` and `appointment_request`, with each booking's `businessName`)
 · called by `BookingSentViewModel`, which shows the sent request's card on the Request sent step; bound by
 `bookingDomainModule()`
 
@@ -19,7 +19,7 @@ already refreshed the upcoming bookings, and a failed refresh there is dropped.
 
 ```mermaid
 flowchart TD
-    Start([flow request]) --> Upcoming[GetUpcomingBookings.flow<br/>Room appointment + appointment_request, named through business]
+    Start([flow request]) --> Upcoming[GetUpcomingBookings.flow<br/>Room appointment + appointment_request, with businessName]
     Upcoming --> Match{a booking with businessId = request.businessId,<br/>employee.id = request.specialistId and<br/>date = request.startsAt in the device time zone?}
     Match -- no --> Null([emit null])
     Match -- yes --> Map[SentBooking id, startsAt = date,<br/>endsAt = startsAt + total service duration,<br/>services grouped by id with their count,<br/>status WAITING_FOR_CONFIRMATION or CONFIRMED]

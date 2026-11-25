@@ -12,6 +12,7 @@ import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import library.device.api.DeviceFacade
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -129,8 +130,6 @@ class SettingsDashboardViewModelTest {
 
         then()
         assertEquals(UIColorScheme.DARK, sut.uiState.appearance.colorScheme)
-        assertEquals("Anna".desc(), sut.uiState.profile.name)
-        assertEquals("Smith".desc(), sut.uiState.profile.lastName)
         assertEquals("anna@example.com".desc(), sut.uiState.profile.email)
     }
 
@@ -175,6 +174,21 @@ class SettingsDashboardViewModelTest {
         assertEquals(
             SettingsRes.strings.settings_profile_edit_booking.desc(),
             sut.uiState.profile.edit.text,
+        )
+    }
+
+    @Test
+    fun `shows a chevron after the profile edit button text`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            DesignSystem.images.material_chevron_right,
+            sut.uiState.profile.edit.endIcon,
         )
     }
 

@@ -29,18 +29,17 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
-import me.bookk.designsystem.test.FakePickerFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.designsystem.uistate.PickerFieldState
-import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.designsystem.uistate.quantityOf
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
+import me.bookk.feature.appointments.domain.api.GetClientSnapshot
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentDraft
@@ -89,16 +88,16 @@ class AppointmentCreateViewModelTest {
             60.minutes,
         )
         val options = MutableStateFlow(
-            AppointmentOptions(
-                clients = listOf(client),
-                services = listOf(haircut, coloring),
-            ),
+            AppointmentOptions(services = listOf(haircut, coloring)),
         )
         val observeAppointmentOptions = mock<ObserveAppointmentOptions> {
             every { invoke() } returns options
         }
         val getAppointmentOptions = mock<GetAppointmentOptions> {
             everySuspend { invoke(any()) } returns options.value
+        }
+        val getClientSnapshot = mock<GetClientSnapshot> {
+            everySuspend { invoke(client.id) } returns client
         }
         val createAppointment = mock<CreateAppointment>()
         val errorMapper = FakeErrorMapper()
@@ -108,6 +107,7 @@ class AppointmentCreateViewModelTest {
             businessId = businessId,
             getAppointmentOptions = getAppointmentOptions,
             observeAppointmentOptions = observeAppointmentOptions,
+            getClientSnapshot = getClientSnapshot,
             createAppointment = createAppointment,
             dateLocalizer = FakeDateLocalizer(),
             stateFactory = FakeAppointmentsStateFactory(),
@@ -115,17 +115,15 @@ class AppointmentCreateViewModelTest {
         )
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun AppointmentCreateViewModel.fillValidForm() {
-        (uiState.clientPicker as FakePickerFieldState<SimplePickerPresentation<ClientSnapshot>>)
-            .pick(uiState.clientPicker.options.first())
+    private fun AppointmentCreateViewModel.fillValidForm(client: ClientSnapshot) {
+        uiState.onClientPicked(client.id)
         uiState.servicePicker.onItemsPicked(listOf(uiState.servicePicker.options.first()))
         uiState.datePicker.datePicker.onDatePicked?.invoke(LocalDate(2030, 1, 10))
         uiState.timePicker.timePicker.onTimePicked?.invoke(LocalTime(14, 30))
     }
 
     @Test
-    fun `loads clients and services as picker options`() = runUnitTest {
+    fun `loads services as picker options`() = runUnitTest {
         given()
         val fixture = Fixture()
 
@@ -133,7 +131,6 @@ class AppointmentCreateViewModelTest {
         val sut = fixture.sut()
 
         then()
-        assertEquals(listOf(fixture.client), sut.uiState.clientPicker.options.map { it.domain })
         assertEquals(
             listOf(fixture.haircut, fixture.coloring),
             sut.uiState.servicePicker.options.map { it.item },
@@ -153,23 +150,15 @@ class AppointmentCreateViewModelTest {
     }
 
     @Test
-    fun `updates picker options when observed options change`() = runUnitTest {
+    fun `updates service options when observed options change`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
-        val newClient = ClientSnapshot.stub()
 
         whenn()
-        fixture.options.value = AppointmentOptions(
-            clients = listOf(fixture.client, newClient),
-            services = listOf(fixture.coloring),
-        )
+        fixture.options.value = AppointmentOptions(services = listOf(fixture.coloring))
 
         then()
-        assertEquals(
-            listOf(fixture.client, newClient),
-            sut.uiState.clientPicker.options.map { it.domain },
-        )
         assertEquals(listOf(fixture.coloring), sut.uiState.servicePicker.options.map { it.item })
     }
 
@@ -178,7 +167,7 @@ class AppointmentCreateViewModelTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
         val updated = fixture.haircut.copy(
             name = "Updated haircut",
             price = Money(12000L, Money.SupportedCurrency.UAH),
@@ -186,10 +175,7 @@ class AppointmentCreateViewModelTest {
         )
 
         whenn()
-        fixture.options.value = AppointmentOptions(
-            clients = fixture.options.value.clients,
-            services = listOf(updated),
-        )
+        fixture.options.value = AppointmentOptions(services = listOf(updated))
 
         then()
         assertEquals(listOf(updated), sut.uiState.servicePicker.selectedItems.map { it.item.item })
@@ -202,14 +188,11 @@ class AppointmentCreateViewModelTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
         sut.uiState.servicePicker.onItemsPicked(listOf(sut.uiState.servicePicker.options.last()))
 
         whenn()
-        fixture.options.value = AppointmentOptions(
-            clients = fixture.options.value.clients,
-            services = listOf(fixture.coloring),
-        )
+        fixture.options.value = AppointmentOptions(services = listOf(fixture.coloring))
 
         then()
         assertEquals(
@@ -225,13 +208,10 @@ class AppointmentCreateViewModelTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         whenn()
-        fixture.options.value = AppointmentOptions(
-            clients = fixture.options.value.clients,
-            services = listOf(fixture.coloring),
-        )
+        fixture.options.value = AppointmentOptions(services = listOf(fixture.coloring))
 
         then()
         assertTrue(sut.uiState.servicePicker.selectedItems.isEmpty())
@@ -245,17 +225,15 @@ class AppointmentCreateViewModelTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
         sut.uiState.note.text = "Window seat"
 
         whenn()
-        fixture.options.value = AppointmentOptions(
-            clients = fixture.options.value.clients,
-            services = listOf(fixture.haircut.copy(duration = 45.minutes)),
-        )
+        fixture.options.value =
+            AppointmentOptions(services = listOf(fixture.haircut.copy(duration = 45.minutes)))
 
         then()
-        assertEquals(fixture.client, sut.uiState.clientPicker.selectedItem?.domain)
+        assertEquals(fixture.client.fullName, sut.uiState.clientField.text)
         assertEquals(LocalDate(2030, 1, 10), sut.uiState.datePicker.datePicker.pickedDate)
         assertEquals(LocalTime(14, 30), sut.uiState.timePicker.timePicker.pickedTime)
         assertEquals("Window seat", sut.uiState.note.text)
@@ -270,14 +248,12 @@ class AppointmentCreateViewModelTest {
             val result = CompletableDeferred<Appointment>()
             everySuspend { fixture.createAppointment(any()) } calls { result.await() }
             val sut = fixture.sut()
-            sut.fillValidForm()
+            sut.fillValidForm(fixture.client)
             sut.uiState.create.onClick?.invoke()
 
             whenn()
-            fixture.options.value = AppointmentOptions(
-                clients = fixture.options.value.clients,
-                services = listOf(fixture.haircut.copy(duration = 45.minutes)),
-            )
+            fixture.options.value =
+                AppointmentOptions(services = listOf(fixture.haircut.copy(duration = 45.minutes)))
 
             then()
             assertTrue(sut.uiState.create.isLoading)
@@ -294,14 +270,11 @@ class AppointmentCreateViewModelTest {
             val fixture = Fixture()
             val updated = fixture.haircut.copy(price = Money(12000L, Money.SupportedCurrency.UAH))
             everySuspend { fixture.createAppointment(any()) } calls {
-                fixture.options.value = AppointmentOptions(
-                    clients = fixture.options.value.clients,
-                    services = listOf(updated),
-                )
+                fixture.options.value = AppointmentOptions(services = listOf(updated))
                 throw CreateAppointment.Error.PriceChanged()
             }
             val sut = fixture.sut()
-            sut.fillValidForm()
+            sut.fillValidForm(fixture.client)
 
             whenn()
             sut.uiState.create.onClick?.invoke()
@@ -322,11 +295,8 @@ class AppointmentCreateViewModelTest {
         val fixture = Fixture()
         val updated = fixture.haircut.copy(price = Money(12000L, Money.SupportedCurrency.UAH))
         val sut = fixture.sut()
-        sut.fillValidForm()
-        fixture.options.value = AppointmentOptions(
-            clients = fixture.options.value.clients,
-            services = listOf(updated),
-        )
+        sut.fillValidForm(fixture.client)
+        fixture.options.value = AppointmentOptions(services = listOf(updated))
         everySuspend { fixture.createAppointment(capture(fixture.drafts)) } returns
             Appointment.stub()
 
@@ -380,10 +350,11 @@ class AppointmentCreateViewModelTest {
     @Test
     fun `enables create only when client services date and time are picked`() = runUnitTest {
         given()
-        val sut = Fixture().sut()
+        val fixture = Fixture()
+        val sut = fixture.sut()
 
         whenn()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         then()
         assertTrue(sut.uiState.create.isEnabled)
@@ -392,12 +363,11 @@ class AppointmentCreateViewModelTest {
     @Test
     fun `keeps create disabled without time`() = runUnitTest {
         given()
-        val sut = Fixture().sut()
+        val fixture = Fixture()
+        val sut = fixture.sut()
 
         whenn()
-        @Suppress("UNCHECKED_CAST")
-        (sut.uiState.clientPicker as FakePickerFieldState<SimplePickerPresentation<ClientSnapshot>>)
-            .pick(sut.uiState.clientPicker.options.first())
+        sut.uiState.onClientPicked(fixture.client.id)
         sut.uiState.servicePicker.onItemsPicked(listOf(sut.uiState.servicePicker.options.first()))
         sut.uiState.datePicker.datePicker.onDatePicked?.invoke(LocalDate(2030, 1, 10))
 
@@ -517,8 +487,9 @@ class AppointmentCreateViewModelTest {
     @Test
     fun `disables create when the last service quantity is decreased away`() = runUnitTest {
         given()
-        val sut = Fixture().sut()
-        sut.fillValidForm()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.fillValidForm(fixture.client)
 
         whenn()
         sut.uiState.servicePicker.onQuantityDecreaseRequested(
@@ -536,7 +507,7 @@ class AppointmentCreateViewModelTest {
         everySuspend { fixture.createAppointment(capture(fixture.drafts)) } returns
             Appointment.stub()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
         sut.uiState.servicePicker.onQuantityIncreaseRequested(
             sut.uiState.servicePicker.options.first(),
         )
@@ -555,7 +526,7 @@ class AppointmentCreateViewModelTest {
         everySuspend { fixture.createAppointment(capture(fixture.drafts)) } returns
             Appointment.stub()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
         sut.uiState.note.text = "Window seat"
 
         whenn()
@@ -584,7 +555,7 @@ class AppointmentCreateViewModelTest {
         val fixture = Fixture()
         everySuspend { fixture.createAppointment(any()) } returns Appointment.stub()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         whenn()
         sut.uiState.create.onClick?.invoke()
@@ -599,7 +570,7 @@ class AppointmentCreateViewModelTest {
         val fixture = Fixture()
         everySuspend { fixture.createAppointment(any()) } throws TestException()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         whenn()
         sut.uiState.create.onClick?.invoke()
@@ -611,6 +582,51 @@ class AppointmentCreateViewModelTest {
             },
         )
     }
+
+    @Test
+    fun `opens the client picker when the client field is tapped`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.onClientFieldClick()
+
+        then()
+        assertTrue(sut.uiState.isClientPickerVisible)
+    }
+
+    @Test
+    fun `shows the picked client and closes the client picker`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        sut.uiState.onClientFieldClick()
+
+        whenn()
+        sut.uiState.onClientPicked(fixture.client.id)
+
+        then()
+        assertEquals(fixture.client.fullName, sut.uiState.clientField.text)
+        assertFalse(sut.uiState.isClientPickerVisible)
+    }
+
+    @Test
+    fun `shows an error and keeps creation disabled when the picked client cannot be read`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val missingId = Uuid.random()
+            everySuspend { fixture.getClientSnapshot(missingId) } throws TestException()
+            val sut = fixture.sut()
+
+            whenn()
+            sut.uiState.onClientPicked(missingId)
+
+            then()
+            fixture.errorMapper.assertMappedSingle(TestException::class)
+            assertEquals("", sut.uiState.clientField.text)
+            assertFalse(sut.uiState.create.isEnabled)
+        }
 
     @Test
     fun `does not create without picked client`() = runUnitTest {
@@ -632,7 +648,7 @@ class AppointmentCreateViewModelTest {
         everySuspend { fixture.createAppointment(any()) } throws
             CreateAppointment.Error.AppointmentOverlap()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         whenn()
         sut.uiState.create.onClick?.invoke()
@@ -648,7 +664,7 @@ class AppointmentCreateViewModelTest {
         everySuspend { fixture.createAppointment(any()) } throws
             CreateAppointment.Error.NotAnEmployee()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         whenn()
         sut.uiState.create.onClick?.invoke()
@@ -669,7 +685,7 @@ class AppointmentCreateViewModelTest {
         everySuspend { fixture.createAppointment(any()) } throws
             CreateAppointment.Error.DateIsNotAllowed()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         whenn()
         sut.uiState.create.onClick?.invoke()
@@ -686,7 +702,7 @@ class AppointmentCreateViewModelTest {
         everySuspend { fixture.createAppointment(any()) } throws
             CreateAppointment.Error.TimeIsNotAllowed()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         whenn()
         sut.uiState.create.onClick?.invoke()
@@ -704,7 +720,7 @@ class AppointmentCreateViewModelTest {
             everySuspend { fixture.createAppointment(any()) } throws
                 CreateAppointment.Error.EmployeeDateIsNotAllowed()
             val sut = fixture.sut()
-            sut.fillValidForm()
+            sut.fillValidForm(fixture.client)
 
             whenn()
             sut.uiState.create.onClick?.invoke()
@@ -726,7 +742,7 @@ class AppointmentCreateViewModelTest {
             everySuspend { fixture.createAppointment(any()) } throws
                 CreateAppointment.Error.EmployeeTimeIsNotAllowed()
             val sut = fixture.sut()
-            sut.fillValidForm()
+            sut.fillValidForm(fixture.client)
 
             whenn()
             sut.uiState.create.onClick?.invoke()
@@ -747,7 +763,7 @@ class AppointmentCreateViewModelTest {
         everySuspend { fixture.createAppointment(any()) } throws
             CreateAppointment.Error.EmployeeDateIsNotAllowed()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
         sut.uiState.create.onClick?.invoke()
 
         whenn()
@@ -765,7 +781,7 @@ class AppointmentCreateViewModelTest {
         everySuspend { fixture.createAppointment(any()) } throws
             CreateAppointment.Error.TimeIsNotAllowed()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
         sut.uiState.create.onClick?.invoke()
 
         whenn()
@@ -782,7 +798,7 @@ class AppointmentCreateViewModelTest {
         val fixture = Fixture()
         everySuspend { fixture.createAppointment(any()) } throws TestException()
         val sut = fixture.sut()
-        sut.fillValidForm()
+        sut.fillValidForm(fixture.client)
 
         whenn()
         sut.uiState.create.onClick?.invoke()
@@ -833,7 +849,7 @@ class AppointmentCreateViewModelTest {
             val fixture = Fixture()
             everySuspend { fixture.createAppointment(any()) } throws error
             val sut = fixture.sut()
-            sut.fillValidForm()
+            sut.fillValidForm(fixture.client)
 
             whenn()
             sut.uiState.create.onClick?.invoke()

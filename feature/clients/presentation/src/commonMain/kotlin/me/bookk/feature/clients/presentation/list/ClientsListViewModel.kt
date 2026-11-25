@@ -13,7 +13,6 @@ import library.permissions.api.PermissionManager
 import library.permissions.api.PermissionType
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.clients.resources.ClientsRes
-import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
@@ -23,8 +22,6 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.core.presentation.text.TextCollator
-import me.bookk.designsystem.convenience.loadList
-import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.action
@@ -58,7 +55,16 @@ class ClientsListViewModel(
 ) : ViewModel(vmArgs) {
 
     val uiState = stateFactory.createClientsListState().setup()
-    private var items = listOf<ClientSection>()
+    private val clients = SearchableClientList(
+        viewModel = this,
+        listState = uiState.clientsList,
+        searchField = uiState.searchField,
+        notifications = uiState.notifications,
+        refreshState = uiState.refreshState,
+        getClientsList = getClientsList,
+        observeCurrentBusinessId = observeCurrentBusinessId,
+        onClientClick = weakVMClosure { vm, client -> vm.onClientClick(client) },
+    )
     private val importAction = uiState.appBar.action(
         icon = DesignSystem.images.contacts,
         contentDescription = DesignSystem.strings.action_import.desc(),
@@ -71,45 +77,15 @@ class ClientsListViewModel(
     )
 
     init {
-        observeClients()
-        observeBusinessChanges()
+        clients.start()
+        observeEditAccess()
     }
 
-    private fun observeClients() {
-        getClientsList
-            .flow()
-            .flowOn(DispatcherProvider.io)
-            .safeOnEach { renderClients(it) }
-            .onError { uiState.notifications.add(it.notification()) }
-            .observe()
-    }
-
-    private fun renderClients(clients: List<Client>) {
-        if (clients.isEmpty() && uiState.clientsList.isInitialLoading) return
-        val grouped = clients
-            .sortedBy { it.name.trim() }
-            .groupBy { it.name[0].toString().capitalizeChar() }
-            .map { entry ->
-                ClientSection(
-                    id = entry.key,
-                    header = entry.key,
-                    items = entry.value,
-                    onItemClick = weakVMClosure { vm, client -> vm.onClientClick(client) },
-                )
-            }
-        items = grouped
-        uiState.clientsList.replace(grouped)
-    }
-
-    private fun observeBusinessChanges() {
+    private fun observeEditAccess() {
         observeCurrentBusinessId()
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
-            .resetListOnChange(uiState.clientsList)
-            .safeOnEach {
-                loadClients(it)
-                loadEditAccess(it)
-            }
+            .safeOnEach { loadEditAccess(it) }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
     }
@@ -127,15 +103,6 @@ class ClientsListViewModel(
     private fun renderAppBarActions(canEdit: Boolean) {
         val actions = if (canEdit) listOf(importAction, addAction) else emptyList()
         uiState.appBar.actions.replace(actions)
-    }
-
-    private fun loadClients(businessId: Uuid) {
-        loadList(
-            listState = uiState.clientsList,
-            notifications = uiState.notifications,
-            refreshState = uiState.refreshState,
-            call = { getClientsList.refresh(businessId) },
-        )
     }
 
     private fun onClientClick(client: Client) {
@@ -301,31 +268,13 @@ class ClientsListViewModel(
         )
     }
 
-    private fun onSearchQueryChanged(query: String) {
-        uiState.searchField.text = query
-        if (query.isBlank()) {
-            uiState.clientsList.replace(items)
-            return
-        }
-        val filtered = items
-            .map {
-                it.copy(
-                    items = it.items.filter {
-                        it.fullName.contains(query, ignoreCase = true)
-                    },
-                )
-            }
-            .filter { it.items.isNotEmpty() }
-        uiState.clientsList.replace(filtered)
-    }
-
     private fun ClientsListState.setup(): ClientsListState {
         appBar.title = ClientsRes.strings.clients_title.desc()
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(ClientsListDestination.Back)
         }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
-        searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
+        searchField.onTextChanged = weakVMClosure { vm, value -> vm.clients.search(value) }
         contactsPicker.pickerTitle = ClientsRes.strings.clients_import_contacts_title.desc()
         contactsPicker.pickerType = PickerFieldState.PickerType.SCREEN
         contactsPicker.onItemsPicked = weakVMClosure { vm, picked -> vm.onContactsPicked(picked) }

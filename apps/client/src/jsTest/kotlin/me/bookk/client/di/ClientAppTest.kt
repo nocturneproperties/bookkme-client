@@ -42,6 +42,7 @@ import me.bookk.feature.booking.domain.api.GetBookingRequestDetails
 import me.bookk.feature.booking.domain.api.GetBookingSlots
 import me.bookk.feature.booking.domain.api.GetBookingSpecialists
 import me.bookk.feature.booking.domain.api.GetBookingTimetable
+import me.bookk.feature.booking.domain.api.GetBookings
 import me.bookk.feature.booking.domain.api.GetBusinessMessage
 import me.bookk.feature.booking.domain.api.GetSentBooking
 import me.bookk.feature.booking.domain.api.SendBookingRequest
@@ -51,6 +52,7 @@ import me.bookk.feature.booking.domain.api.SetBookingSpecialist
 import me.bookk.feature.booking.domain.api.WithdrawBookingRequest
 import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
+import me.bookk.feature.booking.presentation.screen.bookings.BookingsViewModel
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeViewModel
 import me.bookk.feature.booking.presentation.screen.details.BookingAppointmentDetailsViewModel
 import me.bookk.feature.booking.presentation.screen.details.BookingRequestDetailsViewModel
@@ -150,14 +152,14 @@ class ClientAppTest {
 
         override fun appointmentDao(): AppointmentDao {
             return mock {
-                every { observeScheduled() } returns emptyFlow()
+                every { observeByStatuses(any()) } returns emptyFlow()
                 every { observeById(any()) } returns emptyFlow()
             }
         }
 
         override fun appointmentRequestDao(): AppointmentRequestDao {
             return mock {
-                every { observePending() } returns emptyFlow()
+                every { observeByStatuses(any()) } returns emptyFlow()
                 every { observeById(any()) } returns emptyFlow()
             }
         }
@@ -599,6 +601,31 @@ class ClientAppTest {
         val viewModel = KoinPlatform.getKoin().getOrNull<BookingAppointmentDetailsViewModel> {
             parametersOf(Uuid.random())
         }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the bookings the bookings screen pages through`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val getBookings = KoinPlatform.getKoin().getOrNull<GetBookings>()
+
+        then()
+        assertNotNull(getBookings)
+    }
+
+    @Test
+    fun `provides the bookings view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<BookingsViewModel>()
 
         then()
         assertNotNull(viewModel)

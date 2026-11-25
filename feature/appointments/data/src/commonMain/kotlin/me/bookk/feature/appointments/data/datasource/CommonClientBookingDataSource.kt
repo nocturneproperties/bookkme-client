@@ -13,13 +13,20 @@ import me.bookk.database.dao.AppointmentDao
 import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.BookingInfoDao
 import me.bookk.database.dao.SavedBusinessDao
+import me.bookk.feature.appointments.data.mapping.appointmentStatusNames
+import me.bookk.feature.appointments.data.mapping.appointmentStatuses
+import me.bookk.feature.appointments.data.mapping.requestStatusNames
+import me.bookk.feature.appointments.data.mapping.requestStatuses
 import me.bookk.feature.appointments.data.mapping.toAdjustmentServiceEntities
 import me.bookk.feature.appointments.data.mapping.toDomain
 import me.bookk.feature.appointments.data.mapping.toEntity
+import me.bookk.feature.appointments.data.mapping.toRemote
 import me.bookk.feature.appointments.data.mapping.toRequestEntity
 import me.bookk.feature.appointments.data.mapping.toRequestServiceEntities
 import me.bookk.feature.appointments.data.mapping.toServiceEntities
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
+import me.bookk.feature.appointments.data.remote.model.AppointmentPageRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentRequestPageRemote
 import me.bookk.feature.appointments.data.remote.model.BookingInfoRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotsDayRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotsRequestRemote
@@ -28,10 +35,11 @@ import me.bookk.feature.appointments.data.remote.model.UpcomingBookingsRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.BookingInfo
+import me.bookk.feature.appointments.domain.api.entity.ClientBookingPeriod
 import me.bookk.feature.appointments.domain.api.entity.FreeSlotsQuery
 import me.bookk.feature.appointments.domain.api.entity.SavedBusinessEntry
-import me.bookk.feature.appointments.domain.api.entity.UpcomingBookings
 import me.bookk.feature.appointments.domain.datasource.ClientBookingDataSource
+import me.bookk.feature.appointments.domain.datasource.DateBounds
 import kotlin.uuid.Uuid
 
 internal class CommonClientBookingDataSource(
@@ -50,42 +58,83 @@ internal class CommonClientBookingDataSource(
             .toDomain()
     }
 
-    override suspend fun saveUpcomingBookingsInDb(bookings: UpcomingBookings) {
+    override suspend fun getOwnAppointments(period: ClientBookingPeriod, cursor: String?) =
         mapExceptions {
-            replaceScheduledAppointments(bookings.appointments)
-            replacePendingRequests(bookings.requests)
+            val resource = Api.Appointment.Mine(
+                cursor = cursor,
+                period = period.toRemote(),
+                status = period.appointmentStatuses(),
+            )
+            httpClient.get(resource)
+                .body<AppointmentPageRemote>()
+                .toDomain()
+        }
+
+    override suspend fun getOwnRequests(period: ClientBookingPeriod, cursor: String?) =
+        mapExceptions {
+            val resource = Api.Appointment.RequestMine(
+                cursor = cursor,
+                period = period.toRemote(),
+                status = period.requestStatuses(),
+            )
+            httpClient.get(resource)
+                .body<AppointmentRequestPageRemote>()
+                .toDomain()
+        }
+
+    override suspend fun saveAppointmentsInDb(appointments: List<Appointment>) {
+        mapExceptions {
+            appointmentDao.upsertWithServices(
+                appointments = appointments.map { it.toEntity() },
+                services = appointments.flatMap { it.toServiceEntities() },
+                adjustmentServices = appointments.flatMap { it.toAdjustmentServiceEntities() },
+            )
         }
     }
 
-    private suspend fun replaceScheduledAppointments(appointments: List<Appointment>) {
-        val freshIds = appointments.map { it.id }.toSet()
-        val staleIds = appointmentDao.getScheduledIds().filterNot { it in freshIds }
-        if (staleIds.isNotEmpty()) appointmentDao.deleteByIds(staleIds)
-        appointmentDao.upsertWithServices(
-            appointments = appointments.map { it.toEntity() },
-            services = appointments.flatMap { it.toServiceEntities() },
-            adjustmentServices = appointments.flatMap { it.toAdjustmentServiceEntities() },
-        )
+    override suspend fun saveRequestsInDb(requests: List<AppointmentRequest>) {
+        mapExceptions {
+            appointmentRequestDao.upsertWithServices(
+                requests = requests.map { it.toRequestEntity() },
+                services = requests.flatMap { it.toRequestServiceEntities() },
+            )
+        }
     }
 
-    private suspend fun replacePendingRequests(requests: List<AppointmentRequest>) {
-        val freshIds = requests.map { it.id }.toSet()
-        val staleIds = appointmentRequestDao.getPendingIds().filterNot { it in freshIds }
-        if (staleIds.isNotEmpty()) appointmentRequestDao.deleteByIds(staleIds)
-        appointmentRequestDao.upsertWithServices(
-            requests = requests.map { it.toRequestEntity() },
-            services = requests.flatMap { it.toRequestServiceEntities() },
-        )
+    override suspend fun getAppointmentIdsInDb(period: ClientBookingPeriod, dates: DateBounds) =
+        mapExceptions {
+            appointmentDao.getIdsByStatusesBetween(
+                period.appointmentStatusNames(),
+                dates.from,
+                dates.to,
+            )
+        }
+
+    override suspend fun getRequestIdsInDb(period: ClientBookingPeriod, dates: DateBounds) =
+        mapExceptions {
+            appointmentRequestDao.getIdsByStatusesBetween(
+                period.requestStatusNames(),
+                dates.from,
+                dates.to,
+            )
+        }
+
+    override suspend fun deleteAppointmentsInDb(ids: List<Uuid>) {
+        mapExceptions { appointmentDao.deleteByIds(ids) }
     }
 
-    override fun observeUpcomingAppointments(): Flow<List<Appointment>> {
-        return appointmentDao.observeScheduled()
+    override suspend fun deleteRequestsInDb(ids: List<Uuid>) {
+        mapExceptions { appointmentRequestDao.deleteByIds(ids) }
+    }
+
+    override fun observeAppointments(period: ClientBookingPeriod): Flow<List<Appointment>> {
+        return appointmentDao.observeByStatuses(period.appointmentStatusNames())
             .map { appointments -> appointments.map { it.toDomain() } }
             .mapErrors()
     }
 
-    override fun observeUpcomingRequests(): Flow<List<AppointmentRequest>> {
-        return appointmentRequestDao.observePending()
+    override fun observeRequests(period: ClientBookingPeriod): Flow<List<AppointmentRequest>> {
+        return appointmentRequestDao.observeByStatuses(period.requestStatusNames())
             .map { requests -> requests.map { it.toDomain() } }
             .mapErrors()
     }

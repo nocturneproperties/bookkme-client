@@ -27,19 +27,41 @@ fun ViewModel.loadList(
     onRefresh: (() -> Unit)? = null,
     call: suspend () -> Collection<*>,
 ) {
-    refreshState?.onRefresh = weakVMClosure {
-        onRefresh?.invoke()
-        it.launchListLoad(listState, notifications, refreshIndicator = refreshState, call = call)
-    }
-    launchListLoad(listState, notifications, refreshIndicator = null, call = call)
+    startListLoading(
+        listState = listState,
+        notifications = notifications,
+        refreshState = refreshState,
+        onRefresh = onRefresh,
+        load = ListLoad(call = call, itemsOf = { it }, onLoaded = {}),
+    )
 }
 
-private fun ViewModel.launchListLoad(
+internal class ListLoad<R>(
+    val call: suspend () -> R,
+    val itemsOf: (R) -> Collection<*>,
+    val onLoaded: (R) -> Unit,
+)
+
+internal fun <R> ViewModel.startListLoading(
+    listState: ListState<*>,
+    notifications: PresentationNotificationState,
+    refreshState: RefreshState?,
+    onRefresh: (() -> Unit)?,
+    load: ListLoad<R>,
+) {
+    refreshState?.onRefresh = weakVMClosure {
+        onRefresh?.invoke()
+        it.launchListLoad(listState, notifications, refreshIndicator = refreshState, load = load)
+    }
+    launchListLoad(listState, notifications, refreshIndicator = null, load = load)
+}
+
+private fun <R> ViewModel.launchListLoad(
     listState: ListState<*>,
     notifications: PresentationNotificationState,
     refreshIndicator: RefreshState?,
     retriedBanner: BannerErrorState? = null,
-    call: suspend () -> Collection<*>,
+    load: ListLoad<R>,
 ) {
     val retry = weakVMClosure {
         it.launchListLoad(
@@ -47,47 +69,63 @@ private fun ViewModel.launchListLoad(
             notifications,
             refreshIndicator = null,
             retriedBanner = listState.bannerError,
-            call = call,
+            load = load,
         )
     }
     launch(
-        key = "loadList@${listState.hashCode()}",
+        key = listState.loadKey(),
         launchIn = DispatcherProvider.io,
         onStart = {
             refreshIndicator?.isRefreshing = true
             listState.errorState = null
             listState.bannerError = retriedBanner?.retrying()
         },
-        call = call,
+        call = load.call,
         onComplete = { result ->
-            if (result.isNotEmpty() && listState.isInitialLoading) delay(RENDER_GRACE_PERIOD)
+            if (load.itemsOf(result).isNotEmpty() && listState.isInitialLoading) {
+                delay(RENDER_GRACE_PERIOD)
+            }
             listState.isInitialLoading = false
             listState.bannerError = null
+            load.onLoaded(result)
         },
         onError = { error ->
             if (retriedBanner != null) listState.bannerError = retriedBanner
-            when (val notification = error.notification()) {
-                PresentationNotification.Ignore -> {
-                }
-
-                PresentationNotification.Unauthorized -> {
-                    notifications.add(notification)
-                }
-
-                PresentationNotification.BusinessAccessSuspended -> {
-                    notifications.add(notification)
-                    listState.showLoadingError(error.description(), retry)
-                }
-
-                else -> {
-                    listState.showLoadingError(error.description(), retry)
-                }
-            }
+            showListError(listState, notifications, error, retry)
         },
         onTerminate = {
             refreshIndicator?.isRefreshing = false
         },
     )
+}
+
+internal fun ViewModel.showListError(
+    listState: ListState<*>,
+    notifications: PresentationNotificationState,
+    error: Throwable,
+    retry: () -> Unit,
+) {
+    when (val notification = error.notification()) {
+        PresentationNotification.Ignore -> {
+        }
+
+        PresentationNotification.Unauthorized -> {
+            notifications.add(notification)
+        }
+
+        PresentationNotification.BusinessAccessSuspended -> {
+            notifications.add(notification)
+            listState.showLoadingError(error.description(), retry)
+        }
+
+        else -> {
+            listState.showLoadingError(error.description(), retry)
+        }
+    }
+}
+
+internal fun ListState<*>.loadKey(): String {
+    return "loadList@${hashCode()}"
 }
 
 private fun ListState<*>.showLoadingError(description: ErrorDescription, retry: () -> Unit) {
@@ -109,6 +147,7 @@ fun <K> Flow<K>.resetListOnChange(listState: ListState<*>): Flow<K> = distinctUn
 
 private fun ListState<*>.resetToInitialLoading() {
     clear()
+    loadMore = null
     isInitialLoading = true
     errorState = null
     bannerError = null

@@ -36,6 +36,7 @@ fun initClientApp(setup: KoinApplication.() -> Unit = {}) {
         modules(
             commonModule(),
             deviceModule(),
+            crashReportingModule(),
             cacheModule(),
             filesModule(),
             clientDatabaseModule(),

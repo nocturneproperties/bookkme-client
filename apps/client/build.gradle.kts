@@ -73,6 +73,7 @@ kotlin {
             implementation(projects.core)
             implementation(projects.shared.common)
             implementation(projects.library.device.impl)
+            implementation(projects.library.crashreporting.api)
             implementation(projects.library.cache.impl)
             implementation(projects.library.files.impl)
             implementation(projects.database.client)

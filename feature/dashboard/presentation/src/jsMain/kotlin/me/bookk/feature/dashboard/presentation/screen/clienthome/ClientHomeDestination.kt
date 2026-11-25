@@ -16,11 +16,29 @@ fun ClientHomeDestination(webApp: TelegramWebApp, navigation: ClientHomeNavigati
     ClientHomeScreen(viewModel.uiState)
     ObserveNavigation(viewModel.uiState.navigation) {
         when (it) {
-            ClientHomeDestinations.Settings -> navigation.toSettings()
-            ClientHomeDestinations.Bookings -> navigation.toBookings()
-            ClientHomeDestinations.Businesses -> navigation.toBusinesses()
-            is ClientHomeDestinations.BookingDetails -> navigation.toBookingDetails(it.bookingId)
-            is ClientHomeDestinations.Services -> navigation.toServices(it.businessId)
+            ClientHomeDestinations.Settings -> {
+                navigation.toSettings()
+            }
+
+            ClientHomeDestinations.Bookings -> {
+                navigation.toBookings()
+            }
+
+            ClientHomeDestinations.Businesses -> {
+                navigation.toBusinesses()
+            }
+
+            is ClientHomeDestinations.RequestDetails -> {
+                navigation.toRequestDetails(it.requestId)
+            }
+
+            is ClientHomeDestinations.AppointmentDetails -> {
+                navigation.toAppointmentDetails(it.appointmentId)
+            }
+
+            is ClientHomeDestinations.Services -> {
+                navigation.toServices(it.businessId)
+            }
         }
     }
 }

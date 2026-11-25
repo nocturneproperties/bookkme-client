@@ -22,9 +22,21 @@ fun BookingSentDestination(
     BookingSentScreen(viewModel.uiState, webApp)
     ObserveNavigation(viewModel.uiState.navigation) {
         when (it) {
-            BookingSentDestinations.Home -> navigation.onLeave()
-            is BookingSentDestinations.Services -> navigation.toNewBooking(it.businessId)
-            is BookingSentDestinations.BookingDetails -> navigation.toBookingDetails(it.bookingId)
+            BookingSentDestinations.Home -> {
+                navigation.onLeave()
+            }
+
+            is BookingSentDestinations.Services -> {
+                navigation.toNewBooking(it.businessId)
+            }
+
+            is BookingSentDestinations.RequestDetails -> {
+                navigation.toRequestDetails(it.requestId)
+            }
+
+            is BookingSentDestinations.AppointmentDetails -> {
+                navigation.toAppointmentDetails(it.appointmentId)
+            }
         }
     }
 }

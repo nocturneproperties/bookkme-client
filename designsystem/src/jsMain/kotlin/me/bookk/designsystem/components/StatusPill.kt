@@ -7,6 +7,7 @@ import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.graphics.Color
 import com.varabyte.kobweb.compose.ui.modifiers.alignSelf
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
@@ -47,6 +48,15 @@ val StatusPillStyle = CssStyle.base {
         .fontWeight(FontWeight.SemiBold)
 }
 
+val StatusLabelStyle = CssStyle.base {
+    Modifier
+        .alignSelf(AlignSelf.FlexStart)
+        .gap(0.375.cssRem)
+        .fontSize(0.8125.cssRem)
+        .lineHeight(1.125.cssRem)
+        .fontWeight(FontWeight.SemiBold)
+}
+
 @Composable
 fun StatusPill(text: StringDesc, color: ColorToken, modifier: Modifier = Modifier) {
     val tint = color.themed
@@ -57,13 +67,31 @@ fun StatusPill(text: StringDesc, color: ColorToken, modifier: Modifier = Modifie
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            Modifier
-                .size(0.5.cssRem)
-                .flexShrink(0)
-                .borderRadius(50.percent)
-                .backgroundColor(tint),
-        )
+        StatusDot(tint)
         Span { Text(text.localized()) }
     }
+}
+
+@Composable
+fun StatusLabel(text: StringDesc, color: ColorToken, modifier: Modifier = Modifier) {
+    Row(
+        StatusLabelStyle
+            .toModifier()
+            .then(modifier),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        StatusDot(color.themed)
+        Span { Text(text.localized()) }
+    }
+}
+
+@Composable
+private fun StatusDot(color: Color) {
+    Box(
+        Modifier
+            .size(0.5.cssRem)
+            .flexShrink(0)
+            .borderRadius(50.percent)
+            .backgroundColor(color),
+    )
 }

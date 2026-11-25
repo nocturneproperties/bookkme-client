@@ -6,6 +6,7 @@ class ClientHomeNavigation(
     val toSettings: () -> Unit,
     val toBookings: () -> Unit,
     val toBusinesses: () -> Unit,
-    val toBookingDetails: (Uuid) -> Unit,
+    val toRequestDetails: (Uuid) -> Unit,
+    val toAppointmentDetails: (Uuid) -> Unit,
     val toServices: (Uuid) -> Unit,
 )

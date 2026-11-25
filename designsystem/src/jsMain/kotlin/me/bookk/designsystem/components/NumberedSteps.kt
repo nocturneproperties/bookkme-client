@@ -50,7 +50,7 @@ val NumberedStepsStyle = CssStyle.base {
         .margin(0.px)
         .padding(leftRight = 1.cssRem, topBottom = 0.25.cssRem)
         .listStyle(ListStyleType.None)
-        .borderRadius(1.cssRem)
+        .borderRadius(CardCornerRadius)
         .textAlign(TextAlign.Start)
         .backgroundColor(colorMode.webColors().elevated)
 }

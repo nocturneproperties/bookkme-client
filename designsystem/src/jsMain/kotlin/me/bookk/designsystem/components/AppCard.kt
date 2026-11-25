@@ -14,10 +14,12 @@ import com.varabyte.kobweb.silk.style.toModifier
 import me.bookk.designsystem.theme.webColors
 import org.jetbrains.compose.web.css.cssRem
 
+val CardCornerRadius = 1.25.cssRem
+
 val AppCardStyle = CssStyle.base {
     Modifier
         .backgroundColor(colorMode.webColors().elevated)
-        .borderRadius(1.cssRem)
+        .borderRadius(CardCornerRadius)
         .padding(1.5.cssRem)
         .gap(0.5.cssRem)
 }

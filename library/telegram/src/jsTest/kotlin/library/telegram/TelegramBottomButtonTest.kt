@@ -5,6 +5,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.WebButtonState
 import me.bookk.designsystem.uistate.startLoading
 import kotlin.test.Test
@@ -13,6 +14,46 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class TelegramBottomButtonTest {
+
+    @Test
+    fun `paints a primary button in the button colors`() = runUnitTest {
+        given()
+        val style = TelegramButtonStyle.PRIMARY
+
+        whenn()
+        val tokens = style.tokens()
+
+        then()
+        assertEquals(
+            BottomButtonTokens(
+                active = ColorToken.ButtonActive,
+                onActive = ColorToken.OnAction,
+                inactive = ColorToken.ButtonInactive,
+                onInactive = ColorToken.ActionTextDisabled,
+            ),
+            tokens,
+        )
+    }
+
+    @Test
+    fun `paints a destructive button in the error color on the card color`() = runUnitTest {
+        given()
+        val style = TelegramButtonStyle.DESTRUCTIVE
+
+        whenn()
+        val tokens = style.tokens()
+
+        then()
+        assertEquals(
+            BottomButtonTokens(
+                active = ColorToken.Elevated,
+                onActive = ColorToken.Error,
+                inactive = ColorToken.ButtonInactive,
+                onInactive = ColorToken.ActionTextDisabled,
+            ),
+            tokens,
+        )
+    }
 
     @Test
     fun `shows an enabled button in the active colors`() = runUnitTest {

@@ -23,6 +23,7 @@ data class Appointment(
     val cancellationReason: String,
     val completedBy: AppointmentCompletedBy? = null,
     val priceAdjustment: PriceAdjustment? = null,
+    val clientNote: String = "",
 ) {
 
     val providedServices: List<ServiceSnapshot> by lazy(LazyThreadSafetyMode.NONE) {

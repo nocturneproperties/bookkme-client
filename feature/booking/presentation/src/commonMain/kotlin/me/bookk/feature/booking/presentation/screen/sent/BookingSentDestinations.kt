@@ -9,7 +9,11 @@ sealed class BookingSentDestinations : NavigationDestination() {
         val businessId: Uuid,
     ) : BookingSentDestinations()
 
-    data class BookingDetails(
-        val bookingId: Uuid,
+    data class RequestDetails(
+        val requestId: Uuid,
+    ) : BookingSentDestinations()
+
+    data class AppointmentDetails(
+        val appointmentId: Uuid,
     ) : BookingSentDestinations()
 }

@@ -66,10 +66,18 @@ class BookingSentViewModel(
             details = details(),
             status = status.label(),
             statusColor = status.color(),
-            onClick = weakVMClosure {
-                it.uiState.navigation.push(BookingSentDestinations.BookingDetails(id))
-            },
+            onClick = weakVMClosure { it.uiState.navigation.push(detailsDestination()) },
         )
+    }
+
+    private fun SentBooking.detailsDestination(): BookingSentDestinations {
+        return when (status) {
+            SentBooking.Status.WAITING_FOR_CONFIRMATION -> BookingSentDestinations.RequestDetails(
+                id,
+            )
+
+            SentBooking.Status.CONFIRMED -> BookingSentDestinations.AppointmentDetails(id)
+        }
     }
 
     private fun SentBooking.details(): StringDesc {

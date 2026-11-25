@@ -66,7 +66,7 @@ val CardButtonStyle = CssStyle {
         PressableBase
             .backgroundColor(colors.elevated)
             .color(colors.primaryText)
-            .borderRadius(1.cssRem)
+            .borderRadius(CardCornerRadius)
             .padding(0.75.cssRem)
     }
     cssRule(":hover") { Modifier.opacity(PRESSABLE_HOVER_OPACITY) }
@@ -80,7 +80,7 @@ val SelectableCardButtonStyle = CssStyle {
             .backgroundColor(colors.elevated)
             .color(colors.primaryText)
             .border(2.px, LineStyle.Solid, Colors.Transparent)
-            .borderRadius(1.cssRem)
+            .borderRadius(CardCornerRadius)
             .padding(topBottom = 1.25.cssRem, leftRight = 0.75.cssRem)
             .textAlign(TextAlign.Center)
             .transition(
@@ -117,6 +117,7 @@ val ListRowButtonStyle = CssStyle {
 fun CardButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    verticalAlignment: Alignment.Vertical = Alignment.Top,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
@@ -125,7 +126,10 @@ fun CardButton(
             .then(modifier)
             .toAttrs { onClick { onClick() } },
     ) {
-        Row(Modifier.fillMaxWidth().gap(0.75.cssRem)) { content() }
+        Row(
+            Modifier.fillMaxWidth().gap(0.75.cssRem),
+            verticalAlignment = verticalAlignment,
+        ) { content() }
     }
 }
 

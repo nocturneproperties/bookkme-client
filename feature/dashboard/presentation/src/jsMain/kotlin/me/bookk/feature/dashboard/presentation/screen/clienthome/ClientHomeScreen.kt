@@ -34,7 +34,7 @@ import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.BannerErrorView
 import me.bookk.designsystem.components.CardButton
-import me.bookk.designsystem.components.DateTile
+import me.bookk.designsystem.components.DayDate
 import me.bookk.designsystem.components.EmptyStateView
 import me.bookk.designsystem.components.FittingList
 import me.bookk.designsystem.components.Heading
@@ -45,7 +45,7 @@ import me.bookk.designsystem.components.IconTile
 import me.bookk.designsystem.components.InitialLoadingView
 import me.bookk.designsystem.components.ListRowButton
 import me.bookk.designsystem.components.NumberedSteps
-import me.bookk.designsystem.components.StatusPill
+import me.bookk.designsystem.components.StatusLabel
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TintedIcon
@@ -150,19 +150,35 @@ private fun UpcomingSection(state: ClientHomeState) {
 
 @Composable
 private fun UpcomingBookingCard(item: UpcomingBookingItem) {
-    CardButton(onClick = item.onClick, modifier = Modifier.fittingItem()) {
-        DateTile(item.weekday, item.day)
-        Column(Modifier.gap(0.125.cssRem)) {
+    CardButton(
+        onClick = item.onClick,
+        modifier = Modifier
+            .fittingItem()
+            .padding(topBottom = 1.cssRem, leftRight = 0.75.cssRem),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        DayDate(item.weekday, item.day)
+        Column(
+            Modifier
+                .flexGrow(1)
+                .minWidth(0.px)
+                .gap(0.125.cssRem),
+        ) {
             TextBlock(
                 item.businessName.desc(),
                 TitleMediumTextStyle
                     .toModifier()
+                    .fontWeight(FontWeight.SemiBold)
                     .margin(0.px),
             )
-            SecondaryLine(item.services.desc())
-            SecondaryLine(item.timeAndSpecialist)
-            StatusPill(item.status, item.statusColor, Modifier.margin(top = 0.375.cssRem))
+            SecondaryLine(item.summary)
+            StatusLabel(item.status, item.statusColor, Modifier.margin(top = 0.25.cssRem))
         }
+        TintedIcon(
+            DesignSystem.images.material_chevron_right,
+            ColorToken.SecondaryText,
+            Modifier.size(1.25.cssRem),
+        )
     }
 }
 

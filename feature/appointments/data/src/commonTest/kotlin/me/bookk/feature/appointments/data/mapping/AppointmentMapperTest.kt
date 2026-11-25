@@ -129,6 +129,34 @@ class AppointmentMapperTest {
         }
 
     @Test
+    fun `stored appointment keeps the client's note`() = runUnitTest {
+        given()
+        val appointment = appointment(listOf(service("Haircut"))).copy(
+            clientNote = "Short nails, please.",
+        )
+
+        whenn()
+        val restored = appointment.toLocal().toDomain()
+
+        then()
+        assertEquals("Short nails, please.", restored.clientNote)
+    }
+
+    @Test
+    fun `fetched appointment carries the client's note`() = runUnitTest {
+        given()
+        val remote = appointment(listOf(service("Haircut"))).toRemote().copy(
+            clientNote = "Short nails, please.",
+        )
+
+        whenn()
+        val appointment = remote.toDomain()
+
+        then()
+        assertEquals("Short nails, please.", appointment.clientNote)
+    }
+
+    @Test
     fun `stored no-show appointment restores its status`() = runUnitTest {
         given()
         val appointment = appointment(

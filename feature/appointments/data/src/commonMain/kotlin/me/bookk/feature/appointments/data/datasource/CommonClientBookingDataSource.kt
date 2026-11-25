@@ -90,6 +90,18 @@ internal class CommonClientBookingDataSource(
             .mapErrors()
     }
 
+    override fun observeAppointment(appointmentId: Uuid): Flow<Appointment?> {
+        return appointmentDao.observeById(appointmentId)
+            .map { it?.toDomain() }
+            .mapErrors()
+    }
+
+    override fun observeRequest(requestId: Uuid): Flow<AppointmentRequest?> {
+        return appointmentRequestDao.observeById(requestId)
+            .map { it?.toDomain() }
+            .mapErrors()
+    }
+
     override suspend fun getSavedBusinesses() = mapExceptions {
         httpClient.get(Api.Appointment.SavedBusinesses())
             .body<List<SavedBusinessRemote>>()

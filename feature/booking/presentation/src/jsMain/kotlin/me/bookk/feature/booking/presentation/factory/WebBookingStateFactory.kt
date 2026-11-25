@@ -3,6 +3,8 @@ package me.bookk.feature.booking.presentation.factory
 import me.bookk.feature.booking.presentation.BookingStateFactory
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeState
 import me.bookk.feature.booking.presentation.screen.datetime.WebBookingDateTimeState
+import me.bookk.feature.booking.presentation.screen.details.BookingDetailsState
+import me.bookk.feature.booking.presentation.screen.details.WebBookingDetailsState
 import me.bookk.feature.booking.presentation.screen.review.BookingReviewState
 import me.bookk.feature.booking.presentation.screen.review.WebBookingReviewState
 import me.bookk.feature.booking.presentation.screen.sent.BookingSentState
@@ -31,5 +33,9 @@ internal class WebBookingStateFactory : BookingStateFactory {
 
     override fun createBookingSentState(): BookingSentState {
         return WebBookingSentState()
+    }
+
+    override fun createBookingDetailsState(): BookingDetailsState {
+        return WebBookingDetailsState()
     }
 }

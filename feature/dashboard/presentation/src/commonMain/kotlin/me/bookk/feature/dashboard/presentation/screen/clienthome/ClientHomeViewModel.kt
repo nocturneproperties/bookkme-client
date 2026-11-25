@@ -115,20 +115,29 @@ class ClientHomeViewModel(
             weekday = weekdayFormatter.format(booking.date.date),
             day = booking.date.day.toString(),
             businessName = booking.businessName,
-            services = servicesText(booking.services),
-            timeAndSpecialist = timeAndSpecialist(booking),
+            summary = summary(booking),
             status = booking.status.label(),
             statusColor = booking.status.color(),
-            onClick = weakVMClosure {
-                it.uiState.navigation.push(ClientHomeDestinations.BookingDetails(booking.id))
-            },
+            onClick = weakVMClosure { it.uiState.navigation.push(booking.detailsDestination()) },
         )
     }
 
-    private fun timeAndSpecialist(booking: UpcomingBooking): StringDesc {
+    private fun UpcomingBooking.detailsDestination(): ClientHomeDestinations {
+        return when (status) {
+            UpcomingBooking.Status.WAITING_FOR_CONFIRMATION -> {
+                ClientHomeDestinations.RequestDetails(id)
+            }
+
+            UpcomingBooking.Status.CONFIRMED -> {
+                ClientHomeDestinations.AppointmentDetails(id)
+            }
+        }
+    }
+
+    private fun summary(booking: UpcomingBooking): StringDesc {
         val time = timeFormatter.format(booking.date.time)
-        val format = DashboardRes.strings.dashboard_client_home_time_and_specialist
-        return format.format(time, booking.employee.fullName)
+        val format = DashboardRes.strings.dashboard_client_home_time_and_services
+        return format.format(time, servicesText(booking.services))
     }
 
     private fun servicesText(services: List<ServiceSnapshot>): String {

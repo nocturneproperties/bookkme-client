@@ -89,6 +89,12 @@ object AppointmentRouting {
                 val id: Uuid,
             )
 
+            @Resource("/request/{id}/withdraw")
+            class RequestWithdraw(
+                val parent: Appointment = Appointment(),
+                val id: Uuid,
+            )
+
             @Resource("/{id}/complete")
             class Complete(
                 val parent: Appointment = Appointment(),

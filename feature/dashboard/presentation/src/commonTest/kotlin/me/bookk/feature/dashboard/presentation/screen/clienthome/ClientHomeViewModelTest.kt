@@ -216,7 +216,7 @@ class ClientHomeViewModelTest {
     }
 
     @Test
-    fun `renders an upcoming booking with day, services, time and specialist`() = runUnitTest {
+    fun `renders an upcoming booking with day, time and services`() = runUnitTest {
         given()
         val fixture = Fixture()
         val upcoming = booking(services = listOf(service("Haircut"), service("Beard trim")))
@@ -231,13 +231,12 @@ class ClientHomeViewModelTest {
         assertEquals("2026-11-24", item.weekday)
         assertEquals("24", item.day)
         assertEquals("Studio Lumen", item.businessName)
-        assertEquals("Haircut, Beard trim", item.services)
         assertEquals(
-            DashboardRes.strings.dashboard_client_home_time_and_specialist.format(
+            DashboardRes.strings.dashboard_client_home_time_and_services.format(
                 "14:30",
-                "Andrii",
+                "Haircut, Beard trim",
             ),
-            item.timeAndSpecialist,
+            item.summary,
         )
     }
 
@@ -253,7 +252,13 @@ class ClientHomeViewModelTest {
             listOf(booking(services = listOf(haircut, service("Beard trim"), haircut)))
 
         then()
-        assertEquals("Haircut × 2, Beard trim", sut.uiState.upcoming.items.single().services)
+        assertEquals(
+            DashboardRes.strings.dashboard_client_home_time_and_services.format(
+                "14:30",
+                "Haircut × 2, Beard trim",
+            ),
+            sut.uiState.upcoming.items.single().summary,
+        )
     }
 
     @Test
@@ -293,10 +298,10 @@ class ClientHomeViewModelTest {
     }
 
     @Test
-    fun `opens booking details when an upcoming booking is tapped`() = runUnitTest {
+    fun `opens the request details when a waiting booking is tapped`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val upcoming = booking()
+        val upcoming = booking(status = UpcomingBooking.Status.WAITING_FOR_CONFIRMATION)
         val sut = loadedSut(fixture)
         fixture.upcoming.value = listOf(upcoming)
 
@@ -305,7 +310,25 @@ class ClientHomeViewModelTest {
 
         then()
         assertEquals(
-            listOf<ClientHomeDestinations>(ClientHomeDestinations.BookingDetails(upcoming.id)),
+            listOf<ClientHomeDestinations>(ClientHomeDestinations.RequestDetails(upcoming.id)),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `opens the appointment details when a confirmed booking is tapped`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val upcoming = booking(status = UpcomingBooking.Status.CONFIRMED)
+        val sut = loadedSut(fixture)
+        fixture.upcoming.value = listOf(upcoming)
+
+        whenn()
+        sut.uiState.upcoming.items.single().onClick()
+
+        then()
+        assertEquals(
+            listOf<ClientHomeDestinations>(ClientHomeDestinations.AppointmentDetails(upcoming.id)),
             sut.uiState.navigation.navigationDestination,
         )
     }

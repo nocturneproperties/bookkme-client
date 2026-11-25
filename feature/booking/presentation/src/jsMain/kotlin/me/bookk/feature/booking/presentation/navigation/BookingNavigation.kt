@@ -11,5 +11,7 @@ class BookingNavigation(
     val toReview: (Uuid) -> Unit,
     val toSent: (SentBookingRequest) -> Unit,
     val toNewBooking: (Uuid) -> Unit,
-    val toBookingDetails: (Uuid) -> Unit,
+    val toRequestDetails: (Uuid) -> Unit,
+    val toAppointmentDetails: (Uuid) -> Unit,
+    val toBookings: () -> Unit,
 )

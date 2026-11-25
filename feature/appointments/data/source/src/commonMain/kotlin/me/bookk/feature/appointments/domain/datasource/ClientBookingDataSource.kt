@@ -19,6 +19,10 @@ interface ClientBookingDataSource {
 
     fun observeUpcomingRequests(): Flow<List<AppointmentRequest>>
 
+    fun observeAppointment(appointmentId: Uuid): Flow<Appointment?>
+
+    fun observeRequest(requestId: Uuid): Flow<AppointmentRequest?>
+
     suspend fun getSavedBusinesses(): List<SavedBusinessEntry>
 
     suspend fun saveSavedBusinessesInDb(businesses: List<SavedBusinessEntry>)

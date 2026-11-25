@@ -18,7 +18,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodyLargeTextStyle
+import me.bookk.designsystem.theme.SectionRowTextStyle
 import me.bookk.designsystem.theme.error
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
@@ -89,7 +89,7 @@ fun MenuRow(item: MenuItem) {
 
 @Composable
 private fun menuTextModifier(tone: MenuItemTone): Modifier {
-    val modifier = BodyLargeTextStyle
+    val modifier = SectionRowTextStyle
         .toModifier()
         .flexGrow(1)
     return if (tone == MenuItemTone.DESTRUCTIVE) modifier.error() else modifier

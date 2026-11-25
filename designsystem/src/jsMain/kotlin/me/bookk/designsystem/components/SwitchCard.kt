@@ -19,8 +19,8 @@ import com.varabyte.kobweb.compose.ui.modifiers.minWidth
 import com.varabyte.kobweb.compose.ui.modifiers.overflowWrap
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.silk.style.toModifier
-import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.SectionRowTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.uistate.BooleanState
 import org.jetbrains.compose.web.css.cssRem
@@ -69,7 +69,7 @@ private fun SwitchRow(state: BooleanState) {
         ) {
             TextBlock(
                 state.text,
-                BodyLargeTextStyle
+                SectionRowTextStyle
                     .toModifier()
                     .margin(0.px),
             )

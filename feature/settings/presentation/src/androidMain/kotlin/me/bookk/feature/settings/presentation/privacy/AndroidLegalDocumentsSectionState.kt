@@ -12,6 +12,7 @@ internal class AndroidLegalDocumentsSectionState : LegalDocumentsSection {
     override var documents: List<LegalDocumentItem> by mutableStateOf(emptyList())
     override var isLoading: Boolean by mutableStateOf(false)
     override var message: StringDesc? by mutableStateOf(null)
+    override var notice: StringDesc? by mutableStateOf(null)
     override val accept = AndroidButtonState()
     override val retry = AndroidButtonState()
 }

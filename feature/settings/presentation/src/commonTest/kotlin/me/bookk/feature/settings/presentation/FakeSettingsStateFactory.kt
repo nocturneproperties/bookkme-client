@@ -153,6 +153,7 @@ internal class FakeLegalDocumentsSectionState : LegalDocumentsSection {
     override var documents: List<LegalDocumentItem> = emptyList()
     override var isLoading: Boolean = false
     override var message: StringDesc? = null
+    override var notice: StringDesc? = null
     override val accept = FakeButtonState()
     override val retry = FakeButtonState()
 }

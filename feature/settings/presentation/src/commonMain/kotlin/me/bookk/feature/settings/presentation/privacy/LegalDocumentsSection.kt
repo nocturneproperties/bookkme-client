@@ -9,6 +9,7 @@ interface LegalDocumentsSection {
     var documents: List<LegalDocumentItem>
     var isLoading: Boolean
     var message: StringDesc?
+    var notice: StringDesc?
     val accept: ButtonState
     val retry: ButtonState
 }

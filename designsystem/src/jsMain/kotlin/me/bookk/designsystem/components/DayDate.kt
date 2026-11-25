@@ -5,6 +5,7 @@ import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.flexShrink
 import com.varabyte.kobweb.compose.ui.modifiers.fontSize
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
@@ -14,7 +15,9 @@ import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
+import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.secondary
+import me.bookk.designsystem.theme.themed
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
@@ -26,7 +29,12 @@ val DayDateStyle = CssStyle.base {
 }
 
 @Composable
-fun DayDate(weekday: String, day: String, modifier: Modifier = Modifier) {
+fun DayDate(
+    weekday: String,
+    day: String,
+    modifier: Modifier = Modifier,
+    dayColor: ColorToken = ColorToken.PrimaryText,
+) {
     Column(
         DayDateStyle
             .toModifier()
@@ -38,6 +46,7 @@ fun DayDate(weekday: String, day: String, modifier: Modifier = Modifier) {
                 .fontSize(1.75.cssRem)
                 .lineHeight(2.cssRem)
                 .fontWeight(FontWeight.Bold)
+                .color(dayColor.themed)
                 .toAttrs(),
         ) { Text(day) }
         Span(

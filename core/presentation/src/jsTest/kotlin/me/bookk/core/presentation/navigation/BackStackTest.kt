@@ -361,6 +361,60 @@ class BackStackTest {
         assertFalse(home.isActive)
         assertFalse(services.isActive)
     }
+
+    @Test
+    fun `returns to an earlier screen and slides back to it`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("bookings")
+        val bookings = fixture.viewModelOfCurrent()
+        fixture.sut.push("details")
+        fixture.sut.finishTransition()
+
+        whenn()
+        fixture.sut.returnTo("bookings")
+
+        then()
+        assertEquals("bookings", fixture.sut.current)
+        assertEquals(BackStackDirection.BACKWARD, fixture.sut.transition?.direction)
+        assertEquals("details", fixture.sut.transition?.from?.route)
+        assertTrue(bookings.isActive)
+    }
+
+    @Test
+    fun `clears the view models of the screens skipped on the way back to an earlier one`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.sut.push("bookings")
+            fixture.sut.push("sent")
+            val sent = fixture.viewModelOfCurrent()
+            fixture.sut.push("details")
+
+            whenn()
+            fixture.sut.returnTo("bookings")
+
+            then()
+            assertFalse(sent.isActive)
+            assertTrue(fixture.sut.canGoBack)
+        }
+
+    @Test
+    fun `replaces every screen above the initial one when returning to a screen not in it`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.sut.push("details")
+
+            whenn()
+            fixture.sut.returnTo("bookings")
+
+            then()
+            assertEquals("bookings", fixture.sut.current)
+            assertEquals(BackStackDirection.FORWARD, fixture.sut.transition?.direction)
+            fixture.sut.pop()
+            assertEquals("home", fixture.sut.current)
+        }
 }
 
 private fun BackStack<String>.visibleRoutes(): List<String> {

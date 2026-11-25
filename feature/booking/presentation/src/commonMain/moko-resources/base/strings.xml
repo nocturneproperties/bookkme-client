@@ -70,4 +70,10 @@
     <string name="booking_details_done_explanation">This visit is over.</string>
     <string name="booking_details_cancelled_explanation">This booking was cancelled. You can book again any time.</string>
     <string name="booking_details_missed_explanation">This visit was marked as missed.</string>
+    <string name="booking_bookings_title">Your bookings.</string>
+    <string name="booking_bookings_tabs">Bookings</string>
+    <string name="booking_bookings_upcoming">Upcoming</string>
+    <string name="booking_bookings_past">Past</string>
+    <string name="booking_bookings_upcoming_empty">Nothing coming up. Bookings you make show up here.</string>
+    <string name="booking_bookings_past_empty">No past bookings yet.</string>
 </resources>

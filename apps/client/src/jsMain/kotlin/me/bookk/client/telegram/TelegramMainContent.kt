@@ -7,6 +7,7 @@ import me.bookk.client.navigation.rememberBookingNavigation
 import me.bookk.client.navigation.rememberClientHomeNavigation
 import me.bookk.core.presentation.navigation.rememberBackStack
 import me.bookk.designsystem.components.BackStackHost
+import me.bookk.feature.booking.presentation.screen.bookings.BookingsDestination
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeDestination
 import me.bookk.feature.booking.presentation.screen.details.BookingAppointmentDetailsDestination
 import me.bookk.feature.booking.presentation.screen.details.BookingRequestDetailsDestination
@@ -25,6 +26,10 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
         when (screen) {
             ClientScreen.Home -> {
                 ClientHomeDestination(webApp, homeNavigation)
+            }
+
+            ClientScreen.Bookings -> {
+                BookingsDestination(webApp, bookingNavigation)
             }
 
             is ClientScreen.Services -> {

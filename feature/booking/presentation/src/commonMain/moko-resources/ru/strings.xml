@@ -70,4 +70,10 @@
     <string name="booking_details_done_explanation">Этот визит уже состоялся.</string>
     <string name="booking_details_cancelled_explanation">Эта запись отменена. Записаться снова можно в любой момент.</string>
     <string name="booking_details_missed_explanation">Этот визит отмечен как пропущенный.</string>
+    <string name="booking_bookings_title">Ваши записи.</string>
+    <string name="booking_bookings_tabs">Записи</string>
+    <string name="booking_bookings_upcoming">Предстоящие</string>
+    <string name="booking_bookings_past">Прошедшие</string>
+    <string name="booking_bookings_upcoming_empty">Пока ничего не запланировано. Ваши записи появятся здесь.</string>
+    <string name="booking_bookings_past_empty">Прошедших записей пока нет.</string>
 </resources>

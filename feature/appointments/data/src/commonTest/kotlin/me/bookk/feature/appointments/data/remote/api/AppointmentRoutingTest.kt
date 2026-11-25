@@ -9,6 +9,8 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
 import me.bookk.feature.appointments.data.remote.model.AppointmentRequestStatusRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
+import me.bookk.feature.appointments.data.remote.model.BookingPeriodRemote
 import me.bookk.feature.appointments.data.remote.model.HistoryOrderRemote
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -124,5 +126,39 @@ class AppointmentRoutingTest {
 
         then()
         assertEquals("/api/appointments/request/$requestId/withdraw", url)
+    }
+
+    @Test
+    fun `own appointments send the period and every status`() = runUnitTest {
+        given()
+        val resource = Api.Appointment.Mine(
+            cursor = "after-a",
+            period = BookingPeriodRemote.UPCOMING,
+            status = listOf(AppointmentStatusRemote.COMPLETED, AppointmentStatusRemote.NO_SHOW),
+        )
+
+        whenn()
+        val url = href(ResourcesFormat(), resource)
+
+        then()
+        assertEquals(
+            "/api/appointments/mine?cursor=after-a&period=UPCOMING&status=COMPLETED&status=NO_SHOW",
+            url,
+        )
+    }
+
+    @Test
+    fun `own requests send the period and every status`() = runUnitTest {
+        given()
+        val resource = Api.Appointment.RequestMine(
+            period = BookingPeriodRemote.PAST,
+            status = listOf(AppointmentRequestStatusRemote.DECLINED),
+        )
+
+        whenn()
+        val url = href(ResourcesFormat(), resource)
+
+        then()
+        assertEquals("/api/appointments/request/mine?period=PAST&status=DECLINED", url)
     }
 }

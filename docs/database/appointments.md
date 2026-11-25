@@ -45,6 +45,7 @@ erDiagram
         long adjustedPriceValue "nullable"
         string priceAdjustmentReason "nullable"
         string clientNote "default ''; the client's note from the request"
+        string businessName "default ''; the business's current name, sent by the backend"
     }
 
     APPOINTMENT_SERVICE_SNAPSHOT {
@@ -85,6 +86,7 @@ erDiagram
         string clientPhone "nullable"
         string clientEmail "nullable"
         uuid clientUserId "nullable; linked backend user, snapshot"
+        string businessName "default ''; the business's current name, sent by the backend"
     }
 
     APPOINTMENT_REQUEST_SERVICE_SNAPSHOT {
@@ -153,6 +155,11 @@ erDiagram
   field 13). The client-facing `GET /api/appointments/upcoming` blanks the business's own `note` and sends only this
   one, which the client web app shows as "Your note" on Booking details. Added by `AutoMigration(27, 28)` in
   `BusinessDatabase` and `AutoMigration(6, 7)` in `ClientDatabase` (an additive column, default `''`).
+- **Business name.** `appointment.businessName` and `appointment_request.businessName` hold the name the backend sends
+  with every appointment (wire field 14) and request (wire field 11): the business's current name when the row was
+  fetched, so a rename shows after the next refresh. The client web app lists bookings across businesses by it
+  without reading `business`. Added by `AutoMigration(29, 30)` in `BusinessDatabase` and `AutoMigration(7, 8)` in
+  `ClientDatabase` (additive columns, default `''`, so rows cached before stay unnamed until their next refresh).
 - **Price adjustment** is spread over the nullable `adjusted*`/`priceAdjustmentReason` columns plus
   `appointment_adjustment_service` (ordered by `position`). `adjustedPriceValue`/`adjustedPriceCurrency` being
   non-null is what marks an adjustment as present.
@@ -180,11 +187,14 @@ erDiagram
   `refresh()` and [Update appointment settings](../operations/appointments/update-appointment-settings.md). They have no sync marker, because
   a `null` row is itself unambiguous.
 - **Client web app.** In `ClientDatabase`, `appointment` and `appointment_request` hold only the signed-in client's
-  own upcoming bookings, written by [Get upcoming bookings](../operations/appointments/get-upcoming-bookings.md)
-  (`CommonClientBookingDataSource`). Its refresh deletes cached `SCHEDULED` appointments and `PENDING` requests the
-  response no longer returns (`getScheduledIds`/`getPendingIds`) and upserts the rest; `observeScheduled` and
-  `observePending` read them back by `date`. These queries are not scoped by business, so they are used only on the
-  web. `appointment_request_service_snapshot` has no `count` column, so a request with a repeated service is cached
+  own bookings, written by [Get upcoming bookings](../operations/appointments/get-upcoming-bookings.md) (Home's
+  2 + 2) and [Get client bookings](../operations/appointments/get-client-bookings.md) (the Bookings screen's upcoming
+  and past pages), both through `CommonClientBookingDataSource`. A period is a set of statuses: upcoming is
+  `SCHEDULED` appointments and `PENDING` requests, past is `COMPLETED`/`CANCELLED`/`NO_SHOW`/`UNRESOLVED`
+  appointments and `DECLINED`/`CANCELLED` requests. Each refresh or page deletes the cached bookings of its period
+  within the dates it covers that the response no longer returns (`getIdsByStatusesBetween`, inclusive `date`
+  bounds, either open) and upserts the rest; `observeByStatuses` reads a period back by `date`. These queries are
+  not scoped by business, so they are used only on the web. `appointment_request_service_snapshot` has no `count` column, so a request with a repeated service is cached
   with that service once.
 - Cleared on logout: yes, all of them.
 

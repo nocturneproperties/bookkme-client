@@ -34,4 +34,5 @@ class AppointmentEntity(
     val priceAdjustmentReason: String? = null,
     val clientUserId: Uuid? = null,
     @ColumnInfo(defaultValue = "") val clientNote: String = "",
+    @ColumnInfo(defaultValue = "") val businessName: String = "",
 )

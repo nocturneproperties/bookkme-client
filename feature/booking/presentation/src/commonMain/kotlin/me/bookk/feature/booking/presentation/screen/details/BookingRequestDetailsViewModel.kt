@@ -14,7 +14,6 @@ import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.booking.domain.api.GetBookingRequestDetails
@@ -22,6 +21,7 @@ import me.bookk.feature.booking.domain.api.WithdrawBookingRequest
 import me.bookk.feature.booking.domain.api.entity.BookingRequestDetails
 import me.bookk.feature.booking.domain.api.entity.BookingRequestDetails.Status
 import me.bookk.feature.booking.presentation.BookingStateFactory
+import me.bookk.feature.booking.presentation.screen.label
 import org.koin.core.annotation.InjectedParam
 import kotlin.uuid.Uuid
 
@@ -81,31 +81,28 @@ class BookingRequestDetailsViewModel(
     }
 
     private fun Status.presentation(businessName: String): BookingStatusPresentation {
+        val label = label()
+        return BookingStatusPresentation(label.text, label.color, explanation(businessName))
+    }
+
+    private fun Status.explanation(businessName: String): StringDesc {
         val strings = BookingRes.strings
         return when (this) {
-            Status.WAITING_FOR_CONFIRMATION -> BookingStatusPresentation(
-                strings.booking_sent_status_waiting.desc(),
-                ColorToken.SecondaryText,
-                strings.booking_details_waiting_explanation.format(businessName),
-            )
+            Status.WAITING_FOR_CONFIRMATION -> {
+                strings.booking_details_waiting_explanation.format(businessName)
+            }
 
-            Status.CONFIRMED -> BookingStatusPresentation(
-                strings.booking_sent_status_confirmed.desc(),
-                ColorToken.Success,
-                strings.booking_details_confirmed_explanation.format(businessName),
-            )
+            Status.CONFIRMED -> {
+                strings.booking_details_confirmed_explanation.format(businessName)
+            }
 
-            Status.DECLINED -> BookingStatusPresentation(
-                strings.booking_details_status_declined.desc(),
-                ColorToken.Error,
-                strings.booking_details_declined_explanation.format(businessName),
-            )
+            Status.DECLINED -> {
+                strings.booking_details_declined_explanation.format(businessName)
+            }
 
-            Status.CLOSED -> BookingStatusPresentation(
-                strings.booking_details_status_closed.desc(),
-                ColorToken.SecondaryText,
-                strings.booking_details_closed_explanation.desc(),
-            )
+            Status.CLOSED -> {
+                strings.booking_details_closed_explanation.desc()
+            }
         }
     }
 

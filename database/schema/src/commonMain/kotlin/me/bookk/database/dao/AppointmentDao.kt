@@ -66,11 +66,17 @@ abstract class AppointmentDao {
     abstract fun observeById(id: Uuid): Flow<AppointmentLocal?>
 
     @Transaction
-    @Query("SELECT * FROM appointment WHERE status = 'SCHEDULED' ORDER BY date")
-    abstract fun observeScheduled(): Flow<List<AppointmentLocal>>
+    @Query("SELECT * FROM appointment WHERE status IN (:statuses) ORDER BY date")
+    abstract fun observeByStatuses(statuses: List<String>): Flow<List<AppointmentLocal>>
 
-    @Query("SELECT id FROM appointment WHERE status = 'SCHEDULED'")
-    abstract suspend fun getScheduledIds(): List<Uuid>
+    @Query(
+        "SELECT id FROM appointment WHERE status IN (:statuses) AND (:from IS NULL OR date >= :from) AND (:to IS NULL OR date <= :to)",
+    )
+    abstract suspend fun getIdsByStatusesBetween(
+        statuses: List<String>,
+        from: Instant?,
+        to: Instant?,
+    ): List<Uuid>
 
     @Query("DELETE FROM appointment WHERE id IN (:ids)")
     abstract suspend fun deleteByIds(ids: List<Uuid>)

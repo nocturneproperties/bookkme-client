@@ -18,6 +18,7 @@ import me.bookk.feature.booking.presentation.screen.services.BookingServicesDest
 import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistDestination
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsDestination
+import me.bookk.feature.settings.presentation.export.PersonalDataExportDestination
 
 @Composable
 internal fun TelegramMainContent(webApp: TelegramWebApp) {
@@ -74,7 +75,9 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
 
             ClientScreen.PrivacySettings -> {}
 
-            ClientScreen.PersonalDataExport -> {}
+            ClientScreen.PersonalDataExport -> {
+                PersonalDataExportDestination(webApp, settingsNavigation)
+            }
 
             ClientScreen.DeleteAccount -> {}
         }

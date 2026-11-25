@@ -10,4 +10,5 @@ class SettingsNavigation(
     val openContactPage: () -> Unit,
     val openTermsOfUse: () -> Unit,
     val openPrivacyPolicy: () -> Unit,
+    val saveExport: (filePath: String) -> Unit,
 )

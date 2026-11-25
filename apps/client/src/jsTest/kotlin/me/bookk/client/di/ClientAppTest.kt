@@ -64,6 +64,7 @@ import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewM
 import me.bookk.feature.employees.domain.api.GetBookableEmployees
 import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
@@ -118,7 +119,9 @@ class ClientAppTest {
         }
 
         override fun personalDataExportDao(): PersonalDataExportDao {
-            return mock()
+            return mock {
+                every { observe() } returns emptyFlow()
+            }
         }
 
         override fun businessDao(): BusinessDao {
@@ -611,6 +614,19 @@ class ClientAppTest {
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<SettingsDashboardViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the personal data export view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<PersonalDataExportViewModel>()
 
         then()
         assertNotNull(viewModel)

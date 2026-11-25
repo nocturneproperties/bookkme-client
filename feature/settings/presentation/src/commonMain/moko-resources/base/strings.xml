@@ -29,11 +29,9 @@
     <string name="settings_support_report_label">Report an error</string>
 
     <string name="settings_edit_profile_title">Edit profile</string>
-    <string name="settings_edit_profile_first_name">First name</string>
-    <string name="settings_edit_profile_first_name_error">Name should be at least 2 characters long</string>
-    <string name="settings_edit_profile_last_name">Last name</string>
-    <string name="settings_edit_profile_last_name_error">Last name should be at least 2 characters long</string>
+    <string name="settings_edit_profile_name_error">Name should be at least 2 characters long</string>
     <string name="settings_booking_profile_title">Booking profile.</string>
+    <string name="settings_edit_profile_full_name">Full name</string>
     <string name="settings_edit_profile_change_email">Change</string>
     <string name="settings_edit_profile_email_hint">A new email is confirmed with a code we send to it.</string>
 

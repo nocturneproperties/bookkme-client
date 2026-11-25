@@ -42,10 +42,6 @@ internal fun EditProfileScreen(state: EditProfileState) {
                     state = state.name,
                     onValueChange = LocalEditProfileEventListener.current.onNameChanged,
                 )
-                TextField(
-                    state = state.lastName,
-                    onValueChange = LocalEditProfileEventListener.current.onLastNameChanged,
-                )
             }
         },
         bottomBar = {

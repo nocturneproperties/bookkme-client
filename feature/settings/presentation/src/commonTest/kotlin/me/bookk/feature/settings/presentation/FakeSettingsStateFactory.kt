@@ -102,7 +102,6 @@ internal class FakeSettingsState : SettingsState {
 internal class FakeEditProfileState : EditProfileState {
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
-    override val lastName = FakeTextFieldState()
     override val email = FakeTextFieldState()
     override val changeEmail = FakeButtonState()
     override val confirmButton = FakeButtonState()

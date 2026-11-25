@@ -13,6 +13,7 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.validate
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetSettings
@@ -27,32 +28,21 @@ class EditProfileViewModel(
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
-    private enum class Field {
-        NAME,
-        LAST,
-    }
-
     val uiState: EditProfileState = settingsStateFactory.createEditProfileState().setup()
 
-    private val fieldInitialState = mutableMapOf<Field, String>()
+    private var savedName: String? = null
 
     private fun EditProfileState.setup() = apply {
         appBar.title = SettingsRes.strings.settings_edit_profile_title.desc()
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(EditProfileNavigationDestination.Back)
         }
-        setupNameFields()
+        name.label = SettingsRes.strings.settings_edit_profile_full_name.desc()
+        name.onTextChanged = weakVMClosure { vm, text -> vm.onNameTextChanged(text) }
         setupEmail()
         confirmButton.text = DesignSystem.strings.action_save.desc()
         confirmButton.isEnabled = false
         confirmButton.onClick = weakVMClosure { it.onConfirmButtonClick() }
-    }
-
-    private fun EditProfileState.setupNameFields() {
-        name.label = SettingsRes.strings.settings_edit_profile_first_name.desc()
-        name.onTextChanged = weakVMClosure { vm, text -> vm.onFirstNameTextChanged(text) }
-        lastName.label = SettingsRes.strings.settings_edit_profile_last_name.desc()
-        lastName.onTextChanged = weakVMClosure { vm, text -> vm.onLastNameTextChanged(text) }
     }
 
     private fun EditProfileState.setupEmail() {
@@ -81,74 +71,54 @@ class EditProfileViewModel(
 
     private fun renderProfile(profile: SettingsProfile) {
         uiState.email.text = profile.email
-        if (fieldInitialState.isNotEmpty()) return
-        fieldInitialState[Field.NAME] = profile.firstName
-        fieldInitialState[Field.LAST] = profile.lastName
-        onFirstNameTextChanged(profile.firstName)
-        onLastNameTextChanged(profile.lastName)
+        if (savedName != null) return
+        val name = FullName.join(profile.firstName, profile.lastName)
+        savedName = name
+        onNameTextChanged(name)
     }
 
-    fun onFirstNameTextChanged(text: String) {
-        if (fieldInitialState.isEmpty()) return
+    fun onNameTextChanged(text: String) {
+        if (savedName == null) return
         uiState.name.text = text
         uiState.name.clearError()
-        validateButton()
-    }
-
-    fun onLastNameTextChanged(text: String) {
-        if (fieldInitialState.isEmpty()) return
-        uiState.lastName.text = text
-        uiState.lastName.clearError()
-        validateButton()
-    }
-
-    private fun validateForm(): Boolean {
-        return listOf(
-            uiState.name.validate(
-                SettingsRes.strings.settings_edit_profile_first_name_error.desc()
-                    .takeIf { !validateName(uiState.name.text).isValid },
-            ),
-            uiState.lastName.validate(
-                SettingsRes.strings.settings_edit_profile_last_name_error.desc()
-                    .takeIf { !validateName(uiState.lastName.text).isValid },
-            ),
-        ).all { it }
+        updateConfirmButton()
     }
 
     fun onConfirmButtonClick() {
-        if (!validateForm()) {
-            validateButton()
+        val name = FullName.parse(uiState.name.text)
+        if (!validate(name)) {
+            updateConfirmButton()
             return
         }
-        val firstName = uiState.name.text
-        val lastName = uiState.lastName.text
+        val text = uiState.name.text
         launch(
             launchIn = DispatcherProvider.io,
-            onStart = {
-                uiState.confirmButton.isLoading = true
-                uiState.confirmButton.isEnabled = false
-            },
-            call = { editProfile(firstName = firstName, lastName = lastName) },
+            onStart = { uiState.confirmButton.startLoading() },
+            call = { editProfile(firstName = name.firstName, lastName = name.lastName) },
             onComplete = {
                 uiState.notification.add(PresentationNotification.SuccessHaptic)
-                fieldInitialState[Field.NAME] = firstName
-                fieldInitialState[Field.LAST] = lastName
+                savedName = text
                 uiState.navigation.push(EditProfileNavigationDestination.Back)
             },
             onError = ::onSaveError,
             onTerminate = {
                 uiState.confirmButton.isLoading = false
-                validateButton()
+                updateConfirmButton()
             },
+        )
+    }
+
+    private fun validate(name: FullName): Boolean {
+        return uiState.name.validate(
+            SettingsRes.strings.settings_edit_profile_name_error.desc()
+                .takeIf { !validateName(name.firstName).isValid },
         )
     }
 
     private fun onSaveError(error: Throwable) {
         when (error) {
             is EditProfile.Error.ContactAlreadyTaken -> {
-                showErrorMessage(
-                    SettingsRes.strings.settings_edit_profile_email_taken_error.desc(),
-                )
+                showErrorMessage(SettingsRes.strings.settings_edit_profile_email_taken_error.desc())
             }
 
             is EditProfile.Error.EmailChangeRequiresVerification -> {
@@ -173,11 +143,7 @@ class EditProfileViewModel(
         )
     }
 
-    private fun validateButton() {
-        val isChanged = (fieldInitialState[Field.NAME] != uiState.name.text) ||
-            (fieldInitialState[Field.LAST] != uiState.lastName.text)
-        uiState.confirmButton.isEnabled = isChanged &&
-            uiState.name.isValid &&
-            uiState.lastName.isValid
+    private fun updateConfirmButton() {
+        uiState.confirmButton.isEnabled = savedName != uiState.name.text && uiState.name.isValid
     }
 }

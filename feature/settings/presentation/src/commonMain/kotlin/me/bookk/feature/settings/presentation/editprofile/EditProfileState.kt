@@ -9,7 +9,6 @@ import me.bookk.designsystem.uistate.TextFieldState
 interface EditProfileState {
     val appBar: AppBarState
     val name: TextFieldState
-    val lastName: TextFieldState
     val email: TextFieldState
     val changeEmail: ButtonState
     val confirmButton: ButtonState

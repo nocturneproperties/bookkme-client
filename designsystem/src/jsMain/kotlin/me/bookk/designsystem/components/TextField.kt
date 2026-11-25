@@ -41,7 +41,7 @@ import org.jetbrains.compose.web.dom.TextArea
 import org.jetbrains.compose.web.attributes.InputType as HtmlInputType
 
 private const val TEXT_AREA_LINE_HEIGHT = 1.5
-private const val FIELD_PADDING_REM = 1.0
+internal const val FIELD_PADDING_REM = 1.0
 private const val LABEL_FONT_SIZE_REM = 0.9375
 
 @Composable
@@ -69,6 +69,7 @@ internal fun FieldLabel(text: StringDesc) {
             .toModifier()
             .fontSize(LABEL_FONT_SIZE_REM.cssRem)
             .fontWeight(FontWeight.Bold)
+            .padding(left = FIELD_PADDING_REM.cssRem)
             .secondary(),
     )
 }

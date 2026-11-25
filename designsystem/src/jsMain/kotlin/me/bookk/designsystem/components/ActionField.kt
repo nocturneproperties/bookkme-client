@@ -24,7 +24,7 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodyLargeTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.primary
 import me.bookk.designsystem.theme.resolve
 import me.bookk.designsystem.theme.webColors
@@ -38,7 +38,7 @@ val ActionFieldStyle = CssStyle.base {
         .fillMaxWidth()
         .boxSizing(BoxSizing.BorderBox)
         .minHeight(3.5.cssRem)
-        .padding(left = 1.cssRem, right = 0.5.cssRem)
+        .padding(left = FIELD_PADDING_REM.cssRem, right = 0.5.cssRem)
         .gap(0.75.cssRem)
         .borderRadius(1.cssRem)
         .backgroundColor(ColorToken.Elevated.resolve(colorMode.webColors()))
@@ -59,7 +59,7 @@ fun ActionField(state: TextFieldState, action: ButtonState, modifier: Modifier =
         ) {
             TextBlock(
                 state.text.desc(),
-                BodyLargeTextStyle
+                BodyMediumTextStyle
                     .toModifier()
                     .flexGrow(1)
                     .minWidth(0.px)

@@ -117,6 +117,7 @@ val ListRowButtonStyle = CssStyle {
 fun CardButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    verticalAlignment: Alignment.Vertical = Alignment.Top,
     content: @Composable RowScope.() -> Unit,
 ) {
     Button(
@@ -125,7 +126,10 @@ fun CardButton(
             .then(modifier)
             .toAttrs { onClick { onClick() } },
     ) {
-        Row(Modifier.fillMaxWidth().gap(0.75.cssRem)) { content() }
+        Row(
+            Modifier.fillMaxWidth().gap(0.75.cssRem),
+            verticalAlignment = verticalAlignment,
+        ) { content() }
     }
 }
 

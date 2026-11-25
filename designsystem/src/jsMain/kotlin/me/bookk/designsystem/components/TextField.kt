@@ -22,6 +22,7 @@ import com.varabyte.kobweb.silk.components.forms.InputStyle
 import com.varabyte.kobweb.silk.components.forms.InputVars
 import com.varabyte.kobweb.silk.style.common.PlaceholderColor
 import com.varabyte.kobweb.silk.style.toModifier
+import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
 import me.bookk.designsystem.theme.BodySmallTextStyle
@@ -51,20 +52,25 @@ fun TextField(state: TextFieldState, modifier: Modifier = Modifier, minLines: In
             .fillMaxWidth()
             .gap(0.25.cssRem),
     ) {
-        TextBlock(
-            state.label,
-            BodySmallTextStyle
-                .toModifier()
-                .fontSize(LABEL_FONT_SIZE_REM.cssRem)
-                .fontWeight(FontWeight.Bold)
-                .secondary(),
-        )
+        FieldLabel(state.label)
         when (minLines) {
             1 -> SingleLineInput(state)
             else -> MultiLineInput(state, minLines)
         }
         SupportingText(state.supportingTextRes, state.validationState)
     }
+}
+
+@Composable
+internal fun FieldLabel(text: StringDesc) {
+    TextBlock(
+        text,
+        BodySmallTextStyle
+            .toModifier()
+            .fontSize(LABEL_FONT_SIZE_REM.cssRem)
+            .fontWeight(FontWeight.Bold)
+            .secondary(),
+    )
 }
 
 @Composable

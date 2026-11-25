@@ -222,6 +222,63 @@ class BackStackTest {
     }
 
     @Test
+    fun `returns to the given screen and slides back from the current one`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("profile")
+        fixture.sut.push("change email")
+        fixture.sut.push("verify email")
+        fixture.sut.finishTransition()
+
+        whenn()
+        fixture.sut.popTo("profile")
+
+        then()
+        assertEquals("profile", fixture.sut.current)
+        assertEquals(BackStackDirection.BACKWARD, fixture.sut.transition?.direction)
+        assertEquals("verify email", fixture.sut.transition?.from?.route)
+        assertEquals("profile", fixture.sut.transition?.to?.route)
+        fixture.sut.pop()
+        assertEquals("home", fixture.sut.current)
+    }
+
+    @Test
+    fun `clears the view models of the screens skipped on the way to the given screen`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.sut.push("profile")
+            val profile = fixture.viewModelOfCurrent()
+            fixture.sut.push("change email")
+            val changeEmail = fixture.viewModelOfCurrent()
+            fixture.sut.push("verify email")
+            val verifyEmail = fixture.viewModelOfCurrent()
+
+            whenn()
+            fixture.sut.popTo("profile")
+
+            then()
+            assertTrue(profile.isActive)
+            assertFalse(changeEmail.isActive)
+            assertTrue(verifyEmail.isActive)
+        }
+
+    @Test
+    fun `stays on the current screen when the given screen is not on the stack`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.sut.push("profile")
+        fixture.sut.finishTransition()
+
+        whenn()
+        fixture.sut.popTo("settings")
+
+        then()
+        assertEquals("profile", fixture.sut.current)
+        assertNull(fixture.sut.transition)
+    }
+
+    @Test
     fun `replaces every screen above the initial one`() = runUnitTest {
         given()
         val fixture = Fixture()

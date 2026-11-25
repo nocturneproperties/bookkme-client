@@ -67,8 +67,6 @@ internal class FakeSettingsState : SettingsState {
             AppearanceSection.UIColorScheme.SYSTEM
     }
     override val profile = object : ProfileSection {
-        override var name: StringDesc = "".desc()
-        override var lastName: StringDesc = "".desc()
         override var email: StringDesc = "".desc()
         override var fullName: StringDesc = "".desc()
         override var initials: String = ""

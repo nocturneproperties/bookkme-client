@@ -76,6 +76,7 @@ kotlin {
             implementation(projects.library.cache.impl)
             implementation(projects.library.files.impl)
             implementation(projects.library.validation.impl)
+            implementation(projects.library.permissions.impl)
             implementation(projects.database.client)
             implementation(projects.feature.authorization.domain.impl)
             implementation(projects.feature.authorization.data)

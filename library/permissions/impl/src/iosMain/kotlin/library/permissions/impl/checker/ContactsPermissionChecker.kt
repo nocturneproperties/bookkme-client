@@ -9,11 +9,11 @@ import platform.Contacts.CNContactStore
 import platform.Contacts.CNEntityType
 import kotlin.coroutines.resume
 
-internal actual class ContactsPermissionChecker : PermissionChecker {
+internal class ContactsPermissionChecker : PermissionChecker {
 
-    actual override val type: PermissionType = PermissionType.CONTACTS
+    override val type: PermissionType = PermissionType.CONTACTS
 
-    actual override suspend fun requestPermission(): Boolean = suspendCancellableCoroutine {
+    override suspend fun requestPermission(): Boolean = suspendCancellableCoroutine {
         CNContactStore().requestAccessForEntityType(CNEntityType.CNEntityTypeContacts) {
                 granted,
                 _,
@@ -22,7 +22,7 @@ internal actual class ContactsPermissionChecker : PermissionChecker {
         }
     }
 
-    actual override suspend fun hasPermission(): Boolean {
+    override suspend fun hasPermission(): Boolean {
         val status = CNContactStore.authorizationStatusForEntityType(
             CNEntityType.CNEntityTypeContacts,
         )

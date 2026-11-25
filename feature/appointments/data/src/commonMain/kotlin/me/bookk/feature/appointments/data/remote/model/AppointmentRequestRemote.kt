@@ -18,6 +18,7 @@ data class AppointmentRequestRemote(
     @ProtoNumber(8) val date: Instant,
     @ProtoNumber(9) val note: String,
     @ProtoNumber(10) val declineReason: String,
+    @ProtoNumber(11) val businessName: String = "",
 ) {
     fun toDomain(): AppointmentRequest {
         return AppointmentRequest(
@@ -31,6 +32,7 @@ data class AppointmentRequestRemote(
             date = date,
             note = note,
             declineReason = declineReason,
+            businessName = businessName,
         )
     }
 }

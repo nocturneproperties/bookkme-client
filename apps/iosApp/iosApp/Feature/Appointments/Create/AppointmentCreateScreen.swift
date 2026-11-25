@@ -16,7 +16,7 @@ struct AppointmentCreateScreen: View {
         let state = IOSAppointmentCreateState.cast(viewModel.uiState)
         List {
 			Section {
-				PickerField(state.clientPicker)
+				AppointmentClientField(state: state)
 					.textFieldStyle(.inListTrailing)
 			} header: {
 				Text("")
@@ -65,6 +65,15 @@ struct AppointmentCreateScreen: View {
 		.listSectionSpacing(.compact)
         .scrollDismissesKeyboard(.immediately)
         .withNavigationBar(state.appBar)
+        .fullScreenCover(isPresented: Binding(
+            get: { state.isClientPickerVisible },
+            set: { state.isClientPickerVisible = $0 }
+        )) {
+            SelectClientScreen(
+                onSelected: { state.onClientPicked($0) },
+                onDismiss: { state.isClientPickerVisible = false }
+            )
+        }
         .sendLifecycleEventsTo(viewModel)
         .handleNotifications(state.notifications)
         .handleNavigation(state.navigation) { destination in
@@ -75,5 +84,24 @@ struct AppointmentCreateScreen: View {
                 break
             }
         }
+    }
+}
+
+private struct AppointmentClientField: View {
+
+    @Bindable var state: IOSAppointmentCreateState
+
+    var body: some View {
+        HStack {
+            StateTextField(state.clientField)
+                .allowsHitTesting(false)
+            Image(systemName: "chevron.right")
+                .font(.subheadline)
+                .bold()
+                .foregroundStyle(.tertiary)
+                .padding(.trailing)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { state.onClientFieldClick() }
     }
 }

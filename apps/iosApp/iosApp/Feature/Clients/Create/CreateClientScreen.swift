@@ -13,9 +13,17 @@ struct CreateClientScreen: View {
 	
 	@EnvironmentObject var navigationStack: NavigationStackHolder
 	@StateViewModel var viewModel: CreateClientViewModel
+	private let onCreated: ((KotlinUuid) -> Void)?
+	private let onBack: (() -> Void)?
 	
-	init(businessId: KotlinUuid) {
+	init(
+		businessId: KotlinUuid,
+		onCreated: ((KotlinUuid) -> Void)? = nil,
+		onBack: (() -> Void)? = nil
+	) {
 		_viewModel = StateViewModel(wrappedValue: IosClientsPresentationDiKt.createClientVM(businessId: businessId))
+		self.onCreated = onCreated
+		self.onBack = onBack
 	}
 	
 	var body: some View {
@@ -45,10 +53,18 @@ struct CreateClientScreen: View {
 		.handleNavigation(uiState.navigation) { dest in
 			switch dest {
 			case let dest as CreateClientDestination.Details:
-				navigationStack.popLast()
-				navigationStack.push(ClientsDestinations.ClientDetails(id: dest.id))
+				if let onCreated {
+					onCreated(dest.id)
+				} else {
+					navigationStack.popLast()
+					navigationStack.push(ClientsDestinations.ClientDetails(id: dest.id))
+				}
 			case is CreateClientDestination.Back:
-				navigationStack.popLast()
+				if let onBack {
+					onBack()
+				} else {
+					navigationStack.popLast()
+				}
 			default :
 				break
 			}

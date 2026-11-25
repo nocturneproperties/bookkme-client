@@ -38,6 +38,7 @@ private val modulesWithWebTarget = setOf(
     ":library:validation:api",
     ":library:validation:impl",
     ":library:permissions:api",
+    ":library:permissions:impl",
     ":database:schema",
     ":database:client",
     ":feature:authorization:data",

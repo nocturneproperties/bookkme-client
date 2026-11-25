@@ -9,6 +9,7 @@ import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -18,6 +19,7 @@ import kotlinx.datetime.toInstant
 import library.device.api.DeviceFacade
 import library.money.api.Money
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
+import me.bookk.core.domain.pagination.Page
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -46,6 +48,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
@@ -70,12 +73,13 @@ class AppointmentRequestViewModelTest {
         val requests = MutableStateFlow<List<AppointmentRequest>>(emptyList())
         val getAssignedAppointmentRequests = mock<GetAssignedAppointmentRequests> {
             every { flow(any()) } returns requests
-            everySuspend { refresh(any()) } returns emptyList()
+            everySuspend { refresh(any()) } returns Page(emptyList(), nextCursor = null)
         }
         val approveAppointmentRequest = mock<ApproveAppointmentRequest>()
         val declineAppointmentRequest = mock<DeclineAppointmentRequest>()
+        val currentBusinessId = MutableStateFlow<Uuid?>(businessId)
         val observeCurrentBusinessId = mock<ObserveCurrentBusinessId> {
-            every { invoke() } returns MutableStateFlow<Uuid?>(businessId)
+            every { invoke() } returns currentBusinessId
         }
         val device = mock<DeviceFacade> {
             every { dial(any()) } returns Unit
@@ -106,17 +110,99 @@ class AppointmentRequestViewModelTest {
     }
 
     @Test
-    fun `refreshes requests of current business when presented`() = runUnitTest {
+    fun `refreshes requests of current business when created`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val sut = fixture.sut()
 
         whenn()
-        sut.onViewPresented()
+        fixture.sut()
 
         then()
         verifySuspend { fixture.getAssignedAppointmentRequests.refresh(fixture.businessId) }
     }
+
+    @Test
+    fun `reloads requests of the new business when the business changes`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val otherBusinessId = Uuid.random()
+        fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        fixture.currentBusinessId.value = otherBusinessId
+        advanceUntilIdle()
+
+        then()
+        verifySuspend { fixture.getAssignedAppointmentRequests.refresh(otherBusinessId) }
+    }
+
+    @Test
+    fun `does not reload requests when the screen is presented again`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        whenn()
+        sut.onViewPresented()
+        sut.onViewPresented()
+        advanceUntilIdle()
+
+        then()
+        verifySuspend(VerifyMode.exactly(1)) {
+            fixture.getAssignedAppointmentRequests.refresh(fixture.businessId)
+        }
+    }
+
+    @Test
+    fun `offers more requests when the first page has more`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getAssignedAppointmentRequests.refresh(any()) } returns
+            Page(listOf(AppointmentRequest.stub()), nextCursor = "after-1")
+
+        whenn()
+        val sut = fixture.sut()
+        advanceUntilIdle()
+
+        then()
+        assertNotNull(sut.uiState.requests.loadMore)
+    }
+
+    @Test
+    fun `offers no more requests when the first page is the last`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertNull(sut.uiState.requests.loadMore)
+    }
+
+    @Test
+    fun `loads the page after the first one for the current business at the end of the list`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.getAssignedAppointmentRequests.refresh(any()) } returns
+                Page(listOf(AppointmentRequest.stub()), nextCursor = "after-1")
+            everySuspend { fixture.getAssignedAppointmentRequests.loadMore(any(), any()) } returns
+                Page(emptyList(), nextCursor = null)
+            val sut = fixture.sut()
+            advanceUntilIdle()
+
+            whenn()
+            sut.uiState.requests.loadMore?.invoke()
+
+            then()
+            verifySuspend {
+                fixture.getAssignedAppointmentRequests.loadMore(fixture.businessId, "after-1")
+            }
+            assertNull(sut.uiState.requests.loadMore)
+        }
 
     private fun service(name: String, minutes: Int): ServiceSnapshot {
         return ServiceSnapshot(

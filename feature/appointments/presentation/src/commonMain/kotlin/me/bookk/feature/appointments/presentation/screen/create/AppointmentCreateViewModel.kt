@@ -19,7 +19,6 @@ import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.PickerFieldState
-import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.clearError
 import me.bookk.designsystem.uistate.decreaseQuantity
@@ -32,6 +31,7 @@ import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.designsystem.uistate.unpick
 import me.bookk.feature.appointments.domain.api.CreateAppointment
 import me.bookk.feature.appointments.domain.api.GetAppointmentOptions
+import me.bookk.feature.appointments.domain.api.GetClientSnapshot
 import me.bookk.feature.appointments.domain.api.ObserveAppointmentOptions
 import me.bookk.feature.appointments.domain.api.entity.AppointmentDraft
 import me.bookk.feature.appointments.domain.api.entity.AppointmentOptions
@@ -44,6 +44,7 @@ class AppointmentCreateViewModel(
     @InjectedParam private val businessId: Uuid,
     private val getAppointmentOptions: GetAppointmentOptions,
     private val observeAppointmentOptions: ObserveAppointmentOptions,
+    private val getClientSnapshot: GetClientSnapshot,
     private val createAppointment: CreateAppointment,
     dateLocalizer: DateLocalizer,
     stateFactory: AppointmentsStateFactory,
@@ -52,6 +53,7 @@ class AppointmentCreateViewModel(
 
     val uiState: AppointmentCreateState = stateFactory.createAppointmentCreateState().setup()
     private val dateFormat = dateLocalizer.forStyle(DateStyle.SHORT)
+    private var selectedClient: ClientSnapshot? = null
 
     init {
         observeOptions()
@@ -77,7 +79,6 @@ class AppointmentCreateViewModel(
     }
 
     private fun renderOptions(options: AppointmentOptions) {
-        uiState.clientPicker.replaceOptions(options.clients.map(ClientSnapshot::pickerItem))
         val services = options.services.map(::ServicePickerPresentation)
         val servicesById = services.associateBy { it.pickerItemId }
         val selected = uiState.servicePicker.selectedItems.mapNotNull { picked ->
@@ -91,9 +92,20 @@ class AppointmentCreateViewModel(
         invalidateButton()
     }
 
-    private fun onClientSelected(client: SimplePickerPresentation<ClientSnapshot>?) {
-        uiState.clientPicker.selectedItem = client
-        uiState.clientPicker.textField.text = client?.domain?.fullName.orEmpty()
+    private fun onClientPicked(clientId: Uuid) {
+        uiState.isClientPickerVisible = false
+        launch(
+            key = CLIENT_KEY,
+            launchIn = DispatcherProvider.io,
+            call = { getClientSnapshot(clientId) },
+            onComplete = { selectClient(it) },
+            onError = { uiState.notifications.add(it.notification()) },
+        )
+    }
+
+    private fun selectClient(client: ClientSnapshot) {
+        selectedClient = client
+        uiState.clientField.text = client.fullName
         invalidateButton()
     }
 
@@ -151,7 +163,7 @@ class AppointmentCreateViewModel(
 
     private fun invalidateButton() {
         uiState.create.isEnabled = !uiState.create.isLoading &&
-            uiState.clientPicker.selectedItem != null &&
+            selectedClient != null &&
             uiState.servicePicker.selectedItems.isNotEmpty() &&
             uiState.datePicker.datePicker.pickedDate != null &&
             uiState.timePicker.timePicker.pickedTime != null &&
@@ -160,7 +172,7 @@ class AppointmentCreateViewModel(
     }
 
     private fun onCreateClick() {
-        val client = uiState.clientPicker.selectedItem?.domain ?: return
+        val client = selectedClient ?: return
         val services = uiState.servicePicker.selectedUnits()
         val date = uiState.datePicker.datePicker.pickedDate ?: return
         val time = uiState.timePicker.timePicker.pickedTime ?: return
@@ -338,13 +350,12 @@ class AppointmentCreateViewModel(
             it.uiState.navigation.push(AppointmentCreateDestination.Back)
         }
 
-        clientPicker.pickerTitle =
+        clientField.label = AppointmentsRes.strings.appointments_create_client.desc()
+        clientField.placeholder =
             AppointmentsRes.strings.appointments_create_client_placeholder.desc()
-        clientPicker.pickerType = PickerFieldState.PickerType.SCREEN
-        clientPicker.textField.label = AppointmentsRes.strings.appointments_create_client.desc()
-        clientPicker.textField.placeholder =
-            AppointmentsRes.strings.appointments_create_client_placeholder.desc()
-        clientPicker.onItemPicked = weakVMClosure { vm, item -> vm.onClientSelected(item) }
+        clientField.readOnly = true
+        onClientFieldClick = weakVMClosure { it.uiState.isClientPickerVisible = true }
+        onClientPicked = weakVMClosure { vm, clientId -> vm.onClientPicked(clientId) }
 
         servicePicker.pickerTitle = AppointmentsRes.strings.appointments_create_services.desc()
         servicePicker.pickerType = PickerFieldState.PickerType.SCREEN
@@ -386,5 +397,6 @@ class AppointmentCreateViewModel(
     private companion object {
         const val OPTIONS_KEY = "appointment-create-options"
         const val CREATE_KEY = "appointment-create"
+        const val CLIENT_KEY = "appointment-create-client"
     }
 }

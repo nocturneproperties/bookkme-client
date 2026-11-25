@@ -59,6 +59,12 @@ internal fun NotificationSettingsScreen(state: NotificationSettingsState) {
                         state = state.telegramEnabled,
                     )
                 }
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text =
+                    SettingsRes.strings.settings_notifications_channels_footer.desc().localized(),
+                    style = MaterialTheme.typography.bodySmall.secondary(),
+                )
 
                 Header(
                     text =

@@ -70,4 +70,10 @@
     <string name="booking_details_done_explanation">Ta wizyta już się odbyła.</string>
     <string name="booking_details_cancelled_explanation">Ta rezerwacja została anulowana. Możesz zarezerwować ponownie w każdej chwili.</string>
     <string name="booking_details_missed_explanation">Ta wizyta została oznaczona jako nieodbyta.</string>
+    <string name="booking_bookings_title">Twoje rezerwacje.</string>
+    <string name="booking_bookings_tabs">Rezerwacje</string>
+    <string name="booking_bookings_upcoming">Nadchodzące</string>
+    <string name="booking_bookings_past">Minione</string>
+    <string name="booking_bookings_upcoming_empty">Na razie nic nie zaplanowano. Tu pojawią się Twoje rezerwacje.</string>
+    <string name="booking_bookings_past_empty">Nie masz jeszcze minionych rezerwacji.</string>
 </resources>

@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 
 @Dao
 abstract class ClientsDao {
-    @Query("select * from client where businessId = :businessId")
+    @Query("select * from client where businessId = :businessId order by createdAt desc, id desc")
     abstract fun observeClients(businessId: Uuid): Flow<List<ClientEntity>>
 
     @Query("select * from client where id = :id")

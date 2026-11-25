@@ -6,6 +6,8 @@ import kotlin.uuid.Uuid
 
 sealed interface ClientScreen {
     data object Home : ClientScreen
+
+    data object Bookings : ClientScreen
     data class Services(
         val businessId: Uuid,
     ) : ClientScreen

@@ -42,9 +42,22 @@ class ClientRemoteContractTest {
                 "email" to 5,
                 "userId" to 6,
                 "description" to 7,
+                "createdAt" to 8,
             ),
             fields,
         )
+    }
+
+    @Test
+    fun `ClientPageRemote field order matches the backend schema`() = runUnitTest {
+        given()
+        val descriptor = ClientPageRemote.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("data" to 1, "nextCursor" to 2), fields)
     }
 
     @Test

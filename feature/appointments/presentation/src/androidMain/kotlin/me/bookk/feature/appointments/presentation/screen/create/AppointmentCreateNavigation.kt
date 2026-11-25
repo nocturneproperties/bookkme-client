@@ -23,7 +23,7 @@ internal fun NavGraphBuilder.appointmentCreateScreen(navigation: AppointmentNavi
 
         ObserveNotifications(viewModel.uiState.notifications)
         SendLifecycleEventsTo(viewModel)
-        AppointmentCreateScreen(viewModel.uiState)
+        AppointmentCreateScreen(viewModel.uiState, navigation.clientPicker)
         ObserveNavigation(viewModel.uiState.navigation) { dest ->
             when (dest) {
                 is Back -> navigation.onBack()

@@ -33,7 +33,7 @@ class IOSClientsListState: @MainActor ClientsListState, NativeStateRepresentatio
 	
 	init() {
 		self.appBar = IOSAppBarState()
-		self.clientsList = IOSListState<ClientSection>()
+		self.clientsList = IOSListState<ClientListItem>()
 		self.navigation = IOSNavigationState()
 		self.notifications = IOSNotificationState()
 		self.refreshState = IOSRefreshState()
@@ -44,4 +44,4 @@ class IOSClientsListState: @MainActor ClientsListState, NativeStateRepresentatio
 	
 }
 
-extension ClientSection: @retroactive Identifiable {}
+extension ClientListItem: @retroactive Identifiable {}

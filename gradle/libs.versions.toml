@@ -95,6 +95,7 @@ kmm-resources-compose = { module = "dev.icerock.moko:resources-compose", version
 kmm-resources-graphics = { module = "dev.icerock.moko:graphics", version.ref = "kmm-resources-graphics" }
 room-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room" }
 room-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room" }
+room-gradlePlugin = { module = "androidx.room3:room3-gradle-plugin", version.ref = "room" }
 room-sqlite = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 room-sqlite-web = { module = "androidx.sqlite:sqlite-web", version.ref = "sqlite" }
 room-sqlite-async = { module = "androidx.sqlite:sqlite-async", version.ref = "sqlite" }

@@ -82,7 +82,10 @@ class EditProfileViewModelTest {
             email: String = "anna@example.com",
         ) {
             everySuspend { getSettings() } returns
-                Settings(ColorScheme.SYSTEM, SettingsProfile(firstName, lastName, email))
+                Settings(
+                    ColorScheme.SYSTEM,
+                    SettingsProfile(firstName, lastName, email, isEmailDeliverable = true),
+                )
         }
 
         fun stubSaveSucceeds() {

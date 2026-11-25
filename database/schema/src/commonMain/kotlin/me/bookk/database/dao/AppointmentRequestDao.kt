@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import me.bookk.database.entity.AppointmentRequestEntity
 import me.bookk.database.entity.AppointmentRequestServiceSnapshotEntity
 import me.bookk.database.relation.AppointmentRequestLocal
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Dao
@@ -24,11 +25,17 @@ abstract class AppointmentRequestDao {
     abstract fun observeById(id: Uuid): Flow<AppointmentRequestLocal?>
 
     @Transaction
-    @Query("SELECT * FROM appointment_request WHERE status = 'PENDING' ORDER BY date")
-    abstract fun observePending(): Flow<List<AppointmentRequestLocal>>
+    @Query("SELECT * FROM appointment_request WHERE status IN (:statuses) ORDER BY date")
+    abstract fun observeByStatuses(statuses: List<String>): Flow<List<AppointmentRequestLocal>>
 
-    @Query("SELECT id FROM appointment_request WHERE status = 'PENDING'")
-    abstract suspend fun getPendingIds(): List<Uuid>
+    @Query(
+        "SELECT id FROM appointment_request WHERE status IN (:statuses) AND (:from IS NULL OR date >= :from) AND (:to IS NULL OR date <= :to)",
+    )
+    abstract suspend fun getIdsByStatusesBetween(
+        statuses: List<String>,
+        from: Instant?,
+        to: Instant?,
+    ): List<Uuid>
 
     @Query("SELECT id FROM appointment_request WHERE businessId = :businessId")
     abstract suspend fun getIdsForBusiness(businessId: Uuid): List<Uuid>

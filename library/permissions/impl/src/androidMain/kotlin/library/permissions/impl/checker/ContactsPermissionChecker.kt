@@ -6,17 +6,17 @@ import androidx.core.content.ContextCompat
 import library.permissions.api.PermissionChecker
 import library.permissions.api.PermissionType
 
-internal actual class ContactsPermissionChecker :
+internal class ContactsPermissionChecker :
     AndroidPermissionChecker(),
     PermissionChecker {
 
-    actual override val type: PermissionType = PermissionType.CONTACTS
+    override val type: PermissionType = PermissionType.CONTACTS
 
-    actual override suspend fun requestPermission(): Boolean {
+    override suspend fun requestPermission(): Boolean {
         return check(Manifest.permission.READ_CONTACTS)
     }
 
-    actual override suspend fun hasPermission(): Boolean {
+    override suspend fun hasPermission(): Boolean {
         return ContextCompat.checkSelfPermission(
             awaitActivity(),
             Manifest.permission.READ_CONTACTS,

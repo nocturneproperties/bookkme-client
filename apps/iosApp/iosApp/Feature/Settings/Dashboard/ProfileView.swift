@@ -18,7 +18,7 @@ struct ProfileView: View {
 	
 	var body: some View {
 		VStack {
-			Text(state.name.localized() + " " + state.lastName.localized())
+			Text(state.fullName.localized())
 				.font(.title.weight(.bold))
 				.transition(.opacity)
 			Text(state.email.localized())

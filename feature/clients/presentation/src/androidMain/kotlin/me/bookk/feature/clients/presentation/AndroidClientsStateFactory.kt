@@ -8,6 +8,8 @@ import me.bookk.feature.clients.presentation.edit.AndroidEditClientState
 import me.bookk.feature.clients.presentation.edit.EditClientState
 import me.bookk.feature.clients.presentation.list.AndroidClientsListState
 import me.bookk.feature.clients.presentation.list.ClientsListState
+import me.bookk.feature.clients.presentation.select.AndroidSelectClientState
+import me.bookk.feature.clients.presentation.select.SelectClientState
 
 class AndroidClientsStateFactory : ClientsStateFactory {
     override fun createClientsListState(): ClientsListState {
@@ -24,5 +26,9 @@ class AndroidClientsStateFactory : ClientsStateFactory {
 
     override fun createEditClientState(): EditClientState {
         return AndroidEditClientState()
+    }
+
+    override fun createSelectClientState(): SelectClientState {
+        return AndroidSelectClientState()
     }
 }

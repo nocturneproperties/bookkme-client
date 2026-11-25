@@ -15,6 +15,7 @@ class IOSButtonState: IOSViewState, @MainActor ButtonState {
     var isLoading: Bool
     var text: any StringDesc
 	var icon: ImageResource?
+	var endIcon: ImageResource?
 	var onClick: (() -> Void)?
     
 	init(
@@ -22,6 +23,7 @@ class IOSButtonState: IOSViewState, @MainActor ButtonState {
 		isEnabled: Bool = true,
 		isLoading: Bool = false,
 		icon: ImageResource? = nil,
+		endIcon: ImageResource? = nil,
 		onClick: (() -> Void)? = nil,
 		isVisible: Bool = true
 	) {
@@ -29,6 +31,7 @@ class IOSButtonState: IOSViewState, @MainActor ButtonState {
         self.isLoading = isLoading
         self.text = text
 		self.icon = icon
+		self.endIcon = endIcon
 		self.onClick = onClick
         super.init(isVisible: isVisible)
     }

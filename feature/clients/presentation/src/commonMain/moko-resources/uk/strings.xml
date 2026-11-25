@@ -2,6 +2,7 @@
 <resources>
     <string name="clients_title">Клієнти</string>
     <string name="clients_empty">У вас поки немає клієнтів</string>
+    <string name="clients_select_title">Вибір клієнта</string>
 
     <string name="clients_create_title">Додати клієнта</string>
     <string name="clients_create_name">Імʼя</string>

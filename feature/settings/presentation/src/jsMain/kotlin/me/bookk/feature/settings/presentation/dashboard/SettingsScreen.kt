@@ -81,7 +81,7 @@ private fun ProfileHeader(profile: ProfileSection) {
                 .margin(0.px)
                 .secondary(),
         )
-        TextButton(profile.edit, endIcon = DesignSystem.images.material_chevron_right)
+        TextButton(profile.edit)
     }
 }
 

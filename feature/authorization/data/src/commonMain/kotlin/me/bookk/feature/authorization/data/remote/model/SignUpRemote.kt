@@ -7,8 +7,7 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class PassKeySignUpStartInfo(
-    @ProtoNumber(1) val firstName: String,
-    @ProtoNumber(2) val lastName: String,
+    @ProtoNumber(1) val name: String,
     @ProtoNumber(3) val email: String,
 )
 
@@ -42,7 +41,6 @@ class VerifyAccountCreationRequest(
     @Serializable
     class UserInfo(
         @ProtoNumber(1) val name: String,
-        @ProtoNumber(2) val lastName: String,
         @ProtoNumber(3) val email: String,
     )
 

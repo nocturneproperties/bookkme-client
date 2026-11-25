@@ -20,7 +20,7 @@ class InMemorySignUpSessionDataSourceTest {
 
     private fun session(attestation: PasskeyVerificationPayload? = null): SignUpSession {
         return SignUpSession(
-            userData = StartSignUp.UserData("John", "Doe", "john@example.com"),
+            userData = StartSignUp.UserData("John Doe", "john@example.com"),
             challenge = ServerSignUpChallenge(
                 requestId = "req",
                 displayName = "John Doe",

@@ -64,7 +64,7 @@ class StartSignUpImplTest {
         fixture.stubChallenge()
 
         whenn()
-        val result = fixture.sut(StartSignUp.UserData("John", "Doe", "j@example.com"))
+        val result = fixture.sut(StartSignUp.UserData("John Doe", "j@example.com"))
 
         then()
         assertEquals("j***@example.com", result.maskedEmail)
@@ -77,14 +77,13 @@ class StartSignUpImplTest {
         fixture.stubChallenge()
 
         whenn()
-        fixture.sut(StartSignUp.UserData("  John ", "Doe\n", " john@example.com "))
+        fixture.sut(StartSignUp.UserData("  John Doe\n", " john@example.com "))
 
         then()
         verifySuspend {
             fixture.registrationDataSource.getSignUpPasskeyChallenge(
                 matches({ "trimmed" }) {
-                    it.firstName == "John" && it.lastName == "Doe" &&
-                        it.email == "john@example.com"
+                    it.name == "John Doe" && it.email == "john@example.com"
                 },
             )
         }
@@ -98,11 +97,11 @@ class StartSignUpImplTest {
         val documents = AcceptedLegalDocuments("privacy-v3", "terms-v2")
 
         whenn()
-        fixture.sut(StartSignUp.UserData(" John ", "Doe", "john@example.com", documents))
+        fixture.sut(StartSignUp.UserData(" John Doe ", "john@example.com", documents))
 
         then()
         val session = fixture.sessionDataSource.session!!
-        assertEquals("John", session.userData.firstName)
+        assertEquals("John Doe", session.userData.name)
         assertEquals(documents, session.userData.acceptedDocuments)
         assertEquals("req-id", session.challenge?.requestId)
         assertNull(session.attestation)
@@ -118,10 +117,10 @@ class StartSignUpImplTest {
         )
 
         whenn()
-        fixture.sut(StartSignUp.UserData("Jane", "Doe", "jane@example.com"))
+        fixture.sut(StartSignUp.UserData("Jane Doe", "jane@example.com"))
 
         then()
-        assertEquals("Jane", fixture.sessionDataSource.session!!.userData.firstName)
+        assertEquals("Jane Doe", fixture.sessionDataSource.session!!.userData.name)
     }
 
     @Test

@@ -20,7 +20,6 @@ import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 internal class AndroidSignUpState : SignUpState {
     override val appBar = AndroidAppBarState()
     override val name = AndroidTextFieldState()
-    override val lastName = AndroidTextFieldState()
     override val email = AndroidTextFieldState()
     override val confirmButton = AndroidButtonState(isEnabled = false)
     override val learnMoreButton = AndroidButtonState()

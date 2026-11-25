@@ -44,7 +44,6 @@ struct SignUpScreen: View {
 struct SignUpScreenContent: View {
 	private enum FocusField {
 		case name
-		case lastName
 		case email
 	}
 	@FocusState private var focusedField: FocusField?
@@ -55,16 +54,7 @@ struct SignUpScreenContent: View {
 		
 		SectionTextField(uiState.name)
 		.focused($focusedField, equals: .name)
-		.textContentType(.givenName)
-		.submitLabel(.next)
-		.onSubmit {
-			focusedField = .lastName
-		}
-		.textFieldStyle(.inList)
-		
-		SectionTextField(uiState.lastName)
-		.focused($focusedField, equals: .lastName)
-		.textContentType(.familyName)
+		.textContentType(.name)
 		.submitLabel(.next)
 		.onSubmit {
 			focusedField = .email

@@ -1,10 +1,12 @@
 package me.bookk.client.telegram
 
 import androidx.compose.runtime.Composable
+import library.telegram.TelegramSettingsButton
 import library.telegram.TelegramWebApp
 import me.bookk.client.navigation.ClientScreen
 import me.bookk.client.navigation.rememberBookingNavigation
 import me.bookk.client.navigation.rememberClientHomeNavigation
+import me.bookk.client.navigation.rememberSettingsNavigation
 import me.bookk.core.presentation.navigation.rememberBackStack
 import me.bookk.designsystem.components.BackStackHost
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeDestination
@@ -15,12 +17,15 @@ import me.bookk.feature.booking.presentation.screen.sent.BookingSentDestination
 import me.bookk.feature.booking.presentation.screen.services.BookingServicesDestination
 import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistDestination
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestination
+import me.bookk.feature.settings.presentation.dashboard.SettingsDestination
 
 @Composable
 internal fun TelegramMainContent(webApp: TelegramWebApp) {
     val stack = rememberBackStack<ClientScreen>(ClientScreen.Home)
     val homeNavigation = rememberClientHomeNavigation(stack)
     val bookingNavigation = rememberBookingNavigation(stack)
+    val settingsNavigation = rememberSettingsNavigation(stack, webApp)
+    TelegramSettingsButton(webApp, homeNavigation.toSettings)
     BackStackHost(stack) { screen ->
         when (screen) {
             ClientScreen.Home -> {
@@ -58,6 +63,20 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
                     bookingNavigation,
                 )
             }
+
+            ClientScreen.Settings -> {
+                SettingsDestination(webApp, settingsNavigation)
+            }
+
+            ClientScreen.BookingProfile -> {}
+
+            ClientScreen.NotificationSettings -> {}
+
+            ClientScreen.PrivacySettings -> {}
+
+            ClientScreen.PersonalDataExport -> {}
+
+            ClientScreen.DeleteAccount -> {}
         }
     }
 }

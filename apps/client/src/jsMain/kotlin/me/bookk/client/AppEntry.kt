@@ -18,6 +18,7 @@ import com.varabyte.kobweb.silk.theme.colors.systemPreference
 import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.android.feature.booking.resources.BookingRes
 import me.bookk.android.feature.dashboard.resources.DashboardRes
+import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.client.resources.ClientRes
 import me.bookk.designsystem.resources.LocalizedContent
 import org.jetbrains.compose.web.css.vh
@@ -47,7 +48,8 @@ fun AppEntry(content: @Composable () -> Unit) {
                 ClientRes.strings.stringsLoader +
                     AuthRes.strings.stringsLoader +
                     DashboardRes.strings.stringsLoader +
-                    BookingRes.stringsLoader,
+                    BookingRes.stringsLoader +
+                    SettingsRes.strings.stringsLoader,
             ) {
                 content()
             }

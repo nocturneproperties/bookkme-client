@@ -35,24 +35,24 @@ class IOSSettingsState: @MainActor SettingsState {
 @MainActor
 @Observable
 class IOSAccountSection: @MainActor AccountSection {
-	let dataExport: any TextState = IOSTextState(text: RawStringDesc(string: ""))
+	let dataExport: any ButtonState = IOSButtonState()
 	let changeEmail: any TextState = IOSTextState(text: RawStringDesc(string: ""))
-	let privacy: any TextState = IOSTextState(text: RawStringDesc(string: ""))
+	let privacy: any ButtonState = IOSButtonState()
 	var privacyStatus: (any StringDesc)? = nil
 	
 	var title: any StringDesc
-	var deleteAccount: any TextState
+	var deleteAccount: any ButtonState
 	var logout: any TextState
 	var passkey: any TextState
-	var notifications: any TextState
+	var notifications: any ButtonState
 	
 	
 	init(initData: AccountSectionInitData) {
 		title = initData.title
 		logout = IOSTextState(text: initData.logoutLabel)
 		passkey = IOSTextState(text: initData.passkeyLabel)
-		deleteAccount = IOSTextState(text: initData.deleteAccountLabel)
-		notifications = IOSTextState(text: initData.notificationsLabel)
+		deleteAccount = IOSButtonState(text: initData.deleteAccountLabel)
+		notifications = IOSButtonState(text: initData.notificationsLabel)
 	}
 }
 
@@ -89,12 +89,18 @@ class IOSProfileSection: @MainActor ProfileSection {
 	var email: any StringDesc
 	var lastName: any StringDesc
 	var name: any StringDesc
+	var fullName: any StringDesc
+	var initials: String
+	let edit: any ButtonState
 	
 	
 	init() {
 		email = RawStringDesc(string: "")
 		lastName = RawStringDesc(string: "")
 		name = RawStringDesc(string: "")
+		fullName = RawStringDesc(string: "")
+		initials = ""
+		edit = IOSButtonState()
 	}
 }
 
@@ -111,13 +117,15 @@ class IOSSupportSection: @MainActor SupportSection {
 	
 	var contact: any TextState
 	
+	var contactPage: any ButtonState
+	
 	var feature: any TextState
 	
-	var policy: any TextState
+	var policy: any ButtonState
 	
 	var reportError: any TextState
 	
-	var terms: any TextState
+	var terms: any ButtonState
 	
 	var onContactClick: () -> Void = {}
 	
@@ -125,10 +133,11 @@ class IOSSupportSection: @MainActor SupportSection {
 	init(initData: SupportSectionInitData) {
 		title = initData.title
 		contact = IOSTextState(text: initData.contactLabel)
+		contactPage = IOSButtonState(text: initData.contactLabel)
 		feature = IOSTextState(text: initData.featureLabel)
-		policy = IOSTextState(text: initData.policyLabel)
+		policy = IOSButtonState(text: initData.policyLabel)
 		reportError = IOSTextState(text: initData.reportErrorLabel)
-		terms = IOSTextState(text: initData.termsLabel)
+		terms = IOSButtonState(text: initData.termsLabel)
 	}
 }
 

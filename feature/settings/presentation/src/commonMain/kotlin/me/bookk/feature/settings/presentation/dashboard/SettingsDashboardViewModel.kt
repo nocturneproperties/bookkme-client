@@ -19,6 +19,7 @@ import me.bookk.feature.settings.domain.api.GetLegalDocumentStatuses
 import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.UpdateColorScheme
 import me.bookk.feature.settings.domain.api.entity.LegalDocumentStatus
+import me.bookk.feature.settings.domain.api.entity.SettingsProfile
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection.UIColorScheme
 
@@ -38,18 +39,45 @@ class SettingsDashboardViewModel(
     }
 
     private fun SettingsState.setup(): SettingsState = apply {
-        account.changeEmail.text = SettingsRes.strings.settings_account_change_email_label.desc()
-        account.dataExport.text = SettingsRes.strings.settings_export_title.desc()
-        account.privacy.text = SettingsRes.strings.settings_privacy_title.desc()
-        support.onContactClick = weakVMClosure { it.device.mail(SUPPORT_EMAIL) }
+        profile.setup()
+        account.setup()
+        support.setup()
         appBar.actions.replace(
             listOf(
                 appBar.action(
                     contentDescription = SettingsRes.strings.settings_profile_edit.desc(),
-                    onClick = weakVMClosure { it.onEditClick() },
+                    onClick = weakVMClosure { it.open(SettingsDashboardDestination.EditProfile) },
                 ),
             ),
         )
+    }
+
+    private fun ProfileSection.setup() {
+        edit.text = SettingsRes.strings.settings_profile_edit_booking.desc()
+        edit.onClick = weakVMClosure { it.open(SettingsDashboardDestination.EditProfile) }
+    }
+
+    private fun AccountSection.setup() {
+        changeEmail.text = SettingsRes.strings.settings_account_change_email_label.desc()
+        dataExport.text = SettingsRes.strings.settings_export_title.desc()
+        privacy.text = SettingsRes.strings.settings_privacy_title.desc()
+        notifications.onClick = weakVMClosure {
+            it.open(SettingsDashboardDestination.Notifications)
+        }
+        privacy.onClick = weakVMClosure { it.open(SettingsDashboardDestination.Privacy) }
+        dataExport.onClick = weakVMClosure {
+            it.open(SettingsDashboardDestination.PersonalDataExport)
+        }
+        deleteAccount.onClick = weakVMClosure {
+            it.open(SettingsDashboardDestination.DeleteAccount)
+        }
+    }
+
+    private fun SupportSection.setup() {
+        onContactClick = weakVMClosure { it.device.mail(SUPPORT_EMAIL) }
+        contactPage.onClick = weakVMClosure { it.open(SettingsDashboardDestination.ContactPage) }
+        terms.onClick = weakVMClosure { it.open(SettingsDashboardDestination.TermsOfUse) }
+        policy.onClick = weakVMClosure { it.open(SettingsDashboardDestination.PrivacyPolicy) }
     }
 
     override fun onViewPresented() {
@@ -114,8 +142,8 @@ class SettingsDashboardViewModel(
         )
     }
 
-    private fun onEditClick() {
-        uiState.navigation.push(SettingsDashboardDestination.EditProfile)
+    private fun open(destination: SettingsDashboardDestination) {
+        uiState.navigation.push(destination)
     }
 
     private fun logout() {
@@ -128,12 +156,21 @@ class SettingsDashboardViewModel(
             call = { getSettings() },
             onComplete = {
                 uiState.appearance.colorScheme = UIColorScheme.from(it.colorScheme)
-                uiState.profile.name = it.profile.firstName.desc()
-                uiState.profile.lastName = it.profile.lastName.desc()
-                uiState.profile.email = it.profile.email.desc()
+                uiState.profile.render(it.profile)
             },
             onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
         )
+    }
+
+    private fun ProfileSection.render(profile: SettingsProfile) {
+        val names = listOf(profile.firstName, profile.lastName)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+        name = profile.firstName.desc()
+        lastName = profile.lastName.desc()
+        email = profile.email.desc()
+        fullName = names.joinToString(" ").desc()
+        initials = names.joinToString("") { it.first().uppercase() }
     }
 
     companion object {

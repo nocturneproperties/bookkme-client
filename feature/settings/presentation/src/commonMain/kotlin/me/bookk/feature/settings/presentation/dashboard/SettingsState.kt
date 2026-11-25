@@ -4,6 +4,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.designsystem.uistate.AppBarState
+import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextState
@@ -67,18 +68,21 @@ interface ProfileSection {
     var name: StringDesc
     var lastName: StringDesc
     var email: StringDesc
+    var fullName: StringDesc
+    var initials: String
+    val edit: ButtonState
 }
 
 interface AccountSection {
-    val dataExport: TextState
+    val dataExport: ButtonState
     val changeEmail: TextState
-    val privacy: TextState
+    val privacy: ButtonState
     var privacyStatus: StringDesc?
     val title: StringDesc
-    val notifications: TextState
+    val notifications: ButtonState
     val passkey: TextState
     val logout: TextState
-    val deleteAccount: TextState
+    val deleteAccount: ButtonState
 
     class InitData(
         val title: StringDesc,
@@ -92,9 +96,10 @@ interface AccountSection {
 interface SupportSection {
     val title: StringDesc
     val contact: TextState
+    val contactPage: ButtonState
     val feature: TextState
-    val terms: TextState
-    val policy: TextState
+    val terms: ButtonState
+    val policy: ButtonState
     val reportError: TextState
     var onContactClick: () -> Unit
 

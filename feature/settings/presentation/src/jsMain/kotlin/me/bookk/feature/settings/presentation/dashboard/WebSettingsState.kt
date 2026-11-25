@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.uistate.WebAppBarState
+import me.bookk.designsystem.uistate.WebButtonState
 import me.bookk.designsystem.uistate.WebNavigationState
 import me.bookk.designsystem.uistate.WebNotificationState
 import me.bookk.designsystem.uistate.WebTextState
@@ -34,20 +35,23 @@ internal class WebProfileSection : ProfileSection {
     override var name: StringDesc by mutableStateOf("".desc())
     override var lastName: StringDesc by mutableStateOf("".desc())
     override var email: StringDesc by mutableStateOf("".desc())
+    override var fullName: StringDesc by mutableStateOf("".desc())
+    override var initials: String by mutableStateOf("")
+    override val edit = WebButtonState()
 }
 
 internal class WebAccountSection(
     initData: AccountSection.InitData,
 ) : AccountSection {
-    override val dataExport = WebTextState()
+    override val dataExport = WebButtonState()
     override val changeEmail = WebTextState()
-    override val privacy = WebTextState()
+    override val privacy = WebButtonState()
     override var privacyStatus: StringDesc? by mutableStateOf(null)
     override val title: StringDesc = initData.title
-    override val notifications = WebTextState(initData.notificationsLabel)
+    override val notifications = WebButtonState(text = initData.notificationsLabel)
     override val passkey = WebTextState(initData.passkeyLabel)
     override val logout = WebTextState(initData.logoutLabel)
-    override val deleteAccount = WebTextState(initData.deleteAccountLabel)
+    override val deleteAccount = WebButtonState(text = initData.deleteAccountLabel)
 }
 
 internal class WebSupportSection(
@@ -55,9 +59,10 @@ internal class WebSupportSection(
 ) : SupportSection {
     override val title: StringDesc = initData.title
     override val contact = WebTextState(initData.contactLabel)
+    override val contactPage = WebButtonState(text = initData.contactLabel)
     override val feature = WebTextState(initData.featureLabel)
-    override val terms = WebTextState(initData.termsLabel)
-    override val policy = WebTextState(initData.policyLabel)
+    override val terms = WebButtonState(text = initData.termsLabel)
+    override val policy = WebButtonState(text = initData.policyLabel)
     override val reportError = WebTextState(initData.reportErrorLabel)
     override var onContactClick: () -> Unit = {}
 }

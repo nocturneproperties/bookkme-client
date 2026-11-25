@@ -26,7 +26,32 @@ internal fun NavGraphBuilder.dashboardScreen(navigation: SettingsNavigation) {
             SettingsDashboardScreen(viewModel.uiState)
             ObserveNavigation(viewModel.uiState.navigation) {
                 when (it) {
-                    SettingsDashboardDestination.EditProfile -> navigation.navigateToEditProfile()
+                    SettingsDashboardDestination.EditProfile -> {
+                        navigation.navigateToEditProfile()
+                    }
+
+                    SettingsDashboardDestination.Notifications -> {
+                        navigation.navigateToNotifications()
+                    }
+
+                    SettingsDashboardDestination.Privacy -> {
+                        navigation.navigateToPrivacy()
+                    }
+
+                    SettingsDashboardDestination.PersonalDataExport -> {
+                        navigation.navigateToPersonalDataExport()
+                    }
+
+                    SettingsDashboardDestination.DeleteAccount -> {
+                        navigation.navigateToDeleteAccount()
+                    }
+
+                    SettingsDashboardDestination.ContactPage,
+                    SettingsDashboardDestination.TermsOfUse,
+                    SettingsDashboardDestination.PrivacyPolicy,
+                    -> {
+                        Unit
+                    }
                 }
             }
         }

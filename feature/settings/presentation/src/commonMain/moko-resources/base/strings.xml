@@ -10,6 +10,8 @@
     <string name="settings_profile_last_name">Last name</string>
     <string name="settings_profile_email">Email</string>
     <string name="settings_profile_edit">Edit</string>
+    <string name="settings_profile_edit_booking">Edit booking profile</string>
+    <string name="settings_profile_booking_hint">Businesses see this name when you book</string>
 
     <string name="settings_account_title">Account</string>
     <string name="settings_account_passkey_label">Passkey</string>

@@ -21,6 +21,7 @@ import me.bookk.feature.services.data.di.servicesDataModule
 import me.bookk.feature.services.domain.impl.di.clientServicesDomainModule
 import me.bookk.feature.settings.data.di.settingsDataModule
 import me.bookk.feature.settings.domain.impl.di.settingsDomainModule
+import me.bookk.feature.settings.presentation.di.settingsPresentationModule
 import me.bookk.shared.common.di.commonModule
 import me.bookk.shared.common.di.initLogging
 import org.koin.core.KoinApplication
@@ -55,6 +56,7 @@ fun initClientApp(setup: KoinApplication.() -> Unit = {}) {
             bookingDomainModule(),
             bookingDataModule(),
             bookingPresentationModule(),
+            settingsPresentationModule(),
         )
     }
 }

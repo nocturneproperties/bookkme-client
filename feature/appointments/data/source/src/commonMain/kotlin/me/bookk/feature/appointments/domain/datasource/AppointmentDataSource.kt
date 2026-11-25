@@ -2,6 +2,8 @@ package me.bookk.feature.appointments.domain.datasource
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import me.bookk.core.domain.pagination.Page
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
 import me.bookk.feature.appointments.domain.api.entity.InstantAppointmentDraft
@@ -36,10 +38,17 @@ interface AppointmentDataSource {
 
     suspend fun getAppointmentHistory(
         businessId: Uuid,
-        limit: Int,
-        offset: Long,
-        query: String? = null,
-    ): List<Appointment>
+        search: String?,
+        cursor: String?,
+    ): Page<Appointment>
+
+    fun observeAppointmentsDBChanges(businessId: Uuid): Flow<List<Appointment>>
+
+    suspend fun getAppointmentIdsInDb(
+        businessId: Uuid,
+        from: LocalDateTime?,
+        to: LocalDateTime?,
+    ): List<Uuid>
 
     suspend fun createAppointment(draft: InstantAppointmentDraft): Appointment
 

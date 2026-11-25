@@ -9,7 +9,7 @@ import me.bookk.feature.dashboard.presentation.navigation.ClientHomeNavigation
 internal fun rememberClientHomeNavigation(stack: BackStack<ClientScreen>) = remember(stack) {
     ClientHomeNavigation(
         toSettings = { stack.openSettings() },
-        toBookings = {},
+        toBookings = { stack.push(ClientScreen.Bookings) },
         toBusinesses = {},
         toRequestDetails = { stack.push(ClientScreen.BookingRequestDetails(it)) },
         toAppointmentDetails = { stack.push(ClientScreen.BookingAppointmentDetails(it)) },

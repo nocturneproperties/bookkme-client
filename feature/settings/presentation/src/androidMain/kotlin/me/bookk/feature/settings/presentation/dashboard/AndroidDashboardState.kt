@@ -38,8 +38,6 @@ internal class AndroidAppearanceSectionState(
 }
 
 internal class AndroidProfileSectionState : ProfileSection {
-    override var name: StringDesc by mutableStateOf("".desc())
-    override var lastName: StringDesc by mutableStateOf("".desc())
     override var email: StringDesc by mutableStateOf("".desc())
     override var fullName: StringDesc by mutableStateOf("".desc())
     override var initials: String by mutableStateOf("")

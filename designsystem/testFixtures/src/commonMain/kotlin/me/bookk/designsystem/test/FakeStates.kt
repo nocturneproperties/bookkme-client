@@ -100,6 +100,7 @@ class FakeButtonState :
     FakeViewState(),
     ButtonState {
     override var icon: ImageResource? = null
+    override var endIcon: ImageResource? = null
     override var text: StringDesc = "".desc()
     override var isLoading: Boolean = false
     override var isEnabled: Boolean = true

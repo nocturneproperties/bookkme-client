@@ -25,7 +25,7 @@ flowchart TD
     Start([invoke businessId]) --> Plug[runCatching IsAppointmentsPluginEnabled.refresh businessId<br/>GET /api/appointments/enabled/id<br/>plugin_prefs]
     Plug --> Groups[runCatching GetServiceGroups.refresh businessId<br/>service_group]
     Groups --> Services[runCatching GetServices.refresh businessId<br/>service, service_group]
-    Services --> Clients[runCatching GetClientsList.refresh businessId<br/>client]
+    Services --> Clients[runCatching GetClientsList.refresh ClientsQuery businessId<br/>first page of clients]
     Clients --> Failed{any failure?}
     Failed -- no --> R([Unit])
     Failed -- yes --> EX([rethrow first failure])

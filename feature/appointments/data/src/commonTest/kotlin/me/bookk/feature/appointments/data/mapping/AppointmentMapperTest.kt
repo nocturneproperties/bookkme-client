@@ -8,10 +8,12 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.database.relation.AppointmentLocal
+import me.bookk.database.relation.AppointmentRequestLocal
 import me.bookk.feature.appointments.data.remote.model.AppointmentStatusRemote
 import me.bookk.feature.appointments.data.remote.model.RequestedServiceRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCompletedBy
+import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
 import me.bookk.feature.appointments.domain.api.entity.PriceAdjustment
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
@@ -154,6 +156,49 @@ class AppointmentMapperTest {
 
         then()
         assertEquals("Short nails, please.", appointment.clientNote)
+    }
+
+    @Test
+    fun `stored appointment keeps its business name`() = runUnitTest {
+        given()
+        val appointment = appointment(
+            listOf(service("Haircut")),
+        ).copy(businessName = "Studio Lumen")
+
+        whenn()
+        val restored = appointment.toLocal().toDomain()
+
+        then()
+        assertEquals("Studio Lumen", restored.businessName)
+    }
+
+    @Test
+    fun `fetched appointment carries its business name`() = runUnitTest {
+        given()
+        val remote = appointment(listOf(service("Haircut"))).toRemote().copy(
+            businessName = "Studio Lumen",
+        )
+
+        whenn()
+        val appointment = remote.toDomain()
+
+        then()
+        assertEquals("Studio Lumen", appointment.businessName)
+    }
+
+    @Test
+    fun `stored request keeps its business name`() = runUnitTest {
+        given()
+        val request = AppointmentRequest.stub().copy(businessName = "Nail Room")
+
+        whenn()
+        val restored = AppointmentRequestLocal(
+            entity = request.toRequestEntity(),
+            services = request.toRequestServiceEntities(),
+        ).toDomain()
+
+        then()
+        assertEquals("Nail Room", restored.businessName)
     }
 
     @Test

@@ -5,6 +5,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 
 interface ButtonState : ViewState {
     var icon: ImageResource?
+    var endIcon: ImageResource?
     var text: StringDesc
     var isLoading: Boolean
     var isEnabled: Boolean

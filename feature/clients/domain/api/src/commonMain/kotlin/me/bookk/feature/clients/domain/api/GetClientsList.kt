@@ -1,10 +1,10 @@
 package me.bookk.feature.clients.domain.api
 
 import kotlinx.coroutines.flow.Flow
+import me.bookk.core.domain.pagination.PagedSource
 import me.bookk.feature.clients.domain.api.entity.Client
-import kotlin.uuid.Uuid
+import me.bookk.feature.clients.domain.api.entity.ClientsQuery
 
-interface GetClientsList {
-    fun flow(): Flow<List<Client>>
-    suspend fun refresh(businessId: Uuid): List<Client>
+interface GetClientsList : PagedSource<ClientsQuery, Client> {
+    fun flow(search: String? = null): Flow<List<Client>>
 }

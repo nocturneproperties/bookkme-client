@@ -11,7 +11,6 @@ import me.bookk.designsystem.uistate.AndroidDatePickerFieldState
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
 import me.bookk.designsystem.uistate.AndroidOptionsMultiPickerState
-import me.bookk.designsystem.uistate.AndroidPickerFieldState
 import me.bookk.designsystem.uistate.AndroidTextFieldState
 import me.bookk.designsystem.uistate.AndroidTimePickerFieldState
 import me.bookk.designsystem.uistate.AppBarState
@@ -19,15 +18,17 @@ import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.DatePickerFieldState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
-import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.designsystem.uistate.TimePickerFieldState
-import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
+import kotlin.uuid.Uuid
 
 internal class AndroidAppointmentCreateState : AppointmentCreateState {
     override val appBar: AppBarState = AndroidAppBarState()
 
-    override val clientPicker = AndroidPickerFieldState<SimplePickerPresentation<ClientSnapshot>>()
+    override val clientField = AndroidTextFieldState()
+    override var isClientPickerVisible: Boolean by mutableStateOf(false)
+    override var onClientFieldClick: () -> Unit = {}
+    override var onClientPicked: (Uuid) -> Unit = {}
     override val servicePicker = AndroidOptionsMultiPickerState<ServicePickerPresentation>()
     override var subtotalLabel: StringDesc by mutableStateOf("".desc())
     override var subtotalPrice: String by mutableStateOf("")

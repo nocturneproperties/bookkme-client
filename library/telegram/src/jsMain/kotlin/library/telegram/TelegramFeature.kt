@@ -8,6 +8,7 @@ enum class TelegramFeature(
     SETTINGS_BUTTON("7.0"),
     SECONDARY_BUTTON("7.10"),
     BOTTOM_BAR_COLOR("7.10"),
+    DOWNLOAD_FILE("8.0"),
 }
 
 fun TelegramWebApp.supports(feature: TelegramFeature): Boolean {

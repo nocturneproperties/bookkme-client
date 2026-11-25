@@ -36,6 +36,8 @@ external interface TelegramWebApp {
 
     fun showPopup(params: TelegramPopupParams, callback: (String?) -> Unit)
 
+    fun downloadFile(params: TelegramDownloadFileParams, callback: (Boolean) -> Unit)
+
     fun onEvent(eventType: String, eventHandler: () -> Unit)
 
     fun offEvent(eventType: String, eventHandler: () -> Unit)

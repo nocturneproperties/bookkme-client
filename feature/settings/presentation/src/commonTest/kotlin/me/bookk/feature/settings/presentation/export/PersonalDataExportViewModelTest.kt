@@ -513,10 +513,7 @@ class PersonalDataExportViewModelTest {
             SettingsRes.strings.settings_export_running_message.desc(),
             sut.uiState.status.message,
         )
-        assertEquals(
-            SettingsRes.strings.settings_export_running_footer.desc(),
-            sut.uiState.status.footer,
-        )
+        assertEquals(exportRunningFooter.desc(), sut.uiState.status.footer)
     }
 
     @Test
@@ -735,6 +732,85 @@ class PersonalDataExportViewModelTest {
     }
 
     @Test
+    fun `shows an expired export while the next export waits for its cooldown`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.cache.value = DataExport(
+            DataExportStatus.NONE,
+            availableAgainAt = fixture.now + 1.days,
+        )
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            UIExportStatus(
+                title = SettingsRes.strings.settings_export_expired_title.desc(),
+                message = SettingsRes.strings.settings_export_expired_message.desc(),
+                footer = null,
+                icon = DesignSystem.images.export_document,
+                color = ColorToken.SecondaryText,
+                isInProgress = false,
+                showsFile = false,
+                stage = UIExportStage.EXPIRED,
+            ),
+            sut.uiState.status,
+        )
+        assertFalse(sut.uiState.request.isVisible)
+        assertFalse(sut.uiState.download.isVisible)
+    }
+
+    @Test
+    fun `shows the request again once the cooldown of an expired export ends`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val availableAgainAt = fixture.now + 1.hours
+        fixture.cache.value = DataExport(DataExportStatus.NONE, availableAgainAt = availableAgainAt)
+        val sut = fixture.sut()
+        fixture.now = availableAgainAt
+
+        whenn()
+        advanceTimeBy(1.hours)
+        runCurrent()
+
+        then()
+        assertEquals(UIExportStage.REQUEST, sut.uiState.status.stage)
+        assertEquals(
+            SettingsRes.strings.settings_export_request_title.desc(),
+            sut.uiState.status.title,
+        )
+    }
+
+    @Test
+    fun `marks every export status with the stage it presents`() = runUnitTest {
+        given()
+        val statuses = listOf(
+            DataExportStatus.NONE,
+            DataExportStatus.RUNNING,
+            DataExportStatus.READY,
+            DataExportStatus.FAILED,
+        )
+        val fixtures = statuses.map { status ->
+            Fixture().also { it.cache.value = DataExport(status, expiresAt = it.now + 1.days) }
+        }
+
+        whenn()
+        val stages = fixtures.map { it.sut().uiState.status.stage }
+
+        then()
+        assertEquals(
+            listOf(
+                UIExportStage.REQUEST,
+                UIExportStage.PREPARING,
+                UIExportStage.READY,
+                UIExportStage.FAILED,
+            ),
+            stages,
+        )
+    }
+
+    @Test
     fun `failed poll keeps the running status and shows the error without a retry`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -936,11 +1012,28 @@ class PersonalDataExportViewModelTest {
 
         then()
         assertEquals(
-            List(2) { SettingsRes.strings.settings_export_confirmation_error.desc() },
+            List(2) { exportConfirmationError.desc() },
             suts.map { it.uiState.error },
         )
         assertEquals(listOf(1, 1), fixtures.map { it.startExport.calls })
         assertTrue(suts.all { it.uiState.notifications.presentationNotification.isEmpty() })
+    }
+
+    @Test
+    fun `keeps the request available after its confirmation fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.startExport.server = { throw StartPersonalDataExport.Error.ConfirmationFailed() }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.request.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.request.isVisible)
+        assertTrue(sut.uiState.request.isEnabled)
+        assertFalse(sut.uiState.request.isLoading)
+        assertEquals(UIExportStage.REQUEST, sut.uiState.status.stage)
     }
 
     @Test

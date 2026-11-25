@@ -116,7 +116,7 @@ class PersonalDataExportViewModel(
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(PersonalDataExportDestinations.Back)
         }
-        status = UIExportStatus(DataExportStatus.NONE, canRequest = false)
+        status = UIExportStatus(UIExportStage.REQUEST, canRequest = false)
         request.text = SettingsRes.strings.settings_export_request.desc()
         request.isVisible = false
         request.onClick = weakVMClosure { it.requestExport() }
@@ -156,7 +156,23 @@ class PersonalDataExportViewModel(
         uiState.requestAvailability = requestAvailability(exportStatus, cooldownEnd)
         uiState.error = null
         uiState.retry.isVisible = false
-        renderStatus(exportStatus, canRequest = cooldownEnd == null)
+        renderStatus(stageOf(exportStatus, cooldownEnd), canRequest = cooldownEnd == null)
+    }
+
+    private fun stageOf(status: DataExportStatus, cooldownEnd: Instant?): UIExportStage {
+        return when (status) {
+            DataExportStatus.NONE -> if (cooldownEnd == null) {
+                UIExportStage.REQUEST
+            } else {
+                UIExportStage.EXPIRED
+            }
+
+            DataExportStatus.RUNNING -> UIExportStage.PREPARING
+
+            DataExportStatus.READY -> UIExportStage.READY
+
+            DataExportStatus.FAILED -> UIExportStage.FAILED
+        }
     }
 
     private fun requestAvailability(status: DataExportStatus, cooldownEnd: Instant?): StringDesc? {
@@ -173,10 +189,10 @@ class PersonalDataExportViewModel(
         }
     }
 
-    private fun renderStatus(status: DataExportStatus, canRequest: Boolean) {
-        val isReady = status == DataExportStatus.READY
-        val isRequestable = canRequest && !isReady && status != DataExportStatus.RUNNING
-        uiState.status = UIExportStatus(status, canRequest)
+    private fun renderStatus(stage: UIExportStage, canRequest: Boolean) {
+        val isReady = stage == UIExportStage.READY
+        val isRequestable = canRequest && stage in REQUESTABLE_STAGES
+        uiState.status = UIExportStatus(stage, canRequest)
         uiState.download.isVisible = isReady
         uiState.request.isVisible = isRequestable
     }
@@ -220,11 +236,11 @@ class PersonalDataExportViewModel(
             is StartPersonalDataExport.Error.ConfirmationFailed,
             is StartPersonalDataExport.Error.ConfirmationRequired,
             -> {
-                uiState.error = SettingsRes.strings.settings_export_confirmation_error.desc()
+                uiState.error = exportConfirmationError.desc()
             }
 
             is StartPersonalDataExport.Error.TooFrequent -> {
-                renderStatus(exportStatus, canRequest = false)
+                renderStatus(stageOf(exportStatus, cooldownEnd = null), canRequest = false)
                 showRetryableError(SettingsRes.strings.settings_export_too_frequent.desc())
             }
 
@@ -249,7 +265,7 @@ class PersonalDataExportViewModel(
             },
             onError = {
                 if (it is DownloadPersonalDataExport.Error.NotReady) {
-                    renderStatus(DataExportStatus.NONE, canRequest = false)
+                    renderStatus(UIExportStage.REQUEST, canRequest = false)
                     showRetryableError(SettingsRes.strings.settings_export_unavailable.desc())
                 } else {
                     showError(it, SettingsRes.strings.settings_export_download_error)
@@ -274,5 +290,6 @@ class PersonalDataExportViewModel(
     companion object {
         private const val OPERATION_KEY = "personalDataExportOperation"
         private val STATUS_POLL_INTERVAL = 10.seconds
+        private val REQUESTABLE_STAGES = setOf(UIExportStage.REQUEST, UIExportStage.FAILED)
     }
 }

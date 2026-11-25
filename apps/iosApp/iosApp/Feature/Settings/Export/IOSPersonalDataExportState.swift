@@ -15,7 +15,8 @@ class IOSPersonalDataExportState: @MainActor PersonalDataExportState, NativeStat
         icon: nil,
         color: .actiontext,
         isInProgress: false,
-        showsFile: false
+        showsFile: false,
+        stage: .request
     )
     var expiry: (any StringDesc)?
     var requestAvailability: (any StringDesc)?

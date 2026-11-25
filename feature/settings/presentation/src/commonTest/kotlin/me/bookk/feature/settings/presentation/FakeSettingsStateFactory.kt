@@ -23,6 +23,7 @@ import me.bookk.feature.settings.presentation.editprofile.EditProfileNavigationD
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
 import me.bookk.feature.settings.presentation.export.PersonalDataExportDestinations
 import me.bookk.feature.settings.presentation.export.PersonalDataExportState
+import me.bookk.feature.settings.presentation.export.UIExportStage
 import me.bookk.feature.settings.presentation.export.UIExportStatus
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsDestinations
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
@@ -167,6 +168,7 @@ internal class FakePersonalDataExportState : PersonalDataExportState {
         color = ColorToken.ActionText,
         isInProgress = false,
         showsFile = false,
+        stage = UIExportStage.REQUEST,
     )
     override var expiry: StringDesc? = null
     override var requestAvailability: StringDesc? = null

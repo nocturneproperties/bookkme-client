@@ -78,6 +78,7 @@
     <string name="settings_legal_loading">Перевіряємо документи…</string>
 
     <string name="settings_export_title">Експорт моїх даних</string>
+    <string name="settings_export_headline">Ваші дані.</string>
     <string name="settings_export_loading">Перевіряємо стан експорту…</string>
     <string name="settings_export_request_title">Копія ваших персональних даних</string>
     <string name="settings_export_description">Запросіть копію персональних даних, які застосунок зберігає про вас. Їх буде підготовлено у файлі JSON — структурованому форматі, який можна завантажити, зберегти, поширити або відкрити в сумісній програмі.</string>
@@ -98,11 +99,13 @@
     <string name="settings_export_load_error">Не вдалося перевірити стан експорту.</string>
     <string name="settings_export_request_error">Не вдалося запросити експорт. Спробуйте ще раз.</string>
     <string name="settings_export_confirmation_error">Підтвердження ключем доступу не вдалося або втратило чинність. Запросіть експорт ще раз для підтвердження.</string>
+    <string name="settings_export_confirmation_unavailable_mini_app">Експорт поки не можна підтвердити в міні-застосунку. Спробуйте пізніше.</string>
     <string name="settings_export_too_frequent">Поки що не можна запросити новий експорт. Оновіть стан, щоб перевірити доступність.</string>
     <string name="settings_export_unavailable">Цей експорт більше недоступний. Оновіть стан, щоб дізнатися про подальші дії.</string>
     <string name="settings_export_download_error">Не вдалося завантажити файл або поділитися ним. Спробуйте ще раз.</string>
     <string name="settings_export_request_footer">Ви можете й далі користуватися застосунком, поки готується експорт.</string>
     <string name="settings_export_running_footer">Ви можете залишити цей екран і повернутися пізніше.</string>
+    <string name="settings_export_running_footer_mini_app">Можна закрити міні-застосунок і повернутися пізніше. Ми напишемо вам тут, коли все буде готово.</string>
     <string name="settings_export_file_title">Персональні дані</string>
     <string name="settings_export_file_type">Файл JSON</string>
 </resources>

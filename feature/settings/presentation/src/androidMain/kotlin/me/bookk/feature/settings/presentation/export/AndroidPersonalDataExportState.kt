@@ -22,6 +22,7 @@ internal class AndroidPersonalDataExportState : PersonalDataExportState {
             color = ColorToken.ActionText,
             isInProgress = false,
             showsFile = false,
+            stage = UIExportStage.REQUEST,
         ),
     )
     override var expiry: StringDesc? by mutableStateOf(null)

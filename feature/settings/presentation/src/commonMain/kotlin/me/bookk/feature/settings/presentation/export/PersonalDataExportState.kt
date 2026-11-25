@@ -5,7 +5,6 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
-import me.bookk.core.domain.entity.DataExportStatus
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
@@ -25,6 +24,14 @@ interface PersonalDataExportState {
     val navigation: NavigationState<PersonalDataExportDestinations>
 }
 
+enum class UIExportStage {
+    REQUEST,
+    PREPARING,
+    READY,
+    FAILED,
+    EXPIRED,
+}
+
 data class UIExportStatus(
     val title: StringDesc,
     val message: StringDesc?,
@@ -33,68 +40,77 @@ data class UIExportStatus(
     val color: ColorToken,
     val isInProgress: Boolean,
     val showsFile: Boolean,
+    val stage: UIExportStage,
 ) {
-    internal constructor(status: DataExportStatus, canRequest: Boolean) : this(
-        title = status.title(),
-        message = status.message(),
-        footer = status.footer(canRequest),
-        icon = status.icon(),
-        color = status.color(),
-        isInProgress = status == DataExportStatus.RUNNING,
-        showsFile = status == DataExportStatus.READY,
+    internal constructor(stage: UIExportStage, canRequest: Boolean) : this(
+        title = stage.title(),
+        message = stage.message(),
+        footer = stage.footer(canRequest),
+        icon = stage.icon(),
+        color = stage.color(),
+        isInProgress = stage == UIExportStage.PREPARING,
+        showsFile = stage == UIExportStage.READY,
+        stage = stage,
     )
 }
 
-private fun DataExportStatus.title(): StringDesc {
+private fun UIExportStage.title(): StringDesc {
     return when (this) {
-        DataExportStatus.RUNNING -> SettingsRes.strings.settings_export_running_title.desc()
-        DataExportStatus.READY -> SettingsRes.strings.settings_export_ready_title.desc()
-        DataExportStatus.FAILED -> SettingsRes.strings.settings_export_failed_title.desc()
-        DataExportStatus.NONE -> SettingsRes.strings.settings_export_request_title.desc()
+        UIExportStage.REQUEST -> SettingsRes.strings.settings_export_request_title.desc()
+        UIExportStage.PREPARING -> SettingsRes.strings.settings_export_running_title.desc()
+        UIExportStage.READY -> SettingsRes.strings.settings_export_ready_title.desc()
+        UIExportStage.FAILED -> SettingsRes.strings.settings_export_failed_title.desc()
+        UIExportStage.EXPIRED -> SettingsRes.strings.settings_export_expired_title.desc()
     }
 }
 
-private fun DataExportStatus.message(): StringDesc? {
+private fun UIExportStage.message(): StringDesc? {
     return when (this) {
-        DataExportStatus.RUNNING -> SettingsRes.strings.settings_export_running_message.desc()
-        DataExportStatus.READY -> null
-        DataExportStatus.FAILED -> SettingsRes.strings.settings_export_failed_message.desc()
-        DataExportStatus.NONE -> SettingsRes.strings.settings_export_description.desc()
+        UIExportStage.REQUEST -> SettingsRes.strings.settings_export_description.desc()
+        UIExportStage.PREPARING -> SettingsRes.strings.settings_export_running_message.desc()
+        UIExportStage.READY -> null
+        UIExportStage.FAILED -> SettingsRes.strings.settings_export_failed_message.desc()
+        UIExportStage.EXPIRED -> SettingsRes.strings.settings_export_expired_message.desc()
     }
 }
 
-private fun DataExportStatus.footer(canRequest: Boolean): StringDesc? {
+private fun UIExportStage.footer(canRequest: Boolean): StringDesc? {
     return when (this) {
-        DataExportStatus.RUNNING -> SettingsRes.strings.settings_export_running_footer.desc()
+        UIExportStage.PREPARING -> exportRunningFooter.desc()
 
-        DataExportStatus.READY -> SettingsRes.strings.settings_export_ready_message.desc()
+        UIExportStage.READY -> SettingsRes.strings.settings_export_ready_message.desc()
 
-        DataExportStatus.FAILED,
-        DataExportStatus.NONE,
+        UIExportStage.EXPIRED -> null
+
+        UIExportStage.REQUEST,
+        UIExportStage.FAILED,
         -> SettingsRes.strings.settings_export_request_footer.desc().takeIf { canRequest }
     }
 }
 
-private fun DataExportStatus.icon(): ImageResource? {
+private fun UIExportStage.icon(): ImageResource? {
     return when (this) {
-        DataExportStatus.RUNNING -> null
+        UIExportStage.PREPARING -> null
 
-        DataExportStatus.READY -> DesignSystem.images.export_ready
+        UIExportStage.READY -> DesignSystem.images.export_ready
 
-        DataExportStatus.FAILED,
-        DataExportStatus.NONE,
+        UIExportStage.REQUEST,
+        UIExportStage.FAILED,
+        UIExportStage.EXPIRED,
         -> DesignSystem.images.export_document
     }
 }
 
-private fun DataExportStatus.color(): ColorToken {
+private fun UIExportStage.color(): ColorToken {
     return when (this) {
-        DataExportStatus.RUNNING -> ColorToken.SecondaryText
+        UIExportStage.PREPARING,
+        UIExportStage.EXPIRED,
+        -> ColorToken.SecondaryText
 
-        DataExportStatus.READY -> ColorToken.Success
+        UIExportStage.READY -> ColorToken.Success
 
-        DataExportStatus.FAILED,
-        DataExportStatus.NONE,
+        UIExportStage.REQUEST,
+        UIExportStage.FAILED,
         -> ColorToken.ActionText
     }
 }

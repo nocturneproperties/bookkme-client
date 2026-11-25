@@ -78,6 +78,7 @@
     <string name="settings_legal_loading">Sprawdzanie dokumentów…</string>
 
     <string name="settings_export_title">Eksport moich danych</string>
+    <string name="settings_export_headline">Twoje dane.</string>
     <string name="settings_export_loading">Sprawdzanie stanu eksportu…</string>
     <string name="settings_export_request_title">Kopia Twoich danych osobowych</string>
     <string name="settings_export_description">Poproś o kopię danych osobowych, które aplikacja przechowuje na Twój temat. Zostaną przygotowane w pliku JSON — uporządkowanym formacie, który możesz pobrać, zapisać, udostępnić lub otworzyć w zgodnym oprogramowaniu.</string>
@@ -98,11 +99,13 @@
     <string name="settings_export_load_error">Nie udało się sprawdzić stanu eksportu.</string>
     <string name="settings_export_request_error">Nie udało się zlecić eksportu. Spróbuj ponownie.</string>
     <string name="settings_export_confirmation_error">Potwierdzenie kluczem dostępu nie powiodło się lub wygasło. Poproś o eksport ponownie, aby potwierdzić.</string>
+    <string name="settings_export_confirmation_unavailable_mini_app">Eksportu nie można jeszcze potwierdzić w miniaplikacji. Spróbuj ponownie później.</string>
     <string name="settings_export_too_frequent">Nie można jeszcze zlecić kolejnego eksportu. Odśwież stan, aby sprawdzić dostępność.</string>
     <string name="settings_export_unavailable">Ten eksport nie jest już dostępny. Odśwież stan, aby sprawdzić dostępne opcje.</string>
     <string name="settings_export_download_error">Nie udało się pobrać lub udostępnić pliku. Spróbuj ponownie.</string>
     <string name="settings_export_request_footer">Możesz nadal korzystać z aplikacji podczas przygotowywania eksportu.</string>
     <string name="settings_export_running_footer">Możesz opuścić ten ekran i wrócić później.</string>
+    <string name="settings_export_running_footer_mini_app">Możesz zamknąć miniaplikację i wrócić później. Gdy plik będzie gotowy, napiszemy do Ciebie tutaj.</string>
     <string name="settings_export_file_title">Dane osobowe</string>
     <string name="settings_export_file_type">Plik JSON</string>
 </resources>

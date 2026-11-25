@@ -14,12 +14,12 @@ import platform.UserNotifications.UNAuthorizationStatusAuthorized
 import platform.UserNotifications.UNUserNotificationCenter
 import kotlin.coroutines.resume
 
-internal actual class NotificationPermissionChecker : PermissionChecker {
+internal class NotificationPermissionChecker : PermissionChecker {
     private val notificationCenter = UNUserNotificationCenter.currentNotificationCenter()
 
-    actual override val type: PermissionType = PermissionType.NOTIFICATIONS
+    override val type: PermissionType = PermissionType.NOTIFICATIONS
 
-    actual override suspend fun requestPermission(): Boolean {
+    override suspend fun requestPermission(): Boolean {
         val hasPermissions = requestAuthorization()
         if (hasPermissions) {
             withContext(DispatcherProvider.main) {
@@ -40,7 +40,7 @@ internal actual class NotificationPermissionChecker : PermissionChecker {
             }
     }
 
-    actual override suspend fun hasPermission(): Boolean = suspendCancellableCoroutine {
+    override suspend fun hasPermission(): Boolean = suspendCancellableCoroutine {
         notificationCenter.getNotificationSettingsWithCompletionHandler { settings ->
             it.resume(settings?.authorizationStatus == UNAuthorizationStatusAuthorized)
         }

@@ -83,6 +83,14 @@ val BodyLargeTextStyle = CssStyle {
     Breakpoint.MD { Modifier.fontSize(1.35.cssRem) }
 }
 
+val SectionRowTextStyle = CssStyle.base {
+    Modifier
+        .fontSize(1.cssRem)
+        .lineHeight(1.4)
+        .letterSpacing((-0.01).em)
+        .margin(0.px)
+}
+
 val BodyMediumTextStyle = CssStyle.base {
     Modifier
         .fontSize(1.cssRem)

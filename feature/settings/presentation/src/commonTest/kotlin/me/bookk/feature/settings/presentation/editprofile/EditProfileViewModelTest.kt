@@ -54,7 +54,10 @@ class EditProfileViewModelTest {
     private class Fixture {
         val getSettings = mock<GetSettings> {
             everySuspend { invoke() } returns
-                Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", "anna@example.com"))
+                Settings(
+                    ColorScheme.SYSTEM,
+                    SettingsProfile("Anna", "Smith", "anna@example.com", isEmailDeliverable = true),
+                )
         }
         val editProfile = mock<EditProfile>()
         val errorMapper = FakeErrorMapper()

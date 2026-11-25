@@ -19,6 +19,7 @@ import me.bookk.feature.booking.presentation.screen.services.BookingServicesDest
 import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistDestination
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsDestination
+import me.bookk.feature.settings.presentation.notifications.NotificationSettingsDestination
 
 @Composable
 internal fun TelegramMainContent(webApp: TelegramWebApp) {
@@ -75,7 +76,9 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
 
             ClientScreen.BookingProfile -> {}
 
-            ClientScreen.NotificationSettings -> {}
+            ClientScreen.NotificationSettings -> {
+                NotificationSettingsDestination(webApp, settingsNavigation)
+            }
 
             ClientScreen.PrivacySettings -> {}
 

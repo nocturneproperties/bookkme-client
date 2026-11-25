@@ -3,6 +3,7 @@ package me.bookk.client.di
 import library.cache.impl.di.cacheModule
 import library.device.impl.di.deviceModule
 import library.files.impl.di.filesModule
+import library.validation.impl.di.validationModule
 import me.bookk.database.client.di.clientDatabaseModule
 import me.bookk.feature.appointments.data.di.clientAppointmentsDataModule
 import me.bookk.feature.appointments.domain.impl.di.clientAppointmentsDomainModule
@@ -38,6 +39,7 @@ fun initClientApp(setup: KoinApplication.() -> Unit = {}) {
             deviceModule(),
             cacheModule(),
             filesModule(),
+            validationModule(),
             clientDatabaseModule(),
             authDomainModule(),
             authDataModule(),

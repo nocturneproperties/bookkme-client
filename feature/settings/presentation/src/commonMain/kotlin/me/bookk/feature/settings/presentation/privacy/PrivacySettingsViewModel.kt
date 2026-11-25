@@ -3,6 +3,7 @@ package me.bookk.feature.settings.presentation.privacy
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.flowOn
+import library.device.api.DeviceFacade
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.LaunchBehaviour
@@ -27,6 +28,7 @@ class PrivacySettingsViewModel(
     private val acceptLegalDocuments: AcceptLegalDocuments,
     private val getCrashReportingEnabled: GetCrashReportingEnabled,
     private val updateCrashReportingEnabled: UpdateCrashReportingEnabled,
+    private val deviceFacade: DeviceFacade,
     stateFactory: SettingsStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
@@ -143,11 +145,7 @@ class PrivacySettingsViewModel(
             status = status.acceptanceDescription(),
             statusColor = status.acceptanceColor(),
             onClick = status?.let { loadedStatus ->
-                weakVMClosure {
-                    it.uiState.navigation.push(
-                        PrivacySettingsDestinations.OpenDocument(loadedStatus.current.url),
-                    )
-                }
+                weakVMClosure { it.deviceFacade.openUrlPreview(loadedStatus.current.url) }
             },
         )
     }

@@ -6,6 +6,11 @@ import kotlin.js.json
 
 class JsDeviceFacade : DeviceFacade {
 
+    private val linkOpener = LinkOpener(
+        telegramWebApp = { window.asDynamic().Telegram?.WebApp.unsafeCast<TelegramLinkHost?>() },
+        openInBrowser = { window.open(it, "_blank", "noopener") },
+    )
+
     override fun getPlatformName(): String {
         return "web"
     }
@@ -23,7 +28,7 @@ class JsDeviceFacade : DeviceFacade {
     }
 
     override fun openUrlPreview(url: String) {
-        window.open(url, "_blank", "noopener")
+        linkOpener.open(url)
     }
 
     override fun openMapAt(lat: Double, lng: Double) {

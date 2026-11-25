@@ -16,13 +16,7 @@ fun PrivacySettingsDestination(webApp: TelegramWebApp, navigation: SettingsNavig
     PrivacySettingsScreen(viewModel.uiState, webApp)
     ObserveNavigation(viewModel.uiState.navigation) {
         when (it) {
-            PrivacySettingsDestinations.Back -> {
-                navigation.onBack()
-            }
-
-            is PrivacySettingsDestinations.OpenDocument -> {
-                webApp.openLink(it.url)
-            }
+            PrivacySettingsDestinations.Back -> navigation.onBack()
         }
     }
 }

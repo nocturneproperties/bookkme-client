@@ -8,11 +8,13 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import library.device.api.DeviceFacade
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
@@ -78,6 +80,9 @@ class PrivacySettingsViewModelTest {
         val updateCrashReportingEnabled = mock<UpdateCrashReportingEnabled> {
             everySuspend { invoke(any()) } returns Unit
         }
+        val deviceFacade = mock<DeviceFacade> {
+            every { openUrlPreview(any()) } returns Unit
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut(): PrivacySettingsViewModel {
@@ -86,6 +91,7 @@ class PrivacySettingsViewModelTest {
                 acceptLegalDocuments = acceptLegalDocuments,
                 getCrashReportingEnabled = getCrashReportingEnabled,
                 updateCrashReportingEnabled = updateCrashReportingEnabled,
+                deviceFacade = deviceFacade,
                 stateFactory = FakeSettingsStateFactory(),
                 vmArgs = VmArgs(errorMapper),
             )
@@ -569,12 +575,7 @@ class PrivacySettingsViewModelTest {
         sut.uiState.legal.documents[0].onClick?.invoke()
 
         then()
-        assertEquals(
-            listOf<PrivacySettingsDestinations>(
-                PrivacySettingsDestinations.OpenDocument("https://bookk.test/privacy"),
-            ),
-            sut.uiState.navigation.navigationDestination,
-        )
+        verify { fixture.deviceFacade.openUrlPreview("https://bookk.test/privacy") }
         verifySuspend(VerifyMode.exactly(0)) { fixture.acceptLegalDocuments(any()) }
     }
 
@@ -589,12 +590,7 @@ class PrivacySettingsViewModelTest {
         sut.uiState.legal.documents[1].onClick?.invoke()
 
         then()
-        assertEquals(
-            listOf<PrivacySettingsDestinations>(
-                PrivacySettingsDestinations.OpenDocument("https://bookk.test/terms"),
-            ),
-            sut.uiState.navigation.navigationDestination,
-        )
+        verify { fixture.deviceFacade.openUrlPreview("https://bookk.test/terms") }
         verifySuspend(VerifyMode.exactly(0)) { fixture.acceptLegalDocuments(any()) }
     }
 

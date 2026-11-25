@@ -7,6 +7,7 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
+import com.varabyte.kobweb.compose.ui.modifiers.borderTop
 import com.varabyte.kobweb.compose.ui.modifiers.flexShrink
 import com.varabyte.kobweb.compose.ui.modifiers.size
 import com.varabyte.kobweb.compose.ui.styleModifier
@@ -16,7 +17,9 @@ import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.ImageResource
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.themed
+import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.cssRem
+import org.jetbrains.compose.web.css.px
 
 private const val ICON_TILE_TINT_ALPHA = 0.12f
 
@@ -57,6 +60,33 @@ fun IconTile(
     color: ColorToken = ColorToken.ActionText,
     size: IconTileSize = IconTileSize.REGULAR,
 ) {
+    TintedTile(color, size, modifier) {
+        TintedIcon(image, color, Modifier.size(size.iconRem.cssRem))
+    }
+}
+
+@Composable
+fun ProgressTile(
+    modifier: Modifier = Modifier,
+    color: ColorToken = ColorToken.ActionText,
+    size: IconTileSize = IconTileSize.REGULAR,
+) {
+    TintedTile(color, size, modifier) {
+        Spinner(
+            Modifier
+                .size(size.iconRem.cssRem)
+                .borderTop(2.px, LineStyle.Solid, color.themed),
+        )
+    }
+}
+
+@Composable
+private fun TintedTile(
+    color: ColorToken,
+    size: IconTileSize,
+    modifier: Modifier,
+    content: @Composable () -> Unit,
+) {
     Box(
         IconTileStyle
             .toModifier()
@@ -70,6 +100,6 @@ fun IconTile(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        TintedIcon(image, color, Modifier.size(size.iconRem.cssRem))
+        content()
     }
 }

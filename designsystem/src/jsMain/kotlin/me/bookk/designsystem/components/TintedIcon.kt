@@ -15,9 +15,7 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.ImageResource
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.resolve
 import me.bookk.designsystem.theme.themed
-import me.bookk.designsystem.theme.webColors
 import org.jetbrains.compose.web.css.cssRem
 
 private const val ICON_TILE_TINT_ALPHA = 0.12f
@@ -40,26 +38,38 @@ fun TintedIcon(image: ImageResource, color: ColorToken, modifier: Modifier = Mod
 }
 
 val IconTileStyle = CssStyle.base {
-    Modifier
-        .size(2.75.cssRem)
-        .flexShrink(0)
-        .borderRadius(0.875.cssRem)
-        .backgroundColor(
-            ColorToken.ActionText
-                .resolve(colorMode.webColors())
-                .toRgb()
-                .copyf(alpha = ICON_TILE_TINT_ALPHA),
-        )
+    Modifier.flexShrink(0)
+}
+
+enum class IconTileSize(
+    val sideRem: Double,
+    val iconRem: Double,
+    val cornerRem: Double,
+) {
+    REGULAR(sideRem = 2.75, iconRem = 1.5, cornerRem = 0.875),
+    SMALL(sideRem = 2.0, iconRem = 1.125, cornerRem = 0.5625),
 }
 
 @Composable
-fun IconTile(image: ImageResource, modifier: Modifier = Modifier) {
+fun IconTile(
+    image: ImageResource,
+    modifier: Modifier = Modifier,
+    color: ColorToken = ColorToken.ActionText,
+    size: IconTileSize = IconTileSize.REGULAR,
+) {
     Box(
         IconTileStyle
             .toModifier()
+            .size(size.sideRem.cssRem)
+            .borderRadius(size.cornerRem.cssRem)
+            .backgroundColor(
+                color.themed
+                    .toRgb()
+                    .copyf(alpha = ICON_TILE_TINT_ALPHA),
+            )
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        TintedIcon(image, ColorToken.ActionText)
+        TintedIcon(image, color, Modifier.size(size.iconRem.cssRem))
     }
 }

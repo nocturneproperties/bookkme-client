@@ -14,7 +14,7 @@ internal class JsPassKeyManager : PassKeyManager {
     override suspend fun authorize(
         challenge: PassKeyManager.AuthorizationRequest,
     ): PasskeyVerificationPayload {
-        throw unsupported()
+        throw PassKeyManager.Error.CredentialsMissing()
     }
 
     override suspend fun signalAccountDeleted(assertion: PasskeyVerificationPayload) {

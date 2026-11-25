@@ -27,14 +27,14 @@ class JsPassKeyManagerTest {
     }
 
     @Test
-    fun `refuses to authorize with a passkey on the web`() = runUnitTest {
+    fun `reports that the web holds no passkey to authorize with`() = runUnitTest {
         given()
         val fixture = Fixture()
         val request = PassKeyManager.AuthorizationRequest("{}", "challenge")
 
         whenn()
         then()
-        assertFailsWith<UnsupportedOperationException> { fixture.sut.authorize(request) }
+        assertFailsWith<PassKeyManager.Error.CredentialsMissing> { fixture.sut.authorize(request) }
     }
 
     @Test

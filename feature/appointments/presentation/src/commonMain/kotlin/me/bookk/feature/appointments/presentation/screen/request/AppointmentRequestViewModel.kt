@@ -21,7 +21,8 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
-import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.convenience.listPager
+import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.resources.toStringDesc
 import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.simple.EmptyState
@@ -54,13 +55,15 @@ class AppointmentRequestViewModel(
     private val timeFormatter = dateLocalizer.forStyle(DateStyle.SHORT)
     private val dateFormatter = dateLocalizer.forStyle(DateStyle.D_MMM_YYYY_RELATIVE)
 
+    private val requestPages = listPager(
+        uiState.requests,
+        uiState.notifications,
+        getAssignedAppointmentRequests
+    )
+
     init {
         observeRequests()
-    }
-
-    override fun onViewPresented() {
-        super.onViewPresented()
-        loadRequests()
+        loadRequestsOfCurrentBusiness()
     }
 
     private fun AppointmentRequestState.setup() = apply {
@@ -82,20 +85,23 @@ class AppointmentRequestViewModel(
             .observe()
     }
 
+    private fun loadRequestsOfCurrentBusiness() {
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .flowOn(DispatcherProvider.io)
+            .resetListOnChange(uiState.requests)
+            .safeOnEach { requestPages.load(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
+    }
+
     private fun renderRequests(requests: List<AppointmentRequest>) {
         if (requests.isEmpty() && uiState.requests.isInitialLoading) return
         uiState.requests.replace(requests.map(::createRequestItemState))
     }
 
-    private fun loadRequests() {
-        loadList(
-            listState = uiState.requests,
-            notifications = uiState.notifications,
-            call = {
-                val businessId = observeCurrentBusinessId().filterNotNull().first()
-                getAssignedAppointmentRequests.refresh(businessId)
-            },
-        )
+    private suspend fun currentBusinessId(): Uuid {
+        return observeCurrentBusinessId().filterNotNull().first()
     }
 
     private fun createRequestItemState(request: AppointmentRequest): AppointmentRequestItemState {
@@ -203,10 +209,7 @@ class AppointmentRequestViewModel(
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { item.declineButton.startLoading() },
-            call = {
-                val businessId = observeCurrentBusinessId().filterNotNull().first()
-                declineAppointmentRequest(requestId, businessId, reason)
-            },
+            call = { declineAppointmentRequest(requestId, currentBusinessId(), reason) },
             onComplete = { removeHandledRequest(item) },
             onError = { uiState.notifications.add(it.notification()) },
             onTerminate = { item.declineButton.stopLoading() },

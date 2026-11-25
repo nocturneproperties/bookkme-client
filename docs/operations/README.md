@@ -142,7 +142,6 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `GetBusinessAppointmentRequests` | `GET /api/appointments/request/{businessId}` | [Get business appointment requests](appointments/get-business-appointment-requests.md) |
 | `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=[&employeeId=]` | [Get appointments for business](appointments/get-appointments-for-business.md) |
 | `GetAppointment` | local read; `refresh(id)` fetches and caches `GET /api/appointments/{id}`; shared `NotFound` → use-case `NotFound` | [Get appointment](appointments/get-appointment.md) |
 | `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}` (paged) | [Get appointment history](appointments/get-appointment-history.md) |
@@ -151,7 +150,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `CancelAppointment` | `POST /api/appointments/{id}/cancel`; UI reloads after closed edit window | [Cancel appointment](appointments/cancel-appointment.md) |
 | `CompleteAppointment` | `POST /api/appointments/{id}/complete`; UI reloads after closed edit window | [Complete appointment](appointments/complete-appointment.md) |
 | `MarkAppointmentNoShow` | `POST /api/appointments/{id}/no-show`; UI reloads after closed edit window | [Mark appointment as no-show](appointments/mark-appointment-no-show.md) |
-| `GetAssignedAppointmentRequests` | `GET /api/appointments/request/{businessId}/assigned` | [Get assigned appointment requests](appointments/get-assigned-appointment-requests.md) |
+| `GetAssignedAppointmentRequests` | `GET /api/appointments/request/history/{businessId}?employeeId=&status=PENDING&order=SOONEST_FIRST[&cursor=]` (cursor-paged: `refresh` replaces the cache with the first page, `loadMore(cursor)` appends; the screen's `ListPager` holds the cursor) | [Get assigned appointment requests](appointments/get-assigned-appointment-requests.md) |
 | `CreateAppointmentRequest` | `POST /api/appointments/request` | [Create appointment request](appointments/create-appointment-request.md) |
 | `ApproveAppointmentRequest` | `POST /api/appointments` | [Approve appointment request](appointments/approve-appointment-request.md) |
 | `DeclineAppointmentRequest` | `POST /api/appointments/request/{id}/decline` | [Decline appointment request](appointments/decline-appointment-request.md) |

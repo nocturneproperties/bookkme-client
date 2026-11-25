@@ -8,6 +8,8 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
+import me.bookk.feature.appointments.data.remote.model.AppointmentRequestStatusRemote
+import me.bookk.feature.appointments.data.remote.model.HistoryOrderRemote
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.Uuid
@@ -50,17 +52,37 @@ class AppointmentRoutingTest {
     }
 
     @Test
-    fun `assigned requests point to the assigned endpoint of the business`() = runUnitTest {
+    fun `assigned requests ask the request history for the employee's pending ones, soonest first`() =
+        runUnitTest {
+            given()
+            val resource = Api.Appointment.RequestHistory(
+                businessId = businessId,
+                employeeId = employeeId,
+                status = listOf(AppointmentRequestStatusRemote.PENDING),
+                order = HistoryOrderRemote.SOONEST_FIRST,
+            )
+
+            whenn()
+            val url = href(ResourcesFormat(), resource)
+
+            then()
+            assertEquals(
+                "/api/appointments/request/history/$businessId" +
+                    "?employeeId=$employeeId&status=PENDING&order=SOONEST_FIRST",
+                url,
+            )
+        }
+
+    @Test
+    fun `request history sends the cursor of the next page`() = runUnitTest {
         given()
-        val resource = Api.Appointment.Requests.Assigned(
-            Api.Appointment.Requests(businessId = businessId),
-        )
+        val resource = Api.Appointment.RequestHistory(businessId = businessId, cursor = "after-a")
 
         whenn()
         val url = href(ResourcesFormat(), resource)
 
         then()
-        assertEquals("/api/appointments/request/$businessId/assigned", url)
+        assertEquals("/api/appointments/request/history/$businessId?cursor=after-a", url)
     }
 
     @Test

@@ -135,10 +135,12 @@ erDiagram
   deletion in [Get appointments for business](../operations/appointments/get-appointments-for-business.md)
   covers only that window. The sync marker is per date:
   `appointments_prefs` / `last_synced_at_<businessId>_<yyyy-MM-dd>`.
-- **Only requests assigned to the signed-in user are stored**, fetched from `/request/{businessId}/assigned`. Both
-  `flow()` and `refresh()` of [Get assigned appointment
-  requests](../operations/appointments/get-assigned-appointment-requests.md) filter to `PENDING` and sort by `date`.
-  Sync marker: `appointment_requests_prefs` / `last_synced_at_<businessId>`.
+- **Only requests assigned to the signed-in user are stored**, fetched page by page from
+  `/request/history/{businessId}?employeeId=<own>&status=PENDING&order=SOONEST_FIRST`. `refresh()` of [Get assigned
+  appointment requests](../operations/appointments/get-assigned-appointment-requests.md) replaces the cached rows with
+  the first page and `loadMore()` adds the next one; `flow()` filters to `PENDING` and sorts by `date`. Sync marker:
+  `appointment_requests_prefs` / `last_synced_at_<businessId>`. The cursor of the next page is not stored: the
+  screen's `ListPager` keeps it in memory.
 - **Repeated services.** The backend stores one `ServiceSnapshot` per booked count. Locally they collapse into one
   `appointment_service_snapshot` row per service id with a `count` (its PK is `(appointmentId, id)`), and
   `AppointmentLocal.toDomain()` expands it again. Without `count`, a service booked twice would come back once,

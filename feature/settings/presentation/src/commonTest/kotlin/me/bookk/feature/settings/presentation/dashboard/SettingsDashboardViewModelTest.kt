@@ -127,8 +127,6 @@ class SettingsDashboardViewModelTest {
 
         then()
         assertEquals(UIColorScheme.DARK, sut.uiState.appearance.colorScheme)
-        assertEquals("Anna".desc(), sut.uiState.profile.name)
-        assertEquals("Smith".desc(), sut.uiState.profile.lastName)
         assertEquals("anna@example.com".desc(), sut.uiState.profile.email)
     }
 

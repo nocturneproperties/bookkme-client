@@ -167,8 +167,6 @@ class SettingsDashboardViewModel(
         val names = listOf(profile.firstName, profile.lastName)
             .map { it.trim() }
             .filter { it.isNotEmpty() }
-        name = profile.firstName.desc()
-        lastName = profile.lastName.desc()
         email = profile.email.desc()
         fullName = names.joinToString(" ").desc()
         initials = names.joinToString("") { it.first().uppercase() }

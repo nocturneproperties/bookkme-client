@@ -6,6 +6,8 @@ import me.bookk.feature.settings.domain.api.GetSettings
 import me.bookk.feature.settings.domain.api.entity.Settings
 import me.bookk.feature.settings.domain.api.entity.SettingsProfile
 
+private const val TELEGRAM_PLACEHOLDER_EMAIL_DOMAIN = "telegramundeliverable.org"
+
 internal class GetSettingsImpl(
     private val getColorScheme: GetColorScheme,
     private val userProfileCRUD: UserProfileCRUD,
@@ -18,7 +20,14 @@ internal class GetSettingsImpl(
                 firstName = profile.firstName,
                 lastName = profile.lastName,
                 email = profile.email,
+                isEmailDeliverable = !isTelegramPlaceholder(profile.email),
             ),
         )
     }
+}
+
+private fun isTelegramPlaceholder(email: String): Boolean {
+    val domain = email.trim().lowercase().substringAfterLast('@')
+    return domain == TELEGRAM_PLACEHOLDER_EMAIL_DOMAIN ||
+        domain.endsWith(".$TELEGRAM_PLACEHOLDER_EMAIL_DOMAIN")
 }

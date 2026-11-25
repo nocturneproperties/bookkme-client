@@ -61,7 +61,10 @@ class SettingsDashboardViewModelTest {
     private class Fixture {
         val getSettings = mock<GetSettings> {
             everySuspend { invoke() } returns
-                Settings(ColorScheme.DARK, SettingsProfile("Anna", "Smith", "anna@example.com"))
+                Settings(
+                    ColorScheme.DARK,
+                    SettingsProfile("Anna", "Smith", "anna@example.com", isEmailDeliverable = true),
+                )
         }
         val updateColorScheme = mock<UpdateColorScheme>()
         val statuses = MutableStateFlow<List<LegalDocumentStatus>>(emptyList())
@@ -149,7 +152,7 @@ class SettingsDashboardViewModelTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSettings() } returns
-            Settings(ColorScheme.SYSTEM, SettingsProfile("anna", "", ""))
+            Settings(ColorScheme.SYSTEM, SettingsProfile("anna", "", "", isEmailDeliverable = true))
         val sut = fixture.sut()
 
         whenn()

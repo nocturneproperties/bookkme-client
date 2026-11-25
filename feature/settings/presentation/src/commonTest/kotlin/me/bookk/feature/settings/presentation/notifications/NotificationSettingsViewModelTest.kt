@@ -13,6 +13,7 @@ import dev.mokkery.matcher.capture.get
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import library.permissions.api.PermissionManager
 import me.bookk.android.feature.settings.resources.SettingsRes
@@ -568,6 +569,74 @@ class NotificationSettingsViewModelTest {
     }
 
     @Test
+    fun `hides the email channel when the email address is undeliverable`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getSettings() } returns
+            settingsWithEmail("42@telegramundeliverable.org", isEmailDeliverable = false)
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.cached.value = NotificationSettings.stub()
+            .onlyChannels(NotificationChannel.EMAIL, NotificationChannel.TELEGRAM)
+
+        then()
+        assertFalse(sut.uiState.emailEnabled.isVisible)
+        assertTrue(sut.uiState.telegramEnabled.isVisible)
+    }
+
+    @Test
+    fun `locks telegram when the other enabled channel is an undeliverable email`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getSettings() } returns
+            settingsWithEmail("42@telegramundeliverable.org", isEmailDeliverable = false)
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.cached.value = NotificationSettings.stub().withChannels(
+            NotificationChannel.TELEGRAM to true,
+            NotificationChannel.EMAIL to true,
+        )
+
+        then()
+        assertTrue(sut.uiState.telegramEnabled.isChecked)
+        assertFalse(sut.uiState.telegramEnabled.isEnabled)
+    }
+
+    @Test
+    fun `hides the email channel when the profile cannot be read`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getSettings() } throws TestException()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.cached.value = NotificationSettings.stub()
+            .onlyChannels(NotificationChannel.EMAIL, NotificationChannel.TELEGRAM)
+
+        then()
+        assertFalse(sut.uiState.emailEnabled.isVisible)
+        assertTrue(sut.uiState.telegramEnabled.isVisible)
+    }
+
+    @Test
+    fun `shows the email channel when the profile loads after the settings`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val profile = CompletableDeferred<Settings>()
+        everySuspend { fixture.getSettings() } calls { profile.await() }
+        fixture.cached.value = NotificationSettings.stub().onlyChannels(NotificationChannel.EMAIL)
+        val sut = fixture.sut()
+
+        whenn()
+        profile.complete(settingsWithEmail("anna@example.com"))
+
+        then()
+        assertTrue(sut.uiState.emailEnabled.isVisible)
+    }
+
+    @Test
     fun `describes appointment notifications and the telegram channel`() = runUnitTest {
         given()
         val fixture = Fixture()
@@ -602,6 +671,6 @@ class NotificationSettingsViewModelTest {
     }
 }
 
-private fun settingsWithEmail(email: String): Settings {
-    return Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", email))
+private fun settingsWithEmail(email: String, isEmailDeliverable: Boolean = true): Settings {
+    return Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", email, isEmailDeliverable))
 }

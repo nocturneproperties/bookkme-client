@@ -20,6 +20,7 @@ import me.bookk.feature.settings.domain.api.entity.NotificationChannel.EMAIL
 import me.bookk.feature.settings.domain.api.entity.NotificationChannel.PUSH_NOTIFICATIONS
 import me.bookk.feature.settings.domain.api.entity.NotificationChannel.TELEGRAM
 import me.bookk.feature.settings.domain.api.entity.NotificationSettings
+import me.bookk.feature.settings.domain.api.entity.SettingsProfile
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 
 class NotificationSettingsViewModel(
@@ -33,13 +34,13 @@ class NotificationSettingsViewModel(
 ) : ViewModel(vmArgs) {
 
     private var loadedSettings = NotificationSettings.stub()
+    private var isEmailDeliverable = false
 
     val uiState = settingsStateFactory.createNotificationSettingsState().setup()
 
     init {
-        observeSettings()
         loadSettings()
-        loadEmailAddress()
+        loadProfile()
     }
 
     private fun observeSettings() {
@@ -63,15 +64,19 @@ class NotificationSettingsViewModel(
         )
     }
 
-    private fun loadEmailAddress() {
+    private fun loadProfile() {
         launch(
             launchIn = DispatcherProvider.io,
-            call = { getSettings().profile.email },
-            onComplete = { email ->
-                uiState.emailEnabled.supportingTextRes = email.takeIf { it.isNotBlank() }?.desc()
-            },
+            call = { getSettings().profile },
+            onComplete = { renderProfile(it) },
             onError = { handleError(it) },
+            onTerminate = { observeSettings() },
         )
+    }
+
+    private fun renderProfile(profile: SettingsProfile) {
+        isEmailDeliverable = profile.isEmailDeliverable
+        uiState.emailEnabled.supportingTextRes = profile.email.takeIf { it.isNotBlank() }?.desc()
     }
 
     private fun onAppointmentEnabledChanged(enabled: Boolean) {
@@ -142,8 +147,11 @@ class NotificationSettingsViewModel(
     }
 
     private fun isShown(channel: NotificationChannel): Boolean {
-        return channel != PUSH_NOTIFICATIONS ||
-            permissionManager.supports(PermissionType.NOTIFICATIONS)
+        return when (channel) {
+            EMAIL -> isEmailDeliverable
+            PUSH_NOTIFICATIONS -> permissionManager.supports(PermissionType.NOTIFICATIONS)
+            TELEGRAM -> true
+        }
     }
 
     private fun NotificationSettingsState.channelSwitch(

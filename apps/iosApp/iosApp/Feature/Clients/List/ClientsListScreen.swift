@@ -68,7 +68,7 @@ struct ClientsListScreen: View {
 	}
 }
 	
-private struct ClientListRow: View {
+struct ClientListRow: View {
 	
 	var item: ClientListItem
 	

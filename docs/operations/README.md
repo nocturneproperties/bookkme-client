@@ -159,7 +159,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `WithdrawAppointmentRequest` | `POST /api/appointments/request/{id}/withdraw`, then sets the cached request to `CANCELLED` (best effort); 404 → `NotFound`, 300008 → `AlreadyApproved`, 300007 → `AlreadyDeclined` (client web app) | [Withdraw appointment request](appointments/withdraw-appointment-request.md) |
 | `GetAppointmentSettings` | `GET /api/appointments/settings/{businessId}` | [Get appointment settings](appointments/get-appointment-settings.md) |
 | `UpdateAppointmentSettings` | `PUT /api/appointments/settings/{businessId}` | [Update appointment settings](appointments/update-appointment-settings.md) |
-| `GetAppointmentOptions` | composes two refreshes | [Get appointment options](appointments/get-appointment-options.md) |
+| `GetAppointmentOptions` | composes `GetServices.refresh` | [Get appointment options](appointments/get-appointment-options.md) |
+| `GetClientSnapshot` | local only: the picked client from Room through `GetClient` | [Get client snapshot](appointments/get-client-snapshot.md) |
 | `ObserveAppointmentOptions` | local only | [Observe appointment options](appointments/observe-appointment-options.md) |
 | `GetUpcomingBookings` | `GET /api/appointments/upcoming` + `GetBusinesses.refresh` (client web app) | [Get upcoming bookings](appointments/get-upcoming-bookings.md) |
 | `GetSavedBusinesses` | `GET /api/appointments/businesses` + `GetBusinesses.refresh` (client web app) | [Get saved businesses](appointments/get-saved-businesses.md) |
@@ -228,8 +229,9 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Download business data export](business/download-business-data-export.md) | `GetBusinessDataExport.flow` |
 | [Observe dashboard setup status](business/observe-dashboard-setup-status.md) | `BusinessDataSource.observeUserBusinessInfoInDb` (business + selection snapshot), `IsAppointmentsPluginEnabled.flow`, `GetServiceGroups.flow`, `GetServices.flow`, `GetClientsList.flow` (cross-feature) |
 | [Refresh dashboard setup status](business/refresh-dashboard-setup-status.md) | `IsAppointmentsPluginEnabled.refresh`, `GetServiceGroups.refresh`, `GetServices.refresh`, `GetClientsList.refresh` (cross-feature) |
-| [Get appointment options](appointments/get-appointment-options.md) | `GetClientsList.refresh`, `GetServices.refresh` (parallel) |
-| [Observe appointment options](appointments/observe-appointment-options.md) | `GetClientsList.flow`, `GetServices.flow` (combined) |
+| [Get appointment options](appointments/get-appointment-options.md) | `GetServices.refresh` |
+| [Get client snapshot](appointments/get-client-snapshot.md) | `GetClient` (clients feature, cross-feature wrapper) |
+| [Observe appointment options](appointments/observe-appointment-options.md) | `GetServices.flow` |
 | [Save business](appointments/save-business.md) | `GetSavedBusinesses.refresh` |
 | [Get upcoming bookings](appointments/get-upcoming-bookings.md), [Get saved businesses](appointments/get-saved-businesses.md) | `GetBusinesses.flow`, `GetBusinesses.refresh` (cross-feature, business) |
 | [Get client appointment request](appointments/get-client-appointment-request.md), [Get client appointment](appointments/get-client-appointment.md) | `GetBusinesses.flow` (cross-feature, business) |

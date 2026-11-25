@@ -4,7 +4,7 @@
 
 `GetClientsList.flow(search)` / `.refresh(ClientsQuery)` / `.loadMore(ClientsQuery, cursor)` →
 `GET /api/business/{businessId}/clients[?cursor=][&query=]`
-· called from `ClientsListViewModel` (through its `ListPager`), [Get appointment options](../appointments/get-appointment-options.md),
+· called from `ClientsListViewModel` and `SelectClientViewModel` (both through `SearchableClientList` and its `ListPager`),
 [Refresh dashboard setup status](../business/refresh-dashboard-setup-status.md)
 and [background data fetch](../authorization/initial-app-data-fetch.md)
 

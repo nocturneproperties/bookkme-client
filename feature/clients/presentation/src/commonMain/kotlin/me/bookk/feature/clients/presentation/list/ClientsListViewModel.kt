@@ -5,16 +5,9 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.joinToStringDesc
 import dev.icerock.moko.resources.format
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import library.device.api.DeviceFacade
 import library.permissions.api.PermissionManager
 import library.permissions.api.PermissionType
@@ -29,8 +22,6 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.core.presentation.text.TextCollator
-import me.bookk.designsystem.convenience.listPager
-import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.action
@@ -45,12 +36,9 @@ import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.entity.ClientImportResult
-import me.bookk.feature.clients.domain.api.entity.ClientsQuery
 import me.bookk.feature.clients.domain.api.entity.RejectedClientImport
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.list.ClientsListDestination.AddClient
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.Uuid
 
 class ClientsListViewModel(
@@ -67,12 +55,15 @@ class ClientsListViewModel(
 ) : ViewModel(vmArgs) {
 
     val uiState = stateFactory.createClientsListState().setup()
-    private val searchText = MutableStateFlow("")
-    private val clientPages = listPager(
+    private val clients = SearchableClientList(
+        viewModel = this,
         listState = uiState.clientsList,
+        searchField = uiState.searchField,
         notifications = uiState.notifications,
-        source = getClientsList,
         refreshState = uiState.refreshState,
+        getClientsList = getClientsList,
+        observeCurrentBusinessId = observeCurrentBusinessId,
+        onClientClick = weakVMClosure { vm, client -> vm.onClientClick(client) },
     )
     private val importAction = uiState.appBar.action(
         icon = DesignSystem.images.contacts,
@@ -86,31 +77,8 @@ class ClientsListViewModel(
     )
 
     init {
-        observeClients()
+        clients.start()
         observeEditAccess()
-        loadClients()
-    }
-
-    private fun observeClients() {
-        searchText
-            .flatMapLatest { getClientsList.flow(it) }
-            .flowOn(DispatcherProvider.io)
-            .safeOnEach { renderClients(it) }
-            .onError { uiState.notifications.add(it.notification()) }
-            .observe()
-    }
-
-    private fun renderClients(clients: List<Client>) {
-        if (clients.isEmpty() && uiState.clientsList.isInitialLoading) return
-        uiState.clientsList.replace(clients.map(::clientListItem))
-    }
-
-    private fun clientListItem(client: Client): ClientListItem {
-        return ClientListItem(
-            id = client.id.toString(),
-            fullName = client.fullName,
-            onClick = weakVMClosure { it.onClientClick(client) },
-        )
     }
 
     private fun observeEditAccess() {
@@ -120,25 +88,6 @@ class ClientsListViewModel(
             .safeOnEach { loadEditAccess(it) }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
-    }
-
-    private fun loadClients() {
-        observeCurrentBusinessId()
-            .filterNotNull()
-            .flowOn(DispatcherProvider.io)
-            .resetListOnChange(uiState.clientsList)
-            .combine(serverSearch()) { businessId, search -> ClientsQuery(businessId, search) }
-            .distinctUntilChanged()
-            .safeOnEach { clientPages.load(it) }
-            .onError { uiState.notifications.add(it.notification()) }
-            .observe()
-    }
-
-    private fun serverSearch(): Flow<String?> {
-        return searchText
-            .map { text -> text.trim().takeIf { it.length >= MIN_SERVER_SEARCH_LENGTH } }
-            .debounce { if (it == null) Duration.ZERO else SERVER_SEARCH_DELAY }
-            .distinctUntilChanged()
     }
 
     private fun loadEditAccess(businessId: Uuid) {
@@ -319,18 +268,13 @@ class ClientsListViewModel(
         )
     }
 
-    private fun onSearchQueryChanged(query: String) {
-        uiState.searchField.text = query
-        searchText.value = query
-    }
-
     private fun ClientsListState.setup(): ClientsListState {
         appBar.title = ClientsRes.strings.clients_title.desc()
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(ClientsListDestination.Back)
         }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
-        searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
+        searchField.onTextChanged = weakVMClosure { vm, value -> vm.clients.search(value) }
         contactsPicker.pickerTitle = ClientsRes.strings.clients_import_contacts_title.desc()
         contactsPicker.pickerType = PickerFieldState.PickerType.SCREEN
         contactsPicker.onItemsPicked = weakVMClosure { vm, picked -> vm.onContactsPicked(picked) }
@@ -344,7 +288,5 @@ class ClientsListViewModel(
     private companion object {
         const val EDIT_ACCESS_KEY = "clients_list_edit_access"
         const val IMPORT_CONTACTS_KEY = "clients_list_import_contacts"
-        const val MIN_SERVER_SEARCH_LENGTH = 2
-        val SERVER_SEARCH_DELAY = 300.milliseconds
     }
 }

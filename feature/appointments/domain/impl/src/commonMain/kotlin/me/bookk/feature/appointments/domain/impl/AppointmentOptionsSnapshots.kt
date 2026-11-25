@@ -17,13 +17,11 @@ internal fun List<Service>.snapshotServices(): List<ServiceSnapshot> {
     }
 }
 
-internal fun List<Client>.snapshotClients(): List<ClientSnapshot> {
-    return map {
-        ClientSnapshot(
-            id = it.id,
-            fullName = it.fullName,
-            phone = it.phone,
-            email = it.email,
-        )
-    }
+internal fun Client.snapshot(): ClientSnapshot {
+    return ClientSnapshot(
+        id = id,
+        fullName = fullName,
+        phone = phone,
+        email = email,
+    )
 }

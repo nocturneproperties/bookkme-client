@@ -22,12 +22,15 @@ import me.bookk.feature.clients.presentation.edit.EditClientState
 import me.bookk.feature.clients.presentation.list.ClientListItem
 import me.bookk.feature.clients.presentation.list.ClientsListDestination
 import me.bookk.feature.clients.presentation.list.ClientsListState
+import me.bookk.feature.clients.presentation.select.SelectClientDestination
+import me.bookk.feature.clients.presentation.select.SelectClientState
 
 internal class FakeClientsStateFactory : ClientsStateFactory {
     override fun createClientsListState(): ClientsListState = FakeClientsListState()
     override fun createClientState(): CreateClientState = FakeCreateClientState()
     override fun createClientDetailsState(): ClientDetailsState = FakeClientDetailsState()
     override fun createEditClientState(): EditClientState = FakeEditClientState()
+    override fun createSelectClientState(): SelectClientState = FakeSelectClientState()
 }
 
 internal class FakeClientsListState : ClientsListState {
@@ -73,4 +76,13 @@ internal class FakeEditClientState : EditClientState {
     override val deleteButton = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<EditClientDestination>()
+}
+
+internal class FakeSelectClientState : SelectClientState {
+    override val appBar = FakeAppBarState()
+    override val searchField = FakeTextFieldState()
+    override val clients = FakeListState<ClientListItem>()
+    override val refreshState = FakeRefreshState()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<SelectClientDestination>()
 }

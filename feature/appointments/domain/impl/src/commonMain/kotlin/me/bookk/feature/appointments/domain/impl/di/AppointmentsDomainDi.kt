@@ -16,6 +16,7 @@ import me.bookk.feature.appointments.domain.api.GetAssignedAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetBookingInfo
 import me.bookk.feature.appointments.domain.api.GetClientAppointment
 import me.bookk.feature.appointments.domain.api.GetClientAppointmentRequest
+import me.bookk.feature.appointments.domain.api.GetClientSnapshot
 import me.bookk.feature.appointments.domain.api.GetFreeSlots
 import me.bookk.feature.appointments.domain.api.GetSavedBusinesses
 import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
@@ -42,6 +43,7 @@ import me.bookk.feature.appointments.domain.impl.GetAssignedAppointmentRequestsI
 import me.bookk.feature.appointments.domain.impl.GetBookingInfoImpl
 import me.bookk.feature.appointments.domain.impl.GetClientAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.GetClientAppointmentRequestImpl
+import me.bookk.feature.appointments.domain.impl.GetClientSnapshotImpl
 import me.bookk.feature.appointments.domain.impl.GetFreeSlotsImpl
 import me.bookk.feature.appointments.domain.impl.GetSavedBusinessesImpl
 import me.bookk.feature.appointments.domain.impl.GetUpcomingBookingsImpl
@@ -60,6 +62,7 @@ import org.koin.dsl.module
 
 fun appointmentsDomainModule() = module {
     factoryOf(::GetAppointmentOptionsImpl) bind GetAppointmentOptions::class
+    factoryOf(::GetClientSnapshotImpl) bind GetClientSnapshot::class
     factoryOf(::ObserveAppointmentOptionsImpl) bind ObserveAppointmentOptions::class
     factoryOf(::GetAppointmentSettingsImpl) binds
         arrayOf(GetAppointmentSettings::class, BusinessDataFetchAction::class)

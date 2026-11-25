@@ -1,4 +1,5 @@
 import build_src.constants.ApplicationConfig
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
     id(libs.plugins.convention.kmm.library.compose.get().pluginId)
@@ -22,11 +23,21 @@ kotlin {
         androidMain.dependencies {
             implementation(projects.feature.authorization.presentation)
         }
+        jsMain.dependencies {
+            implementation(projects.library.telegram)
+            implementation(libs.kobweb.compose.runtime)
+            implementation(libs.compose.html.core)
+            implementation(libs.kobweb.silk)
+        }
         commonTest.dependencies {
             implementation(projects.core.testFixtures)
             implementation(projects.designsystem.testFixtures)
         }
     }
+}
+
+composeCompiler {
+    targetKotlinPlatforms.add(KotlinPlatformType.js)
 }
 
 multiplatformResources {

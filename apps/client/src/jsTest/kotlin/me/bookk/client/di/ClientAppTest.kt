@@ -64,6 +64,7 @@ import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewM
 import me.bookk.feature.employees.domain.api.GetBookableEmployees
 import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import me.bookk.feature.settings.presentation.notifications.NotificationSettingsViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
@@ -611,6 +612,19 @@ class ClientAppTest {
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<SettingsDashboardViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the notification settings view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<NotificationSettingsViewModel>()
 
         then()
         assertNotNull(viewModel)

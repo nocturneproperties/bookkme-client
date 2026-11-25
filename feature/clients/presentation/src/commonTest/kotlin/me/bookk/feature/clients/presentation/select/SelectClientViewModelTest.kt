@@ -53,7 +53,9 @@ class SelectClientViewModelTest {
         dispatchers.uninstall()
     }
 
-    private class Fixture(canEdit: Boolean = true) {
+    private class Fixture(
+        canEdit: Boolean = true,
+    ) {
         val businessId = Uuid.random()
         val clients = MutableStateFlow<List<Client>>(emptyList())
         val getClientsList = mock<GetClientsList> {

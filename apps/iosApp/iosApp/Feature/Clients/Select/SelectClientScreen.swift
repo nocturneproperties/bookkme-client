@@ -6,6 +6,7 @@ struct SelectClientScreen: View {
 	@StateViewModel var viewModel: SelectClientViewModel
 	let onSelected: (KotlinUuid) -> Void
 	let onDismiss: () -> Void
+	@State private var newClientBusinessId: KotlinUuid?
 
 	init(onSelected: @escaping (KotlinUuid) -> Void, onDismiss: @escaping () -> Void) {
 		_viewModel = StateViewModel(wrappedValue: IosClientsPresentationDiKt.selectClientVM())
@@ -29,6 +30,15 @@ struct SelectClientScreen: View {
 				prompt: uiState.searchField.placeholder.localized()
 			)
 			.withNavigationBar(uiState.appBar)
+			.navigationDestination(isPresented: isAddingClient) {
+				if let businessId = newClientBusinessId {
+					CreateClientScreen(
+						businessId: businessId,
+						onCreated: onSelected,
+						onBack: { newClientBusinessId = nil }
+					)
+				}
+			}
 		}
 		.sendLifecycleEventsTo(viewModel)
 		.handleNotifications(uiState.notifications)
@@ -36,11 +46,20 @@ struct SelectClientScreen: View {
 			switch destination {
 			case let destination as SelectClientDestination.Selected:
 				onSelected(destination.clientId)
+			case let destination as SelectClientDestination.AddClient:
+				newClientBusinessId = destination.businessId
 			case is SelectClientDestination.Back:
 				onDismiss()
 			default:
 				break
 			}
 		}
+	}
+
+	private var isAddingClient: Binding<Bool> {
+		Binding(
+			get: { newClientBusinessId != nil },
+			set: { if !$0 { newClientBusinessId = nil } }
+		)
 	}
 }

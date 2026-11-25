@@ -23,10 +23,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectClientSheet(
-    onClientSelected: (Uuid) -> Unit,
-    onDismiss: () -> Unit,
-) {
+fun SelectClientSheet(onClientSelected: (Uuid) -> Unit, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     DesignSystemBottomSheet(sheetState = sheetState, onDismiss = onDismiss) {
         val storeOwner = rememberViewModelStoreOwner()
@@ -69,11 +66,7 @@ private fun SelectClientContent(
 }
 
 @Composable
-private fun NewClientContent(
-    businessId: Uuid,
-    onCreated: (Uuid) -> Unit,
-    onBack: () -> Unit,
-) {
+private fun NewClientContent(businessId: Uuid, onCreated: (Uuid) -> Unit, onBack: () -> Unit) {
     val storeOwner = rememberViewModelStoreOwner()
     val viewModel: CreateClientViewModel = koinViewModel(viewModelStoreOwner = storeOwner) {
         parametersOf(businessId)

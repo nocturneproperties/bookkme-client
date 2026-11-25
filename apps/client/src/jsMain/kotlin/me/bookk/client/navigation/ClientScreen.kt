@@ -34,4 +34,16 @@ sealed interface ClientScreen {
     data class BookingAppointmentDetails(
         val appointmentId: Uuid,
     ) : ClientScreen
+
+    data object Settings : ClientScreen
+
+    data object BookingProfile : ClientScreen
+
+    data object NotificationSettings : ClientScreen
+
+    data object PrivacySettings : ClientScreen
+
+    data object PersonalDataExport : ClientScreen
+
+    data object DeleteAccount : ClientScreen
 }

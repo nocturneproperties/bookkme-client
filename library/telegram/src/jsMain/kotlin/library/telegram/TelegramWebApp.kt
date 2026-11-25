@@ -14,6 +14,9 @@ external interface TelegramWebApp {
     @JsName("BackButton")
     val backButton: TelegramBackButton
 
+    @JsName("SettingsButton")
+    val settingsButton: TelegramSettingsButton
+
     @JsName("HapticFeedback")
     val hapticFeedback: TelegramHapticFeedback
 
@@ -58,6 +61,16 @@ external interface TelegramBackButton {
     fun onClick(callback: () -> Unit): TelegramBackButton
 
     fun offClick(callback: () -> Unit): TelegramBackButton
+}
+
+external interface TelegramSettingsButton {
+    fun show(): TelegramSettingsButton
+
+    fun hide(): TelegramSettingsButton
+
+    fun onClick(callback: () -> Unit): TelegramSettingsButton
+
+    fun offClick(callback: () -> Unit): TelegramSettingsButton
 }
 
 external interface TelegramHapticFeedback {

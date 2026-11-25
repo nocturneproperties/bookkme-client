@@ -9,10 +9,17 @@ class ClientLink(
     val url: String,
 ) {
     companion object {
-        private const val SITE_CLIENTS_PATH = "/clients"
+        const val SITE_CLIENTS_PATH = "/clients"
+        const val SITE_CONTACT_PATH = "/contact"
+        const val SITE_TERMS_PATH = "/terms"
+        const val SITE_PRIVACY_PATH = "/privacy"
 
         fun siteClients(title: StringDesc, siteUrl: SiteUrl): ClientLink {
-            return ClientLink(title, siteUrl.value + WebLocalization.localize(SITE_CLIENTS_PATH))
+            return ClientLink(title, sitePage(SITE_CLIENTS_PATH, siteUrl))
+        }
+
+        fun sitePage(path: String, siteUrl: SiteUrl): String {
+            return siteUrl.value + WebLocalization.localize(path)
         }
     }
 }

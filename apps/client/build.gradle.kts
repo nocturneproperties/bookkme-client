@@ -90,6 +90,7 @@ kotlin {
             implementation(projects.feature.booking.domain.impl)
             implementation(projects.feature.booking.data)
             implementation(projects.feature.booking.presentation)
+            implementation(projects.feature.settings.presentation)
             implementation(projects.feature.booking.domain.api)
             implementation(projects.feature.services.domain.impl)
             implementation(projects.feature.services.data)

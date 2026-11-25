@@ -11,6 +11,7 @@ import com.varabyte.kobweb.compose.ui.graphics.Color
 import com.varabyte.kobweb.compose.ui.modifiers.alignSelf
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
+import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.flexShrink
 import com.varabyte.kobweb.compose.ui.modifiers.fontSize
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
@@ -18,6 +19,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.gap
 import com.varabyte.kobweb.compose.ui.modifiers.lineHeight
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.size
+import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
@@ -54,6 +56,14 @@ val StatusLabelStyle = CssStyle.base {
         .gap(0.375.cssRem)
         .fontSize(0.8125.cssRem)
         .lineHeight(1.125.cssRem)
+        .fontWeight(FontWeight.SemiBold)
+}
+
+val StatusTextStyle = CssStyle.base {
+    Modifier
+        .flexShrink(0)
+        .fontSize(0.9375.cssRem)
+        .lineHeight(1.25.cssRem)
         .fontWeight(FontWeight.SemiBold)
 }
 
@@ -94,4 +104,17 @@ private fun StatusDot(color: Color) {
             .borderRadius(50.percent)
             .backgroundColor(color),
     )
+}
+
+@Composable
+fun StatusText(text: StringDesc, color: ColorToken, modifier: Modifier = Modifier) {
+    Span(
+        StatusTextStyle
+            .toModifier()
+            .color(color.themed)
+            .then(modifier)
+            .toAttrs(),
+    ) {
+        Text(text.localized())
+    }
 }

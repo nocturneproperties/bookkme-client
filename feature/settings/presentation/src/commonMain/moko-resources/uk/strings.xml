@@ -10,6 +10,8 @@
     <string name="settings_profile_last_name">Прізвище</string>
     <string name="settings_profile_email">Ел. пошта</string>
     <string name="settings_profile_edit">Змінити</string>
+    <string name="settings_profile_edit_booking">Змінити профіль для записів</string>
+    <string name="settings_profile_booking_hint">Це імʼя бачать бізнеси, коли ви записуєтеся</string>
 
     <string name="settings_account_title">Обліковий запис</string>
     <string name="settings_account_passkey_label">Ключ доступу</string>

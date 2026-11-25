@@ -12,6 +12,7 @@ import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import library.device.api.DeviceFacade
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -126,9 +127,168 @@ class SettingsDashboardViewModelTest {
 
         then()
         assertEquals(UIColorScheme.DARK, sut.uiState.appearance.colorScheme)
-        assertEquals("Anna".desc(), sut.uiState.profile.name)
-        assertEquals("Smith".desc(), sut.uiState.profile.lastName)
         assertEquals("anna@example.com".desc(), sut.uiState.profile.email)
+    }
+
+    @Test
+    fun `renders full name and initials when presented`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals("Anna Smith".desc(), sut.uiState.profile.fullName)
+        assertEquals("AS", sut.uiState.profile.initials)
+    }
+
+    @Test
+    fun `leaves a missing last name out of the full name and initials`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getSettings() } returns
+            Settings(ColorScheme.SYSTEM, SettingsProfile("anna", "", ""))
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals("anna".desc(), sut.uiState.profile.fullName)
+        assertEquals("A", sut.uiState.profile.initials)
+    }
+
+    @Test
+    fun `labels the profile edit button as the booking profile`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_profile_edit_booking.desc(),
+            sut.uiState.profile.edit.text,
+        )
+    }
+
+    @Test
+    fun `shows a chevron after the profile edit button text`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            DesignSystem.images.material_chevron_right,
+            sut.uiState.profile.edit.endIcon,
+        )
+    }
+
+    @Test
+    fun `opens the booking profile from the profile edit button`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.profile.edit.onClick?.invoke()
+
+        then()
+        sut.assertNavigatedTo(SettingsDashboardDestination.EditProfile)
+    }
+
+    @Test
+    fun `opens notifications from the notifications row`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.account.notifications.onClick?.invoke()
+
+        then()
+        sut.assertNavigatedTo(SettingsDashboardDestination.Notifications)
+    }
+
+    @Test
+    fun `opens privacy from the privacy row`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.account.privacy.onClick?.invoke()
+
+        then()
+        sut.assertNavigatedTo(SettingsDashboardDestination.Privacy)
+    }
+
+    @Test
+    fun `opens the personal data export from the export row`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.account.dataExport.onClick?.invoke()
+
+        then()
+        sut.assertNavigatedTo(SettingsDashboardDestination.PersonalDataExport)
+    }
+
+    @Test
+    fun `opens account deletion from the delete account row`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.account.deleteAccount.onClick?.invoke()
+
+        then()
+        sut.assertNavigatedTo(SettingsDashboardDestination.DeleteAccount)
+    }
+
+    @Test
+    fun `opens the contact page from the contact page row`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.support.contactPage.onClick?.invoke()
+
+        then()
+        sut.assertNavigatedTo(SettingsDashboardDestination.ContactPage)
+    }
+
+    @Test
+    fun `opens the terms of use from the terms row`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.support.terms.onClick?.invoke()
+
+        then()
+        sut.assertNavigatedTo(SettingsDashboardDestination.TermsOfUse)
+    }
+
+    @Test
+    fun `opens the privacy policy from the policy row`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.uiState.support.policy.onClick?.invoke()
+
+        then()
+        sut.assertNavigatedTo(SettingsDashboardDestination.PrivacyPolicy)
+    }
+
+    private fun SettingsDashboardViewModel.assertNavigatedTo(
+        destination: SettingsDashboardDestination,
+    ) {
+        assertEquals(listOf(destination), uiState.navigation.navigationDestination)
     }
 
     @Test

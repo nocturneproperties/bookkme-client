@@ -10,6 +10,8 @@
     <string name="settings_profile_last_name">Nazwisko</string>
     <string name="settings_profile_email">E-mail</string>
     <string name="settings_profile_edit">Edytuj</string>
+    <string name="settings_profile_edit_booking">Edytuj profil rezerwacji</string>
+    <string name="settings_profile_booking_hint">Firmy widzą to imię, gdy rezerwujesz</string>
 
     <string name="settings_account_title">Konto</string>
     <string name="settings_account_passkey_label">Klucz dostępu</string>

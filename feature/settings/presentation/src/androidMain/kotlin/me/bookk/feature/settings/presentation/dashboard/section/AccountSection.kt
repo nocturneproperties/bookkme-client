@@ -41,7 +41,7 @@ internal fun AccountSection(state: AccountSection) {
         ) {
             SectionItem(
                 text = state.notifications.text.localized(),
-                onClick = LocalNavigation.current.navigateToNotifications,
+                onClick = { state.notifications.onClick?.invoke() },
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
@@ -57,12 +57,12 @@ internal fun AccountSection(state: AccountSection) {
             SectionItem(
                 text = state.privacy.text.localized(),
                 trailingText = state.privacyStatus?.localized(),
-                onClick = LocalNavigation.current.navigateToPrivacy,
+                onClick = { state.privacy.onClick?.invoke() },
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
                 text = state.dataExport.text.localized(),
-                onClick = LocalNavigation.current.navigateToPersonalDataExport,
+                onClick = { state.dataExport.onClick?.invoke() },
             )
             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SectionItem(
@@ -73,7 +73,7 @@ internal fun AccountSection(state: AccountSection) {
             SectionItem(
                 text = state.deleteAccount.text.localized(),
                 color = LocalColors.current.error,
-                onClick = LocalNavigation.current.navigateToDeleteAccount,
+                onClick = { state.deleteAccount.onClick?.invoke() },
             )
         }
     }

@@ -66,27 +66,29 @@ internal class FakeSettingsState : SettingsState {
             AppearanceSection.UIColorScheme.SYSTEM
     }
     override val profile = object : ProfileSection {
-        override var name: StringDesc = "".desc()
-        override var lastName: StringDesc = "".desc()
         override var email: StringDesc = "".desc()
+        override var fullName: StringDesc = "".desc()
+        override var initials: String = ""
+        override val edit = FakeButtonState()
     }
     override val account = object : AccountSection {
-        override val dataExport = FakeTextState()
+        override val dataExport = FakeButtonState()
         override val changeEmail = FakeTextState()
-        override val privacy = FakeTextState()
+        override val privacy = FakeButtonState()
         override var privacyStatus: StringDesc? = null
         override val title: StringDesc = "".desc()
-        override val notifications = FakeTextState()
+        override val notifications = FakeButtonState()
         override val passkey = FakeTextState()
         override val logout = FakeTextState()
-        override val deleteAccount = FakeTextState()
+        override val deleteAccount = FakeButtonState()
     }
     override val support = object : SupportSection {
         override val title: StringDesc = "".desc()
         override val contact = FakeTextState()
+        override val contactPage = FakeButtonState()
         override val feature = FakeTextState()
-        override val terms = FakeTextState()
-        override val policy = FakeTextState()
+        override val terms = FakeButtonState()
+        override val policy = FakeButtonState()
         override val reportError = FakeTextState()
         override var onContactClick: () -> Unit = {}
     }

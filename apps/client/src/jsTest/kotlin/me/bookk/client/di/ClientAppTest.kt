@@ -65,6 +65,7 @@ import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewModel
 import me.bookk.feature.employees.domain.api.GetBookableEmployees
 import me.bookk.feature.services.domain.api.service.GetBusinessServices
+import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
@@ -113,7 +114,9 @@ class ClientAppTest {
         }
 
         override fun legalDocumentStatusDao(): LegalDocumentStatusDao {
-            return mock()
+            return mock {
+                every { observeAll() } returns emptyFlow()
+            }
         }
 
         override fun personalDataExportDao(): PersonalDataExportDao {
@@ -622,6 +625,19 @@ class ClientAppTest {
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<BookingsViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the settings view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<SettingsDashboardViewModel>()
 
         then()
         assertNotNull(viewModel)

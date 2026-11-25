@@ -26,6 +26,7 @@ class AppointmentRequestRemoteContractTest {
                 "id" to 1, "initiatorUserId" to 2, "businessId" to 3, "employee" to 4,
                 "client" to 5, "services" to 6, "status" to 7, "date" to 8, "note" to 9,
                 "declineReason" to 10,
+                "businessName" to 11,
             ),
             fields,
         )

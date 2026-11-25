@@ -1,7 +1,9 @@
 package me.bookk.designsystem.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberUpdatedState
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.display
@@ -13,6 +15,8 @@ import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
+import me.bookk.designsystem.dom.IntersectionObserver
+import me.bookk.designsystem.dom.IntersectionObserverInit
 import me.bookk.designsystem.uistate.ListState
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.cssRem
@@ -20,6 +24,7 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Div
 
 private const val CARD_GRID_MIN_COLUMN_REM = 8
+private const val LOAD_MORE_AHEAD_MARGIN = "0px 0px 400px 0px"
 
 val CardGridStyle = CssStyle.base {
     Modifier
@@ -127,5 +132,22 @@ private fun <T> ListContent(
     state.bannerError?.let { BannerErrorView(it) }
     content(appearance)
     val loadMore = state.loadMore ?: return
-    LaunchedEffect(state.items.size) { loadMore() }
+    key(state.items.size) { LoadMoreTrigger(loadMore) }
+}
+
+@Composable
+private fun LoadMoreTrigger(loadMore: () -> Unit) {
+    val currentLoadMore by rememberUpdatedState(loadMore)
+    Div({
+        ref { element ->
+            val options = js("{}").unsafeCast<IntersectionObserverInit>()
+            options.rootMargin = LOAD_MORE_AHEAD_MARGIN
+            val observer = IntersectionObserver(
+                { entries, _ -> if (entries.any { it.isIntersecting }) currentLoadMore() },
+                options,
+            )
+            observer.observe(element)
+            onDispose { observer.disconnect() }
+        }
+    })
 }

@@ -14,6 +14,7 @@ data class AppointmentRequest(
     val date: Instant,
     val note: String,
     val declineReason: String,
+    val businessName: String = "",
 ) {
 
     val total: String by lazy(LazyThreadSafetyMode.NONE) {

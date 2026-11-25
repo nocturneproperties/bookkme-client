@@ -20,10 +20,11 @@ struct ClientsListScreen: View {
 	
 	var body: some View {
 		let uiState = IOSClientsListState.cast(viewModel.uiState)
-		let listState = IOSListState<ClientSection>.cast(uiState.clientsList)
-		ListGroup(listState: listState) { section in
-			ContactSection(section: section)
+		let listState = IOSListState<ClientListItem>.cast(uiState.clientsList)
+		ListGroup(listState: listState) { item in
+			ClientListRow(item: item)
 				.listRowSeparator(.hidden)
+				.listRowInsets(EdgeInsets())
 				.transition(.opacity)
 				.animation(.easeInOut, value: uiState.clientsList.items.count)
 		}
@@ -67,46 +68,26 @@ struct ClientsListScreen: View {
 	}
 }
 	
-struct ContactSection: View {
+struct ClientListRow: View {
 	
-	var section: ClientSection
+	var item: ClientListItem
 	
 	var body: some View {
-		Section {
-			ForEach(section.items, id: \.id) { client in
-				VStack {
-					Button {
-						section.onItemClick(client)
-					} label: {
-						VStack {
-							Spacer()
-							Text(client.fullName)
-								.font(.body)
-								.padding(.horizontal)
-								.frame(maxWidth: .infinity, minHeight: 44, alignment: .init(horizontal: .leading, vertical: .center))
-								.contentShape(Rectangle())
-							Spacer()
-						}
-					}
-					.buttonStyle(.plain)
-					
-					Divider()
-						.padding(.leading)
-						.background(AppColors.divider)
-				}.listRowSeparator(.hidden)
-			}
-		} header: {
-			VStack {
-				Text(section.header)
-					.fontWeight(.medium)
-					.foregroundStyle(AppColors.header)
+		VStack(spacing: 0) {
+			Button {
+				item.onClick()
+			} label: {
+				Text(item.fullName)
+					.font(.body)
 					.padding(.horizontal)
-					.frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .center))
-				
-				Divider()
-					.padding(.leading)
-					.background(AppColors.divider)
-			}.background(AppColors.background)
-		}.listRowInsets(EdgeInsets())
+					.frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+					.contentShape(Rectangle())
+			}
+			.buttonStyle(.plain)
+			
+			Divider()
+				.padding(.leading)
+				.background(AppColors.divider)
+		}
 	}
 }

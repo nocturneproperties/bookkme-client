@@ -78,6 +78,8 @@ internal fun Appointment.toRemote(): AppointmentRemote {
         date = date.toInstant(TimeZone.currentSystemDefault()),
         note = note,
         cancellationReason = cancellationReason,
+        clientNote = clientNote,
+        businessName = businessName,
     )
 }
 
@@ -172,6 +174,7 @@ internal fun Appointment.toEntity(): AppointmentEntity {
         adjustedPriceValue = priceAdjustment?.price?.value,
         priceAdjustmentReason = priceAdjustment?.reason,
         clientNote = clientNote,
+        businessName = businessName,
     )
 }
 
@@ -264,6 +267,7 @@ internal fun AppointmentLocal.toDomain(): Appointment {
         completedBy = entity.completedBy?.let { AppointmentCompletedBy.valueOf(it) },
         priceAdjustment = priceAdjustment(),
         clientNote = entity.clientNote,
+        businessName = entity.businessName,
     )
 }
 
@@ -284,6 +288,7 @@ internal fun AppointmentRequest.toRequestEntity(): AppointmentRequestEntity {
         clientPhone = client.phone,
         clientUserId = client.userId,
         clientEmail = client.email,
+        businessName = businessName,
     )
 }
 
@@ -332,6 +337,7 @@ internal fun AppointmentRequestLocal.toDomain(): AppointmentRequest {
         date = entity.date,
         note = entity.note,
         declineReason = entity.declineReason,
+        businessName = entity.businessName,
     )
 }
 

@@ -5,6 +5,7 @@ import androidx.room3.ForeignKey
 import androidx.room3.ForeignKey.Companion.CASCADE
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Entity(
@@ -29,4 +30,5 @@ class ClientEntity(
     val businessId: Uuid,
     val userId: Uuid?,
     val description: String? = null,
+    val createdAt: Instant? = null,
 )

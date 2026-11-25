@@ -10,7 +10,10 @@ class IOSAppointmentCreateState: @MainActor AppointmentCreateState, NativeStateR
 
     let appBar: any AppBarState
 
-    let clientPicker: any PickerFieldState
+    let clientField: any TextFieldState
+    var isClientPickerVisible: Bool
+    var onClientFieldClick: () -> Void
+    var onClientPicked: (KotlinUuid) -> Void
     let servicePicker: any OptionsMultiPickerState
     var subtotalLabel: any StringDesc
     var subtotalPrice: String
@@ -24,7 +27,10 @@ class IOSAppointmentCreateState: @MainActor AppointmentCreateState, NativeStateR
 
     init() {
         appBar = IOSAppBarState()
-        clientPicker = IOSPickerState()
+        clientField = IOSTextFieldState()
+        isClientPickerVisible = false
+        onClientFieldClick = {}
+        onClientPicked = { _ in }
         servicePicker = IOSOptionsMultiPickerState()
         subtotalLabel = RawStringDesc(string: "")
         subtotalPrice = ""

@@ -11,6 +11,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core)
+            api(projects.core.domain)
             api(projects.library.money)
             api(projects.feature.business.domain.api)
         }

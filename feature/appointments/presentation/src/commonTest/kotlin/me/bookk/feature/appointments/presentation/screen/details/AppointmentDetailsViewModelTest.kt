@@ -105,7 +105,7 @@ class AppointmentDetailsViewModelTest {
             15.minutes,
         )
         val options = MutableStateFlow(
-            AppointmentOptions(clients = emptyList(), services = listOf(polish, massage)),
+            AppointmentOptions(services = listOf(polish, massage)),
         )
         val observeAppointmentOptions = mock<ObserveAppointmentOptions> {
             every { invoke() } returns options

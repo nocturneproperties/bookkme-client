@@ -4,24 +4,28 @@ import dev.icerock.moko.resources.desc.desc
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.appointments.resources.AppointmentsRes
 import me.bookk.core.coroutine.DispatcherProvider
-import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.convenience.listPager
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.designsystem.uistate.simple.EmptyState
 import me.bookk.feature.appointments.domain.api.GetAppointmentHistory
 import me.bookk.feature.appointments.domain.api.entity.Appointment
+import me.bookk.feature.appointments.domain.api.entity.AppointmentHistoryQuery
 import me.bookk.feature.appointments.presentation.AppointmentsStateFactory
 import me.bookk.feature.appointments.presentation.screen.history.AppointmentHistoryDestinations.AppointmentDetails
 import org.koin.core.annotation.InjectedParam
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.Uuid
 
 class AppointmentHistoryViewModel(
@@ -33,69 +37,46 @@ class AppointmentHistoryViewModel(
 ) : ViewModel(vmArgs) {
 
     val uiState: AppointmentHistoryState = stateFactory.createAppointmentHistoryState().setup()
-    private val searchQuery = MutableStateFlow<String?>(null)
+    private val searchText = MutableStateFlow("")
+    private val historyPages = listPager(
+        listState = uiState.appointments,
+        notifications = uiState.notifications,
+        source = getAppointmentHistory,
+        refreshState = uiState.refresh,
+    )
 
     init {
+        observeHistory()
         loadHistory()
-        observeSearchQuery()
     }
 
-    private fun observeSearchQuery() {
-        searchQuery
-            .drop(1)
-            .debounce(SEARCH_DEBOUNCE_MS)
-            .distinctUntilChanged()
+    private fun observeHistory() {
+        searchText
+            .flatMapLatest { getAppointmentHistory.flow(businessId, it) }
             .flowOn(DispatcherProvider.io)
-            .safeOnEach { loadHistory(it) }
+            .safeOnEach { renderHistory(it) }
+            .onError { uiState.notifications.add(it.notification()) }
             .observe()
     }
 
-    private fun loadHistory(query: String? = null, isRefresh: Boolean = false) {
-        launch(
-            key = LOAD_KEY,
-            launchIn = DispatcherProvider.io,
-            onStart = {
-                if (isRefresh) {
-                    uiState.refresh.isRefreshing = true
-                } else {
-                    uiState.appointments.isInitialLoading = true
-                }
-            },
-            call = { getAppointmentHistory.reload(businessId, query) },
-            onComplete = { uiState.appointments.replace(mapToItems(it)) },
-            onError = { uiState.notifications.add(it.notification()) },
-            onTerminate = {
-                if (isRefresh) {
-                    uiState.refresh.isRefreshing = false
-                } else {
-                    uiState.appointments.isInitialLoading = false
-                }
-            },
-        )
+    private fun renderHistory(appointments: List<Appointment>) {
+        if (appointments.isEmpty() && uiState.appointments.isInitialLoading) return
+        uiState.appointments.replace(mapToItems(appointments))
+    }
+
+    private fun loadHistory() {
+        searchText
+            .map { it.trim().ifBlank { null } }
+            .debounce { if (it == null) Duration.ZERO else SEARCH_DEBOUNCE }
+            .distinctUntilChanged()
+            .map { AppointmentHistoryQuery(businessId, it) }
+            .safeOnEach { historyPages.load(it) }
+            .observe()
     }
 
     private fun onSearchQueryChanged(query: String) {
         uiState.searchField.text = query
-        searchQuery.value = query.toSearchQuery()
-    }
-
-    private fun onRefresh() {
-        loadHistory(uiState.searchField.text.toSearchQuery(), isRefresh = true)
-    }
-
-    private fun String.toSearchQuery(): String? {
-        return trim().ifBlank { null }
-    }
-
-    private fun onLoadMore() {
-        launch(
-            key = LOAD_KEY,
-            launchBehaviour = LaunchBehaviour.DropLatest,
-            launchIn = DispatcherProvider.io,
-            call = { getAppointmentHistory.loadMore() },
-            onComplete = { uiState.appointments.append(mapToItems(it)) },
-            onError = { uiState.notifications.add(it.notification()) },
-        )
+        searchText.value = query
     }
 
     private fun onAppointmentClick(appointment: Appointment) {
@@ -120,8 +101,6 @@ class AppointmentHistoryViewModel(
             weakVMClosure { it.uiState.navigation.push(AppointmentHistoryDestinations.Back) }
         searchField.placeholder = DesignSystem.strings.action_search.desc()
         searchField.onTextChanged = weakVMClosure { vm, value -> vm.onSearchQueryChanged(value) }
-        refresh.onRefresh = weakVMClosure { it.onRefresh() }
-        appointments.loadMore = weakVMClosure { it.onLoadMore() }
         appointments.emptyState = EmptyState(
             image = DesignSystem.images.empty,
             label = AppointmentsRes.strings.appointments_history_empty.desc(),
@@ -129,7 +108,6 @@ class AppointmentHistoryViewModel(
     }
 
     private companion object {
-        const val LOAD_KEY = "appointment_history_load"
-        const val SEARCH_DEBOUNCE_MS = 500L
+        val SEARCH_DEBOUNCE = 500.milliseconds
     }
 }

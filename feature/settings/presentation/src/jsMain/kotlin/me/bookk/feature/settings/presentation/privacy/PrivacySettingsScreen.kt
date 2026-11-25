@@ -105,13 +105,13 @@ private fun LegalDocumentRow(document: LegalDocumentItem) {
         ) {
             LegalDocumentText(document)
         }
-        return
-    }
-    ListRowButton(
-        onClick = onClick,
-        endIcon = DesignSystem.images.material_open_in_new,
-    ) {
-        LegalDocumentText(document)
+    } else {
+        ListRowButton(
+            onClick = onClick,
+            endIcon = DesignSystem.images.material_open_in_new,
+        ) {
+            LegalDocumentText(document)
+        }
     }
 }
 

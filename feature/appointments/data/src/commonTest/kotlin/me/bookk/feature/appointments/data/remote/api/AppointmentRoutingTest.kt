@@ -86,6 +86,34 @@ class AppointmentRoutingTest {
     }
 
     @Test
+    fun `history asks for the first page without paging parameters`() = runUnitTest {
+        given()
+        val resource = Api.Appointment.History(businessId = businessId)
+
+        whenn()
+        val url = href(ResourcesFormat(), resource)
+
+        then()
+        assertEquals("/api/appointments/history/$businessId", url)
+    }
+
+    @Test
+    fun `history sends the cursor of the next page and the query`() = runUnitTest {
+        given()
+        val resource = Api.Appointment.History(
+            businessId = businessId,
+            cursor = "after-a",
+            query = "anna",
+        )
+
+        whenn()
+        val url = href(ResourcesFormat(), resource)
+
+        then()
+        assertEquals("/api/appointments/history/$businessId?cursor=after-a&query=anna", url)
+    }
+
+    @Test
     fun `withdrawing a request points to the withdraw endpoint of the request`() = runUnitTest {
         given()
         val requestId = Uuid.parse("6f1c2d3e-0000-4000-8000-000000000003")

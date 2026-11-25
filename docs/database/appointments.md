@@ -135,6 +135,10 @@ erDiagram
   deletion in [Get appointments for business](../operations/appointments/get-appointments-for-business.md)
   covers only that window. The sync marker is per date:
   `appointments_prefs` / `last_synced_at_<businessId>_<yyyy-MM-dd>`.
+- **History shares the table.** [Get appointment history](../operations/appointments/get-appointment-history.md)
+  saves its pages into `appointment` and, without a search, deletes only the cached rows of the business within
+  each page's dates (`getIdsBetween`), so the per-day lists and the history never remove each other's rows outside
+  the range a response covers. `flow()` reads them with `observeForBusiness` (`order by date desc, id desc`).
 - **Only requests assigned to the signed-in user are stored**, fetched page by page from
   `/request/history/{businessId}?employeeId=<own>&status=PENDING&order=SOONEST_FIRST`. `refresh()` of [Get assigned
   appointment requests](../operations/appointments/get-assigned-appointment-requests.md) replaces the cached rows with

@@ -64,8 +64,8 @@ object AppointmentRouting {
             class History(
                 val parent: Appointment = Appointment(),
                 val businessId: Uuid,
-                val limit: Int,
-                val offset: Long,
+                val limit: Int? = null,
+                val cursor: String? = null,
                 val query: String? = null,
             )
 

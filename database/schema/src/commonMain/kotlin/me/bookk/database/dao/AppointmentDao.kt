@@ -18,6 +18,15 @@ import kotlin.uuid.Uuid
 abstract class AppointmentDao {
 
     @Transaction
+    @Query("SELECT * FROM appointment WHERE businessId = :businessId ORDER BY date DESC, id DESC")
+    abstract fun observeForBusiness(businessId: Uuid): Flow<List<AppointmentLocal>>
+
+    @Query(
+        "SELECT id FROM appointment WHERE businessId = :businessId AND (:from IS NULL OR date >= :from) AND (:to IS NULL OR date <= :to)",
+    )
+    abstract suspend fun getIdsBetween(businessId: Uuid, from: Instant?, to: Instant?): List<Uuid>
+
+    @Transaction
     @Query("SELECT * FROM appointment WHERE id = :id")
     abstract suspend fun getById(id: Uuid): AppointmentLocal
 

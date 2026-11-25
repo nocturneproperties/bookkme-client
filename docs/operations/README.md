@@ -144,7 +144,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 |---|---|---|
 | `GetAppointmentsForBusiness` | `GET /api/appointments/list/{businessId}?date=[&employeeId=]` | [Get appointments for business](appointments/get-appointments-for-business.md) |
 | `GetAppointment` | local read; `refresh(id)` fetches and caches `GET /api/appointments/{id}`; shared `NotFound` → use-case `NotFound` | [Get appointment](appointments/get-appointment.md) |
-| `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}` (paged) | [Get appointment history](appointments/get-appointment-history.md) |
+| `GetAppointmentHistory` | `GET /api/appointments/history/{businessId}[?cursor=][&query=]` (cursor-paged `PagedSource<AppointmentHistoryQuery, Appointment>`, cached in `appointment` within each page's dates; `flow(businessId, search)` filters on the device) | [Get appointment history](appointments/get-appointment-history.md) |
 | `CreateAppointment` | fresh service quote + `POST /api/appointments/instant`; refresh on mismatch; UI reconciles selected services from cache | [Create appointment](appointments/create-appointment.md) |
 | `UpdateAppointment` | `PUT /api/appointments/{id}`; UI reloads after conflict or closed edit window | [Update appointment](appointments/update-appointment.md) |
 | `CancelAppointment` | `POST /api/appointments/{id}/cancel`; UI reloads after closed edit window | [Cancel appointment](appointments/cancel-appointment.md) |

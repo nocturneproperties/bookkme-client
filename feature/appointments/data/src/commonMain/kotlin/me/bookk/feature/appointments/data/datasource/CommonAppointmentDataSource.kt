@@ -10,15 +10,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
+import me.bookk.core.domain.pagination.Page
 import me.bookk.database.dao.AppointmentDao
 import me.bookk.feature.appointments.data.mapping.toAdjustmentServiceEntities
 import me.bookk.feature.appointments.data.mapping.toCompleteRequestRemote
@@ -28,7 +31,7 @@ import me.bookk.feature.appointments.data.mapping.toRemote
 import me.bookk.feature.appointments.data.mapping.toServiceEntities
 import me.bookk.feature.appointments.data.mapping.toUpdateRemote
 import me.bookk.feature.appointments.data.remote.api.AppointmentRouting.Api
-import me.bookk.feature.appointments.data.remote.model.AppointmentPaginationRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentPageRemote
 import me.bookk.feature.appointments.data.remote.model.AppointmentRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentCancellation
@@ -77,21 +80,29 @@ internal class CommonAppointmentDataSource(
 
     override suspend fun getAppointmentHistory(
         businessId: Uuid,
-        limit: Int,
-        offset: Long,
-        query: String?,
-    ): List<Appointment> = mapExceptions {
+        search: String?,
+        cursor: String?,
+    ): Page<Appointment> = mapExceptions {
         httpClient.get(
-            Api.Appointment.History(
-                businessId = businessId,
-                limit = limit,
-                offset = offset,
-                query = query,
-            ),
+            Api.Appointment.History(businessId = businessId, cursor = cursor, query = search),
         )
-            .body<AppointmentPaginationRemote>()
-            .data
-            .map { it.toDomain() }
+            .body<AppointmentPageRemote>()
+            .toDomain()
+    }
+
+    override fun observeAppointmentsDBChanges(businessId: Uuid): Flow<List<Appointment>> {
+        return appointmentDao.observeForBusiness(businessId)
+            .map { appointments -> appointments.map { it.toDomain() } }
+            .mapErrors()
+    }
+
+    override suspend fun getAppointmentIdsInDb(
+        businessId: Uuid,
+        from: LocalDateTime?,
+        to: LocalDateTime?,
+    ): List<Uuid> = mapExceptions {
+        val timeZone = TimeZone.currentSystemDefault()
+        appointmentDao.getIdsBetween(businessId, from?.toInstant(timeZone), to?.toInstant(timeZone))
     }
 
     override suspend fun saveAppointmentsInDB(appointments: List<Appointment>) = mapExceptions {

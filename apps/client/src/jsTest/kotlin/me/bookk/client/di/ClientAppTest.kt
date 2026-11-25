@@ -2,11 +2,19 @@ package me.bookk.client.di
 
 import dev.mokkery.answering.returns
 import dev.mokkery.every
+import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import library.cache.api.PreferenceProvider
+import library.cache.api.Preferences
 import me.bookk.core.data.HttpClientType
+import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
@@ -33,6 +41,7 @@ import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
+import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapViewModel
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
 import me.bookk.feature.booking.domain.api.GetBookingAppointmentDetails
@@ -51,6 +60,7 @@ import me.bookk.feature.booking.domain.api.SetBookingSpecialist
 import me.bookk.feature.booking.domain.api.WithdrawBookingRequest
 import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
+import me.bookk.feature.booking.domain.datasource.BookingSelection
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeViewModel
 import me.bookk.feature.booking.presentation.screen.details.BookingAppointmentDetailsViewModel
 import me.bookk.feature.booking.presentation.screen.details.BookingRequestDetailsViewModel
@@ -63,17 +73,22 @@ import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewModel
 import me.bookk.feature.employees.domain.api.GetBookableEmployees
 import me.bookk.feature.services.domain.api.service.GetBusinessServices
+import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import org.koin.core.Koin
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
+import kotlin.reflect.KClass
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
@@ -94,6 +109,13 @@ class ClientAppTest {
         )
     }
 
+    private fun startClientAppWithFakePreferences(): FakePreferenceProvider {
+        startClientApp()
+        val preferences = FakePreferenceProvider()
+        loadKoinModules(module { single<PreferenceProvider> { preferences } })
+        return preferences
+    }
+
     private class FakeDatabaseStorage : DatabaseStorage {
         override suspend fun isPersistent(): Boolean {
             return true
@@ -101,80 +123,145 @@ class ClientAppTest {
     }
 
     private class FakeClientDaos : ClientDaos {
+        val profile = mock<UserProfileDao> {
+            every { observeProfile() } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+        }
+        val notificationSettings = mock<NotificationSettingsDao> {
+            everySuspend { clear() } returns Unit
+        }
+        val legalDocumentStatus = mock<LegalDocumentStatusDao> {
+            every { observeAll() } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+        }
+        val personalDataExport = mock<PersonalDataExportDao> {
+            everySuspend { clear() } returns Unit
+        }
+        val business = mock<BusinessDao> {
+            every { observeBusinesses(any()) } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+            everySuspend { clearDashboardBusiness() } returns Unit
+        }
+        val businessDataExport = mock<BusinessDataExportDao>()
+        val savedBusiness = mock<SavedBusinessDao> {
+            every { observeAll() } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+        }
+        val service = mock<ServiceDao> {
+            every { observe(any()) } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+        }
+        val serviceGroup = mock<ServiceGroupDao> {
+            everySuspend { clear() } returns Unit
+        }
+        val appointment = mock<AppointmentDao> {
+            every { observeScheduled() } returns emptyFlow()
+            every { observeById(any()) } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+        }
+        val appointmentRequest = mock<AppointmentRequestDao> {
+            every { observePending() } returns emptyFlow()
+            every { observeById(any()) } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+        }
+        val appointmentSettings = mock<AppointmentSettingsDao>()
+        val bookableEmployee = mock<BookableEmployeeDao> {
+            every { observeEmployees(any()) } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+        }
+        val bookingInfo = mock<BookingInfoDao> {
+            every { observe(any()) } returns emptyFlow()
+            everySuspend { clear() } returns Unit
+        }
+
         override fun profileDao(): UserProfileDao {
-            return mock {
-                every { observeProfile() } returns emptyFlow()
-            }
+            return profile
         }
 
         override fun notificationSettingsDao(): NotificationSettingsDao {
-            return mock()
+            return notificationSettings
         }
 
         override fun legalDocumentStatusDao(): LegalDocumentStatusDao {
-            return mock {
-                every { observeAll() } returns emptyFlow()
-            }
+            return legalDocumentStatus
         }
 
         override fun personalDataExportDao(): PersonalDataExportDao {
-            return mock()
+            return personalDataExport
         }
 
         override fun businessDao(): BusinessDao {
-            return mock {
-                every { observeBusinesses(any()) } returns emptyFlow()
-            }
+            return business
         }
 
         override fun businessDataExportDao(): BusinessDataExportDao {
-            return mock()
+            return businessDataExport
         }
 
         override fun savedBusinessDao(): SavedBusinessDao {
-            return mock {
-                every { observeAll() } returns emptyFlow()
-            }
+            return savedBusiness
         }
 
         override fun serviceDao(): ServiceDao {
-            return mock {
-                every { observe(any()) } returns emptyFlow()
-            }
+            return service
         }
 
         override fun serviceGroupDao(): ServiceGroupDao {
-            return mock()
+            return serviceGroup
         }
 
         override fun appointmentDao(): AppointmentDao {
-            return mock {
-                every { observeScheduled() } returns emptyFlow()
-                every { observeById(any()) } returns emptyFlow()
-            }
+            return appointment
         }
 
         override fun appointmentRequestDao(): AppointmentRequestDao {
-            return mock {
-                every { observePending() } returns emptyFlow()
-                every { observeById(any()) } returns emptyFlow()
-            }
+            return appointmentRequest
         }
 
         override fun appointmentSettingsDao(): AppointmentSettingsDao {
-            return mock()
+            return appointmentSettings
         }
 
         override fun bookableEmployeeDao(): BookableEmployeeDao {
-            return mock {
-                every { observeEmployees(any()) } returns emptyFlow()
-            }
+            return bookableEmployee
         }
 
         override fun bookingInfoDao(): BookingInfoDao {
-            return mock {
-                every { observe(any()) } returns emptyFlow()
-            }
+            return bookingInfo
+        }
+    }
+
+    private class FakePreferenceProvider : PreferenceProvider {
+        val opened = mutableSetOf<String>()
+        val cleared = mutableSetOf<String>()
+
+        override fun get(fileName: String): Preferences {
+            opened += fileName
+            return FakePreferences { cleared += fileName }
+        }
+    }
+
+    private class FakePreferences(
+        private val onClear: () -> Unit,
+    ) : Preferences {
+        override suspend fun <T : Any> get(key: Preferences.Key<T>, cls: KClass<T>): T? {
+            return null
+        }
+
+        override fun <T : Any> getFlow(key: Preferences.Key<T>, cls: KClass<T>): Flow<T?> {
+            return flowOf(null)
+        }
+
+        override suspend fun <T : Any> set(key: Preferences.Key<T>, value: T?, cls: KClass<T>) {
+            return
+        }
+
+        override suspend fun <T : Any> remove(key: Preferences.Key<T>, cls: KClass<T>) {
+            return
+        }
+
+        override suspend fun clear() {
+            onClear()
         }
     }
 
@@ -615,5 +702,90 @@ class ClientAppTest {
         then()
         assertNotNull(viewModel)
         viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the delete account view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<DeleteAccountViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `clears every table the client app writes when the session ends`() = runUnitTest {
+        given()
+        startClientAppWithFakePreferences()
+        val koin = KoinPlatform.getKoin()
+        val daos = koin.get<ClientDaos>() as FakeClientDaos
+
+        whenn()
+        koin.localLogOutActions().forEach { it.doOnLogOut() }
+
+        then()
+        verifySuspend { daos.profile.clear() }
+        verifySuspend { daos.notificationSettings.clear() }
+        verifySuspend { daos.legalDocumentStatus.clear() }
+        verifySuspend { daos.personalDataExport.clear() }
+        verifySuspend { daos.business.clear() }
+        verifySuspend { daos.business.clearDashboardBusiness() }
+        verifySuspend { daos.savedBusiness.clear() }
+        verifySuspend { daos.service.clear() }
+        verifySuspend { daos.serviceGroup.clear() }
+        verifySuspend { daos.appointment.clear() }
+        verifySuspend { daos.appointmentRequest.clear() }
+        verifySuspend { daos.bookableEmployee.clear() }
+        verifySuspend { daos.bookingInfo.clear() }
+    }
+
+    @Test
+    fun `clears every preferences bucket holding user data when the session ends`() = runUnitTest {
+        given()
+        val preferences = startClientAppWithFakePreferences()
+        val koin = KoinPlatform.getKoin()
+        val actions = koin.localLogOutActions()
+
+        whenn()
+        actions.forEach { it.doOnLogOut() }
+
+        then()
+        val userBuckets = preferences.opened - INSTALL_PREFERENCE_BUCKETS - SESSION_PREFERENCES
+        assertEquals(userBuckets, preferences.cleared)
+        assertTrue(preferences.cleared.containsAll(SYNC_PREFERENCE_BUCKETS))
+    }
+
+    @Test
+    fun `forgets the booking being prepared when the session ends`() = runUnitTest {
+        given()
+        startClientAppWithFakePreferences()
+        val koin = KoinPlatform.getKoin()
+        val businessId = Uuid.random()
+        val preparation = koin.get<BookingPreparationDataSource>()
+        preparation.saveSelection(businessId, BookingSelection(specialistId = Uuid.random()))
+
+        whenn()
+        koin.localLogOutActions().forEach { it.doOnLogOut() }
+
+        then()
+        assertEquals(BookingSelection(), preparation.observeSelection(businessId).first())
+    }
+
+    private fun Koin.localLogOutActions(): List<LogOutAction> {
+        return getAll<LogOutAction>().filterNot { it is AuthorizationDataSource }
+    }
+
+    private companion object {
+        val INSTALL_PREFERENCE_BUCKETS = setOf("notification_prefs")
+        val SYNC_PREFERENCE_BUCKETS = setOf(
+            "appointment_requests_prefs",
+            "services_prefs",
+            "service_groups_prefs",
+        )
+        const val SESSION_PREFERENCES = "authorization_prefs"
     }
 }

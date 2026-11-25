@@ -58,7 +58,7 @@ class AppointmentRequestViewModel(
     private val requestPages = listPager(
         uiState.requests,
         uiState.notifications,
-        getAssignedAppointmentRequests
+        getAssignedAppointmentRequests,
     )
 
     init {

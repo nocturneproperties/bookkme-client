@@ -5,15 +5,21 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.desc.joinToStringDesc
 import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import library.device.api.DeviceFacade
 import library.permissions.api.PermissionManager
 import library.permissions.api.PermissionType
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.clients.resources.ClientsRes
-import me.bookk.core.capitalizeChar
 import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
@@ -23,7 +29,7 @@ import me.bookk.core.presentation.error.ButtonDescriptor
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.core.presentation.text.TextCollator
-import me.bookk.designsystem.convenience.loadList
+import me.bookk.designsystem.convenience.listPager
 import me.bookk.designsystem.convenience.resetListOnChange
 import me.bookk.designsystem.uistate.PickerFieldState
 import me.bookk.designsystem.uistate.SimplePickerPresentation
@@ -39,9 +45,12 @@ import me.bookk.feature.clients.domain.api.ObserveCurrentBusinessId
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.entity.ClientImportResult
+import me.bookk.feature.clients.domain.api.entity.ClientsQuery
 import me.bookk.feature.clients.domain.api.entity.RejectedClientImport
 import me.bookk.feature.clients.presentation.ClientsStateFactory
 import me.bookk.feature.clients.presentation.list.ClientsListDestination.AddClient
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.Uuid
 
 class ClientsListViewModel(
@@ -58,7 +67,13 @@ class ClientsListViewModel(
 ) : ViewModel(vmArgs) {
 
     val uiState = stateFactory.createClientsListState().setup()
-    private var items = listOf<ClientSection>()
+    private val searchText = MutableStateFlow("")
+    private val clientPages = listPager(
+        listState = uiState.clientsList,
+        notifications = uiState.notifications,
+        source = getClientsList,
+        refreshState = uiState.refreshState,
+    )
     private val importAction = uiState.appBar.action(
         icon = DesignSystem.images.contacts,
         contentDescription = DesignSystem.strings.action_import.desc(),
@@ -72,12 +87,13 @@ class ClientsListViewModel(
 
     init {
         observeClients()
-        observeBusinessChanges()
+        observeEditAccess()
+        loadClients()
     }
 
     private fun observeClients() {
-        getClientsList
-            .flow()
+        searchText
+            .flatMapLatest { getClientsList.flow(it) }
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderClients(it) }
             .onError { uiState.notifications.add(it.notification()) }
@@ -86,32 +102,43 @@ class ClientsListViewModel(
 
     private fun renderClients(clients: List<Client>) {
         if (clients.isEmpty() && uiState.clientsList.isInitialLoading) return
-        val grouped = clients
-            .sortedBy { it.name.trim() }
-            .groupBy { it.name[0].toString().capitalizeChar() }
-            .map { entry ->
-                ClientSection(
-                    id = entry.key,
-                    header = entry.key,
-                    items = entry.value,
-                    onItemClick = weakVMClosure { vm, client -> vm.onClientClick(client) },
-                )
-            }
-        items = grouped
-        uiState.clientsList.replace(grouped)
+        uiState.clientsList.replace(clients.map(::clientListItem))
     }
 
-    private fun observeBusinessChanges() {
+    private fun clientListItem(client: Client): ClientListItem {
+        return ClientListItem(
+            id = client.id.toString(),
+            fullName = client.fullName,
+            onClick = weakVMClosure { it.onClientClick(client) },
+        )
+    }
+
+    private fun observeEditAccess() {
+        observeCurrentBusinessId()
+            .filterNotNull()
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { loadEditAccess(it) }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
+    }
+
+    private fun loadClients() {
         observeCurrentBusinessId()
             .filterNotNull()
             .flowOn(DispatcherProvider.io)
             .resetListOnChange(uiState.clientsList)
-            .safeOnEach {
-                loadClients(it)
-                loadEditAccess(it)
-            }
+            .combine(serverSearch()) { businessId, search -> ClientsQuery(businessId, search) }
+            .distinctUntilChanged()
+            .safeOnEach { clientPages.load(it) }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun serverSearch(): Flow<String?> {
+        return searchText
+            .map { text -> text.trim().takeIf { it.length >= MIN_SERVER_SEARCH_LENGTH } }
+            .debounce { if (it == null) Duration.ZERO else SERVER_SEARCH_DELAY }
+            .distinctUntilChanged()
     }
 
     private fun loadEditAccess(businessId: Uuid) {
@@ -127,15 +154,6 @@ class ClientsListViewModel(
     private fun renderAppBarActions(canEdit: Boolean) {
         val actions = if (canEdit) listOf(importAction, addAction) else emptyList()
         uiState.appBar.actions.replace(actions)
-    }
-
-    private fun loadClients(businessId: Uuid) {
-        loadList(
-            listState = uiState.clientsList,
-            notifications = uiState.notifications,
-            refreshState = uiState.refreshState,
-            call = { getClientsList.refresh(businessId) },
-        )
     }
 
     private fun onClientClick(client: Client) {
@@ -303,20 +321,7 @@ class ClientsListViewModel(
 
     private fun onSearchQueryChanged(query: String) {
         uiState.searchField.text = query
-        if (query.isBlank()) {
-            uiState.clientsList.replace(items)
-            return
-        }
-        val filtered = items
-            .map {
-                it.copy(
-                    items = it.items.filter {
-                        it.fullName.contains(query, ignoreCase = true)
-                    },
-                )
-            }
-            .filter { it.items.isNotEmpty() }
-        uiState.clientsList.replace(filtered)
+        searchText.value = query
     }
 
     private fun ClientsListState.setup(): ClientsListState {
@@ -339,5 +344,7 @@ class ClientsListViewModel(
     private companion object {
         const val EDIT_ACCESS_KEY = "clients_list_edit_access"
         const val IMPORT_CONTACTS_KEY = "clients_list_import_contacts"
+        const val MIN_SERVER_SEARCH_LENGTH = 2
+        val SERVER_SEARCH_DELAY = 300.milliseconds
     }
 }

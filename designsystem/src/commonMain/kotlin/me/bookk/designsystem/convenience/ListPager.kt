@@ -37,7 +37,7 @@ class ListPager<K>(
             refreshState = refreshState,
             onRefresh = onRefresh,
             load = ListLoad(
-                call = { source.refresh(key) },
+                call = { source.refresh(key).skippingEmptyPages(key) },
                 itemsOf = Page<*>::items,
                 onLoaded = weakSelfClosure { pager, page -> pager.onPageLoaded(key, page) },
             ),
@@ -51,7 +51,7 @@ class ListPager<K>(
             launchBehaviour = LaunchBehaviour.DropLatest,
             launchIn = DispatcherProvider.io,
             onStart = { listState.bannerError = null },
-            call = { source.loadMore(page.key, page.cursor) },
+            call = { source.loadMore(page.key, page.cursor).skippingEmptyPages(page.key) },
             onComplete = { loaded -> onPageLoaded(page.key, loaded) },
             onError = { error ->
                 viewModel.showListError(
@@ -62,6 +62,15 @@ class ListPager<K>(
                 )
             },
         )
+    }
+
+    private suspend fun Page<*>.skippingEmptyPages(key: K): Page<*> {
+        var page = this
+        while (page.items.isEmpty()) {
+            val cursor = page.nextCursor ?: return page
+            page = source.loadMore(key, cursor)
+        }
+        return page
     }
 
     private fun onPageLoaded(key: K, page: Page<*>) {

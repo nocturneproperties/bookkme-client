@@ -19,6 +19,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.TimeZone
 import library.money.api.Currency
+import me.bookk.core.domain.entity.Error
+import me.bookk.core.domain.pagination.Page
+import me.bookk.core.domain.pagination.PageErrorCodes
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -29,6 +32,7 @@ import me.bookk.feature.business.domain.api.entity.BusinessPermissions
 import me.bookk.feature.business.domain.api.entity.ResourcePermission
 import me.bookk.feature.business.domain.api.entity.WorkingSchedule
 import me.bookk.feature.clients.domain.api.entity.Client
+import me.bookk.feature.clients.domain.api.entity.ClientsQuery
 import me.bookk.feature.clients.domain.datasource.ClientsDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -53,38 +57,43 @@ class GetClientsListImplTest {
     }
 
     private class Fixture {
+        val businessId = Uuid.random()
         val dataSource = mock<ClientsDataSource>()
         val observeDashboardBusinessChanges = mock<ObserveDashboardBusinessChanges>()
         val sut = GetClientsListImpl(dataSource, observeDashboardBusinessChanges)
+
+        fun stubCached(vararg clients: Client) {
+            val business = stubBusiness(businessId)
+            every { observeDashboardBusinessChanges() } returns flowOf(business)
+            every { dataSource.observeClientsDBChanges(businessId) } returns
+                flowOf(clients.toList())
+        }
+
+        fun stubPage(search: String?, cursor: String?, page: Page<Client>) {
+            everySuspend { dataSource.getClients(businessId, search, cursor) } returns page
+        }
+
+        fun stubWrites(cachedIds: List<Uuid> = emptyList()) {
+            everySuspend { dataSource.getClientIdsInDb(businessId) } returns cachedIds
+            everySuspend { dataSource.deleteClientsInDb(any()) } returns Unit
+            everySuspend { dataSource.saveClientsInDb(any()) } returns Unit
+            everySuspend { dataSource.saveLastSyncedAt(any()) } returns Unit
+        }
+
+        fun client(
+            name: String = "John",
+            lastName: String = "Doe",
+            phone: String? = "123",
+            email: String? = "j@e.com",
+        ) = Client.Detached(
+            id = Uuid.random(),
+            name = name,
+            lastName = lastName,
+            phone = phone,
+            email = email,
+            businessId = businessId,
+        )
     }
-
-    private fun stubBusiness(id: Uuid = Uuid.random()) = Business(
-        id = id,
-        name = "Business",
-        description = "",
-        address = "",
-        location = null,
-        currency = Currency("USD"),
-        timeZone = TimeZone.UTC,
-        socials = emptyMap(),
-        schedule = WorkingSchedule(),
-        permissions = BusinessPermissions(
-            business = ResourcePermission(),
-            employees = ResourcePermission(),
-            clients = ResourcePermission(),
-            services = ResourcePermission(),
-            appointments = ResourcePermission(),
-        ),
-    )
-
-    private fun stubClient(businessId: Uuid) = Client.Detached(
-        id = Uuid.random(),
-        name = "John",
-        lastName = "Doe",
-        phone = "123",
-        email = "j@e.com",
-        businessId = businessId,
-    )
 
     @Test
     fun `flow emits empty list when there is no dashboard business`() = runUnitTest {
@@ -157,51 +166,113 @@ class GetClientsListImplTest {
         fixture.sut.flow().first()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getClients(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getClients(any(), any(), any()) }
     }
 
     @Test
-    fun `refresh fetches clients from remote and saves them`() = runUnitTest {
+    fun `flow without a search emits every cached client`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val clients = listOf(stubClient(businessId))
-        everySuspend { fixture.dataSource.getClients(businessId) } returns clients
-        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns
-            clients.map { it.id }
-        everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+        val clients = arrayOf(fixture.client(name = "Anna"), fixture.client(name = "Olga"))
+        fixture.stubCached(*clients)
 
         whenn()
-        val result = fixture.sut.refresh(businessId)
+        val result = fixture.sut.flow(search = "  ").first()
 
         then()
-        assertEquals(clients, result)
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveClientsInDb(clients) }
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveLastSyncedAt(businessId) }
+        assertEquals(clients.toList(), result)
     }
 
     @Test
-    fun `refresh deletes local clients that are no longer present remotely`() = runUnitTest {
+    fun `flow with a search keeps clients whose names start with every searched word`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val anna = fixture.client(name = "Anna", lastName = "Kowalska")
+            val annaNowak = fixture.client(name = "Anna", lastName = "Nowak")
+            fixture.stubCached(anna, annaNowak)
+
+            whenn()
+            val result = fixture.sut.flow(search = "kow an").first()
+
+            then()
+            assertEquals(listOf(anna), result)
+        }
+
+    @Test
+    fun `flow with a search ignores case, accents and apostrophes`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val stillPresent = stubClient(businessId)
-        val remote = listOf(stillPresent)
+        val zoe = fixture.client(name = "Zoë", lastName = "O'Neil")
+        fixture.stubCached(zoe, fixture.client(name = "Zack"))
+
+        whenn()
+        val result = fixture.sut.flow(search = "ZOE oneil").first()
+
+        then()
+        assertEquals(listOf(zoe), result)
+    }
+
+    @Test
+    fun `flow with a search does not match the middle of a name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubCached(fixture.client(name = "Joanna", email = null))
+
+        whenn()
+        val result = fixture.sut.flow(search = "anna").first()
+
+        then()
+        assertEquals(emptyList(), result)
+    }
+
+    @Test
+    fun `flow with a search keeps clients whose email contains it`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val client = fixture.client(email = "Anna.K@Example.com")
+        fixture.stubCached(client, fixture.client(email = "olga@example.com"))
+
+        whenn()
+        val result = fixture.sut.flow(search = "anna.k@ex").first()
+
+        then()
+        assertEquals(listOf(client), result)
+    }
+
+    @Test
+    fun `flow with a phone search compares digits only`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val client = fixture.client(phone = "+48 501-234-567")
+        fixture.stubCached(client, fixture.client(phone = "+48 600 100 200"))
+
+        whenn()
+        val result = fixture.sut.flow(search = "(501) 234").first()
+
+        then()
+        assertEquals(listOf(client), result)
+    }
+
+    @Test
+    fun `refresh without a search replaces the cached clients with the first page`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val kept = fixture.client()
         val staleId = Uuid.random()
-        everySuspend { fixture.dataSource.getClients(businessId) } returns remote
-        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns
-            listOf(stillPresent.id, staleId)
-        everySuspend { fixture.dataSource.deleteClientsInDb(listOf(staleId)) } returns Unit
-        everySuspend { fixture.dataSource.saveClientsInDb(remote) } returns Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+        val page = Page(listOf<Client>(kept), nextCursor = "after-1")
+        fixture.stubPage(search = null, cursor = null, page)
+        fixture.stubWrites(cachedIds = listOf(kept.id, staleId))
 
         whenn()
-        fixture.sut.refresh(businessId)
+        val result = fixture.sut.refresh(ClientsQuery(fixture.businessId))
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) {
+        assertEquals(page, result)
+        verifySuspend(VerifyMode.order) {
             fixture.dataSource.deleteClientsInDb(listOf(staleId))
+            fixture.dataSource.saveClientsInDb(page.items)
+            fixture.dataSource.saveLastSyncedAt(fixture.businessId)
         }
     }
 
@@ -209,53 +280,127 @@ class GetClientsListImplTest {
     fun `refresh does not call delete when nothing is stale`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val client = stubClient(businessId)
-        everySuspend { fixture.dataSource.getClients(businessId) } returns listOf(client)
-        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns listOf(client.id)
-        everySuspend { fixture.dataSource.saveClientsInDb(listOf(client)) } returns Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+        val client = fixture.client()
+        fixture.stubPage(search = null, cursor = null, Page(listOf(client), nextCursor = null))
+        fixture.stubWrites(cachedIds = listOf(client.id))
 
         whenn()
-        fixture.sut.refresh(businessId)
+        fixture.sut.refresh(ClientsQuery(fixture.businessId))
 
         then()
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientsInDb(any()) }
     }
 
     @Test
-    fun `refresh propagates a fetch error to the caller`() = runUnitTest {
+    fun `refresh with a search adds the found clients without removing others`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val error = IllegalStateException("network down")
-        everySuspend { fixture.dataSource.getClients(businessId) } throws error
+        val found = fixture.client(name = "Anna")
+        val page = Page(listOf<Client>(found), nextCursor = null)
+        fixture.stubPage(search = "anna", cursor = null, page)
+        fixture.stubWrites(cachedIds = listOf(Uuid.random()))
 
         whenn()
-        val thrown = assertFailsWith<IllegalStateException> { fixture.sut.refresh(businessId) }
+        val result = fixture.sut.refresh(ClientsQuery(fixture.businessId, search = "anna"))
+
+        then()
+        assertEquals(page, result)
+        verifySuspend { fixture.dataSource.saveClientsInDb(page.items) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientsInDb(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveLastSyncedAt(any()) }
+    }
+
+    @Test
+    fun `refresh propagates a fetch error and keeps the cache`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val error = IllegalStateException("network down")
+        everySuspend { fixture.dataSource.getClients(any(), any(), any()) } throws error
+
+        whenn()
+        val thrown = assertFailsWith<IllegalStateException> {
+            fixture.sut.refresh(ClientsQuery(fixture.businessId))
+        }
 
         then()
         assertEquals(error, thrown)
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.getClientIdsInDb(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveClientsInDb(any()) }
+    }
+
+    @Test
+    fun `load more adds the page after the cursor for the same search`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val page = Page(listOf<Client>(fixture.client()), nextCursor = "after-2")
+        fixture.stubPage(search = "anna", cursor = "after-1", page)
+        fixture.stubWrites()
+
+        whenn()
+        val result = fixture.sut.loadMore(ClientsQuery(fixture.businessId, "anna"), "after-1")
+
+        then()
+        assertEquals(page, result)
+        verifySuspend { fixture.dataSource.saveClientsInDb(page.items) }
         verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.deleteClientsInDb(any()) }
     }
 
     @Test
-    fun `refreshes the business clients when the business data fetch runs`() = runUnitTest {
+    fun `load more restarts from the first page when the cursor is rejected`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val clients = listOf(stubClient(businessId))
-        everySuspend { fixture.dataSource.getClients(businessId) } returns clients
-        everySuspend { fixture.dataSource.getClientIdsInDb(businessId) } returns
-            clients.map { it.id }
-        everySuspend { fixture.dataSource.saveClientsInDb(clients) } returns Unit
-        everySuspend { fixture.dataSource.saveLastSyncedAt(businessId) } returns Unit
+        val firstPage = Page(listOf<Client>(fixture.client()), nextCursor = "after-1")
+        everySuspend { fixture.dataSource.getClients(fixture.businessId, null, "stale") } throws
+            Error.BusinessError(PageErrorCodes.CURSOR_INVALID, "")
+        fixture.stubPage(search = null, cursor = null, firstPage)
+        fixture.stubWrites()
 
         whenn()
-        fixture.sut.doOnBusinessDataFetch(businessId)
+        val result = fixture.sut.loadMore(ClientsQuery(fixture.businessId), "stale")
 
         then()
-        verifySuspend(VerifyMode.exactly(1)) { fixture.dataSource.saveClientsInDb(clients) }
+        assertEquals(firstPage, result)
     }
+
+    @Test
+    fun `refreshes the first page of the business clients when the business data fetch runs`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.stubPage(search = null, cursor = null, Page(emptyList(), nextCursor = null))
+            fixture.stubWrites()
+
+            whenn()
+            fixture.sut.doOnBusinessDataFetch(fixture.businessId)
+
+            then()
+            verifySuspend { fixture.dataSource.getClients(fixture.businessId, null, null) }
+        }
 }
+
+private fun stubBusiness(id: Uuid = Uuid.random()) = Business(
+    id = id,
+    name = "Business",
+    description = "",
+    address = "",
+    location = null,
+    currency = Currency("USD"),
+    timeZone = TimeZone.UTC,
+    socials = emptyMap(),
+    schedule = WorkingSchedule(),
+    permissions = BusinessPermissions(
+        business = ResourcePermission(),
+        employees = ResourcePermission(),
+        clients = ResourcePermission(),
+        services = ResourcePermission(),
+        appointments = ResourcePermission(),
+    ),
+)
+
+private fun stubClient(businessId: Uuid) = Client.Detached(
+    id = Uuid.random(),
+    name = "John",
+    lastName = "Doe",
+    phone = "123",
+    email = "j@e.com",
+    businessId = businessId,
+)

@@ -179,6 +179,42 @@ class ListPagerTest {
     }
 
     @Test
+    fun `skips first pages without items while more pages follow`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.firstPage = { Page(emptyList(), nextCursor = "after-empty") }
+        fixture.nextPage = { Page(listOf("b"), nextCursor = "after-b") }
+
+        whenn()
+        fixture.load()
+        fixture.scrollToEnd()
+
+        then()
+        assertEquals(listOf("after-empty", "after-b"), fixture.requestedCursors)
+    }
+
+    @Test
+    fun `skips next pages without items while more pages follow`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.nextPage = { cursor ->
+            if (cursor == "after-a") {
+                Page(emptyList(), nextCursor = "after-empty")
+            } else {
+                Page(listOf("c"), nextCursor = null)
+            }
+        }
+        fixture.load()
+
+        whenn()
+        fixture.scrollToEnd()
+
+        then()
+        assertEquals(listOf("after-a", "after-empty"), fixture.requestedCursors)
+        assertNull(fixture.listState.loadMore)
+    }
+
+    @Test
     fun `stops offering pages after the last page`() = runUnitTest {
         given()
         val fixture = Fixture()

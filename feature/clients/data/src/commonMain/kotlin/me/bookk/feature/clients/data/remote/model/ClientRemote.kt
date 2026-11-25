@@ -2,6 +2,7 @@ package me.bookk.feature.clients.data.remote.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -13,6 +14,7 @@ internal class ClientRemote(
     @ProtoNumber(5) val email: String?,
     @ProtoNumber(6) val userId: Uuid?,
     @ProtoNumber(7) val description: String?,
+    @ProtoNumber(8) val createdAt: Instant? = null,
 )
 
 @Serializable

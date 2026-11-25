@@ -14,7 +14,7 @@ scope cancels the other and rethrows.
 ```mermaid
 flowchart TD
     Start([invoke businessId]) --> Fork{{coroutineScope}}
-    Fork --> C[GetClientsList.refresh businessId<br/>→ snapshotClients]
+    Fork --> C[GetClientsList.refresh ClientsQuery businessId<br/>first page → snapshotClients]
     Fork --> S[GetServices.refresh businessId<br/>→ snapshotServices]
     C --> Join{{await all}}
     S --> Join

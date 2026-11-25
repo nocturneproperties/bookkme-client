@@ -1,6 +1,5 @@
 package me.bookk.feature.clients.presentation.list
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +19,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import library.picker.standardOptionsScreenPicker
 import me.bookk.designsystem.components.AppTopBar
-import me.bookk.designsystem.components.Header
 import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.PullToRefresh
 import me.bookk.designsystem.components.TextField
@@ -53,8 +51,8 @@ fun ClientsListScreen(state: ClientsListState) {
                     .fillMaxSize(),
             ) {
                 PullToRefresh(state.refreshState) {
-                    List(state.clientsList, idProvider = ClientSection::id) {
-                        ClientSectionItem(Modifier.animateItem(), it)
+                    List(state.clientsList, idProvider = ClientListItem::id) {
+                        ClientRow(Modifier.animateItem(), it)
                     }
                 }
             }
@@ -75,30 +73,24 @@ private fun ContactsPicker(state: ClientsListState) {
 }
 
 @Composable
-private fun ClientSectionItem(modifier: Modifier, section: ClientSection) {
+private fun ClientRow(modifier: Modifier, item: ClientListItem) {
     Column(modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.height(54.dp), verticalArrangement = Arrangement.Bottom) {
-            Header(modifier = Modifier.padding(horizontal = 16.dp), text = section.header)
-            HorizontalDivider(color = LocalColors.current.divider)
-        }
-        section.items.forEach {
-            TextButton(
+        TextButton(
+            modifier = Modifier
+                .height(48.dp)
+                .fillMaxWidth(),
+            onClick = item.onClick,
+            shape = RectangleShape,
+        ) {
+            Text(
                 modifier = Modifier
-                    .height(48.dp)
+                    .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
-                onClick = { section.onItemClick(it) },
-                shape = RectangleShape,
-            ) {
-                Text(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
-                    text = it.fullName,
-                    style = MaterialTheme.typography.bodyLarge.primary(),
-                    textAlign = TextAlign.Start,
-                )
-            }
-            HorizontalDivider(color = LocalColors.current.divider.copy(alpha = 0.5f))
+                text = item.fullName,
+                style = MaterialTheme.typography.bodyLarge.primary(),
+                textAlign = TextAlign.Start,
+            )
         }
+        HorizontalDivider(color = LocalColors.current.divider.copy(alpha = 0.5f))
     }
 }

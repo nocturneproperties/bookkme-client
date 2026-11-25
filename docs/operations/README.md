@@ -95,7 +95,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 
 | Use case | Network | Diagram |
 |---|---|---|
-| `GetClientsList` | `GET /api/business/{businessId}/clients` | [Get clients list](clients/get-clients-list.md) (reference list steps) |
+| `GetClientsList` | `GET /api/business/{businessId}/clients[?cursor=][&query=]` (cursor-paged `PagedSource<ClientsQuery, Client>`; `flow(search)` filters the cache on the device) | [Get clients list](clients/get-clients-list.md) (reference list steps) |
 | `GetClient` | local only (`flow` observes the row) | [Get client](clients/get-client.md) |
 | `CreateClient` | `POST /api/business/{businessId}/clients` | [Create client](clients/create-client.md) |
 | `ImportClients` | `POST /api/business/{businessId}/clients/import` (one request per 500 entries) | [Import clients](clients/import-clients.md) |

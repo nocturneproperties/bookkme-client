@@ -8,11 +8,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import me.bookk.core.domain.pagination.Page
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.clients.domain.api.GetClientsList
+import me.bookk.feature.clients.domain.api.entity.ClientsQuery
 import me.bookk.feature.services.domain.api.service.GetServices
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -48,7 +50,8 @@ class GetAppointmentOptionsImplTest {
         val businessId = Uuid.random()
         val clients = listOf(stubClient(businessId))
         val services = listOf(stubService(businessId))
-        everySuspend { fixture.getClients.refresh(businessId) } returns clients
+        everySuspend { fixture.getClients.refresh(ClientsQuery(businessId)) } returns
+            Page(clients, nextCursor = null)
         everySuspend { fixture.getServices.refresh(businessId) } returns services
 
         whenn()
@@ -67,7 +70,8 @@ class GetAppointmentOptionsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val client = stubClient(businessId)
-        everySuspend { fixture.getClients.refresh(businessId) } returns listOf(client)
+        everySuspend { fixture.getClients.refresh(ClientsQuery(businessId)) } returns
+            Page(listOf(client), nextCursor = null)
         everySuspend { fixture.getServices.refresh(businessId) } returns emptyList()
 
         whenn()
@@ -87,7 +91,8 @@ class GetAppointmentOptionsImplTest {
         val fixture = Fixture()
         val businessId = Uuid.random()
         val service = stubService(businessId)
-        everySuspend { fixture.getClients.refresh(businessId) } returns emptyList()
+        everySuspend { fixture.getClients.refresh(ClientsQuery(businessId)) } returns
+            Page(emptyList(), nextCursor = null)
         everySuspend { fixture.getServices.refresh(businessId) } returns listOf(service)
 
         whenn()

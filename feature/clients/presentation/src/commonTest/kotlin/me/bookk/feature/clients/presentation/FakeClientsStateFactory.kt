@@ -19,7 +19,7 @@ import me.bookk.feature.clients.presentation.details.ClientDetailsDestination
 import me.bookk.feature.clients.presentation.details.ClientDetailsState
 import me.bookk.feature.clients.presentation.edit.EditClientDestination
 import me.bookk.feature.clients.presentation.edit.EditClientState
-import me.bookk.feature.clients.presentation.list.ClientSection
+import me.bookk.feature.clients.presentation.list.ClientListItem
 import me.bookk.feature.clients.presentation.list.ClientsListDestination
 import me.bookk.feature.clients.presentation.list.ClientsListState
 
@@ -33,7 +33,7 @@ internal class FakeClientsStateFactory : ClientsStateFactory {
 internal class FakeClientsListState : ClientsListState {
     override val appBar = FakeAppBarState()
     override val searchField = FakeTextFieldState()
-    override val clientsList = FakeListState<ClientSection>()
+    override val clientsList = FakeListState<ClientListItem>()
     override val refreshState = FakeRefreshState()
     override val contactsPicker =
         FakeOptionsMultiPickerState<SimplePickerPresentation<ClientImportEntry>>()

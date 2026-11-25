@@ -23,6 +23,10 @@ internal class TestExportFileProvider : FileProvider {
         files[file] = content
     }
 
+    override fun readText(file: Path): String? {
+        return files[file]
+    }
+
     override fun deleteRecursively(path: Path) {
         files.keys.removeAll { it == path || it.toString().startsWith("$path/") }
     }

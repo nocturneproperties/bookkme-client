@@ -90,6 +90,33 @@ class CommonFileProviderTest {
     }
 
     @Test
+    fun `reads back the UTF-8 content of a written file`() = runUnitTest {
+        given()
+        val fixture = Fixture().also { resources.add(it) }
+        val file = fixture.sut.touchCacheFile("nested/export.json")
+        val content = "{\"name\":\"Zażółć Україна\"}"
+        fixture.sut.writeText(file, content)
+
+        whenn()
+        val result = fixture.sut.readText(file)
+
+        then()
+        assertEquals(content, result)
+    }
+
+    @Test
+    fun `reads nothing from a missing file`() = runUnitTest {
+        given()
+        val fixture = Fixture().also { resources.add(it) }
+
+        whenn()
+        val result = fixture.sut.readText(fixture.sut.touchCacheFile("missing.json"))
+
+        then()
+        assertNull(result)
+    }
+
+    @Test
     fun `missing file does not exist`() = runUnitTest {
         given()
         val fixture = Fixture().also { resources.add(it) }

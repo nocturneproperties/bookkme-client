@@ -8,7 +8,9 @@ import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import org.koin.dsl.koinApplication
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class JsFileProviderTest {
@@ -60,5 +62,33 @@ class JsFileProviderTest {
 
         then()
         assertTrue(provider.exists(prefsFile))
+    }
+
+    @Test
+    fun `reads back the content of a written cache file`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val provider = fixture.koin.get<FileProvider>()
+        val file = provider.touchCacheFile("exports") / "export.json"
+        provider.writeText(file, "{\"name\":\"Zażółć\"}")
+
+        whenn()
+        val result = provider.readText(file)
+
+        then()
+        assertEquals("{\"name\":\"Zażółć\"}", result)
+    }
+
+    @Test
+    fun `reads nothing from a file that was never written`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val provider = fixture.koin.get<FileProvider>()
+
+        whenn()
+        val result = provider.readText(provider.touchCacheFile("missing.json"))
+
+        then()
+        assertNull(result)
     }
 }

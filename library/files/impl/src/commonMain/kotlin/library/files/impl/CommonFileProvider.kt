@@ -25,6 +25,11 @@ abstract class CommonFileProvider(
         }
     }
 
+    override fun readText(file: Path): String? {
+        if (!fileSystem.exists(file)) return null
+        return fileSystem.read(file) { readUtf8() }
+    }
+
     override fun deleteRecursively(path: Path) {
         fileSystem.deleteRecursively(path, mustExist = false)
     }

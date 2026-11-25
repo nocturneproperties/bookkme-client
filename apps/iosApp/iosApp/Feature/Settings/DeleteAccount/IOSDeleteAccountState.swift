@@ -23,11 +23,11 @@ class IOSDeleteAccountState: @MainActor DeleteAccountState {
 	
 	var notifications: any PresentationNotificationState
 	
-	init(initData: DeleteAccountStateInitData) {
-		appBar = IOSAppBarState(title: initData.title)
-		confirmationMessage = initData.confirmationMessage
-		confirmation = IOSBooleanState(text: initData.switchMessage, isChecked: false)
-		deleteButton = IOSButtonState(text: initData.buttonMessage, isEnabled: false)
+	init() {
+		appBar = IOSAppBarState()
+		confirmationMessage = RawStringDesc(string: "")
+		confirmation = IOSBooleanState()
+		deleteButton = IOSButtonState()
 		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()
 	}

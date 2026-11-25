@@ -28,10 +28,8 @@ internal class WebSettingsStateFactory : SettingsStateFactory {
         return WebEditProfileState(initData)
     }
 
-    override fun createDeleteAccountState(
-        initData: DeleteAccountState.InitData,
-    ): DeleteAccountState {
-        return WebDeleteAccountState(initData)
+    override fun createDeleteAccountState(): DeleteAccountState {
+        return WebDeleteAccountState()
     }
 
     override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState {

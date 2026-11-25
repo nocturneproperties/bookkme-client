@@ -40,8 +40,9 @@ internal class FakeSettingsStateFactory : SettingsStateFactory {
     override fun createSettingsState(initData: SettingsState.InitData): SettingsState =
         FakeSettingsState()
 
-    override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState =
-        FakeEditProfileState()
+    override fun createEditProfileState(): EditProfileState {
+        return FakeEditProfileState()
+    }
 
     override fun createDeleteAccountState(
         initData: DeleteAccountState.InitData,
@@ -102,6 +103,8 @@ internal class FakeEditProfileState : EditProfileState {
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
     override val lastName = FakeTextFieldState()
+    override val email = FakeTextFieldState()
+    override val changeEmail = FakeButtonState()
     override val confirmButton = FakeButtonState()
     override val notification = FakeNotificationState()
     override val navigation = FakeNavigationState<EditProfileNavigationDestination>()

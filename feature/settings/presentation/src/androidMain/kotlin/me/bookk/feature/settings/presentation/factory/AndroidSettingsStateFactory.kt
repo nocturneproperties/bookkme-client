@@ -25,8 +25,8 @@ class AndroidSettingsStateFactory : SettingsStateFactory {
         return AndroidDashboardState(initData = initData)
     }
 
-    override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState {
-        return AndroidEditProfileState(initData)
+    override fun createEditProfileState(): EditProfileState {
+        return AndroidEditProfileState()
     }
 
     override fun createDeleteAccountState(

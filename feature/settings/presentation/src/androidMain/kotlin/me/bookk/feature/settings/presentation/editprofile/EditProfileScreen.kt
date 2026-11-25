@@ -67,6 +67,10 @@ private fun HandleNavigation(navigation: NavigationState<EditProfileNavigationDe
             EditProfileNavigationDestination.Back -> {
                 LocalNavigation.current.navigateBack()
             }
+
+            EditProfileNavigationDestination.ChangeEmail -> {
+                LocalNavigation.current.navigateToChangeEmail()
+            }
         }
     }
 }
@@ -76,7 +80,7 @@ private fun HandleNavigation(navigation: NavigationState<EditProfileNavigationDe
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         EditProfileScreen(
-            state = AndroidEditProfileState(EditProfileViewModel.createInitData()),
+            state = AndroidEditProfileState(),
         )
     }
 }
@@ -86,7 +90,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         EditProfileScreen(
-            state = AndroidEditProfileState(EditProfileViewModel.createInitData()),
+            state = AndroidEditProfileState(),
         )
     }
 }

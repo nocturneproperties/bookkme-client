@@ -33,6 +33,9 @@
     <string name="settings_edit_profile_first_name_error">Імʼя має містити щонайменше 2 символи</string>
     <string name="settings_edit_profile_last_name">Прізвище</string>
     <string name="settings_edit_profile_last_name_error">Прізвище має містити щонайменше 2 символи</string>
+    <string name="settings_booking_profile_title">Профіль для записів.</string>
+    <string name="settings_edit_profile_change_email">Змінити</string>
+    <string name="settings_edit_profile_email_hint">Нову адресу ел. пошти підтвердьте кодом, який ми на неї надішлемо.</string>
 
 
     <string name="settings_delete_account_title">Видалити обліковий запис</string>

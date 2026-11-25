@@ -33,6 +33,9 @@
     <string name="settings_edit_profile_first_name_error">Имя должно содержать не менее 2 символов</string>
     <string name="settings_edit_profile_last_name">Фамилия</string>
     <string name="settings_edit_profile_last_name_error">Фамилия должна содержать не менее 2 символов</string>
+    <string name="settings_booking_profile_title">Профиль для записей.</string>
+    <string name="settings_edit_profile_change_email">Изменить</string>
+    <string name="settings_edit_profile_email_hint">Новый адрес эл. почты подтвердите кодом, который мы на него отправим.</string>
 
 
     <string name="settings_delete_account_title">Удалить аккаунт</string>

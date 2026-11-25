@@ -1,6 +1,5 @@
 package me.bookk.feature.settings.presentation.editprofile
 
-import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
@@ -11,15 +10,10 @@ interface EditProfileState {
     val appBar: AppBarState
     val name: TextFieldState
     val lastName: TextFieldState
+    val email: TextFieldState
+    val changeEmail: ButtonState
     val confirmButton: ButtonState
 
     val notification: PresentationNotificationState
     val navigation: NavigationState<EditProfileNavigationDestination>
-
-    class InitData(
-        val title: StringDesc,
-        val nameHint: StringDesc,
-        val lastNameHint: StringDesc,
-        val confirmButtonText: StringDesc,
-    )
 }

@@ -35,6 +35,8 @@ struct EditProfileScreen: View {
 			switch dest {
 			case is EditProfileNavigationDestination.Back:
 				navigationStack.popLast()
+			case is EditProfileNavigationDestination.ChangeEmail:
+				navigationStack.push(SettingsDestination.ChangeEmail())
 			default:
 				break
 			}

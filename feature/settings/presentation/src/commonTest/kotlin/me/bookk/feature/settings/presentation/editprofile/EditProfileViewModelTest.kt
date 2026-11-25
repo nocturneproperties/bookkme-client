@@ -8,6 +8,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
@@ -17,6 +18,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
+import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
@@ -70,6 +72,119 @@ class EditProfileViewModelTest {
         fun presentedSut(): EditProfileViewModel {
             return sut().also { it.onViewPresented() }
         }
+
+        fun stubProfile(email: String) {
+            everySuspend { getSettings() } returns
+                Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", email))
+        }
+    }
+
+    @Test
+    fun `labels the profile fields and actions`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_title.desc(),
+            sut.uiState.appBar.title,
+        )
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_first_name.desc(),
+            sut.uiState.name.label,
+        )
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_last_name.desc(),
+            sut.uiState.lastName.label,
+        )
+        assertEquals(DesignSystem.strings.action_save.desc(), sut.uiState.confirmButton.text)
+    }
+
+    @Test
+    fun `shows the email read only with how a new one is confirmed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.presentedSut()
+
+        then()
+        assertEquals(SettingsRes.strings.settings_profile_email.desc(), sut.uiState.email.label)
+        assertEquals("anna@example.com", sut.uiState.email.text)
+        assertTrue(sut.uiState.email.readOnly)
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_email_hint.desc(),
+            sut.uiState.email.supportingTextRes,
+        )
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_change_email.desc(),
+            sut.uiState.changeEmail.text,
+        )
+    }
+
+    @Test
+    fun `shows the changed email when presented again and keeps unsaved names`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.presentedSut()
+        sut.onFirstNameTextChanged("Maria")
+        fixture.stubProfile("anna@new.example.com")
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals("anna@new.example.com", sut.uiState.email.text)
+        assertEquals("Maria", sut.uiState.name.text)
+    }
+
+    @Test
+    fun `opens the email change when change is tapped`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+
+        whenn()
+        sut.uiState.changeEmail.onClick?.invoke()
+
+        then()
+        assertEquals(
+            listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.ChangeEmail),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `goes back when back is tapped`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+
+        whenn()
+        sut.uiState.appBar.onBackClick?.invoke()
+
+        then()
+        assertEquals(
+            listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `saves the names typed into the fields when save is tapped`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editProfile(any(), any()) } returns Unit
+        val sut = fixture.presentedSut()
+        (sut.uiState.name as FakeTextFieldState).type("Maria")
+        (sut.uiState.lastName as FakeTextFieldState).type("Brown")
+
+        whenn()
+        sut.uiState.confirmButton.onClick?.invoke()
+
+        then()
+        verifySuspend { fixture.editProfile("Maria", "Brown") }
     }
 
     @Test

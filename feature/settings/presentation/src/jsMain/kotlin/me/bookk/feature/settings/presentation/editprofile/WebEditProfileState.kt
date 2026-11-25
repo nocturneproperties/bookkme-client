@@ -6,14 +6,13 @@ import me.bookk.designsystem.uistate.WebNavigationState
 import me.bookk.designsystem.uistate.WebNotificationState
 import me.bookk.designsystem.uistate.WebTextFieldState
 
-internal class WebEditProfileState(
-    initData: EditProfileState.InitData,
-) : EditProfileState {
-    override val appBar = WebAppBarState(title = initData.title)
-    override val name = WebTextFieldState(label = initData.nameHint)
-    override val lastName = WebTextFieldState(label = initData.lastNameHint)
-    override val confirmButton =
-        WebButtonState(text = initData.confirmButtonText, isEnabled = false)
+internal class WebEditProfileState : EditProfileState {
+    override val appBar = WebAppBarState()
+    override val name = WebTextFieldState()
+    override val lastName = WebTextFieldState()
+    override val email = WebTextFieldState()
+    override val changeEmail = WebButtonState()
+    override val confirmButton = WebButtonState()
     override val notification = WebNotificationState()
     override val navigation = WebNavigationState<EditProfileNavigationDestination>()
 }

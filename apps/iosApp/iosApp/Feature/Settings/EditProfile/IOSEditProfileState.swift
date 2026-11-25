@@ -19,17 +19,23 @@ class IOSEditProfileState: @MainActor EditProfileState {
 	
 	var lastName: any TextFieldState
 	
+	var email: any TextFieldState
+	
+	var changeEmail: any ButtonState
+	
 	var confirmButton: any ButtonState
 	
 	var notification: any PresentationNotificationState
 	
 	var navigation: any NavigationState
 	
-	init(initData:EditProfileStateInitData) {
-		appBar = IOSAppBarState(title: initData.title)
-		confirmButton = IOSButtonState(text: initData.confirmButtonText, isEnabled: false)
-		lastName = IOSTextFieldState(label: initData.lastNameHint)
-		name = IOSTextFieldState(label: initData.nameHint)
+	init() {
+		appBar = IOSAppBarState()
+		confirmButton = IOSButtonState()
+		lastName = IOSTextFieldState()
+		name = IOSTextFieldState()
+		email = IOSTextFieldState()
+		changeEmail = IOSButtonState()
 		notification = IOSNotificationState()
 		navigation = IOSNavigationState()
 	}

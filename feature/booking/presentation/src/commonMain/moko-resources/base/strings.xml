@@ -47,6 +47,7 @@
     <string name="booking_details_when">When</string>
     <string name="booking_details_with">With</string>
     <string name="booking_details_note">Your note</string>
+    <string name="booking_details_services">Services</string>
     <string name="booking_details_when_value">%1$s, %2$s</string>
     <string name="booking_details_waiting_explanation">%s hasn’t answered yet. You’ll get a message here once they do.</string>
     <string name="booking_details_confirmed_explanation">%s has confirmed your booking.</string>

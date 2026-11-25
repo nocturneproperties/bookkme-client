@@ -170,20 +170,20 @@ class BookingRequestDetailsViewModelTest {
         val strings = BookingRes.strings
         assertEquals(
             listOf(
-                BookingDetailsRow(
+                Pair(
                     strings.booking_details_when.desc(),
                     strings.booking_details_when_value.format(
                         "2026-11-27",
                         strings.booking_review_time_range.format("11:00", "12:00"),
                     ),
                 ),
-                BookingDetailsRow(strings.booking_details_with.desc(), "Maria Shevchuk".desc()),
-                BookingDetailsRow(
+                Pair(strings.booking_details_with.desc(), "Maria Shevchuk".desc()),
+                Pair(
                     strings.booking_details_note.desc(),
                     "Short nails, please.".desc(),
                 ),
             ),
-            state.booking?.rows,
+            state.booking?.rows?.map { it.title to it.value },
         )
     }
 
@@ -217,13 +217,13 @@ class BookingRequestDetailsViewModelTest {
         then()
         assertEquals(
             listOf(
-                BookingDetailsServiceItem("Manicure".desc(), Money(55_000, UAH).toString().desc()),
-                BookingDetailsServiceItem(
+                Pair("Manicure".desc(), Money(55_000, UAH).toString().desc()),
+                Pair(
                     BookingRes.strings.booking_review_service_count.format("Gel polish", 2),
                     Money(40_000, UAH).toString().desc(),
                 ),
             ),
-            state.booking?.services,
+            state.booking?.services?.map { it.title to it.value },
         )
     }
 

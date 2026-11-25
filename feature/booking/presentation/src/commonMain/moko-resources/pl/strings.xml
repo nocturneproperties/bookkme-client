@@ -47,6 +47,7 @@
     <string name="booking_details_when">Kiedy</string>
     <string name="booking_details_with">Do kogo</string>
     <string name="booking_details_note">Twoja notatka</string>
+    <string name="booking_details_services">Usługi</string>
     <string name="booking_details_when_value">%1$s, %2$s</string>
     <string name="booking_details_waiting_explanation">Brak jeszcze odpowiedzi od %s. Gdy tylko się pojawi, dostaniesz wiadomość tutaj.</string>
     <string name="booking_details_confirmed_explanation">Rezerwacja potwierdzona — %s czeka na Ciebie.</string>

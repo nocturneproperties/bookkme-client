@@ -47,6 +47,7 @@
     <string name="booking_details_when">Когда</string>
     <string name="booking_details_with">К кому</string>
     <string name="booking_details_note">Ваша заметка</string>
+    <string name="booking_details_services">Услуги</string>
     <string name="booking_details_when_value">%1$s, %2$s</string>
     <string name="booking_details_waiting_explanation">Ответа от %s пока нет. Как только он будет, вы получите сообщение здесь.</string>
     <string name="booking_details_confirmed_explanation">Запись подтверждена — %s ждёт вас.</string>

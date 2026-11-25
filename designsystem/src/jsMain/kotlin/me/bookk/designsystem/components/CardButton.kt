@@ -66,7 +66,7 @@ val CardButtonStyle = CssStyle {
         PressableBase
             .backgroundColor(colors.elevated)
             .color(colors.primaryText)
-            .borderRadius(1.cssRem)
+            .borderRadius(CardCornerRadius)
             .padding(0.75.cssRem)
     }
     cssRule(":hover") { Modifier.opacity(PRESSABLE_HOVER_OPACITY) }
@@ -80,7 +80,7 @@ val SelectableCardButtonStyle = CssStyle {
             .backgroundColor(colors.elevated)
             .color(colors.primaryText)
             .border(2.px, LineStyle.Solid, Colors.Transparent)
-            .borderRadius(1.cssRem)
+            .borderRadius(CardCornerRadius)
             .padding(topBottom = 1.25.cssRem, leftRight = 0.75.cssRem)
             .textAlign(TextAlign.Center)
             .transition(

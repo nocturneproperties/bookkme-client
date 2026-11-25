@@ -6,6 +6,7 @@ import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
+import me.bookk.designsystem.uistate.simple.InfoLine
 
 interface BookingDetailsState {
     val appBar: AppBarState
@@ -19,18 +20,8 @@ data class BookingDetailsItem(
     val businessName: StringDesc,
     val status: StringDesc,
     val statusColor: ColorToken,
-    val rows: List<BookingDetailsRow>,
-    val services: List<BookingDetailsServiceItem>,
+    val rows: List<InfoLine>,
+    val services: List<InfoLine>,
     val total: StringDesc,
     val statusExplanation: StringDesc,
-)
-
-data class BookingDetailsRow(
-    val title: StringDesc,
-    val value: StringDesc,
-)
-
-data class BookingDetailsServiceItem(
-    val name: StringDesc,
-    val price: StringDesc,
 )

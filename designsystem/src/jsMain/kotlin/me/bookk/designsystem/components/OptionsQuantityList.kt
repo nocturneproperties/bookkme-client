@@ -34,7 +34,7 @@ val OptionsQuantityRowStyle = CssStyle.base {
         .fillMaxWidth()
         .boxSizing(BoxSizing.BorderBox)
         .backgroundColor(colorMode.webColors().elevated)
-        .borderRadius(1.cssRem)
+        .borderRadius(CardCornerRadius)
         .minHeight(4.5.cssRem)
         .gap(0.75.cssRem)
         .padding(top = 0.75.cssRem, right = 0.75.cssRem, bottom = 0.75.cssRem, left = 1.cssRem)

@@ -55,7 +55,6 @@ enum class InitialsAvatarSize(
 ) {
     REGULAR(diameterRem = 2.75, fontSizeRem = 1.0, lineHeightRem = 1.25),
     LARGE(diameterRem = 4.5, fontSizeRem = 1.5, lineHeightRem = 1.75),
-    EXTRA_LARGE(diameterRem = 5.25, fontSizeRem = 1.875, lineHeightRem = 2.25),
 }
 
 @Composable

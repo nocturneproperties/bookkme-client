@@ -21,8 +21,6 @@ import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.designsystem.components.Heading
 import me.bookk.designsystem.components.HeadingLevel
-import me.bookk.designsystem.components.InitialsAvatar
-import me.bookk.designsystem.components.InitialsAvatarSize
 import me.bookk.designsystem.components.MenuCard
 import me.bookk.designsystem.components.MenuItem
 import me.bookk.designsystem.components.MenuItemTone
@@ -62,11 +60,6 @@ private fun ProfileHeader(profile: ProfileSection) {
             .textAlign(TextAlign.Center),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        InitialsAvatar(
-            profile.initials,
-            Modifier.margin(bottom = 0.5.cssRem),
-            InitialsAvatarSize.EXTRA_LARGE,
-        )
         Heading(
             profile.fullName,
             HeadingLevel.H1,

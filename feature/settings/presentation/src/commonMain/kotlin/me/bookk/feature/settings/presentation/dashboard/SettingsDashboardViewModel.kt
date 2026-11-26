@@ -169,7 +169,6 @@ class SettingsDashboardViewModel(
             .filter { it.isNotEmpty() }
         email = profile.email.desc()
         fullName = names.joinToString(" ").desc()
-        initials = names.joinToString("") { it.first().uppercase() }
     }
 
     companion object {

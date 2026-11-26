@@ -140,7 +140,7 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
-    fun `renders full name and initials when presented`() = runUnitTest {
+    fun `renders full name when presented`() = runUnitTest {
         given()
         val sut = Fixture().sut()
 
@@ -149,11 +149,10 @@ class SettingsDashboardViewModelTest {
 
         then()
         assertEquals("Anna Smith".desc(), sut.uiState.profile.fullName)
-        assertEquals("AS", sut.uiState.profile.initials)
     }
 
     @Test
-    fun `leaves a missing last name out of the full name and initials`() = runUnitTest {
+    fun `leaves a missing last name out of the full name`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSettings() } returns
@@ -168,7 +167,6 @@ class SettingsDashboardViewModelTest {
 
         then()
         assertEquals("anna".desc(), sut.uiState.profile.fullName)
-        assertEquals("A", sut.uiState.profile.initials)
     }
 
     @Test

@@ -115,4 +115,8 @@
     <string name="settings_export_running_footer_mini_app">Можно закрыть мини-приложение и вернуться позже. Мы напишем вам здесь, когда всё будет готово.</string>
     <string name="settings_export_file_title">Персональные данные</string>
     <string name="settings_export_file_type">Файл JSON</string>
+
+    <string name="settings_chat_confirmation_sent">Мы отправили подтверждение в ваш чат в Telegram. Нажмите там «Подтвердить».</string>
+    <string name="settings_chat_confirmation_send_again">Отправить ещё раз</string>
+    <string name="settings_chat_confirmation_write_access_refused">Для подтверждения нужно сообщение от бота BookkMe. Разрешите боту писать вам и попробуйте ещё раз.</string>
 </resources>

@@ -13,6 +13,7 @@ import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.FakeTextState
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountNavigationDestination
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountState
+import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationState
 import me.bookk.feature.settings.presentation.dashboard.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection
 import me.bookk.feature.settings.presentation.dashboard.ProfileSection
@@ -115,8 +116,15 @@ internal class FakeDeleteAccountState : DeleteAccountState {
     override var confirmationMessage: StringDesc = "".desc()
     override val confirmation = FakeBooleanState()
     override val deleteButton = FakeButtonState()
+    override val chatConfirmation = FakeChatConfirmationState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<DeleteAccountNavigationDestination>()
+}
+
+internal class FakeChatConfirmationState : ChatConfirmationState {
+    override var notice: StringDesc? = null
+    override var isWriteAccessRequested: Boolean = false
+    override var onWriteAccessAnswered: (Boolean) -> Unit = {}
 }
 
 internal class FakePasskeyState : PasskeyState {
@@ -177,6 +185,7 @@ internal class FakePersonalDataExportState : PersonalDataExportState {
     override var requestAvailability: StringDesc? = null
     override var error: StringDesc? = null
     override val request = FakeButtonState()
+    override val chatConfirmation = FakeChatConfirmationState()
     override val download = FakeButtonState()
     override val retry = FakeButtonState()
     override val notifications = FakeNotificationState()

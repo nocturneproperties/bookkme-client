@@ -35,6 +35,7 @@ import me.bookk.feature.settings.domain.api.DownloadPersonalDataExport
 import me.bookk.feature.settings.domain.api.GetPersonalDataExport
 import me.bookk.feature.settings.domain.api.StartPersonalDataExport
 import me.bookk.feature.settings.presentation.SettingsStateFactory
+import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationRequest
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -50,6 +51,16 @@ class PersonalDataExportViewModel(
 ) : ViewModel(vmArgs) {
 
     val uiState = stateFactory.createPersonalDataExportState().setup()
+    private val exportRequest = ChatConfirmationRequest(
+        viewModel = this,
+        key = OPERATION_KEY,
+        state = uiState.chatConfirmation,
+        button = uiState.request,
+        notifications = uiState.notifications,
+        action = { startExport() },
+        onCompleted = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
+        onError = { handleRequestError(it) },
+    )
     private var exportStatus = DataExportStatus.NONE
     private var hasCheckedOpeningStatus = false
     private val isViewPresented = MutableStateFlow(false)
@@ -120,6 +131,9 @@ class PersonalDataExportViewModel(
         request.text = SettingsRes.strings.settings_export_request.desc()
         request.isVisible = false
         request.onClick = weakVMClosure { it.requestExport() }
+        chatConfirmation.onWriteAccessAnswered = weakVMClosure { vm, isGranted: Boolean ->
+            vm.exportRequest.onWriteAccessAnswered(isGranted)
+        }
         download.text = SettingsRes.strings.settings_export_download.desc()
         download.icon = DesignSystem.images.download
         download.isVisible = false
@@ -143,7 +157,7 @@ class PersonalDataExportViewModel(
             onError = { showLoadError(it) },
             onTerminate = {
                 uiState.retry.stopLoading()
-                uiState.request.isEnabled = true
+                uiState.request.isEnabled = exportRequest.canSend()
                 uiState.download.isEnabled = true
             },
         )
@@ -214,21 +228,8 @@ class PersonalDataExportViewModel(
     }
 
     private fun requestExport() {
-        launch(
-            key = OPERATION_KEY,
-            launchBehaviour = LaunchBehaviour.DropLatest,
-            launchIn = DispatcherProvider.io,
-            onStart = {
-                uiState.error = null
-                uiState.request.startLoading()
-            },
-            call = { startExport() },
-            onComplete = {
-                uiState.notifications.add(PresentationNotification.SuccessHaptic)
-            },
-            onError = { handleRequestError(it) },
-            onTerminate = { uiState.request.stopLoading() },
-        )
+        uiState.error = null
+        exportRequest.send()
     }
 
     private fun handleRequestError(error: Throwable) {

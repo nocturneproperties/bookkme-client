@@ -38,21 +38,39 @@ import me.bookk.feature.settings.domain.impl.GetNotificationSettingsImpl
 import me.bookk.feature.settings.domain.impl.GetPersonalDataExportImpl
 import me.bookk.feature.settings.domain.impl.GetSettingsImpl
 import me.bookk.feature.settings.domain.impl.StartPersonalDataExportImpl
+import me.bookk.feature.settings.domain.impl.TelegramDeleteAccountImpl
+import me.bookk.feature.settings.domain.impl.TelegramStartPersonalDataExportImpl
 import me.bookk.feature.settings.domain.impl.UpdateColorSchemeImpl
 import me.bookk.feature.settings.domain.impl.UpdateCrashReportingEnabledImpl
 import me.bookk.feature.settings.domain.impl.UpdateNotificationSettingsImpl
 import me.bookk.feature.settings.domain.impl.UpdateNotificationTokenImpl
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.binds
 import org.koin.dsl.module
 
-fun settingsDomainModule() = module {
+fun settingsDomainModule(): Module {
+    return module {
+        includes(sharedSettingsDomainModule())
+        factoryOf(::DeleteAccountImpl) bind DeleteAccount::class
+        factoryOf(::StartPersonalDataExportImpl) bind StartPersonalDataExport::class
+    }
+}
+
+fun clientSettingsDomainModule(): Module {
+    return module {
+        includes(sharedSettingsDomainModule())
+        factoryOf(::TelegramDeleteAccountImpl) bind DeleteAccount::class
+        factoryOf(::TelegramStartPersonalDataExportImpl) bind StartPersonalDataExport::class
+    }
+}
+
+private fun sharedSettingsDomainModule() = module {
     factoryOf(::DeleteExpiredPersonalDataExportFileImpl) binds
         arrayOf(DeleteExpiredPersonalDataExportFile::class, AppStartAction::class)
     factoryOf(::DownloadPersonalDataExportImpl) bind DownloadPersonalDataExport::class
     factoryOf(::GetPersonalDataExportImpl) bind GetPersonalDataExport::class
-    factoryOf(::StartPersonalDataExportImpl) bind StartPersonalDataExport::class
     factoryOf(::AcceptLegalDocumentsImpl) bind AcceptLegalDocuments::class
     factoryOf(::GetLegalDocumentStatusesImpl) bind GetLegalDocumentStatuses::class
     factoryOf(::GetLegalDocumentVersionsImpl) bind GetLegalDocumentVersions::class
@@ -62,7 +80,6 @@ fun settingsDomainModule() = module {
     factoryOf(::UpdateCrashReportingEnabledImpl) bind UpdateCrashReportingEnabled::class
     factoryOf(::GetSettingsImpl) bind GetSettings::class
     factoryOf(::EditProfileImpl) bind EditProfile::class
-    factoryOf(::DeleteAccountImpl) bind DeleteAccount::class
     factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
     factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class
     factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class

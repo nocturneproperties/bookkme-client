@@ -10,12 +10,14 @@ import me.bookk.designsystem.uistate.WebBooleanState
 import me.bookk.designsystem.uistate.WebButtonState
 import me.bookk.designsystem.uistate.WebNavigationState
 import me.bookk.designsystem.uistate.WebNotificationState
+import me.bookk.feature.settings.presentation.confirmation.WebChatConfirmationState
 
 internal class WebDeleteAccountState : DeleteAccountState {
     override val appBar = WebAppBarState()
     override var confirmationMessage: StringDesc by mutableStateOf("".desc())
     override val confirmation = WebBooleanState()
     override val deleteButton = WebButtonState()
+    override val chatConfirmation = WebChatConfirmationState()
     override val notifications = WebNotificationState()
     override val navigation = WebNavigationState<DeleteAccountNavigationDestination>()
 }

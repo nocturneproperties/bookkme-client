@@ -2,10 +2,14 @@ package me.bookk.feature.settings.presentation.accdelete
 
 import dev.icerock.moko.resources.desc.desc
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.sequentially
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
@@ -19,6 +23,8 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.entity.ActionOutcome
+import me.bookk.feature.settings.domain.api.entity.ChatConfirmationError
 import me.bookk.feature.settings.presentation.FakeSettingsStateFactory
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountNavigationDestination.Back
 import kotlin.test.AfterTest
@@ -26,7 +32,9 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 
 class DeleteAccountViewModelTest {
 
@@ -53,6 +61,11 @@ class DeleteAccountViewModelTest {
         )
 
         fun agreedSut() = sut().apply { uiState.confirmation.onCheckedChange?.invoke(true) }
+
+        fun sentSut(): DeleteAccountViewModel {
+            everySuspend { deleteAccount() } returns ActionOutcome.ConfirmationSent
+            return agreedSut().apply { uiState.deleteButton.onClick?.invoke() }
+        }
     }
 
     @Test
@@ -137,7 +150,7 @@ class DeleteAccountViewModelTest {
     fun `deletes account and shows success message`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.deleteAccount() } returns Unit
+        everySuspend { fixture.deleteAccount() } returns ActionOutcome.Completed(Unit)
         val sut = fixture.agreedSut()
 
         whenn()
@@ -155,7 +168,7 @@ class DeleteAccountViewModelTest {
     fun `plays success haptic when account is deleted`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.deleteAccount() } returns Unit
+        everySuspend { fixture.deleteAccount() } returns ActionOutcome.Completed(Unit)
         val sut = fixture.agreedSut()
 
         whenn()
@@ -215,5 +228,213 @@ class DeleteAccountViewModelTest {
 
         then()
         assertTrue(sut.uiState.deleteButton.isEnabled)
+    }
+
+    @Test
+    fun `shows that the confirmation was sent to the telegram chat`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteAccount() } returns ActionOutcome.ConfirmationSent
+        val sut = fixture.agreedSut()
+
+        whenn()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_chat_confirmation_sent.desc(),
+            sut.uiState.chatConfirmation.notice,
+        )
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
+    }
+
+    @Test
+    fun `waits for the cooldown before offering to send again`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sentSut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_chat_confirmation_send_again.desc(),
+            sut.uiState.deleteButton.text,
+        )
+        assertFalse(sut.uiState.deleteButton.isLoading)
+        assertFalse(sut.uiState.deleteButton.isEnabled)
+    }
+
+    @Test
+    fun `keeps send again disabled until the cooldown ends`() = runUnitTest {
+        given()
+        val sut = Fixture().sentSut()
+
+        whenn()
+        advanceTimeBy(59.seconds)
+
+        then()
+        assertFalse(sut.uiState.deleteButton.isEnabled)
+    }
+
+    @Test
+    fun `offers to send again once the cooldown ends`() = runUnitTest {
+        given()
+        val sut = Fixture().sentSut()
+
+        whenn()
+        advanceTimeBy(60.seconds)
+        runCurrent()
+
+        then()
+        assertTrue(sut.uiState.deleteButton.isEnabled)
+    }
+
+    @Test
+    fun `keeps send again disabled during the cooldown when the agreement is ticked again`() =
+        runUnitTest {
+            given()
+            val sut = Fixture().sentSut()
+            sut.uiState.confirmation.onCheckedChange?.invoke(false)
+
+            whenn()
+            sut.uiState.confirmation.onCheckedChange?.invoke(true)
+
+            then()
+            assertFalse(sut.uiState.deleteButton.isEnabled)
+        }
+
+    @Test
+    fun `does not offer send again after the cooldown while the agreement is unticked`() =
+        runUnitTest {
+            given()
+            val sut = Fixture().sentSut()
+            sut.uiState.confirmation.onCheckedChange?.invoke(false)
+
+            whenn()
+            advanceTimeBy(60.seconds)
+            runCurrent()
+
+            then()
+            assertFalse(sut.uiState.deleteButton.isEnabled)
+        }
+
+    @Test
+    fun `sends the confirmation again when send again is tapped`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sentSut()
+        advanceTimeBy(60.seconds)
+        runCurrent()
+
+        whenn()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        then()
+        verifySuspend(VerifyMode.exactly(2)) { fixture.deleteAccount() }
+        assertFalse(sut.uiState.deleteButton.isEnabled)
+    }
+
+    @Test
+    fun `treats a confirmation sent moments ago as sent`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteAccount() } throws ChatConfirmationError.TooFrequent()
+        val sut = fixture.agreedSut()
+
+        whenn()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_chat_confirmation_sent.desc(),
+            sut.uiState.chatConfirmation.notice,
+        )
+        assertFalse(sut.uiState.deleteButton.isEnabled)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
+    fun `asks telegram for write access when the bot cannot write`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteAccount() } throws ChatConfirmationError.WriteAccessRequired()
+        val sut = fixture.agreedSut()
+
+        whenn()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.chatConfirmation.isWriteAccessRequested)
+        assertNull(sut.uiState.chatConfirmation.notice)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
+    }
+
+    @Test
+    fun `sends the confirmation again once write access is granted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteAccount() } sequentially {
+            throws(ChatConfirmationError.WriteAccessRequired())
+            returns(ActionOutcome.ConfirmationSent)
+        }
+        val sut = fixture.agreedSut()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        whenn()
+        sut.uiState.chatConfirmation.onWriteAccessAnswered(true)
+
+        then()
+        verifySuspend(VerifyMode.exactly(2)) { fixture.deleteAccount() }
+        assertFalse(sut.uiState.chatConfirmation.isWriteAccessRequested)
+        assertEquals(
+            SettingsRes.strings.settings_chat_confirmation_sent.desc(),
+            sut.uiState.chatConfirmation.notice,
+        )
+    }
+
+    @Test
+    fun `explains that confirmation needs a bot message when write access is refused`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            everySuspend { fixture.deleteAccount() } throws
+                ChatConfirmationError.WriteAccessRequired()
+            val sut = fixture.agreedSut()
+            sut.uiState.deleteButton.onClick?.invoke()
+
+            whenn()
+            sut.uiState.chatConfirmation.onWriteAccessAnswered(false)
+
+            then()
+            verifySuspend(VerifyMode.exactly(1)) { fixture.deleteAccount() }
+            assertFalse(sut.uiState.chatConfirmation.isWriteAccessRequested)
+            val message = sut.uiState.notifications.presentationNotification
+                .filterIsInstance<PresentationNotification.Message>()
+                .single()
+            assertEquals(
+                SettingsRes.strings.settings_chat_confirmation_write_access_refused.desc(),
+                message.message,
+            )
+            assertTrue(sut.uiState.deleteButton.isEnabled)
+        }
+
+    @Test
+    fun `asks for write access only once`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.deleteAccount() } throws ChatConfirmationError.WriteAccessRequired()
+        val sut = fixture.agreedSut()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        whenn()
+        sut.uiState.chatConfirmation.onWriteAccessAnswered(true)
+
+        then()
+        verifySuspend(VerifyMode.exactly(2)) { fixture.deleteAccount() }
+        assertFalse(sut.uiState.chatConfirmation.isWriteAccessRequested)
+        sut.uiState.notifications.presentationNotification
+            .filterIsInstance<PresentationNotification.Message>()
+            .single()
     }
 }

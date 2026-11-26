@@ -26,6 +26,8 @@ import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.failOnceThenSuspend
 import me.bookk.feature.settings.domain.api.DownloadPersonalDataExport
 import me.bookk.feature.settings.domain.api.StartPersonalDataExport
+import me.bookk.feature.settings.domain.api.entity.ActionOutcome
+import me.bookk.feature.settings.domain.api.entity.ChatConfirmationError
 import me.bookk.feature.settings.presentation.FakeSettingsStateFactory
 import okio.Path
 import okio.Path.Companion.toPath
@@ -1319,5 +1321,91 @@ class PersonalDataExportViewModelTest {
             listOf(PersonalDataExportDestinations.Back),
             sut.uiState.navigation.navigationDestination,
         )
+    }
+
+    @Test
+    fun `shows that the export confirmation was sent to the telegram chat`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.startExport.chat = { ActionOutcome.ConfirmationSent }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.request.onClick?.invoke()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_chat_confirmation_sent.desc(),
+            sut.uiState.chatConfirmation.notice,
+        )
+        assertEquals(UIExportStage.REQUEST, sut.uiState.status.stage)
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
+    }
+
+    @Test
+    fun `waits for the cooldown before offering to send the export confirmation again`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            fixture.startExport.chat = { ActionOutcome.ConfirmationSent }
+            val sut = fixture.sut()
+
+            whenn()
+            sut.uiState.request.onClick?.invoke()
+
+            then()
+            assertEquals(
+                SettingsRes.strings.settings_chat_confirmation_send_again.desc(),
+                sut.uiState.request.text,
+            )
+            assertFalse(sut.uiState.request.isEnabled)
+        }
+
+    @Test
+    fun `offers to send the export confirmation again once the cooldown ends`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.startExport.chat = { ActionOutcome.ConfirmationSent }
+        val sut = fixture.sut()
+        sut.uiState.request.onClick?.invoke()
+
+        whenn()
+        advanceTimeBy(60.seconds)
+        runCurrent()
+
+        then()
+        assertTrue(sut.uiState.request.isEnabled)
+    }
+
+    @Test
+    fun `keeps send again disabled when a status refresh ends during the cooldown`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.getExport.server = { throw TestException() }
+        fixture.startExport.chat = { ActionOutcome.ConfirmationSent }
+        val sut = fixture.sut()
+        sut.uiState.request.onClick?.invoke()
+
+        whenn()
+        sut.uiState.retry.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.retry.isVisible)
+        assertFalse(sut.uiState.request.isEnabled)
+    }
+
+    @Test
+    fun `asks telegram for write access before sending the export confirmation`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.startExport.chat = { throw ChatConfirmationError.WriteAccessRequired() }
+        val sut = fixture.sut()
+
+        whenn()
+        sut.uiState.request.onClick?.invoke()
+
+        then()
+        assertTrue(sut.uiState.chatConfirmation.isWriteAccessRequested)
+        assertNull(sut.uiState.error)
     }
 }

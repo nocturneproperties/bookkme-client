@@ -19,6 +19,8 @@ class IOSDeleteAccountState: @MainActor DeleteAccountState {
 	
 	var deleteButton: any ButtonState
 	
+	var chatConfirmation: any ChatConfirmationState
+	
 	var navigation: any NavigationState
 	
 	var notifications: any PresentationNotificationState
@@ -28,6 +30,7 @@ class IOSDeleteAccountState: @MainActor DeleteAccountState {
 		confirmationMessage = RawStringDesc(string: "")
 		confirmation = IOSBooleanState()
 		deleteButton = IOSButtonState()
+		chatConfirmation = IOSChatConfirmationState()
 		navigation = IOSNavigationState()
 		notifications = IOSNotificationState()
 	}

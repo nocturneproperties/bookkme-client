@@ -29,9 +29,11 @@ import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.authorization.domain.entity.UserProfile
 import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.entity.ActionOutcome
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
 import kotlin.uuid.Uuid
@@ -94,6 +96,19 @@ class DeleteAccountImplTest {
         then()
         verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
         verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) }
+    }
+
+    @Test
+    fun `reports the account as deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture().stubVerifiedDeletion()
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+
+        whenn()
+        val result = fixture.sut()
+
+        then()
+        assertEquals(ActionOutcome.Completed(Unit), result)
     }
 
     @Test

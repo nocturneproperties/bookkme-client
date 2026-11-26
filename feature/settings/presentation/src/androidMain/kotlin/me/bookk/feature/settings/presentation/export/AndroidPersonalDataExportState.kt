@@ -10,6 +10,7 @@ import me.bookk.designsystem.uistate.AndroidAppBarState
 import me.bookk.designsystem.uistate.AndroidButtonState
 import me.bookk.designsystem.uistate.AndroidNavigationState
 import me.bookk.designsystem.uistate.AndroidNotificationState
+import me.bookk.feature.settings.presentation.confirmation.AndroidChatConfirmationState
 
 internal class AndroidPersonalDataExportState : PersonalDataExportState {
     override val appBar = AndroidAppBarState()
@@ -29,6 +30,7 @@ internal class AndroidPersonalDataExportState : PersonalDataExportState {
     override var requestAvailability: StringDesc? by mutableStateOf(null)
     override var error: StringDesc? by mutableStateOf(null)
     override val request = AndroidButtonState()
+    override val chatConfirmation = AndroidChatConfirmationState()
     override val download = AndroidButtonState()
     override val retry = AndroidButtonState()
     override val notifications = AndroidNotificationState()

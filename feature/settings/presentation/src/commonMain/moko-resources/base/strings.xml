@@ -115,4 +115,8 @@
     <string name="settings_export_running_footer_mini_app">You can close the mini app and come back later. We’ll message you here when it’s ready.</string>
     <string name="settings_export_file_title">Personal data</string>
     <string name="settings_export_file_type">JSON file</string>
+
+    <string name="settings_chat_confirmation_sent">We sent a confirmation to your Telegram chat. Tap Confirm there.</string>
+    <string name="settings_chat_confirmation_send_again">Send again</string>
+    <string name="settings_chat_confirmation_write_access_refused">Confirmation needs a message from the BookkMe bot. Allow the bot to message you and try again.</string>
 </resources>

@@ -10,6 +10,7 @@ import me.bookk.designsystem.uistate.AppBarState
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
+import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationState
 
 interface PersonalDataExportState {
     val appBar: AppBarState
@@ -18,6 +19,7 @@ interface PersonalDataExportState {
     var requestAvailability: StringDesc?
     var error: StringDesc?
     val request: ButtonState
+    val chatConfirmation: ChatConfirmationState
     val download: ButtonState
     val retry: ButtonState
     val notifications: PresentationNotificationState

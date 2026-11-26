@@ -22,6 +22,8 @@ import me.bookk.designsystem.components.IconTile
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.BodyLargeTextStyle
+import me.bookk.feature.settings.presentation.confirmation.AskTelegramWriteAccess
+import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationNotice
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 
@@ -36,6 +38,7 @@ private val DeleteAccountModifier = Modifier
 internal fun DeleteAccountScreen(state: DeleteAccountState, webApp: TelegramWebApp) {
     TelegramAppTopBar(webApp, state.appBar)
     TelegramMainButton(webApp, state.deleteButton, TelegramButtonStyle.DESTRUCTIVE)
+    AskTelegramWriteAccess(webApp, state.chatConfirmation)
     Column(DeleteAccountModifier) {
         WarningCard(state)
         AppCard(
@@ -45,6 +48,7 @@ internal fun DeleteAccountScreen(state: DeleteAccountState, webApp: TelegramWebA
         ) {
             CheckBox(state.confirmation)
         }
+        ChatConfirmationNotice(state.chatConfirmation)
     }
 }
 

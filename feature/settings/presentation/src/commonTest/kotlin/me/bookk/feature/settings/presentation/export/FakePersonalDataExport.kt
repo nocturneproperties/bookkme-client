@@ -7,6 +7,7 @@ import me.bookk.core.domain.entity.DataExportStatus
 import me.bookk.feature.settings.domain.api.DownloadPersonalDataExport
 import me.bookk.feature.settings.domain.api.GetPersonalDataExport
 import me.bookk.feature.settings.domain.api.StartPersonalDataExport
+import me.bookk.feature.settings.domain.api.entity.ActionOutcome
 import okio.Path
 
 internal class FakeExportCache {
@@ -51,12 +52,17 @@ internal class FakeStartPersonalDataExport(
     private val cache: FakeExportCache,
 ) : StartPersonalDataExport {
     var server: suspend () -> DataExport = { DataExport(DataExportStatus.RUNNING) }
+    var chat: (suspend () -> ActionOutcome<DataExport>)? = null
     var cachesServerResponse = true
     var calls = 0
         private set
 
-    override suspend fun invoke(): DataExport {
+    override suspend fun invoke(): ActionOutcome<DataExport> {
         calls++
+        return chat?.invoke() ?: ActionOutcome.Completed(startOnServer())
+    }
+
+    private suspend fun startOnServer(): DataExport {
         val export = server()
         if (cachesServerResponse) cache.value = export
         return export

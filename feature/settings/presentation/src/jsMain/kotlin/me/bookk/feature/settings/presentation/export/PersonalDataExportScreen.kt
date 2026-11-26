@@ -49,6 +49,8 @@ import me.bookk.designsystem.theme.error
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.theme.themed
 import me.bookk.designsystem.uistate.ButtonState
+import me.bookk.feature.settings.presentation.confirmation.AskTelegramWriteAccess
+import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationNotice
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 
@@ -64,6 +66,7 @@ private val PersonalDataExportModifier = Modifier
 internal fun PersonalDataExportScreen(state: PersonalDataExportState, webApp: TelegramWebApp) {
     TelegramBackButton(webApp, state.appBar.onBackClick)
     TelegramMainButton(webApp, mainAction(state))
+    AskTelegramWriteAccess(webApp, state.chatConfirmation)
     Column(PersonalDataExportModifier) {
         Heading(
             SettingsRes.strings.settings_export_headline.desc(),
@@ -71,6 +74,7 @@ internal fun PersonalDataExportScreen(state: PersonalDataExportState, webApp: Te
             textModifier(HeadlineLargeTextStyle).fontWeight(FontWeight.ExtraBold),
         )
         StatusCard(state.status, state.expiry)
+        ChatConfirmationNotice(state.chatConfirmation)
         Notes(state)
     }
 }

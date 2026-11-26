@@ -22,6 +22,7 @@ class IOSPersonalDataExportState: @MainActor PersonalDataExportState, NativeStat
     var requestAvailability: (any StringDesc)?
     var error: (any StringDesc)?
     let request: any ButtonState = IOSButtonState()
+    let chatConfirmation: any ChatConfirmationState = IOSChatConfirmationState()
     let download: any ButtonState = IOSButtonState()
     let retry: any ButtonState = IOSButtonState()
     let notifications: any PresentationNotificationState = IOSNotificationState()

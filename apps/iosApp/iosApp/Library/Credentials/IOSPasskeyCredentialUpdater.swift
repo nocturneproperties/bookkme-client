@@ -10,12 +10,16 @@ class IOSPasskeyCredentialUpdater: PasskeyCredentialUpdater {
         )
     }
 
-    func reportNoAcceptedCredentials(relyingParty: String, userHandle: String) async throws {
+    func reportAcceptedCredentials(
+        relyingParty: String,
+        userHandle: String,
+        credentialIds: [String]
+    ) async throws {
         guard #available(iOS 26.0, *) else { return }
         try await ASCredentialUpdater().reportAllAcceptedPublicKeyCredentials(
             relyingPartyIdentifier: relyingParty,
             userHandle: try Data(base64URLEncoded: userHandle),
-            acceptedCredentialIDs: []
+            acceptedCredentialIDs: try credentialIds.map { try Data(base64URLEncoded: $0) }
         )
     }
 }

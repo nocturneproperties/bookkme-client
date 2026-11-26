@@ -18,6 +18,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
@@ -202,5 +203,29 @@ class ConfirmSensitiveActionImplTest {
 
         then()
         assertSame(failure, result.exceptionOrNull())
+    }
+
+    @Test
+    fun `tells the device to forget a passkey no account has`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.dataSource.confirmAction(any()) } throws
+            me.bookk.core.domain.entity.Error.BusinessError(
+                AuthErrorCodes.PASSKEY_UNKNOWN,
+                "unknown",
+            )
+        everySuspend { fixture.passKeyManager.signalUnknownPasskey(any()) } returns Unit
+
+        whenn()
+        val result =
+            runCatching { fixture.sut(SensitiveAction.DELETE_ACCOUNT, fixture.id, fixture.id) }
+
+        then()
+        assertFailsWith<ConfirmSensitiveAction.Error.PasskeyNotFound> { result.getOrThrow() }
+        verifySuspend {
+            fixture.passKeyManager.signalUnknownPasskey(
+                matches({ "the assertion just used" }) { it.jsonPayload == "assertion" },
+            )
+        }
     }
 }

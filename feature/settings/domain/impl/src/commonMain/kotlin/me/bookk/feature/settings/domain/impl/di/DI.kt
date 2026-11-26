@@ -57,6 +57,8 @@ import org.koin.dsl.module
 fun settingsDomainModule(): Module {
     return module {
         includes(sharedSettingsDomainModule())
+        factoryOf(::GetAvailablePasskeysImpl) binds
+            arrayOf(GetAvailablePasskeys::class, BackgroundDataFetchAction::class)
         factoryOf(::RequestAccountDeletionImpl) bind RequestAccountDeletion::class
         factoryOf(::StartPersonalDataExportImpl) bind StartPersonalDataExport::class
     }
@@ -65,6 +67,7 @@ fun settingsDomainModule(): Module {
 fun clientSettingsDomainModule(): Module {
     return module {
         includes(sharedSettingsDomainModule())
+        factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
         factoryOf(::TelegramRequestAccountDeletionImpl) bind RequestAccountDeletion::class
         factoryOf(::TelegramStartPersonalDataExportImpl) bind StartPersonalDataExport::class
         factoryOf(::CompleteTelegramConfirmationImpl) bind CompleteTelegramConfirmation::class
@@ -86,7 +89,6 @@ private fun sharedSettingsDomainModule() = module {
     factoryOf(::GetSettingsImpl) bind GetSettings::class
     factoryOf(::EditProfileImpl) bind EditProfile::class
     factoryOf(::GetAccountDeletionImpl) bind GetAccountDeletion::class
-    factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
     factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class
     factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class
     factoryOf(::GetNotificationSettingsImpl) binds

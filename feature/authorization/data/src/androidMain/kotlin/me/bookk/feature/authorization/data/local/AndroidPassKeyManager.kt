@@ -101,11 +101,16 @@ class AndroidPassKeyManager(
         }.getOrThrow()
     }
 
-    override suspend fun signalAccountDeleted(assertion: PasskeyVerificationPayload) {
+    override suspend fun signalUnknownPasskey(assertion: PasskeyVerificationPayload) {
         val passkey = PasskeyAssertion.from(assertion)
         credentialUpdater.reportUnknownCredential(relyingParty, passkey.credentialId)
-        passkey.userHandle?.let {
-            credentialUpdater.reportNoAcceptedCredentials(relyingParty, it)
-        }
+    }
+
+    override suspend fun signalAcceptedPasskeys(passkeys: PassKeyManager.AcceptedPasskeys) {
+        credentialUpdater.reportAcceptedCredentials(
+            relyingParty = passkeys.relyingParty,
+            userHandle = passkeys.userHandle,
+            credentialIds = passkeys.credentialIds,
+        )
     }
 }

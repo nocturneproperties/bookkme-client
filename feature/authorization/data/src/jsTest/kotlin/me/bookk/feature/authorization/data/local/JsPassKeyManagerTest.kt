@@ -38,14 +38,27 @@ class JsPassKeyManagerTest {
     }
 
     @Test
-    fun `refuses to signal a deleted account on the web`() = runUnitTest {
+    fun `refuses to signal an unknown passkey on the web`() = runUnitTest {
         given()
         val fixture = Fixture()
 
         whenn()
         then()
         assertFailsWith<UnsupportedOperationException> {
-            fixture.sut.signalAccountDeleted(PasskeyVerificationPayload("{}"))
+            fixture.sut.signalUnknownPasskey(PasskeyVerificationPayload("{}"))
+        }
+    }
+
+    @Test
+    fun `refuses to signal accepted passkeys on the web`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val passkeys = PassKeyManager.AcceptedPasskeys("bookkme.app", "dXNlcg", listOf("AAECAw"))
+
+        whenn()
+        then()
+        assertFailsWith<UnsupportedOperationException> {
+            fixture.sut.signalAcceptedPasskeys(passkeys)
         }
     }
 }

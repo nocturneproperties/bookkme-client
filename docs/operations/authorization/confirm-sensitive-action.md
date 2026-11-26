@@ -18,6 +18,8 @@ flowchart TD
     Net -- 6 CHALLENGE_WINDOW_EXPIRED --> Expired([throw Error.ChallengeExpired])
     Net -- 4 VERIFICATION_FAILED --> Failed
     Net -- 7 PASSKEY_OWNER_NOT_FOUND --> Missing([throw Error.PasskeyNotFound])
+    Net -- 26 PASSKEY_UNKNOWN --> Forget[PassKeyManager.signalUnknownPasskey assertion<br/>best effort: the device forgets the passkey]
+    Forget --> Missing
     Net -- 11 PASSKEY_NOT_OWNED --> Wrong([throw Error.PasskeyNotOwned])
     Net -- other failure --> Other([propagate])
 ```

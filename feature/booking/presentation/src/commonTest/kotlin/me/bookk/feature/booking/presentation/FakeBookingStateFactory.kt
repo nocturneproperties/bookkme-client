@@ -8,8 +8,12 @@ import me.bookk.designsystem.test.FakeListState
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
 import me.bookk.designsystem.test.FakeOptionsMultiPickerState
+import me.bookk.designsystem.test.FakeRadioButtonState
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.feature.booking.presentation.screen.BookingTotal
+import me.bookk.feature.booking.presentation.screen.bookings.BookingsDestinations
+import me.bookk.feature.booking.presentation.screen.bookings.BookingsListItem
+import me.bookk.feature.booking.presentation.screen.bookings.BookingsState
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeDestinations
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeState
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDayItem
@@ -55,6 +59,10 @@ class FakeBookingStateFactory : BookingStateFactory {
 
     override fun createBookingDetailsState(): BookingDetailsState {
         return FakeBookingDetailsState()
+    }
+
+    override fun createBookingsState(): BookingsState {
+        return FakeBookingsState()
     }
 }
 
@@ -121,4 +129,14 @@ class FakeBookingDetailsState : BookingDetailsState {
     override val actionButton = FakeButtonState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<BookingDetailsDestinations>()
+}
+
+class FakeBookingsState : BookingsState {
+    override val appBar = FakeAppBarState()
+    override val upcomingTab = FakeRadioButtonState()
+    override val pastTab = FakeRadioButtonState()
+    override val upcoming = FakeListState<BookingsListItem>()
+    override val past = FakeListState<BookingsListItem>()
+    override val notifications = FakeNotificationState()
+    override val navigation = FakeNavigationState<BookingsDestinations>()
 }

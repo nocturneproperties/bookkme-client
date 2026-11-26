@@ -33,8 +33,13 @@ import me.bookk.feature.authorization.domain.api.GetTokenInfo
 import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.api.RefreshToken
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
+import me.bookk.feature.authorization.domain.api.StartEmailChange
+import me.bookk.feature.authorization.domain.entity.EmailVerification
+import me.bookk.feature.authorization.presentation.screen.changeemail.ChangeEmailViewModel
 import me.bookk.feature.authorization.presentation.screen.clientbootstrap.ClientBootstrapViewModel
 import me.bookk.feature.authorization.presentation.screen.telegram.TelegramSignInViewModel
+import me.bookk.feature.authorization.presentation.screen.verifyemail.VerifyEmailRequest
+import me.bookk.feature.authorization.presentation.screen.verifyemail.VerifyEmailViewModel
 import me.bookk.feature.booking.domain.api.GetBookingAppointmentDetails
 import me.bookk.feature.booking.domain.api.GetBookingCatalog
 import me.bookk.feature.booking.domain.api.GetBookingPreparation
@@ -42,6 +47,7 @@ import me.bookk.feature.booking.domain.api.GetBookingRequestDetails
 import me.bookk.feature.booking.domain.api.GetBookingSlots
 import me.bookk.feature.booking.domain.api.GetBookingSpecialists
 import me.bookk.feature.booking.domain.api.GetBookingTimetable
+import me.bookk.feature.booking.domain.api.GetBookings
 import me.bookk.feature.booking.domain.api.GetBusinessMessage
 import me.bookk.feature.booking.domain.api.GetSentBooking
 import me.bookk.feature.booking.domain.api.SendBookingRequest
@@ -51,6 +57,7 @@ import me.bookk.feature.booking.domain.api.SetBookingSpecialist
 import me.bookk.feature.booking.domain.api.WithdrawBookingRequest
 import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import me.bookk.feature.booking.domain.datasource.BookingPreparationDataSource
+import me.bookk.feature.booking.presentation.screen.bookings.BookingsViewModel
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeViewModel
 import me.bookk.feature.booking.presentation.screen.details.BookingAppointmentDetailsViewModel
 import me.bookk.feature.booking.presentation.screen.details.BookingRequestDetailsViewModel
@@ -64,7 +71,10 @@ import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewM
 import me.bookk.feature.employees.domain.api.GetBookableEmployees
 import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
+import me.bookk.feature.settings.presentation.notifications.NotificationSettingsViewModel
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
@@ -152,14 +162,14 @@ class ClientAppTest {
 
         override fun appointmentDao(): AppointmentDao {
             return mock {
-                every { observeScheduled() } returns emptyFlow()
+                every { observeByStatuses(any()) } returns emptyFlow()
                 every { observeById(any()) } returns emptyFlow()
             }
         }
 
         override fun appointmentRequestDao(): AppointmentRequestDao {
             return mock {
-                every { observePending() } returns emptyFlow()
+                every { observeByStatuses(any()) } returns emptyFlow()
                 every { observeById(any()) } returns emptyFlow()
             }
         }
@@ -608,12 +618,112 @@ class ClientAppTest {
     }
 
     @Test
+    fun `provides the bookings the bookings screen pages through`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val getBookings = KoinPlatform.getKoin().getOrNull<GetBookings>()
+
+        then()
+        assertNotNull(getBookings)
+    }
+
+    @Test
+    fun `provides the bookings view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<BookingsViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
     fun `provides the settings view model`() = runUnitTest {
         given()
         startClientApp()
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<SettingsDashboardViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the booking profile view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<EditProfileViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the change email view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<ChangeEmailViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the verify email view model for the pending email change`() = runUnitTest {
+        given()
+        startClientApp()
+        val pendingEmailChange = StartEmailChange.PendingEmailChange(
+            email = "anna@example.com",
+            verification = EmailVerification(
+                id = Uuid.random(),
+                expiresAt = Instant.fromEpochSeconds(0),
+                resendAvailableAt = Instant.fromEpochSeconds(0),
+            ),
+        )
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<VerifyEmailViewModel> {
+            parametersOf(VerifyEmailRequest.EmailChange(pendingEmailChange))
+        }
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the notification settings view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<NotificationSettingsViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the privacy settings view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<PrivacySettingsViewModel>()
 
         then()
         assertNotNull(viewModel)

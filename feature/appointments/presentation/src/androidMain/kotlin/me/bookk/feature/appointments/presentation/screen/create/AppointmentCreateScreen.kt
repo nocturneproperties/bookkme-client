@@ -1,48 +1,33 @@
 package me.bookk.feature.appointments.presentation.screen.create
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.resources.compose.localized
-import dev.icerock.moko.resources.desc.StringDesc
 import library.picker.standardOptionsScreenPicker
-import library.picker.standardScreenPicker
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
 import me.bookk.designsystem.components.DatePickerField
 import me.bookk.designsystem.components.OptionsMultiPicker
-import me.bookk.designsystem.components.PickerField
 import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.components.TimePickerField
+import me.bookk.designsystem.components.singleClickInteractionSource
 import me.bookk.designsystem.modifier.topShadow
-import me.bookk.designsystem.theme.color.AppColors
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.designsystem.theme.typography.primary
-import me.bookk.designsystem.theme.typography.secondary
+import me.bookk.feature.appointments.presentation.navigation.ClientPicker
 
 @Composable
-internal fun AppointmentCreateScreen(state: AppointmentCreateState) {
+internal fun AppointmentCreateScreen(state: AppointmentCreateState, clientPicker: ClientPicker) {
     Scaffold(
         topBar = { AppTopBar(state = state.appBar) },
     ) { paddingValues ->
@@ -55,11 +40,7 @@ internal fun AppointmentCreateScreen(state: AppointmentCreateState) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            PickerField(
-                state.clientPicker,
-                modifier = Modifier.padding(top = 16.dp),
-                screenPicker = standardScreenPicker(),
-            )
+            ClientField(state, Modifier.padding(top = 16.dp))
             OptionsMultiPicker(
                 state.servicePicker,
                 showDividers = true,
@@ -81,4 +62,23 @@ internal fun AppointmentCreateScreen(state: AppointmentCreateState) {
             )
         }
     }
+    if (state.isClientPickerVisible) {
+        clientPicker(state.onClientPicked) { state.isClientPickerVisible = false }
+    }
+}
+
+@Composable
+private fun ClientField(state: AppointmentCreateState, modifier: Modifier) {
+    TextField(
+        modifier = modifier,
+        interactionSource = singleClickInteractionSource { state.onClientFieldClick() },
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Filled.ChevronRight,
+                tint = LocalColors.current.secondaryText,
+                contentDescription = null,
+            )
+        },
+        state = state.clientField,
+    )
 }

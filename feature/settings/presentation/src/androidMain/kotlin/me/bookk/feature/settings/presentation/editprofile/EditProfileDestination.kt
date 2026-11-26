@@ -16,8 +16,8 @@ internal fun NavGraphBuilder.editProfileScreen(navigation: SettingsNavigation) {
         CompositionLocalProvider(
             LocalNavigation provides navigation,
             LocalEditProfileEventListener provides EditProfileEventListener(
-                onNameChanged = viewModel::onFirstNameTextChanged,
-                onLastNameChanged = viewModel::onLastNameTextChanged,
+                onNameChanged = viewModel::onNameTextChanged,
+                onPhoneChanged = viewModel::onPhoneTextChanged,
                 onSaveClick = viewModel::onConfirmButtonClick,
             ),
         ) {

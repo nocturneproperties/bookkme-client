@@ -12,6 +12,7 @@ import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.MutableStateFlow
 import library.device.api.DeviceFacade
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.ActionType
@@ -61,7 +62,16 @@ class SettingsDashboardViewModelTest {
     private class Fixture {
         val getSettings = mock<GetSettings> {
             everySuspend { invoke() } returns
-                Settings(ColorScheme.DARK, SettingsProfile("Anna", "Smith", "anna@example.com"))
+                Settings(
+                    ColorScheme.DARK,
+                    SettingsProfile(
+                        "Anna",
+                        "Smith",
+                        "anna@example.com",
+                        "",
+                        isEmailDeliverable = true,
+                    ),
+                )
         }
         val updateColorScheme = mock<UpdateColorScheme>()
         val statuses = MutableStateFlow<List<LegalDocumentStatus>>(emptyList())
@@ -126,13 +136,11 @@ class SettingsDashboardViewModelTest {
 
         then()
         assertEquals(UIColorScheme.DARK, sut.uiState.appearance.colorScheme)
-        assertEquals("Anna".desc(), sut.uiState.profile.name)
-        assertEquals("Smith".desc(), sut.uiState.profile.lastName)
         assertEquals("anna@example.com".desc(), sut.uiState.profile.email)
     }
 
     @Test
-    fun `renders full name and initials when presented`() = runUnitTest {
+    fun `renders full name when presented`() = runUnitTest {
         given()
         val sut = Fixture().sut()
 
@@ -141,15 +149,17 @@ class SettingsDashboardViewModelTest {
 
         then()
         assertEquals("Anna Smith".desc(), sut.uiState.profile.fullName)
-        assertEquals("AS", sut.uiState.profile.initials)
     }
 
     @Test
-    fun `leaves a missing last name out of the full name and initials`() = runUnitTest {
+    fun `leaves a missing last name out of the full name`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.getSettings() } returns
-            Settings(ColorScheme.SYSTEM, SettingsProfile("anna", "", ""))
+            Settings(
+                ColorScheme.SYSTEM,
+                SettingsProfile("anna", "", "", "", isEmailDeliverable = true),
+            )
         val sut = fixture.sut()
 
         whenn()
@@ -157,7 +167,6 @@ class SettingsDashboardViewModelTest {
 
         then()
         assertEquals("anna".desc(), sut.uiState.profile.fullName)
-        assertEquals("A", sut.uiState.profile.initials)
     }
 
     @Test
@@ -172,6 +181,21 @@ class SettingsDashboardViewModelTest {
         assertEquals(
             SettingsRes.strings.settings_profile_edit_booking.desc(),
             sut.uiState.profile.edit.text,
+        )
+    }
+
+    @Test
+    fun `shows a chevron after the profile edit button text`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            DesignSystem.images.material_chevron_right,
+            sut.uiState.profile.edit.endIcon,
         )
     }
 

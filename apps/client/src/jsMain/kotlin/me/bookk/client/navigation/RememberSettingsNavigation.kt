@@ -22,6 +22,7 @@ internal fun rememberSettingsNavigation(
         SettingsNavigation(
             onBack = { stack.pop() },
             toBookingProfile = { stack.push(ClientScreen.BookingProfile) },
+            toChangeEmail = { stack.push(ClientScreen.ChangeEmail) },
             toNotifications = { stack.push(ClientScreen.NotificationSettings) },
             toPrivacy = { stack.push(ClientScreen.PrivacySettings) },
             toPersonalDataExport = { stack.push(ClientScreen.PersonalDataExport) },

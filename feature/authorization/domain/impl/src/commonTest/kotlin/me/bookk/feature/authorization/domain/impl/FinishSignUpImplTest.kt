@@ -134,8 +134,7 @@ class FinishSignUpImplTest {
         fixture.sessionDataSource.save(
             SignUpSession(
                 me.bookk.feature.authorization.domain.api.StartSignUp.UserData(
-                    "John",
-                    "Doe",
+                    "John Doe",
                     "john@example.com",
                     documents,
                 ),
@@ -152,6 +151,7 @@ class FinishSignUpImplTest {
                 matches({ "code and session" }) {
                     it.emailCode == "123456" && it.verificationId == stubVerificationId &&
                         it.requestId == "req-id" && it.acceptedDocuments == documents &&
+                        it.userInfo.name == "John Doe" &&
                         it.userInfo.email == "john@example.com" &&
                         it.publicKeyCredentialJson == "{attestation}" &&
                         it.deviceInfo.deviceUUID == "device-uuid"

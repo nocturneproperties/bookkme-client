@@ -16,7 +16,6 @@ import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.GetClientAppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.AppointmentRequestStatus
-import me.bookk.feature.appointments.domain.api.entity.ClientAppointmentRequest
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.ServiceSnapshot
@@ -41,7 +40,7 @@ class GetBookingRequestDetailsImplTest {
         val getClientAppointmentRequest = mock<GetClientAppointmentRequest>()
         val sut = GetBookingRequestDetailsImpl(getClientAppointmentRequest)
 
-        fun stubCache(id: Uuid, request: ClientAppointmentRequest?) {
+        fun stubCache(id: Uuid, request: AppointmentRequest?) {
             every { getClientAppointmentRequest.flow(id) } returns flowOf(request)
         }
     }
@@ -150,7 +149,7 @@ class GetBookingRequestDetailsImplTest {
     private fun cached(
         services: List<ServiceSnapshot> = listOf(manicure),
         status: AppointmentRequestStatus = AppointmentRequestStatus.PENDING,
-    ): ClientAppointmentRequest {
+    ): AppointmentRequest {
         val request = AppointmentRequest(
             id = requestId,
             userId = Uuid.random(),
@@ -163,7 +162,7 @@ class GetBookingRequestDetailsImplTest {
             note = "Short nails, please.",
             declineReason = "",
         )
-        return ClientAppointmentRequest(request, "Nail Room")
+        return request.copy(businessName = "Nail Room")
     }
 
     private fun serviceSnapshot(name: String, duration: Duration, price: Money): ServiceSnapshot {

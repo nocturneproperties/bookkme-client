@@ -15,6 +15,7 @@ import library.cache.api.get
 import library.cache.api.set
 import me.bookk.core.data.DataSource
 import me.bookk.core.domain.logout.LogOutAction
+import me.bookk.core.domain.pagination.Page
 import me.bookk.database.dao.ClientsDao
 import me.bookk.feature.clients.data.mapping.toDbEntity
 import me.bookk.feature.clients.data.mapping.toDomain
@@ -24,6 +25,7 @@ import me.bookk.feature.clients.data.remote.api.ClientsRouting.Api
 import me.bookk.feature.clients.data.remote.model.ClientImportEntryRemote
 import me.bookk.feature.clients.data.remote.model.ClientImportRequest
 import me.bookk.feature.clients.data.remote.model.ClientImportResultRemote
+import me.bookk.feature.clients.data.remote.model.ClientPageRemote
 import me.bookk.feature.clients.data.remote.model.ClientRemote
 import me.bookk.feature.clients.data.remote.model.DeleteClientRequest
 import me.bookk.feature.clients.domain.api.entity.Client
@@ -44,11 +46,15 @@ internal class CommonClientsDataSource(
 
     private val preferences = preferenceProvider.get("clients_prefs")
 
-    override suspend fun getClients(businessId: Uuid): List<Client> {
+    override suspend fun getClients(
+        businessId: Uuid,
+        search: String?,
+        cursor: String?,
+    ): Page<Client> {
         return mapExceptions {
-            httpClient.get(Api.Clients(businessId = businessId))
-                .body<List<ClientRemote>>()
-                .map { it.toDomain(businessId) }
+            httpClient.get(Api.ClientList(businessId = businessId, cursor = cursor, query = search))
+                .body<ClientPageRemote>()
+                .toDomain(businessId)
         }
     }
 

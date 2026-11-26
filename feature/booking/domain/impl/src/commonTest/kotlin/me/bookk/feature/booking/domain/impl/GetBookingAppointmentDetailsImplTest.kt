@@ -14,7 +14,6 @@ import me.bookk.core.test.whenn
 import me.bookk.feature.appointments.domain.api.GetClientAppointment
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.AppointmentStatus
-import me.bookk.feature.appointments.domain.api.entity.ClientAppointment
 import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.domain.api.entity.EmployeeSnapshot
 import me.bookk.feature.appointments.domain.api.entity.PriceAdjustment
@@ -44,7 +43,7 @@ class GetBookingAppointmentDetailsImplTest {
         val getClientAppointment = mock<GetClientAppointment>()
         val sut = GetBookingAppointmentDetailsImpl(getClientAppointment)
 
-        fun stubCache(id: Uuid, appointment: ClientAppointment?) {
+        fun stubCache(id: Uuid, appointment: Appointment?) {
             every { getClientAppointment.flow(id) } returns flowOf(appointment)
         }
     }
@@ -91,17 +90,13 @@ class GetBookingAppointmentDetailsImplTest {
                 Money(20_000, Money.SupportedCurrency.UAH),
                 10.minutes,
             )
-            val adjusted = cached(AppointmentStatus.COMPLETED).let {
-                it.copy(
-                    appointment = it.appointment.copy(
-                        priceAdjustment = PriceAdjustment(
-                            additionalServices = listOf(haircut, beard),
-                            price = Money(70_000, Money.SupportedCurrency.UAH),
-                            reason = "Added a beard trim",
-                        ),
-                    ),
-                )
-            }
+            val adjusted = cached(AppointmentStatus.COMPLETED).copy(
+                priceAdjustment = PriceAdjustment(
+                    additionalServices = listOf(haircut, beard),
+                    price = Money(70_000, Money.SupportedCurrency.UAH),
+                    reason = "Added a beard trim",
+                ),
+            )
             fixture.stubCache(appointmentId, adjusted)
 
             whenn()
@@ -118,7 +113,7 @@ class GetBookingAppointmentDetailsImplTest {
         given()
         val fixture = Fixture()
         val empty = cached().let {
-            it.copy(appointment = it.appointment.copy(services = emptyList()))
+            it.copy(services = emptyList())
         }
         fixture.stubCache(appointmentId, empty)
 
@@ -167,7 +162,7 @@ class GetBookingAppointmentDetailsImplTest {
         assertNull(details)
     }
 
-    private fun cached(status: AppointmentStatus = AppointmentStatus.SCHEDULED): ClientAppointment {
+    private fun cached(status: AppointmentStatus = AppointmentStatus.SCHEDULED): Appointment {
         val appointment = Appointment(
             id = appointmentId,
             userId = Uuid.random(),
@@ -181,6 +176,6 @@ class GetBookingAppointmentDetailsImplTest {
             cancellationReason = "",
             clientNote = "Short at the back.",
         )
-        return ClientAppointment(appointment, "Studio Lumen")
+        return appointment.copy(businessName = "Studio Lumen")
     }
 }

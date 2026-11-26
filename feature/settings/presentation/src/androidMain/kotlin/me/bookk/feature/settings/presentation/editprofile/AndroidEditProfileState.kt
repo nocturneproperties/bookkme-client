@@ -11,16 +11,13 @@ import me.bookk.designsystem.uistate.NavigationState
 import me.bookk.designsystem.uistate.PresentationNotificationState
 import me.bookk.designsystem.uistate.TextFieldState
 
-internal class AndroidEditProfileState(
-    initData: EditProfileState.InitData,
-) : EditProfileState {
-    override val appBar: AppBarState = AndroidAppBarState(title = initData.title)
-    override val name: TextFieldState = AndroidTextFieldState(label = initData.nameHint)
-    override val lastName: TextFieldState = AndroidTextFieldState(label = initData.lastNameHint)
-    override val confirmButton: ButtonState = AndroidButtonState(
-        text = initData.confirmButtonText,
-        isEnabled = false,
-    )
+internal class AndroidEditProfileState : EditProfileState {
+    override val appBar: AppBarState = AndroidAppBarState()
+    override val name: TextFieldState = AndroidTextFieldState()
+    override val phone: TextFieldState = AndroidTextFieldState()
+    override val email: TextFieldState = AndroidTextFieldState()
+    override val changeEmail: ButtonState = AndroidButtonState()
+    override val confirmButton: ButtonState = AndroidButtonState()
     override val notification: PresentationNotificationState = AndroidNotificationState()
     override val navigation: NavigationState<EditProfileNavigationDestination> =
         AndroidNavigationState()

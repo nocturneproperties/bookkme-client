@@ -29,10 +29,13 @@
     <string name="settings_support_report_label">Report an error</string>
 
     <string name="settings_edit_profile_title">Edit profile</string>
-    <string name="settings_edit_profile_first_name">First name</string>
-    <string name="settings_edit_profile_first_name_error">Name should be at least 2 characters long</string>
-    <string name="settings_edit_profile_last_name">Last name</string>
-    <string name="settings_edit_profile_last_name_error">Last name should be at least 2 characters long</string>
+    <string name="settings_edit_profile_name_error">Name should be at least 2 characters long</string>
+    <string name="settings_booking_profile_title">Booking profile.</string>
+    <string name="settings_edit_profile_full_name">Full name</string>
+    <string name="settings_edit_profile_change_email">Change</string>
+    <string name="settings_edit_profile_email_hint">A new email is confirmed with a code we send to it.</string>
+    <string name="settings_edit_profile_phone">Phone</string>
+    <string name="settings_edit_profile_phone_hint">Optional. Businesses you book with can use it to contact you.</string>
 
 
     <string name="settings_delete_account_title">Delete account</string>
@@ -56,7 +59,11 @@
     <string name="settings_notifications_email_label">Email</string>
     <string name="settings_notifications_push_label">Push notifications</string>
     <string name="settings_notifications_telegram_label">Telegram</string>
-    <string name="settings_edit_profile_email_taken_error">This email address is already in use.</string>
+    <string name="settings_notifications_heading">Notifications.</string>
+    <string name="settings_notifications_appointment_hint">Confirmations, changes and reminders</string>
+    <string name="settings_notifications_telegram_hint">Messages from the BookkMe bot</string>
+    <string name="settings_notifications_channels_footer">Keep at least one channel on to get appointment notifications.</string>
+    <string name="settings_edit_profile_phone_taken_error">This phone number is already used by another account.</string>
     <string name="settings_edit_profile_email_verification_required_error">A new email address must be confirmed with a code.</string>
     <string name="settings_passkey_last_error">You cannot delete your last passkey. Add another passkey first to keep access to your account.</string>
 

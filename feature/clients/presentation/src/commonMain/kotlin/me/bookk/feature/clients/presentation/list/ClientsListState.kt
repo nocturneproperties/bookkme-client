@@ -13,7 +13,7 @@ import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 interface ClientsListState {
     val appBar: AppBarState
     val searchField: TextFieldState
-    val clientsList: ListState<ClientSection>
+    val clientsList: ListState<ClientListItem>
     val refreshState: RefreshState
     val contactsPicker: OptionsMultiPickerState<SimplePickerPresentation<ClientImportEntry>>
     var isContactsPickerVisible: Boolean

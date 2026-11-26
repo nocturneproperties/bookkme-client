@@ -14,9 +14,10 @@ import me.bookk.feature.appointments.domain.api.GetAppointmentSettings
 import me.bookk.feature.appointments.domain.api.GetAppointmentsForBusiness
 import me.bookk.feature.appointments.domain.api.GetAssignedAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetBookingInfo
-import me.bookk.feature.appointments.domain.api.GetBusinessAppointmentRequests
 import me.bookk.feature.appointments.domain.api.GetClientAppointment
 import me.bookk.feature.appointments.domain.api.GetClientAppointmentRequest
+import me.bookk.feature.appointments.domain.api.GetClientBookings
+import me.bookk.feature.appointments.domain.api.GetClientSnapshot
 import me.bookk.feature.appointments.domain.api.GetFreeSlots
 import me.bookk.feature.appointments.domain.api.GetSavedBusinesses
 import me.bookk.feature.appointments.domain.api.GetUpcomingBookings
@@ -41,9 +42,10 @@ import me.bookk.feature.appointments.domain.impl.GetAppointmentSettingsImpl
 import me.bookk.feature.appointments.domain.impl.GetAppointmentsForBusinessImpl
 import me.bookk.feature.appointments.domain.impl.GetAssignedAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.GetBookingInfoImpl
-import me.bookk.feature.appointments.domain.impl.GetBusinessAppointmentRequestsImpl
 import me.bookk.feature.appointments.domain.impl.GetClientAppointmentImpl
 import me.bookk.feature.appointments.domain.impl.GetClientAppointmentRequestImpl
+import me.bookk.feature.appointments.domain.impl.GetClientBookingsImpl
+import me.bookk.feature.appointments.domain.impl.GetClientSnapshotImpl
 import me.bookk.feature.appointments.domain.impl.GetFreeSlotsImpl
 import me.bookk.feature.appointments.domain.impl.GetSavedBusinessesImpl
 import me.bookk.feature.appointments.domain.impl.GetUpcomingBookingsImpl
@@ -61,8 +63,8 @@ import org.koin.dsl.binds
 import org.koin.dsl.module
 
 fun appointmentsDomainModule() = module {
-    factoryOf(::GetBusinessAppointmentRequestsImpl) bind GetBusinessAppointmentRequests::class
     factoryOf(::GetAppointmentOptionsImpl) bind GetAppointmentOptions::class
+    factoryOf(::GetClientSnapshotImpl) bind GetClientSnapshot::class
     factoryOf(::ObserveAppointmentOptionsImpl) bind ObserveAppointmentOptions::class
     factoryOf(::GetAppointmentSettingsImpl) binds
         arrayOf(GetAppointmentSettings::class, BusinessDataFetchAction::class)
@@ -93,4 +95,5 @@ fun clientAppointmentsDomainModule() = module {
     factoryOf(::WithdrawAppointmentRequestImpl) bind WithdrawAppointmentRequest::class
     factoryOf(::GetClientAppointmentRequestImpl) bind GetClientAppointmentRequest::class
     factoryOf(::GetClientAppointmentImpl) bind GetClientAppointment::class
+    factoryOf(::GetClientBookingsImpl) bind GetClientBookings::class
 }

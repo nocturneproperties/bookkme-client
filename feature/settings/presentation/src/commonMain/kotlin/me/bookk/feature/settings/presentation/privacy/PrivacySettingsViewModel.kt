@@ -126,11 +126,10 @@ class PrivacySettingsViewModel(
             createLegalDocumentItem(document, statuses.find { it.current.document == document })
         }
         val hasPendingDocuments = statuses.any { it.acceptedAt == null }
-        legal.message = if (hasPendingDocuments) {
-            SettingsRes.strings.settings_legal_review_note.desc()
-        } else {
-            null
-        }
+        legal.message = SettingsRes.strings.settings_legal_review_note.desc()
+            .takeIf { hasPendingDocuments }
+        legal.notice = SettingsRes.strings.settings_legal_changed.desc()
+            .takeIf { hasPendingDocuments }
         legal.accept.isVisible = hasPendingDocuments
         legal.accept.onClick = weakVMClosure { it.acceptLegalDocuments(statuses) }
     }

@@ -3,6 +3,7 @@ package me.bookk.feature.settings.presentation.navigation
 class SettingsNavigation(
     val onBack: () -> Unit,
     val toBookingProfile: () -> Unit,
+    val toChangeEmail: () -> Unit,
     val toNotifications: () -> Unit,
     val toPrivacy: () -> Unit,
     val toPersonalDataExport: () -> Unit,

@@ -1,12 +1,10 @@
 package me.bookk.feature.appointments.domain.impl
 
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -17,53 +15,50 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.appointments.domain.api.entity.ClientBookingPeriod
 import me.bookk.feature.appointments.domain.api.entity.UpcomingBooking
 import me.bookk.feature.appointments.domain.api.entity.UpcomingBookings
 import me.bookk.feature.appointments.domain.datasource.ClientBookingDataSource
-import me.bookk.feature.business.domain.api.business.GetBusinesses
-import me.bookk.feature.business.domain.api.entity.Business
+import me.bookk.feature.appointments.domain.datasource.DateBounds
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
 
 class GetUpcomingBookingsImplTest {
 
     private class Fixture {
         val dataSource = mock<ClientBookingDataSource>()
-        val getBusinesses = mock<GetBusinesses>()
-        val sut = GetUpcomingBookingsImpl(dataSource, getBusinesses)
+        val sut = GetUpcomingBookingsImpl(dataSource)
 
-        fun stubCache(bookings: UpcomingBookings, businesses: List<Business>) {
-            every { dataSource.observeUpcomingAppointments() } returns flowOf(bookings.appointments)
-            every { dataSource.observeUpcomingRequests() } returns flowOf(bookings.requests)
-            every { getBusinesses.flow(bookings.businessIds) } returns flowOf(businesses)
+        fun stubCache(bookings: UpcomingBookings) {
+            every { dataSource.observeAppointments(ClientBookingPeriod.UPCOMING) } returns
+                flowOf(bookings.appointments)
+            every { dataSource.observeRequests(ClientBookingPeriod.UPCOMING) } returns
+                flowOf(bookings.requests)
         }
 
-        fun stubRemote(bookings: UpcomingBookings, businesses: List<Business>) {
+        fun stubRemote(bookings: UpcomingBookings) {
             everySuspend { dataSource.getUpcomingBookings() } returns bookings
-            everySuspend { getBusinesses.refresh(bookings.businessIds) } returns businesses
-            everySuspend { dataSource.saveUpcomingBookingsInDb(any()) } returns Unit
+            everySuspend { dataSource.getAppointmentIdsInDb(any(), any()) } returns emptyList()
+            everySuspend { dataSource.getRequestIdsInDb(any(), any()) } returns emptyList()
+            everySuspend { dataSource.deleteAppointmentsInDb(any()) } returns Unit
+            everySuspend { dataSource.deleteRequestsInDb(any()) } returns Unit
+            everySuspend { dataSource.saveAppointmentsInDb(any()) } returns Unit
+            everySuspend { dataSource.saveRequestsInDb(any()) } returns Unit
         }
     }
 
     private val tuesday = LocalDateTime(2026, 11, 24, 14, 30)
     private val friday = LocalDateTime(2026, 11, 27, 11, 0)
 
-    private fun business(id: Uuid, name: String) = stubBusiness(id = id).copy(name = name)
-
     @Test
     fun `flow merges cached appointments and requests soonest first`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val appointment = stubAppointment(businessId = businessId).copy(date = friday)
-        val request = stubAppointmentRequest(businessId = businessId)
+        val appointment = stubAppointment().copy(date = friday)
+        val request = stubAppointmentRequest()
             .copy(date = tuesday.toInstant(TimeZone.currentSystemDefault()))
-        fixture.stubCache(
-            UpcomingBookings(listOf(appointment), listOf(request)),
-            listOf(business(businessId, "Studio")),
-        )
+        fixture.stubCache(UpcomingBookings(listOf(appointment), listOf(request)))
 
         whenn()
         val result = fixture.sut.flow().first()
@@ -79,7 +74,7 @@ class GetUpcomingBookingsImplTest {
         val appointment = stubAppointment().copy(date = tuesday)
         val request = stubAppointmentRequest()
             .copy(date = friday.toInstant(TimeZone.currentSystemDefault()))
-        fixture.stubCache(UpcomingBookings(listOf(appointment), listOf(request)), emptyList())
+        fixture.stubCache(UpcomingBookings(listOf(appointment), listOf(request)))
 
         whenn()
         val result = fixture.sut.flow().first()
@@ -100,7 +95,7 @@ class GetUpcomingBookingsImplTest {
         val fixture = Fixture()
         val request = stubAppointmentRequest()
             .copy(date = friday.toInstant(TimeZone.currentSystemDefault()))
-        fixture.stubCache(UpcomingBookings(emptyList(), listOf(request)), emptyList())
+        fixture.stubCache(UpcomingBookings(emptyList(), listOf(request)))
 
         whenn()
         val result = fixture.sut.flow().first()
@@ -110,73 +105,31 @@ class GetUpcomingBookingsImplTest {
     }
 
     @Test
-    fun `flow names each booking after its cached business`() = runUnitTest {
+    fun `flow names each booking after the business it came with`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val appointment = stubAppointment(businessId = businessId)
-        fixture.stubCache(
-            UpcomingBookings(listOf(appointment), emptyList()),
-            listOf(business(businessId, "Studio Lumen")),
-        )
+        val appointment = stubAppointment().copy(businessName = "Studio Lumen")
+        val request = stubAppointmentRequest().copy(businessName = "Nail Room")
+        fixture.stubCache(UpcomingBookings(listOf(appointment), listOf(request)))
 
         whenn()
         val result = fixture.sut.flow().first()
 
         then()
-        assertEquals("Studio Lumen", result.single().businessName)
-    }
-
-    @Test
-    fun `flow leaves the business name empty while the business is not cached`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        fixture.stubCache(UpcomingBookings(listOf(stubAppointment()), emptyList()), emptyList())
-
-        whenn()
-        val result = fixture.sut.flow().first()
-
-        then()
-        assertEquals("", result.single().businessName)
-    }
-
-    @Test
-    fun `refresh refreshes every booked business before saving the bookings`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val first = Uuid.random()
-        val second = Uuid.random()
-        val bookings = UpcomingBookings(
-            listOf(stubAppointment(businessId = first)),
-            listOf(stubAppointmentRequest(businessId = second)),
-        )
-        fixture.stubRemote(
-            bookings,
-            listOf(business(first, "Studio"), business(second, "Nail Room")),
-        )
-
-        whenn()
-        fixture.sut.refresh()
-
-        then()
-        verifySuspend(VerifyMode.order) {
-            fixture.getBusinesses.refresh(setOf(first, second))
-            fixture.dataSource.saveUpcomingBookingsInDb(bookings)
-        }
+        assertEquals(setOf("Studio Lumen", "Nail Room"), result.map { it.businessName }.toSet())
     }
 
     @Test
     fun `refresh returns the fetched bookings soonest first with business names`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val businessId = Uuid.random()
-        val appointment = stubAppointment(businessId = businessId).copy(date = friday)
-        val request = stubAppointmentRequest(businessId = businessId)
-            .copy(date = tuesday.toInstant(TimeZone.currentSystemDefault()))
-        fixture.stubRemote(
-            UpcomingBookings(listOf(appointment), listOf(request)),
-            listOf(business(businessId, "Studio")),
-        )
+        val appointment = stubAppointment().copy(date = friday, businessName = "Studio")
+        val request = stubAppointmentRequest()
+            .copy(
+                date = tuesday.toInstant(TimeZone.currentSystemDefault()),
+                businessName = "Studio",
+            )
+        fixture.stubRemote(UpcomingBookings(listOf(appointment), listOf(request)))
 
         whenn()
         val result = fixture.sut.refresh()
@@ -187,17 +140,66 @@ class GetUpcomingBookingsImplTest {
     }
 
     @Test
-    fun `refresh keeps the cache when the businesses cannot be fetched`() = runUnitTest {
+    fun `refresh deletes every cached upcoming booking missing from a short response`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val stale = Uuid.random()
+            val bookings =
+                UpcomingBookings(listOf(stubAppointment().copy(date = friday)), emptyList())
+            fixture.stubRemote(bookings)
+            everySuspend {
+                fixture.dataSource.getAppointmentIdsInDb(ClientBookingPeriod.UPCOMING, DateBounds())
+            } returns listOf(stale)
+
+            whenn()
+            fixture.sut.refresh()
+
+            then()
+            verifySuspend { fixture.dataSource.deleteAppointmentsInDb(listOf(stale)) }
+        }
+
+    @Test
+    fun `refresh deletes stale upcoming bookings only up to the last one of a full response`() =
+        runUnitTest {
+            given()
+            val fixture = Fixture()
+            val requests = listOf(
+                stubAppointmentRequest().copy(
+                    date = tuesday.toInstant(TimeZone.currentSystemDefault()),
+                ),
+                stubAppointmentRequest().copy(
+                    date = friday.toInstant(TimeZone.currentSystemDefault()),
+                ),
+            )
+            fixture.stubRemote(UpcomingBookings(emptyList(), requests))
+
+            whenn()
+            fixture.sut.refresh()
+
+            then()
+            verifySuspend {
+                fixture.dataSource.getRequestIdsInDb(
+                    ClientBookingPeriod.UPCOMING,
+                    DateBounds(to = friday.toInstant(TimeZone.currentSystemDefault())),
+                )
+            }
+        }
+
+    @Test
+    fun `refresh saves the fetched bookings`() = runUnitTest {
         given()
         val fixture = Fixture()
-        val bookings = UpcomingBookings(listOf(stubAppointment()), emptyList())
-        everySuspend { fixture.dataSource.getUpcomingBookings() } returns bookings
-        everySuspend { fixture.getBusinesses.refresh(any()) } throws IllegalStateException()
+        val bookings = UpcomingBookings(listOf(stubAppointment()), listOf(stubAppointmentRequest()))
+        fixture.stubRemote(bookings)
 
         whenn()
-        assertFailsWith<IllegalStateException> { fixture.sut.refresh() }
+        fixture.sut.refresh()
 
         then()
-        verifySuspend(VerifyMode.exactly(0)) { fixture.dataSource.saveUpcomingBookingsInDb(any()) }
+        verifySuspend {
+            fixture.dataSource.saveAppointmentsInDb(bookings.appointments)
+            fixture.dataSource.saveRequestsInDb(bookings.requests)
+        }
     }
 }

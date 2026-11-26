@@ -54,6 +54,7 @@ class SettingsDashboardViewModel(
 
     private fun ProfileSection.setup() {
         edit.text = SettingsRes.strings.settings_profile_edit_booking.desc()
+        edit.endIcon = DesignSystem.images.material_chevron_right
         edit.onClick = weakVMClosure { it.open(SettingsDashboardDestination.EditProfile) }
     }
 
@@ -166,11 +167,8 @@ class SettingsDashboardViewModel(
         val names = listOf(profile.firstName, profile.lastName)
             .map { it.trim() }
             .filter { it.isNotEmpty() }
-        name = profile.firstName.desc()
-        lastName = profile.lastName.desc()
         email = profile.email.desc()
         fullName = names.joinToString(" ").desc()
-        initials = names.joinToString("") { it.first().uppercase() }
     }
 
     companion object {

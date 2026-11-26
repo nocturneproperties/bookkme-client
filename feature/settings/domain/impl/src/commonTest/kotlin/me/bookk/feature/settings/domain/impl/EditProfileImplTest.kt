@@ -60,7 +60,7 @@ class EditProfileImplTest {
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("New", "Lastname")
+        fixture.sut("New", "Lastname", "")
 
         then()
         verifySuspend {
@@ -84,7 +84,7 @@ class EditProfileImplTest {
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("New", "Lastname")
+        fixture.sut("New", "Lastname", "")
 
         then()
         verifySuspend {
@@ -107,7 +107,7 @@ class EditProfileImplTest {
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("A", "B")
+        fixture.sut("A", "B", "")
 
         then()
         verifySuspend { fixture.profileCRUD.update(matches({ "match" }) { it.id == id }) }
@@ -127,13 +127,47 @@ class EditProfileImplTest {
         everySuspend { fixture.profileCRUD.update(any()) } returns Unit
 
         whenn()
-        fixture.sut("  New ", "Lastname\n")
+        fixture.sut("  New ", "Lastname\n", "")
 
         then()
         verifySuspend {
             fixture.profileCRUD.update(
                 matches({ "trimmed" }) { it.firstName == "New" && it.lastName == "Lastname" },
             )
+        }
+    }
+
+    @Test
+    fun `saves the trimmed phone`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.profileCRUD.get() } returns
+            UserProfile(Uuid.random(), "John", "Doe", "old@example.com", phone = "+111")
+        everySuspend { fixture.profileCRUD.update(any()) } returns Unit
+
+        whenn()
+        fixture.sut("John", "Doe", " +48123456789 ")
+
+        then()
+        verifySuspend {
+            fixture.profileCRUD.update(matches({ "trimmed phone" }) { it.phone == "+48123456789" })
+        }
+    }
+
+    @Test
+    fun `sends a blank phone to clear it`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.profileCRUD.get() } returns
+            UserProfile(Uuid.random(), "John", "Doe", "old@example.com", phone = "+111")
+        everySuspend { fixture.profileCRUD.update(any()) } returns Unit
+
+        whenn()
+        fixture.sut("John", "Doe", "  ")
+
+        then()
+        verifySuspend {
+            fixture.profileCRUD.update(matches({ "blank phone" }) { it.phone == "" })
         }
     }
 
@@ -147,7 +181,7 @@ class EditProfileImplTest {
             Error.BusinessError(100002, "rejected")
 
         whenn()
-        val result = runCatching { fixture.sut("John", "Doe") }
+        val result = runCatching { fixture.sut("John", "Doe", "") }
 
         then()
         assertFailsWith<EditProfile.Error.ContactAlreadyTaken> { result.getOrThrow() }
@@ -163,7 +197,7 @@ class EditProfileImplTest {
             Error.BusinessError(100006, "rejected")
 
         whenn()
-        val result = runCatching { fixture.sut("John", "Doe") }
+        val result = runCatching { fixture.sut("John", "Doe", "") }
 
         then()
         assertFailsWith<EditProfile.Error.EmailChangeRequiresVerification> { result.getOrThrow() }

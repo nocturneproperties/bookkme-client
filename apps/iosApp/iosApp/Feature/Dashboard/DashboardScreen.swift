@@ -63,6 +63,7 @@ struct DashboardTabs: View {
 				.disabled(!item.isEnabled)
 			}
 		}
+		.id(state.tabItems.items.map(\.isEnabled))
 	}
 }
 

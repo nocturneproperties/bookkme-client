@@ -22,7 +22,7 @@ internal fun ProfileSection(state: ProfileSection) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = state.name.localized() + " " + state.lastName.localized(),
+            text = state.fullName.localized(),
             style = MaterialTheme.typography.headlineMedium,
         )
         Text(

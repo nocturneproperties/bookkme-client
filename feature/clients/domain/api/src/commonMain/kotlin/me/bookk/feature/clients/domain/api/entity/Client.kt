@@ -1,5 +1,6 @@
 package me.bookk.feature.clients.domain.api.entity
 
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 sealed interface Client {
@@ -10,6 +11,7 @@ sealed interface Client {
     val email: String?
     val businessId: Uuid
     val description: String?
+    val createdAt: Instant?
     val fullName: String
 
     data class Detached(
@@ -20,6 +22,7 @@ sealed interface Client {
         override val email: String?,
         override val businessId: Uuid,
         override val description: String? = null,
+        override val createdAt: Instant? = null,
     ) : Client {
         override val fullName: String = "$name $lastName"
     }
@@ -33,6 +36,7 @@ sealed interface Client {
         override val businessId: Uuid,
         val userId: Uuid,
         override val description: String? = null,
+        override val createdAt: Instant? = null,
     ) : Client {
         override val fullName: String = "$name $lastName"
     }

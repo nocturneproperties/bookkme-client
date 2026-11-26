@@ -41,8 +41,9 @@ internal class FakeSettingsStateFactory : SettingsStateFactory {
     override fun createSettingsState(initData: SettingsState.InitData): SettingsState =
         FakeSettingsState()
 
-    override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState =
-        FakeEditProfileState()
+    override fun createEditProfileState(): EditProfileState {
+        return FakeEditProfileState()
+    }
 
     override fun createDeleteAccountState(
         initData: DeleteAccountState.InitData,
@@ -67,11 +68,8 @@ internal class FakeSettingsState : SettingsState {
             AppearanceSection.UIColorScheme.SYSTEM
     }
     override val profile = object : ProfileSection {
-        override var name: StringDesc = "".desc()
-        override var lastName: StringDesc = "".desc()
         override var email: StringDesc = "".desc()
         override var fullName: StringDesc = "".desc()
-        override var initials: String = ""
         override val edit = FakeButtonState()
     }
     override val account = object : AccountSection {
@@ -102,7 +100,9 @@ internal class FakeSettingsState : SettingsState {
 internal class FakeEditProfileState : EditProfileState {
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
-    override val lastName = FakeTextFieldState()
+    override val phone = FakeTextFieldState()
+    override val email = FakeTextFieldState()
+    override val changeEmail = FakeButtonState()
     override val confirmButton = FakeButtonState()
     override val notification = FakeNotificationState()
     override val navigation = FakeNavigationState<EditProfileNavigationDestination>()
@@ -154,6 +154,7 @@ internal class FakeLegalDocumentsSectionState : LegalDocumentsSection {
     override var documents: List<LegalDocumentItem> = emptyList()
     override var isLoading: Boolean = false
     override var message: StringDesc? = null
+    override var notice: StringDesc? = null
     override val accept = FakeButtonState()
     override val retry = FakeButtonState()
 }

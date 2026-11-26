@@ -38,6 +38,30 @@ class SignUpRemoteContractTest {
     }
 
     @Test
+    fun `signup challenge request sends the full name at wire number one`() = runUnitTest {
+        given()
+        val descriptor = PassKeySignUpStartInfo.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("name" to 1, "email" to 3), fields)
+    }
+
+    @Test
+    fun `signup user info sends the full name at wire number one`() = runUnitTest {
+        given()
+        val descriptor = VerifyAccountCreationRequest.UserInfo.serializer().descriptor
+
+        whenn()
+        val fields = descriptor.protoFields()
+
+        then()
+        assertEquals(listOf("name" to 1, "email" to 3), fields)
+    }
+
+    @Test
     fun `accepted document versions use the backend wire numbers`() = runUnitTest {
         given()
         val descriptor = AcceptedLegalDocumentsRemote.serializer().descriptor

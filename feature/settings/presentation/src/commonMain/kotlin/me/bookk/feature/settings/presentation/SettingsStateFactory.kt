@@ -11,7 +11,7 @@ import me.bookk.feature.settings.presentation.privacy.PrivacySettingsState
 interface SettingsStateFactory {
     fun createPersonalDataExportState(): PersonalDataExportState
     fun createSettingsState(initData: SettingsState.InitData): SettingsState
-    fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState
+    fun createEditProfileState(): EditProfileState
     fun createDeleteAccountState(initData: DeleteAccountState.InitData): DeleteAccountState
     fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState
     fun createNotificationSettingsState(): NotificationSettingsState

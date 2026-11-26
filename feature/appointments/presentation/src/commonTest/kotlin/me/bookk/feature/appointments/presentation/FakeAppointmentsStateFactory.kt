@@ -13,14 +13,11 @@ import me.bookk.designsystem.test.FakeListState
 import me.bookk.designsystem.test.FakeNavigationState
 import me.bookk.designsystem.test.FakeNotificationState
 import me.bookk.designsystem.test.FakeOptionsMultiPickerState
-import me.bookk.designsystem.test.FakePickerFieldState
 import me.bookk.designsystem.test.FakeRefreshState
 import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.FakeTimePickerFieldState
 import me.bookk.designsystem.test.FakeViewState
-import me.bookk.designsystem.uistate.SimplePickerPresentation
 import me.bookk.designsystem.uistate.simple.InfoLine
-import me.bookk.feature.appointments.domain.api.entity.ClientSnapshot
 import me.bookk.feature.appointments.presentation.screen.create.AppointmentCreateDestination
 import me.bookk.feature.appointments.presentation.screen.create.AppointmentCreateState
 import me.bookk.feature.appointments.presentation.screen.create.ServicePickerPresentation
@@ -40,6 +37,7 @@ import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequ
 import me.bookk.feature.appointments.presentation.screen.request.AppointmentRequestState
 import me.bookk.feature.appointments.presentation.screen.settings.AppointmentSettingsDestination
 import me.bookk.feature.appointments.presentation.screen.settings.AppointmentSettingsState
+import kotlin.uuid.Uuid
 
 internal class FakeAppointmentsStateFactory : AppointmentsStateFactory {
     override fun createAppointmentListState(): AppointmentListState = FakeAppointmentListState()
@@ -69,7 +67,10 @@ internal class FakeAppointmentListState : AppointmentListState {
 
 internal class FakeAppointmentCreateState : AppointmentCreateState {
     override val appBar = FakeAppBarState()
-    override val clientPicker = FakePickerFieldState<SimplePickerPresentation<ClientSnapshot>>()
+    override val clientField = FakeTextFieldState()
+    override var isClientPickerVisible: Boolean = false
+    override var onClientFieldClick: () -> Unit = {}
+    override var onClientPicked: (Uuid) -> Unit = {}
     override val servicePicker = FakeOptionsMultiPickerState<ServicePickerPresentation>()
     override var subtotalLabel: StringDesc = "".desc()
     override var subtotalPrice: String = ""

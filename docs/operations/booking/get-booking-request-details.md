@@ -19,7 +19,7 @@ and there would be no currency to total in); the screen then goes back.
 
 ```mermaid
 flowchart TD
-    Start([flow requestId]) --> Read[GetClientAppointmentRequest.flow<br/>appointment_request by id, named through business]
+    Start([flow requestId]) --> Read[GetClientAppointmentRequest.flow<br/>appointment_request by id, with businessName]
     Read --> Cached{request with services?}
     Cached -- no --> Null([emit null])
     Cached -- yes --> Map[BookingSummary businessName, specialistName,<br/>startsAt = date, endsAt = startsAt + total service duration, note,<br/>services grouped by id with count and price x count, total]

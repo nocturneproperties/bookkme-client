@@ -1,5 +1,8 @@
 package me.bookk.feature.appointments.data.datasource
 
+import dev.mokkery.answering.returns
+import dev.mokkery.every
+import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -17,6 +20,8 @@ import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.protobuf.protobuf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -24,6 +29,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.builtins.ListSerializer
 import me.bookk.core.data.dataSerializer
+import me.bookk.core.domain.pagination.Page
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -33,6 +39,8 @@ import me.bookk.database.dao.AppointmentRequestDao
 import me.bookk.database.dao.BookingInfoDao
 import me.bookk.database.dao.SavedBusinessDao
 import me.bookk.feature.appointments.data.mapping.toRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentPageRemote
+import me.bookk.feature.appointments.data.remote.model.AppointmentRequestPageRemote
 import me.bookk.feature.appointments.data.remote.model.BookingInfoRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotRemote
 import me.bookk.feature.appointments.data.remote.model.FreeSlotsDayRemote
@@ -42,12 +50,14 @@ import me.bookk.feature.appointments.data.remote.model.SavedBusinessRemote
 import me.bookk.feature.appointments.data.remote.model.UpcomingBookingsRemote
 import me.bookk.feature.appointments.domain.api.entity.Appointment
 import me.bookk.feature.appointments.domain.api.entity.BookingInfo
+import me.bookk.feature.appointments.domain.api.entity.ClientBookingPeriod
 import me.bookk.feature.appointments.domain.api.entity.FreeSlot
 import me.bookk.feature.appointments.domain.api.entity.FreeSlotsDay
 import me.bookk.feature.appointments.domain.api.entity.FreeSlotsQuery
 import me.bookk.feature.appointments.domain.api.entity.RequestedService
 import me.bookk.feature.appointments.domain.api.entity.SavedBusinessEntry
 import me.bookk.feature.appointments.domain.api.entity.UpcomingBookings
+import me.bookk.feature.appointments.domain.datasource.DateBounds
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -96,10 +106,12 @@ class ClientBookingHttpTest {
             install(ContentNegotiation) { protobuf(dataSerializer) }
             defaultRequest { contentType(ContentType.Application.ProtoBuf) }
         }
+        val appointmentDao = mock<AppointmentDao>()
+        val appointmentRequestDao = mock<AppointmentRequestDao>()
         val sut = CommonClientBookingDataSource(
             client,
-            mock<AppointmentDao>(),
-            mock<AppointmentRequestDao>(),
+            appointmentDao,
+            appointmentRequestDao,
             mock<SavedBusinessDao>(),
             mock<BookingInfoDao>(),
         )
@@ -312,5 +324,108 @@ class ClientBookingHttpTest {
 
         then()
         assertEquals(BookingInfo(businessId, ""), result)
+    }
+
+    @Test
+    fun `fetches a page of own upcoming appointments that are still scheduled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val appointment = Appointment.stub(date = LocalDateTime(2026, 11, 24, 14, 30))
+        fixture.body = dataSerializer.encodeToByteArray(
+            AppointmentPageRemote.serializer(),
+            AppointmentPageRemote(listOf(appointment.toRemote()), nextCursor = "after-a"),
+        )
+
+        whenn()
+        val result = fixture.call { getOwnAppointments(ClientBookingPeriod.UPCOMING, "from-a") }
+
+        then()
+        assertEquals("/api/appointments/mine", fixture.request?.url?.encodedPath)
+        assertEquals(
+            "cursor=from-a&period=UPCOMING&status=SCHEDULED",
+            fixture.request?.url?.encodedQuery,
+        )
+        assertEquals(Page(listOf(appointment), "after-a"), result)
+    }
+
+    @Test
+    fun `fetches own past appointments by their finished statuses`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.call { getOwnAppointments(ClientBookingPeriod.PAST, cursor = null) }
+
+        then()
+        assertEquals(
+            "status=COMPLETED&status=CANCELLED&status=NO_SHOW&status=UNRESOLVED",
+            fixture.request?.url?.encodedQuery,
+        )
+    }
+
+    @Test
+    fun `fetches a page of own upcoming requests that are still pending`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.body = dataSerializer.encodeToByteArray(
+            AppointmentRequestPageRemote.serializer(),
+            AppointmentRequestPageRemote(emptyList(), nextCursor = "after-r"),
+        )
+
+        whenn()
+        val result = fixture.call { getOwnRequests(ClientBookingPeriod.UPCOMING, cursor = null) }
+
+        then()
+        assertEquals("/api/appointments/request/mine", fixture.request?.url?.encodedPath)
+        assertEquals("period=UPCOMING&status=PENDING", fixture.request?.url?.encodedQuery)
+        assertEquals(Page(emptyList(), "after-r"), result)
+    }
+
+    @Test
+    fun `fetches own past requests by their answered statuses`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.call { getOwnRequests(ClientBookingPeriod.PAST, cursor = "from-r") }
+
+        then()
+        assertEquals(
+            "cursor=from-r&status=DECLINED&status=CANCELLED",
+            fixture.request?.url?.encodedQuery,
+        )
+    }
+
+    @Test
+    fun `reads cached past appointments by the statuses the past page asks for`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val statuses = listOf("COMPLETED", "CANCELLED", "NO_SHOW", "UNRESOLVED")
+        every { fixture.appointmentDao.observeByStatuses(statuses) } returns flowOf(emptyList())
+
+        whenn()
+        val result = fixture.call { observeAppointments(ClientBookingPeriod.PAST).first() }
+
+        then()
+        assertEquals(emptyList(), result)
+    }
+
+    @Test
+    fun `reads cached upcoming request ids within the dates`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val id = Uuid.random()
+        val from = Instant.fromEpochMilliseconds(1_800_000_000_000)
+        everySuspend {
+            fixture.appointmentRequestDao.getIdsByStatusesBetween(listOf("PENDING"), from, null)
+        } returns listOf(id)
+
+        whenn()
+        val result = fixture.call {
+            getRequestIdsInDb(ClientBookingPeriod.UPCOMING, DateBounds(from = from))
+        }
+
+        then()
+        assertEquals(listOf(id), result)
     }
 }

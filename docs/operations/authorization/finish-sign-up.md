@@ -45,7 +45,7 @@ flowchart TD
     PK -- payload --> Keep[SignUpSessionDataSource.save<br/>session with attestation]
     Att -- yes --> Dev
     Keep --> Dev[DeviceDataSource.getOrCreateDeviceUUID<br/>+ DeviceFacade.getDeviceName]
-    Dev --> Fin[RegistrationDataSource.finishRegistration<br/>POST /api/auth/sign_up<br/>with verificationId, emailCode, acceptedDocuments]
+    Dev --> Fin[RegistrationDataSource.finishRegistration<br/>POST /api/auth/sign_up<br/>with verificationId, emailCode, acceptedDocuments,<br/>userInfo name as one full-name field]
     Fin -- business error --> FinC{errorCode}
     FinC -- 910001 EMAIL_CODE_INVALID --> E5([throw EmailVerificationError.CodeInvalid<br/>session kept])
     FinC -- 910002 EMAIL_CODE_EXPIRED --> E6([throw EmailVerificationError.CodeExpired])

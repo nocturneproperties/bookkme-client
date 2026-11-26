@@ -2,6 +2,7 @@ package me.bookk.feature.booking.presentation.di
 
 import me.bookk.feature.booking.presentation.BookingStateFactory
 import me.bookk.feature.booking.presentation.factory.WebBookingStateFactory
+import me.bookk.feature.booking.presentation.screen.bookings.BookingsViewModel
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeViewModel
 import me.bookk.feature.booking.presentation.screen.details.BookingAppointmentDetailsViewModel
 import me.bookk.feature.booking.presentation.screen.details.BookingRequestDetailsViewModel
@@ -24,5 +25,6 @@ fun bookingPresentationModule(): Module {
         factoryOf(::BookingSentViewModel)
         factoryOf(::BookingRequestDetailsViewModel)
         factoryOf(::BookingAppointmentDetailsViewModel)
+        factoryOf(::BookingsViewModel)
     }
 }

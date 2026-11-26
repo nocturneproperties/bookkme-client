@@ -5,6 +5,7 @@ import me.bookk.feature.clients.presentation.create.CreateClientViewModel
 import me.bookk.feature.clients.presentation.details.ClientDetailsViewModel
 import me.bookk.feature.clients.presentation.edit.EditClientViewModel
 import me.bookk.feature.clients.presentation.list.ClientsListViewModel
+import me.bookk.feature.clients.presentation.select.SelectClientViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.parameter.parametersOf
@@ -17,10 +18,14 @@ internal actual fun platformClientsDiModule(): Module = module {
     factoryOf(::CreateClientViewModel)
     factoryOf(::ClientDetailsViewModel)
     factoryOf(::EditClientViewModel)
+    factoryOf(::SelectClientViewModel)
 }
 
 @UsedInSwift
 fun clientsListVM(): ClientsListViewModel = KoinPlatform.getKoin().get()
+
+@UsedInSwift
+fun selectClientVM(): SelectClientViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun createClientVM(businessId: Uuid): CreateClientViewModel =

@@ -1,6 +1,7 @@
 package me.bookk.feature.clients.domain.datasource
 
 import kotlinx.coroutines.flow.Flow
+import me.bookk.core.domain.pagination.Page
 import me.bookk.feature.clients.domain.api.entity.Client
 import me.bookk.feature.clients.domain.api.entity.ClientImportEntry
 import me.bookk.feature.clients.domain.api.entity.ClientImportResult
@@ -8,7 +9,7 @@ import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 interface ClientsDataSource {
-    suspend fun getClients(businessId: Uuid): List<Client>
+    suspend fun getClients(businessId: Uuid, search: String?, cursor: String?): Page<Client>
     fun observeClientsDBChanges(businessId: Uuid): Flow<List<Client>>
     suspend fun getClient(id: Uuid): Client
     fun observeClientDBChanges(id: Uuid): Flow<Client?>

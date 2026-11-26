@@ -10,7 +10,13 @@ import me.bookk.core.coroutine.DispatcherProvider
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
+import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.resources.asPhone
+import me.bookk.designsystem.uistate.InputType
+import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.showError
+import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.validate
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetSettings
@@ -25,16 +31,42 @@ class EditProfileViewModel(
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
-    private enum class Field {
-        NAME,
-        LAST,
+    val uiState: EditProfileState = settingsStateFactory.createEditProfileState().setup()
+
+    private var savedName: String? = null
+    private var savedPhone = ""
+
+    private fun EditProfileState.setup() = apply {
+        appBar.title = SettingsRes.strings.settings_edit_profile_title.desc()
+        appBar.onBackClick = weakVMClosure {
+            it.uiState.navigation.push(EditProfileNavigationDestination.Back)
+        }
+        name.label = SettingsRes.strings.settings_edit_profile_full_name.desc()
+        name.onTextChanged = weakVMClosure { vm, text -> vm.onNameTextChanged(text) }
+        setupPhone()
+        setupEmail()
+        confirmButton.text = DesignSystem.strings.action_save.desc()
+        confirmButton.isEnabled = false
+        confirmButton.onClick = weakVMClosure { it.onConfirmButtonClick() }
     }
 
-    val uiState: EditProfileState = settingsStateFactory.createEditProfileState(
-        createInitData(),
-    )
+    private fun EditProfileState.setupPhone() {
+        phone.label = SettingsRes.strings.settings_edit_profile_phone.desc()
+        phone.inputType = InputType.PHONE
+        phone.showPhoneHint()
+        phone.onTextChanged = weakVMClosure { vm, text -> vm.onPhoneTextChanged(text) }
+    }
 
-    private val fieldInitialState = mutableMapOf<Field, String>()
+    private fun EditProfileState.setupEmail() {
+        email.label = SettingsRes.strings.settings_profile_email.desc()
+        email.inputType = InputType.EMAIL
+        email.readOnly = true
+        email.supportingTextRes = SettingsRes.strings.settings_edit_profile_email_hint.desc()
+        changeEmail.text = SettingsRes.strings.settings_edit_profile_change_email.desc()
+        changeEmail.onClick = weakVMClosure {
+            it.uiState.navigation.push(EditProfileNavigationDestination.ChangeEmail)
+        }
+    }
 
     override fun onViewPresented() {
         loadCurrentUserProfile()
@@ -50,88 +82,88 @@ class EditProfileViewModel(
     }
 
     private fun renderProfile(profile: SettingsProfile) {
-        if (fieldInitialState.isNotEmpty()) return
-        fieldInitialState[Field.NAME] = profile.firstName
-        fieldInitialState[Field.LAST] = profile.lastName
-        onFirstNameTextChanged(profile.firstName)
-        onLastNameTextChanged(profile.lastName)
+        uiState.email.text = profile.email
+        if (savedName != null) return
+        val name = FullName.join(profile.firstName, profile.lastName)
+        savedName = name
+        savedPhone = profile.phone
+        uiState.phone.text = profile.phone
+        onNameTextChanged(name)
     }
 
-    fun onFirstNameTextChanged(text: String) {
-        if (fieldInitialState.isEmpty()) return
+    fun onNameTextChanged(text: String) {
+        if (savedName == null) return
         uiState.name.text = text
         uiState.name.clearError()
-        validateButton()
+        updateConfirmButton()
     }
 
-    fun onLastNameTextChanged(text: String) {
-        if (fieldInitialState.isEmpty()) return
-        uiState.lastName.text = text
-        uiState.lastName.clearError()
-        validateButton()
+    fun onPhoneTextChanged(text: String) {
+        if (savedName == null) return
+        uiState.phone.text = text.asPhone()
+        uiState.phone.showPhoneHint()
+        updateConfirmButton()
     }
 
-    private fun validateForm(): Boolean {
-        return listOf(
-            uiState.name.validate(
-                SettingsRes.strings.settings_edit_profile_first_name_error.desc()
-                    .takeIf { !validateName(uiState.name.text).isValid },
-            ),
-            uiState.lastName.validate(
-                SettingsRes.strings.settings_edit_profile_last_name_error.desc()
-                    .takeIf { !validateName(uiState.lastName.text).isValid },
-            ),
-        ).all { it }
+    private fun TextFieldState.showPhoneHint() {
+        clearError()
+        supportingTextRes = SettingsRes.strings.settings_edit_profile_phone_hint.desc()
     }
 
     fun onConfirmButtonClick() {
-        if (!validateForm()) {
-            validateButton()
+        val name = FullName.parse(uiState.name.text)
+        if (!validate(name)) {
+            updateConfirmButton()
             return
         }
+        val text = uiState.name.text
+        val phone = uiState.phone.text
         launch(
             launchIn = DispatcherProvider.io,
-            onStart = {
-                uiState.confirmButton.isLoading = true
-                uiState.confirmButton.isEnabled = false
-            },
+            onStart = { uiState.confirmButton.startLoading() },
             call = {
-                editProfile(
-                    firstName = uiState.name.text,
-                    lastName = uiState.lastName.text,
-                )
+                editProfile(firstName = name.firstName, lastName = name.lastName, phone = phone)
             },
             onComplete = {
                 uiState.notification.add(PresentationNotification.SuccessHaptic)
-                fieldInitialState[Field.NAME] = uiState.name.text
-                fieldInitialState[Field.LAST] = uiState.lastName.text
+                savedName = text
+                savedPhone = phone
                 uiState.navigation.push(EditProfileNavigationDestination.Back)
             },
-            onError = {
-                when (it) {
-                    is EditProfile.Error.ContactAlreadyTaken -> {
-                        showErrorMessage(
-                            SettingsRes.strings.settings_edit_profile_email_taken_error.desc(),
-                        )
-                    }
-
-                    is EditProfile.Error.EmailChangeRequiresVerification -> {
-                        showErrorMessage(
-                            SettingsRes.strings
-                                .settings_edit_profile_email_verification_required_error.desc(),
-                        )
-                    }
-
-                    else -> {
-                        uiState.notification.add(it.notification())
-                    }
-                }
-            },
+            onError = ::onSaveError,
             onTerminate = {
                 uiState.confirmButton.isLoading = false
-                validateButton()
+                updateConfirmButton()
             },
         )
+    }
+
+    private fun validate(name: FullName): Boolean {
+        return uiState.name.validate(
+            SettingsRes.strings.settings_edit_profile_name_error.desc()
+                .takeIf { !validateName(name.firstName).isValid },
+        )
+    }
+
+    private fun onSaveError(error: Throwable) {
+        when (error) {
+            is EditProfile.Error.ContactAlreadyTaken -> {
+                uiState.phone.showError(
+                    SettingsRes.strings.settings_edit_profile_phone_taken_error.desc(),
+                )
+            }
+
+            is EditProfile.Error.EmailChangeRequiresVerification -> {
+                showErrorMessage(
+                    SettingsRes.strings
+                        .settings_edit_profile_email_verification_required_error.desc(),
+                )
+            }
+
+            else -> {
+                uiState.notification.add(error.notification())
+            }
+        }
     }
 
     private fun showErrorMessage(text: StringDesc) {
@@ -143,20 +175,9 @@ class EditProfileViewModel(
         )
     }
 
-    private fun validateButton() {
-        val isChanged = (fieldInitialState[Field.NAME] != uiState.name.text) ||
-            (fieldInitialState[Field.LAST] != uiState.lastName.text)
-        uiState.confirmButton.isEnabled = isChanged &&
-            uiState.name.isValid &&
-            uiState.lastName.isValid
-    }
-
-    companion object {
-        fun createInitData() = EditProfileState.InitData(
-            title = SettingsRes.strings.settings_edit_profile_title.desc(),
-            nameHint = SettingsRes.strings.settings_edit_profile_first_name.desc(),
-            lastNameHint = SettingsRes.strings.settings_edit_profile_last_name.desc(),
-            confirmButtonText = DesignSystem.strings.action_save.desc(),
-        )
+    private fun updateConfirmButton() {
+        val isChanged = savedName != uiState.name.text || savedPhone != uiState.phone.text
+        uiState.confirmButton.isEnabled =
+            isChanged && uiState.name.isValid && uiState.phone.isValid
     }
 }

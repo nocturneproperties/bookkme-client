@@ -10,7 +10,9 @@ The challenge request has two side effects on the backend: it issues the passkey
 minutes) and emails a 6-digit code in the `Accept-Language` language. Calling it again restarts sign-up
 with a new challenge **and** a new code; only the newest code works.
 
-First name, last name and email are trimmed before anything is sent. `UserData.acceptedDocuments` is
+The name is the user's full name in one field and is sent as entered, only trimmed like the email:
+the backend splits it at the first space into the first and last name (the last name may be empty) and
+uses it as the passkey's display name. `UserData.acceptedDocuments` is
 preserved unchanged and kept in the session so [Finish sign-up](finish-sign-up.md) can send it. Legal
 requirements come from [Get signup legal documents](get-sign-up-legal-documents.md); this use case never
 fetches versions and never infers consent.
@@ -23,7 +25,7 @@ when the challenge fails, and cleared on logout (`LogOutAction`).
 
 ```mermaid
 flowchart TD
-    Start([invoke userData]) --> Trim[userData = firstName, lastName, email trimmed]
+    Start([invoke userData]) --> Trim[userData = name, email trimmed]
     Trim --> Ch[RegistrationDataSource.getSignUpPasskeyChallenge<br/>POST /api/auth/passkey/sign_up/challenge]
     Ch -- business error --> ChC{errorCode}
     ChC -- 1 EMAIL_EXIST --> E1([throw StartSignUp.Error.EmailAlreadyExist])

@@ -27,10 +27,8 @@ import com.varabyte.kobweb.compose.ui.modifiers.transition
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.style.CssStyle
-import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.selectors.disabled
 import com.varabyte.kobweb.silk.style.toModifier
-import dev.icerock.moko.resources.ImageResource
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
 import me.bookk.designsystem.theme.webColors
@@ -111,18 +109,17 @@ fun ActionButton(state: ButtonState, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TextButton(state: ButtonState, modifier: Modifier = Modifier, endIcon: ImageResource? = null) {
+fun TextButton(state: ButtonState, modifier: Modifier = Modifier) {
     StateButton(
         state,
         TextButtonStyle
             .toModifier()
             .then(modifier),
-        endIcon,
     )
 }
 
 @Composable
-private fun StateButton(state: ButtonState, modifier: Modifier, endIcon: ImageResource? = null) {
+private fun StateButton(state: ButtonState, modifier: Modifier) {
     if (!state.isVisible) return
     Button(
         modifier.toAttrs {
@@ -136,7 +133,7 @@ private fun StateButton(state: ButtonState, modifier: Modifier, endIcon: ImageRe
             } else {
                 state.icon?.let { Image(it.fileUrl, modifier = Modifier.fontSize(1.em)) }
                 Text(state.text.localized())
-                endIcon?.let { TintedIcon(it, ColorToken.ActionText, Modifier.size(1.em)) }
+                state.endIcon?.let { TintedIcon(it, ColorToken.ActionText, Modifier.size(1.em)) }
             }
         }
     }

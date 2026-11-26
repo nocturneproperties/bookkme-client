@@ -28,7 +28,7 @@ import me.bookk.feature.authorization.domain.api.ResendSignUpCode
 import me.bookk.feature.authorization.domain.api.StartEmailChange
 import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.entity.EmailVerificationError
-import me.bookk.feature.authorization.presentation.AuthStateFactory
+import me.bookk.feature.authorization.presentation.EmailVerificationStateFactory
 import org.koin.core.annotation.InjectedParam
 import kotlin.math.ceil
 import kotlin.time.Clock
@@ -44,7 +44,7 @@ class VerifyEmailViewModel(
     private val startEmailChange: StartEmailChange,
     private val confirmEmailChange: ConfirmEmailChange,
     private val clock: Clock,
-    stateFactory: AuthStateFactory,
+    stateFactory: EmailVerificationStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 

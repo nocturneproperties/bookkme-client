@@ -3,8 +3,8 @@
 # Get booking appointment details
 
 `GetBookingAppointmentDetails.flow(appointmentId)` → appointments' [Get client
-appointment](../appointments/get-client-appointment.md) (local only: Room `appointment` by id, named through
-`business`)
+appointment](../appointments/get-client-appointment.md) (local only: Room `appointment` by id, with its
+`businessName`)
 · called by `BookingAppointmentDetailsViewModel`, the appointment details screen of the client web app; bound by
 `bookingDomainModule()`
 
@@ -19,7 +19,7 @@ never creates one); the screen then goes back.
 
 ```mermaid
 flowchart TD
-    Start([flow appointmentId]) --> Read[GetClientAppointment.flow<br/>appointment by id, named through business]
+    Start([flow appointmentId]) --> Read[GetClientAppointment.flow<br/>appointment by id, with businessName]
     Read --> Cached{appointment with booked services?}
     Cached -- no --> Null([emit null])
     Cached -- yes --> Map[BookingSummary businessName, specialistName,<br/>startsAt = date, endsAt = startsAt + total service duration, note = clientNote,<br/>providedServices grouped by id with count and price x count,<br/>total = adjustment price, else sum of booked services]

@@ -87,19 +87,13 @@ extension AppearanceSection {
 class IOSProfileSection: @MainActor ProfileSection {
 	
 	var email: any StringDesc
-	var lastName: any StringDesc
-	var name: any StringDesc
 	var fullName: any StringDesc
-	var initials: String
 	let edit: any ButtonState
 	
 	
 	init() {
 		email = RawStringDesc(string: "")
-		lastName = RawStringDesc(string: "")
-		name = RawStringDesc(string: "")
 		fullName = RawStringDesc(string: "")
-		initials = ""
 		edit = IOSButtonState()
 	}
 }

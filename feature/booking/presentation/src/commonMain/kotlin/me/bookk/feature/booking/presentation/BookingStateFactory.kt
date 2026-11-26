@@ -1,5 +1,6 @@
 package me.bookk.feature.booking.presentation
 
+import me.bookk.feature.booking.presentation.screen.bookings.BookingsState
 import me.bookk.feature.booking.presentation.screen.datetime.BookingDateTimeState
 import me.bookk.feature.booking.presentation.screen.details.BookingDetailsState
 import me.bookk.feature.booking.presentation.screen.review.BookingReviewState
@@ -14,4 +15,5 @@ interface BookingStateFactory {
     fun createBookingReviewState(): BookingReviewState
     fun createBookingSentState(): BookingSentState
     fun createBookingDetailsState(): BookingDetailsState
+    fun createBookingsState(): BookingsState
 }

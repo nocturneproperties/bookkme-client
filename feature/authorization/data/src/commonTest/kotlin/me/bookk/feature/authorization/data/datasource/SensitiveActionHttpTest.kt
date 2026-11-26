@@ -207,6 +207,6 @@ class SensitiveActionHttpTest {
 
     @Serializable
     private class AccountDeletionBody(
-        @ProtoNumber(1) val confirmationToken: String,
+        @ProtoNumber(3) val confirmationToken: String,
     )
 }

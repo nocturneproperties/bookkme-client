@@ -21,7 +21,7 @@ class ConfirmedOperationsContractTest {
         }
 
         then()
-        assertEquals(listOf("confirmationToken" to 1), fields)
+        assertEquals(listOf("confirmationToken" to 3), fields)
     }
 
     @Test

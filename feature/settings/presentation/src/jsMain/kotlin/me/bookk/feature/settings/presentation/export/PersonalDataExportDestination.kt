@@ -1,6 +1,8 @@
 package me.bookk.feature.settings.presentation.export
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import library.files.api.FileProvider
 import library.telegram.ObserveTelegramNotifications
 import library.telegram.TelegramWebApp
 import me.bookk.core.domain.launch.ConfirmableAction
@@ -9,6 +11,7 @@ import me.bookk.core.presentation.rememberViewModel
 import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.feature.settings.presentation.confirmaction.ConfirmTelegramAction
 import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
+import org.koin.mp.KoinPlatform
 
 @Composable
 fun PersonalDataExportDestination(
@@ -17,6 +20,7 @@ fun PersonalDataExportDestination(
     confirmsInTelegram: Boolean = false,
 ) {
     val viewModel = rememberViewModel<PersonalDataExportViewModel>()
+    val fileProvider = remember { KoinPlatform.getKoin().get<FileProvider>() }
     if (confirmsInTelegram) {
         ConfirmTelegramAction(webApp, ConfirmableAction.EXPORT_PERSONAL_DATA)
     }
@@ -30,7 +34,7 @@ fun PersonalDataExportDestination(
             }
 
             is PersonalDataExportDestinations.Share -> {
-                navigation.saveExport(it.filePath)
+                shareExportFile(fileProvider, it.filePath)
             }
         }
     }

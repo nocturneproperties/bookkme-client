@@ -25,6 +25,7 @@ kotlin {
         }
         jsMain.dependencies {
             implementation(projects.library.telegram)
+            implementation(projects.library.files.api)
             implementation(libs.kobweb.compose.runtime)
             implementation(libs.compose.html.core)
             implementation(libs.kobweb.silk)

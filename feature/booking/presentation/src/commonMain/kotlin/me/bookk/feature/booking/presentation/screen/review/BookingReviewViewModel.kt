@@ -70,13 +70,38 @@ class BookingReviewViewModel(
         )
             .flowOn(DispatcherProvider.io)
             .safeOnEach { (timetable, preparation, message) ->
-                this.timetable = timetable
-                uiState.businessName = timetable.businessName.desc()
-                renderBusinessMessage(timetable, message)
-                renderBooking(timetable, preparation)
+                renderReview(timetable, preparation, message)
             }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun renderReview(
+        timetable: BookingTimetable,
+        preparation: BookingPreparation,
+        message: String?,
+    ) {
+        this.timetable = timetable
+        uiState.businessName = timetable.businessName.desc()
+        renderBusinessMessage(timetable, message)
+        renderBooking(timetable, preparation)
+    }
+
+    private fun renderBusinessMessage(timetable: BookingTimetable, message: String?) {
+        uiState.businessMessage = message?.let {
+            BusinessMessage(
+                title = BookingRes.strings.booking_review_business_message_title
+                    .format(timetable.businessName),
+                text = it.desc(),
+            )
+        }
+    }
+
+    private fun renderBooking(timetable: BookingTimetable, preparation: BookingPreparation) {
+        val summary = summaries.summary(timetable, preparation) ?: return
+        uiState.summary = summary
+        uiState.confirmationNotice = BookingRes.strings.booking_review_confirmation_notice
+            .format(timetable.businessName)
     }
 
     private fun refreshBusinessMessage() {
@@ -104,23 +129,6 @@ class BookingReviewViewModel(
             ),
         )
         uiState.navigation.push(BookingReviewDestinations.Leave)
-    }
-
-    private fun renderBusinessMessage(timetable: BookingTimetable, message: String?) {
-        uiState.businessMessage = message?.let {
-            BusinessMessage(
-                title = BookingRes.strings.booking_review_business_message_title
-                    .format(timetable.businessName),
-                text = it.desc(),
-            )
-        }
-    }
-
-    private fun renderBooking(timetable: BookingTimetable, preparation: BookingPreparation) {
-        val summary = summaries.summary(timetable, preparation) ?: return
-        uiState.summary = summary
-        uiState.confirmationNotice = BookingRes.strings.booking_review_confirmation_notice
-            .format(timetable.businessName)
     }
 
     private fun sendRequest() {

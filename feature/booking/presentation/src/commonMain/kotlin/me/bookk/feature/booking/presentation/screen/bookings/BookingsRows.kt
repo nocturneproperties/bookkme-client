@@ -39,6 +39,11 @@ internal class BookingsRows(
             }
     }
 
+    private fun BookingOverview.monthStart(): LocalDate {
+        val date = summary.startsAt.date
+        return LocalDate(date.year, date.month, 1)
+    }
+
     private fun monthItem(month: LocalDate, today: LocalDate): BookingsListItem.Month {
         val format = if (month.year == today.year) monthFormat else monthYearFormat
         return BookingsListItem.Month(key = "$MONTH_KEY_PREFIX$month", title = format.format(month))
@@ -64,11 +69,6 @@ internal class BookingsRows(
             statusColor = label.color,
             onClick = { onClick(this) },
         )
-    }
-
-    private fun BookingOverview.monthStart(): LocalDate {
-        val date = summary.startsAt.date
-        return LocalDate(date.year, date.month, 1)
     }
 
     private fun BookingPeriod.dayColor(): ColorToken {

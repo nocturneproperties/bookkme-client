@@ -38,8 +38,9 @@ class BusinessLinkViewModel(
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
-    val uiState: BusinessLinkState = stateFactory.createBusinessLinkState().setup()
     private var savedName = ""
+
+    val uiState: BusinessLinkState = stateFactory.createBusinessLinkState().setup()
 
     init {
         observeLink()
@@ -55,9 +56,9 @@ class BusinessLinkViewModel(
         name.inputType = InputType.ASCII
         name.onTextChanged = weakVMClosure { vm, text -> vm.onNameChanged(text) }
         preview = previewOf("")
-        save.isEnabled = false
         refresh.onRefresh = weakVMClosure { it.refreshLink() }
         save.text = DesignSystem.strings.action_save.desc()
+        save.isEnabled = false
         save.onClick = weakVMClosure { it.saveLink() }
         share.text = BusinessRes.strings.business_link_share.desc()
         share.isVisible = false
@@ -70,6 +71,26 @@ class BusinessLinkViewModel(
             .safeOnEach { renderLink(it) }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun renderLink(link: BusinessLink?) {
+        val name = link?.name.orEmpty()
+        if (uiState.name.text == savedName) {
+            showName(name)
+        }
+        savedName = name
+        uiState.share.isVisible = link != null
+    }
+
+    private fun showName(name: String) {
+        uiState.name.text = name
+        uiState.preview = previewOf(name)
+        uiState.save.isEnabled = !uiState.save.isLoading && BusinessLink.isValidName(name)
+    }
+
+    private fun previewOf(name: String): StringDesc {
+        val host = clientAppUrl.value.substringAfter("://")
+        return "$host/${BusinessLink.normalizeName(name)}".desc()
     }
 
     private fun refreshLink() {
@@ -171,28 +192,8 @@ class BusinessLinkViewModel(
         uiState.notifications.add(PresentationNotification.Message.simple(message))
     }
 
-    private fun renderLink(link: BusinessLink?) {
-        val name = link?.name.orEmpty()
-        if (uiState.name.text == savedName) {
-            showName(name)
-        }
-        savedName = name
-        uiState.share.isVisible = link != null
-    }
-
-    private fun showName(name: String) {
-        uiState.name.text = name
-        uiState.preview = previewOf(name)
-        uiState.save.isEnabled = !uiState.save.isLoading && BusinessLink.isValidName(name)
-    }
-
     private fun shareLink() {
         device.share("${clientAppUrl.value}/$savedName")
-    }
-
-    private fun previewOf(name: String): StringDesc {
-        val host = clientAppUrl.value.substringAfter("://")
-        return "$host/${BusinessLink.normalizeName(name)}".desc()
     }
 
     private companion object {

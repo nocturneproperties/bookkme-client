@@ -48,10 +48,6 @@ class BookingSentViewModel(
         }
     }
 
-    private fun returnHome() {
-        uiState.navigation.push(BookingSentDestinations.Home)
-    }
-
     private fun observeSentBooking() {
         getSentBooking.flow(request)
             .flowOn(DispatcherProvider.io)
@@ -68,16 +64,6 @@ class BookingSentViewModel(
             statusColor = status.color(),
             onClick = weakVMClosure { it.uiState.navigation.push(detailsDestination()) },
         )
-    }
-
-    private fun SentBooking.detailsDestination(): BookingSentDestinations {
-        return when (status) {
-            SentBooking.Status.WAITING_FOR_CONFIRMATION -> BookingSentDestinations.RequestDetails(
-                id,
-            )
-
-            SentBooking.Status.CONFIRMED -> BookingSentDestinations.AppointmentDetails(id)
-        }
     }
 
     private fun SentBooking.details(): StringDesc {
@@ -114,6 +100,22 @@ class BookingSentViewModel(
             SentBooking.Status.WAITING_FOR_CONFIRMATION -> ColorToken.SecondaryText
             SentBooking.Status.CONFIRMED -> ColorToken.Success
         }
+    }
+
+    private fun SentBooking.detailsDestination(): BookingSentDestinations {
+        return when (status) {
+            SentBooking.Status.WAITING_FOR_CONFIRMATION -> {
+                BookingSentDestinations.RequestDetails(id)
+            }
+
+            SentBooking.Status.CONFIRMED -> {
+                BookingSentDestinations.AppointmentDetails(id)
+            }
+        }
+    }
+
+    private fun returnHome() {
+        uiState.navigation.push(BookingSentDestinations.Home)
     }
 
     private companion object {

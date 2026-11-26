@@ -78,38 +78,6 @@ class BookingServicesViewModel(
             .observe()
     }
 
-    private fun restoreSavedServices() {
-        getBookingPreparation.flow(businessId)
-            .take(1)
-            .flowOn(DispatcherProvider.io)
-            .safeOnEach { renderSavedServices(it) }
-            .observe()
-    }
-
-    private fun loadCatalog() {
-        loadList(
-            listState = uiState.groups,
-            notifications = uiState.notifications,
-            call = { getBookingCatalog.refresh(businessId).groups },
-        )
-    }
-
-    private fun saveServicesAndContinue() {
-        val services = uiState.services.selectedItems.map {
-            PreparedService(it.item.service, it.quantity)
-        }
-        launch(
-            key = SAVE_SERVICES_KEY,
-            launchBehaviour = LaunchBehaviour.DropLatest,
-            launchIn = DispatcherProvider.io,
-            call = { setBookingServices(businessId, services) },
-            onComplete = {
-                uiState.navigation.push(BookingServicesDestinations.Specialist(businessId))
-            },
-            onError = { uiState.notifications.add(it.notification()) },
-        )
-    }
-
     private fun renderCatalog(catalog: BookingCatalog) {
         uiState.businessName = catalog.businessName?.desc()
         if (catalog.groups.isEmpty() && uiState.groups.isInitialLoading) return
@@ -118,15 +86,6 @@ class BookingServicesViewModel(
         uiState.services.replaceOptions(options)
         uiState.services.replaceSelected(stillOffered(options))
         uiState.groups.replace(groups)
-        uiState.renderSelection()
-    }
-
-    private fun renderSavedServices(preparation: BookingPreparation) {
-        uiState.services.replaceSelected(
-            preparation.services.map {
-                uiState.services.createPickedItem(serviceOption(it.service), it.quantity)
-            },
-        )
         uiState.renderSelection()
     }
 
@@ -159,10 +118,51 @@ class BookingServicesViewModel(
         }
     }
 
+    private fun restoreSavedServices() {
+        getBookingPreparation.flow(businessId)
+            .take(1)
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { renderSavedServices(it) }
+            .observe()
+    }
+
+    private fun renderSavedServices(preparation: BookingPreparation) {
+        uiState.services.replaceSelected(
+            preparation.services.map {
+                uiState.services.createPickedItem(serviceOption(it.service), it.quantity)
+            },
+        )
+        uiState.renderSelection()
+    }
+
     private fun BookingServicesState.renderSelection() {
         val picked = services.selectedUnits().map { it.service }
         total = picked.bookingTotal()
         continueButton.isEnabled = picked.isNotEmpty()
+    }
+
+    private fun loadCatalog() {
+        loadList(
+            listState = uiState.groups,
+            notifications = uiState.notifications,
+            call = { getBookingCatalog.refresh(businessId).groups },
+        )
+    }
+
+    private fun saveServicesAndContinue() {
+        val services = uiState.services.selectedItems.map {
+            PreparedService(it.item.service, it.quantity)
+        }
+        launch(
+            key = SAVE_SERVICES_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
+            launchIn = DispatcherProvider.io,
+            call = { setBookingServices(businessId, services) },
+            onComplete = {
+                uiState.navigation.push(BookingServicesDestinations.Specialist(businessId))
+            },
+            onError = { uiState.notifications.add(it.notification()) },
+        )
     }
 
     private companion object {

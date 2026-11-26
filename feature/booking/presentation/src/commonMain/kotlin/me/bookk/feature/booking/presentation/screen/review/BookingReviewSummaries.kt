@@ -48,12 +48,13 @@ internal class BookingReviewSummaries(
             timeFormat.format(endsAt.time),
         )
         return when (val specialist = timetable.specialist) {
-            null -> timeRange
+            null -> {
+                timeRange
+            }
 
-            else -> BookingRes.strings.booking_review_details.format(
-                timeRange,
-                specialist.fullName(),
-            )
+            else -> {
+                BookingRes.strings.booking_review_details.format(timeRange, specialist.fullName())
+            }
         }
     }
 
@@ -66,15 +67,15 @@ internal class BookingReviewSummaries(
         )
     }
 
-    private fun PreparedService.previousPrice(): StringDesc? {
-        if (approvedPrice == service.price) return null
-        return (approvedPrice * quantity).toString().desc()
-    }
-
     private fun PreparedService.name(): StringDesc {
         return when (quantity) {
             1 -> service.name.desc()
             else -> BookingRes.strings.booking_review_service_count.format(service.name, quantity)
         }
+    }
+
+    private fun PreparedService.previousPrice(): StringDesc? {
+        if (approvedPrice == service.price) return null
+        return (approvedPrice * quantity).toString().desc()
     }
 }

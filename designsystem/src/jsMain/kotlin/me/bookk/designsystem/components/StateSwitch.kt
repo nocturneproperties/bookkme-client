@@ -29,14 +29,15 @@ import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun StateSwitch(state: BooleanState, modifier: Modifier = Modifier) {
-    if (!state.isVisible) return
-    Column(modifier.gap(0.25.cssRem)) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextBlock(state.text, BodyLargeTextStyle.toModifier())
-            Spacer()
-            StateToggle(state)
+    if (state.isVisible) {
+        Column(modifier.gap(0.25.cssRem)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                TextBlock(state.text, BodyLargeTextStyle.toModifier())
+                Spacer()
+                StateToggle(state)
+            }
+            SupportingText(state.supportingTextRes, state.validationState)
         }
-        SupportingText(state.supportingTextRes, state.validationState)
     }
 }
 
@@ -59,21 +60,22 @@ val CheckBoxStyle = CssStyle {
 
 @Composable
 fun CheckBox(state: BooleanState, modifier: Modifier = Modifier) {
-    if (!state.isVisible) return
-    Column(modifier.gap(0.25.cssRem)) {
-        Checkbox(
-            checked = state.isChecked,
-            onCheckedChange = { state.onCheckedChange?.invoke(it) },
-            modifier = checkBoxModifier(),
-            enabled = state.isEnabled,
-            size = CheckboxSize.LG,
-            borderColor = checkBoxBorder(state.validationState).themed,
-            uncheckedColor = Colors.Transparent,
-            iconColor = ColorToken.OnAction.themed,
-        ) {
-            Text(state.text.localized())
+    if (state.isVisible) {
+        Column(modifier.gap(0.25.cssRem)) {
+            Checkbox(
+                checked = state.isChecked,
+                onCheckedChange = { state.onCheckedChange?.invoke(it) },
+                modifier = checkBoxModifier(),
+                enabled = state.isEnabled,
+                size = CheckboxSize.LG,
+                borderColor = checkBoxBorder(state.validationState).themed,
+                uncheckedColor = Colors.Transparent,
+                iconColor = ColorToken.OnAction.themed,
+            ) {
+                Text(state.text.localized())
+            }
+            SupportingText(state.supportingTextRes, state.validationState)
         }
-        SupportingText(state.supportingTextRes, state.validationState)
     }
 }
 

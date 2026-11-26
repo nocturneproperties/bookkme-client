@@ -134,17 +134,17 @@ private fun <T : PickerPresentation> PickedItemRow(
 ) {
     if (!state.isEditable || !state.isQuantityEditable) {
         itemContent(picked.item) { state.onItemsRemoveRequested(listOf(picked.item)) }
-        return
-    }
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.weight(1f)) {
-            itemContent(picked.item, null)
+    } else {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) {
+                itemContent(picked.item, null)
+            }
+            QuantityStepper(
+                quantity = picked.quantity,
+                onIncrease = { state.onQuantityIncreaseRequested(picked.item) },
+                onDecrease = { state.onQuantityDecreaseRequested(picked.item) },
+                modifier = Modifier.padding(end = 8.dp),
+            )
         }
-        QuantityStepper(
-            quantity = picked.quantity,
-            onIncrease = { state.onQuantityIncreaseRequested(picked.item) },
-            onDecrease = { state.onQuantityDecreaseRequested(picked.item) },
-            modifier = Modifier.padding(end = 8.dp),
-        )
     }
 }

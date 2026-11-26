@@ -101,24 +101,25 @@ private fun <T> ListStates(
     modifier: Modifier,
     content: @Composable (ItemAppearance) -> Unit,
 ) {
-    if (!state.isVisible) return
-    val appearance = rememberItemAppearance(
-        isShown =
-        !state.isInitialLoading || state.errorState != null,
-    )
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .gap(0.5.cssRem)
-            .then(modifier),
-    ) {
-        val errorState = state.errorState
-        val emptyState = state.emptyState
-        when {
-            errorState != null -> ErrorStateView(errorState)
-            state.isInitialLoading -> InitialLoadingView()
-            state.items.isEmpty() && emptyState != null -> EmptyStateView(emptyState)
-            else -> ListContent(state, appearance, content)
+    if (state.isVisible) {
+        val appearance = rememberItemAppearance(
+            isShown =
+            !state.isInitialLoading || state.errorState != null,
+        )
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .gap(0.5.cssRem)
+                .then(modifier),
+        ) {
+            val errorState = state.errorState
+            val emptyState = state.emptyState
+            when {
+                errorState != null -> ErrorStateView(errorState)
+                state.isInitialLoading -> InitialLoadingView()
+                state.items.isEmpty() && emptyState != null -> EmptyStateView(emptyState)
+                else -> ListContent(state, appearance, content)
+            }
         }
     }
 }
@@ -131,8 +132,10 @@ private fun <T> ListContent(
 ) {
     state.bannerError?.let { BannerErrorView(it) }
     content(appearance)
-    val loadMore = state.loadMore ?: return
-    key(state.items.size) { LoadMoreTrigger(loadMore) }
+    val loadMore = state.loadMore
+    if (loadMore != null) {
+        key(state.items.size) { LoadMoreTrigger(loadMore) }
+    }
 }
 
 @Composable

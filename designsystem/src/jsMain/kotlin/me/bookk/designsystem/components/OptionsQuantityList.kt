@@ -57,19 +57,20 @@ fun <T : PickerPresentation> OptionsQuantityList(
     modifier: Modifier = Modifier,
     itemContent: @Composable (T) -> Unit,
 ) {
-    if (!state.isVisible) return
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .gap(0.5.cssRem)
-            .then(modifier),
-    ) {
-        Header(title)
-        OptionsQuantityPlaceholder(state.placeholder, options)
-        val appearance = rememberItemAppearance()
-        options.forEach { option ->
-            AppearingItem(appearance, option.pickerItemId) {
-                OptionsQuantityRow(state, option, itemContent)
+    if (state.isVisible) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .gap(0.5.cssRem)
+                .then(modifier),
+        ) {
+            Header(title)
+            OptionsQuantityPlaceholder(state.placeholder, options)
+            val appearance = rememberItemAppearance()
+            options.forEach { option ->
+                AppearingItem(appearance, option.pickerItemId) {
+                    OptionsQuantityRow(state, option, itemContent)
+                }
             }
         }
     }
@@ -77,18 +78,19 @@ fun <T : PickerPresentation> OptionsQuantityList(
 
 @Composable
 private fun OptionsQuantityPlaceholder(placeholder: StringDesc?, options: List<*>) {
-    if (placeholder == null || options.isNotEmpty()) return
-    AppCard(
-        Modifier
-            .fillMaxWidth()
-            .padding(1.cssRem),
-    ) {
-        TextBlock(
-            placeholder,
-            BodyLargeTextStyle
-                .toModifier()
-                .secondary(),
-        )
+    if (placeholder != null && options.isEmpty()) {
+        AppCard(
+            Modifier
+                .fillMaxWidth()
+                .padding(1.cssRem),
+        ) {
+            TextBlock(
+                placeholder,
+                BodyLargeTextStyle
+                    .toModifier()
+                    .secondary(),
+            )
+        }
     }
 }
 

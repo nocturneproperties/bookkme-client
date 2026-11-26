@@ -94,19 +94,20 @@ private fun BottomButton(
     state: ButtonState,
     style: TelegramButtonStyle,
 ) {
-    if (!LocalIsCurrentScreen.current) return
-    val spec = state.bottomButtonSpec(state.text.localized(), style.tokens().themed())
-    val onClick by rememberUpdatedState(state.onClick)
-    DisposableEffect(button) {
-        val onPressed = { onClick?.invoke() ?: Unit }
-        button.onClick(onPressed)
-        onDispose {
-            button.offClick(onPressed)
-            button.hide()
+    if (LocalIsCurrentScreen.current) {
+        val spec = state.bottomButtonSpec(state.text.localized(), style.tokens().themed())
+        val onClick by rememberUpdatedState(state.onClick)
+        DisposableEffect(button) {
+            val onPressed = { onClick?.invoke() ?: Unit }
+            button.onClick(onPressed)
+            onDispose {
+                button.offClick(onPressed)
+                button.hide()
+            }
         }
-    }
-    LaunchedEffect(button, spec) {
-        button.render(spec)
+        LaunchedEffect(button, spec) {
+            button.render(spec)
+        }
     }
 }
 

@@ -47,17 +47,18 @@ val InfoCardOnlyLineStyle = CssStyle.base {
 
 @Composable
 fun InfoCard(lines: List<InfoLine>, modifier: Modifier = Modifier) {
-    if (lines.isEmpty()) return
-    AppCard(
-        Modifier
-            .fillMaxWidth()
-            .padding(0.px)
-            .gap(0.px)
-            .then(modifier),
-    ) {
-        lines.forEachIndexed { index, line ->
-            InfoCardLine(line, isOnlyLine = lines.size == 1)
-            if (index != lines.lastIndex) InsetDivider()
+    if (lines.isNotEmpty()) {
+        AppCard(
+            Modifier
+                .fillMaxWidth()
+                .padding(0.px)
+                .gap(0.px)
+                .then(modifier),
+        ) {
+            lines.forEachIndexed { index, line ->
+                InfoCardLine(line, isOnlyLine = lines.size == 1)
+                if (index != lines.lastIndex) InsetDivider()
+            }
         }
     }
 }
@@ -79,15 +80,15 @@ fun InfoCardLine(line: InfoLine, isOnlyLine: Boolean = false) {
     val onClick = line.onClick
     if (onClick == null) {
         InfoCardLineContent(line, isOnlyLine)
-        return
-    }
-    Button(
-        ListRowButtonStyle
-            .toModifier()
-            .padding(0.px)
-            .toAttrs { onClick { onClick() } },
-    ) {
-        InfoCardLineContent(line, isOnlyLine)
+    } else {
+        Button(
+            ListRowButtonStyle
+                .toModifier()
+                .padding(0.px)
+                .toAttrs { onClick { onClick() } },
+        ) {
+            InfoCardLineContent(line, isOnlyLine)
+        }
     }
 }
 

@@ -5,7 +5,6 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import dev.icerock.moko.resources.format
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +49,8 @@ class PersonalDataExportViewModel(
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
-    val uiState = stateFactory.createPersonalDataExportState().setup()
+    val uiState: PersonalDataExportState = stateFactory.createPersonalDataExportState().setup()
+
     private val exportRequest = ChatConfirmationRequest(
         viewModel = this,
         key = OPERATION_KEY,
@@ -61,6 +61,7 @@ class PersonalDataExportViewModel(
         onCompleted = { uiState.notifications.add(PresentationNotification.SuccessHaptic) },
         onError = { handleRequestError(it) },
     )
+
     private var exportStatus = DataExportStatus.NONE
     private var hasCheckedOpeningStatus = false
     private val isViewPresented = MutableStateFlow(false)
@@ -77,52 +78,7 @@ class PersonalDataExportViewModel(
         isViewPresented.value = false
     }
 
-    private fun observeExport() {
-        getExport.flow()
-            .flowOn(DispatcherProvider.io)
-            .reemitWhenCooldownEnds()
-            .safeOnEach {
-                render(it)
-                refreshUnknownOpeningStatus(it)
-            }
-            .onError { showLoadError(it) }
-            .pollWhileRunning()
-            .safeOnEach { refreshStatus() }
-            .observe()
-    }
-
-    private fun refreshUnknownOpeningStatus(export: DataExport?) {
-        if (hasCheckedOpeningStatus) return
-        hasCheckedOpeningStatus = true
-        if (export == null || export.status == DataExportStatus.RUNNING) {
-            refreshStatus()
-        }
-    }
-
-    private fun Flow<DataExport?>.reemitWhenCooldownEnds(): Flow<DataExport?> {
-        return transformLatest { export ->
-            emit(export)
-            val cooldownLeft = export?.availableAgainAt?.minus(clock.now())
-            if (cooldownLeft != null && cooldownLeft.isPositive()) {
-                delay(cooldownLeft)
-                emit(export)
-            }
-        }
-    }
-
-    private fun Flow<DataExport?>.pollWhileRunning(): Flow<Unit> {
-        return map { it?.status == DataExportStatus.RUNNING }
-            .combine(isViewPresented) { isRunning, isPresented -> isRunning && isPresented }
-            .distinctUntilChanged()
-            .transformLatest { shouldPoll ->
-                while (shouldPoll) {
-                    delay(STATUS_POLL_INTERVAL)
-                    emit(Unit)
-                }
-            }
-    }
-
-    private fun PersonalDataExportState.setup(): PersonalDataExportState = apply {
+    private fun PersonalDataExportState.setup() = apply {
         appBar.title = SettingsRes.strings.settings_export_title.desc()
         appBar.onBackClick = weakVMClosure {
             it.uiState.navigation.push(PersonalDataExportDestinations.Back)
@@ -143,6 +99,112 @@ class PersonalDataExportViewModel(
         retry.onClick = weakVMClosure { it.refreshStatus() }
     }
 
+    private fun observeExport() {
+        getExport.flow()
+            .flowOn(DispatcherProvider.io)
+            .reemitWhenCooldownEnds()
+            .safeOnEach {
+                render(it)
+                refreshUnknownOpeningStatus(it)
+            }
+            .onError { showLoadError(it) }
+            .pollWhileRunning()
+            .safeOnEach { refreshStatus() }
+            .observe()
+    }
+
+    private fun Flow<DataExport?>.reemitWhenCooldownEnds(): Flow<DataExport?> {
+        return transformLatest { export ->
+            emit(export)
+            val cooldownLeft = export?.availableAgainAt?.minus(clock.now())
+            if (cooldownLeft != null && cooldownLeft.isPositive()) {
+                delay(cooldownLeft)
+                emit(export)
+            }
+        }
+    }
+
+    private fun render(export: DataExport?) {
+        val cooldownEnd = export?.availableAgainAt?.takeIf { it > clock.now() }
+        exportStatus = export?.status ?: DataExportStatus.NONE
+        uiState.expiry = export?.expiresAt?.let { formatDate(it).desc() }
+        uiState.requestAvailability = requestAvailability(exportStatus, cooldownEnd)
+        uiState.error = null
+        uiState.retry.isVisible = false
+        renderStatus(stageOf(exportStatus, cooldownEnd), canRequest = cooldownEnd == null)
+    }
+
+    private fun requestAvailability(status: DataExportStatus, cooldownEnd: Instant?): StringDesc? {
+        return when (status) {
+            DataExportStatus.RUNNING,
+            DataExportStatus.READY,
+            -> {
+                SettingsRes.strings.settings_export_request_after_expiry.desc()
+            }
+
+            DataExportStatus.NONE,
+            DataExportStatus.FAILED,
+            -> {
+                cooldownEnd?.let {
+                    SettingsRes.strings.settings_export_cooldown.format(formatDate(it))
+                }
+            }
+        }
+    }
+
+    private fun stageOf(status: DataExportStatus, cooldownEnd: Instant?): UIExportStage {
+        return when (status) {
+            DataExportStatus.NONE -> {
+                if (cooldownEnd == null) UIExportStage.REQUEST else UIExportStage.EXPIRED
+            }
+
+            DataExportStatus.RUNNING -> {
+                UIExportStage.PREPARING
+            }
+
+            DataExportStatus.READY -> {
+                UIExportStage.READY
+            }
+
+            DataExportStatus.FAILED -> {
+                UIExportStage.FAILED
+            }
+        }
+    }
+
+    private fun renderStatus(stage: UIExportStage, canRequest: Boolean) {
+        val isReady = stage == UIExportStage.READY
+        val isRequestable = canRequest && stage in REQUESTABLE_STAGES
+        uiState.status = UIExportStatus(stage, canRequest)
+        uiState.download.isVisible = isReady
+        uiState.request.isVisible = isRequestable
+    }
+
+    private fun refreshUnknownOpeningStatus(export: DataExport?) {
+        if (hasCheckedOpeningStatus) return
+        hasCheckedOpeningStatus = true
+        if (export == null || export.status == DataExportStatus.RUNNING) {
+            refreshStatus()
+        }
+    }
+
+    private fun showLoadError(error: Throwable) {
+        uiState.retry.isVisible = exportStatus != DataExportStatus.RUNNING
+        showError(error, SettingsRes.strings.settings_export_load_error)
+    }
+
+    private fun Flow<DataExport?>.pollWhileRunning(): Flow<Unit> {
+        return map { it?.status == DataExportStatus.RUNNING }
+            .combine(isViewPresented) { isRunning, isPresented -> isRunning && isPresented }
+            .distinctUntilChanged()
+            .transformLatest { shouldPoll ->
+                while (shouldPoll) {
+                    delay(STATUS_POLL_INTERVAL)
+                    emit(Unit)
+                }
+            }
+    }
+
     private fun refreshStatus() {
         launch(
             key = OPERATION_KEY,
@@ -160,70 +222,6 @@ class PersonalDataExportViewModel(
                 uiState.request.isEnabled = exportRequest.canSend()
                 uiState.download.isEnabled = true
             },
-        )
-    }
-
-    private fun render(export: DataExport?) {
-        val cooldownEnd = export?.availableAgainAt?.takeIf { it > clock.now() }
-        exportStatus = export?.status ?: DataExportStatus.NONE
-        uiState.expiry = export?.expiresAt?.let { formatDate(it).desc() }
-        uiState.requestAvailability = requestAvailability(exportStatus, cooldownEnd)
-        uiState.error = null
-        uiState.retry.isVisible = false
-        renderStatus(stageOf(exportStatus, cooldownEnd), canRequest = cooldownEnd == null)
-    }
-
-    private fun stageOf(status: DataExportStatus, cooldownEnd: Instant?): UIExportStage {
-        return when (status) {
-            DataExportStatus.NONE -> if (cooldownEnd == null) {
-                UIExportStage.REQUEST
-            } else {
-                UIExportStage.EXPIRED
-            }
-
-            DataExportStatus.RUNNING -> UIExportStage.PREPARING
-
-            DataExportStatus.READY -> UIExportStage.READY
-
-            DataExportStatus.FAILED -> UIExportStage.FAILED
-        }
-    }
-
-    private fun requestAvailability(status: DataExportStatus, cooldownEnd: Instant?): StringDesc? {
-        return when (status) {
-            DataExportStatus.RUNNING,
-            DataExportStatus.READY,
-            -> SettingsRes.strings.settings_export_request_after_expiry.desc()
-
-            DataExportStatus.NONE,
-            DataExportStatus.FAILED,
-            -> cooldownEnd?.let {
-                SettingsRes.strings.settings_export_cooldown.format(formatDate(it))
-            }
-        }
-    }
-
-    private fun renderStatus(stage: UIExportStage, canRequest: Boolean) {
-        val isReady = stage == UIExportStage.READY
-        val isRequestable = canRequest && stage in REQUESTABLE_STAGES
-        uiState.status = UIExportStatus(stage, canRequest)
-        uiState.download.isVisible = isReady
-        uiState.request.isVisible = isRequestable
-    }
-
-    private fun showLoadError(error: Throwable) {
-        uiState.retry.isVisible = exportStatus != DataExportStatus.RUNNING
-        showError(error, SettingsRes.strings.settings_export_load_error)
-    }
-
-    private fun showRetryableError(message: StringDesc) {
-        uiState.retry.isVisible = true
-        uiState.error = message
-    }
-
-    private fun formatDate(instant: Instant): String {
-        return dateLocalizer.forStyle(DateStyle.MEDIUM).format(
-            instant.toLocalDateTime(TimeZone.currentSystemDefault()),
         )
     }
 
@@ -264,28 +262,47 @@ class PersonalDataExportViewModel(
             onComplete = {
                 uiState.navigation.push(PersonalDataExportDestinations.Share(it.toString()))
             },
-            onError = {
-                if (it is DownloadPersonalDataExport.Error.NotReady) {
-                    renderStatus(UIExportStage.REQUEST, canRequest = false)
-                    showRetryableError(SettingsRes.strings.settings_export_unavailable.desc())
-                } else {
-                    showError(it, SettingsRes.strings.settings_export_download_error)
-                }
-            },
+            onError = { handleDownloadError(it) },
             onTerminate = { uiState.download.stopLoading() },
         )
     }
 
+    private fun handleDownloadError(error: Throwable) {
+        when (error) {
+            is DownloadPersonalDataExport.Error.NotReady -> {
+                renderStatus(UIExportStage.REQUEST, canRequest = false)
+                showRetryableError(SettingsRes.strings.settings_export_unavailable.desc())
+            }
+
+            else -> {
+                showError(error, SettingsRes.strings.settings_export_download_error)
+            }
+        }
+    }
+
+    private fun showRetryableError(message: StringDesc) {
+        uiState.retry.isVisible = true
+        uiState.error = message
+    }
+
     private fun showError(error: Throwable, message: StringResource) {
         when (error) {
-            is Error.Ignore, is CancellationException -> Unit
+            is Error.Ignore, is CancellationException -> {}
 
-            is Error.Unauthorized, is Error.BusinessAccessSuspended -> uiState.notifications.add(
-                error.notification(),
-            )
+            is Error.Unauthorized, is Error.BusinessAccessSuspended -> {
+                uiState.notifications.add(error.notification())
+            }
 
-            else -> uiState.error = message.desc()
+            else -> {
+                uiState.error = message.desc()
+            }
         }
+    }
+
+    private fun formatDate(instant: Instant): String {
+        return dateLocalizer.forStyle(DateStyle.MEDIUM).format(
+            instant.toLocalDateTime(TimeZone.currentSystemDefault()),
+        )
     }
 
     companion object {

@@ -66,8 +66,7 @@ class ClientHomeViewModel(
         settingsButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Settings)
         }
-        allBookingsButton.text =
-            DashboardRes.strings.dashboard_client_home_all_bookings.desc()
+        allBookingsButton.text = DashboardRes.strings.dashboard_client_home_all_bookings.desc()
         allBookingsButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Bookings)
         }
@@ -75,8 +74,7 @@ class ClientHomeViewModel(
             image = DesignSystem.images.empty,
             label = DashboardRes.strings.dashboard_client_home_no_upcoming.desc(),
         )
-        allBusinessesButton.text =
-            DashboardRes.strings.dashboard_client_home_all_businesses.desc()
+        allBusinessesButton.text = DashboardRes.strings.dashboard_client_home_all_businesses.desc()
         allBusinessesButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Businesses)
         }
@@ -124,18 +122,6 @@ class ClientHomeViewModel(
         )
     }
 
-    private fun UpcomingBooking.detailsDestination(): ClientHomeDestinations {
-        return when (status) {
-            UpcomingBooking.Status.WAITING_FOR_CONFIRMATION -> {
-                ClientHomeDestinations.RequestDetails(id)
-            }
-
-            UpcomingBooking.Status.CONFIRMED -> {
-                ClientHomeDestinations.AppointmentDetails(id)
-            }
-        }
-    }
-
     private fun summary(booking: UpcomingBooking): StringDesc {
         val time = timeFormatter.format(booking.date.time)
         val format = DashboardRes.strings.dashboard_client_home_time_and_services
@@ -146,6 +132,37 @@ class ClientHomeViewModel(
         return services.groupBy { it.id }.values.joinToString(", ") { sameServices ->
             val name = sameServices.first().name
             if (sameServices.size == 1) name else "$name × ${sameServices.size}"
+        }
+    }
+
+    private fun UpcomingBooking.Status.label(): StringDesc {
+        return when (this) {
+            UpcomingBooking.Status.CONFIRMED -> {
+                DashboardRes.strings.dashboard_client_home_status_confirmed.desc()
+            }
+
+            UpcomingBooking.Status.WAITING_FOR_CONFIRMATION -> {
+                DashboardRes.strings.dashboard_client_home_status_waiting.desc()
+            }
+        }
+    }
+
+    private fun UpcomingBooking.Status.color(): ColorToken {
+        return when (this) {
+            UpcomingBooking.Status.CONFIRMED -> ColorToken.Success
+            UpcomingBooking.Status.WAITING_FOR_CONFIRMATION -> ColorToken.SecondaryText
+        }
+    }
+
+    private fun UpcomingBooking.detailsDestination(): ClientHomeDestinations {
+        return when (status) {
+            UpcomingBooking.Status.WAITING_FOR_CONFIRMATION -> {
+                ClientHomeDestinations.RequestDetails(id)
+            }
+
+            UpcomingBooking.Status.CONFIRMED -> {
+                ClientHomeDestinations.AppointmentDetails(id)
+            }
         }
     }
 
@@ -201,14 +218,6 @@ class ClientHomeViewModel(
         )
     }
 
-    private fun loadSavedBusinesses() {
-        loadList(
-            listState = uiState.businesses,
-            notifications = uiState.notifications,
-            call = { getSavedBusinesses.refresh() },
-        )
-    }
-
     private fun openLaunchParameterOrLoadBusinesses() {
         when (val launch = LaunchParameter.parse(startParameter)) {
             is LaunchParameter.Business -> openLaunchBusiness(launch.id)
@@ -217,39 +226,6 @@ class ClientHomeViewModel(
             LaunchParameter.UnsupportedOperation -> explainUnsupportedLaunch()
             LaunchParameter.None -> loadSavedBusinesses()
         }
-    }
-
-    private fun openLaunchConfirmation(action: ConfirmableAction) {
-        uiState.navigation.push(ClientHomeDestinations.ConfirmAction(action))
-        loadSavedBusinesses()
-    }
-
-    private fun explainUnsupportedLaunch() {
-        uiState.notifications.add(
-            PresentationNotification.Message.simple(
-                DashboardRes.strings.dashboard_client_home_link_unsupported.desc(),
-            ),
-        )
-        loadSavedBusinesses()
-    }
-
-    private fun openLaunchLink(name: String) {
-        launch(
-            launchIn = DispatcherProvider.io,
-            call = { resolveBusinessLink(name) },
-            onComplete = { openLaunchBusiness(it.businessId) },
-            onError = {
-                uiState.notifications.add(resolveErrorNotification(it))
-                loadSavedBusinesses()
-            },
-        )
-    }
-
-    private fun resolveErrorNotification(error: Throwable): PresentationNotification {
-        if (error !is ResolveBusinessLink.Error.NotFound) return error.notification()
-        return PresentationNotification.Message.simple(
-            DashboardRes.strings.dashboard_client_home_link_not_found.desc(),
-        )
     }
 
     private fun openLaunchBusiness(businessId: Uuid) {
@@ -285,23 +261,45 @@ class ClientHomeViewModel(
         return PresentationNotification.Message.simple(message)
     }
 
-    private fun UpcomingBooking.Status.label(): StringDesc {
-        return when (this) {
-            UpcomingBooking.Status.CONFIRMED -> {
-                DashboardRes.strings.dashboard_client_home_status_confirmed.desc()
-            }
-
-            UpcomingBooking.Status.WAITING_FOR_CONFIRMATION -> {
-                DashboardRes.strings.dashboard_client_home_status_waiting.desc()
-            }
-        }
+    private fun openLaunchLink(name: String) {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { resolveBusinessLink(name) },
+            onComplete = { openLaunchBusiness(it.businessId) },
+            onError = {
+                uiState.notifications.add(resolveErrorNotification(it))
+                loadSavedBusinesses()
+            },
+        )
     }
 
-    private fun UpcomingBooking.Status.color(): ColorToken {
-        return when (this) {
-            UpcomingBooking.Status.CONFIRMED -> ColorToken.Success
-            UpcomingBooking.Status.WAITING_FOR_CONFIRMATION -> ColorToken.SecondaryText
-        }
+    private fun resolveErrorNotification(error: Throwable): PresentationNotification {
+        if (error !is ResolveBusinessLink.Error.NotFound) return error.notification()
+        return PresentationNotification.Message.simple(
+            DashboardRes.strings.dashboard_client_home_link_not_found.desc(),
+        )
+    }
+
+    private fun openLaunchConfirmation(action: ConfirmableAction) {
+        uiState.navigation.push(ClientHomeDestinations.ConfirmAction(action))
+        loadSavedBusinesses()
+    }
+
+    private fun explainUnsupportedLaunch() {
+        uiState.notifications.add(
+            PresentationNotification.Message.simple(
+                DashboardRes.strings.dashboard_client_home_link_unsupported.desc(),
+            ),
+        )
+        loadSavedBusinesses()
+    }
+
+    private fun loadSavedBusinesses() {
+        loadList(
+            listState = uiState.businesses,
+            notifications = uiState.notifications,
+            call = { getSavedBusinesses.refresh() },
+        )
     }
 
     private companion object {

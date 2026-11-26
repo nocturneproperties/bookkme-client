@@ -3,13 +3,12 @@ package me.bookk.feature.settings.presentation.export
 import androidx.compose.runtime.Composable
 import com.varabyte.kobweb.compose.css.BoxSizing
 import com.varabyte.kobweb.compose.css.FontWeight
+import com.varabyte.kobweb.compose.css.TextAlign
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
 import com.varabyte.kobweb.compose.ui.modifiers.boxSizing
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
@@ -19,6 +18,8 @@ import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.minWidth
 import com.varabyte.kobweb.compose.ui.modifiers.padding
+import com.varabyte.kobweb.compose.ui.modifiers.size
+import com.varabyte.kobweb.compose.ui.modifiers.textAlign
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.GeneralKind
 import com.varabyte.kobweb.silk.style.toModifier
@@ -35,19 +36,17 @@ import me.bookk.designsystem.components.Heading
 import me.bookk.designsystem.components.HeadingLevel
 import me.bookk.designsystem.components.HorizontalDivider
 import me.bookk.designsystem.components.IconTile
-import me.bookk.designsystem.components.IconTileSize
 import me.bookk.designsystem.components.ProgressTile
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
+import me.bookk.designsystem.components.TintedIcon
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.BodySmallTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.error
 import me.bookk.designsystem.theme.secondary
-import me.bookk.designsystem.theme.themed
 import me.bookk.designsystem.uistate.ButtonState
 import me.bookk.feature.settings.presentation.confirmation.AskTelegramWriteAccess
 import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationNotice
@@ -91,7 +90,7 @@ private fun StatusCard(status: UIExportStatus, expiry: StringDesc?) {
             .boxSizing(BoxSizing.BorderBox)
             .gap(0.75.cssRem),
     ) {
-        StatusTile(status)
+        StatusIndicator(status)
         Column(Modifier.fillMaxWidth().gap(0.25.cssRem)) {
             TextBlock(
                 status.title,
@@ -100,8 +99,22 @@ private fun StatusCard(status: UIExportStatus, expiry: StringDesc?) {
             status.message?.let { TextBlock(it, textModifier(BodyMediumTextStyle).secondary()) }
         }
         if (status.showsFile) {
-            ExportFile(expiry)
+            FileRow()
         }
+        expiry?.let { ExpiryRow(it) }
+    }
+}
+
+@Composable
+private fun StatusIndicator(status: UIExportStatus) {
+    if (status.showsFile) {
+        TintedIcon(
+            DesignSystem.images.material_check_circle,
+            status.color,
+            Modifier.size(2.5.cssRem),
+        )
+    } else {
+        StatusTile(status)
     }
 }
 
@@ -129,33 +142,26 @@ private fun UIExportStage.icon(): ImageResource {
 }
 
 @Composable
-private fun ExportFile(expiry: StringDesc?) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .boxSizing(BoxSizing.BorderBox)
-            .padding(0.75.cssRem)
-            .borderRadius(0.75.cssRem)
-            .backgroundColor(ColorToken.Background.themed)
-            .gap(0.75.cssRem),
+private fun FileRow() {
+    Row(
+        Modifier.fillMaxWidth().gap(1.cssRem),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            Modifier.fillMaxWidth().gap(0.75.cssRem),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconTile(DesignSystem.images.material_description, size = IconTileSize.REGULAR)
-            Column(Modifier.minWidth(0.px)) {
-                TextBlock(
-                    SettingsRes.strings.settings_export_file_title.desc(),
-                    textModifier(BodyLargeTextStyle).fontWeight(FontWeight.SemiBold),
-                )
-                TextBlock(
-                    SettingsRes.strings.settings_export_file_type.desc(),
-                    textModifier(BodySmallTextStyle).secondary(),
-                )
-            }
+        TintedIcon(
+            DesignSystem.images.material_description,
+            ColorToken.SecondaryText,
+            Modifier.size(2.cssRem),
+        )
+        Column(Modifier.minWidth(0.px)) {
+            TextBlock(
+                SettingsRes.strings.settings_export_file_title.desc(),
+                textModifier(BodyMediumTextStyle).fontWeight(FontWeight.SemiBold),
+            )
+            TextBlock(
+                SettingsRes.strings.settings_export_file_type.desc(),
+                textModifier(BodyMediumTextStyle).secondary(),
+            )
         }
-        expiry?.let { ExpiryRow(it) }
     }
 }
 
@@ -169,9 +175,9 @@ private fun ExpiryRow(expiry: StringDesc) {
     ) {
         TextBlock(
             SettingsRes.strings.settings_export_expiry_label.desc(),
-            textModifier(BodyMediumTextStyle).secondary(),
+            textModifier(BodyMediumTextStyle),
         )
-        TextBlock(expiry, textModifier(BodyMediumTextStyle).fontWeight(FontWeight.SemiBold))
+        TextBlock(expiry, textModifier(BodyMediumTextStyle).textAlign(TextAlign.End))
     }
 }
 
@@ -184,12 +190,20 @@ private fun Notes(state: PersonalDataExportState) {
             .padding(leftRight = 1.cssRem)
             .gap(0.5.cssRem),
     ) {
-        state.status.footer?.let { TextBlock(it, textModifier(BodySmallTextStyle).secondary()) }
         state.requestAvailability?.let {
             TextBlock(it, textModifier(BodySmallTextStyle).secondary())
         }
         state.error?.let { TextBlock(it, textModifier(BodyMediumTextStyle).error()) }
         TextButton(state.retry)
+        state.status.footer?.let {
+            TextBlock(
+                it,
+                textModifier(BodySmallTextStyle)
+                    .secondary()
+                    .fillMaxWidth()
+                    .textAlign(TextAlign.Center),
+            )
+        }
     }
 }
 

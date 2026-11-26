@@ -119,4 +119,12 @@
     <string name="settings_chat_confirmation_sent">We sent a confirmation to your Telegram chat. Tap Confirm there.</string>
     <string name="settings_chat_confirmation_send_again">Send again</string>
     <string name="settings_chat_confirmation_write_access_refused">Confirmation needs a message from the BookkMe bot. Allow the bot to message you and try again.</string>
+    <string name="settings_confirm_delete_account_title">Confirm deletion</string>
+    <string name="settings_confirm_export_title">Confirm export</string>
+    <string name="settings_confirm_export_message">You asked for a copy of the personal data BookkMe holds about you. Confirm to start preparing it.</string>
+    <string name="settings_confirm_action_button">Confirm</string>
+    <string name="settings_confirm_action_open_settings">Open Settings</string>
+    <string name="settings_confirm_action_expired">This confirmation has expired. Start again from Settings.</string>
+    <string name="settings_confirm_action_other_account">This confirmation was requested from another Telegram account.</string>
+    <string name="settings_confirm_action_reopen">Your Telegram data has expired. Close the mini app and open it again from the button in the chat.</string>
 </resources>

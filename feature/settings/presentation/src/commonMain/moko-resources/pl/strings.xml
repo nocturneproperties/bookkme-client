@@ -119,4 +119,12 @@
     <string name="settings_chat_confirmation_sent">Wysłaliśmy potwierdzenie na Twój czat w Telegramie. Naciśnij tam „Potwierdź”.</string>
     <string name="settings_chat_confirmation_send_again">Wyślij ponownie</string>
     <string name="settings_chat_confirmation_write_access_refused">Do potwierdzenia potrzebna jest wiadomość od bota BookkMe. Pozwól botowi pisać do Ciebie i spróbuj ponownie.</string>
+    <string name="settings_confirm_delete_account_title">Potwierdzenie usunięcia</string>
+    <string name="settings_confirm_export_title">Potwierdzenie eksportu</string>
+    <string name="settings_confirm_export_message">Chcesz otrzymać kopię danych osobowych, które BookkMe o Tobie przechowuje? Potwierdź, aby rozpocząć jej przygotowanie.</string>
+    <string name="settings_confirm_action_button">Potwierdź</string>
+    <string name="settings_confirm_action_open_settings">Otwórz ustawienia</string>
+    <string name="settings_confirm_action_expired">To potwierdzenie wygasło. Zacznij ponownie w ustawieniach.</string>
+    <string name="settings_confirm_action_other_account">O to potwierdzenie poproszono z innego konta Telegram.</string>
+    <string name="settings_confirm_action_reopen">Dane Telegrama wygasły. Zamknij miniaplikację i otwórz ją ponownie przyciskiem na czacie.</string>
 </resources>

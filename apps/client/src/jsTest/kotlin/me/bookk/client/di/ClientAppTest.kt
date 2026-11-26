@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flowOf
 import library.cache.api.PreferenceProvider
 import library.cache.api.Preferences
 import me.bookk.core.data.HttpClientType
+import me.bookk.core.domain.launch.ConfirmableAction
 import me.bookk.core.domain.logout.LogOutAction
 import me.bookk.core.presentation.error.ErrorMapper
 import me.bookk.core.test.given
@@ -81,6 +82,7 @@ import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeViewM
 import me.bookk.feature.employees.domain.api.GetBookableEmployees
 import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
+import me.bookk.feature.settings.presentation.confirmaction.ConfirmActionViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
@@ -836,6 +838,21 @@ class ClientAppTest {
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<DeleteAccountViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the telegram action confirmation view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<ConfirmActionViewModel> {
+            parametersOf(ConfirmableAction.EXPORT_PERSONAL_DATA, "auth_date=1&hash=00")
+        }
 
         then()
         assertNotNull(viewModel)

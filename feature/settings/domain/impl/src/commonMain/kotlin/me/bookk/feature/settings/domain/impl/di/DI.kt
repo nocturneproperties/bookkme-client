@@ -3,6 +3,7 @@ package me.bookk.feature.settings.domain.impl.di
 import me.bookk.core.domain.fetch.AppStartAction
 import me.bookk.core.domain.fetch.BackgroundDataFetchAction
 import me.bookk.feature.settings.domain.api.AcceptLegalDocuments
+import me.bookk.feature.settings.domain.api.CompleteTelegramConfirmation
 import me.bookk.feature.settings.domain.api.CreateNewPasskey
 import me.bookk.feature.settings.domain.api.DeleteAccount
 import me.bookk.feature.settings.domain.api.DeleteExpiredPersonalDataExportFile
@@ -23,6 +24,7 @@ import me.bookk.feature.settings.domain.api.UpdateCrashReportingEnabled
 import me.bookk.feature.settings.domain.api.UpdateNotificationSettings
 import me.bookk.feature.settings.domain.api.UpdateNotificationToken
 import me.bookk.feature.settings.domain.impl.AcceptLegalDocumentsImpl
+import me.bookk.feature.settings.domain.impl.CompleteTelegramConfirmationImpl
 import me.bookk.feature.settings.domain.impl.CreateNewPasskeyImpl
 import me.bookk.feature.settings.domain.impl.DeleteAccountImpl
 import me.bookk.feature.settings.domain.impl.DeleteExpiredPersonalDataExportFileImpl
@@ -63,6 +65,7 @@ fun clientSettingsDomainModule(): Module {
         includes(sharedSettingsDomainModule())
         factoryOf(::TelegramDeleteAccountImpl) bind DeleteAccount::class
         factoryOf(::TelegramStartPersonalDataExportImpl) bind StartPersonalDataExport::class
+        factoryOf(::CompleteTelegramConfirmationImpl) bind CompleteTelegramConfirmation::class
     }
 }
 

@@ -12,4 +12,6 @@ class SettingsNavigation(
     val openTermsOfUse: () -> Unit,
     val openPrivacyPolicy: () -> Unit,
     val saveExport: (filePath: String) -> Unit,
+    val returnToSettings: () -> Unit,
+    val showStartedExport: () -> Unit,
 )

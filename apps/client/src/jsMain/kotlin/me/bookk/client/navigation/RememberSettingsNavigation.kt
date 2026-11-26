@@ -31,6 +31,8 @@ internal fun rememberSettingsNavigation(
             openTermsOfUse = { openSitePage(ClientLink.SITE_TERMS_PATH) },
             openPrivacyPolicy = { openSitePage(ClientLink.SITE_PRIVACY_PATH) },
             saveExport = { saveExport(fileProvider, it) },
+            returnToSettings = { stack.replaceAboveRoot(ClientScreen.Settings) },
+            showStartedExport = { stack.replaceAboveRoot(ClientScreen.PersonalDataExport) },
         )
     }
 }

@@ -6,6 +6,8 @@ import kotlin.time.Instant
 
 interface AuthorizationDataSource {
     suspend fun confirmAction(confirmation: ActionConfirmationRequest): String
+    suspend fun startTelegramActionConfirmation(request: TelegramActionConfirmationStart)
+    suspend fun confirmActionWithTelegram(initData: String): String
     suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?)
     suspend fun getAccessToken(): String?
     fun getIsAuthorizedFlow(): Flow<Boolean>

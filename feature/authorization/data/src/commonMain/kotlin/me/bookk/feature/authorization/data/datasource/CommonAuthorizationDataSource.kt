@@ -32,6 +32,7 @@ import me.bookk.feature.authorization.domain.datasource.authorization.Authorizat
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
+import me.bookk.feature.authorization.domain.datasource.authorization.TelegramActionConfirmationStart
 import me.bookk.feature.authorization.domain.datasource.authorization.TelegramSignInData
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 import kotlin.time.Clock
@@ -109,6 +110,14 @@ class CommonAuthorizationDataSource(
             }
             response.body<TokenInfoResponse>().toDomain()
         }
+    }
+
+    override suspend fun startTelegramActionConfirmation(request: TelegramActionConfirmationStart) {
+        TODO("POST /api/auth/telegram/confirm_action/start, nocturneproperties/bookkme#210")
+    }
+
+    override suspend fun confirmActionWithTelegram(initData: String): String {
+        TODO("POST /api/auth/telegram/confirm_action, nocturneproperties/bookkme#210")
     }
 
     override suspend fun deleteAccount(request: DeleteAccountRequest) {

@@ -56,6 +56,36 @@ class ConfirmedOperationsContractTest {
     }
 
     @Test
+    fun `telegram confirmation start pins its backend wire fields`() = runUnitTest {
+        given()
+        val descriptor = TelegramActionConfirmationStartRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("action" to 1, "businessId" to 2, "targetId" to 3), fields)
+    }
+
+    @Test
+    fun `telegram confirmation sends only the init data`() = runUnitTest {
+        given()
+        val descriptor = TelegramActionConfirmationRequestRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("initData" to 1), fields)
+    }
+
+    @Test
     fun `ActionConfirmationRequestRemote pins its backend wire fields`() = runUnitTest {
         given()
         val descriptor = ActionConfirmationRequestRemote.serializer().descriptor

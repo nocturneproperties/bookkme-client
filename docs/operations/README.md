@@ -49,8 +49,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | Use case | Network | Diagram |
 |---|---|---|
 | `ConfirmSensitiveAction` | `GET challenge + POST /api/auth/passkey/confirm_action` | [Confirm sensitive action](authorization/confirm-sensitive-action.md) |
-| `StartTelegramActionConfirmation` | `POST /api/auth/telegram/confirm_action/start` (client web app; route pending backend #210) | [Start Telegram action confirmation](authorization/start-telegram-action-confirmation.md) |
-| `ConfirmActionWithTelegram` | `POST /api/auth/telegram/confirm_action` with the raw `initData` → action confirmation token (client web app; route pending backend #210) | [Confirm action with Telegram](authorization/confirm-action-with-telegram.md) |
+| `StartTelegramActionConfirmation` | `POST /api/auth/telegram/confirm_action/start` (client web app) | [Start Telegram action confirmation](authorization/start-telegram-action-confirmation.md) |
+| `ConfirmActionWithTelegram` | `POST /api/auth/telegram/confirm_action` with the raw `initData` → action confirmation token (client web app) | [Confirm action with Telegram](authorization/confirm-action-with-telegram.md) |
 | `GetSignUpLegalDocuments` | `invoke`: persisted cache only; `refresh`: via `GetLegalDocumentVersions`, `GET /api/user/legal` | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) |
 | `StartSignUp` | `POST /api/auth/passkey/sign_up/challenge` (also emails the 6-digit code) | [Start sign-up](authorization/start-sign-up.md) |
 | `FinishSignUp` | `POST /api/auth/sign_up` with the emailed code and accepted legal-document versions | [Finish sign-up](authorization/finish-sign-up.md) |

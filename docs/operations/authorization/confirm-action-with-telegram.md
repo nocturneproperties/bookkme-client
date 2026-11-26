@@ -11,9 +11,9 @@ half of [Start Telegram action confirmation](start-telegram-action-confirmation.
 flowchart TD
     Start([invoke initData]) --> Net[AuthorizationDataSource.confirmActionWithTelegram<br/>POST /api/auth/telegram/confirm_action<br/>raw initData, never initDataUnsafe]
     Net -- token --> R([return token])
-    Net -- challenge expired or already used --> E([throw Error.ConfirmationExpired])
-    Net -- Telegram user is not the caller's --> M([throw Error.TelegramAccountMismatch])
-    Net -- invalid or expired init data --> I([throw Error.TelegramDataInvalid])
+    Net -- 20 TELEGRAM_CONFIRMATION_EXPIRED --> E([throw Error.ConfirmationExpired])
+    Net -- 21 TELEGRAM_ACCOUNT_MISMATCH --> M([throw Error.TelegramAccountMismatch])
+    Net -- 14 TELEGRAM_DATA_INVALID or 15 TELEGRAM_DATA_EXPIRED --> I([throw Error.TelegramDataInvalid])
     Net -- other failure --> Other([propagate])
 ```
 
@@ -21,7 +21,6 @@ The server takes the action, business and target from the stored challenge named
 `start_param`, never from the request, so a confirmation started for an export can't become a deletion. The
 token stays in memory and is never cached.
 
-**Pending backend (nocturneproperties/bookkme#210):** the route is not in the swagger yet.
-`CommonAuthorizationDataSource.confirmActionWithTelegram` is a `TODO` placeholder and the error codes are not
-mapped yet (invalid or expired init data is expected to reuse sign-in's `TELEGRAM_DATA_INVALID` (14) and
-`TELEGRAM_DATA_EXPIRED` (15)).
+Request body `TelegramActionConfirmationRequestRemote`: `initData` (1); response `ActionConfirmationTokenRemote`, as
+for the passkey route. The server spends the challenge only when every check passes, so a forwarded button doesn't
+use it up. `TELEGRAM_CONFIRMATION_UNAVAILABLE` (25) propagates as `BusinessError` with the server's message.

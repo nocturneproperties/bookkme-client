@@ -27,6 +27,8 @@ import me.bookk.feature.authorization.data.remote.model.ActionConfirmationReques
 import me.bookk.feature.authorization.data.remote.model.ActionConfirmationTokenRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.SensitiveActionRemote
+import me.bookk.feature.authorization.data.remote.model.TelegramActionConfirmationRequestRemote
+import me.bookk.feature.authorization.data.remote.model.TelegramActionConfirmationStartRemote
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
 import me.bookk.feature.authorization.domain.datasource.authorization.ActionConfirmationRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
@@ -114,11 +116,23 @@ class CommonAuthorizationDataSource(
     }
 
     override suspend fun startTelegramActionConfirmation(request: TelegramActionConfirmationStart) {
-        TODO("POST /api/auth/telegram/confirm_action/start, nocturneproperties/bookkme#210")
+        mapExceptions {
+            httpClient.post(Auth.Telegram.ConfirmAction.Start()) {
+                setBody(
+                    TelegramActionConfirmationStartRemote(
+                        action = SensitiveActionRemote.fromDomain(request.action),
+                        businessId = request.businessId,
+                        targetId = request.targetId,
+                    ),
+                )
+            }
+        }
     }
 
-    override suspend fun confirmActionWithTelegram(initData: String): String {
-        TODO("POST /api/auth/telegram/confirm_action, nocturneproperties/bookkme#210")
+    override suspend fun confirmActionWithTelegram(initData: String): String = mapExceptions {
+        httpClient.post(Auth.Telegram.ConfirmAction()) {
+            setBody(TelegramActionConfirmationRequestRemote(initData))
+        }.body<ActionConfirmationTokenRemote>().token
     }
 
     override suspend fun requestAccountDeletion(request: DeleteAccountRequest): Instant =

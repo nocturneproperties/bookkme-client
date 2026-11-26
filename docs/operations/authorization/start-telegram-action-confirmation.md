@@ -12,8 +12,8 @@ Only the settings Mini App bindings call it, through `TelegramConfirmationSender
 flowchart TD
     Start([invoke action, businessId, targetId]) --> Net[AuthorizationDataSource.startTelegramActionConfirmation<br/>POST /api/auth/telegram/confirm_action/start<br/>action, businessId, targetId]
     Net -- 204 --> R([Unit])
-    Net -- bot cannot write to the user --> W([throw Error.BotCannotWrite])
-    Net -- start within the 60 s cooldown --> F([throw Error.TooFrequent])
+    Net -- 22 TELEGRAM_CHAT_UNREACHABLE --> W([throw Error.BotCannotWrite])
+    Net -- 23 TELEGRAM_CONFIRMATION_TOO_FREQUENT --> F([throw Error.TooFrequent])
     Net -- other failure --> Other([propagate])
 ```
 
@@ -22,7 +22,7 @@ Mini App with `start_param` `op_<kind>_<32 hex>` (`delete-account` or `export-pe
 the device. Only `DELETE_ACCOUNT` and `EXPORT_PERSONAL_DATA` with the nil business id and the caller as
 target are accepted.
 
-**Pending backend (nocturneproperties/bookkme#210):** the route is not in the swagger yet.
-`CommonAuthorizationDataSource.startTelegramActionConfirmation` is a `TODO` placeholder, and the backend error
-codes for "bot can't write" and "too frequent" are not mapped to `Error.BotCannotWrite` and `Error.TooFrequent`
-yet, so today every call fails with `NotImplementedError`.
+Request body `TelegramActionConfirmationStartRemote`: `action` (1, `SensitiveActionRemote` ordinal), `businessId` (2),
+`targetId` (3). Other server errors (`TELEGRAM_IDENTITY_MISSING` (19), `ACTION_NOT_CONFIRMABLE_THROUGH_TELEGRAM` (24),
+`TELEGRAM_CONFIRMATION_UNAVAILABLE` (25, also a failed send or a chat notifications hasn't stored yet)) propagate
+as `BusinessError`, and the screen shows the server's message.

@@ -119,11 +119,6 @@
     <string name="settings_chat_confirmation_sent">Мы отправили подтверждение в ваш чат в Telegram. Нажмите там «Подтвердить».</string>
     <string name="settings_chat_confirmation_send_again">Отправить ещё раз</string>
     <string name="settings_chat_confirmation_write_access_refused">Для подтверждения нужно сообщение от бота BookkMe. Разрешите боту писать вам и попробуйте ещё раз.</string>
-    <string name="settings_confirm_delete_account_title">Подтверждение удаления</string>
-    <string name="settings_confirm_export_title">Подтверждение экспорта</string>
-    <string name="settings_confirm_export_message">Вы запросили копию персональных данных, которые BookkMe хранит о вас. Подтвердите, чтобы начать её подготовку.</string>
-    <string name="settings_confirm_action_button">Подтвердить</string>
-    <string name="settings_confirm_action_open_settings">Открыть настройки</string>
     <string name="settings_confirm_action_expired">Срок действия этого подтверждения истёк. Начните заново в настройках.</string>
     <string name="settings_confirm_action_other_account">Это подтверждение запросили из другого аккаунта Telegram.</string>
     <string name="settings_confirm_action_reopen">Данные Telegram устарели. Закройте мини-приложение и откройте его снова кнопкой в чате.</string>

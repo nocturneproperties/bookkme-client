@@ -35,7 +35,12 @@ The deletion is only scheduled: the backend erases the account 7 days later (bac
 account keeps working until then, so the session is never cleared. A failed confirmation makes no protected
 request. Nothing is retried automatically.
 
-On success the screen plays a success haptic; a deletion replaces the screens above Home with Delete account, which shows the pending deletion and its date
-(see [Get account deletion](get-account-deletion.md)) while the person stays signed in, an export replaces the screens above Home with Export my data, which
-renders the RUNNING status from `personal_data_export`. Each error replaces the Confirm button with "Open
-Settings". The Telegram `BackButton` leaves without confirming.
+There is no confirmation screen: tapping Confirm in the chat is the confirmation. Home pushes
+`ClientScreen.ConfirmAction(action)`, which opens Delete account or Export my data directly, and `ConfirmTelegramAction`
+on that screen runs `ConfirmActionViewModel` once, which calls this operation with the raw `initData` as soon as it
+opens. Both screens render from the local cache, so the saved result shows by itself: Delete account switches to the
+requested deletion and its date (see [Get account deletion](get-account-deletion.md)) while the person stays signed
+in, and Export my data to its preparing state from `personal_data_export`. Success plays a haptic; an expired or used
+confirmation, another Telegram account's confirmation, stale Telegram data (reopen the Mini App from the chat
+button) or an export already made today shows its message in a Telegram popup, and other failures show the mapped
+error.

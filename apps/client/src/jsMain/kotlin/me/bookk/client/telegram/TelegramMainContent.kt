@@ -8,6 +8,7 @@ import me.bookk.client.navigation.rememberBookingNavigation
 import me.bookk.client.navigation.rememberClientHomeNavigation
 import me.bookk.client.navigation.rememberEmailChangeNavigation
 import me.bookk.client.navigation.rememberSettingsNavigation
+import me.bookk.core.domain.launch.ConfirmableAction
 import me.bookk.core.presentation.navigation.rememberBackStack
 import me.bookk.designsystem.components.BackStackHost
 import me.bookk.feature.authorization.presentation.screen.changeemail.ChangeEmailDestination
@@ -22,10 +23,10 @@ import me.bookk.feature.booking.presentation.screen.services.BookingServicesDest
 import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistDestination
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestination
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountDestination
-import me.bookk.feature.settings.presentation.confirmaction.ConfirmActionDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsDestination
 import me.bookk.feature.settings.presentation.editprofile.BookingProfileDestination
 import me.bookk.feature.settings.presentation.export.PersonalDataExportDestination
+import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsDestination
 import me.bookk.feature.settings.presentation.privacy.PrivacySettingsDestination
 
@@ -116,8 +117,25 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
             }
 
             is ClientScreen.ConfirmAction -> {
-                ConfirmActionDestination(webApp, screen.action, settingsNavigation)
+                ConfirmedInTelegram(webApp, screen.action, settingsNavigation)
             }
+        }
+    }
+}
+
+@Composable
+private fun ConfirmedInTelegram(
+    webApp: TelegramWebApp,
+    action: ConfirmableAction,
+    navigation: SettingsNavigation,
+) {
+    when (action) {
+        ConfirmableAction.DELETE_ACCOUNT -> {
+            DeleteAccountDestination(webApp, navigation, confirmsInTelegram = true)
+        }
+
+        ConfirmableAction.EXPORT_PERSONAL_DATA -> {
+            PersonalDataExportDestination(webApp, navigation, confirmsInTelegram = true)
         }
     }
 }

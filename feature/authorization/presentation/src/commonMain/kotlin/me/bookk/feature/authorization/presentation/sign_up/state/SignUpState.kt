@@ -12,7 +12,6 @@ import me.bookk.feature.authorization.presentation.sign_up.SignUpNavigationDesti
 interface SignUpState {
     val appBar: AppBarState
     val name: TextFieldState
-    val lastName: TextFieldState
     val email: TextFieldState
     var passkeyInfoCardData: PasskeyInfoCardData
     val learnMoreButton: ButtonState

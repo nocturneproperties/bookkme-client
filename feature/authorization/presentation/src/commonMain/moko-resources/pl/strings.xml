@@ -2,10 +2,8 @@
 <resources>
     <string name="sign_up_create_acc">Utwórz konto</string>
     <string name="sign_up_personal_section_title">Dane osobowe</string>
-    <string name="sign_up_first_name">Imię</string>
-    <string name="sign_up_first_name_error">Imię musi mieć co najmniej 2 znaki</string>
-    <string name="sign_up_last_name">Nazwisko</string>
-    <string name="sign_up_last_name_error">Nazwisko musi mieć co najmniej 2 znaki</string>
+    <string name="sign_up_full_name">Imię i nazwisko</string>
+    <string name="sign_up_name_error">Imię musi mieć co najmniej 2 znaki</string>
     <string name="sign_up_email">E-mail</string>
     <string name="sign_up_email_error">Nieprawidłowy format adresu e-mail</string>
     <string name="sign_up_email_exist">Konto z tym adresem e-mail już istnieje</string>

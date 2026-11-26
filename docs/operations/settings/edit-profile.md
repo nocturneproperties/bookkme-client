@@ -3,7 +3,7 @@
 # Edit profile
 
 `EditProfile(firstName, lastName)` → `PATCH /api/user/me`
-· called from `EditProfileViewModel`
+· called from `EditProfileViewModel`, which splits its single full-name field into first name (the first word) and last name (the rest, may be empty)
 
 First and last name are trimmed before they are saved. The email is sent back unchanged from the
 stored profile: since backend 0.18.0 a different email is rejected with 100006 and must go through

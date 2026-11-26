@@ -8,6 +8,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
@@ -17,6 +18,7 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.test.FakeErrorMapper
+import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
@@ -52,136 +54,259 @@ class EditProfileViewModelTest {
     }
 
     private class Fixture {
-        val getSettings = mock<GetSettings> {
-            everySuspend { invoke() } returns
-                Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", "anna@example.com"))
-        }
+        val getSettings = mock<GetSettings>()
         val editProfile = mock<EditProfile>()
         val errorMapper = FakeErrorMapper()
 
-        fun sut() = EditProfileViewModel(
-            getSettings = getSettings,
-            editProfile = editProfile,
-            validateName = FakeValidateName(),
-            settingsStateFactory = FakeSettingsStateFactory(),
-            vmArgs = VmArgs(errorMapper),
-        )
+        init {
+            stubProfile()
+        }
+
+        fun sut(): EditProfileViewModel {
+            return EditProfileViewModel(
+                getSettings = getSettings,
+                editProfile = editProfile,
+                validateName = FakeValidateName(),
+                settingsStateFactory = FakeSettingsStateFactory(),
+                vmArgs = VmArgs(errorMapper),
+            )
+        }
 
         fun presentedSut(): EditProfileViewModel {
             return sut().also { it.onViewPresented() }
         }
+
+        fun stubProfile(
+            firstName: String = "Anna",
+            lastName: String = "Smith",
+            email: String = "anna@example.com",
+        ) {
+            everySuspend { getSettings() } returns
+                Settings(
+                    ColorScheme.SYSTEM,
+                    SettingsProfile(firstName, lastName, email, isEmailDeliverable = true),
+                )
+        }
+
+        fun stubSaveSucceeds() {
+            everySuspend { editProfile(any(), any()) } returns Unit
+        }
+    }
+
+    private fun EditProfileViewModel.typeName(text: String) {
+        (uiState.name as FakeTextFieldState).type(text)
+    }
+
+    private fun EditProfileViewModel.save() {
+        uiState.confirmButton.onClick?.invoke()
     }
 
     @Test
-    fun `renders current profile with save disabled`() = runUnitTest {
+    fun `labels the title, the name field and save`() = runUnitTest {
         given()
         val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_title.desc(),
+            sut.uiState.appBar.title,
+        )
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_full_name.desc(),
+            sut.uiState.name.label,
+        )
+        assertEquals(DesignSystem.strings.action_save.desc(), sut.uiState.confirmButton.text)
+    }
+
+    @Test
+    fun `shows the email read only with how a new one is confirmed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.presentedSut()
+
+        then()
+        assertEquals(SettingsRes.strings.settings_profile_email.desc(), sut.uiState.email.label)
+        assertEquals("anna@example.com", sut.uiState.email.text)
+        assertTrue(sut.uiState.email.readOnly)
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_email_hint.desc(),
+            sut.uiState.email.supportingTextRes,
+        )
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_change_email.desc(),
+            sut.uiState.changeEmail.text,
+        )
+    }
+
+    @Test
+    fun `shows first and last name in one field with save disabled`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.presentedSut()
+
+        then()
+        assertEquals("Anna Smith", sut.uiState.name.text)
+        assertFalse(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `shows only the first name when the last name is empty`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubProfile(lastName = "")
 
         whenn()
         val sut = fixture.presentedSut()
 
         then()
         assertEquals("Anna", sut.uiState.name.text)
-        assertEquals("Smith", sut.uiState.lastName.text)
-        assertFalse(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
-    fun `keeps unsaved name changes when presented again`() = runUnitTest {
-        given()
-        val sut = Fixture().presentedSut()
-        sut.onFirstNameTextChanged("Maria")
-
-        whenn()
-        sut.onViewPresented()
-
-        then()
-        assertEquals("Maria", sut.uiState.name.text)
-        assertTrue(sut.uiState.confirmButton.isEnabled)
-    }
-
-    @Test
-    fun `ignores typing before profile is loaded`() = runUnitTest {
+    fun `ignores typing before the profile is loaded`() = runUnitTest {
         given()
         val sut = Fixture().sut()
 
         whenn()
-        sut.onFirstNameTextChanged("Maria")
+        sut.onNameTextChanged("Maria")
 
         then()
         assertEquals("", sut.uiState.name.text)
     }
 
     @Test
-    fun `enables save when a field changes`() = runUnitTest {
+    fun `saves the first word as first name and the rest as last name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveSucceeds()
+        val sut = fixture.presentedSut()
+        sut.typeName("Maria Anna Brown")
+
+        whenn()
+        sut.save()
+
+        then()
+        verifySuspend { fixture.editProfile("Maria", "Anna Brown") }
+    }
+
+    @Test
+    fun `saves an empty last name when only one name is typed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveSucceeds()
+        val sut = fixture.presentedSut()
+        sut.typeName("Maria")
+
+        whenn()
+        sut.save()
+
+        then()
+        verifySuspend { fixture.editProfile("Maria", "") }
+    }
+
+    @Test
+    fun `ignores extra spaces around and between names when saving`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveSucceeds()
+        val sut = fixture.presentedSut()
+        sut.typeName("  Maria   Brown ")
+
+        whenn()
+        sut.save()
+
+        then()
+        verifySuspend { fixture.editProfile("Maria", "Brown") }
+    }
+
+    @Test
+    fun `enables save when the name changes`() = runUnitTest {
         given()
         val sut = Fixture().presentedSut()
 
         whenn()
-        sut.onFirstNameTextChanged("Maria")
+        sut.typeName("Maria Brown")
 
         then()
         assertTrue(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
-    fun `does not show errors while typing`() = runUnitTest {
+    fun `does not show an error while typing`() = runUnitTest {
         given()
         val sut = Fixture().presentedSut()
 
         whenn()
-        sut.onLastNameTextChanged("S")
+        sut.typeName("M")
 
         then()
-        assertEquals(ValidationState.DEFAULT, sut.uiState.lastName.validationState)
+        assertEquals(ValidationState.DEFAULT, sut.uiState.name.validationState)
         assertTrue(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
-    fun `shows errors for every invalid name on save`() = runUnitTest {
+    fun `shows an error on save when the first name is too short`() = runUnitTest {
         given()
         val sut = Fixture().presentedSut()
-        sut.onFirstNameTextChanged("A")
-        sut.onLastNameTextChanged("S")
+        sut.typeName("M Brown")
 
         whenn()
-        sut.onConfirmButtonClick()
+        sut.save()
 
         then()
         assertEquals(
-            SettingsRes.strings.settings_edit_profile_first_name_error.desc(),
+            SettingsRes.strings.settings_edit_profile_name_error.desc(),
             sut.uiState.name.supportingTextRes,
-        )
-        assertEquals(
-            SettingsRes.strings.settings_edit_profile_last_name_error.desc(),
-            sut.uiState.lastName.supportingTextRes,
         )
         assertFalse(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
-    fun `does not save an invalid profile`() = runUnitTest {
+    fun `shows an error on save when the name is blank`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+        sut.typeName("   ")
+
+        whenn()
+        sut.save()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_name_error.desc(),
+            sut.uiState.name.supportingTextRes,
+        )
+    }
+
+    @Test
+    fun `does not save an invalid name`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("A")
+        sut.typeName("M")
 
         whenn()
-        sut.onConfirmButtonClick()
+        sut.save()
 
         then()
         verifySuspend(VerifyMode.not) { fixture.editProfile(any(), any()) }
     }
 
     @Test
-    fun `clears field error once the field is edited`() = runUnitTest {
+    fun `clears the name error once the name is edited`() = runUnitTest {
         given()
         val sut = Fixture().presentedSut()
-        sut.onFirstNameTextChanged("A")
-        sut.onConfirmButtonClick()
+        sut.typeName("M")
+        sut.save()
 
         whenn()
-        sut.onFirstNameTextChanged("Maria")
+        sut.typeName("Maria")
 
         then()
         assertNull(sut.uiState.name.supportingTextRes)
@@ -190,35 +315,82 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `saves edited profile and goes back`() = runUnitTest {
+    fun `shows the changed email when presented again and keeps the unsaved name`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.editProfile(any(), any()) } returns Unit
         val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
+        sut.typeName("Maria Brown")
+        fixture.stubProfile(email = "anna@new.example.com")
 
         whenn()
-        sut.onConfirmButtonClick()
+        sut.onViewPresented()
 
         then()
-        verifySuspend { fixture.editProfile("Maria", "Smith") }
+        assertEquals("anna@new.example.com", sut.uiState.email.text)
+        assertEquals("Maria Brown", sut.uiState.name.text)
+        assertTrue(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `opens the email change when change is tapped`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+
+        whenn()
+        sut.uiState.changeEmail.onClick?.invoke()
+
+        then()
+        assertEquals(
+            listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.ChangeEmail),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `goes back when back is tapped`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+
+        whenn()
+        sut.uiState.appBar.onBackClick?.invoke()
+
+        then()
+        assertEquals(
+            listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.Back),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `goes back with save disabled after the name is saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveSucceeds()
+        val sut = fixture.presentedSut()
+        sut.typeName("Maria Brown")
+
+        whenn()
+        sut.save()
+
+        then()
         assertEquals(
             listOf<EditProfileNavigationDestination>(EditProfileNavigationDestination.Back),
             sut.uiState.navigation.navigationDestination,
         )
         assertFalse(sut.uiState.confirmButton.isEnabled)
+        assertFalse(sut.uiState.confirmButton.isLoading)
     }
 
     @Test
-    fun `plays success haptic when profile is saved`() = runUnitTest {
+    fun `plays success haptic when the name is saved`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.editProfile(any(), any()) } returns Unit
+        fixture.stubSaveSucceeds()
         val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
+        sut.typeName("Maria Brown")
 
         whenn()
-        sut.onConfirmButtonClick()
+        sut.save()
 
         then()
         assertEquals(
@@ -230,15 +402,15 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `does not play success haptic when profile save fails`() = runUnitTest {
+    fun `does not play success haptic when saving the name fails`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.editProfile(any(), any()) } throws TestException()
         val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
+        sut.typeName("Maria Brown")
 
         whenn()
-        sut.onConfirmButtonClick()
+        sut.save()
 
         then()
         assertTrue(
@@ -249,15 +421,15 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `keeps save enabled after save fails`() = runUnitTest {
+    fun `keeps save enabled after saving fails`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.editProfile(any(), any()) } throws TestException()
         val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
+        sut.typeName("Maria Brown")
 
         whenn()
-        sut.onConfirmButtonClick()
+        sut.save()
 
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
@@ -272,10 +444,10 @@ class EditProfileViewModelTest {
         everySuspend { fixture.editProfile(any(), any()) } throws
             EditProfile.Error.ContactAlreadyTaken()
         val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
+        sut.typeName("Maria Brown")
 
         whenn()
-        sut.onConfirmButtonClick()
+        sut.save()
 
         then()
         val message = sut.uiState.notification.assertSingle<GlobalMessage>()
@@ -295,10 +467,10 @@ class EditProfileViewModelTest {
         everySuspend { fixture.editProfile(any(), any()) } throws
             EditProfile.Error.EmailChangeRequiresVerification()
         val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
+        sut.typeName("Maria Brown")
 
         whenn()
-        sut.onConfirmButtonClick()
+        sut.save()
 
         then()
         val message = sut.uiState.notification.assertSingle<GlobalMessage>()
@@ -309,22 +481,5 @@ class EditProfileViewModelTest {
         assertEquals(GlobalMessage.State.ERROR, message.state)
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
         assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
-    }
-
-    @Test
-    fun `keeps save enabled after an email error`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        everySuspend { fixture.editProfile(any(), any()) } throws
-            EditProfile.Error.EmailChangeRequiresVerification()
-        val sut = fixture.presentedSut()
-        sut.onFirstNameTextChanged("Maria")
-
-        whenn()
-        sut.onConfirmButtonClick()
-
-        then()
-        assertTrue(sut.uiState.confirmButton.isEnabled)
-        assertFalse(sut.uiState.confirmButton.isLoading)
     }
 }

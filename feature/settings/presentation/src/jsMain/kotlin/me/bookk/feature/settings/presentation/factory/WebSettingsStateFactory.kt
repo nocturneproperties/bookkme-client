@@ -24,8 +24,8 @@ internal class WebSettingsStateFactory : SettingsStateFactory {
         return WebSettingsState(initData)
     }
 
-    override fun createEditProfileState(initData: EditProfileState.InitData): EditProfileState {
-        return WebEditProfileState(initData)
+    override fun createEditProfileState(): EditProfileState {
+        return WebEditProfileState()
     }
 
     override fun createDeleteAccountState(

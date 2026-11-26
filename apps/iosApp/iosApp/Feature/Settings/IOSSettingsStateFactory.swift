@@ -15,8 +15,8 @@ class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
 	}
 
 	
-	func createEditProfileState(initData: EditProfileStateInitData) -> any EditProfileState {
-		return IOSEditProfileState(initData: initData)
+	func createEditProfileState() -> any EditProfileState {
+		return IOSEditProfileState()
 	}
 	
 	func createSettingsState(initData: SettingsStateInitData) -> any SettingsState {

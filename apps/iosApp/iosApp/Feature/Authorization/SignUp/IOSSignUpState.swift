@@ -9,7 +9,6 @@ class IOSSignUpState: @MainActor SignUpState, NativeStateRepresentation {
 
     let appBar: any AppBarState
     let email: any TextFieldState
-    let lastName: any TextFieldState
     let name: any TextFieldState
     let confirmButton: any ButtonState
     let learnMoreButton: any ButtonState
@@ -23,7 +22,6 @@ class IOSSignUpState: @MainActor SignUpState, NativeStateRepresentation {
     init() {
         appBar = IOSAppBarState()
         name = IOSTextFieldState()
-        lastName = IOSTextFieldState()
         email = IOSTextFieldState()
         confirmButton = IOSButtonState(isEnabled: false)
         learnMoreButton = IOSButtonState()

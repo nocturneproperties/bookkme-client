@@ -87,7 +87,7 @@ class CommonRegistrationDataSourceTest {
                     "00000000-0000-0000-0000-000000000001",
                     "Device",
                 ),
-                userInfo = RegistrationData.UserInfo("John", "Doe", "john@example.com"),
+                userInfo = RegistrationData.UserInfo("John Doe", "john@example.com"),
                 publicKeyCredentialJson = "{}",
                 acceptedDocuments = AcceptedLegalDocuments("privacy-v3", "terms-v2"),
                 verificationId = verificationId,
@@ -104,7 +104,7 @@ class CommonRegistrationDataSourceTest {
 
         whenn()
         val result = fixture.sut.getSignUpPasskeyChallenge(
-            StartSignUp.UserData("John", "Doe", "john@example.com"),
+            StartSignUp.UserData("John Doe", "john@example.com"),
         )
 
         then()

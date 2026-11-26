@@ -5,8 +5,7 @@ import kotlin.time.Instant
 
 interface StartSignUp {
     class UserData(
-        val firstName: String,
-        val lastName: String,
+        val name: String,
         val email: String,
         val acceptedDocuments: AcceptedLegalDocuments = AcceptedLegalDocuments(),
     )

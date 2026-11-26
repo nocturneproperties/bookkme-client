@@ -29,8 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.icerock.moko.resources.compose.localized
-import dev.icerock.moko.resources.desc.desc
-import me.bookk.android.feature.authorization.resources.AuthRes
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.AppTopBar
@@ -41,7 +39,6 @@ import me.bookk.designsystem.components.TextField
 import me.bookk.designsystem.theme.AppTheme
 import me.bookk.designsystem.theme.ThemeMode
 import me.bookk.designsystem.theme.color.LocalColors
-import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.authorization.presentation.sign_up.state.SignUpState
 
 @Composable
@@ -67,13 +64,6 @@ fun SignUpScreen(state: SignUpState) {
             ) {
                 TextField(
                     state = state.name,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next,
-                        keyboardType = KeyboardType.Text,
-                    ),
-                )
-                TextField(
-                    state = state.lastName,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
                         keyboardType = KeyboardType.Text,

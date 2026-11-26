@@ -1,6 +1,5 @@
 package me.bookk.feature.authorization.domain.impl
 
-import me.bookk.core.domain.entity.businessOrThrow
 import me.bookk.core.domain.entity.onBusinessError
 import me.bookk.feature.authorization.domain.api.StartSignUp
 import me.bookk.feature.authorization.domain.api.StartSignUp.UserData
@@ -39,8 +38,7 @@ internal class StartSignUpImpl(
 
     private fun UserData.trimmed(): UserData {
         return UserData(
-            firstName = firstName.trim(),
-            lastName = lastName.trim(),
+            name = name.trim(),
             email = email.trim(),
             acceptedDocuments = acceptedDocuments,
         )

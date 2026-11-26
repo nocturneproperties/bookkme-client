@@ -143,8 +143,7 @@ class SignUpViewModelTest {
     }
 
     private fun SignUpViewModel.fillValidForm() {
-        onFirstNameTextChanged("Anna")
-        onLastNameTextChanged("Smith")
+        onNameTextChanged("Anna Smith")
         onEmailTextChanged("anna@example.com")
     }
 
@@ -166,7 +165,7 @@ class SignUpViewModelTest {
         val sut = Fixture().sut(acceptLegalDocuments = true)
 
         whenn()
-        sut.onFirstNameTextChanged("A")
+        sut.onNameTextChanged("A")
         sut.onEmailTextChanged("anna")
 
         then()
@@ -179,8 +178,7 @@ class SignUpViewModelTest {
     fun `shows errors for every invalid field on confirm`() = runUnitTest {
         given()
         val sut = Fixture().sut(acceptLegalDocuments = true)
-        sut.onFirstNameTextChanged("A")
-        sut.onLastNameTextChanged("S")
+        sut.onNameTextChanged("A")
         sut.onEmailTextChanged("anna")
 
         whenn()
@@ -188,12 +186,8 @@ class SignUpViewModelTest {
 
         then()
         assertEquals(
-            AuthRes.strings.sign_up_first_name_error.desc(),
+            AuthRes.strings.sign_up_name_error.desc(),
             sut.uiState.name.supportingTextRes,
-        )
-        assertEquals(
-            AuthRes.strings.sign_up_last_name_error.desc(),
-            sut.uiState.lastName.supportingTextRes,
         )
         assertEquals(
             AuthRes.strings.sign_up_email_error.desc(),
@@ -221,11 +215,11 @@ class SignUpViewModelTest {
         given()
         val sut = Fixture().sut(acceptLegalDocuments = true)
         sut.fillValidForm()
-        sut.onFirstNameTextChanged("A")
+        sut.onNameTextChanged("A")
         sut.onConfirmButtonClick()
 
         whenn()
-        sut.onFirstNameTextChanged("An")
+        sut.onNameTextChanged("An")
 
         then()
         assertEquals(ValidationState.DEFAULT, sut.uiState.name.validationState)
@@ -247,10 +241,26 @@ class SignUpViewModelTest {
 
         then()
         val data = fixture.userData.get()
-        assertEquals("Anna", data.firstName)
-        assertEquals("Smith", data.lastName)
+        assertEquals("Anna Smith", data.name)
         assertEquals("anna@example.com", data.email)
         assertFalse(sut.uiState.confirmButton.isLoading)
+    }
+
+    @Test
+    fun `creates account with a single word name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.startSignUp(capture(fixture.userData)) } returns
+            fixture.pendingSignUp
+        val sut = fixture.sut(acceptLegalDocuments = true)
+        sut.onNameTextChanged("Anna")
+        sut.onEmailTextChanged("anna@example.com")
+
+        whenn()
+        sut.onConfirmButtonClick()
+
+        then()
+        assertEquals("Anna", fixture.userData.get().name)
     }
 
     @Test
@@ -480,7 +490,6 @@ class SignUpViewModelTest {
 
         then()
         assertEquals(ValidationState.ERROR, sut.uiState.name.validationState)
-        assertEquals(ValidationState.ERROR, sut.uiState.lastName.validationState)
         assertEquals(ValidationState.ERROR, sut.uiState.email.validationState)
         assertEquals(ValidationState.ERROR, sut.uiState.legalAcceptance.validationState)
         verifySuspend(VerifyMode.not) { fixture.startSignUp(any()) }

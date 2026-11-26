@@ -2,10 +2,8 @@
 <resources>
     <string name="sign_up_create_acc">Создать аккаунт</string>
     <string name="sign_up_personal_section_title">Личные данные</string>
-    <string name="sign_up_first_name">Имя</string>
-    <string name="sign_up_first_name_error">Имя должно содержать не менее 2 символов</string>
-    <string name="sign_up_last_name">Фамилия</string>
-    <string name="sign_up_last_name_error">Фамилия должна содержать не менее 2 символов</string>
+    <string name="sign_up_full_name">Имя и фамилия</string>
+    <string name="sign_up_name_error">Имя должно содержать не менее 2 символов</string>
     <string name="sign_up_email">Эл. почта</string>
     <string name="sign_up_email_error">Неверный формат эл. почты</string>
     <string name="sign_up_email_exist">Аккаунт с такой эл. почтой уже существует</string>

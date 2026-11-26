@@ -99,7 +99,6 @@ internal class FakeSignUpState : SignUpState {
     override val reloadLegalDocuments = FakeButtonState()
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
-    override val lastName = FakeTextFieldState()
     override val email = FakeTextFieldState()
     override val learnMoreButton = FakeButtonState()
     override val confirmButton = FakeButtonState()

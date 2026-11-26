@@ -34,7 +34,6 @@ internal class WebAppearanceSection(
 internal class WebProfileSection : ProfileSection {
     override var email: StringDesc by mutableStateOf("".desc())
     override var fullName: StringDesc by mutableStateOf("".desc())
-    override var initials: String by mutableStateOf("")
     override val edit = WebButtonState()
 }
 

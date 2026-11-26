@@ -20,6 +20,7 @@ internal class GetSettingsImpl(
                 firstName = profile.firstName,
                 lastName = profile.lastName,
                 email = profile.email,
+                phone = profile.phone.orEmpty(),
                 isEmailDeliverable = !isTelegramPlaceholder(profile.email),
             ),
         )

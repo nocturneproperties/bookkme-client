@@ -11,6 +11,7 @@ class IOSLegalDocumentsSection: @MainActor LegalDocumentsSection, NativeStateRep
     var documents: [LegalDocumentItem] = []
     var isLoading: Bool = false
     var message: (any StringDesc)? = nil
+    var notice: (any StringDesc)? = nil
     let accept: any ButtonState = IOSButtonState()
     let retry: any ButtonState = IOSButtonState()
 }

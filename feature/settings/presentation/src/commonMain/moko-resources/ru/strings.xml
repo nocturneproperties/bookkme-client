@@ -34,6 +34,8 @@
     <string name="settings_edit_profile_full_name">Имя и фамилия</string>
     <string name="settings_edit_profile_change_email">Изменить</string>
     <string name="settings_edit_profile_email_hint">Новый адрес эл. почты подтвердите кодом, который мы на него отправим.</string>
+    <string name="settings_edit_profile_phone">Телефон</string>
+    <string name="settings_edit_profile_phone_hint">Необязательно. Бизнесы, к которым вы записываетесь, смогут связаться с вами по нему.</string>
 
 
     <string name="settings_delete_account_title">Удалить аккаунт</string>
@@ -61,7 +63,7 @@
     <string name="settings_notifications_appointment_hint">Подтверждения, изменения и напоминания</string>
     <string name="settings_notifications_telegram_hint">Сообщения от бота BookkMe</string>
     <string name="settings_notifications_channels_footer">Оставьте включённым хотя бы один канал, чтобы получать уведомления о записях.</string>
-    <string name="settings_edit_profile_email_taken_error">Этот адрес электронной почты уже используется.</string>
+    <string name="settings_edit_profile_phone_taken_error">Этот номер телефона уже используется другим аккаунтом.</string>
     <string name="settings_edit_profile_email_verification_required_error">Новый адрес эл. почты нужно подтвердить кодом.</string>
     <string name="settings_passkey_last_error">Нельзя удалить последний ключ доступа. Сначала добавьте другой ключ, чтобы сохранить доступ к аккаунту.</string>
 

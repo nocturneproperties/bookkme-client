@@ -73,6 +73,7 @@ import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsViewModel
+import me.bookk.feature.settings.presentation.privacy.PrivacySettingsViewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.stopKoin
 import org.koin.core.parameter.parametersOf
@@ -707,6 +708,19 @@ class ClientAppTest {
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<NotificationSettingsViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the privacy settings view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<PrivacySettingsViewModel>()
 
         then()
         assertNotNull(viewModel)

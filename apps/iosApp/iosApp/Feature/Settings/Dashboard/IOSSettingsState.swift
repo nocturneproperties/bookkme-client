@@ -88,14 +88,12 @@ class IOSProfileSection: @MainActor ProfileSection {
 	
 	var email: any StringDesc
 	var fullName: any StringDesc
-	var initials: String
 	let edit: any ButtonState
 	
 	
 	init() {
 		email = RawStringDesc(string: "")
 		fullName = RawStringDesc(string: "")
-		initials = ""
 		edit = IOSButtonState()
 	}
 }

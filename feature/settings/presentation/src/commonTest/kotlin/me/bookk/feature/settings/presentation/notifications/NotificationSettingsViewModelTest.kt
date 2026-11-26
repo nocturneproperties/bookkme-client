@@ -672,5 +672,8 @@ class NotificationSettingsViewModelTest {
 }
 
 private fun settingsWithEmail(email: String, isEmailDeliverable: Boolean = true): Settings {
-    return Settings(ColorScheme.SYSTEM, SettingsProfile("Anna", "Smith", email, isEmailDeliverable))
+    return Settings(
+        ColorScheme.SYSTEM,
+        SettingsProfile("Anna", "Smith", email, "", isEmailDeliverable),
+    )
 }

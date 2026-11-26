@@ -21,6 +21,8 @@ struct EditProfileScreen: View {
 				viewModel.onNameTextChanged(text: newText)
 			}
 			.textFieldStyle(.inList)
+			SectionTextField(state.phone, header: "")
+				.textFieldStyle(.inList)
 		}
 		.listSectionSpacing(.compact)
 		.scrollDismissesKeyboard(.immediately)

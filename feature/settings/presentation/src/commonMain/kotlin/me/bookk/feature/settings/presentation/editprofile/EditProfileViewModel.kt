@@ -11,8 +11,11 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.resources.asPhone
 import me.bookk.designsystem.uistate.InputType
+import me.bookk.designsystem.uistate.TextFieldState
 import me.bookk.designsystem.uistate.clearError
+import me.bookk.designsystem.uistate.showError
 import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.validate
 import me.bookk.feature.settings.domain.api.EditProfile
@@ -31,6 +34,7 @@ class EditProfileViewModel(
     val uiState: EditProfileState = settingsStateFactory.createEditProfileState().setup()
 
     private var savedName: String? = null
+    private var savedPhone = ""
 
     private fun EditProfileState.setup() = apply {
         appBar.title = SettingsRes.strings.settings_edit_profile_title.desc()
@@ -39,10 +43,18 @@ class EditProfileViewModel(
         }
         name.label = SettingsRes.strings.settings_edit_profile_full_name.desc()
         name.onTextChanged = weakVMClosure { vm, text -> vm.onNameTextChanged(text) }
+        setupPhone()
         setupEmail()
         confirmButton.text = DesignSystem.strings.action_save.desc()
         confirmButton.isEnabled = false
         confirmButton.onClick = weakVMClosure { it.onConfirmButtonClick() }
+    }
+
+    private fun EditProfileState.setupPhone() {
+        phone.label = SettingsRes.strings.settings_edit_profile_phone.desc()
+        phone.inputType = InputType.PHONE
+        phone.showPhoneHint()
+        phone.onTextChanged = weakVMClosure { vm, text -> vm.onPhoneTextChanged(text) }
     }
 
     private fun EditProfileState.setupEmail() {
@@ -74,6 +86,8 @@ class EditProfileViewModel(
         if (savedName != null) return
         val name = FullName.join(profile.firstName, profile.lastName)
         savedName = name
+        savedPhone = profile.phone
+        uiState.phone.text = profile.phone
         onNameTextChanged(name)
     }
 
@@ -84,6 +98,18 @@ class EditProfileViewModel(
         updateConfirmButton()
     }
 
+    fun onPhoneTextChanged(text: String) {
+        if (savedName == null) return
+        uiState.phone.text = text.asPhone()
+        uiState.phone.showPhoneHint()
+        updateConfirmButton()
+    }
+
+    private fun TextFieldState.showPhoneHint() {
+        clearError()
+        supportingTextRes = SettingsRes.strings.settings_edit_profile_phone_hint.desc()
+    }
+
     fun onConfirmButtonClick() {
         val name = FullName.parse(uiState.name.text)
         if (!validate(name)) {
@@ -91,13 +117,17 @@ class EditProfileViewModel(
             return
         }
         val text = uiState.name.text
+        val phone = uiState.phone.text
         launch(
             launchIn = DispatcherProvider.io,
             onStart = { uiState.confirmButton.startLoading() },
-            call = { editProfile(firstName = name.firstName, lastName = name.lastName) },
+            call = {
+                editProfile(firstName = name.firstName, lastName = name.lastName, phone = phone)
+            },
             onComplete = {
                 uiState.notification.add(PresentationNotification.SuccessHaptic)
                 savedName = text
+                savedPhone = phone
                 uiState.navigation.push(EditProfileNavigationDestination.Back)
             },
             onError = ::onSaveError,
@@ -118,7 +148,9 @@ class EditProfileViewModel(
     private fun onSaveError(error: Throwable) {
         when (error) {
             is EditProfile.Error.ContactAlreadyTaken -> {
-                showErrorMessage(SettingsRes.strings.settings_edit_profile_email_taken_error.desc())
+                uiState.phone.showError(
+                    SettingsRes.strings.settings_edit_profile_phone_taken_error.desc(),
+                )
             }
 
             is EditProfile.Error.EmailChangeRequiresVerification -> {
@@ -144,6 +176,8 @@ class EditProfileViewModel(
     }
 
     private fun updateConfirmButton() {
-        uiState.confirmButton.isEnabled = savedName != uiState.name.text && uiState.name.isValid
+        val isChanged = savedName != uiState.name.text || savedPhone != uiState.phone.text
+        uiState.confirmButton.isEnabled =
+            isChanged && uiState.name.isValid && uiState.phone.isValid
     }
 }

@@ -69,7 +69,6 @@ internal class FakeSettingsState : SettingsState {
     override val profile = object : ProfileSection {
         override var email: StringDesc = "".desc()
         override var fullName: StringDesc = "".desc()
-        override var initials: String = ""
         override val edit = FakeButtonState()
     }
     override val account = object : AccountSection {
@@ -100,6 +99,7 @@ internal class FakeSettingsState : SettingsState {
 internal class FakeEditProfileState : EditProfileState {
     override val appBar = FakeAppBarState()
     override val name = FakeTextFieldState()
+    override val phone = FakeTextFieldState()
     override val email = FakeTextFieldState()
     override val changeEmail = FakeButtonState()
     override val confirmButton = FakeButtonState()
@@ -153,6 +153,7 @@ internal class FakeLegalDocumentsSectionState : LegalDocumentsSection {
     override var documents: List<LegalDocumentItem> = emptyList()
     override var isLoading: Boolean = false
     override var message: StringDesc? = null
+    override var notice: StringDesc? = null
     override val accept = FakeButtonState()
     override val retry = FakeButtonState()
 }

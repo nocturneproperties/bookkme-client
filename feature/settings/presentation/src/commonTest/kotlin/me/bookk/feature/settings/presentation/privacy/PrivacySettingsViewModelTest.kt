@@ -988,6 +988,47 @@ class PrivacySettingsViewModelTest {
     }
 
     @Test
+    fun `announces changed documents while confirmation is pending`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals(SettingsRes.strings.settings_legal_changed.desc(), sut.uiState.legal.notice)
+    }
+
+    @Test
+    fun `announces no changed documents when all current versions are confirmed`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.remoteStatuses.refresh() } returns
+            listOf(privacyPolicyStatus(accepted = true), termsStatus())
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertNull(sut.uiState.legal.notice)
+    }
+
+    @Test
+    fun `announces no changed documents before statuses are loaded`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        every { fixture.getLegalDocumentStatuses.flow() } returns emptyFlow()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertNull(sut.uiState.legal.notice)
+    }
+
+    @Test
     fun `navigates back from the app bar`() = runUnitTest {
         given()
         val sut = Fixture().sut()

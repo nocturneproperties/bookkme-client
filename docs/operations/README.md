@@ -181,7 +181,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Privacy screen review and post-acceptance refresh; dashboard "Action required" row status | [Get legal document statuses](settings/get-legal-document-statuses.md) |
 | `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |
 | `GetSettings` | local-first | [Get settings](settings/get-settings.md) |
-| `EditProfile` | `PATCH /api/user/me` with the stored email unchanged; contact-conflict and email-verification errors | [Edit profile](settings/edit-profile.md) |
+| `EditProfile` | `PATCH /api/user/me` with the name and optional phone (blank clears it), the stored email unchanged; contact-conflict and email-verification errors | [Edit profile](settings/edit-profile.md) |
 | `GetColorScheme`, `UpdateColorScheme` | local only | [Get / update color scheme](settings/get-color-scheme.md) |
 | `GetCrashReportingEnabled`, `UpdateCrashReportingEnabled` | local only, through the platform `CrashReporter` (Firebase Crashlytics); every change deletes unsent reports | [Get / update crash reporting](settings/get-crash-reporting-enabled.md) |
 | `GetNotificationSettings` | `GET /api/notifications/settings` | [Get notification settings](settings/get-notification-settings.md) |

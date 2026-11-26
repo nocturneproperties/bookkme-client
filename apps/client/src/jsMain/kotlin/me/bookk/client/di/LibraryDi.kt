@@ -10,6 +10,7 @@ import org.koin.dsl.module
 internal fun libraryModule() = module {
     includes(
         deviceModule(),
+        crashReportingModule(),
         cacheModule(),
         filesModule(),
         permissionsModule(),

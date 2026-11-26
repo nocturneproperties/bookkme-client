@@ -17,6 +17,8 @@ class IOSEditProfileState: @MainActor EditProfileState {
 	
 	var name: any TextFieldState
 	
+	var phone: any TextFieldState
+	
 	var email: any TextFieldState
 	
 	var changeEmail: any ButtonState
@@ -31,6 +33,7 @@ class IOSEditProfileState: @MainActor EditProfileState {
 		appBar = IOSAppBarState()
 		confirmButton = IOSButtonState()
 		name = IOSTextFieldState()
+		phone = IOSTextFieldState()
 		email = IOSTextFieldState()
 		changeEmail = IOSButtonState()
 		notification = IOSNotificationState()

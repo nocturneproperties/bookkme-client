@@ -32,8 +32,8 @@ import me.bookk.designsystem.components.Spinner
 import me.bookk.designsystem.components.StatusLabel
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
-import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.SectionRowTextStyle
 import me.bookk.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
@@ -125,7 +125,7 @@ private fun LegalDocumentText(document: LegalDocumentItem) {
     ) {
         TextBlock(
             document.title,
-            BodyLargeTextStyle
+            SectionRowTextStyle
                 .toModifier()
                 .margin(0.px),
         )

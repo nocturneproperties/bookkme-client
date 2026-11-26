@@ -14,6 +14,7 @@ import me.bookk.designsystem.uistate.TextFieldState
 internal class AndroidEditProfileState : EditProfileState {
     override val appBar: AppBarState = AndroidAppBarState()
     override val name: TextFieldState = AndroidTextFieldState()
+    override val phone: TextFieldState = AndroidTextFieldState()
     override val email: TextFieldState = AndroidTextFieldState()
     override val changeEmail: ButtonState = AndroidButtonState()
     override val confirmButton: ButtonState = AndroidButtonState()

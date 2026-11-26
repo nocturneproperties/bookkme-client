@@ -48,5 +48,6 @@ internal fun BookingProfileScreen(state: EditProfileState, webApp: TelegramWebAp
         )
         TextField(state.name)
         ActionField(state.email, state.changeEmail)
+        TextField(state.phone)
     }
 }

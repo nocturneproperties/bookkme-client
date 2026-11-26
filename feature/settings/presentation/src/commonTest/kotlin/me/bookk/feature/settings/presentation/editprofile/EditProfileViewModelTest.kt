@@ -23,6 +23,7 @@ import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.test.assertSingle
+import me.bookk.designsystem.uistate.InputType
 import me.bookk.designsystem.uistate.ValidationState
 import me.bookk.feature.settings.domain.api.EditProfile
 import me.bookk.feature.settings.domain.api.GetSettings
@@ -80,21 +81,26 @@ class EditProfileViewModelTest {
             firstName: String = "Anna",
             lastName: String = "Smith",
             email: String = "anna@example.com",
+            phone: String = "+48123456789",
         ) {
             everySuspend { getSettings() } returns
                 Settings(
                     ColorScheme.SYSTEM,
-                    SettingsProfile(firstName, lastName, email, isEmailDeliverable = true),
+                    SettingsProfile(firstName, lastName, email, phone, isEmailDeliverable = true),
                 )
         }
 
         fun stubSaveSucceeds() {
-            everySuspend { editProfile(any(), any()) } returns Unit
+            everySuspend { editProfile(any(), any(), any()) } returns Unit
         }
     }
 
     private fun EditProfileViewModel.typeName(text: String) {
         (uiState.name as FakeTextFieldState).type(text)
+    }
+
+    private fun EditProfileViewModel.typePhone(text: String) {
+        (uiState.phone as FakeTextFieldState).type(text)
     }
 
     private fun EditProfileViewModel.save() {
@@ -193,7 +199,7 @@ class EditProfileViewModelTest {
         sut.save()
 
         then()
-        verifySuspend { fixture.editProfile("Maria", "Anna Brown") }
+        verifySuspend { fixture.editProfile("Maria", "Anna Brown", "+48123456789") }
     }
 
     @Test
@@ -208,7 +214,7 @@ class EditProfileViewModelTest {
         sut.save()
 
         then()
-        verifySuspend { fixture.editProfile("Maria", "") }
+        verifySuspend { fixture.editProfile("Maria", "", "+48123456789") }
     }
 
     @Test
@@ -223,7 +229,7 @@ class EditProfileViewModelTest {
         sut.save()
 
         then()
-        verifySuspend { fixture.editProfile("Maria", "Brown") }
+        verifySuspend { fixture.editProfile("Maria", "Brown", "+48123456789") }
     }
 
     @Test
@@ -295,7 +301,7 @@ class EditProfileViewModelTest {
         sut.save()
 
         then()
-        verifySuspend(VerifyMode.not) { fixture.editProfile(any(), any()) }
+        verifySuspend(VerifyMode.not) { fixture.editProfile(any(), any(), any()) }
     }
 
     @Test
@@ -405,7 +411,7 @@ class EditProfileViewModelTest {
     fun `does not play success haptic when saving the name fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.editProfile(any(), any()) } throws TestException()
+        everySuspend { fixture.editProfile(any(), any(), any()) } throws TestException()
         val sut = fixture.presentedSut()
         sut.typeName("Maria Brown")
 
@@ -424,7 +430,7 @@ class EditProfileViewModelTest {
     fun `keeps save enabled after saving fails`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.editProfile(any(), any()) } throws TestException()
+        everySuspend { fixture.editProfile(any(), any(), any()) } throws TestException()
         val sut = fixture.presentedSut()
         sut.typeName("Maria Brown")
 
@@ -438,33 +444,201 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `shows email taken error as an error message`() = runUnitTest {
+    fun `labels the phone field as an optional phone input`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.editProfile(any(), any()) } throws
-            EditProfile.Error.ContactAlreadyTaken()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_phone.desc(),
+            sut.uiState.phone.label,
+        )
+        assertEquals(InputType.PHONE, sut.uiState.phone.inputType)
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_phone_hint.desc(),
+            sut.uiState.phone.supportingTextRes,
+        )
+    }
+
+    @Test
+    fun `shows the stored phone`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
         val sut = fixture.presentedSut()
-        sut.typeName("Maria Brown")
+
+        then()
+        assertEquals("+48123456789", sut.uiState.phone.text)
+    }
+
+    @Test
+    fun `shows an empty phone when the profile has none`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubProfile(phone = "")
+
+        whenn()
+        val sut = fixture.presentedSut()
+
+        then()
+        assertEquals("", sut.uiState.phone.text)
+        assertFalse(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `ignores phone typing before the profile is loaded`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.onPhoneTextChanged("+1")
+
+        then()
+        assertEquals("", sut.uiState.phone.text)
+    }
+
+    @Test
+    fun `keeps only digits and a leading plus in the phone`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+
+        whenn()
+        sut.typePhone("+48 (123) 456-789")
+
+        then()
+        assertEquals("+48123456789", sut.uiState.phone.text)
+    }
+
+    @Test
+    fun `enables save when only the phone changes`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+
+        whenn()
+        sut.typePhone("+48999")
+
+        then()
+        assertTrue(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `disables save when the phone is changed back`() = runUnitTest {
+        given()
+        val sut = Fixture().presentedSut()
+        sut.typePhone("+48999")
+
+        whenn()
+        sut.typePhone("+48123456789")
+
+        then()
+        assertFalse(sut.uiState.confirmButton.isEnabled)
+    }
+
+    @Test
+    fun `saves the typed phone with the name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveSucceeds()
+        val sut = fixture.presentedSut()
+        sut.typePhone("+48999")
 
         whenn()
         sut.save()
 
         then()
-        val message = sut.uiState.notification.assertSingle<GlobalMessage>()
+        verifySuspend { fixture.editProfile("Anna", "Smith", "+48999") }
+    }
+
+    @Test
+    fun `saves an empty phone to remove it`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveSucceeds()
+        val sut = fixture.presentedSut()
+        sut.typePhone("")
+
+        whenn()
+        sut.save()
+
+        then()
+        verifySuspend { fixture.editProfile("Anna", "Smith", "") }
+    }
+
+    @Test
+    fun `plays success haptic when the phone is saved`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubSaveSucceeds()
+        val sut = fixture.presentedSut()
+        sut.typePhone("+48999")
+
+        whenn()
+        sut.save()
+
+        then()
         assertEquals(
-            SettingsRes.strings.settings_edit_profile_email_taken_error.desc(),
-            message.text,
+            1,
+            sut.uiState.notification.presentationNotification.count {
+                it is PresentationNotification.SuccessHaptic
+            },
         )
-        assertEquals(GlobalMessage.State.ERROR, message.state)
+    }
+
+    @Test
+    fun `shows phone taken error on the phone field`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editProfile(any(), any(), any()) } throws
+            EditProfile.Error.ContactAlreadyTaken()
+        val sut = fixture.presentedSut()
+        sut.typePhone("+48999")
+
+        whenn()
+        sut.save()
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_phone_taken_error.desc(),
+            sut.uiState.phone.supportingTextRes,
+        )
+        assertEquals(ValidationState.ERROR, sut.uiState.phone.validationState)
+        assertFalse(sut.uiState.confirmButton.isEnabled)
+        assertTrue(sut.uiState.notification.presentationNotification.isEmpty())
         assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
         assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+    }
+
+    @Test
+    fun `restores the phone hint once the taken phone is edited`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.editProfile(any(), any(), any()) } throws
+            EditProfile.Error.ContactAlreadyTaken()
+        val sut = fixture.presentedSut()
+        sut.typePhone("+48999")
+        sut.save()
+
+        whenn()
+        sut.typePhone("+48998")
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_edit_profile_phone_hint.desc(),
+            sut.uiState.phone.supportingTextRes,
+        )
+        assertEquals(ValidationState.DEFAULT, sut.uiState.phone.validationState)
+        assertTrue(sut.uiState.confirmButton.isEnabled)
     }
 
     @Test
     fun `shows email verification required error as an error message`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.editProfile(any(), any()) } throws
+        everySuspend { fixture.editProfile(any(), any(), any()) } throws
             EditProfile.Error.EmailChangeRequiresVerification()
         val sut = fixture.presentedSut()
         sut.typeName("Maria Brown")

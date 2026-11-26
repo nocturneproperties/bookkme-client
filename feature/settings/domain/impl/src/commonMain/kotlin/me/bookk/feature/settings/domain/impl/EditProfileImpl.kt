@@ -8,7 +8,7 @@ import me.bookk.feature.settings.domain.datasource.SettingsErrorCodes
 internal class EditProfileImpl(
     private val profileCRUD: UserProfileCRUD,
 ) : EditProfile {
-    override suspend fun invoke(firstName: String, lastName: String) {
+    override suspend fun invoke(firstName: String, lastName: String, phone: String) {
         runCatching {
             profileCRUD.update(
                 profileCRUD
@@ -16,6 +16,7 @@ internal class EditProfileImpl(
                     .copy(
                         firstName = firstName.trim(),
                         lastName = lastName.trim(),
+                        phone = phone.trim(),
                     ),
             )
         }

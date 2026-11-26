@@ -45,12 +45,14 @@ class GetSettingsImplTest {
         val sut = GetSettingsImpl(getColorScheme, userProfileCRUD)
     }
 
-    private fun stubProfile(email: String = "john@example.com") = UserProfile(
-        id = Uuid.random(),
-        firstName = "John",
-        lastName = "Doe",
-        email = email,
-    )
+    private fun stubProfile(email: String = "john@example.com", phone: String? = "+48123456789") =
+        UserProfile(
+            id = Uuid.random(),
+            firstName = "John",
+            lastName = "Doe",
+            email = email,
+            phone = phone,
+        )
 
     @Test
     fun `returns settings combining color scheme and profile`() = runUnitTest {
@@ -67,6 +69,21 @@ class GetSettingsImplTest {
         assertEquals("John", result.profile.firstName)
         assertEquals("Doe", result.profile.lastName)
         assertEquals("john@example.com", result.profile.email)
+        assertEquals("+48123456789", result.profile.phone)
+    }
+
+    @Test
+    fun `returns an empty phone when the profile has none`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getColorScheme() } returns ColorScheme.DARK
+        everySuspend { fixture.userProfileCRUD.get() } returns stubProfile(phone = null)
+
+        whenn()
+        val result = fixture.sut()
+
+        then()
+        assertEquals("", result.profile.phone)
     }
 
     @Test

@@ -9,6 +9,7 @@ import me.bookk.designsystem.uistate.WebTextFieldState
 internal class WebEditProfileState : EditProfileState {
     override val appBar = WebAppBarState()
     override val name = WebTextFieldState()
+    override val phone = WebTextFieldState()
     override val email = WebTextFieldState()
     override val changeEmail = WebButtonState()
     override val confirmButton = WebButtonState()

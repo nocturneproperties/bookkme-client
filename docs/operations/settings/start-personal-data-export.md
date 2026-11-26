@@ -2,7 +2,11 @@
 
 # Start personal data export
 
-`StartPersonalDataExport` → `POST /api/user/export`, then upsert the returned status in Room.
+`StartPersonalDataExport` returns an `ActionOutcome<DataExport>`. The mobile apps bind
+`StartPersonalDataExportImpl`: `POST /api/user/export`, then upsert the returned status in Room, returning
+`ActionOutcome.Completed`. The client web app binds `TelegramStartPersonalDataExportImpl` instead (see
+[Telegram Mini App](#telegram-mini-app)). The token request and the status save are shared with
+[Complete Telegram confirmation](complete-telegram-confirmation.md) through `PersonalDataExportRequest`.
 
 ```mermaid
 flowchart TD
@@ -16,7 +20,7 @@ flowchart TD
     Net -- success --> Prune[DataExportDataSource.deleteFiles<br/>clear personal_data_exports cache directory]
     Prune --> Save[DataExportDataSource.saveInDb]
     Save --> Upsert[PersonalDataExportDao.upsert<br/>personal_data_export id = 0]
-    Upsert --> R([return DataExport])
+    Upsert --> R([return ActionOutcome.Completed DataExport])
     Save -- failure --> Other
     Prune -- failure --> Other
     Net -- other failure --> Other([propagate])
@@ -45,3 +49,23 @@ other export types can use separate directories without being affected. Failed n
 preserve the downloaded files. Logout also removes this directory from the app cache. File operations
 do not change the Room schema or add preferences. The datasource delegates directory removal to
 `FileProvider.deleteRecursively()`; subsequent downloads recreate the directory when saving JSON.
+
+## Telegram Mini App
+
+`TelegramStartPersonalDataExportImpl` only asks for a confirmation in the person's Telegram chat; the export
+starts when they tap Confirm there, through [Complete Telegram confirmation](complete-telegram-confirmation.md).
+
+```mermaid
+flowchart TD
+    Start([invoke]) --> Profile[UserProfileCRUD.get caller id]
+    Profile --> Send[StartTelegramActionConfirmation EXPORT_PERSONAL_DATA<br/>nil business UUID, caller id]
+    Send -- Unit --> R([ActionOutcome.ConfirmationSent])
+    Send -- Error.BotCannotWrite --> W([throw ChatConfirmationError.WriteAccessRequired])
+    Send -- Error.TooFrequent --> F([throw ChatConfirmationError.TooFrequent])
+    Send -- other failure --> EX([propagate])
+```
+
+The export screen stays on the request stage and `ChatConfirmationRequest` shows the sent notice, the
+60-second "Send again" cooldown and the write-access request, as described in
+[Delete account](delete-account.md#telegram-mini-app). Nothing is saved until the export starts.
+

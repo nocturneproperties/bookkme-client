@@ -32,16 +32,13 @@ import me.bookk.designsystem.components.MediaFrame
 import me.bookk.designsystem.components.MediaPlaceholder
 import me.bookk.designsystem.components.SectionContainer
 import me.bookk.designsystem.components.TextBlock
-import me.bookk.designsystem.components.TextLink
-import me.bookk.designsystem.resources.WebLocalization
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.BandTone
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.LabelMediumTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
-import me.bookk.designsystem.theme.active
 import me.bookk.designsystem.theme.resolve
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.theme.webColors
@@ -52,7 +49,6 @@ import me.bookk.site.landing.PrivacyPanel
 import me.bookk.site.landing.SectionIntro
 import me.bookk.site.landing.Statement
 import me.bookk.site.landing.business.SplitSectionStyle
-import me.bookk.site.navigation.SiteNavigation
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.LineStyle
@@ -180,7 +176,7 @@ private fun PromiseRow(promise: Promise, isDivided: Boolean) {
             Heading(promise.title, HeadingLevel.H3, TitleMediumTextStyle.toModifier())
             TextBlock(
                 promise.description,
-                BodyMediumTextStyle
+                BodyLargeTextStyle
                     .toModifier()
                     .secondary(),
             )
@@ -200,7 +196,7 @@ fun AnytimeBookingSection() {
                 )
                 TextBlock(
                     SiteRes.strings.site_clients_anytime_description.desc(),
-                    BodyLargeTextStyle
+                    LeadTextStyle
                         .toModifier()
                         .secondary(),
                 )

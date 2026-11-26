@@ -18,7 +18,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.opacity
 import com.varabyte.kobweb.compose.ui.modifiers.size
 import com.varabyte.kobweb.silk.style.toModifier
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.themed
 import me.bookk.designsystem.uistate.RadioButtonState
 import org.jetbrains.compose.web.css.LineStyle
@@ -44,7 +44,7 @@ fun RadioButton(state: RadioButtonState, modifier: Modifier = Modifier) {
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TextBlock(state.text, BodyMediumTextStyle.toModifier())
+        TextBlock(state.text, BodyLargeTextStyle.toModifier())
         Spacer()
         RadioIndicator(state.isSelected)
     }

@@ -10,9 +10,9 @@ import me.bookk.core.data.DataSource
 import me.bookk.feature.settings.data.mapping.toDomain
 import me.bookk.feature.settings.data.mapping.toRemote
 import me.bookk.feature.settings.data.remote.api.AuthRouting
-import me.bookk.feature.settings.data.remote.model.PasskeyRemote
+import me.bookk.feature.settings.data.remote.model.PasskeyListRemote
 import me.bookk.feature.settings.data.remote.model.RegistrationChallengeResponse
-import me.bookk.feature.settings.domain.api.entity.Passkey
+import me.bookk.feature.settings.domain.datasource.passkey.AccountPasskeys
 import me.bookk.feature.settings.domain.datasource.passkey.AddPasskeyChallenge
 import me.bookk.feature.settings.domain.datasource.passkey.ClientSignUpResult
 import me.bookk.feature.settings.domain.datasource.passkey.PasskeySettingsDataSource
@@ -22,11 +22,11 @@ internal class PasskeySettingsDataSourceImpl(
     private val httpClient: HttpClient,
 ) : DataSource(),
     PasskeySettingsDataSource {
-    override suspend fun getPasskeys(): List<Passkey> {
+    override suspend fun getPasskeys(): AccountPasskeys {
         return mapExceptions {
             httpClient.get(AuthRouting.Api.Auth.PassKey())
-                .body<List<PasskeyRemote>>()
-                .map(PasskeyRemote::toDomain)
+                .body<PasskeyListRemote>()
+                .toDomain()
         }
     }
 

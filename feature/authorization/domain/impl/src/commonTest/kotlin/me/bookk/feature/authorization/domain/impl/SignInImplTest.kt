@@ -174,4 +174,43 @@ class SignInImplTest {
             fixture.sut()
         }
     }
+
+    @Test
+    fun `tells the device to forget a passkey no account has`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUnknownPasskey()
+        everySuspend { fixture.passKeyManager.signalUnknownPasskey(any()) } returns Unit
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<SignIn.Error.NoAccountForThisPasskey> { result.getOrThrow() }
+        verifySuspend { fixture.passKeyManager.signalUnknownPasskey(payload) }
+    }
+
+    @Test
+    fun `reports the unknown passkey even when the device can't forget it`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.stubUnknownPasskey()
+        everySuspend { fixture.passKeyManager.signalUnknownPasskey(any()) } throws
+            IllegalStateException("provider unavailable")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<SignIn.Error.NoAccountForThisPasskey> { result.getOrThrow() }
+    }
+
+    private suspend fun Fixture.stubUnknownPasskey() {
+        everySuspend { authorizationDataSource.getAuthorizationChallenge() } returns stubChallenge()
+        everySuspend { passKeyManager.authorize(any()) } returns payload
+        everySuspend { deviceDataSource.getOrCreateDeviceUUID() } returns "uuid"
+        everySuspend { deviceFacade.getDeviceName() } returns "Name"
+        everySuspend { authorizationDataSource.verifyAuthorization(any()) } throws
+            Error.BusinessError(AuthErrorCodes.PASSKEY_UNKNOWN, "msg")
+    }
 }

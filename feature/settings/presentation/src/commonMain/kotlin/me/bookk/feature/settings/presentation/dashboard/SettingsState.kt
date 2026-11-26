@@ -67,6 +67,8 @@ interface AppearanceSection {
 interface ProfileSection {
     var email: StringDesc
     var fullName: StringDesc
+    var initials: String
+    var photoUrl: String?
     val edit: ButtonState
 }
 

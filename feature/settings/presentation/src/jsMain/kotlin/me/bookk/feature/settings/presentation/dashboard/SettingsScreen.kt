@@ -19,15 +19,17 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
+import me.bookk.designsystem.components.Avatar
 import me.bookk.designsystem.components.Heading
 import me.bookk.designsystem.components.HeadingLevel
+import me.bookk.designsystem.components.InitialsAvatarSize
 import me.bookk.designsystem.components.MenuCard
 import me.bookk.designsystem.components.MenuItem
 import me.bookk.designsystem.components.MenuItemTone
 import me.bookk.designsystem.components.MenuItemTrailing
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.uistate.ButtonState
@@ -60,6 +62,12 @@ private fun ProfileHeader(profile: ProfileSection) {
             .textAlign(TextAlign.Center),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Avatar(
+            initials = profile.initials,
+            photoUrl = profile.photoUrl,
+            modifier = Modifier.margin(bottom = 0.5.cssRem),
+            size = InitialsAvatarSize.EXTRA_LARGE,
+        )
         Heading(
             profile.fullName,
             HeadingLevel.H1,
@@ -69,7 +77,7 @@ private fun ProfileHeader(profile: ProfileSection) {
         )
         TextBlock(
             SettingsRes.strings.settings_profile_booking_hint.desc(),
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .margin(0.px)
                 .secondary(),

@@ -6,6 +6,8 @@ import kotlin.time.Instant
 
 interface AuthorizationDataSource {
     suspend fun confirmAction(confirmation: ActionConfirmationRequest): String
+    suspend fun startTelegramActionConfirmation(request: TelegramActionConfirmationStart)
+    suspend fun confirmActionWithTelegram(initData: String): String
     suspend fun saveAuthorizationTokens(tokenInfo: TokenInfo?)
     suspend fun getAccessToken(): String?
     fun getIsAuthorizedFlow(): Flow<Boolean>
@@ -14,7 +16,7 @@ interface AuthorizationDataSource {
     suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge
     suspend fun verifyAuthorization(signInData: SignInData): TokenInfo
     suspend fun signInWithTelegram(data: TelegramSignInData): TokenInfo
-    suspend fun deleteAccount(request: DeleteAccountRequest)
+    suspend fun requestAccountDeletion(request: DeleteAccountRequest): Instant
     suspend fun setAuthorizationStatus(isAuthorized: Boolean)
     suspend fun invalidateClientTokens()
     suspend fun getLastInitialDataFetchAt(): Instant?

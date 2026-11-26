@@ -41,10 +41,10 @@ import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.VerticalDivider
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.LabelMediumTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
 import me.bookk.designsystem.theme.active
 import me.bookk.designsystem.theme.secondary
@@ -119,7 +119,7 @@ private fun Title(state: BookingDateTimeState) {
 private fun SecondaryLabel(text: StringDesc) {
     TextBlock(
         text,
-        BodyMediumTextStyle
+        BodyLargeTextStyle
             .toModifier()
             .fontWeight(FontWeight.SemiBold)
             .minWidth(0.px)
@@ -226,7 +226,7 @@ private fun SlotChip(slot: SlotItem) {
     ) {
         TextBlock(
             slot.time,
-            BodyLargeTextStyle
+            LeadTextStyle
                 .toModifier()
                 .fontWeight(FontWeight.Bold)
                 .margin(0.px)

@@ -12,6 +12,14 @@ class PasskeyRemote(
     @ProtoNumber(3) val createdAt: Instant,
     @ProtoNumber(4) val lastUsedAt: Instant,
     @ProtoNumber(5) val isBackedUp: Boolean,
+    @ProtoNumber(6) val credentialId: String = "",
+)
+
+@Serializable
+class PasskeyListRemote(
+    @ProtoNumber(1) val rpId: String,
+    @ProtoNumber(2) val userHandle: String,
+    @ProtoNumber(3) val passkeys: List<PasskeyRemote> = emptyList(),
 )
 
 @Serializable

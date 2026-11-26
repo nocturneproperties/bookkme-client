@@ -39,10 +39,10 @@
 
 
     <string name="settings_delete_account_title">Delete account</string>
-    <string name="settings_delete_account_confirmation">I understand that deleting account will result in a permanent loss and I won’t be able to restore my account</string>
+    <string name="settings_delete_account_confirmation">I understand that my account will be deleted 7 days after I confirm. Until then I can keep using it. After that, my account and its data are gone for good and can’t be restored.</string>
     <string name="settings_delete_account_confirmation_switch">Agree</string>
     <string name="settings_delete_account_confirmation_button">Delete</string>
-    <string name="settings_delete_account_success_message">Account deleted successfully</string>
+    <string name="settings_delete_account_pending">Deletion requested. Your account will be deleted on %s. Until then you can keep using it.</string>
 
     <string name="settings_passkey_title">Passkey</string>
     <string name="settings_passkey_add_button">Add</string>
@@ -85,6 +85,7 @@
     <string name="settings_legal_loading">Checking documents…</string>
 
     <string name="settings_export_title">Export my data</string>
+    <string name="settings_export_headline">Your data.</string>
     <string name="settings_export_loading">Checking export status…</string>
     <string name="settings_export_request_title">A copy of your personal data</string>
     <string name="settings_export_description">Request a copy of the personal data the app holds about you. It will be prepared as a JSON file, a structured format you can download, save or share and open with compatible software.</string>
@@ -105,11 +106,20 @@
     <string name="settings_export_load_error">Could not check export status.</string>
     <string name="settings_export_request_error">Could not request your export. Please try again.</string>
     <string name="settings_export_confirmation_error">Passkey confirmation failed or expired. Request the export again to confirm.</string>
+    <string name="settings_export_confirmation_unavailable_mini_app">Exports can’t be confirmed in the mini app yet. Please try again later.</string>
     <string name="settings_export_too_frequent">Another export cannot be requested yet. Refresh the status to check availability.</string>
     <string name="settings_export_unavailable">This export is no longer available. Refresh the status to see your options.</string>
     <string name="settings_export_download_error">Could not download or share your file. Please try again.</string>
     <string name="settings_export_request_footer">You can keep using the app while it prepares.</string>
     <string name="settings_export_running_footer">You can leave this screen and return later.</string>
+    <string name="settings_export_running_footer_mini_app">You can close the mini app and come back later. We’ll message you here when it’s ready.</string>
     <string name="settings_export_file_title">Personal data</string>
     <string name="settings_export_file_type">JSON file</string>
+
+    <string name="settings_chat_confirmation_sent">We sent a confirmation to your Telegram chat. Tap Confirm there.</string>
+    <string name="settings_chat_confirmation_send_again">Send again</string>
+    <string name="settings_chat_confirmation_write_access_refused">Confirmation needs a message from the BookkMe bot. Allow the bot to message you and try again.</string>
+    <string name="settings_confirm_action_expired">This confirmation has expired. Start again from Settings.</string>
+    <string name="settings_confirm_action_other_account">This confirmation was requested from another Telegram account.</string>
+    <string name="settings_confirm_action_reopen">Your Telegram data has expired. Close the mini app and open it again from the button in the chat.</string>
 </resources>

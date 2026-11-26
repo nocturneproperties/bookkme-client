@@ -1,0 +1,49 @@
+package me.bookk.feature.settings.domain.impl
+
+import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
+import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
+import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
+import me.bookk.feature.authorization.domain.entity.ActionConfirmation
+import me.bookk.feature.authorization.domain.entity.SensitiveAction
+import me.bookk.feature.settings.domain.api.RequestAccountDeletion
+import me.bookk.feature.settings.domain.api.entity.ActionOutcome
+import kotlin.uuid.Uuid
+
+internal class RequestAccountDeletionImpl(
+    authorizationDataSource: AuthorizationDataSource,
+    accountDeletionDataSource: AccountDeletionDataSource,
+    private val confirmation: ConfirmSensitiveAction,
+    private val profile: UserProfileCRUD,
+) : RequestAccountDeletion {
+    private val deletionScheduler =
+        AccountDeletionScheduler(authorizationDataSource, accountDeletionDataSource)
+
+    override suspend fun invoke(): ActionOutcome<Unit> {
+        val confirmedAction = confirmAccountDeletion()
+        deletionScheduler.scheduleDeletion(confirmedAction.token)
+        return ActionOutcome.Completed(Unit)
+    }
+
+    private suspend fun confirmAccountDeletion(): ActionConfirmation {
+        val userId = profile.get().id
+        return runCatching {
+            confirmation(
+                SensitiveAction.DELETE_ACCOUNT,
+                Uuid.NIL,
+                userId,
+            )
+        }
+            .getOrElse {
+                throw when (it) {
+                    is ConfirmSensitiveAction.Error -> {
+                        RequestAccountDeletion.Error.AccountVerificationFailed()
+                    }
+
+                    else -> {
+                        it
+                    }
+                }
+            }
+    }
+}

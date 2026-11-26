@@ -10,7 +10,7 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Li
@@ -50,7 +50,7 @@ fun <T> TextList(
     type: TextListType = TextListType.BULLET,
     itemContent: @Composable (T) -> Unit,
 ) {
-    val listModifier = BodyMediumTextStyle
+    val listModifier = BodyLargeTextStyle
         .toModifier()
         .then(TextListStyle.toModifier())
         .then(modifier)

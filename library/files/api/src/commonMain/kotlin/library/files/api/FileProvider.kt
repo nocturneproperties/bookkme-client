@@ -7,5 +7,6 @@ interface FileProvider {
     fun touchCacheFile(fileName: String): Path
     fun exists(file: Path): Boolean
     fun writeText(file: Path, content: String)
+    fun readText(file: Path): String?
     fun deleteRecursively(path: Path)
 }

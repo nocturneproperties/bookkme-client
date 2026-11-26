@@ -10,6 +10,7 @@ import me.bookk.designsystem.uistate.WebAppBarState
 import me.bookk.designsystem.uistate.WebButtonState
 import me.bookk.designsystem.uistate.WebNavigationState
 import me.bookk.designsystem.uistate.WebNotificationState
+import me.bookk.feature.settings.presentation.confirmation.WebChatConfirmationState
 
 internal class WebPersonalDataExportState : PersonalDataExportState {
     override val appBar = WebAppBarState()
@@ -22,12 +23,14 @@ internal class WebPersonalDataExportState : PersonalDataExportState {
             color = ColorToken.ActionText,
             isInProgress = false,
             showsFile = false,
+            stage = UIExportStage.REQUEST,
         ),
     )
     override var expiry: StringDesc? by mutableStateOf(null)
     override var requestAvailability: StringDesc? by mutableStateOf(null)
     override var error: StringDesc? by mutableStateOf(null)
     override val request = WebButtonState()
+    override val chatConfirmation = WebChatConfirmationState()
     override val download = WebButtonState()
     override val retry = WebButtonState()
     override val notifications = WebNotificationState()

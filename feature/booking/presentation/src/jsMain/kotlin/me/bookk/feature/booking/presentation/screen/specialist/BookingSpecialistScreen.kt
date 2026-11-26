@@ -30,8 +30,8 @@ import me.bookk.designsystem.components.InitialsAvatarSize
 import me.bookk.designsystem.components.SelectableCardButton
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.feature.booking.presentation.screen.BookingTotalBar
 import org.jetbrains.compose.web.css.cssRem
@@ -66,7 +66,7 @@ private fun Title(businessName: StringDesc?) {
         businessName?.let {
             TextBlock(
                 it,
-                BodyMediumTextStyle
+                BodyLargeTextStyle
                     .toModifier()
                     .fontWeight(FontWeight.SemiBold)
                     .margin(0.px)
@@ -94,7 +94,7 @@ private fun SpecialistCard(item: SpecialistItem) {
         InitialsAvatar(item.initials, size = InitialsAvatarSize.LARGE)
         TextBlock(
             item.name,
-            BodyLargeTextStyle
+            LeadTextStyle
                 .toModifier()
                 .fillMaxWidth()
                 .fontWeight(FontWeight.Bold)

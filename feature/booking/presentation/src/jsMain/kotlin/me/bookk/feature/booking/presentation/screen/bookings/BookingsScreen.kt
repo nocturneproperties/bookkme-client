@@ -34,7 +34,7 @@ import me.bookk.designsystem.components.StatusLabel
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TintedIcon
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
 import me.bookk.designsystem.theme.secondary
@@ -83,7 +83,7 @@ private fun MonthTitle(month: BookingsListItem.Month) {
     Heading(
         month.title.desc(),
         HeadingLevel.H2,
-        textModifier(BodyMediumTextStyle)
+        textModifier(BodyLargeTextStyle)
             .fontWeight(FontWeight.SemiBold)
             .padding(top = 0.5.cssRem, left = 0.25.cssRem)
             .secondary(),
@@ -108,7 +108,7 @@ private fun BookingCard(item: BookingsListItem.Booking) {
                 item.businessName.desc(),
                 textModifier(TitleMediumTextStyle).fontWeight(FontWeight.SemiBold),
             )
-            TextBlock(item.details, textModifier(BodyMediumTextStyle).secondary())
+            TextBlock(item.details, textModifier(BodyLargeTextStyle).secondary())
             StatusLabel(item.status, item.statusColor, Modifier.margin(top = 0.25.cssRem))
         }
         TintedIcon(

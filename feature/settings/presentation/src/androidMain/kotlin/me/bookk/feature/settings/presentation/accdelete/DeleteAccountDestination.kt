@@ -12,15 +12,7 @@ import org.koin.androidx.compose.koinViewModel
 internal fun NavGraphBuilder.deleteAccountScreen(navigation: SettingsNavigation) {
     composable<SettingsDestination.DeleteAccount> {
         val viewModel: DeleteAccountViewModel = koinViewModel()
-        val listener = DeleteAccountEventListener(
-            onDeleteClick = viewModel::onDeleteClick,
-            onSwitchStateChanged = viewModel::onSwitchStateChanged,
-        )
-
-        CompositionLocalProvider(
-            LocalNavigation provides navigation,
-            LocalDeleteAccountEventListener provides listener,
-        ) {
+        CompositionLocalProvider(LocalNavigation provides navigation) {
             SendLifecycleEventsTo(viewModel)
             DeleteAccountScreen(viewModel.uiState)
         }

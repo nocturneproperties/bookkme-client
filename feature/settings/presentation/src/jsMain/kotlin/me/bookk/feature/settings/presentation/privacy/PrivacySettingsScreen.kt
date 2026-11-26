@@ -32,7 +32,7 @@ import me.bookk.designsystem.components.Spinner
 import me.bookk.designsystem.components.StatusLabel
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
-import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.SectionRowTextStyle
 import me.bookk.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
@@ -149,7 +149,7 @@ private fun LegalDocumentDivider() {
 private fun LegalMessage(message: StringDesc) {
     TextBlock(
         message,
-        BodySmallTextStyle
+        BodyMediumTextStyle
             .toModifier()
             .margin(0.px)
             .padding(leftRight = 1.cssRem)

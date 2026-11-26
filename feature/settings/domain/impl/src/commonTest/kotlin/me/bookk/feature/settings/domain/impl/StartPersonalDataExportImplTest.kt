@@ -24,6 +24,7 @@ import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.authorization.domain.entity.UserProfile
 import me.bookk.feature.settings.domain.api.StartPersonalDataExport
+import me.bookk.feature.settings.domain.api.entity.ActionOutcome
 import me.bookk.feature.settings.domain.datasource.DataExportDataSource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -73,7 +74,7 @@ class StartPersonalDataExportImplTest {
         val result = fixture.sut()
 
         then()
-        assertEquals(expected, result)
+        assertEquals(ActionOutcome.Completed(expected), result)
         verifySuspend { fixture.dataSource.saveInDb(expected) }
         verifySuspend { fixture.dataSource.deleteFiles() }
         verifySuspend {

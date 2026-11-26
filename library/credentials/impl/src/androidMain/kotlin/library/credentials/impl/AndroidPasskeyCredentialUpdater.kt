@@ -21,11 +21,15 @@ class AndroidPasskeyCredentialUpdater :
         )
     }
 
-    override suspend fun reportNoAcceptedCredentials(relyingParty: String, userHandle: String) {
+    override suspend fun reportAcceptedCredentials(
+        relyingParty: String,
+        userHandle: String,
+        credentialIds: List<String>,
+    ) {
         val requestJson = JSONObject()
             .put("rpId", relyingParty)
             .put("userId", userHandle)
-            .put("allAcceptedCredentialIds", JSONArray())
+            .put("allAcceptedCredentialIds", JSONArray(credentialIds))
         credentialManager().signalCredentialState(
             SignalAllAcceptedCredentialIdsRequest(requestJson.toString()),
         )

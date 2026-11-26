@@ -1,5 +1,6 @@
 package me.bookk.feature.dashboard.presentation.screen.clienthome
 
+import me.bookk.core.domain.launch.ConfirmableAction
 import me.bookk.core.presentation.navigation.NavigationDestination
 import kotlin.uuid.Uuid
 
@@ -15,5 +16,8 @@ sealed class ClientHomeDestinations : NavigationDestination() {
     ) : ClientHomeDestinations()
     data class Services(
         val businessId: Uuid,
+    ) : ClientHomeDestinations()
+    data class ConfirmAction(
+        val action: ConfirmableAction,
     ) : ClientHomeDestinations()
 }

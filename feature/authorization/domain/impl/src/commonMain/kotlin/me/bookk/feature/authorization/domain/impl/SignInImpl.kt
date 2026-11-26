@@ -1,6 +1,7 @@
 package me.bookk.feature.authorization.domain.impl
 
 import library.device.api.DeviceFacade
+import me.bookk.core.coroutine.runSuspendCatching
 import me.bookk.core.domain.entity.Error
 import me.bookk.core.domain.entity.businessOrThrow
 import me.bookk.feature.authorization.domain.api.InitialAppDataFetch
@@ -47,6 +48,11 @@ internal class SignInImpl(
                         SignIn.Error.NoAccountForThisPasskey()
                     }
 
+                    AuthErrorCodes.PASSKEY_UNKNOWN -> {
+                        forgetUnknownPasskey(payload)
+                        SignIn.Error.NoAccountForThisPasskey()
+                    }
+
                     AuthErrorCodes.VERIFICATION_FAILED,
                     AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED,
                     -> {
@@ -59,6 +65,10 @@ internal class SignInImpl(
                 }
             }
             .getOrThrow()
+    }
+
+    private suspend fun forgetUnknownPasskey(payload: PasskeyVerificationPayload) {
+        runSuspendCatching { passKeyManager.signalUnknownPasskey(payload) }
     }
 
     private suspend fun authorizeWithPasskey(

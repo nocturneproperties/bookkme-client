@@ -19,7 +19,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.minWidth
 import com.varabyte.kobweb.compose.ui.modifiers.overflowWrap
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.silk.style.toModifier
-import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.SectionRowTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.uistate.BooleanState
@@ -76,7 +76,7 @@ private fun SwitchRow(state: BooleanState) {
             state.supportingTextRes?.let {
                 TextBlock(
                     it,
-                    BodySmallTextStyle
+                    BodyMediumTextStyle
                         .toModifier()
                         .margin(0.px)
                         .secondary(),

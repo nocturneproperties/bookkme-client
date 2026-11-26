@@ -1,6 +1,7 @@
 package me.bookk.feature.settings.presentation.dashboard
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import library.telegram.ObserveTelegramNotifications
 import library.telegram.TelegramBackButton
 import library.telegram.TelegramWebApp
@@ -12,6 +13,9 @@ import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
 @Composable
 fun SettingsDestination(webApp: TelegramWebApp, navigation: SettingsNavigation) {
     val viewModel = rememberViewModel<SettingsDashboardViewModel>()
+    LaunchedEffect(viewModel) {
+        viewModel.onProfilePhotoProvided(webApp.initDataUnsafe.user?.photoUrl)
+    }
     SendLifecycleEventsTo(viewModel)
     ObserveTelegramNotifications(webApp, viewModel.uiState.notification)
     TelegramBackButton(webApp, navigation.onBack)

@@ -32,8 +32,8 @@ import me.bookk.designsystem.components.TextList
 import me.bookk.designsystem.components.TextListType
 import me.bookk.designsystem.resources.WebLocalization
 import me.bookk.designsystem.resources.color.ColorToken
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
-import me.bookk.designsystem.theme.BodySmallTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
@@ -126,7 +126,7 @@ private fun LegalHeading(heading: MarkdownBlock.Heading) {
 
 @Composable
 private fun LegalParagraph(content: List<MarkdownInline>) {
-    P(BodyMediumTextStyle.toModifier().toAttrs()) {
+    P(BodyLargeTextStyle.toModifier().toAttrs()) {
         LegalInlines(content)
     }
 }
@@ -135,7 +135,7 @@ private fun LegalParagraph(content: List<MarkdownInline>) {
 private fun LegalTable(table: MarkdownBlock.Table) {
     Div(LegalTableWrapperStyle.toModifier().toAttrs()) {
         Table(
-            BodySmallTextStyle
+            BodyMediumTextStyle
                 .toModifier()
                 .then(LegalTableStyle.toModifier())
                 .toAttrs(),

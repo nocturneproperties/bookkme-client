@@ -10,7 +10,7 @@ import com.varabyte.kobweb.silk.style.GeneralKind
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.uistate.TextState
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
@@ -19,7 +19,7 @@ import org.jetbrains.compose.web.dom.Text
 fun StateText(
     state: TextState,
     modifier: Modifier = Modifier,
-    style: CssStyle<GeneralKind> = BodyMediumTextStyle,
+    style: CssStyle<GeneralKind> = BodyLargeTextStyle,
 ) {
     if (!state.isVisible) return
     val weight = if (state.isHighlighted) Modifier.fontWeight(FontWeight.SemiBold) else Modifier

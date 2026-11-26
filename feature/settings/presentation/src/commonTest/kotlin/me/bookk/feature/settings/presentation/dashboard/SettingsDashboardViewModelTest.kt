@@ -170,6 +170,60 @@ class SettingsDashboardViewModelTest {
     }
 
     @Test
+    fun `renders initials of first and last name when presented`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals("AS", sut.uiState.profile.initials)
+    }
+
+    @Test
+    fun `renders an uppercase initial when the last name is missing`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.getSettings() } returns
+            Settings(
+                ColorScheme.SYSTEM,
+                SettingsProfile(" anna ", " ", "", "", isEmailDeliverable = true),
+            )
+        val sut = fixture.sut()
+
+        whenn()
+        sut.onViewPresented()
+
+        then()
+        assertEquals("A", sut.uiState.profile.initials)
+    }
+
+    @Test
+    fun `shows the provided profile photo`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.onProfilePhotoProvided("https://t.me/i/userpic/320/anna.jpg")
+
+        then()
+        assertEquals("https://t.me/i/userpic/320/anna.jpg", sut.uiState.profile.photoUrl)
+    }
+
+    @Test
+    fun `shows no profile photo when the provided url is blank`() = runUnitTest {
+        given()
+        val sut = Fixture().sut()
+
+        whenn()
+        sut.onProfilePhotoProvided(" ")
+
+        then()
+        assertNull(sut.uiState.profile.photoUrl)
+    }
+
+    @Test
     fun `labels the profile edit button as the booking profile`() = runUnitTest {
         given()
         val fixture = Fixture()

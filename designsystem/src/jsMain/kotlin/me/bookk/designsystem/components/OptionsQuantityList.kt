@@ -20,7 +20,7 @@ import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.theme.webColors
 import me.bookk.designsystem.uistate.OptionsMultiPickerState
@@ -85,7 +85,7 @@ private fun OptionsQuantityPlaceholder(placeholder: StringDesc?, options: List<*
     ) {
         TextBlock(
             placeholder,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .secondary(),
         )

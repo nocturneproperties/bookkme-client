@@ -31,7 +31,7 @@ import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.resolve
 import me.bookk.designsystem.theme.webColors
 import org.jetbrains.compose.web.css.DisplayStyle
@@ -84,7 +84,7 @@ fun NumberedSteps(steps: List<StringDesc>, modifier: Modifier = Modifier) {
         steps.forEachIndexed { index, step ->
             Li(NumberedStepStyle.toModifier().toAttrs()) {
                 StepNumber(index + 1)
-                Span(BodyMediumTextStyle.toModifier().toAttrs()) { Text(step.localized()) }
+                Span(BodyLargeTextStyle.toModifier().toAttrs()) { Text(step.localized()) }
             }
         }
     }

@@ -13,6 +13,7 @@ import me.bookk.designsystem.test.FakeTextFieldState
 import me.bookk.designsystem.test.FakeTextState
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountNavigationDestination
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountState
+import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationState
 import me.bookk.feature.settings.presentation.dashboard.AccountSection
 import me.bookk.feature.settings.presentation.dashboard.AppearanceSection
 import me.bookk.feature.settings.presentation.dashboard.ProfileSection
@@ -23,6 +24,7 @@ import me.bookk.feature.settings.presentation.editprofile.EditProfileNavigationD
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
 import me.bookk.feature.settings.presentation.export.PersonalDataExportDestinations
 import me.bookk.feature.settings.presentation.export.PersonalDataExportState
+import me.bookk.feature.settings.presentation.export.UIExportStage
 import me.bookk.feature.settings.presentation.export.UIExportStatus
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsDestinations
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
@@ -44,9 +46,9 @@ internal class FakeSettingsStateFactory : SettingsStateFactory {
         return FakeEditProfileState()
     }
 
-    override fun createDeleteAccountState(
-        initData: DeleteAccountState.InitData,
-    ): DeleteAccountState = FakeDeleteAccountState()
+    override fun createDeleteAccountState(): DeleteAccountState {
+        return FakeDeleteAccountState()
+    }
 
     override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState =
         FakePasskeyState()
@@ -69,6 +71,8 @@ internal class FakeSettingsState : SettingsState {
     override val profile = object : ProfileSection {
         override var email: StringDesc = "".desc()
         override var fullName: StringDesc = "".desc()
+        override var initials: String = ""
+        override var photoUrl: String? = null
         override val edit = FakeButtonState()
     }
     override val account = object : AccountSection {
@@ -109,11 +113,19 @@ internal class FakeEditProfileState : EditProfileState {
 
 internal class FakeDeleteAccountState : DeleteAccountState {
     override val appBar = FakeAppBarState()
-    override val confirmationMessage: StringDesc = "".desc()
+    override var confirmationMessage: StringDesc = "".desc()
+    override var pendingDeletion: StringDesc? = null
     override val confirmation = FakeBooleanState()
     override val deleteButton = FakeButtonState()
+    override val chatConfirmation = FakeChatConfirmationState()
     override val notifications = FakeNotificationState()
     override val navigation = FakeNavigationState<DeleteAccountNavigationDestination>()
+}
+
+internal class FakeChatConfirmationState : ChatConfirmationState {
+    override var notice: StringDesc? = null
+    override var isWriteAccessRequested: Boolean = false
+    override var onWriteAccessAnswered: (Boolean) -> Unit = {}
 }
 
 internal class FakePasskeyState : PasskeyState {
@@ -168,11 +180,13 @@ internal class FakePersonalDataExportState : PersonalDataExportState {
         color = ColorToken.ActionText,
         isInProgress = false,
         showsFile = false,
+        stage = UIExportStage.REQUEST,
     )
     override var expiry: StringDesc? = null
     override var requestAvailability: StringDesc? = null
     override var error: StringDesc? = null
     override val request = FakeButtonState()
+    override val chatConfirmation = FakeChatConfirmationState()
     override val download = FakeButtonState()
     override val retry = FakeButtonState()
     override val notifications = FakeNotificationState()

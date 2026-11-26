@@ -26,9 +26,9 @@ import me.bookk.designsystem.components.TextLink
 import me.bookk.designsystem.resources.WebLocalization
 import me.bookk.designsystem.theme.BandTone
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.active
 import me.bookk.designsystem.theme.secondary
 import me.bookk.site.contact.ContactChannelRow
@@ -96,7 +96,7 @@ private fun ContactHeader() {
         )
         TextBlock(
             SiteRes.strings.site_contact_subtitle.desc(),
-            BodyLargeTextStyle
+            LeadTextStyle
                 .toModifier()
                 .maxWidth(40.cssRem)
                 .secondary(),
@@ -121,7 +121,7 @@ private fun LegalDocumentLinks() {
                 TextLink(
                     it.title.desc(),
                     WebLocalization.localize(it.path),
-                    BodyMediumTextStyle
+                    BodyLargeTextStyle
                         .toModifier()
                         .active(),
                 )

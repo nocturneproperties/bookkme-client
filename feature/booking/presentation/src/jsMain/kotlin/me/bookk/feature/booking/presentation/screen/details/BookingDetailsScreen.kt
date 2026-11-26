@@ -35,7 +35,7 @@ import me.bookk.designsystem.components.HeadingLevel
 import me.bookk.designsystem.components.InfoCard
 import me.bookk.designsystem.components.StatusPill
 import me.bookk.designsystem.components.TextBlock
-import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
@@ -66,7 +66,7 @@ private fun BookingDetailsContent(booking: BookingDetailsItem) {
         ServicesSection(booking)
         TextBlock(
             booking.statusExplanation,
-            textModifier(BodySmallTextStyle)
+            textModifier(BodyMediumTextStyle)
                 .padding(leftRight = 1.cssRem)
                 .secondary(),
         )

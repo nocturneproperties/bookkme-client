@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.domain.impl.di
 
+import me.bookk.feature.authorization.domain.api.ConfirmActionWithTelegram
 import me.bookk.feature.authorization.domain.api.ConfirmEmailChange
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.FinishSignUp
@@ -17,7 +18,9 @@ import me.bookk.feature.authorization.domain.api.SignIn
 import me.bookk.feature.authorization.domain.api.SignInWithTelegram
 import me.bookk.feature.authorization.domain.api.StartEmailChange
 import me.bookk.feature.authorization.domain.api.StartSignUp
+import me.bookk.feature.authorization.domain.api.StartTelegramActionConfirmation
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
+import me.bookk.feature.authorization.domain.impl.ConfirmActionWithTelegramImpl
 import me.bookk.feature.authorization.domain.impl.ConfirmEmailChangeImpl
 import me.bookk.feature.authorization.domain.impl.ConfirmSensitiveActionImpl
 import me.bookk.feature.authorization.domain.impl.FinishSignUpImpl
@@ -35,6 +38,7 @@ import me.bookk.feature.authorization.domain.impl.SignInImpl
 import me.bookk.feature.authorization.domain.impl.SignInWithTelegramImpl
 import me.bookk.feature.authorization.domain.impl.StartEmailChangeImpl
 import me.bookk.feature.authorization.domain.impl.StartSignUpImpl
+import me.bookk.feature.authorization.domain.impl.StartTelegramActionConfirmationImpl
 import me.bookk.feature.authorization.domain.impl.UserProfileCRUDImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
@@ -43,6 +47,8 @@ import kotlin.time.Clock
 
 fun authDomainModule() = module {
     factoryOf(::ConfirmSensitiveActionImpl) bind ConfirmSensitiveAction::class
+    factoryOf(::StartTelegramActionConfirmationImpl) bind StartTelegramActionConfirmation::class
+    factoryOf(::ConfirmActionWithTelegramImpl) bind ConfirmActionWithTelegram::class
     single<Clock> { Clock.System }
     factoryOf(::GetSignUpLegalDocumentsImpl) bind GetSignUpLegalDocuments::class
     factoryOf(::StartSignUpImpl) bind StartSignUp::class

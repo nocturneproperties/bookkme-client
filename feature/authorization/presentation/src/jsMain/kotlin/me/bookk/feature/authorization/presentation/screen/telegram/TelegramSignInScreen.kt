@@ -25,8 +25,8 @@ import me.bookk.designsystem.components.ListRowButton
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TintedIcon
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.uistate.BooleanState
@@ -53,7 +53,7 @@ internal fun TelegramSignInScreen(
 private fun MessageText(text: StringDesc) {
     TextBlock(
         text,
-        BodyLargeTextStyle
+        LeadTextStyle
             .toModifier()
             .secondary(),
     )
@@ -88,7 +88,7 @@ private fun Welcome(message: StringDesc) {
         )
         TextBlock(
             message,
-            BodyLargeTextStyle
+            LeadTextStyle
                 .toModifier()
                 .margin(0.px)
                 .secondary(),
@@ -150,7 +150,7 @@ private fun LegalDocumentRow(
         TintedIcon(icon, ColorToken.SecondaryText)
         TextBlock(
             document.linkText,
-            BodyLargeTextStyle
+            LeadTextStyle
                 .toModifier()
                 .fillMaxWidth()
                 .margin(0.px),

@@ -66,4 +66,5 @@
     <string name="dashboard_client_home_save_not_enabled">This business doesn\'t take bookings yet.</string>
     <string name="dashboard_client_home_save_limit">You\'ve saved as many businesses as you can.</string>
     <string name="dashboard_client_home_link_not_found">No business uses this link. Ask the business for its current link.</string>
+    <string name="dashboard_client_home_link_unsupported">This link needs a newer version of the app. Update Telegram and open the link again.</string>
 </resources>

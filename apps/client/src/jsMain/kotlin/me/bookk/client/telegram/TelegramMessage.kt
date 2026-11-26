@@ -25,8 +25,8 @@ import me.bookk.designsystem.components.Logo
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextLink
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.active
 import me.bookk.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
@@ -81,7 +81,7 @@ fun TelegramFormLayout(content: @Composable () -> Unit) {
 fun TelegramMessageBody(text: StringDesc) {
     TextBlock(
         text,
-        BodyLargeTextStyle
+        LeadTextStyle
             .toModifier()
             .secondary(),
     )
@@ -92,7 +92,7 @@ private fun MessageLink(link: ClientLink) {
     TextLink(
         link.title,
         link.url,
-        BodyMediumTextStyle
+        BodyLargeTextStyle
             .toModifier()
             .active(),
     )

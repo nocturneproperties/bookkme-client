@@ -49,6 +49,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | Use case | Network | Diagram |
 |---|---|---|
 | `ConfirmSensitiveAction` | `GET challenge + POST /api/auth/passkey/confirm_action` | [Confirm sensitive action](authorization/confirm-sensitive-action.md) |
+| `StartTelegramActionConfirmation` | `POST /api/auth/telegram/confirm_action/start` (client web app) | [Start Telegram action confirmation](authorization/start-telegram-action-confirmation.md) |
+| `ConfirmActionWithTelegram` | `POST /api/auth/telegram/confirm_action` with the raw `initData` → action confirmation token (client web app) | [Confirm action with Telegram](authorization/confirm-action-with-telegram.md) |
 | `GetSignUpLegalDocuments` | `invoke`: persisted cache only; `refresh`: via `GetLegalDocumentVersions`, `GET /api/user/legal` | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) |
 | `StartSignUp` | `POST /api/auth/passkey/sign_up/challenge` (also emails the 6-digit code) | [Start sign-up](authorization/start-sign-up.md) |
 | `FinishSignUp` | `POST /api/auth/sign_up` with the emailed code and accepted legal-document versions | [Finish sign-up](authorization/finish-sign-up.md) |
@@ -176,7 +178,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `DeleteExpiredPersonalDataExportFile` | Local only, an `AppStartAction` run on every app start by `InitialAppDataFetch.timestampProtectedFetch`: cached `personal_data_export` row → delete `personal_data_exports/` unless READY and unexpired | [Delete expired personal data export file](settings/delete-expired-personal-data-export-file.md) |
 | `DownloadPersonalDataExport` | Local READY status (else `NotReady`) → reuse JSON file per export; cache miss → `GET /api/user/export/download` → save through `FileProvider` → return file path for the `Share` destination; `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
 | `GetPersonalDataExport` | Read-only flow maps expired records to null; ViewModel refreshes on open only for a null or RUNNING first value and polls RUNNING every 10 s (max 30); `refresh` always uses `GET /api/user/export` → clear personal files unless READY and unexpired → save server response | [Get personal data export](settings/get-personal-data-export.md) |
-| `StartPersonalDataExport` | `POST /api/user/export`; passkey confirmation → clear all personal export JSON files → status cache upsert | [Start personal data export](settings/start-personal-data-export.md) |
+| `StartPersonalDataExport` | Mobile: `POST /api/user/export`; passkey confirmation → clear all personal export JSON files → status cache upsert. Client web app: sends a Telegram chat confirmation only | [Start personal data export](settings/start-personal-data-export.md) |
+| `CompleteTelegramConfirmation` | Client web app only: `ConfirmActionWithTelegram` token → `DELETE /api/auth/account` (schedules the deletion, session kept), or `POST /api/user/export` → clear export files → status cache upsert | [Complete Telegram confirmation](settings/complete-telegram-confirmation.md) |
 | `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings → Privacy | [Accept legal documents](settings/accept-legal-documents.md) |
 | `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Privacy screen review and post-acceptance refresh; dashboard "Action required" row status | [Get legal document statuses](settings/get-legal-document-statuses.md) |
 | `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |
@@ -187,9 +190,10 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `GetNotificationSettings` | `GET /api/notifications/settings` | [Get notification settings](settings/get-notification-settings.md) |
 | `UpdateNotificationSettings` | `PUT /api/notifications/settings` | [Update notification settings](settings/update-notification-settings.md) |
 | `UpdateNotificationToken` | `PUT /api/notifications/{deviceUuid}/token` | [Update notification token](settings/update-notification-token.md) |
-| `GetAvailablePasskeys`, `DeletePasskey` | `GET /api/auth/passkey`, `DELETE /api/auth/passkey/{id}` | [Delete passkey / Get available passkeys](settings/delete-passkey.md) |
+| `GetAvailablePasskeys`, `DeletePasskey` | `GET /api/auth/passkey` (then tells the passkey provider the accepted passkeys), `DELETE /api/auth/passkey/{id}` | [Delete passkey / Get available passkeys](settings/delete-passkey.md) |
 | `CreateNewPasskey` | `GET /api/auth/passkey/add/challenge`, `POST /api/auth/passkey/add/finish`; typed backend errors | [Create new passkey](settings/create-new-passkey.md) |
-| `DeleteAccount` | Action confirmation + `DELETE /api/auth/account`; typed backend errors | [Delete account](settings/delete-account.md) |
+| `GetAccountDeletion` | `flow`: `account_deletion_prefs`; `refresh`: `GET /api/auth/account/deletion` → saved, removed when none is pending | [Get account deletion](settings/get-account-deletion.md) |
+| `RequestAccountDeletion` | Mobile: passkey action confirmation + `DELETE /api/auth/account` (schedules the deletion 7 days ahead) → `account_deletion_prefs` date; typed backend errors. Client web app: sends a Telegram chat confirmation only | [Request account deletion](settings/request-account-deletion.md) |
 
 ## Booking
 
@@ -222,7 +226,7 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Resend sign-up code](authorization/resend-sign-up-code.md) | `StartSignUp` |
 | [Get signup legal documents](authorization/get-sign-up-legal-documents.md) | `refresh`: `GetLegalDocumentVersions` (cross-feature wrapper); `invoke`: local cache only |
 | [Initiate business suspend](authorization/initiate-business-suspend.md) | `SwitchDashboardBusiness`, `RefreshBusinessInfo` (cross-feature wrapper) |
-| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `GetSignUpLegalDocuments.refresh` before the authorization check, `UserProfileCRUD`; every other feature through the `core:domain` fetch triggers (`AppStartAction`, `DataFetchAction`, `BackgroundDataFetchAction`), bound like `LogOutAction`: `DeleteExpiredPersonalDataExportFile`, `DeleteExpiredBusinessDataExportFiles`, `RefreshBusinessInfo`, `UpdateNotificationToken`, `GetNotificationSettings`, `DashboardBusinessDataFetch` → `BusinessDataFetchAction`: `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `GetAppointmentSettings` |
+| [Initial app data fetch](authorization/initial-app-data-fetch.md) | `GetSignUpLegalDocuments.refresh` before the authorization check, `UserProfileCRUD`; every other feature through the `core:domain` fetch triggers (`AppStartAction`, `DataFetchAction`, `BackgroundDataFetchAction`), bound like `LogOutAction`: `DeleteExpiredPersonalDataExportFile`, `DeleteExpiredBusinessDataExportFiles`, `RefreshBusinessInfo`, `UpdateNotificationToken`, `GetNotificationSettings`, `GetAvailablePasskeys` (mobile), `DashboardBusinessDataFetch` → `BusinessDataFetchAction`: `GetServices`, `GetServiceGroups`, `GetClientsList`, `GetEmployees`, `GetAppointmentSettings` |
 | [Create business](business/create-business.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Redeem employee invitation](employees/redeem-employee-invitation.md) | `RefreshBusinessInfo.refreshAndSelect`, `SwitchDashboardBusiness` |
 | [Join business](business/join-business.md) | `RedeemEmployeeInvitation` (cross-feature wrapper) |
@@ -259,9 +263,10 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Get bookings](booking/get-bookings.md) | `GetClientBookings.flow`/`refresh`/`loadMore` (appointments) (cross-feature wrapper) |
 | [Withdraw booking request](booking/withdraw-booking-request.md) | `WithdrawAppointmentRequest` and `GetUpcomingBookings.refresh` (appointments) (cross-feature wrapper) |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
-| [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut` |
+| [Request account deletion](settings/request-account-deletion.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`; client web app: `UserProfileCRUD`, `StartTelegramActionConfirmation` |
+| [Complete Telegram confirmation](settings/complete-telegram-confirmation.md) | `ConfirmActionWithTelegram` |
 | [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |
-| [Start personal data export](settings/start-personal-data-export.md) | `UserProfileCRUD`, `ConfirmSensitiveAction` |
+| [Start personal data export](settings/start-personal-data-export.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`; client web app: `UserProfileCRUD`, `StartTelegramActionConfirmation` |
 | [Start business data export](business/start-business-data-export.md) | `ConfirmSensitiveAction` |
 
 ## Known issues found while documenting

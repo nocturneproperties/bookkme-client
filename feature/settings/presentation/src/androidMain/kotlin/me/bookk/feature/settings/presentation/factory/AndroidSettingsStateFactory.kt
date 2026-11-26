@@ -29,10 +29,8 @@ class AndroidSettingsStateFactory : SettingsStateFactory {
         return AndroidEditProfileState()
     }
 
-    override fun createDeleteAccountState(
-        initData: DeleteAccountState.InitData,
-    ): DeleteAccountState {
-        return AndroidDeleteAccountState(initData)
+    override fun createDeleteAccountState(): DeleteAccountState {
+        return AndroidDeleteAccountState()
     }
 
     override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState {

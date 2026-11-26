@@ -42,10 +42,9 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.LabelMediumTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
-import me.bookk.designsystem.theme.error
 import me.bookk.designsystem.theme.resolve
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.theme.themed
@@ -119,7 +118,7 @@ fun EmptyStateView(state: EmptyState) {
         )
         TextBlock(
             state.label,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .margin(0.px)
                 .textAlign(TextAlign.Center)
@@ -156,7 +155,7 @@ fun ErrorStateView(state: ErrorState) {
         )
         TextBlock(
             state.subtitle,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .textAlign(TextAlign.Center)
                 .secondary(),

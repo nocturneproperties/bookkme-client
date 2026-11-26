@@ -1,5 +1,6 @@
 package me.bookk.feature.authorization.domain.impl
 
+import me.bookk.core.coroutine.runSuspendCatching
 import me.bookk.core.domain.entity.onBusinessError
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction.Error
@@ -7,6 +8,7 @@ import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.ActionConfirmationRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
+import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import kotlin.uuid.Uuid
@@ -50,14 +52,37 @@ internal class ConfirmSensitiveActionImpl(
         }
             .onBusinessError {
                 throw when (it.errorCode) {
-                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> Error.ChallengeExpired()
-                    AuthErrorCodes.VERIFICATION_FAILED -> Error.VerificationFailed()
-                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> Error.PasskeyNotFound()
-                    AuthErrorCodes.PASSKEY_NOT_OWNED -> Error.PasskeyNotOwned()
-                    else -> it
+                    AuthErrorCodes.PASSKEY_UNKNOWN -> {
+                        forgetUnknownPasskey(payload)
+                        Error.PasskeyNotFound()
+                    }
+
+                    AuthErrorCodes.CHALLENGE_WINDOW_EXPIRED -> {
+                        Error.ChallengeExpired()
+                    }
+
+                    AuthErrorCodes.VERIFICATION_FAILED -> {
+                        Error.VerificationFailed()
+                    }
+
+                    AuthErrorCodes.PASSKEY_OWNER_NOT_FOUND -> {
+                        Error.PasskeyNotFound()
+                    }
+
+                    AuthErrorCodes.PASSKEY_NOT_OWNED -> {
+                        Error.PasskeyNotOwned()
+                    }
+
+                    else -> {
+                        it
+                    }
                 }
             }
             .getOrThrow()
         return ActionConfirmation(token, payload.jsonPayload)
+    }
+
+    private suspend fun forgetUnknownPasskey(payload: PasskeyVerificationPayload) {
+        runSuspendCatching { passKeyManager.signalUnknownPasskey(payload) }
     }
 }

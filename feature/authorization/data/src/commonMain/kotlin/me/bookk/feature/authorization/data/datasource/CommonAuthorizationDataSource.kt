@@ -22,16 +22,20 @@ import me.bookk.database.DatabaseStorage
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting.Api.Auth
+import me.bookk.feature.authorization.data.remote.model.AccountDeletionRemote
 import me.bookk.feature.authorization.data.remote.model.ActionConfirmationRequestRemote
 import me.bookk.feature.authorization.data.remote.model.ActionConfirmationTokenRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
 import me.bookk.feature.authorization.data.remote.model.SensitiveActionRemote
+import me.bookk.feature.authorization.data.remote.model.TelegramActionConfirmationRequestRemote
+import me.bookk.feature.authorization.data.remote.model.TelegramActionConfirmationStartRemote
 import me.bookk.feature.authorization.data.remote.model.TokenInfoResponse
 import me.bookk.feature.authorization.domain.datasource.authorization.ActionConfirmationRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
 import me.bookk.feature.authorization.domain.datasource.authorization.ServerAuthenticationChallenge
 import me.bookk.feature.authorization.domain.datasource.authorization.SignInData
+import me.bookk.feature.authorization.domain.datasource.authorization.TelegramActionConfirmationStart
 import me.bookk.feature.authorization.domain.datasource.authorization.TelegramSignInData
 import me.bookk.feature.authorization.domain.entity.TokenInfo
 import kotlin.time.Clock
@@ -111,13 +115,32 @@ class CommonAuthorizationDataSource(
         }
     }
 
-    override suspend fun deleteAccount(request: DeleteAccountRequest) {
+    override suspend fun startTelegramActionConfirmation(request: TelegramActionConfirmationStart) {
         mapExceptions {
-            httpClient.delete(Auth.Account()) {
-                setBody(request.toRemote())
+            httpClient.post(Auth.Telegram.ConfirmAction.Start()) {
+                setBody(
+                    TelegramActionConfirmationStartRemote(
+                        action = SensitiveActionRemote.fromDomain(request.action),
+                        businessId = request.businessId,
+                        targetId = request.targetId,
+                    ),
+                )
             }
         }
     }
+
+    override suspend fun confirmActionWithTelegram(initData: String): String = mapExceptions {
+        httpClient.post(Auth.Telegram.ConfirmAction()) {
+            setBody(TelegramActionConfirmationRequestRemote(initData))
+        }.body<ActionConfirmationTokenRemote>().token
+    }
+
+    override suspend fun requestAccountDeletion(request: DeleteAccountRequest): Instant =
+        mapExceptions {
+            httpClient.delete(Auth.Account()) {
+                setBody(request.toRemote())
+            }.body<AccountDeletionRemote>().deletesAt
+        }
 
     override suspend fun doOnLogOut() {
         preferences.clear()

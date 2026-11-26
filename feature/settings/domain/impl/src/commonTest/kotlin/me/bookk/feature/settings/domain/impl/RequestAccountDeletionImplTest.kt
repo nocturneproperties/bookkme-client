@@ -19,25 +19,27 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
-import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
+import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
-import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.authorization.domain.entity.UserProfile
-import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.RequestAccountDeletion
+import me.bookk.feature.settings.domain.api.entity.ActionOutcome
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DeleteAccountImplTest {
+class RequestAccountDeletionImplTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -54,16 +56,14 @@ class DeleteAccountImplTest {
     private class Fixture {
         val userId = Uuid.parse("00000000-0000-0000-0000-000000000001")
         val authorizationDataSource = mock<AuthorizationDataSource>()
-        val passKeyManager = mock<PassKeyManager>()
         val confirmation = mock<ConfirmSensitiveAction>()
         val profile = mock<UserProfileCRUD>()
-        val logOut = mock<LogOut> {
-            everySuspend { invoke() } returns Unit
+        val accountDeletionDataSource = mock<AccountDeletionDataSource> {
+            everySuspend { saveScheduledDeletion(any()) } returns Unit
         }
-        val sut = DeleteAccountImpl(
+        val sut = RequestAccountDeletionImpl(
             authorizationDataSource = authorizationDataSource,
-            passKeyManager = passKeyManager,
-            logOut = logOut,
+            accountDeletionDataSource = accountDeletionDataSource,
             confirmation = confirmation,
             profile = profile,
         )
@@ -76,24 +76,70 @@ class DeleteAccountImplTest {
         }
 
         fun stubVerifiedDeletion(): Fixture = apply {
-            everySuspend { passKeyManager.signalAccountDeleted(any()) } returns Unit
-            everySuspend { authorizationDataSource.saveAuthorizationTokens(null) } returns Unit
-            everySuspend { authorizationDataSource.setAuthorizationStatus(false) } returns Unit
+            everySuspend { authorizationDataSource.requestAccountDeletion(any()) } returns
+                DELETES_AT
         }
     }
 
     @Test
-    fun `clears auth tokens and status on success`() = runUnitTest {
+    fun `keeps the session while the deletion waits out its grace period`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } returns
+            DELETES_AT
 
         whenn()
         fixture.sut()
 
         then()
-        verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
-        verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.saveAuthorizationTokens(any())
+        }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.setAuthorizationStatus(any())
+        }
+    }
+
+    @Test
+    fun `remembers when the scheduled deletion runs`() = runUnitTest {
+        given()
+        val fixture = Fixture().stubVerifiedDeletion()
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend { fixture.accountDeletionDataSource.saveScheduledDeletion(DELETES_AT) }
+    }
+
+    @Test
+    fun `does not remember a deletion the server refused`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
+            Error.BusinessError(AuthErrorCodes.VERIFICATION_FAILED, "msg")
+
+        whenn()
+        runCatching { fixture.sut() }
+
+        then()
+        verifySuspend(VerifyMode.not) {
+            fixture.accountDeletionDataSource.saveScheduledDeletion(any())
+        }
+    }
+
+    @Test
+    fun `reports the account as deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture().stubVerifiedDeletion()
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } returns
+            DELETES_AT
+
+        whenn()
+        val result = fixture.sut()
+
+        then()
+        assertEquals(ActionOutcome.Completed(Unit), result)
     }
 
     @Test
@@ -108,9 +154,9 @@ class DeleteAccountImplTest {
 
         then()
         assertFailsWith<Error.Ignore> { result.getOrThrow() }
-        verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.requestAccountDeletion(any())
+        }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(any())
         }
@@ -130,98 +176,32 @@ class DeleteAccountImplTest {
         val result = runCatching { fixture.sut() }
 
         then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
-    }
-
-    @Test
-    fun `logs out after the account is deleted`() = runUnitTest {
-        given()
-        val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
-
-        whenn()
-        fixture.sut()
-
-        then()
-        verifySuspend { fixture.logOut() }
-    }
-
-    @Test
-    fun `signals the credential provider with the verified passkey after the account is deleted`() =
-        runUnitTest {
-            given()
-            val fixture = Fixture().stubVerifiedDeletion()
-            val assertion = PasskeyVerificationPayload("{\"id\":\"credential-id\"}")
-            everySuspend { fixture.confirmation(any(), any(), any()) } returns
-                ActionConfirmation("confirmed", assertion.jsonPayload)
-            everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
-
-            whenn()
-            fixture.sut()
-
-            then()
-            verifySuspend(VerifyMode.order) {
-                fixture.authorizationDataSource.deleteAccount(any())
-                fixture.passKeyManager.signalAccountDeleted(
-                    matches({ "verified passkey assertion" }) {
-                        it.jsonPayload ==
-                            assertion.jsonPayload
-                    },
-                )
-            }
+        assertFailsWith<RequestAccountDeletion.Error.AccountVerificationFailed> {
+            result.getOrThrow()
         }
-
-    @Test
-    fun `completes the deletion when signaling the credential provider fails`() = runUnitTest {
-        given()
-        val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
-        everySuspend { fixture.passKeyManager.signalAccountDeleted(any()) } throws
-            PassKeyManager.Error.Infrastructure()
-
-        whenn()
-        fixture.sut()
-
-        then()
-        verifySuspend { fixture.logOut() }
-        verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
-        verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) }
-    }
-
-    @Test
-    fun `does not signal the credential provider when remote deletion fails`() = runUnitTest {
-        given()
-        val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
-            Error.BusinessError(AuthErrorCodes.VERIFICATION_FAILED, "msg")
-
-        whenn()
-        val result = runCatching { fixture.sut() }
-
-        then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
     }
 
     @Test
     fun `throws AccountVerificationFailed when server rejects the passkey`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
             Error.BusinessError(AuthErrorCodes.VERIFICATION_FAILED, "msg")
 
         whenn()
         val result = runCatching { fixture.sut() }
 
         then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
+        assertFailsWith<RequestAccountDeletion.Error.AccountVerificationFailed> {
+            result.getOrThrow()
+        }
     }
 
     @Test
     fun `rethrows other business errors`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
             Error.BusinessError(UNKNOWN_ERROR_CODE, "msg")
 
         whenn()
@@ -235,22 +215,24 @@ class DeleteAccountImplTest {
     fun `keeps the session when remote deletion fails`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
             Error.BusinessError(AuthErrorCodes.VERIFICATION_FAILED, "msg")
 
         whenn()
         val result = runCatching { fixture.sut() }
 
         then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
+        assertFailsWith<RequestAccountDeletion.Error.AccountVerificationFailed> {
+            result.getOrThrow()
+        }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(null)
         }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
     }
 
     private companion object {
         const val UNKNOWN_ERROR_CODE = 999_999
+        val DELETES_AT = Instant.parse("2026-12-03T14:00:00Z")
     }
 
     @Test
@@ -265,7 +247,9 @@ class DeleteAccountImplTest {
         val result = runCatching { fixture.sut() }
 
         then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
+        assertFailsWith<RequestAccountDeletion.Error.AccountVerificationFailed> {
+            result.getOrThrow()
+        }
     }
 
     @Test
@@ -280,7 +264,9 @@ class DeleteAccountImplTest {
         val result = runCatching { fixture.sut() }
 
         then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
+        assertFailsWith<RequestAccountDeletion.Error.AccountVerificationFailed> {
+            result.getOrThrow()
+        }
     }
 
     @Test
@@ -295,14 +281,17 @@ class DeleteAccountImplTest {
         val result = runCatching { fixture.sut() }
 
         then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
+        assertFailsWith<RequestAccountDeletion.Error.AccountVerificationFailed> {
+            result.getOrThrow()
+        }
     }
 
     @Test
     fun `confirms account deletion for the caller and sends only the issued token`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } returns
+            DELETES_AT
 
         whenn()
         fixture.sut()
@@ -314,15 +303,10 @@ class DeleteAccountImplTest {
                 Uuid.NIL,
                 fixture.userId,
             )
-            fixture.authorizationDataSource.deleteAccount(
+            fixture.authorizationDataSource.requestAccountDeletion(
                 matches({ "issued confirmation token" }) { it.confirmationToken == "confirmed" },
             )
-            fixture.passKeyManager.signalAccountDeleted(any())
-            fixture.logOut()
-            fixture.authorizationDataSource.saveAuthorizationTokens(null)
-            fixture.authorizationDataSource.setAuthorizationStatus(false)
         }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.authorize(any()) }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.getAuthorizationChallenge()
         }
@@ -332,16 +316,16 @@ class DeleteAccountImplTest {
     fun `maps an invalid account confirmation token to AccountVerificationFailed`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
             Error.BusinessError(12, "invalid confirmation")
 
         whenn()
         val result = runCatching { fixture.sut() }
 
         then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
+        assertFailsWith<RequestAccountDeletion.Error.AccountVerificationFailed> {
+            result.getOrThrow()
+        }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(any())
         }
@@ -361,10 +345,12 @@ class DeleteAccountImplTest {
         val result = runCatching { fixture.sut() }
 
         then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
-        verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
+        assertFailsWith<RequestAccountDeletion.Error.AccountVerificationFailed> {
+            result.getOrThrow()
+        }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.requestAccountDeletion(any())
+        }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(any())
         }
@@ -385,8 +371,9 @@ class DeleteAccountImplTest {
 
         then()
         assertSame(failure, result.exceptionOrNull())
-        verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.requestAccountDeletion(any())
+        }
     }
 
     @Test
@@ -394,15 +381,14 @@ class DeleteAccountImplTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
         val failure = IllegalStateException("offline")
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws failure
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
+            failure
 
         whenn()
         val result = runCatching { fixture.sut() }
 
         then()
         assertSame(failure, result.exceptionOrNull())
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(any())
         }

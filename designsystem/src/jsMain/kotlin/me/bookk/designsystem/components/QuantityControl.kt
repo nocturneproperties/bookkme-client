@@ -41,7 +41,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.whiteSpace
 import com.varabyte.kobweb.compose.ui.styleModifier
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.style.CssStyle
-import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.desc.StringDesc
@@ -49,7 +48,7 @@ import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.themed
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
@@ -178,7 +177,7 @@ private fun IncreaseButton(isExpanded: Boolean, onIncrease: () -> Unit) {
 @Composable
 private fun QuantityCount(quantity: Int, modifier: Modifier) {
     Span(
-        BodyMediumTextStyle
+        BodyLargeTextStyle
             .toModifier()
             .then(modifier)
             .textAlign(TextAlign.Center)

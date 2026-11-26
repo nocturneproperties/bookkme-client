@@ -39,10 +39,10 @@
 
 
     <string name="settings_delete_account_title">Видалити обліковий запис</string>
-    <string name="settings_delete_account_confirmation">Я розумію, що видалення облікового запису є незворотним і я не зможу його відновити</string>
+    <string name="settings_delete_account_confirmation">Я розумію, що мій обліковий запис буде видалено через 7 днів після підтвердження. До того часу я можу ним користуватися. Після цього обліковий запис і його дані буде видалено назавжди без можливості відновлення.</string>
     <string name="settings_delete_account_confirmation_switch">Погоджуюся</string>
     <string name="settings_delete_account_confirmation_button">Видалити</string>
-    <string name="settings_delete_account_success_message">Обліковий запис успішно видалено</string>
+    <string name="settings_delete_account_pending">Видалення заплановано. Ваш обліковий запис буде видалено %s. До того часу ним можна користуватися.</string>
 
     <string name="settings_passkey_title">Ключ доступу</string>
     <string name="settings_passkey_add_button">Додати</string>
@@ -85,6 +85,7 @@
     <string name="settings_legal_loading">Перевіряємо документи…</string>
 
     <string name="settings_export_title">Експорт моїх даних</string>
+    <string name="settings_export_headline">Ваші дані.</string>
     <string name="settings_export_loading">Перевіряємо стан експорту…</string>
     <string name="settings_export_request_title">Копія ваших персональних даних</string>
     <string name="settings_export_description">Запросіть копію персональних даних, які застосунок зберігає про вас. Їх буде підготовлено у файлі JSON — структурованому форматі, який можна завантажити, зберегти, поширити або відкрити в сумісній програмі.</string>
@@ -105,11 +106,20 @@
     <string name="settings_export_load_error">Не вдалося перевірити стан експорту.</string>
     <string name="settings_export_request_error">Не вдалося запросити експорт. Спробуйте ще раз.</string>
     <string name="settings_export_confirmation_error">Підтвердження ключем доступу не вдалося або втратило чинність. Запросіть експорт ще раз для підтвердження.</string>
+    <string name="settings_export_confirmation_unavailable_mini_app">Експорт поки не можна підтвердити в міні-застосунку. Спробуйте пізніше.</string>
     <string name="settings_export_too_frequent">Поки що не можна запросити новий експорт. Оновіть стан, щоб перевірити доступність.</string>
     <string name="settings_export_unavailable">Цей експорт більше недоступний. Оновіть стан, щоб дізнатися про подальші дії.</string>
     <string name="settings_export_download_error">Не вдалося завантажити файл або поділитися ним. Спробуйте ще раз.</string>
     <string name="settings_export_request_footer">Ви можете й далі користуватися застосунком, поки готується експорт.</string>
     <string name="settings_export_running_footer">Ви можете залишити цей екран і повернутися пізніше.</string>
+    <string name="settings_export_running_footer_mini_app">Можна закрити міні-застосунок і повернутися пізніше. Ми напишемо вам тут, коли все буде готово.</string>
     <string name="settings_export_file_title">Персональні дані</string>
     <string name="settings_export_file_type">Файл JSON</string>
+
+    <string name="settings_chat_confirmation_sent">Ми надіслали підтвердження у ваш чат у Telegram. Натисніть там «Підтвердити».</string>
+    <string name="settings_chat_confirmation_send_again">Надіслати ще раз</string>
+    <string name="settings_chat_confirmation_write_access_refused">Для підтвердження потрібне повідомлення від бота BookkMe. Дозвольте боту писати вам і спробуйте ще раз.</string>
+    <string name="settings_confirm_action_expired">Термін дії цього підтвердження минув. Почніть знову з налаштувань.</string>
+    <string name="settings_confirm_action_other_account">Це підтвердження запитали з іншого облікового запису Telegram.</string>
+    <string name="settings_confirm_action_reopen">Дані Telegram застаріли. Закрийте міні-застосунок і відкрийте його знову кнопкою в чаті.</string>
 </resources>

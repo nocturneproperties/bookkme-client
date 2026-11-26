@@ -72,7 +72,7 @@ val TitleMediumTextStyle = CssStyle.base {
         .margin(0.px)
 }
 
-val BodyLargeTextStyle = CssStyle {
+val LeadTextStyle = CssStyle {
     base {
         Modifier
             .fontSize(1.15.cssRem)
@@ -81,6 +81,13 @@ val BodyLargeTextStyle = CssStyle {
             .margin(0.px)
     }
     Breakpoint.MD { Modifier.fontSize(1.35.cssRem) }
+}
+
+val BodyLargeTextStyle = CssStyle.base {
+    Modifier
+        .fontSize(1.cssRem)
+        .lineHeight(1.5)
+        .margin(0.px)
 }
 
 val SectionRowTextStyle = CssStyle.base {
@@ -93,15 +100,15 @@ val SectionRowTextStyle = CssStyle.base {
 
 val BodyMediumTextStyle = CssStyle.base {
     Modifier
-        .fontSize(1.cssRem)
-        .lineHeight(1.5)
+        .fontSize(0.875.cssRem)
+        .lineHeight(1.43)
         .margin(0.px)
 }
 
 val BodySmallTextStyle = CssStyle.base {
     Modifier
-        .fontSize(0.85.cssRem)
-        .lineHeight(1.4)
+        .fontSize(0.75.cssRem)
+        .lineHeight(1.33)
         .margin(0.px)
 }
 

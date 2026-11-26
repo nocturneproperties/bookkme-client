@@ -6,10 +6,12 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.resources.Resources
+import io.ktor.client.request.HttpResponseData
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -32,6 +34,7 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.feature.authorization.data.remote.model.AccountDeletionRemote
 import me.bookk.feature.authorization.data.remote.model.ActionConfirmationRequestRemote
 import me.bookk.feature.authorization.data.remote.model.ActionConfirmationTokenRemote
 import me.bookk.feature.authorization.data.remote.model.SensitiveActionRemote
@@ -43,6 +46,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -138,7 +142,7 @@ class SensitiveActionHttpTest {
                     path = it.url.encodedPath
                     method = it.method
                     body = (it.body as OutgoingContent.ByteArrayContent).bytes()
-                    respond("", HttpStatusCode.NoContent)
+                    respondScheduledDeletion()
                 },
             ) {
                 install(Resources)
@@ -153,7 +157,7 @@ class SensitiveActionHttpTest {
 
             whenn()
             try {
-                dataSource.deleteAccount(DeleteAccountRequest("delete-account-confirmed"))
+                dataSource.requestAccountDeletion(DeleteAccountRequest("delete-account-confirmed"))
             } finally {
                 client.close()
             }
@@ -164,8 +168,45 @@ class SensitiveActionHttpTest {
             assertContentEquals(expectedBody, body)
         }
 
+    @Test
+    fun `returns when the scheduled account deletion runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val client = HttpClient(MockEngine { respondScheduledDeletion() }) {
+            install(Resources)
+            install(ContentNegotiation) { protobuf(dataSerializer) }
+            defaultRequest { contentType(ContentType.Application.ProtoBuf) }
+        }
+        val dataSource = CommonAuthorizationDataSource(client, client, fixture.provider, mock())
+
+        whenn()
+        val deletesAt = try {
+            dataSource.requestAccountDeletion(DeleteAccountRequest("delete-account-confirmed"))
+        } finally {
+            client.close()
+        }
+
+        then()
+        assertEquals(DELETES_AT, deletesAt)
+    }
+
+    private fun MockRequestHandleScope.respondScheduledDeletion(): HttpResponseData {
+        return respond(
+            dataSerializer.encodeToByteArray(
+                AccountDeletionRemote.serializer(),
+                AccountDeletionRemote(DELETES_AT),
+            ),
+            HttpStatusCode.OK,
+            headersOf(HttpHeaders.ContentType, ContentType.Application.ProtoBuf.toString()),
+        )
+    }
+
+    private companion object {
+        val DELETES_AT = Instant.parse("2026-12-03T14:00:00Z")
+    }
+
     @Serializable
     private class AccountDeletionBody(
-        @ProtoNumber(1) val confirmationToken: String,
+        @ProtoNumber(3) val confirmationToken: String,
     )
 }

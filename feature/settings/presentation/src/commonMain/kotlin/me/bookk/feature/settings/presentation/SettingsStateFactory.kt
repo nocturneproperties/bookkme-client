@@ -12,7 +12,7 @@ interface SettingsStateFactory {
     fun createPersonalDataExportState(): PersonalDataExportState
     fun createSettingsState(initData: SettingsState.InitData): SettingsState
     fun createEditProfileState(): EditProfileState
-    fun createDeleteAccountState(initData: DeleteAccountState.InitData): DeleteAccountState
+    fun createDeleteAccountState(): DeleteAccountState
     fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState
     fun createNotificationSettingsState(): NotificationSettingsState
     fun createPrivacySettingsState(): PrivacySettingsState

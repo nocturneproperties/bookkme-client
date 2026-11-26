@@ -23,7 +23,7 @@ import me.bookk.designsystem.components.Heading
 import me.bookk.designsystem.components.HeadingLevel
 import me.bookk.designsystem.components.SwitchCard
 import me.bookk.designsystem.components.TextBlock
-import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.uistate.BooleanState
@@ -78,7 +78,7 @@ private fun SwitchSection(
         SwitchCard(switches)
         TextBlock(
             footer.desc(),
-            BodySmallTextStyle
+            BodyMediumTextStyle
                 .toModifier()
                 .margin(leftRight = 1.cssRem, topBottom = 0.px)
                 .secondary(),

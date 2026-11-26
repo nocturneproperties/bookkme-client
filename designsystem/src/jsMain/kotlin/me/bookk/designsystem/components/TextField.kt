@@ -25,7 +25,7 @@ import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.theme.themed
 import me.bookk.designsystem.uistate.InputType
@@ -65,7 +65,7 @@ fun TextField(state: TextFieldState, modifier: Modifier = Modifier, minLines: In
 internal fun FieldLabel(text: StringDesc) {
     TextBlock(
         text,
-        BodySmallTextStyle
+        BodyMediumTextStyle
             .toModifier()
             .fontSize(LABEL_FONT_SIZE_REM.cssRem)
             .fontWeight(FontWeight.Bold)

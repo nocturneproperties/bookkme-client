@@ -36,6 +36,10 @@ external interface TelegramWebApp {
 
     fun showPopup(params: TelegramPopupParams, callback: (String?) -> Unit)
 
+    fun downloadFile(params: TelegramDownloadFileParams, callback: (Boolean) -> Unit)
+
+    fun requestWriteAccess(callback: (Boolean) -> Unit)
+
     fun onEvent(eventType: String, eventHandler: () -> Unit)
 
     fun offEvent(eventType: String, eventHandler: () -> Unit)
@@ -51,6 +55,9 @@ external interface TelegramInitData {
 external interface TelegramUser {
     @JsName("language_code")
     val languageCode: String?
+
+    @JsName("photo_url")
+    val photoUrl: String?
 }
 
 external interface TelegramBackButton {

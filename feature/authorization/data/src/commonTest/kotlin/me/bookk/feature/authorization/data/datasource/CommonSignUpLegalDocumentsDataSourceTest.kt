@@ -5,13 +5,10 @@ import dev.mokkery.every
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import library.cache.api.PreferenceProvider
-import library.cache.api.Preferences
 import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
@@ -19,8 +16,6 @@ import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocument.Document
 import me.bookk.feature.authorization.domain.entity.SignUpLegalDocuments
-import kotlin.reflect.KClass
-import kotlin.reflect.safeCast
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -39,30 +34,6 @@ class CommonSignUpLegalDocumentsDataSourceTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
-    }
-
-    private class FakePreferences : Preferences {
-        private val values = mutableMapOf<String, Any>()
-
-        override suspend fun <T : Any> get(key: Preferences.Key<T>, cls: KClass<T>): T? {
-            return cls.safeCast(values[key.name])
-        }
-
-        override fun <T : Any> getFlow(key: Preferences.Key<T>, cls: KClass<T>): Flow<T?> {
-            return flowOf(cls.safeCast(values[key.name]))
-        }
-
-        override suspend fun <T : Any> set(key: Preferences.Key<T>, value: T?, cls: KClass<T>) {
-            if (value == null) values.remove(key.name) else values[key.name] = value
-        }
-
-        override suspend fun <T : Any> remove(key: Preferences.Key<T>, cls: KClass<T>) {
-            values.remove(key.name)
-        }
-
-        override suspend fun clear() {
-            values.clear()
-        }
     }
 
     private class Fixture {

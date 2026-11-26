@@ -19,6 +19,8 @@ flowchart TD
     Dev --> Ver[AuthorizationDataSource.verifyAuthorization<br/>POST /api/auth/sign_in]
     Ver -- business error --> C{errorCode}
     C -- 7 PASSKEY_OWNER_NOT_FOUND --> E3([throw Error.NoAccountForThisPasskey])
+    C -- 26 PASSKEY_UNKNOWN --> Forget[PassKeyManager.signalUnknownPasskey payload<br/>best effort: the device forgets the passkey]
+    Forget --> E3
     C -- 4 VERIFICATION_FAILED --> E2
     C -- 6 CHALLENGE_WINDOW_EXPIRED --> E2
     C -- other --> EX([rethrow])
@@ -28,3 +30,7 @@ flowchart TD
     Fetch --> Auth[authorization_prefs: authorized := true]
     Auth --> R([Unit])
 ```
+
+`PASSKEY_UNKNOWN` (26) means no account has the passkey any more (deleted from the account or by the
+backend). The device's passkey provider is told to forget it (`reportUnknownCredential` on Android's Credential
+Manager and iOS 26's `ASCredentialUpdater`), so it stops being offered; a failure of that signal is ignored.

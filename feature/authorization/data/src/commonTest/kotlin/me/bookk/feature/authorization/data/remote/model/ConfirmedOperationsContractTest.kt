@@ -21,7 +21,68 @@ class ConfirmedOperationsContractTest {
         }
 
         then()
-        assertEquals(listOf("confirmationToken" to 1), fields)
+        assertEquals(listOf("confirmationToken" to 3), fields)
+    }
+
+    @Test
+    fun `account deletion answers with when it runs`() = runUnitTest {
+        given()
+        val descriptor = AccountDeletionRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("deletesAt" to 1), fields)
+    }
+
+    @Test
+    fun `account deletion status pins its optional date`() = runUnitTest {
+        given()
+        val descriptor = AccountDeletionStatusRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("deletesAt" to 1), fields)
+        assertEquals(true, descriptor.getElementDescriptor(0).isNullable)
+    }
+
+    @Test
+    fun `telegram confirmation start pins its backend wire fields`() = runUnitTest {
+        given()
+        val descriptor = TelegramActionConfirmationStartRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("action" to 1, "businessId" to 2, "targetId" to 3), fields)
+    }
+
+    @Test
+    fun `telegram confirmation sends only the init data`() = runUnitTest {
+        given()
+        val descriptor = TelegramActionConfirmationRequestRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("initData" to 1), fields)
     }
 
     @Test

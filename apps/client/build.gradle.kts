@@ -71,6 +71,7 @@ kotlin {
             implementation(projects.site.domcompat)
             implementation(projects.library.telegram)
             implementation(projects.core)
+            implementation(projects.core.domain)
             implementation(projects.shared.common)
             implementation(projects.library.device.impl)
             implementation(projects.library.crashreporting.api)

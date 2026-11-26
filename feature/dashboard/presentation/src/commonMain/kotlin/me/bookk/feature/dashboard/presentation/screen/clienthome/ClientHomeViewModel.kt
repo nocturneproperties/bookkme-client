@@ -11,6 +11,8 @@ import kotlinx.datetime.toLocalDateTime
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.domain.launch.ConfirmableAction
+import me.bookk.core.domain.launch.LaunchParameter
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.date.DateLocalizer
@@ -56,7 +58,7 @@ class ClientHomeViewModel(
         observeUpcomingBookings()
         observeSavedBusinesses()
         loadUpcomingBookings()
-        openLaunchBusinessOrLoadBusinesses()
+        openLaunchParameterOrLoadBusinesses()
     }
 
     private fun ClientHomeState.setup() = apply {
@@ -207,13 +209,28 @@ class ClientHomeViewModel(
         )
     }
 
-    private fun openLaunchBusinessOrLoadBusinesses() {
-        val businessId = Uuid.parseHexDashOrNull(startParameter)
-        when {
-            businessId != null -> openLaunchBusiness(businessId)
-            startParameter.isNotBlank() -> openLaunchLink(startParameter)
-            else -> loadSavedBusinesses()
+    private fun openLaunchParameterOrLoadBusinesses() {
+        when (val launch = LaunchParameter.parse(startParameter)) {
+            is LaunchParameter.Business -> openLaunchBusiness(launch.id)
+            is LaunchParameter.BusinessLink -> openLaunchLink(launch.name)
+            is LaunchParameter.Confirmation -> openLaunchConfirmation(launch.action)
+            LaunchParameter.UnsupportedOperation -> explainUnsupportedLaunch()
+            LaunchParameter.None -> loadSavedBusinesses()
         }
+    }
+
+    private fun openLaunchConfirmation(action: ConfirmableAction) {
+        uiState.navigation.push(ClientHomeDestinations.ConfirmAction(action))
+        loadSavedBusinesses()
+    }
+
+    private fun explainUnsupportedLaunch() {
+        uiState.notifications.add(
+            PresentationNotification.Message.simple(
+                DashboardRes.strings.dashboard_client_home_link_unsupported.desc(),
+            ),
+        )
+        loadSavedBusinesses()
     }
 
     private fun openLaunchLink(name: String) {

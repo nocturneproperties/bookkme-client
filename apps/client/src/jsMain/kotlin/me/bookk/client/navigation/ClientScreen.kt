@@ -1,5 +1,6 @@
 package me.bookk.client.navigation
 
+import me.bookk.core.domain.launch.ConfirmableAction
 import me.bookk.feature.authorization.domain.api.StartEmailChange
 import me.bookk.feature.booking.domain.api.entity.SentBookingRequest
 import kotlin.uuid.Uuid
@@ -53,4 +54,8 @@ sealed interface ClientScreen {
     data object PersonalDataExport : ClientScreen
 
     data object DeleteAccount : ClientScreen
+
+    data class ConfirmAction(
+        val action: ConfirmableAction,
+    ) : ClientScreen
 }

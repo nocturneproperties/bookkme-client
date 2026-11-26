@@ -22,6 +22,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import library.money.api.Money
 import me.bookk.android.feature.dashboard.resources.DashboardRes
+import me.bookk.core.domain.launch.ConfirmableAction
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.test.given
@@ -873,4 +874,87 @@ class ClientHomeViewModelTest {
             then()
             sut.uiState.notifications.assertEmpty()
         }
+
+    @Test
+    fun `opens the account deletion confirmation from the launch parameter`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = loadedSut(fixture, startParameter = "op_delete-account_$CHALLENGE")
+
+        then()
+        assertEquals(
+            listOf<ClientHomeDestinations>(
+                ClientHomeDestinations.ConfirmAction(ConfirmableAction.DELETE_ACCOUNT),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `opens the personal data export confirmation from the launch parameter`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = loadedSut(fixture, startParameter = "op_export-personal_$CHALLENGE")
+
+        then()
+        assertEquals(
+            listOf<ClientHomeDestinations>(
+                ClientHomeDestinations.ConfirmAction(ConfirmableAction.EXPORT_PERSONAL_DATA),
+            ),
+            sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `loads saved businesses under a launch confirmation`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        loadedSut(fixture, startParameter = "op_delete-account_$CHALLENGE")
+
+        then()
+        verifySuspend { fixture.getSavedBusinesses.refresh() }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.resolveBusinessLink(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.saveBusiness(any()) }
+    }
+
+    @Test
+    fun `explains that an unknown operation link needs a newer app`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = loadedSut(fixture, startParameter = "op_transfer-business_$CHALLENGE")
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(
+            DashboardRes.strings.dashboard_client_home_link_unsupported.desc(),
+            message.message,
+        )
+        assertTrue(sut.uiState.navigation.navigationDestination.isEmpty())
+        verifySuspend { fixture.getSavedBusinesses.refresh() }
+    }
+
+    @Test
+    fun `never looks up an operation link as a business link`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        loadedSut(fixture, startParameter = "op_delete-account_not-a-challenge")
+
+        then()
+        verifySuspend(VerifyMode.exactly(0)) { fixture.resolveBusinessLink(any()) }
+        verifySuspend(VerifyMode.exactly(0)) { fixture.saveBusiness(any()) }
+    }
+
+    private companion object {
+        const val CHALLENGE = "0123456789abcdef0123456789abcdef"
+    }
 }

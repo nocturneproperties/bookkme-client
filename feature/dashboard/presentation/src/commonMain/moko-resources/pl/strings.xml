@@ -66,4 +66,5 @@
     <string name="dashboard_client_home_save_not_enabled">Ta firma nie przyjmuje jeszcze rezerwacji.</string>
     <string name="dashboard_client_home_save_limit">Zapisano już maksymalną liczbę firm.</string>
     <string name="dashboard_client_home_link_not_found">Ten link nie prowadzi do żadnej firmy. Poproś firmę o aktualny link.</string>
+    <string name="dashboard_client_home_link_unsupported">Ten link wymaga nowszej wersji aplikacji. Zaktualizuj Telegram i otwórz link ponownie.</string>
 </resources>

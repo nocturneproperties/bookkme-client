@@ -39,6 +39,10 @@ fun ClientHomeDestination(webApp: TelegramWebApp, navigation: ClientHomeNavigati
             is ClientHomeDestinations.Services -> {
                 navigation.toServices(it.businessId)
             }
+
+            is ClientHomeDestinations.ConfirmAction -> {
+                navigation.toConfirmAction(it.action)
+            }
         }
     }
 }

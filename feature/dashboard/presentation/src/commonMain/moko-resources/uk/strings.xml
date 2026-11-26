@@ -66,4 +66,5 @@
     <string name="dashboard_client_home_save_not_enabled">Цей бізнес поки не приймає записів.</string>
     <string name="dashboard_client_home_save_limit">Ви зберегли максимальну кількість бізнесів.</string>
     <string name="dashboard_client_home_link_not_found">Це посилання не веде до жодного бізнесу. Попросіть у бізнесу актуальне посилання.</string>
+    <string name="dashboard_client_home_link_unsupported">Це посилання потребує новішої версії застосунку. Оновіть Telegram і відкрийте посилання ще раз.</string>
 </resources>

@@ -22,6 +22,7 @@ import me.bookk.feature.booking.presentation.screen.services.BookingServicesDest
 import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialistDestination
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestination
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountDestination
+import me.bookk.feature.settings.presentation.confirmaction.ConfirmActionDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsDestination
 import me.bookk.feature.settings.presentation.editprofile.BookingProfileDestination
 import me.bookk.feature.settings.presentation.export.PersonalDataExportDestination
@@ -112,6 +113,10 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
 
             ClientScreen.DeleteAccount -> {
                 DeleteAccountDestination(webApp, settingsNavigation)
+            }
+
+            is ClientScreen.ConfirmAction -> {
+                ConfirmActionDestination(webApp, screen.action, settingsNavigation)
             }
         }
     }

@@ -35,6 +35,10 @@ fun ConfirmActionDestination(
             ConfirmActionDestinations.PersonalDataExport -> {
                 navigation.showStartedExport()
             }
+
+            ConfirmActionDestinations.AccountDeletion -> {
+                navigation.showRequestedDeletion()
+            }
         }
     }
 }

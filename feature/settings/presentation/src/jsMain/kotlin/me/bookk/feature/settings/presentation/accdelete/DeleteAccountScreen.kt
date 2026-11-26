@@ -19,6 +19,7 @@ import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.CheckBox
 import me.bookk.designsystem.components.IconTile
+import me.bookk.designsystem.components.InfoNote
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.BodyLargeTextStyle
@@ -40,15 +41,23 @@ internal fun DeleteAccountScreen(state: DeleteAccountState, webApp: TelegramWebA
     TelegramMainButton(webApp, state.deleteButton, TelegramButtonStyle.DESTRUCTIVE)
     AskTelegramWriteAccess(webApp, state.chatConfirmation)
     Column(DeleteAccountModifier) {
-        WarningCard(state)
-        AppCard(
-            Modifier
-                .fillMaxWidth()
-                .padding(topBottom = 1.cssRem, leftRight = 1.25.cssRem),
-        ) {
-            CheckBox(state.confirmation)
+        state.pendingDeletion?.let { InfoNote(it) }
+        if (state.confirmation.isVisible) {
+            WarningCard(state)
+            AgreementCard(state)
+            ChatConfirmationNotice(state.chatConfirmation)
         }
-        ChatConfirmationNotice(state.chatConfirmation)
+    }
+}
+
+@Composable
+private fun AgreementCard(state: DeleteAccountState) {
+    AppCard(
+        Modifier
+            .fillMaxWidth()
+            .padding(topBottom = 1.cssRem, leftRight = 1.25.cssRem),
+    ) {
+        CheckBox(state.confirmation)
     }
 }
 

@@ -4,13 +4,21 @@ import me.bookk.core.domain.entity.onBusinessError
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
+import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
 import me.bookk.feature.settings.domain.api.DeleteAccount
+import kotlin.time.Instant
 
-internal class AccountRemoval(
+internal class AccountDeletionScheduler(
     private val authorizationDataSource: AuthorizationDataSource,
+    private val accountDeletionDataSource: AccountDeletionDataSource,
 ) {
-    suspend fun deleteOnRemote(confirmationToken: String) {
-        runCatching {
+    suspend fun scheduleDeletion(confirmationToken: String) {
+        val deletesAt = requestDeletion(confirmationToken)
+        accountDeletionDataSource.saveScheduledDeletion(deletesAt)
+    }
+
+    private suspend fun requestDeletion(confirmationToken: String): Instant {
+        return runCatching {
             authorizationDataSource.deleteAccount(DeleteAccountRequest(confirmationToken))
         }
             .onBusinessError {

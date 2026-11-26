@@ -15,6 +15,7 @@ import me.bookk.feature.settings.presentation.confirmation.WebChatConfirmationSt
 internal class WebDeleteAccountState : DeleteAccountState {
     override val appBar = WebAppBarState()
     override var confirmationMessage: StringDesc by mutableStateOf("".desc())
+    override var pendingDeletion: StringDesc? by mutableStateOf(null)
     override val confirmation = WebBooleanState()
     override val deleteButton = WebButtonState()
     override val chatConfirmation = WebChatConfirmationState()

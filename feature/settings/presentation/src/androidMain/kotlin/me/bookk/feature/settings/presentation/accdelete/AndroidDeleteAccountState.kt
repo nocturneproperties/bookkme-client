@@ -21,6 +21,7 @@ import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationState
 class AndroidDeleteAccountState : DeleteAccountState {
     override val appBar: AppBarState = AndroidAppBarState()
     override var confirmationMessage: StringDesc by mutableStateOf("".desc())
+    override var pendingDeletion: StringDesc? by mutableStateOf(null)
     override val confirmation: BooleanState = AndroidBooleanState()
     override val deleteButton: ButtonState = AndroidButtonState()
     override val chatConfirmation: ChatConfirmationState = AndroidChatConfirmationState()

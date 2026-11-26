@@ -10,7 +10,6 @@ import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.uistate.TopBarSize
@@ -83,8 +82,8 @@ class ConfirmActionViewModel(
     private fun onConfirmed() {
         uiState.notifications.add(PresentationNotification.SuccessHaptic)
         when (action) {
-            ConfirmableAction.DELETE_ACCOUNT -> uiState.notifications.add(
-                GlobalMessage(SettingsRes.strings.settings_delete_account_success_message.desc()),
+            ConfirmableAction.DELETE_ACCOUNT -> uiState.navigation.push(
+                ConfirmActionDestinations.AccountDeletion,
             )
 
             ConfirmableAction.EXPORT_PERSONAL_DATA -> uiState.navigation.push(

@@ -25,6 +25,37 @@ class ConfirmedOperationsContractTest {
     }
 
     @Test
+    fun `account deletion answers with when it runs`() = runUnitTest {
+        given()
+        val descriptor = AccountDeletionRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("deletesAt" to 1), fields)
+    }
+
+    @Test
+    fun `account deletion status pins its optional date`() = runUnitTest {
+        given()
+        val descriptor = AccountDeletionStatusRemote.serializer().descriptor
+
+        whenn()
+        val fields = (0 until descriptor.elementsCount).map {
+            descriptor.getElementName(it) to
+                descriptor.getElementAnnotations(it).filterIsInstance<ProtoNumber>().single().number
+        }
+
+        then()
+        assertEquals(listOf("deletesAt" to 1), fields)
+        assertEquals(true, descriptor.getElementDescriptor(0).isNullable)
+    }
+
+    @Test
     fun `ActionConfirmationRequestRemote pins its backend wire fields`() = runUnitTest {
         given()
         val descriptor = ActionConfirmationRequestRemote.serializer().descriptor

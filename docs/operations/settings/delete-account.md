@@ -25,12 +25,14 @@ flowchart TD
     Del -- 12 ACTION_CONFIRMATION_INVALID --> E1
     Del -- 4 VERIFICATION_FAILED --> E1
     Del -- other failure --> EX
-    Del -- 200 deletion date --> R([ActionOutcome.Completed Unit])
+    Del -- 200 deletesAt --> Save[AccountDeletionDataSource.saveScheduledDeletion<br/>account_deletion_prefs: deletes_at]
+    Save --> R([ActionOutcome.Completed Unit])
 ```
 
 The confirmation token is single-use and expires after two minutes. Failed or cancelled confirmation
 makes no DELETE request. The passkey stays on the device: the account keeps working during the grace
-period and the person may need it to sign in and cancel. The session, the cache tables and the prefs buckets are never cleared by this operation. The caller profile read can fill its
+period and the person may need it to sign in and cancel. The returned `deletesAt` is saved for
+[Get account deletion](get-account-deletion.md), which the screen renders. The session, the cache tables and the prefs buckets are never cleared by this operation. The caller profile read can fill its
 normal cache on a miss. No automatic retry of confirmation or the protected DELETE is made.
 ## Telegram Mini App
 

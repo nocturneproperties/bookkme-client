@@ -192,7 +192,8 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `UpdateNotificationToken` | `PUT /api/notifications/{deviceUuid}/token` | [Update notification token](settings/update-notification-token.md) |
 | `GetAvailablePasskeys`, `DeletePasskey` | `GET /api/auth/passkey`, `DELETE /api/auth/passkey/{id}` | [Delete passkey / Get available passkeys](settings/delete-passkey.md) |
 | `CreateNewPasskey` | `GET /api/auth/passkey/add/challenge`, `POST /api/auth/passkey/add/finish`; typed backend errors | [Create new passkey](settings/create-new-passkey.md) |
-| `DeleteAccount` | Mobile: passkey action confirmation + `DELETE /api/auth/account`; typed backend errors. Client web app: sends a Telegram chat confirmation only | [Delete account](settings/delete-account.md) |
+| `GetAccountDeletion` | `flow`: `account_deletion_prefs`; `refresh`: `GET /api/auth/account/deletion` → saved, removed when none is pending | [Get account deletion](settings/get-account-deletion.md) |
+| `DeleteAccount` | Mobile: passkey action confirmation + `DELETE /api/auth/account` (schedules the deletion 7 days ahead) → `account_deletion_prefs` date; typed backend errors. Client web app: sends a Telegram chat confirmation only | [Delete account](settings/delete-account.md) |
 
 ## Booking
 

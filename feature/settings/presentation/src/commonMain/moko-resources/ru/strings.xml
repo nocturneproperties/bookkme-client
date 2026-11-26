@@ -42,7 +42,7 @@
     <string name="settings_delete_account_confirmation">Я понимаю, что удаление аккаунта необратимо и я не смогу его восстановить</string>
     <string name="settings_delete_account_confirmation_switch">Принимаю</string>
     <string name="settings_delete_account_confirmation_button">Удалить</string>
-    <string name="settings_delete_account_success_message">Аккаунт успешно удалён</string>
+    <string name="settings_delete_account_pending">Удаление запланировано. Ваш аккаунт будет удалён %s. До этого момента им можно пользоваться.</string>
 
     <string name="settings_passkey_title">Ключ доступа</string>
     <string name="settings_passkey_add_button">Добавить</string>

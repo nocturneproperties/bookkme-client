@@ -90,7 +90,12 @@ internal object AuthRouting {
             @Resource("/account")
             class Account(
                 val parent: Auth = Auth(),
-            )
+            ) {
+                @Resource("/deletion")
+                class Deletion(
+                    val parent: Account = Account(),
+                )
+            }
         }
 
         @Resource("/user")

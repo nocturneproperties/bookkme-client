@@ -22,6 +22,7 @@ import me.bookk.database.DatabaseStorage
 import me.bookk.feature.authorization.data.mapping.toDomain
 import me.bookk.feature.authorization.data.mapping.toRemote
 import me.bookk.feature.authorization.data.remote.api.AuthRouting.Api.Auth
+import me.bookk.feature.authorization.data.remote.model.AccountDeletionRemote
 import me.bookk.feature.authorization.data.remote.model.ActionConfirmationRequestRemote
 import me.bookk.feature.authorization.data.remote.model.ActionConfirmationTokenRemote
 import me.bookk.feature.authorization.data.remote.model.AuthChallengeResponse
@@ -120,12 +121,10 @@ class CommonAuthorizationDataSource(
         TODO("POST /api/auth/telegram/confirm_action, nocturneproperties/bookkme#210")
     }
 
-    override suspend fun deleteAccount(request: DeleteAccountRequest) {
-        mapExceptions {
-            httpClient.delete(Auth.Account()) {
-                setBody(request.toRemote())
-            }
-        }
+    override suspend fun deleteAccount(request: DeleteAccountRequest): Instant = mapExceptions {
+        httpClient.delete(Auth.Account()) {
+            setBody(request.toRemote())
+        }.body<AccountDeletionRemote>().deletesAt
     }
 
     override suspend fun doOnLogOut() {

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.localized
 import me.bookk.designsystem.components.ActionButton
 import me.bookk.designsystem.components.AppTopBar
+import me.bookk.designsystem.components.InfoNote
 import me.bookk.designsystem.components.ObserveNotifications
 import me.bookk.designsystem.components.StateSwitch
 import me.bookk.designsystem.theme.AppTheme
@@ -37,22 +38,29 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(
-                    modifier = Modifier.padding(top = 24.dp),
-                    text = state.confirmationMessage.localized(),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
-                StateSwitch(state = state.confirmation)
+                state.pendingDeletion?.let {
+                    InfoNote(text = it.localized(), modifier = Modifier.padding(top = 24.dp))
+                }
+                if (state.confirmation.isVisible) {
+                    Text(
+                        modifier = Modifier.padding(top = 24.dp),
+                        text = state.confirmationMessage.localized(),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    StateSwitch(state = state.confirmation)
+                }
             }
         },
         bottomBar = {
-            ActionButton(
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                state = state.deleteButton,
-            )
+            if (state.deleteButton.isVisible) {
+                ActionButton(
+                    modifier = Modifier
+                        .padding(bottom = 24.dp)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    state = state.deleteButton,
+                )
+            }
         },
     )
 }

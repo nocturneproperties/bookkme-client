@@ -33,6 +33,7 @@ internal fun rememberSettingsNavigation(
             saveExport = { saveExport(fileProvider, it) },
             returnToSettings = { stack.replaceAboveRoot(ClientScreen.Settings) },
             showStartedExport = { stack.replaceAboveRoot(ClientScreen.PersonalDataExport) },
+            showRequestedDeletion = { stack.replaceAboveRoot(ClientScreen.DeleteAccount) },
         )
     }
 }

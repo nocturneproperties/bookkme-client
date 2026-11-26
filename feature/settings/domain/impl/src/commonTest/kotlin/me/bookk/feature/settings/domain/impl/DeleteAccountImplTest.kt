@@ -22,6 +22,7 @@ import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
+import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
 import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
@@ -34,6 +35,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,8 +58,12 @@ class DeleteAccountImplTest {
         val authorizationDataSource = mock<AuthorizationDataSource>()
         val confirmation = mock<ConfirmSensitiveAction>()
         val profile = mock<UserProfileCRUD>()
+        val accountDeletionDataSource = mock<AccountDeletionDataSource> {
+            everySuspend { saveScheduledDeletion(any()) } returns Unit
+        }
         val sut = DeleteAccountImpl(
             authorizationDataSource = authorizationDataSource,
+            accountDeletionDataSource = accountDeletionDataSource,
             confirmation = confirmation,
             profile = profile,
         )
@@ -70,6 +76,7 @@ class DeleteAccountImplTest {
         }
 
         fun stubVerifiedDeletion(): Fixture = apply {
+            everySuspend { authorizationDataSource.deleteAccount(any()) } returns DELETES_AT
         }
     }
 
@@ -77,7 +84,7 @@ class DeleteAccountImplTest {
     fun `keeps the session while the deletion waits out its grace period`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns DELETES_AT
 
         whenn()
         fixture.sut()
@@ -92,10 +99,38 @@ class DeleteAccountImplTest {
     }
 
     @Test
+    fun `remembers when the scheduled deletion runs`() = runUnitTest {
+        given()
+        val fixture = Fixture().stubVerifiedDeletion()
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend { fixture.accountDeletionDataSource.saveScheduledDeletion(DELETES_AT) }
+    }
+
+    @Test
+    fun `does not remember a deletion the server refused`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
+            Error.BusinessError(AuthErrorCodes.VERIFICATION_FAILED, "msg")
+
+        whenn()
+        runCatching { fixture.sut() }
+
+        then()
+        verifySuspend(VerifyMode.not) {
+            fixture.accountDeletionDataSource.saveScheduledDeletion(any())
+        }
+    }
+
+    @Test
     fun `reports the account as deleted`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns DELETES_AT
 
         whenn()
         val result = fixture.sut()
@@ -186,6 +221,7 @@ class DeleteAccountImplTest {
 
     private companion object {
         const val UNKNOWN_ERROR_CODE = 999_999
+        val DELETES_AT = Instant.parse("2026-12-03T14:00:00Z")
     }
 
     @Test
@@ -237,7 +273,7 @@ class DeleteAccountImplTest {
     fun `confirms account deletion for the caller and sends only the issued token`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
+        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns DELETES_AT
 
         whenn()
         fixture.sut()

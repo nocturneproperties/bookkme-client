@@ -19,12 +19,14 @@ import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.ConfirmActionWithTelegram
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
+import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
 import me.bookk.feature.settings.domain.api.CompleteTelegramConfirmation
 import me.bookk.feature.settings.domain.datasource.DataExportDataSource
 import me.bookk.feature.settings.domain.datasource.SettingsErrorCodes
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
+import kotlin.time.Instant
 
 class CompleteTelegramConfirmationImplTest {
     private class Fixture {
@@ -34,16 +36,20 @@ class CompleteTelegramConfirmationImplTest {
             everySuspend { invoke(any()) } returns "single-use"
         }
         val authorizationDataSource = mock<AuthorizationDataSource> {
-            everySuspend { deleteAccount(any()) } returns Unit
+            everySuspend { deleteAccount(any()) } returns DELETES_AT
         }
         val dataExportDataSource = mock<DataExportDataSource> {
             everySuspend { start(any()) } returns export
             everySuspend { deleteFiles() } returns Unit
             everySuspend { saveInDb(any()) } returns Unit
         }
+        val accountDeletionDataSource = mock<AccountDeletionDataSource> {
+            everySuspend { saveScheduledDeletion(any()) } returns Unit
+        }
         val sut = CompleteTelegramConfirmationImpl(
             confirmWithTelegram = confirmWithTelegram,
             authorizationDataSource = authorizationDataSource,
+            accountDeletionDataSource = accountDeletionDataSource,
             dataExportDataSource = dataExportDataSource,
         )
     }
@@ -63,6 +69,18 @@ class CompleteTelegramConfirmationImplTest {
                 matches({ "confirmed token" }) { it.confirmationToken == "single-use" },
             )
         }
+    }
+
+    @Test
+    fun `remembers when the scheduled deletion runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.sut(ConfirmableAction.DELETE_ACCOUNT, fixture.initData)
+
+        then()
+        verifySuspend { fixture.accountDeletionDataSource.saveScheduledDeletion(DELETES_AT) }
     }
 
     @Test
@@ -228,5 +246,9 @@ class CompleteTelegramConfirmationImplTest {
 
         then()
         assertSame(failure, result.exceptionOrNull())
+    }
+
+    private companion object {
+        val DELETES_AT = Instant.parse("2026-12-03T14:00:00Z")
     }
 }

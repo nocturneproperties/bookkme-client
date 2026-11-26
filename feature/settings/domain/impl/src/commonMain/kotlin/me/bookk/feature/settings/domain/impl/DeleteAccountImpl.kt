@@ -3,6 +3,7 @@ package me.bookk.feature.settings.domain.impl
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
+import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
 import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.settings.domain.api.DeleteAccount
@@ -11,14 +12,16 @@ import kotlin.uuid.Uuid
 
 internal class DeleteAccountImpl(
     authorizationDataSource: AuthorizationDataSource,
+    accountDeletionDataSource: AccountDeletionDataSource,
     private val confirmation: ConfirmSensitiveAction,
     private val profile: UserProfileCRUD,
 ) : DeleteAccount {
-    private val accountRemoval = AccountRemoval(authorizationDataSource)
+    private val deletionScheduler =
+        AccountDeletionScheduler(authorizationDataSource, accountDeletionDataSource)
 
     override suspend fun invoke(): ActionOutcome<Unit> {
         val confirmedAction = confirmAccountDeletion()
-        accountRemoval.deleteOnRemote(confirmedAction.token)
+        deletionScheduler.scheduleDeletion(confirmedAction.token)
         return ActionOutcome.Completed(Unit)
     }
 

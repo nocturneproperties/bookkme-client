@@ -15,6 +15,8 @@ class IOSDeleteAccountState: @MainActor DeleteAccountState {
 	
 	var confirmationMessage: any StringDesc
 	
+	var pendingDeletion: (any StringDesc)?
+	
 	var confirmation: any BooleanState
 	
 	var deleteButton: any ButtonState

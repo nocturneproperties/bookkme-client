@@ -11,6 +11,7 @@ import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationState
 interface DeleteAccountState {
     val appBar: AppBarState
     var confirmationMessage: StringDesc
+    var pendingDeletion: StringDesc?
     val confirmation: BooleanState
     val deleteButton: ButtonState
     val chatConfirmation: ChatConfirmationState

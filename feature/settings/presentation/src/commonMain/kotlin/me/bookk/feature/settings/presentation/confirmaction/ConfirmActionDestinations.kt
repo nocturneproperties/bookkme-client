@@ -6,4 +6,5 @@ sealed class ConfirmActionDestinations : NavigationDestination() {
     data object Back : ConfirmActionDestinations()
     data object Settings : ConfirmActionDestinations()
     data object PersonalDataExport : ConfirmActionDestinations()
+    data object AccountDeletion : ConfirmActionDestinations()
 }

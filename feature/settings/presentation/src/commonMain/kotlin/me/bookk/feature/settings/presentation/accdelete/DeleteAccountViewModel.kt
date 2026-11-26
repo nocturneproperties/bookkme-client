@@ -1,20 +1,32 @@
 package me.bookk.feature.settings.presentation.accdelete
 
+import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.format
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import me.bookk.android.feature.settings.resources.SettingsRes
+import me.bookk.core.coroutine.DispatcherProvider
+import me.bookk.core.presentation.LaunchBehaviour
 import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
+import me.bookk.core.presentation.date.DateLocalizer
+import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.PresentationNotification
-import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.GetAccountDeletion
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountNavigationDestination.Back
 import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationRequest
+import kotlin.time.Instant
 
 class DeleteAccountViewModel(
     private val deleteAccount: DeleteAccount,
+    private val getAccountDeletion: GetAccountDeletion,
+    private val dateLocalizer: DateLocalizer,
     settingsStateFactory: SettingsStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
@@ -32,6 +44,42 @@ class DeleteAccountViewModel(
         onError = { uiState.notifications.add(it.notification()) },
         isActionAllowed = { uiState.confirmation.isChecked },
     )
+
+    init {
+        observeDeletion()
+        refreshDeletion()
+    }
+
+    private fun observeDeletion() {
+        getAccountDeletion.flow()
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { renderDeletion(it) }
+            .observe()
+    }
+
+    private fun refreshDeletion() {
+        launch(
+            key = REFRESH_KEY,
+            launchBehaviour = LaunchBehaviour.DropLatest,
+            launchIn = DispatcherProvider.io,
+            call = { getAccountDeletion.refresh() },
+            onError = { handleError(it) },
+        )
+    }
+
+    private fun renderDeletion(deletesAt: Instant?) {
+        val isPending = deletesAt != null
+        uiState.pendingDeletion = deletesAt?.let { pendingDeletionMessage(it) }
+        uiState.confirmation.isVisible = !isPending
+        uiState.deleteButton.isVisible = !isPending
+    }
+
+    private fun pendingDeletionMessage(deletesAt: Instant): StringDesc {
+        val date = dateLocalizer.forStyle(DateStyle.MEDIUM).format(
+            deletesAt.toLocalDateTime(TimeZone.currentSystemDefault()),
+        )
+        return SettingsRes.strings.settings_delete_account_pending.format(date)
+    }
 
     private fun DeleteAccountState.setup() = apply {
         appBar.title = SettingsRes.strings.settings_delete_account_title.desc()
@@ -58,12 +106,10 @@ class DeleteAccountViewModel(
 
     private fun onAccountDeleted() {
         uiState.notifications.add(PresentationNotification.SuccessHaptic)
-        uiState.notifications.add(
-            GlobalMessage(SettingsRes.strings.settings_delete_account_success_message.desc()),
-        )
     }
 
     private companion object {
         const val DELETE_KEY = "deleteAccount"
+        const val REFRESH_KEY = "accountDeletionStatus"
     }
 }

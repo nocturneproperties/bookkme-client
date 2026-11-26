@@ -42,7 +42,7 @@
     <string name="settings_delete_account_confirmation">Rozumiem, że usunięcie konta jest nieodwracalne i nie będzie można go przywrócić</string>
     <string name="settings_delete_account_confirmation_switch">Zgadzam się</string>
     <string name="settings_delete_account_confirmation_button">Usuń</string>
-    <string name="settings_delete_account_success_message">Konto zostało usunięte</string>
+    <string name="settings_delete_account_pending">Usunięcie zostało zaplanowane. Twoje konto zostanie usunięte %s. Do tego czasu możesz z niego korzystać.</string>
 
     <string name="settings_passkey_title">Klucz dostępu</string>
     <string name="settings_passkey_add_button">Dodaj</string>

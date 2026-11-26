@@ -10,6 +10,7 @@ import me.bookk.feature.settings.domain.api.DeleteExpiredPersonalDataExportFile
 import me.bookk.feature.settings.domain.api.DeletePasskey
 import me.bookk.feature.settings.domain.api.DownloadPersonalDataExport
 import me.bookk.feature.settings.domain.api.EditProfile
+import me.bookk.feature.settings.domain.api.GetAccountDeletion
 import me.bookk.feature.settings.domain.api.GetAvailablePasskeys
 import me.bookk.feature.settings.domain.api.GetColorScheme
 import me.bookk.feature.settings.domain.api.GetCrashReportingEnabled
@@ -31,6 +32,7 @@ import me.bookk.feature.settings.domain.impl.DeleteExpiredPersonalDataExportFile
 import me.bookk.feature.settings.domain.impl.DeletePasskeyImpl
 import me.bookk.feature.settings.domain.impl.DownloadPersonalDataExportImpl
 import me.bookk.feature.settings.domain.impl.EditProfileImpl
+import me.bookk.feature.settings.domain.impl.GetAccountDeletionImpl
 import me.bookk.feature.settings.domain.impl.GetAvailablePasskeysImpl
 import me.bookk.feature.settings.domain.impl.GetColorSchemeImpl
 import me.bookk.feature.settings.domain.impl.GetCrashReportingEnabledImpl
@@ -83,6 +85,7 @@ private fun sharedSettingsDomainModule() = module {
     factoryOf(::UpdateCrashReportingEnabledImpl) bind UpdateCrashReportingEnabled::class
     factoryOf(::GetSettingsImpl) bind GetSettings::class
     factoryOf(::EditProfileImpl) bind EditProfile::class
+    factoryOf(::GetAccountDeletionImpl) bind GetAccountDeletion::class
     factoryOf(::GetAvailablePasskeysImpl) bind GetAvailablePasskeys::class
     factoryOf(::DeletePasskeyImpl) bind DeletePasskey::class
     factoryOf(::CreateNewPasskeyImpl) bind CreateNewPasskey::class

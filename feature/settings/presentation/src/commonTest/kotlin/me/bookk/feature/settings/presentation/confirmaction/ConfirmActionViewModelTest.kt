@@ -147,7 +147,7 @@ class ConfirmActionViewModelTest {
     }
 
     @Test
-    fun `announces the deleted account`() = runUnitTest {
+    fun `opens the requested deletion once it is scheduled`() = runUnitTest {
         given()
         val fixture = Fixture()
         val sut = fixture.sut(ConfirmableAction.DELETE_ACCOUNT)
@@ -156,12 +156,9 @@ class ConfirmActionViewModelTest {
         sut.uiState.mainButton.onClick?.invoke()
 
         then()
-        val message = sut.uiState.notifications.presentationNotification
-            .filterIsInstance<PresentationNotification.GlobalMessage>()
-            .single()
         assertEquals(
-            SettingsRes.strings.settings_delete_account_success_message.desc(),
-            message.text,
+            listOf(ConfirmActionDestinations.AccountDeletion),
+            sut.uiState.navigation.navigationDestination,
         )
     }
 

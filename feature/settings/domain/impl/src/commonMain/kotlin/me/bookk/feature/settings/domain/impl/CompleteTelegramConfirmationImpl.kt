@@ -4,6 +4,7 @@ import me.bookk.core.coroutine.runSuspendCatching
 import me.bookk.core.domain.launch.ConfirmableAction
 import me.bookk.feature.authorization.domain.api.ConfirmActionWithTelegram
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
+import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
 import me.bookk.feature.settings.domain.api.CompleteTelegramConfirmation
 import me.bookk.feature.settings.domain.api.CompleteTelegramConfirmation.Error
 import me.bookk.feature.settings.domain.api.DeleteAccount
@@ -13,9 +14,11 @@ import me.bookk.feature.settings.domain.datasource.DataExportDataSource
 internal class CompleteTelegramConfirmationImpl(
     private val confirmWithTelegram: ConfirmActionWithTelegram,
     authorizationDataSource: AuthorizationDataSource,
+    accountDeletionDataSource: AccountDeletionDataSource,
     dataExportDataSource: DataExportDataSource,
 ) : CompleteTelegramConfirmation {
-    private val accountRemoval = AccountRemoval(authorizationDataSource)
+    private val deletionScheduler =
+        AccountDeletionScheduler(authorizationDataSource, accountDeletionDataSource)
     private val exportRequest = PersonalDataExportRequest(dataSource = dataExportDataSource)
 
     override suspend fun invoke(action: ConfirmableAction, initData: String) {
@@ -28,7 +31,7 @@ internal class CompleteTelegramConfirmationImpl(
     private suspend fun complete(action: ConfirmableAction, token: String) {
         when (action) {
             ConfirmableAction.DELETE_ACCOUNT -> {
-                accountRemoval.deleteOnRemote(token)
+                deletionScheduler.scheduleDeletion(token)
             }
 
             ConfirmableAction.EXPORT_PERSONAL_DATA -> {

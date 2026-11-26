@@ -42,7 +42,7 @@
     <string name="settings_delete_account_confirmation">Я розумію, що видалення облікового запису є незворотним і я не зможу його відновити</string>
     <string name="settings_delete_account_confirmation_switch">Погоджуюся</string>
     <string name="settings_delete_account_confirmation_button">Видалити</string>
-    <string name="settings_delete_account_success_message">Обліковий запис успішно видалено</string>
+    <string name="settings_delete_account_pending">Видалення заплановано. Ваш обліковий запис буде видалено %s. До того часу ним можна користуватися.</string>
 
     <string name="settings_passkey_title">Ключ доступу</string>
     <string name="settings_passkey_add_button">Додати</string>

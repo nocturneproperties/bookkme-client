@@ -107,6 +107,7 @@ bound in Koin. Each call is wrapped in its own `runCatching`, so one failure doe
 | Table(s) | Cleared by | Cleared on logout? |
 |---|---|---|
 | `user_profile` | `CommonUserProfileDataSource` | ✅ `profileDao.clear()` |
+| `account_deletion_prefs` (pending deletion date) | `CommonAccountDeletionDataSource` | ✅ `clear()` |
 | `signup_legal_documents_prefs` (public legal metadata) | No `LogOutAction` binding for `CommonSignUpLegalDocumentsDataSource` | ❌ intentionally retained for cache-only signup |
 | In-memory sign-up session (user data, challenge, attestation, rejection; never persisted) | `InMemorySignUpSessionDataSource` | ✅ `clear()` |
 | In-memory booking preparation (the client web app's approved services, specialist and time per business; never persisted; a business's preparation is also cleared once its booking request is sent) | `InMemoryBookingPreparationDataSource` | ✅ every business's services, specialist and time |

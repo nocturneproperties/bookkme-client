@@ -14,4 +14,5 @@ class SettingsNavigation(
     val saveExport: (filePath: String) -> Unit,
     val returnToSettings: () -> Unit,
     val showStartedExport: () -> Unit,
+    val showRequestedDeletion: () -> Unit,
 )

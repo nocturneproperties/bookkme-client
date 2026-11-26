@@ -1,15 +1,20 @@
 package me.bookk.feature.settings.presentation.accdelete
 
 import dev.icerock.moko.resources.desc.desc
+import dev.icerock.moko.resources.format
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.sequentially
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import me.bookk.android.feature.settings.resources.SettingsRes
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
@@ -17,12 +22,14 @@ import me.bookk.core.test.given
 import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
+import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.GetAccountDeletion
 import me.bookk.feature.settings.domain.api.entity.ActionOutcome
 import me.bookk.feature.settings.domain.api.entity.ChatConfirmationError
 import me.bookk.feature.settings.presentation.FakeSettingsStateFactory
@@ -35,6 +42,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class DeleteAccountViewModelTest {
 
@@ -52,10 +60,17 @@ class DeleteAccountViewModelTest {
 
     private class Fixture {
         val deleteAccount = mock<DeleteAccount>()
+        val deletion = MutableStateFlow<Instant?>(null)
+        val getAccountDeletion = mock<GetAccountDeletion> {
+            every { flow() } returns deletion
+            everySuspend { refresh() } returns Unit
+        }
         val errorMapper = FakeErrorMapper()
 
         fun sut() = DeleteAccountViewModel(
             deleteAccount = deleteAccount,
+            getAccountDeletion = getAccountDeletion,
+            dateLocalizer = FakeDateLocalizer(),
             settingsStateFactory = FakeSettingsStateFactory(),
             vmArgs = VmArgs(errorMapper),
         )
@@ -147,7 +162,7 @@ class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `deletes account and shows success message`() = runUnitTest {
+    fun `requests the deletion without a popup`() = runUnitTest {
         given()
         val fixture = Fixture()
         everySuspend { fixture.deleteAccount() } returns ActionOutcome.Completed(Unit)
@@ -158,10 +173,87 @@ class DeleteAccountViewModelTest {
 
         then()
         verifySuspend { fixture.deleteAccount() }
-        sut.uiState.notifications.presentationNotification
-            .filterIsInstance<PresentationNotification.GlobalMessage>()
-            .single()
+        assertTrue(
+            sut.uiState.notifications.presentationNotification.none {
+                it is PresentationNotification.GlobalMessage
+            },
+        )
         assertFalse(sut.uiState.deleteButton.isLoading)
+    }
+
+    @Test
+    fun `shows when the requested deletion runs`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+
+        whenn()
+        fixture.deletion.value = DELETES_AT
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_delete_account_pending.format(
+                DELETES_AT.toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
+            ),
+            sut.uiState.pendingDeletion,
+        )
+    }
+
+    @Test
+    fun `hides the agreement and delete while a deletion is pending`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.deletion.value = DELETES_AT
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.confirmation.isVisible)
+        assertFalse(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `offers the agreement and delete when no deletion is pending`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = fixture.sut()
+        fixture.deletion.value = DELETES_AT
+
+        whenn()
+        fixture.deletion.value = null
+
+        then()
+        assertNull(sut.uiState.pendingDeletion)
+        assertTrue(sut.uiState.confirmation.isVisible)
+        assertTrue(sut.uiState.deleteButton.isVisible)
+    }
+
+    @Test
+    fun `checks whether a deletion is pending when opened`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        fixture.sut()
+
+        then()
+        verifySuspend { fixture.getAccountDeletion.refresh() }
+    }
+
+    @Test
+    fun `keeps the known deletion quietly when the check fails`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        fixture.deletion.value = DELETES_AT
+        everySuspend { fixture.getAccountDeletion.refresh() } throws TestException()
+
+        whenn()
+        val sut = fixture.sut()
+
+        then()
+        assertFalse(sut.uiState.deleteButton.isVisible)
+        assertTrue(sut.uiState.notifications.presentationNotification.isEmpty())
     }
 
     @Test
@@ -436,5 +528,9 @@ class DeleteAccountViewModelTest {
         sut.uiState.notifications.presentationNotification
             .filterIsInstance<PresentationNotification.Message>()
             .single()
+    }
+
+    private companion object {
+        val DELETES_AT = Instant.parse("2026-12-03T14:00:00Z")
     }
 }

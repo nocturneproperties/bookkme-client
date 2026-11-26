@@ -114,6 +114,7 @@ internal class FakeEditProfileState : EditProfileState {
 internal class FakeDeleteAccountState : DeleteAccountState {
     override val appBar = FakeAppBarState()
     override var confirmationMessage: StringDesc = "".desc()
+    override var pendingDeletion: StringDesc? = null
     override val confirmation = FakeBooleanState()
     override val deleteButton = FakeButtonState()
     override val chatConfirmation = FakeChatConfirmationState()

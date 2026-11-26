@@ -58,5 +58,5 @@ internal fun stubSignUpChallenge(): ServerSignUpChallenge {
 }
 
 internal fun stubSignUpUserData(): StartSignUp.UserData {
-    return StartSignUp.UserData("John", "Doe", "john@example.com")
+    return StartSignUp.UserData("John Doe", "john@example.com")
 }

@@ -18,12 +18,7 @@ struct EditProfileScreen: View {
 		let state = viewModel.uiState
 		List {
 			SectionTextField(state.name, header: "") { newText in
-				viewModel.onFirstNameTextChanged(text: newText)
-			}
-			.textFieldStyle(.inList)
-			
-			SectionTextField(state.lastName) { newText in
-				viewModel.onLastNameTextChanged(text: newText)
+				viewModel.onNameTextChanged(text: newText)
 			}
 			.textFieldStyle(.inList)
 		}
@@ -35,6 +30,8 @@ struct EditProfileScreen: View {
 			switch dest {
 			case is EditProfileNavigationDestination.Back:
 				navigationStack.popLast()
+			case is EditProfileNavigationDestination.ChangeEmail:
+				navigationStack.push(SettingsDestination.ChangeEmail())
 			default:
 				break
 			}

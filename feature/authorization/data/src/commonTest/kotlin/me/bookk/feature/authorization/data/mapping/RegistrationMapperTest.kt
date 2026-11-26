@@ -21,7 +21,7 @@ class RegistrationMapperTest {
                 "00000000-0000-0000-0000-000000000001",
                 "Device",
             ),
-            userInfo = RegistrationData.UserInfo("John", "Doe", "john@example.com"),
+            userInfo = RegistrationData.UserInfo("John Doe", "john@example.com"),
             publicKeyCredentialJson = "{}",
             acceptedDocuments = documents,
             verificationId = Uuid.parse("00000000-0000-0000-0000-0000000000a1"),

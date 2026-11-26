@@ -2,10 +2,8 @@
 <resources>
     <string name="sign_up_create_acc">Створити обліковий запис</string>
     <string name="sign_up_personal_section_title">Особисті дані</string>
-    <string name="sign_up_first_name">Імʼя</string>
-    <string name="sign_up_first_name_error">Імʼя має містити щонайменше 2 символи</string>
-    <string name="sign_up_last_name">Прізвище</string>
-    <string name="sign_up_last_name_error">Прізвище має містити щонайменше 2 символи</string>
+    <string name="sign_up_full_name">Імʼя та прізвище</string>
+    <string name="sign_up_name_error">Імʼя має містити щонайменше 2 символи</string>
     <string name="sign_up_email">Ел. пошта</string>
     <string name="sign_up_email_error">Неправильний формат ел. пошти</string>
     <string name="sign_up_email_exist">Обліковий запис із такою ел. поштою вже існує</string>

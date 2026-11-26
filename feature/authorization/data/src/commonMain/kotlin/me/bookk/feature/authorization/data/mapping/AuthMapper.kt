@@ -26,8 +26,7 @@ import me.bookk.feature.authorization.domain.entity.UserProfile
 
 internal fun StartSignUp.UserData.toRemote(): PassKeySignUpStartInfo {
     return PassKeySignUpStartInfo(
-        firstName = firstName,
-        lastName = lastName,
+        name = name,
         email = email,
     )
 }
@@ -67,7 +66,6 @@ internal fun RegistrationData.toRemote(): VerifyAccountCreationRequest {
         ),
         userInfo = VerifyAccountCreationRequest.UserInfo(
             name = userInfo.name,
-            lastName = userInfo.lastName,
             email = userInfo.email,
         ),
         publicKeyCredentialJson = publicKeyCredentialJson,

@@ -29,10 +29,11 @@
     <string name="settings_support_report_label">Zgłoś błąd</string>
 
     <string name="settings_edit_profile_title">Edytuj profil</string>
-    <string name="settings_edit_profile_first_name">Imię</string>
-    <string name="settings_edit_profile_first_name_error">Imię musi mieć co najmniej 2 znaki</string>
-    <string name="settings_edit_profile_last_name">Nazwisko</string>
-    <string name="settings_edit_profile_last_name_error">Nazwisko musi mieć co najmniej 2 znaki</string>
+    <string name="settings_edit_profile_name_error">Imię musi mieć co najmniej 2 znaki</string>
+    <string name="settings_booking_profile_title">Profil rezerwacji.</string>
+    <string name="settings_edit_profile_full_name">Imię i nazwisko</string>
+    <string name="settings_edit_profile_change_email">Zmień</string>
+    <string name="settings_edit_profile_email_hint">Nowy adres e-mail potwierdzisz kodem, który na niego wyślemy.</string>
 
 
     <string name="settings_delete_account_title">Usuń konto</string>

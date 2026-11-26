@@ -19,12 +19,12 @@ import me.bookk.designsystem.uistate.startLoading
 import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.authorization.domain.api.StartEmailChange
 import me.bookk.feature.authorization.domain.entity.EmailVerificationError
-import me.bookk.feature.authorization.presentation.AuthStateFactory
+import me.bookk.feature.authorization.presentation.EmailVerificationStateFactory
 
 class ChangeEmailViewModel(
     private val startEmailChange: StartEmailChange,
     private val validateEmail: ValidateEmail,
-    stateFactory: AuthStateFactory,
+    stateFactory: EmailVerificationStateFactory,
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 

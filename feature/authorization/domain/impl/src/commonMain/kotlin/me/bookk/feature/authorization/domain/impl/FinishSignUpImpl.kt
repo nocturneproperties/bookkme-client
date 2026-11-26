@@ -135,8 +135,7 @@ internal class FinishSignUpImpl(
                 deviceName = deviceFacade.getDeviceName(),
             ),
             userInfo = RegistrationData.UserInfo(
-                name = userData.firstName,
-                lastName = userData.lastName,
+                name = userData.name,
                 email = userData.email,
             ),
             publicKeyCredentialJson = attestation.jsonPayload,

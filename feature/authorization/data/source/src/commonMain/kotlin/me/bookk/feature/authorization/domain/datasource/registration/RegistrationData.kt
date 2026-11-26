@@ -15,7 +15,6 @@ class RegistrationData(
 
     class UserInfo(
         val name: String,
-        val lastName: String,
         val email: String,
     )
 

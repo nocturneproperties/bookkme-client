@@ -78,18 +78,10 @@ class SignUpViewModel(
 
     private fun SignUpState.setupProfileFields() {
         name.apply {
-            label = AuthRes.strings.sign_up_first_name.desc()
+            label = AuthRes.strings.sign_up_full_name.desc()
             placeholder = label
             onTextChanged = weakVMClosure { vm, text ->
-                vm.onFirstNameTextChanged(text)
-            }
-            clearError()
-        }
-        lastName.apply {
-            label = AuthRes.strings.sign_up_last_name.desc()
-            placeholder = label
-            onTextChanged = weakVMClosure { vm, text ->
-                vm.onLastNameTextChanged(text)
+                vm.onNameTextChanged(text)
             }
             clearError()
         }
@@ -208,15 +200,9 @@ class SignUpViewModel(
         deviceFacade.openUrlPreview(AuthConstants.PASSKEY_INFO_URL)
     }
 
-    override fun onFirstNameTextChanged(text: String) {
+    override fun onNameTextChanged(text: String) {
         uiState.name.text = text
         uiState.name.clearError()
-        validateButton()
-    }
-
-    override fun onLastNameTextChanged(text: String) {
-        uiState.lastName.text = text
-        uiState.lastName.clearError()
         validateButton()
     }
 
@@ -229,13 +215,8 @@ class SignUpViewModel(
     private fun validateForm(): Boolean {
         return listOf(
             uiState.name.validate(
-                AuthRes.strings.sign_up_first_name_error.desc().takeIf {
+                AuthRes.strings.sign_up_name_error.desc().takeIf {
                     !validateName(uiState.name.text).isValid
-                },
-            ),
-            uiState.lastName.validate(
-                AuthRes.strings.sign_up_last_name_error.desc().takeIf {
-                    !validateName(uiState.lastName.text).isValid
                 },
             ),
             uiState.email.validate(
@@ -259,7 +240,6 @@ class SignUpViewModel(
         }
         val userData = StartSignUp.UserData(
             uiState.name.text,
-            uiState.lastName.text,
             uiState.email.text,
             acceptedDocuments(),
         )
@@ -348,7 +328,7 @@ class SignUpViewModel(
             !uiState.confirmButton.isLoading && !uiState.reloadLegalDocuments.isLoading &&
             !uiState.reloadLegalDocuments.isVisible &&
             uiState.legalDocuments != null && uiState.legalAcceptance.isValid &&
-            uiState.name.isValid && uiState.lastName.isValid && uiState.email.isValid
+            uiState.name.isValid && uiState.email.isValid
     }
 
     private companion object {

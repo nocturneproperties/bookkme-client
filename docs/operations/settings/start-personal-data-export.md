@@ -67,5 +67,5 @@ flowchart TD
 
 The export screen stays on the request stage and `ChatConfirmationRequest` shows the sent notice, the
 60-second "Send again" cooldown and the write-access request, as described in
-[Delete account](delete-account.md#telegram-mini-app). Nothing is saved until the export starts.
+[Request account deletion](request-account-deletion.md#telegram-mini-app). Nothing is saved until the export starts.
 

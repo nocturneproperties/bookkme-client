@@ -193,7 +193,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `GetAvailablePasskeys`, `DeletePasskey` | `GET /api/auth/passkey`, `DELETE /api/auth/passkey/{id}` | [Delete passkey / Get available passkeys](settings/delete-passkey.md) |
 | `CreateNewPasskey` | `GET /api/auth/passkey/add/challenge`, `POST /api/auth/passkey/add/finish`; typed backend errors | [Create new passkey](settings/create-new-passkey.md) |
 | `GetAccountDeletion` | `flow`: `account_deletion_prefs`; `refresh`: `GET /api/auth/account/deletion` → saved, removed when none is pending | [Get account deletion](settings/get-account-deletion.md) |
-| `DeleteAccount` | Mobile: passkey action confirmation + `DELETE /api/auth/account` (schedules the deletion 7 days ahead) → `account_deletion_prefs` date; typed backend errors. Client web app: sends a Telegram chat confirmation only | [Delete account](settings/delete-account.md) |
+| `RequestAccountDeletion` | Mobile: passkey action confirmation + `DELETE /api/auth/account` (schedules the deletion 7 days ahead) → `account_deletion_prefs` date; typed backend errors. Client web app: sends a Telegram chat confirmation only | [Request account deletion](settings/request-account-deletion.md) |
 
 ## Booking
 
@@ -263,7 +263,7 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Get bookings](booking/get-bookings.md) | `GetClientBookings.flow`/`refresh`/`loadMore` (appointments) (cross-feature wrapper) |
 | [Withdraw booking request](booking/withdraw-booking-request.md) | `WithdrawAppointmentRequest` and `GetUpcomingBookings.refresh` (appointments) (cross-feature wrapper) |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
-| [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`; client web app: `UserProfileCRUD`, `StartTelegramActionConfirmation` |
+| [Request account deletion](settings/request-account-deletion.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`; client web app: `UserProfileCRUD`, `StartTelegramActionConfirmation` |
 | [Complete Telegram confirmation](settings/complete-telegram-confirmation.md) | `ConfirmActionWithTelegram` |
 | [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |
 | [Start personal data export](settings/start-personal-data-export.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`; client web app: `UserProfileCRUD`, `StartTelegramActionConfirmation` |

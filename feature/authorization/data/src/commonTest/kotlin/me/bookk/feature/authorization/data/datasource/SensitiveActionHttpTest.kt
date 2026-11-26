@@ -157,7 +157,7 @@ class SensitiveActionHttpTest {
 
             whenn()
             try {
-                dataSource.deleteAccount(DeleteAccountRequest("delete-account-confirmed"))
+                dataSource.requestAccountDeletion(DeleteAccountRequest("delete-account-confirmed"))
             } finally {
                 client.close()
             }
@@ -181,7 +181,7 @@ class SensitiveActionHttpTest {
 
         whenn()
         val deletesAt = try {
-            dataSource.deleteAccount(DeleteAccountRequest("delete-account-confirmed"))
+            dataSource.requestAccountDeletion(DeleteAccountRequest("delete-account-confirmed"))
         } finally {
             client.close()
         }

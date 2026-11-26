@@ -6,7 +6,7 @@
 confirmation in their Telegram chat. It is the first half of the Mini App's confirmation, used instead of
 [Confirm sensitive action](confirm-sensitive-action.md) because Telegram's in-app browser has no passkeys.
 Only the settings Mini App bindings call it, through `TelegramConfirmationSender` (see
-[Delete account](../settings/delete-account.md) and [Start personal data export](../settings/start-personal-data-export.md)).
+[Request account deletion](../settings/request-account-deletion.md) and [Start personal data export](../settings/start-personal-data-export.md)).
 
 ```mermaid
 flowchart TD

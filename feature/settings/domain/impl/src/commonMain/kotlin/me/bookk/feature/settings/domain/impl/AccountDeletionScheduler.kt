@@ -5,7 +5,7 @@ import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.authorization.DeleteAccountRequest
 import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
-import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.RequestAccountDeletion
 import kotlin.time.Instant
 
 internal class AccountDeletionScheduler(
@@ -19,13 +19,13 @@ internal class AccountDeletionScheduler(
 
     private suspend fun requestDeletion(confirmationToken: String): Instant {
         return runCatching {
-            authorizationDataSource.deleteAccount(DeleteAccountRequest(confirmationToken))
+            authorizationDataSource.requestAccountDeletion(DeleteAccountRequest(confirmationToken))
         }
             .onBusinessError {
                 when (it.errorCode) {
                     AuthErrorCodes.ACTION_CONFIRMATION_INVALID,
                     AuthErrorCodes.VERIFICATION_FAILED,
-                    -> throw DeleteAccount.Error.AccountVerificationFailed()
+                    -> throw RequestAccountDeletion.Error.AccountVerificationFailed()
                 }
             }
             .getOrThrow()

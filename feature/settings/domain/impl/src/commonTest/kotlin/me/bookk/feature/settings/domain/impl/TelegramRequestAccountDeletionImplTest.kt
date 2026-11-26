@@ -18,7 +18,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.Uuid
 
-class TelegramDeleteAccountImplTest {
+class TelegramRequestAccountDeletionImplTest {
     private class Fixture {
         val userId = Uuid.parse("00000000-0000-0000-0000-000000000001")
         val startConfirmation = mock<StartTelegramActionConfirmation> {
@@ -27,7 +27,7 @@ class TelegramDeleteAccountImplTest {
         val profile = mock<UserProfileCRUD> {
             everySuspend { get() } returns UserProfile(userId, "Jane", "Doe", "jane@example.com")
         }
-        val sut = TelegramDeleteAccountImpl(startConfirmation, profile)
+        val sut = TelegramRequestAccountDeletionImpl(startConfirmation, profile)
     }
 
     @Test

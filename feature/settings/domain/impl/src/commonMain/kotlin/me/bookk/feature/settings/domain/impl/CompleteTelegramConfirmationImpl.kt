@@ -7,7 +7,7 @@ import me.bookk.feature.authorization.domain.datasource.authorization.Authorizat
 import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
 import me.bookk.feature.settings.domain.api.CompleteTelegramConfirmation
 import me.bookk.feature.settings.domain.api.CompleteTelegramConfirmation.Error
-import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.RequestAccountDeletion
 import me.bookk.feature.settings.domain.api.StartPersonalDataExport
 import me.bookk.feature.settings.domain.datasource.DataExportDataSource
 
@@ -43,7 +43,7 @@ internal class CompleteTelegramConfirmationImpl(
     private fun Throwable.toConfirmationError(): Throwable {
         return when (this) {
             is ConfirmActionWithTelegram.Error.ConfirmationExpired,
-            is DeleteAccount.Error.AccountVerificationFailed,
+            is RequestAccountDeletion.Error.AccountVerificationFailed,
             is StartPersonalDataExport.Error.ConfirmationRequired,
             -> {
                 Error.ConfirmationExpired()

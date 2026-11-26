@@ -1,11 +1,11 @@
 [← Operations](../README.md)
 
-# Delete account
+# Request account deletion
 
-`DeleteAccount()` returns an `ActionOutcome<Unit>`. The mobile apps bind `DeleteAccountImpl`, which composes
+`RequestAccountDeletion()` returns an `ActionOutcome<Unit>`. The mobile apps bind `RequestAccountDeletionImpl`, which composes
 `UserProfileCRUD.get()` and `ConfirmSensitiveAction` and returns `ActionOutcome.Completed(Unit)`.
 `DELETE /api/auth/account` only schedules the deletion: the backend erases the account 7 days later (backend #208), and until then the account keeps working, so the session is kept.
-The client web app binds `TelegramDeleteAccountImpl` instead (see [Telegram Mini App](#telegram-mini-app)).
+The client web app binds `TelegramRequestAccountDeletionImpl` instead (see [Telegram Mini App](#telegram-mini-app)).
 Called from `DeleteAccountViewModel`.
 
 The caller confirms `DELETE_ACCOUNT` with the nil business UUID and their own user UUID as target.
@@ -21,7 +21,7 @@ flowchart TD
     Confirm -- shared Error.Ignore --> Ign([propagate silent cancellation])
     Confirm -- typed confirmation failure --> E1([throw Error.AccountVerificationFailed])
     Confirm -- other failure --> EX
-    Confirm -- token --> Del[AuthorizationDataSource.deleteAccount<br/>DELETE /api/auth/account<br/>body confirmationToken]
+    Confirm -- token --> Del[AuthorizationDataSource.requestAccountDeletion<br/>DELETE /api/auth/account<br/>body confirmationToken]
     Del -- 12 ACTION_CONFIRMATION_INVALID --> E1
     Del -- 4 VERIFICATION_FAILED --> E1
     Del -- other failure --> EX
@@ -36,7 +36,7 @@ period and the person may need it to sign in and cancel. The returned `deletesAt
 normal cache on a miss. No automatic retry of confirmation or the protected DELETE is made.
 ## Telegram Mini App
 
-`TelegramDeleteAccountImpl` only asks for a confirmation in the person's Telegram chat; the account is deleted
+`TelegramRequestAccountDeletionImpl` only asks for a confirmation in the person's Telegram chat; the account is deleted
 later by [Complete Telegram confirmation](complete-telegram-confirmation.md) when they tap Confirm there.
 
 ```mermaid

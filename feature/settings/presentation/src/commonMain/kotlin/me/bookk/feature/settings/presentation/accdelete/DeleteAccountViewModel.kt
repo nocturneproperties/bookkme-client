@@ -16,15 +16,15 @@ import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.uistate.TopBarSize
-import me.bookk.feature.settings.domain.api.DeleteAccount
 import me.bookk.feature.settings.domain.api.GetAccountDeletion
+import me.bookk.feature.settings.domain.api.RequestAccountDeletion
 import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountNavigationDestination.Back
 import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationRequest
 import kotlin.time.Instant
 
 class DeleteAccountViewModel(
-    private val deleteAccount: DeleteAccount,
+    private val requestAccountDeletion: RequestAccountDeletion,
     private val getAccountDeletion: GetAccountDeletion,
     private val dateLocalizer: DateLocalizer,
     settingsStateFactory: SettingsStateFactory,
@@ -39,7 +39,7 @@ class DeleteAccountViewModel(
         state = uiState.chatConfirmation,
         button = uiState.deleteButton,
         notifications = uiState.notifications,
-        action = { deleteAccount() },
+        action = { requestAccountDeletion() },
         onCompleted = { onAccountDeleted() },
         onError = { uiState.notifications.add(it.notification()) },
         isActionAllowed = { uiState.confirmation.isChecked },

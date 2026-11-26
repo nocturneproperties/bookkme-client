@@ -13,7 +13,7 @@ Three small read-only use cases in `authorization`, all **local only**.
 
 Note that "logged in" is driven by the `authorized` flag and **not** by whether a token exists.
 [Sign in](sign-in.md) and [Finish sign-up](finish-sign-up.md) set the flag after the initial fetch,
-[Delete account](../settings/delete-account.md) clears it, and [Log out](log-out.md) clears the whole bucket.
+and [Log out](log-out.md) clears the whole bucket. [Request account deletion](../settings/request-account-deletion.md) leaves it set: the account keeps working during its 7-day grace period.
 
 ```mermaid
 flowchart TD

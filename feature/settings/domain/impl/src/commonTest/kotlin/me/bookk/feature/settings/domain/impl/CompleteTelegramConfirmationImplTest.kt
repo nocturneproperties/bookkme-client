@@ -36,7 +36,7 @@ class CompleteTelegramConfirmationImplTest {
             everySuspend { invoke(any()) } returns "single-use"
         }
         val authorizationDataSource = mock<AuthorizationDataSource> {
-            everySuspend { deleteAccount(any()) } returns DELETES_AT
+            everySuspend { requestAccountDeletion(any()) } returns DELETES_AT
         }
         val dataExportDataSource = mock<DataExportDataSource> {
             everySuspend { start(any()) } returns export
@@ -65,7 +65,7 @@ class CompleteTelegramConfirmationImplTest {
         then()
         verifySuspend(VerifyMode.order) {
             fixture.confirmWithTelegram(fixture.initData)
-            fixture.authorizationDataSource.deleteAccount(
+            fixture.authorizationDataSource.requestAccountDeletion(
                 matches({ "confirmed token" }) { it.confirmationToken == "single-use" },
             )
         }
@@ -113,7 +113,9 @@ class CompleteTelegramConfirmationImplTest {
             fixture.confirmWithTelegram(fixture.initData)
             fixture.dataExportDataSource.start("single-use")
         }
-        verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.requestAccountDeletion(any())
+        }
     }
 
     @Test
@@ -143,7 +145,9 @@ class CompleteTelegramConfirmationImplTest {
         assertFailsWith<CompleteTelegramConfirmation.Error.ConfirmationExpired> {
             result.getOrThrow()
         }
-        verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.requestAccountDeletion(any())
+        }
     }
 
     @Test
@@ -185,7 +189,7 @@ class CompleteTelegramConfirmationImplTest {
     fun `reports a token the deletion rejects as an expired confirmation`() = runUnitTest {
         given()
         val fixture = Fixture()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
             Error.BusinessError(AuthErrorCodes.ACTION_CONFIRMATION_INVALID, "invalid")
 
         whenn()
@@ -239,7 +243,8 @@ class CompleteTelegramConfirmationImplTest {
         given()
         val fixture = Fixture()
         val failure = IllegalStateException("offline")
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws failure
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
+            failure
 
         whenn()
         val result = runCatching { fixture.sut(ConfirmableAction.DELETE_ACCOUNT, fixture.initData) }

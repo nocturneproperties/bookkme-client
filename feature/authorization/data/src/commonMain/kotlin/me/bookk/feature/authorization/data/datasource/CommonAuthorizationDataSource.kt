@@ -121,11 +121,12 @@ class CommonAuthorizationDataSource(
         TODO("POST /api/auth/telegram/confirm_action, nocturneproperties/bookkme#210")
     }
 
-    override suspend fun deleteAccount(request: DeleteAccountRequest): Instant = mapExceptions {
-        httpClient.delete(Auth.Account()) {
-            setBody(request.toRemote())
-        }.body<AccountDeletionRemote>().deletesAt
-    }
+    override suspend fun requestAccountDeletion(request: DeleteAccountRequest): Instant =
+        mapExceptions {
+            httpClient.delete(Auth.Account()) {
+                setBody(request.toRemote())
+            }.body<AccountDeletionRemote>().deletesAt
+        }
 
     override suspend fun doOnLogOut() {
         preferences.clear()

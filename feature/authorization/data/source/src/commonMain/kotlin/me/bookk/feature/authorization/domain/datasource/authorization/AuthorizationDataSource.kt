@@ -16,7 +16,7 @@ interface AuthorizationDataSource {
     suspend fun getAuthorizationChallenge(): ServerAuthenticationChallenge
     suspend fun verifyAuthorization(signInData: SignInData): TokenInfo
     suspend fun signInWithTelegram(data: TelegramSignInData): TokenInfo
-    suspend fun deleteAccount(request: DeleteAccountRequest): Instant
+    suspend fun requestAccountDeletion(request: DeleteAccountRequest): Instant
     suspend fun setAuthorizationStatus(isAuthorized: Boolean)
     suspend fun invalidateClientTokens()
     suspend fun getLastInitialDataFetchAt(): Instant?

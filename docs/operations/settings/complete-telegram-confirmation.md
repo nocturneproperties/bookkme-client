@@ -17,7 +17,7 @@ flowchart TD
     Confirm -- Error.TelegramDataInvalid --> Invalid([throw Error.TelegramDataInvalid])
     Confirm -- other failure --> EX([propagate])
     Confirm -- token --> Kind{action}
-    Kind -- DELETE_ACCOUNT --> Del[AuthorizationDataSource.deleteAccount<br/>DELETE /api/auth/account<br/>body confirmationToken]
+    Kind -- DELETE_ACCOUNT --> Del[AuthorizationDataSource.requestAccountDeletion<br/>DELETE /api/auth/account<br/>body confirmationToken]
     Del -- 12 ACTION_CONFIRMATION_INVALID or 4 VERIFICATION_FAILED --> Expired
     Del -- other failure --> EX
     Del -- 200 deletesAt --> Save[AccountDeletionDataSource.saveScheduledDeletion<br/>account_deletion_prefs: deletes_at]

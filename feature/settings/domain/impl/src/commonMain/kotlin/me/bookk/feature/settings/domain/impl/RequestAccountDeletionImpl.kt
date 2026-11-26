@@ -6,16 +6,16 @@ import me.bookk.feature.authorization.domain.datasource.authorization.Authorizat
 import me.bookk.feature.authorization.domain.datasource.deletion.AccountDeletionDataSource
 import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
-import me.bookk.feature.settings.domain.api.DeleteAccount
+import me.bookk.feature.settings.domain.api.RequestAccountDeletion
 import me.bookk.feature.settings.domain.api.entity.ActionOutcome
 import kotlin.uuid.Uuid
 
-internal class DeleteAccountImpl(
+internal class RequestAccountDeletionImpl(
     authorizationDataSource: AuthorizationDataSource,
     accountDeletionDataSource: AccountDeletionDataSource,
     private val confirmation: ConfirmSensitiveAction,
     private val profile: UserProfileCRUD,
-) : DeleteAccount {
+) : RequestAccountDeletion {
     private val deletionScheduler =
         AccountDeletionScheduler(authorizationDataSource, accountDeletionDataSource)
 
@@ -37,7 +37,7 @@ internal class DeleteAccountImpl(
             .getOrElse {
                 throw when (it) {
                     is ConfirmSensitiveAction.Error -> {
-                        DeleteAccount.Error.AccountVerificationFailed()
+                        RequestAccountDeletion.Error.AccountVerificationFailed()
                     }
 
                     else -> {

@@ -17,7 +17,7 @@ flowchart TD
     Net -- failure --> EX([propagate, cached date kept])
 ```
 
-[Delete account](delete-account.md) and [Complete Telegram confirmation](complete-telegram-confirmation.md) save
+[Request account deletion](request-account-deletion.md) and [Complete Telegram confirmation](complete-telegram-confirmation.md) save
 the `deletesAt` the deletion request answers with through the same datasource, so the screen shows the pending
 deletion at once. While a date is cached, Delete account shows "Deletion requested. Your account will be deleted
 on <date>." (`DateStyle.MEDIUM`, device time zone) and hides the warning, the agreement and the Delete button.

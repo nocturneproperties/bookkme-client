@@ -179,7 +179,7 @@ carrying a structured business-error body retains its `Error.BusinessError` code
 | `DownloadPersonalDataExport` | Local READY status (else `NotReady`) → reuse JSON file per export; cache miss → `GET /api/user/export/download` → save through `FileProvider` → return file path for the `Share` destination; `NotFound` → `NotReady` | [Download personal data export](settings/download-personal-data-export.md) |
 | `GetPersonalDataExport` | Read-only flow maps expired records to null; ViewModel refreshes on open only for a null or RUNNING first value and polls RUNNING every 10 s (max 30); `refresh` always uses `GET /api/user/export` → clear personal files unless READY and unexpired → save server response | [Get personal data export](settings/get-personal-data-export.md) |
 | `StartPersonalDataExport` | Mobile: `POST /api/user/export`; passkey confirmation → clear all personal export JSON files → status cache upsert. Client web app: sends a Telegram chat confirmation only | [Start personal data export](settings/start-personal-data-export.md) |
-| `CompleteTelegramConfirmation` | Client web app only: `ConfirmActionWithTelegram` token → `DELETE /api/auth/account` + logout, or `POST /api/user/export` → clear export files → status cache upsert | [Complete Telegram confirmation](settings/complete-telegram-confirmation.md) |
+| `CompleteTelegramConfirmation` | Client web app only: `ConfirmActionWithTelegram` token → `DELETE /api/auth/account` (schedules the deletion, session kept), or `POST /api/user/export` → clear export files → status cache upsert | [Complete Telegram confirmation](settings/complete-telegram-confirmation.md) |
 | `AcceptLegalDocuments` | `POST /api/user/me/legal`; explicit pending-version acceptance in Settings → Privacy | [Accept legal documents](settings/accept-legal-documents.md) |
 | `GetLegalDocumentStatuses` | `flow`: Room statuses; `refresh`: `GET /api/user/me/legal` → transactional Room replacement; Privacy screen review and post-acceptance refresh; dashboard "Action required" row status | [Get legal document statuses](settings/get-legal-document-statuses.md) |
 | `GetLegalDocumentVersions` | `GET /api/user/legal` | [Get legal document versions](settings/get-legal-document-versions.md) |
@@ -262,8 +262,8 @@ services (and the employees') use cases and keep what the client approved per bu
 | [Get bookings](booking/get-bookings.md) | `GetClientBookings.flow`/`refresh`/`loadMore` (appointments) (cross-feature wrapper) |
 | [Withdraw booking request](booking/withdraw-booking-request.md) | `WithdrawAppointmentRequest` and `GetUpcomingBookings.refresh` (appointments) (cross-feature wrapper) |
 | every `Get*.flow()` list | `ObserveDashboardBusinessChanges` |
-| [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`, `LogOut`; client web app: `UserProfileCRUD`, `StartTelegramActionConfirmation` |
-| [Complete Telegram confirmation](settings/complete-telegram-confirmation.md) | `ConfirmActionWithTelegram`, `LogOut` |
+| [Delete account](settings/delete-account.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`; client web app: `UserProfileCRUD`, `StartTelegramActionConfirmation` |
+| [Complete Telegram confirmation](settings/complete-telegram-confirmation.md) | `ConfirmActionWithTelegram` |
 | [Delete client](clients/delete-client.md) | `ConfirmSensitiveAction` |
 | [Start personal data export](settings/start-personal-data-export.md) | `UserProfileCRUD`, `ConfirmSensitiveAction`; client web app: `UserProfileCRUD`, `StartTelegramActionConfirmation` |
 | [Start business data export](business/start-business-data-export.md) | `ConfirmSensitiveAction` |

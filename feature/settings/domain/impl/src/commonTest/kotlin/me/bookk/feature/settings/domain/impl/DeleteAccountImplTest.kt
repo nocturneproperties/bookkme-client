@@ -19,12 +19,10 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.ConfirmSensitiveAction
-import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.authorization.domain.datasource.registration.PassKeyManager
-import me.bookk.feature.authorization.domain.datasource.registration.PasskeyVerificationPayload
 import me.bookk.feature.authorization.domain.entity.ActionConfirmation
 import me.bookk.feature.authorization.domain.entity.SensitiveAction
 import me.bookk.feature.authorization.domain.entity.UserProfile
@@ -56,16 +54,10 @@ class DeleteAccountImplTest {
     private class Fixture {
         val userId = Uuid.parse("00000000-0000-0000-0000-000000000001")
         val authorizationDataSource = mock<AuthorizationDataSource>()
-        val passKeyManager = mock<PassKeyManager>()
         val confirmation = mock<ConfirmSensitiveAction>()
         val profile = mock<UserProfileCRUD>()
-        val logOut = mock<LogOut> {
-            everySuspend { invoke() } returns Unit
-        }
         val sut = DeleteAccountImpl(
             authorizationDataSource = authorizationDataSource,
-            passKeyManager = passKeyManager,
-            logOut = logOut,
             confirmation = confirmation,
             profile = profile,
         )
@@ -78,14 +70,11 @@ class DeleteAccountImplTest {
         }
 
         fun stubVerifiedDeletion(): Fixture = apply {
-            everySuspend { passKeyManager.signalAccountDeleted(any()) } returns Unit
-            everySuspend { authorizationDataSource.saveAuthorizationTokens(null) } returns Unit
-            everySuspend { authorizationDataSource.setAuthorizationStatus(false) } returns Unit
         }
     }
 
     @Test
-    fun `clears auth tokens and status on success`() = runUnitTest {
+    fun `keeps the session while the deletion waits out its grace period`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()
         everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
@@ -94,8 +83,12 @@ class DeleteAccountImplTest {
         fixture.sut()
 
         then()
-        verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
-        verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.saveAuthorizationTokens(any())
+        }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.setAuthorizationStatus(any())
+        }
     }
 
     @Test
@@ -124,8 +117,6 @@ class DeleteAccountImplTest {
         then()
         assertFailsWith<Error.Ignore> { result.getOrThrow() }
         verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(any())
         }
@@ -146,76 +137,6 @@ class DeleteAccountImplTest {
 
         then()
         assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
-    }
-
-    @Test
-    fun `logs out after the account is deleted`() = runUnitTest {
-        given()
-        val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
-
-        whenn()
-        fixture.sut()
-
-        then()
-        verifySuspend { fixture.logOut() }
-    }
-
-    @Test
-    fun `signals the credential provider with the verified passkey after the account is deleted`() =
-        runUnitTest {
-            given()
-            val fixture = Fixture().stubVerifiedDeletion()
-            val assertion = PasskeyVerificationPayload("{\"id\":\"credential-id\"}")
-            everySuspend { fixture.confirmation(any(), any(), any()) } returns
-                ActionConfirmation("confirmed", assertion.jsonPayload)
-            everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
-
-            whenn()
-            fixture.sut()
-
-            then()
-            verifySuspend(VerifyMode.order) {
-                fixture.authorizationDataSource.deleteAccount(any())
-                fixture.passKeyManager.signalAccountDeleted(
-                    matches({ "verified passkey assertion" }) {
-                        it.jsonPayload ==
-                            assertion.jsonPayload
-                    },
-                )
-            }
-        }
-
-    @Test
-    fun `completes the deletion when signaling the credential provider fails`() = runUnitTest {
-        given()
-        val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } returns Unit
-        everySuspend { fixture.passKeyManager.signalAccountDeleted(any()) } throws
-            PassKeyManager.Error.Infrastructure()
-
-        whenn()
-        fixture.sut()
-
-        then()
-        verifySuspend { fixture.logOut() }
-        verifySuspend { fixture.authorizationDataSource.saveAuthorizationTokens(null) }
-        verifySuspend { fixture.authorizationDataSource.setAuthorizationStatus(false) }
-    }
-
-    @Test
-    fun `does not signal the credential provider when remote deletion fails`() = runUnitTest {
-        given()
-        val fixture = Fixture().stubVerifiedDeletion()
-        everySuspend { fixture.authorizationDataSource.deleteAccount(any()) } throws
-            Error.BusinessError(AuthErrorCodes.VERIFICATION_FAILED, "msg")
-
-        whenn()
-        val result = runCatching { fixture.sut() }
-
-        then()
-        assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
     }
 
     @Test
@@ -261,7 +182,6 @@ class DeleteAccountImplTest {
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(null)
         }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
     }
 
     private companion object {
@@ -332,12 +252,7 @@ class DeleteAccountImplTest {
             fixture.authorizationDataSource.deleteAccount(
                 matches({ "issued confirmation token" }) { it.confirmationToken == "confirmed" },
             )
-            fixture.passKeyManager.signalAccountDeleted(any())
-            fixture.logOut()
-            fixture.authorizationDataSource.saveAuthorizationTokens(null)
-            fixture.authorizationDataSource.setAuthorizationStatus(false)
         }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.authorize(any()) }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.getAuthorizationChallenge()
         }
@@ -355,8 +270,6 @@ class DeleteAccountImplTest {
 
         then()
         assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(any())
         }
@@ -378,8 +291,6 @@ class DeleteAccountImplTest {
         then()
         assertFailsWith<DeleteAccount.Error.AccountVerificationFailed> { result.getOrThrow() }
         verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(any())
         }
@@ -401,7 +312,6 @@ class DeleteAccountImplTest {
         then()
         assertSame(failure, result.exceptionOrNull())
         verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
     }
 
     @Test
@@ -416,8 +326,6 @@ class DeleteAccountImplTest {
 
         then()
         assertSame(failure, result.exceptionOrNull())
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
-        verifySuspend(VerifyMode.not) { fixture.passKeyManager.signalAccountDeleted(any()) }
         verifySuspend(VerifyMode.not) {
             fixture.authorizationDataSource.saveAuthorizationTokens(any())
         }

@@ -20,10 +20,7 @@ flowchart TD
     Kind -- DELETE_ACCOUNT --> Del[AuthorizationDataSource.deleteAccount<br/>DELETE /api/auth/account<br/>body confirmationToken]
     Del -- 12 ACTION_CONFIRMATION_INVALID or 4 VERIFICATION_FAILED --> Expired
     Del -- other failure --> EX
-    Del -- 204 --> Out[LogOut<br/>clears every cache table and prefs bucket]
-    Out --> Clr[authorization_prefs: tokens := null]
-    Clr --> Auth[authorization_prefs: authorized := false]
-    Auth --> R([Unit])
+    Del -- 200 deletion date --> R([Unit])
     Kind -- EXPORT_PERSONAL_DATA --> Exp[DataExportDataSource.start<br/>POST /api/user/export<br/>body confirmationToken]
     Exp -- 100005 USER_ACTION_CONFIRMATION_INVALID --> Expired
     Exp -- 900002 DATA_EXPORT_TOO_FREQUENT --> Limit([throw Error.ExportTooFrequent])
@@ -33,11 +30,10 @@ flowchart TD
     Save --> R
 ```
 
-Unlike the passkey path, the deletion makes no `PassKeyManager.signalAccountDeleted` call: there is no passkey
-assertion in the Mini App. A failed confirmation makes no protected request and keeps the session. Nothing is
-retried automatically.
+The deletion is only scheduled: the backend erases the account 7 days later (backend #208) and the
+account keeps working until then, so the session is never cleared. A failed confirmation makes no protected
+request. Nothing is retried automatically.
 
-On success the screen plays a success haptic; a deletion shows the success message and the cleared session
-returns the Mini App to Telegram sign-in, an export replaces the screens above Home with Export my data, which
+On success the screen plays a success haptic; a deletion shows the success message and the person stays signed in, an export replaces the screens above Home with Export my data, which
 renders the RUNNING status from `personal_data_export`. Each error replaces the Confirm button with "Open
 Settings". The Telegram `BackButton` leaves without confirming.

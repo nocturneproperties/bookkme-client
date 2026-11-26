@@ -3,7 +3,8 @@
 # Delete account
 
 `DeleteAccount()` returns an `ActionOutcome<Unit>`. The mobile apps bind `DeleteAccountImpl`, which composes
-`UserProfileCRUD.get()`, `ConfirmSensitiveAction` and `LogOut` and returns `ActionOutcome.Completed(Unit)`.
+`UserProfileCRUD.get()` and `ConfirmSensitiveAction` and returns `ActionOutcome.Completed(Unit)`.
+`DELETE /api/auth/account` only schedules the deletion: the backend erases the account 7 days later (backend #208), and until then the account keeps working, so the session is kept.
 The client web app binds `TelegramDeleteAccountImpl` instead (see [Telegram Mini App](#telegram-mini-app)).
 Called from `DeleteAccountViewModel`.
 
@@ -20,35 +21,17 @@ flowchart TD
     Confirm -- shared Error.Ignore --> Ign([propagate silent cancellation])
     Confirm -- typed confirmation failure --> E1([throw Error.AccountVerificationFailed])
     Confirm -- other failure --> EX
-    Confirm -- token and verified assertion --> Del[AuthorizationDataSource.deleteAccount<br/>DELETE /api/auth/account<br/>body confirmationToken]
+    Confirm -- token --> Del[AuthorizationDataSource.deleteAccount<br/>DELETE /api/auth/account<br/>body confirmationToken]
     Del -- 12 ACTION_CONFIRMATION_INVALID --> E1
     Del -- 4 VERIFICATION_FAILED --> E1
     Del -- other failure --> EX
-    Del -- 204 --> Sig[PassKeyManager.signalAccountDeleted<br/>reuse the verified assertion]
-    Sig -- success or any failure --> Out[LogOut<br/>clears every cache table and prefs bucket]
-    Out --> Clr[authorization_prefs: tokens := null]
-    Clr --> Auth[authorization_prefs: authorized := false]
-    Auth --> R([ActionOutcome.Completed Unit])
+    Del -- 200 deletion date --> R([ActionOutcome.Completed Unit])
 ```
 
 The confirmation token is single-use and expires after two minutes. Failed or cancelled confirmation
-makes no DELETE request. A failure before or during remote deletion preserves the authenticated session
-and does not run logout/cache cleanup or signal credential removal. The caller profile read can fill its
+makes no DELETE request. The passkey stays on the device: the account keeps working during the grace
+period and the person may need it to sign in and cancel. The session, the cache tables and the prefs buckets are never cleared by this operation. The caller profile read can fill its
 normal cache on a miss. No automatic retry of confirmation or the protected DELETE is made.
-
-`signalAccountDeleted` is best-effort: any failure is swallowed because the account is already deleted on the
-server. It reads `id` and `response.userHandle` from the assertion JSON and forwards them to
-`PasskeyCredentialUpdater`, which each platform supplies through `StateFactoryCreator.createPasskeyCredentialUpdater()`.
-Android (`AndroidPasskeyCredentialUpdater`) sends `SignalUnknownCredentialRequest` and
-`SignalAllAcceptedCredentialIdsRequest` (empty list) via `CredentialManager.signalCredentialState`. iOS
-(`IOSPasskeyCredentialUpdater`, in Swift because `ASCredentialUpdater` is Swift-only) calls
-`reportUnknownPublicKeyCredential` and `reportAllAcceptedPublicKeyCredentials` (empty list). The all-accepted
-signal is skipped when the assertion has no `userHandle`.
-
-After a successful deletion, [Log out](../authorization/log-out.md) runs every `LogOutAction`. Its `DELETE /api/auth/session`
-call fails because the account no longer exists, and that failure is swallowed like any other logout
-action error.
-
 ## Telegram Mini App
 
 `TelegramDeleteAccountImpl` only asks for a confirmation in the person's Telegram chat; the account is deleted

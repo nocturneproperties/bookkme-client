@@ -17,7 +17,6 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.feature.authorization.domain.api.ConfirmActionWithTelegram
-import me.bookk.feature.authorization.domain.api.LogOut
 import me.bookk.feature.authorization.domain.datasource.AuthErrorCodes
 import me.bookk.feature.authorization.domain.datasource.authorization.AuthorizationDataSource
 import me.bookk.feature.settings.domain.api.CompleteTelegramConfirmation
@@ -36,11 +35,6 @@ class CompleteTelegramConfirmationImplTest {
         }
         val authorizationDataSource = mock<AuthorizationDataSource> {
             everySuspend { deleteAccount(any()) } returns Unit
-            everySuspend { saveAuthorizationTokens(null) } returns Unit
-            everySuspend { setAuthorizationStatus(false) } returns Unit
-        }
-        val logOut = mock<LogOut> {
-            everySuspend { invoke() } returns Unit
         }
         val dataExportDataSource = mock<DataExportDataSource> {
             everySuspend { start(any()) } returns export
@@ -50,7 +44,6 @@ class CompleteTelegramConfirmationImplTest {
         val sut = CompleteTelegramConfirmationImpl(
             confirmWithTelegram = confirmWithTelegram,
             authorizationDataSource = authorizationDataSource,
-            logOut = logOut,
             dataExportDataSource = dataExportDataSource,
         )
     }
@@ -73,7 +66,7 @@ class CompleteTelegramConfirmationImplTest {
     }
 
     @Test
-    fun `ends the session after the account is deleted`() = runUnitTest {
+    fun `keeps the session while the deletion waits out its grace period`() = runUnitTest {
         given()
         val fixture = Fixture()
 
@@ -81,11 +74,11 @@ class CompleteTelegramConfirmationImplTest {
         fixture.sut(ConfirmableAction.DELETE_ACCOUNT, fixture.initData)
 
         then()
-        verifySuspend(VerifyMode.order) {
-            fixture.authorizationDataSource.deleteAccount(any())
-            fixture.logOut()
-            fixture.authorizationDataSource.saveAuthorizationTokens(null)
-            fixture.authorizationDataSource.setAuthorizationStatus(false)
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.saveAuthorizationTokens(any())
+        }
+        verifySuspend(VerifyMode.not) {
+            fixture.authorizationDataSource.setAuthorizationStatus(any())
         }
     }
 
@@ -133,7 +126,6 @@ class CompleteTelegramConfirmationImplTest {
             result.getOrThrow()
         }
         verifySuspend(VerifyMode.not) { fixture.authorizationDataSource.deleteAccount(any()) }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
     }
 
     @Test
@@ -185,7 +177,6 @@ class CompleteTelegramConfirmationImplTest {
         assertFailsWith<CompleteTelegramConfirmation.Error.ConfirmationExpired> {
             result.getOrThrow()
         }
-        verifySuspend(VerifyMode.not) { fixture.logOut() }
     }
 
     @Test

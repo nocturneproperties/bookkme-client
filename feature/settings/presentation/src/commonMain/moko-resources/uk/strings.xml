@@ -39,7 +39,7 @@
 
 
     <string name="settings_delete_account_title">Видалити обліковий запис</string>
-    <string name="settings_delete_account_confirmation">Я розумію, що видалення облікового запису є незворотним і я не зможу його відновити</string>
+    <string name="settings_delete_account_confirmation">Я розумію, що мій обліковий запис буде видалено через 7 днів після підтвердження. До того часу я можу ним користуватися. Після цього обліковий запис і його дані буде видалено назавжди без можливості відновлення.</string>
     <string name="settings_delete_account_confirmation_switch">Погоджуюся</string>
     <string name="settings_delete_account_confirmation_button">Видалити</string>
     <string name="settings_delete_account_pending">Видалення заплановано. Ваш обліковий запис буде видалено %s. До того часу ним можна користуватися.</string>

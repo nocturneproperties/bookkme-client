@@ -39,7 +39,7 @@
 
 
     <string name="settings_delete_account_title">Удалить аккаунт</string>
-    <string name="settings_delete_account_confirmation">Я понимаю, что удаление аккаунта необратимо и я не смогу его восстановить</string>
+    <string name="settings_delete_account_confirmation">Я понимаю, что мой аккаунт будет удалён через 7 дней после подтверждения. До этого момента я могу им пользоваться. После этого аккаунт и его данные будут удалены навсегда без возможности восстановления.</string>
     <string name="settings_delete_account_confirmation_switch">Принимаю</string>
     <string name="settings_delete_account_confirmation_button">Удалить</string>
     <string name="settings_delete_account_pending">Удаление запланировано. Ваш аккаунт будет удалён %s. До этого момента им можно пользоваться.</string>

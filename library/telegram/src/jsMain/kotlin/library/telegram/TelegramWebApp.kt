@@ -38,6 +38,8 @@ external interface TelegramWebApp {
 
     fun downloadFile(params: TelegramDownloadFileParams, callback: (Boolean) -> Unit)
 
+    fun requestWriteAccess(callback: (Boolean) -> Unit)
+
     fun onEvent(eventType: String, eventHandler: () -> Unit)
 
     fun offEvent(eventType: String, eventHandler: () -> Unit)

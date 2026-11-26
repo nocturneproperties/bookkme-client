@@ -5,6 +5,7 @@ enum class TelegramFeature(
 ) {
     BACK_BUTTON("6.1"),
     POPUP("6.2"),
+    WRITE_ACCESS("6.9"),
     SETTINGS_BUTTON("7.0"),
     SECONDARY_BUTTON("7.10"),
     BOTTOM_BAR_COLOR("7.10"),

@@ -9,17 +9,10 @@ import me.bookk.designsystem.uistate.PresentationNotificationState
 
 interface DeleteAccountState {
     val appBar: AppBarState
-    val confirmationMessage: StringDesc
+    var confirmationMessage: StringDesc
     val confirmation: BooleanState
     val deleteButton: ButtonState
 
     val notifications: PresentationNotificationState
     val navigation: NavigationState<DeleteAccountNavigationDestination>
-
-    class InitData(
-        val title: StringDesc,
-        val confirmationMessage: StringDesc,
-        val switchMessage: StringDesc,
-        val buttonMessage: StringDesc,
-    )
 }

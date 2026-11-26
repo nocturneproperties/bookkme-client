@@ -42,10 +42,7 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
                     text = state.confirmationMessage.localized(),
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                StateSwitch(
-                    state = state.confirmation,
-                    onCheckedChange = LocalDeleteAccountEventListener.current.onSwitchStateChanged,
-                )
+                StateSwitch(state = state.confirmation)
             }
         },
         bottomBar = {
@@ -55,7 +52,6 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
                 state = state.deleteButton,
-                onClick = LocalDeleteAccountEventListener.current.onDeleteClick,
             )
         },
     )
@@ -66,7 +62,7 @@ internal fun DeleteAccountScreen(state: DeleteAccountState) {
 private fun PreviewDark() {
     AppTheme(themeMode = ThemeMode.DARK) {
         DeleteAccountScreen(
-            state = AndroidDeleteAccountState(DeleteAccountViewModel.createInitData()),
+            state = AndroidDeleteAccountState(),
         )
     }
 }
@@ -76,7 +72,7 @@ private fun PreviewDark() {
 private fun PreviewLight() {
     AppTheme(themeMode = ThemeMode.LIGHT) {
         DeleteAccountScreen(
-            state = AndroidDeleteAccountState(DeleteAccountViewModel.createInitData()),
+            state = AndroidDeleteAccountState(),
         )
     }
 }

@@ -110,6 +110,9 @@ kotlin {
         }
         jsTest.dependencies {
             implementation(projects.core.testFixtures)
+            implementation(projects.core.domain)
+            implementation(projects.library.cache.api)
+            implementation(projects.feature.authorization.data.source)
             implementation(projects.feature.appointments.domain.api)
             implementation(projects.feature.business.domain.api)
             implementation(projects.feature.services.domain.api)

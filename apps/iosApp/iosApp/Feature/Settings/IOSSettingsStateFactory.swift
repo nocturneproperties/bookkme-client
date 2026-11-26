@@ -23,8 +23,8 @@ class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
 		return IOSSettingsState(initData: initData)
 	}
 	
-	func createDeleteAccountState(initData: DeleteAccountStateInitData) -> any DeleteAccountState {
-		return IOSDeleteAccountState(initData: initData)
+	func createDeleteAccountState() -> any DeleteAccountState {
+		return IOSDeleteAccountState()
 	}
 	
 	func createPasskeyState(initData: PasskeyStateInitData) -> any PasskeyState {

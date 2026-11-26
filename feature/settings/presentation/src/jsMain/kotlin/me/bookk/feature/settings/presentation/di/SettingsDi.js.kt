@@ -1,6 +1,7 @@
 package me.bookk.feature.settings.presentation.di
 
 import me.bookk.feature.settings.presentation.SettingsStateFactory
+import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
@@ -19,4 +20,5 @@ internal actual fun platformSettingsDiModule(): Module = module {
     factoryOf(::NotificationSettingsViewModel)
     factoryOf(::PrivacySettingsViewModel)
     factoryOf(::PersonalDataExportViewModel)
+    factoryOf(::DeleteAccountViewModel)
 }

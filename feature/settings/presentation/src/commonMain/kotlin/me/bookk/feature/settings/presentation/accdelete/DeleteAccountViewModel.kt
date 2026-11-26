@@ -7,9 +7,13 @@ import me.bookk.core.presentation.ViewModel
 import me.bookk.core.presentation.VmArgs
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.error.PresentationNotification.GlobalMessage
+import me.bookk.core.presentation.memory.weakVMClosure
 import me.bookk.designsystem.uistate.TopBarSize
+import me.bookk.designsystem.uistate.startLoading
+import me.bookk.designsystem.uistate.stopLoading
 import me.bookk.feature.settings.domain.api.DeleteAccount
 import me.bookk.feature.settings.presentation.SettingsStateFactory
+import me.bookk.feature.settings.presentation.accdelete.DeleteAccountNavigationDestination.Back
 
 class DeleteAccountViewModel(
     private val deleteAccount: DeleteAccount,
@@ -17,21 +21,32 @@ class DeleteAccountViewModel(
     vmArgs: VmArgs,
 ) : ViewModel(vmArgs) {
 
-    val uiState = settingsStateFactory.createDeleteAccountState(createInitData())
+    val uiState: DeleteAccountState = settingsStateFactory.createDeleteAccountState().setup()
 
-    init {
-        uiState.appBar.size = TopBarSize.LARGE
+    private fun DeleteAccountState.setup() = apply {
+        appBar.title = SettingsRes.strings.settings_delete_account_title.desc()
+        appBar.size = TopBarSize.LARGE
+        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
+        confirmationMessage = SettingsRes.strings.settings_delete_account_confirmation.desc()
+        confirmation.text = SettingsRes.strings.settings_delete_account_confirmation_switch.desc()
+        confirmation.isChecked = false
+        confirmation.onCheckedChange = weakVMClosure { vm, isChecked: Boolean ->
+            vm.onAgreementChanged(isChecked)
+        }
+        deleteButton.text = SettingsRes.strings.settings_delete_account_confirmation_button.desc()
+        deleteButton.isEnabled = false
+        deleteButton.onClick = weakVMClosure { it.onDeleteClick() }
     }
 
-    fun onSwitchStateChanged(isChecked: Boolean) {
+    private fun onAgreementChanged(isChecked: Boolean) {
         uiState.confirmation.isChecked = isChecked
         uiState.deleteButton.isEnabled = isChecked
     }
 
-    fun onDeleteClick() {
+    private fun onDeleteClick() {
         launch(
             launchIn = DispatcherProvider.io,
-            onStart = { uiState.deleteButton.isLoading = true },
+            onStart = { uiState.deleteButton.startLoading() },
             call = { deleteAccount() },
             onComplete = {
                 uiState.notifications.add(PresentationNotification.SuccessHaptic)
@@ -41,22 +56,10 @@ class DeleteAccountViewModel(
                     ),
                 )
             },
-            onError = { uiState.notifications.add(errorMapper.mapToNotification(it)) },
-            onTerminate = { uiState.deleteButton.isLoading = false },
+            onError = { uiState.notifications.add(it.notification()) },
+            onTerminate = {
+                uiState.deleteButton.stopLoading(enable = uiState.confirmation.isChecked)
+            },
         )
-    }
-
-    companion object {
-        fun createInitData(): DeleteAccountState.InitData {
-            return DeleteAccountState.InitData(
-                title = SettingsRes.strings.settings_delete_account_title.desc(),
-                confirmationMessage =
-                SettingsRes.strings.settings_delete_account_confirmation.desc(),
-                switchMessage =
-                SettingsRes.strings.settings_delete_account_confirmation_switch.desc(),
-                buttonMessage =
-                SettingsRes.strings.settings_delete_account_confirmation_button.desc(),
-            )
-        }
     }
 }

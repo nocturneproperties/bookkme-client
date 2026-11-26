@@ -23,17 +23,14 @@ struct DeleteAccountScreen: View {
 			Text(uiState.confirmationMessage.localized())
 				.font(.callout)
 			
-			StateSwitch(state: uiState.confirmation) { newState in
-				viewModel.onSwitchStateChanged(isChecked: newState)
-			}
+			StateSwitch(state: uiState.confirmation)
 			.padding(.horizontal, 16)
 			.padding(.vertical, 8)
 			.background(AppColors.elevated)
 			.clipShape(RoundedRectangle(cornerRadius: 10))
 			Spacer()
-			StateButton(uiState.deleteButton) {
-				viewModel.onDeleteClick()
-			}.padding(.bottom, 16)
+			StateButton(uiState.deleteButton)
+				.padding(.bottom, 16)
 		}
 		.padding()
 		.background(AppColors.background)

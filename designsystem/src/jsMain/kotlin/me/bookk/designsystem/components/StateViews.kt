@@ -195,12 +195,12 @@ private fun BannerRetry(state: BannerErrorState) {
                 .size(1.cssRem)
                 .borderTop(2.px, LineStyle.Solid, ColorToken.Error.themed),
         )
-        return
+    } else {
+        Button(
+            LabelMediumTextStyle
+                .toModifier()
+                .then(BannerRetryButtonStyle.toModifier())
+                .toAttrs { onClick { state.onRetryClick() } },
+        ) { Text(DesignSystem.strings.action_retry.desc().localized()) }
     }
-    Button(
-        LabelMediumTextStyle
-            .toModifier()
-            .then(BannerRetryButtonStyle.toModifier())
-            .toAttrs { onClick { state.onRetryClick() } },
-    ) { Text(DesignSystem.strings.action_retry.desc().localized()) }
 }

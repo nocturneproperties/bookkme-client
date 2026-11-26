@@ -46,18 +46,19 @@ private const val LABEL_FONT_SIZE_REM = 0.9375
 
 @Composable
 fun TextField(state: TextFieldState, modifier: Modifier = Modifier, minLines: Int = 1) {
-    if (!state.isVisible) return
-    Column(
-        modifier
-            .fillMaxWidth()
-            .gap(0.25.cssRem),
-    ) {
-        FieldLabel(state.label)
-        when (minLines) {
-            1 -> SingleLineInput(state)
-            else -> MultiLineInput(state, minLines)
+    if (state.isVisible) {
+        Column(
+            modifier
+                .fillMaxWidth()
+                .gap(0.25.cssRem),
+        ) {
+            FieldLabel(state.label)
+            when (minLines) {
+                1 -> SingleLineInput(state)
+                else -> MultiLineInput(state, minLines)
+            }
+            SupportingText(state.supportingTextRes, state.validationState)
         }
-        SupportingText(state.supportingTextRes, state.validationState)
     }
 }
 

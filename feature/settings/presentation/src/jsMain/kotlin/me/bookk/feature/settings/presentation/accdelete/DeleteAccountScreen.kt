@@ -51,17 +51,6 @@ internal fun DeleteAccountScreen(state: DeleteAccountState, webApp: TelegramWebA
 }
 
 @Composable
-private fun AgreementCard(state: DeleteAccountState) {
-    AppCard(
-        Modifier
-            .fillMaxWidth()
-            .padding(topBottom = 1.cssRem, leftRight = 1.25.cssRem),
-    ) {
-        CheckBox(state.confirmation)
-    }
-}
-
-@Composable
 private fun WarningCard(state: DeleteAccountState) {
     AppCard(
         Modifier
@@ -76,5 +65,16 @@ private fun WarningCard(state: DeleteAccountState) {
                 .toModifier()
                 .margin(0.px),
         )
+    }
+}
+
+@Composable
+private fun AgreementCard(state: DeleteAccountState) {
+    AppCard(
+        Modifier
+            .fillMaxWidth()
+            .padding(topBottom = 1.cssRem, leftRight = 1.25.cssRem),
+    ) {
+        CheckBox(state.confirmation)
     }
 }

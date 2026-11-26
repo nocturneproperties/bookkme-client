@@ -50,6 +50,24 @@ class DeleteAccountViewModel(
         refreshDeletion()
     }
 
+    private fun DeleteAccountState.setup() = apply {
+        appBar.title = SettingsRes.strings.settings_delete_account_title.desc()
+        appBar.size = TopBarSize.LARGE
+        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
+        confirmationMessage = SettingsRes.strings.settings_delete_account_confirmation.desc()
+        confirmation.text = SettingsRes.strings.settings_delete_account_confirmation_switch.desc()
+        confirmation.isChecked = false
+        confirmation.onCheckedChange = weakVMClosure { vm, isChecked: Boolean ->
+            vm.onAgreementChanged(isChecked)
+        }
+        deleteButton.text = SettingsRes.strings.settings_delete_account_confirmation_button.desc()
+        deleteButton.isEnabled = false
+        deleteButton.onClick = weakVMClosure { it.deletion.send() }
+        chatConfirmation.onWriteAccessAnswered = weakVMClosure { vm, isGranted: Boolean ->
+            vm.deletion.onWriteAccessAnswered(isGranted)
+        }
+    }
+
     private fun observeDeletion() {
         getAccountDeletion.flow()
             .flowOn(DispatcherProvider.io)
@@ -79,24 +97,6 @@ class DeleteAccountViewModel(
             deletesAt.toLocalDateTime(TimeZone.currentSystemDefault()),
         )
         return SettingsRes.strings.settings_delete_account_pending.format(date)
-    }
-
-    private fun DeleteAccountState.setup() = apply {
-        appBar.title = SettingsRes.strings.settings_delete_account_title.desc()
-        appBar.size = TopBarSize.LARGE
-        appBar.onBackClick = weakVMClosure { it.uiState.navigation.push(Back) }
-        confirmationMessage = SettingsRes.strings.settings_delete_account_confirmation.desc()
-        confirmation.text = SettingsRes.strings.settings_delete_account_confirmation_switch.desc()
-        confirmation.isChecked = false
-        confirmation.onCheckedChange = weakVMClosure { vm, isChecked: Boolean ->
-            vm.onAgreementChanged(isChecked)
-        }
-        deleteButton.text = SettingsRes.strings.settings_delete_account_confirmation_button.desc()
-        deleteButton.isEnabled = false
-        deleteButton.onClick = weakVMClosure { it.deletion.send() }
-        chatConfirmation.onWriteAccessAnswered = weakVMClosure { vm, isGranted: Boolean ->
-            vm.deletion.onWriteAccessAnswered(isGranted)
-        }
     }
 
     private fun onAgreementChanged(isChecked: Boolean) {

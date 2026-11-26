@@ -31,17 +31,18 @@ private const val SWITCH_ROW_HORIZONTAL_PADDING_REM = 1.0
 @Composable
 fun SwitchCard(states: List<BooleanState>, modifier: Modifier = Modifier) {
     val shown = states.filter { it.isVisible }
-    if (shown.isEmpty()) return
-    AppCard(
-        Modifier
-            .fillMaxWidth()
-            .padding(0.px)
-            .gap(0.px)
-            .then(modifier),
-    ) {
-        shown.forEachIndexed { index, state ->
-            key(state.id) { SwitchRow(state) }
-            if (index != shown.lastIndex) SwitchDivider()
+    if (shown.isNotEmpty()) {
+        AppCard(
+            Modifier
+                .fillMaxWidth()
+                .padding(0.px)
+                .gap(0.px)
+                .then(modifier),
+        ) {
+            shown.forEachIndexed { index, state ->
+                key(state.id) { SwitchRow(state) }
+                if (index != shown.lastIndex) SwitchDivider()
+            }
         }
     }
 }

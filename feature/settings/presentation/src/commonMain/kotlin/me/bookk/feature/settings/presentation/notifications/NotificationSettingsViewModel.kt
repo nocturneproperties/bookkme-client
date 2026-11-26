@@ -36,24 +36,42 @@ class NotificationSettingsViewModel(
     private var loadedSettings = NotificationSettings.stub()
     private var isEmailDeliverable = false
 
-    val uiState = settingsStateFactory.createNotificationSettingsState().setup()
+    val uiState: NotificationSettingsState =
+        settingsStateFactory.createNotificationSettingsState().setup()
 
     init {
         loadSettings()
         loadProfile()
     }
 
-    private fun observeSettings() {
-        getNotificationSettings.flow()
-            .flowOn(DispatcherProvider.io)
-            .safeOnEach { settings ->
-                settings?.let {
-                    loadedSettings = it
-                    renderSettings(it)
-                }
-            }
-            .onError { uiState.notifications.add(it.notification()) }
-            .observe()
+    private fun NotificationSettingsState.setup() = apply {
+        appBar.title = SettingsRes.strings.settings_notifications_title.desc()
+        appBar.onBackClick = weakVMClosure {
+            it.uiState.navigation.push(NotificationSettingsDestinations.Back)
+        }
+
+        appointmentEnabled.text =
+            SettingsRes.strings.settings_notifications_appointment_label.desc()
+        appointmentEnabled.supportingTextRes =
+            SettingsRes.strings.settings_notifications_appointment_hint.desc()
+        appointmentEnabled.onCheckedChange = weakVMClosure { vm, v ->
+            vm.onAppointmentEnabledChanged(v)
+        }
+
+        emailEnabled.text = SettingsRes.strings.settings_notifications_email_label.desc()
+        emailEnabled.onCheckedChange = weakVMClosure { vm, v -> vm.onChannelChanged(EMAIL, v) }
+
+        pushNotificationsEnabled.text = SettingsRes.strings.settings_notifications_push_label.desc()
+        pushNotificationsEnabled.onCheckedChange = weakVMClosure { vm, v ->
+            vm.onChannelChanged(PUSH_NOTIFICATIONS, v)
+        }
+
+        telegramEnabled.text = SettingsRes.strings.settings_notifications_telegram_label.desc()
+        telegramEnabled.supportingTextRes =
+            SettingsRes.strings.settings_notifications_telegram_hint.desc()
+        telegramEnabled.onCheckedChange = weakVMClosure { vm, v ->
+            vm.onChannelChanged(TELEGRAM, v)
+        }
     }
 
     private fun loadSettings() {
@@ -77,6 +95,52 @@ class NotificationSettingsViewModel(
     private fun renderProfile(profile: SettingsProfile) {
         isEmailDeliverable = profile.isEmailDeliverable
         uiState.emailEnabled.supportingTextRes = profile.email.takeIf { it.isNotBlank() }?.desc()
+    }
+
+    private fun observeSettings() {
+        getNotificationSettings.flow()
+            .flowOn(DispatcherProvider.io)
+            .safeOnEach { settings ->
+                settings?.let {
+                    loadedSettings = it
+                    renderSettings(it)
+                }
+            }
+            .onError { uiState.notifications.add(it.notification()) }
+            .observe()
+    }
+
+    private fun renderSettings(settings: NotificationSettings) {
+        uiState.appointmentEnabled.isChecked = settings.appointmentEnabled
+        val shownChannels = settings.channels.filter { isShown(it.channel) }
+        val isOnlyEnabledChannel = shownChannels.count { it.enabled } == 1
+        NotificationChannel.entries.forEach { channel ->
+            val switch = uiState.channelSwitch(channel)
+            val shown = shownChannels.firstOrNull { it.channel == channel }
+            switch.isVisible = shown != null
+            shown?.let {
+                switch.isChecked = it.enabled
+                switch.isEnabled = !(it.enabled && isOnlyEnabledChannel)
+            }
+        }
+    }
+
+    private fun isShown(channel: NotificationChannel): Boolean {
+        return when (channel) {
+            EMAIL -> isEmailDeliverable
+            PUSH_NOTIFICATIONS -> permissionManager.supports(PermissionType.NOTIFICATIONS)
+            TELEGRAM -> true
+        }
+    }
+
+    private fun NotificationSettingsState.channelSwitch(
+        channel: NotificationChannel,
+    ): BooleanState {
+        return when (channel) {
+            EMAIL -> emailEnabled
+            PUSH_NOTIFICATIONS -> pushNotificationsEnabled
+            TELEGRAM -> telegramEnabled
+        }
     }
 
     private fun onAppointmentEnabledChanged(enabled: Boolean) {
@@ -129,70 +193,5 @@ class NotificationSettingsViewModel(
             },
             onError = { renderSettings(loadedSettings) },
         )
-    }
-
-    private fun renderSettings(settings: NotificationSettings) {
-        uiState.appointmentEnabled.isChecked = settings.appointmentEnabled
-        val shownChannels = settings.channels.filter { isShown(it.channel) }
-        val isOnlyEnabledChannel = shownChannels.count { it.enabled } == 1
-        NotificationChannel.entries.forEach { channel ->
-            val switch = uiState.channelSwitch(channel)
-            val shown = shownChannels.firstOrNull { it.channel == channel }
-            switch.isVisible = shown != null
-            shown?.let {
-                switch.isChecked = it.enabled
-                switch.isEnabled = !(it.enabled && isOnlyEnabledChannel)
-            }
-        }
-    }
-
-    private fun isShown(channel: NotificationChannel): Boolean {
-        return when (channel) {
-            EMAIL -> isEmailDeliverable
-            PUSH_NOTIFICATIONS -> permissionManager.supports(PermissionType.NOTIFICATIONS)
-            TELEGRAM -> true
-        }
-    }
-
-    private fun NotificationSettingsState.channelSwitch(
-        channel: NotificationChannel,
-    ): BooleanState {
-        return when (channel) {
-            EMAIL -> emailEnabled
-            PUSH_NOTIFICATIONS -> pushNotificationsEnabled
-            TELEGRAM -> telegramEnabled
-        }
-    }
-
-    private fun NotificationSettingsState.setup(): NotificationSettingsState = apply {
-        appBar.title = SettingsRes.strings.settings_notifications_title.desc()
-        appBar.onBackClick = weakVMClosure {
-            it.uiState.navigation.push(NotificationSettingsDestinations.Back)
-        }
-
-        appointmentEnabled.text =
-            SettingsRes.strings.settings_notifications_appointment_label.desc()
-        appointmentEnabled.supportingTextRes =
-            SettingsRes.strings.settings_notifications_appointment_hint.desc()
-        appointmentEnabled.onCheckedChange = weakVMClosure { vm, v ->
-            vm.onAppointmentEnabledChanged(v)
-        }
-
-        emailEnabled.text = SettingsRes.strings.settings_notifications_email_label.desc()
-        emailEnabled.onCheckedChange = weakVMClosure { vm, v ->
-            vm.onChannelChanged(EMAIL, v)
-        }
-
-        pushNotificationsEnabled.text = SettingsRes.strings.settings_notifications_push_label.desc()
-        pushNotificationsEnabled.onCheckedChange = weakVMClosure { vm, v ->
-            vm.onChannelChanged(PUSH_NOTIFICATIONS, v)
-        }
-
-        telegramEnabled.text = SettingsRes.strings.settings_notifications_telegram_label.desc()
-        telegramEnabled.supportingTextRes =
-            SettingsRes.strings.settings_notifications_telegram_hint.desc()
-        telegramEnabled.onCheckedChange = weakVMClosure { vm, v ->
-            vm.onChannelChanged(TELEGRAM, v)
-        }
     }
 }

@@ -132,6 +132,41 @@ private fun Greeting(greeting: StringDesc, settingsButton: ButtonState) {
 }
 
 @Composable
+private fun NoBusinessYet() {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 1.5.cssRem, leftRight = 0.5.cssRem)
+            .gap(1.cssRem)
+            .textAlign(TextAlign.Center),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Heading(
+            DashboardRes.strings.dashboard_client_home_empty_title.desc(),
+            HeadingLevel.H2,
+            HeadlineSmallTextStyle
+                .toModifier()
+                .margin(0.px),
+        )
+        TextBlock(
+            DashboardRes.strings.dashboard_client_home_empty_body.desc(),
+            LeadTextStyle
+                .toModifier()
+                .maxWidth(20.cssRem)
+                .secondary(),
+        )
+        NumberedSteps(
+            listOf(
+                DashboardRes.strings.dashboard_client_home_empty_step_link.desc(),
+                DashboardRes.strings.dashboard_client_home_empty_step_pick.desc(),
+                DashboardRes.strings.dashboard_client_home_empty_step_confirm.desc(),
+            ),
+            Modifier.margin(top = 1.cssRem),
+        )
+    }
+}
+
+@Composable
 private fun UpcomingSection(state: ClientHomeState) {
     Column(SectionModifier) {
         SectionHeader(
@@ -146,6 +181,44 @@ private fun UpcomingSection(state: ClientHomeState) {
             }
         }
     }
+}
+
+@Composable
+private fun SectionHeader(title: StringDesc, button: ButtonState) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        SectionTitle(title)
+        Spacer()
+        TextButton(button)
+    }
+}
+
+@Composable
+private fun SectionTitle(text: StringDesc) {
+    Heading(
+        text,
+        HeadingLevel.H2,
+        TitleMediumTextStyle
+            .toModifier()
+            .margin(0.px),
+    )
+}
+
+@Composable
+private fun <T> ListContent(state: ListState<T>, content: @Composable (List<T>) -> Unit) {
+    val errorState = state.errorState
+    if (errorState != null) {
+        InitialLoadError(errorState.subtitle, errorState.onRetryClick)
+    } else {
+        state.bannerError?.let { BannerErrorView(it) }
+        content(state.items)
+    }
+}
+
+@Composable
+private fun InitialLoadError(message: StringDesc, onRetry: () -> Unit) {
+    val banner =
+        remember(message, onRetry) { BannerErrorState(text = message, onRetryClick = onRetry) }
+    BannerErrorView(banner)
 }
 
 @Composable
@@ -183,20 +256,32 @@ private fun UpcomingBookingCard(item: UpcomingBookingItem) {
 }
 
 @Composable
+private fun SecondaryLine(text: StringDesc) {
+    TextBlock(
+        text,
+        BodyLargeTextStyle
+            .toModifier()
+            .margin(0.px)
+            .secondary(),
+    )
+}
+
+@Composable
 private fun BookAgainSection(state: ClientHomeState) {
-    if (!state.showsBookAgain) return
-    Column(
-        SectionModifier
-            .flex(1, 1, 0.px)
-            .minHeight(BookAgainMinHeight),
-    ) {
-        SectionHeader(
-            DashboardRes.strings.dashboard_client_home_book_again.desc(),
-            state.allBusinessesButton,
-        )
-        ListContent(state.businesses) { businesses ->
-            FittingList(businesses, Modifier.flexGrow(1)) { visibleBusinesses ->
-                SavedBusinessesCard(visibleBusinesses)
+    if (state.showsBookAgain) {
+        Column(
+            SectionModifier
+                .flex(1, 1, 0.px)
+                .minHeight(BookAgainMinHeight),
+        ) {
+            SectionHeader(
+                DashboardRes.strings.dashboard_client_home_book_again.desc(),
+                state.allBusinessesButton,
+            )
+            ListContent(state.businesses) { businesses ->
+                FittingList(businesses, Modifier.flexGrow(1)) { visibleBusinesses ->
+                    SavedBusinessesCard(visibleBusinesses)
+                }
             }
         }
     }
@@ -204,15 +289,16 @@ private fun BookAgainSection(state: ClientHomeState) {
 
 @Composable
 private fun SavedBusinessesCard(businesses: List<SavedBusinessItem>) {
-    if (businesses.isEmpty()) return
-    AppCard(
-        Modifier
-            .fillMaxWidth()
-            .padding(0.px)
-            .gap(0.px),
-    ) {
-        businesses.forEachIndexed { index, business ->
-            SavedBusinessRow(business, isLast = index == businesses.lastIndex)
+    if (businesses.isNotEmpty()) {
+        AppCard(
+            Modifier
+                .fillMaxWidth()
+                .padding(0.px)
+                .gap(0.px),
+        ) {
+            businesses.forEachIndexed { index, business ->
+                SavedBusinessRow(business, isLast = index == businesses.lastIndex)
+            }
         }
     }
 }
@@ -239,88 +325,4 @@ private fun SavedBusinessRow(item: SavedBusinessItem, isLast: Boolean) {
         }
     }
     if (!isLast) HorizontalDivider()
-}
-
-@Composable
-private fun SectionHeader(title: StringDesc, button: ButtonState) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        SectionTitle(title)
-        Spacer()
-        TextButton(button)
-    }
-}
-
-@Composable
-private fun NoBusinessYet() {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(top = 1.5.cssRem, leftRight = 0.5.cssRem)
-            .gap(1.cssRem)
-            .textAlign(TextAlign.Center),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Heading(
-            DashboardRes.strings.dashboard_client_home_empty_title.desc(),
-            HeadingLevel.H2,
-            HeadlineSmallTextStyle
-                .toModifier()
-                .margin(0.px),
-        )
-        TextBlock(
-            DashboardRes.strings.dashboard_client_home_empty_body.desc(),
-            LeadTextStyle
-                .toModifier()
-                .maxWidth(20.cssRem)
-                .secondary(),
-        )
-        NumberedSteps(
-            listOf(
-                DashboardRes.strings.dashboard_client_home_empty_step_link.desc(),
-                DashboardRes.strings.dashboard_client_home_empty_step_pick.desc(),
-                DashboardRes.strings.dashboard_client_home_empty_step_confirm.desc(),
-            ),
-            Modifier.margin(top = 1.cssRem),
-        )
-    }
-}
-
-@Composable
-private fun <T> ListContent(state: ListState<T>, content: @Composable (List<T>) -> Unit) {
-    val errorState = state.errorState
-    if (errorState != null) {
-        InitialLoadError(errorState.subtitle, errorState.onRetryClick)
-        return
-    }
-    state.bannerError?.let { BannerErrorView(it) }
-    content(state.items)
-}
-
-@Composable
-private fun InitialLoadError(message: StringDesc, onRetry: () -> Unit) {
-    val banner =
-        remember(message, onRetry) { BannerErrorState(text = message, onRetryClick = onRetry) }
-    BannerErrorView(banner)
-}
-
-@Composable
-private fun SectionTitle(text: StringDesc) {
-    Heading(
-        text,
-        HeadingLevel.H2,
-        TitleMediumTextStyle
-            .toModifier()
-            .margin(0.px),
-    )
-}
-
-@Composable
-private fun SecondaryLine(text: StringDesc) {
-    TextBlock(
-        text,
-        BodyLargeTextStyle
-            .toModifier()
-            .margin(0.px)
-            .secondary(),
-    )
 }

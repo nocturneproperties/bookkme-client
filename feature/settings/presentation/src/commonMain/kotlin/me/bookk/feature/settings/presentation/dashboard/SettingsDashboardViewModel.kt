@@ -60,12 +60,12 @@ class SettingsDashboardViewModel(
 
     private fun AccountSection.setup() {
         changeEmail.text = SettingsRes.strings.settings_account_change_email_label.desc()
-        dataExport.text = SettingsRes.strings.settings_export_title.desc()
-        privacy.text = SettingsRes.strings.settings_privacy_title.desc()
         notifications.onClick = weakVMClosure {
             it.open(SettingsDashboardDestination.Notifications)
         }
+        privacy.text = SettingsRes.strings.settings_privacy_title.desc()
         privacy.onClick = weakVMClosure { it.open(SettingsDashboardDestination.Privacy) }
+        dataExport.text = SettingsRes.strings.settings_export_title.desc()
         dataExport.onClick = weakVMClosure {
             it.open(SettingsDashboardDestination.PersonalDataExport)
         }
@@ -81,9 +81,8 @@ class SettingsDashboardViewModel(
         policy.onClick = weakVMClosure { it.open(SettingsDashboardDestination.PrivacyPolicy) }
     }
 
-    override fun onViewPresented() {
-        loadSettings()
-        refreshLegalDocumentStatuses()
+    private fun open(destination: SettingsDashboardDestination) {
+        uiState.navigation.push(destination)
     }
 
     private fun observeLegalDocumentStatuses() {
@@ -91,6 +90,40 @@ class SettingsDashboardViewModel(
             .flowOn(DispatcherProvider.io)
             .safeOnEach { uiState.account.privacyStatus = it.privacyStatus() }
             .observe()
+    }
+
+    private fun List<LegalDocumentStatus>.privacyStatus(): StringDesc? {
+        return if (any { it.acceptedAt == null }) {
+            SettingsRes.strings.settings_privacy_action_required.desc()
+        } else {
+            null
+        }
+    }
+
+    override fun onViewPresented() {
+        loadSettings()
+        refreshLegalDocumentStatuses()
+    }
+
+    private fun loadSettings() {
+        launch(
+            launchIn = DispatcherProvider.io,
+            call = { getSettings() },
+            onComplete = {
+                uiState.appearance.colorScheme = UIColorScheme.from(it.colorScheme)
+                uiState.profile.render(it.profile)
+            },
+            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
+        )
+    }
+
+    private fun ProfileSection.render(profile: SettingsProfile) {
+        val names = listOf(profile.firstName, profile.lastName)
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+        email = profile.email.desc()
+        fullName = names.joinToString(" ").desc()
+        initials = names.joinToString("") { it.first().uppercase() }
     }
 
     private fun refreshLegalDocumentStatuses() {
@@ -101,14 +134,6 @@ class SettingsDashboardViewModel(
             call = { getLegalDocumentStatuses.refresh() },
             onError = { handleError(it) },
         )
-    }
-
-    private fun List<LegalDocumentStatus>.privacyStatus(): StringDesc? {
-        return if (any { it.acceptedAt == null }) {
-            SettingsRes.strings.settings_privacy_action_required.desc()
-        } else {
-            null
-        }
     }
 
     fun onSchemeSelected(scheme: UIColorScheme) {
@@ -147,33 +172,8 @@ class SettingsDashboardViewModel(
         )
     }
 
-    private fun open(destination: SettingsDashboardDestination) {
-        uiState.navigation.push(destination)
-    }
-
     private fun logout() {
         uiState.notification.add(PresentationNotification.Unauthorized)
-    }
-
-    private fun loadSettings() {
-        launch(
-            launchIn = DispatcherProvider.io,
-            call = { getSettings() },
-            onComplete = {
-                uiState.appearance.colorScheme = UIColorScheme.from(it.colorScheme)
-                uiState.profile.render(it.profile)
-            },
-            onError = { uiState.notification.add(errorMapper.mapToNotification(it)) },
-        )
-    }
-
-    private fun ProfileSection.render(profile: SettingsProfile) {
-        val names = listOf(profile.firstName, profile.lastName)
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-        email = profile.email.desc()
-        fullName = names.joinToString(" ").desc()
-        initials = names.joinToString("") { it.first().uppercase() }
     }
 
     companion object {

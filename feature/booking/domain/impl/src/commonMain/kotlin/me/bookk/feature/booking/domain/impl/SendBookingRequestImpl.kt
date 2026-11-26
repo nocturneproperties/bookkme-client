@@ -42,17 +42,6 @@ internal class SendBookingRequestImpl(
         return SentBookingRequest(businessId, draft.employeeId, draft.date)
     }
 
-    private suspend fun send(preparation: BookingPreparation, draft: AppointmentRequestDraft) {
-        val quote = createQuote(draft.businessId, preparation.quotedServiceIds())
-        quote.checkAgainst(preparation)
-        createAppointmentRequest(draft.copy(offerToken = quote.token))
-    }
-
-    private suspend fun refreshServicesIfChanged(businessId: Uuid, error: Throwable) {
-        if (error !is Error.ServicesChanged && error !is Error.PricesChanged) return
-        runSuspendCatching { getBusinessServices.refresh(businessId) }
-    }
-
     private suspend fun shownPreparation(businessId: Uuid): BookingPreparation {
         val selection = dataSource.observeSelection(businessId).first()
         val preparation = getBookingPreparation.flow(businessId).first()
@@ -72,6 +61,12 @@ internal class SendBookingRequestImpl(
             note = note,
             offerToken = "",
         )
+    }
+
+    private suspend fun send(preparation: BookingPreparation, draft: AppointmentRequestDraft) {
+        val quote = createQuote(draft.businessId, preparation.quotedServiceIds())
+        quote.checkAgainst(preparation)
+        createAppointmentRequest(draft.copy(offerToken = quote.token))
     }
 
     private fun BookingPreparation.quotedServiceIds(): List<Uuid> {
@@ -135,5 +130,10 @@ internal class SendBookingRequestImpl(
                 this
             }
         }
+    }
+
+    private suspend fun refreshServicesIfChanged(businessId: Uuid, error: Throwable) {
+        if (error !is Error.ServicesChanged && error !is Error.PricesChanged) return
+        runSuspendCatching { getBusinessServices.refresh(businessId) }
     }
 }

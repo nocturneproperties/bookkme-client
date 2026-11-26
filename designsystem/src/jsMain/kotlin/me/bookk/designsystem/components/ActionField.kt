@@ -46,29 +46,30 @@ val ActionFieldStyle = CssStyle.base {
 
 @Composable
 fun ActionField(state: TextFieldState, action: ButtonState, modifier: Modifier = Modifier) {
-    if (!state.isVisible) return
-    Column(
-        modifier
-            .fillMaxWidth()
-            .gap(0.25.cssRem),
-    ) {
-        FieldLabel(state.label)
-        Row(
-            ActionFieldStyle.toModifier(),
-            verticalAlignment = Alignment.CenterVertically,
+    if (state.isVisible) {
+        Column(
+            modifier
+                .fillMaxWidth()
+                .gap(0.25.cssRem),
         ) {
-            TextBlock(
-                state.text.desc(),
-                BodyLargeTextStyle
-                    .toModifier()
-                    .flexGrow(1)
-                    .minWidth(0.px)
-                    .margin(0.px)
-                    .overflowWrap(OverflowWrap.Anywhere)
-                    .primary(),
-            )
-            TextButton(action, Modifier.flexShrink(0))
+            FieldLabel(state.label)
+            Row(
+                ActionFieldStyle.toModifier(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TextBlock(
+                    state.text.desc(),
+                    BodyLargeTextStyle
+                        .toModifier()
+                        .flexGrow(1)
+                        .minWidth(0.px)
+                        .margin(0.px)
+                        .overflowWrap(OverflowWrap.Anywhere)
+                        .primary(),
+                )
+                TextButton(action, Modifier.flexShrink(0))
+            }
+            SupportingText(state.supportingTextRes, state.validationState)
         }
-        SupportingText(state.supportingTextRes, state.validationState)
     }
 }

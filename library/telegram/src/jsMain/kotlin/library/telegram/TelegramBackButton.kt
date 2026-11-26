@@ -20,19 +20,20 @@ fun TelegramAppTopBar(webApp: TelegramWebApp, state: AppBarState) {
 
 @Composable
 fun TelegramBackButton(webApp: TelegramWebApp, onBackClick: (() -> Unit)?) {
-    if (!LocalIsCurrentScreen.current) return
-    val backButton = webApp.backButton
-    val onClick by rememberUpdatedState(onBackClick)
-    DisposableEffect(backButton) {
-        val onPressed = { onClick?.invoke() ?: Unit }
-        backButton.onClick(onPressed)
-        onDispose {
-            backButton.offClick(onPressed)
-            backButton.hide()
+    if (LocalIsCurrentScreen.current) {
+        val backButton = webApp.backButton
+        val onClick by rememberUpdatedState(onBackClick)
+        DisposableEffect(backButton) {
+            val onPressed = { onClick?.invoke() ?: Unit }
+            backButton.onClick(onPressed)
+            onDispose {
+                backButton.offClick(onPressed)
+                backButton.hide()
+            }
         }
-    }
-    val isVisible = onBackClick != null
-    LaunchedEffect(backButton, isVisible) {
-        if (isVisible) backButton.show() else backButton.hide()
+        val isVisible = onBackClick != null
+        LaunchedEffect(backButton, isVisible) {
+            if (isVisible) backButton.show() else backButton.hide()
+        }
     }
 }

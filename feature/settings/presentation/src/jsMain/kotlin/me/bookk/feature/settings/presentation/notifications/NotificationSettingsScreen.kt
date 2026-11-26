@@ -68,20 +68,21 @@ private fun SwitchSection(
     footer: StringResource,
     switches: List<BooleanState>,
 ) {
-    if (switches.none { it.isVisible }) return
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .gap(0.5.cssRem),
-    ) {
-        Header(header.desc(), Modifier.margin(left = 0.25.cssRem, top = 0.px, bottom = 0.px))
-        SwitchCard(switches)
-        TextBlock(
-            footer.desc(),
-            BodyMediumTextStyle
-                .toModifier()
-                .margin(leftRight = 1.cssRem, topBottom = 0.px)
-                .secondary(),
-        )
+    if (switches.any { it.isVisible }) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .gap(0.5.cssRem),
+        ) {
+            Header(header.desc(), Modifier.margin(left = 0.25.cssRem, top = 0.px, bottom = 0.px))
+            SwitchCard(switches)
+            TextBlock(
+                footer.desc(),
+                BodyMediumTextStyle
+                    .toModifier()
+                    .margin(leftRight = 1.cssRem, topBottom = 0.px)
+                    .secondary(),
+            )
+        }
     }
 }

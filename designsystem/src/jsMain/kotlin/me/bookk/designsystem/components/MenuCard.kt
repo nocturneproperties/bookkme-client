@@ -57,17 +57,18 @@ class MenuItem(
 
 @Composable
 fun MenuCard(items: List<MenuItem>, modifier: Modifier = Modifier) {
-    if (items.isEmpty()) return
-    AppCard(
-        Modifier
-            .fillMaxWidth()
-            .padding(0.px)
-            .gap(0.px)
-            .then(modifier),
-    ) {
-        items.forEachIndexed { index, item ->
-            key(item.id) { MenuRow(item) }
-            if (index != items.lastIndex) MenuDivider()
+    if (items.isNotEmpty()) {
+        AppCard(
+            Modifier
+                .fillMaxWidth()
+                .padding(0.px)
+                .gap(0.px)
+                .then(modifier),
+        ) {
+            items.forEachIndexed { index, item ->
+                key(item.id) { MenuRow(item) }
+                if (index != items.lastIndex) MenuDivider()
+            }
         }
     }
 }

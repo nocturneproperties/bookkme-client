@@ -15,13 +15,15 @@ import me.bookk.designsystem.uistate.PresentationNotificationState
 @Composable
 fun ObserveTelegramNotifications(webApp: TelegramWebApp, state: PresentationNotificationState) {
     var presentedCount by remember(state) { mutableIntStateOf(0) }
-    val notification = state.presentationNotification.firstOrNull() ?: return
-    val popup = notification.telegramPopup()
-    val unauthorizedHandler = LocalUnauthorizedHandler.current
-    LaunchedEffect(notification, presentedCount) {
-        webApp.present(notification, popup, unauthorizedHandler)
-        state.removeFirst()
-        presentedCount++
+    val notification = state.presentationNotification.firstOrNull()
+    if (notification != null) {
+        val popup = notification.telegramPopup()
+        val unauthorizedHandler = LocalUnauthorizedHandler.current
+        LaunchedEffect(notification, presentedCount) {
+            webApp.present(notification, popup, unauthorizedHandler)
+            state.removeFirst()
+            presentedCount++
+        }
     }
 }
 

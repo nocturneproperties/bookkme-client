@@ -85,25 +85,12 @@ class BookingsViewModel(
         val today = clock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         list.replace(
             rows.items(
-                period,
-                bookings,
-                today,
-                weakVMClosure { vm, booking ->
-                    vm.open(booking)
-                },
+                period = period,
+                bookings = bookings,
+                today = today,
+                onClick = weakVMClosure { vm, booking -> vm.open(booking) },
             ),
         )
-    }
-
-    private fun open(booking: BookingOverview) {
-        val destination = when (booking.status) {
-            is BookingOverview.Status.Request -> BookingsDestinations.RequestDetails(booking.id)
-
-            is BookingOverview.Status.Appointment -> BookingsDestinations.AppointmentDetails(
-                booking.id,
-            )
-        }
-        uiState.navigation.push(destination)
     }
 
     private fun BookingPeriod.list(): ListState<BookingsListItem> {
@@ -111,5 +98,18 @@ class BookingsViewModel(
             BookingPeriod.UPCOMING -> uiState.upcoming
             BookingPeriod.PAST -> uiState.past
         }
+    }
+
+    private fun open(booking: BookingOverview) {
+        val destination = when (booking.status) {
+            is BookingOverview.Status.Request -> {
+                BookingsDestinations.RequestDetails(booking.id)
+            }
+
+            is BookingOverview.Status.Appointment -> {
+                BookingsDestinations.AppointmentDetails(booking.id)
+            }
+        }
+        uiState.navigation.push(destination)
     }
 }

@@ -1,9 +1,9 @@
 package me.bookk.feature.booking.domain.impl
 
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toLocalDateTime
+import me.bookk.core.coroutine.runSuspendCatching
 import me.bookk.feature.appointments.domain.api.GetFreeSlots
 import me.bookk.feature.appointments.domain.api.entity.FreeSlotsDay
 import me.bookk.feature.appointments.domain.api.entity.FreeSlotsQuery
@@ -33,25 +33,6 @@ internal class GetBookingSlotsImpl(
             .map { it.toBookingDay(timetable) }
     }
 
-    private suspend fun freeSlots(query: FreeSlotsQuery): List<FreeSlotsDay> {
-        return try {
-            getFreeSlots(query)
-        } catch (error: CancellationException) {
-            throw error
-        } catch (error: Throwable) {
-            throw error.toBookingError()
-        }
-    }
-
-    private fun Throwable.toBookingError(): Throwable {
-        return when (this) {
-            is GetFreeSlots.Error.AppointmentsNotEnabled -> Error.BookingUnavailable()
-            is GetFreeSlots.Error.InvalidServiceSelection -> Error.SelectionInvalid()
-            is GetFreeSlots.Error.InvalidRange -> Error.InvalidRange()
-            else -> this
-        }
-    }
-
     private fun query(
         businessId: Uuid,
         selection: BookingSelection,
@@ -67,6 +48,20 @@ internal class GetBookingSlotsImpl(
             from = from,
             to = to,
         )
+    }
+
+    private suspend fun freeSlots(query: FreeSlotsQuery): List<FreeSlotsDay> {
+        return runSuspendCatching { getFreeSlots(query) }
+            .getOrElse { throw it.toBookingError() }
+    }
+
+    private fun Throwable.toBookingError(): Throwable {
+        return when (this) {
+            is GetFreeSlots.Error.AppointmentsNotEnabled -> Error.BookingUnavailable()
+            is GetFreeSlots.Error.InvalidServiceSelection -> Error.SelectionInvalid()
+            is GetFreeSlots.Error.InvalidRange -> Error.InvalidRange()
+            else -> this
+        }
     }
 
     private fun FreeSlotsDay.toBookingDay(timetable: BookingTimetable): BookingDay {

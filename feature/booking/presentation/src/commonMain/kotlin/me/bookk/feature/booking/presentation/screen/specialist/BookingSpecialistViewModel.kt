@@ -75,12 +75,69 @@ class BookingSpecialistViewModel(
             .observe()
     }
 
+    private fun renderPreparation(preparation: BookingPreparation) {
+        uiState.total = preparation.services.units().bookingTotal()
+        approvedSpecialistId = preparation.specialistId
+        renderSelection()
+    }
+
     private fun observeSpecialists() {
         getBookingSpecialists.flow(businessId)
             .flowOn(DispatcherProvider.io)
             .safeOnEach { renderSpecialists(it) }
             .onError { uiState.notifications.add(it.notification()) }
             .observe()
+    }
+
+    private fun renderSpecialists(specialists: List<BookingSpecialist>) {
+        if (specialists.isEmpty() && uiState.specialists.isInitialLoading) return
+        this.specialists = specialists
+        renderSelection()
+    }
+
+    private fun renderSelection() {
+        val specialists = specialists ?: return
+        val selected = selectedSpecialist()
+        uiState.specialists.replace(specialists.map { specialistItem(it, it == selected) })
+        uiState.renderContinueButton(selected)
+    }
+
+    private fun selectedSpecialist(): BookingSpecialist? {
+        return listed(tappedSpecialistId)
+            ?: listed(approvedSpecialistId)
+            ?: specialists?.firstOrNull()
+    }
+
+    private fun listed(id: Uuid?): BookingSpecialist? {
+        return specialists?.firstOrNull { it.id == id }
+    }
+
+    private fun specialistItem(specialist: BookingSpecialist, isSelected: Boolean): SpecialistItem {
+        return SpecialistItem(
+            id = specialist.id.toString(),
+            name = specialist.fullName().desc(),
+            initials = specialist.initials(),
+            isSelected = isSelected,
+            onClick = weakVMClosure { it.selectSpecialist(specialist) },
+        )
+    }
+
+    private fun BookingSpecialist.initials(): String {
+        return listOf(name, lastName)
+            .mapNotNull { it.trim().firstOrNull()?.uppercaseChar() }
+            .joinToString("")
+    }
+
+    private fun selectSpecialist(specialist: BookingSpecialist) {
+        tappedSpecialistId = specialist.id
+        renderSelection()
+    }
+
+    private fun BookingSpecialistState.renderContinueButton(selected: BookingSpecialist?) {
+        continueButton.isEnabled = selected != null
+        continueButton.text = selected
+            ?.let { BookingRes.strings.booking_specialist_continue.format(it.name.trim()) }
+            ?: DesignSystem.strings.action_continue.desc()
     }
 
     private fun loadSpecialists() {
@@ -103,62 +160,6 @@ class BookingSpecialistViewModel(
             },
             onError = { uiState.notifications.add(it.notification()) },
         )
-    }
-
-    private fun renderPreparation(preparation: BookingPreparation) {
-        uiState.total = preparation.services.units().bookingTotal()
-        approvedSpecialistId = preparation.specialistId
-        renderSelection()
-    }
-
-    private fun renderSpecialists(specialists: List<BookingSpecialist>) {
-        if (specialists.isEmpty() && uiState.specialists.isInitialLoading) return
-        this.specialists = specialists
-        renderSelection()
-    }
-
-    private fun selectSpecialist(specialist: BookingSpecialist) {
-        tappedSpecialistId = specialist.id
-        renderSelection()
-    }
-
-    private fun renderSelection() {
-        val specialists = specialists ?: return
-        val selected = selectedSpecialist()
-        uiState.specialists.replace(specialists.map { specialistItem(it, it == selected) })
-        uiState.renderContinueButton(selected)
-    }
-
-    private fun BookingSpecialistState.renderContinueButton(selected: BookingSpecialist?) {
-        continueButton.isEnabled = selected != null
-        continueButton.text = selected
-            ?.let { BookingRes.strings.booking_specialist_continue.format(it.name.trim()) }
-            ?: DesignSystem.strings.action_continue.desc()
-    }
-
-    private fun selectedSpecialist(): BookingSpecialist? {
-        return listed(tappedSpecialistId) ?: listed(approvedSpecialistId)
-            ?: specialists?.firstOrNull()
-    }
-
-    private fun listed(id: Uuid?): BookingSpecialist? {
-        return specialists?.firstOrNull { it.id == id }
-    }
-
-    private fun specialistItem(specialist: BookingSpecialist, isSelected: Boolean): SpecialistItem {
-        return SpecialistItem(
-            id = specialist.id.toString(),
-            name = specialist.fullName().desc(),
-            initials = specialist.initials(),
-            isSelected = isSelected,
-            onClick = weakVMClosure { it.selectSpecialist(specialist) },
-        )
-    }
-
-    private fun BookingSpecialist.initials(): String {
-        return listOf(name, lastName)
-            .mapNotNull { it.trim().firstOrNull()?.uppercaseChar() }
-            .joinToString("")
     }
 
     private companion object {

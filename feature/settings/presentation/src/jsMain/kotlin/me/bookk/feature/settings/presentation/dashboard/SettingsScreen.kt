@@ -19,8 +19,10 @@ import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.settings.resources.SettingsRes
+import me.bookk.designsystem.components.Avatar
 import me.bookk.designsystem.components.Heading
 import me.bookk.designsystem.components.HeadingLevel
+import me.bookk.designsystem.components.InitialsAvatarSize
 import me.bookk.designsystem.components.MenuCard
 import me.bookk.designsystem.components.MenuItem
 import me.bookk.designsystem.components.MenuItemTone
@@ -60,6 +62,12 @@ private fun ProfileHeader(profile: ProfileSection) {
             .textAlign(TextAlign.Center),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Avatar(
+            initials = profile.initials,
+            photoUrl = profile.photoUrl,
+            modifier = Modifier.margin(bottom = 0.5.cssRem),
+            size = InitialsAvatarSize.EXTRA_LARGE,
+        )
         Heading(
             profile.fullName,
             HeadingLevel.H1,

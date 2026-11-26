@@ -53,6 +53,9 @@ external interface TelegramInitData {
 external interface TelegramUser {
     @JsName("language_code")
     val languageCode: String?
+
+    @JsName("photo_url")
+    val photoUrl: String?
 }
 
 external interface TelegramBackButton {

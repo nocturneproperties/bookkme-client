@@ -70,6 +70,8 @@ internal class FakeSettingsState : SettingsState {
     override val profile = object : ProfileSection {
         override var email: StringDesc = "".desc()
         override var fullName: StringDesc = "".desc()
+        override var initials: String = ""
+        override var photoUrl: String? = null
         override val edit = FakeButtonState()
     }
     override val account = object : AccountSection {

@@ -123,6 +123,10 @@ class SettingsDashboardViewModel(
         )
     }
 
+    fun onProfilePhotoProvided(photoUrl: String?) {
+        uiState.profile.photoUrl = photoUrl?.takeIf { it.isNotBlank() }
+    }
+
     fun onLogOutClick() {
         uiState.notification.add(
             PresentationNotification.Message(
@@ -169,6 +173,7 @@ class SettingsDashboardViewModel(
             .filter { it.isNotEmpty() }
         email = profile.email.desc()
         fullName = names.joinToString(" ").desc()
+        initials = names.joinToString("") { it.first().uppercase() }
     }
 
     companion object {

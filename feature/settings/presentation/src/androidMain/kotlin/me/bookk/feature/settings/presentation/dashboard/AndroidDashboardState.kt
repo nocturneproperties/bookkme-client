@@ -40,6 +40,8 @@ internal class AndroidAppearanceSectionState(
 internal class AndroidProfileSectionState : ProfileSection {
     override var email: StringDesc by mutableStateOf("".desc())
     override var fullName: StringDesc by mutableStateOf("".desc())
+    override var initials: String by mutableStateOf("")
+    override var photoUrl: String? by mutableStateOf(null)
     override val edit: ButtonState = AndroidButtonState()
 }
 

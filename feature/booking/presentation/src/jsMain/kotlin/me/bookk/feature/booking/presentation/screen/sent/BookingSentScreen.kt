@@ -32,9 +32,9 @@ import me.bookk.designsystem.components.SuccessMark
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
@@ -61,7 +61,7 @@ internal fun BookingSentScreen(state: BookingSentState, webApp: TelegramWebApp) 
         )
         TextBlock(
             BookingRes.strings.booking_sent_message.desc(),
-            textModifier(BodyLargeTextStyle)
+            textModifier(LeadTextStyle)
                 .maxWidth(20.cssRem)
                 .secondary(),
         )
@@ -86,7 +86,7 @@ private fun SentBookingCard(booking: SentBookingItem) {
                     booking.day,
                     textModifier(HeadlineSmallTextStyle).fontWeight(FontWeight.Bold),
                 )
-                TextBlock(booking.details, textModifier(BodyMediumTextStyle).secondary())
+                TextBlock(booking.details, textModifier(BodyLargeTextStyle).secondary())
             }
         }
     }

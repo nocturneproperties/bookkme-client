@@ -41,8 +41,8 @@ import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TintedIcon
 import me.bookk.designsystem.resources.color.ColorToken
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
-import me.bookk.designsystem.theme.BodySmallTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.error
@@ -96,7 +96,7 @@ private fun StatusCard(status: UIExportStatus, expiry: StringDesc?) {
                 status.title,
                 textModifier(HeadlineSmallTextStyle).fontWeight(FontWeight.SemiBold),
             )
-            status.message?.let { TextBlock(it, textModifier(BodyMediumTextStyle).secondary()) }
+            status.message?.let { TextBlock(it, textModifier(BodyLargeTextStyle).secondary()) }
         }
         if (status.showsFile) {
             FileRow()
@@ -155,11 +155,11 @@ private fun FileRow() {
         Column(Modifier.minWidth(0.px)) {
             TextBlock(
                 SettingsRes.strings.settings_export_file_title.desc(),
-                textModifier(BodyMediumTextStyle).fontWeight(FontWeight.SemiBold),
+                textModifier(BodyLargeTextStyle).fontWeight(FontWeight.SemiBold),
             )
             TextBlock(
                 SettingsRes.strings.settings_export_file_type.desc(),
-                textModifier(BodyMediumTextStyle).secondary(),
+                textModifier(BodyLargeTextStyle).secondary(),
             )
         }
     }
@@ -175,9 +175,9 @@ private fun ExpiryRow(expiry: StringDesc) {
     ) {
         TextBlock(
             SettingsRes.strings.settings_export_expiry_label.desc(),
-            textModifier(BodyMediumTextStyle),
+            textModifier(BodyLargeTextStyle),
         )
-        TextBlock(expiry, textModifier(BodyMediumTextStyle).textAlign(TextAlign.End))
+        TextBlock(expiry, textModifier(BodyLargeTextStyle).textAlign(TextAlign.End))
     }
 }
 
@@ -191,14 +191,14 @@ private fun Notes(state: PersonalDataExportState) {
             .gap(0.5.cssRem),
     ) {
         state.requestAvailability?.let {
-            TextBlock(it, textModifier(BodySmallTextStyle).secondary())
+            TextBlock(it, textModifier(BodyMediumTextStyle).secondary())
         }
-        state.error?.let { TextBlock(it, textModifier(BodyMediumTextStyle).error()) }
+        state.error?.let { TextBlock(it, textModifier(BodyLargeTextStyle).error()) }
         TextButton(state.retry)
         state.status.footer?.let {
             TextBlock(
                 it,
-                textModifier(BodySmallTextStyle)
+                textModifier(BodyMediumTextStyle)
                     .secondary()
                     .fillMaxWidth()
                     .textAlign(TextAlign.Center),

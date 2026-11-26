@@ -15,7 +15,7 @@ import com.varabyte.kobweb.silk.style.toModifier
 import me.bookk.core.presentation.error.ActionType
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
 import me.bookk.designsystem.theme.secondary
@@ -73,7 +73,7 @@ private fun LargeTitle(state: AppBarState) {
     state.subtitle?.let {
         TextBlock(
             it,
-            BodySmallTextStyle
+            BodyMediumTextStyle
                 .toModifier()
                 .secondary(),
         )

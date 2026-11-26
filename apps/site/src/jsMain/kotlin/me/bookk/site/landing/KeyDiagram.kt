@@ -46,8 +46,8 @@ import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TintedIcon
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
-import me.bookk.designsystem.theme.BodySmallTextStyle
 import me.bookk.designsystem.theme.SurfaceCardColor
 import me.bookk.designsystem.theme.SurfaceInsetColor
 import me.bookk.designsystem.theme.TitleMediumTextStyle
@@ -214,7 +214,7 @@ private fun KeyDiagramFrame(
             Heading(title, HeadingLevel.H3, TitleMediumTextStyle.toModifier())
             TextBlock(
                 description,
-                BodyMediumTextStyle
+                BodyLargeTextStyle
                     .toModifier()
                     .secondary(),
             )
@@ -241,7 +241,7 @@ private fun KeyFieldRow(field: KeyField) {
             KeyHolderChipStyle
                 .toModifier()
                 .then(KeyFieldChipStyle.toModifier())
-                .then(BodySmallTextStyle.toModifier())
+                .then(BodyMediumTextStyle.toModifier())
                 .fontWeight(FontWeight.SemiBold),
         )
         KeyIcon(isRevoked = false)
@@ -256,7 +256,7 @@ private fun KeyFieldRow(field: KeyField) {
                 CiphertextStyle
                     .toModifier()
                     .then(SingleLineCiphertextStyle.toModifier())
-                    .then(BodySmallTextStyle.toModifier())
+                    .then(BodyMediumTextStyle.toModifier())
                     .secondary(),
             )
         }
@@ -286,7 +286,7 @@ private fun KeyHolderChip(holder: KeyHolder) {
         holder.name,
         KeyHolderChipStyle
             .toModifier()
-            .then(BodySmallTextStyle.toModifier())
+            .then(BodyMediumTextStyle.toModifier())
             .fontWeight(FontWeight.SemiBold)
             .then(deleted),
     )
@@ -307,7 +307,7 @@ private fun KeyRecord() {
         TintedIcon(SiteRes.images.material_lock, ColorToken.SecondaryText, Modifier.size(1.cssRem))
         TextBlock(
             SiteRes.strings.site_privacy_keys_record.desc(),
-            BodySmallTextStyle
+            BodyMediumTextStyle
                 .toModifier()
                 .secondary(),
         )
@@ -321,7 +321,7 @@ private fun ErasedKeyRecord() {
             .toModifier()
             .then(ErasedKeyRecordStyle.toModifier())
             .then(CiphertextStyle.toModifier())
-            .then(BodySmallTextStyle.toModifier())
+            .then(BodyMediumTextStyle.toModifier())
             .secondary()
             .toAttrs(),
     ) {

@@ -21,7 +21,7 @@ import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.primary
 import me.bookk.designsystem.theme.resolve
 import me.bookk.designsystem.theme.webColors
@@ -57,7 +57,7 @@ fun InfoNote(text: StringDesc, modifier: Modifier = Modifier, title: StringDesc?
             title?.let {
                 TextBlock(
                     it,
-                    BodyMediumTextStyle
+                    BodyLargeTextStyle
                         .toModifier()
                         .fontWeight(FontWeight.SemiBold)
                         .margin(0.px)
@@ -66,7 +66,7 @@ fun InfoNote(text: StringDesc, modifier: Modifier = Modifier, title: StringDesc?
             }
             TextBlock(
                 text,
-                BodyMediumTextStyle
+                BodyLargeTextStyle
                     .toModifier()
                     .margin(0.px)
                     .primary(),

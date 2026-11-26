@@ -23,7 +23,7 @@ import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.uistate.simple.InfoLine
 import org.jetbrains.compose.web.css.cssRem
@@ -101,14 +101,14 @@ private fun InfoCardLineContent(line: InfoLine, isOnlyLine: Boolean) {
     ) {
         TextBlock(
             line.title,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .margin(0.px)
                 .flexShrink(0),
         )
         TextBlock(
             line.value,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .margin(0.px)
                 .flexGrow(1)

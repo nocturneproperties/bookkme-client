@@ -19,7 +19,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.silk.style.toModifier
 import me.bookk.designsystem.components.RevealingBottomBar
 import me.bookk.designsystem.components.TextBlock
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
@@ -46,7 +46,7 @@ private fun TotalContent(total: BookingTotal) {
     ) {
         TextBlock(
             total.summary,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .minWidth(0.px)
                 .margin(0.px)

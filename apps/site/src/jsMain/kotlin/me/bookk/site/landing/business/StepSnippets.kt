@@ -38,7 +38,7 @@ import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TintedIcon
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodySmallTextStyle
+import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.LabelMediumTextStyle
 import me.bookk.designsystem.theme.LabelSmallTextStyle
 import me.bookk.designsystem.theme.SurfaceInsetColor
@@ -111,7 +111,7 @@ fun ShareLinkSnippet() {
         TintedIcon(SiteRes.images.material_link, ColorToken.PrimaryText, Modifier.size(1.cssRem))
         TextBlock(
             SiteRes.strings.site_step_sample_link.desc(),
-            BodySmallTextStyle
+            BodyMediumTextStyle
                 .toModifier()
                 .flexGrow(1)
                 .minWidth(0.px)
@@ -148,7 +148,7 @@ private fun RowScope.TimeSlotChip(slot: TimeSlot) {
         slot.label().desc(),
         TimeSlotStyle
             .toModifier()
-            .then(BodySmallTextStyle.toModifier())
+            .then(BodyMediumTextStyle.toModifier())
             .then(selected),
     )
 }
@@ -169,7 +169,7 @@ fun ApproveRequestSnippet() {
         ) {
             TextBlock(
                 SiteRes.strings.site_step_sample_client.desc(),
-                BodySmallTextStyle
+                BodyMediumTextStyle
                     .toModifier()
                     .fontWeight(FontWeight.SemiBold)
                     .whiteSpace(WhiteSpace.NoWrap)

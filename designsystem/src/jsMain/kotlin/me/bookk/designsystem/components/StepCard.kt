@@ -17,7 +17,7 @@ import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.LabelMediumTextStyle
 import me.bookk.designsystem.theme.SurfaceCardColor
@@ -60,7 +60,7 @@ fun StepCard(
         Heading(title, HeadingLevel.H3, HeadlineSmallTextStyle.toModifier())
         TextBlock(
             description,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .secondary(),
         )

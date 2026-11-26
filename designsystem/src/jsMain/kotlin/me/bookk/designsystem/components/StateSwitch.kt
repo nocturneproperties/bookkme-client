@@ -20,7 +20,7 @@ import com.varabyte.kobweb.silk.style.CssStyle
 import com.varabyte.kobweb.silk.style.toModifier
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.resources.localized
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.themed
 import me.bookk.designsystem.uistate.BooleanState
 import me.bookk.designsystem.uistate.ValidationState
@@ -32,7 +32,7 @@ fun StateSwitch(state: BooleanState, modifier: Modifier = Modifier) {
     if (!state.isVisible) return
     Column(modifier.gap(0.25.cssRem)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextBlock(state.text, BodyMediumTextStyle.toModifier())
+            TextBlock(state.text, BodyLargeTextStyle.toModifier())
             Spacer()
             StateToggle(state)
         }

@@ -24,7 +24,7 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.primary
 import me.bookk.designsystem.theme.resolve
 import me.bookk.designsystem.theme.webColors
@@ -59,7 +59,7 @@ fun ActionField(state: TextFieldState, action: ButtonState, modifier: Modifier =
         ) {
             TextBlock(
                 state.text.desc(),
-                BodyMediumTextStyle
+                BodyLargeTextStyle
                     .toModifier()
                     .flexGrow(1)
                     .minWidth(0.px)

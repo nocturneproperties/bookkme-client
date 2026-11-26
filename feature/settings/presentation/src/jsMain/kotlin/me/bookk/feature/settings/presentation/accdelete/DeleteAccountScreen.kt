@@ -22,7 +22,7 @@ import me.bookk.designsystem.components.IconTile
 import me.bookk.designsystem.components.InfoNote
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.feature.settings.presentation.confirmation.AskTelegramWriteAccess
 import me.bookk.feature.settings.presentation.confirmation.ChatConfirmationNotice
 import org.jetbrains.compose.web.css.cssRem
@@ -72,7 +72,7 @@ private fun WarningCard(state: DeleteAccountState) {
         IconTile(DesignSystem.images.material_delete, color = ColorToken.Error)
         TextBlock(
             state.confirmationMessage,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .margin(0.px),
         )

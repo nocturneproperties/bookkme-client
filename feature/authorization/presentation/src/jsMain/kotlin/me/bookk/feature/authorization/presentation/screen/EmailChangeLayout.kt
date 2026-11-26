@@ -17,7 +17,7 @@ import dev.icerock.moko.resources.desc.StringDesc
 import me.bookk.designsystem.components.Heading
 import me.bookk.designsystem.components.HeadingLevel
 import me.bookk.designsystem.components.TextBlock
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.secondary
 import org.jetbrains.compose.web.css.cssRem
@@ -52,7 +52,7 @@ internal fun EmailChangeLayout(
             )
             TextBlock(
                 message,
-                BodyMediumTextStyle
+                BodyLargeTextStyle
                     .toModifier()
                     .margin(0.px)
                     .secondary(),

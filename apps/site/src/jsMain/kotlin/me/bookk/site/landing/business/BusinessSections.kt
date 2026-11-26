@@ -9,9 +9,7 @@ import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.borderBottom
 import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
-import com.varabyte.kobweb.compose.ui.modifiers.borderTop
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flexBasis
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
@@ -34,7 +32,6 @@ import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.style.breakpoint.displayIfAtLeast
 import com.varabyte.kobweb.silk.style.toModifier
-import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.components.ButtonLink
 import me.bookk.designsystem.components.ButtonLinkVariant
@@ -49,19 +46,13 @@ import me.bookk.designsystem.components.MediaPlaceholder
 import me.bookk.designsystem.components.SectionContainer
 import me.bookk.designsystem.components.StepCard
 import me.bookk.designsystem.components.TextBlock
-import me.bookk.designsystem.components.TextLink
 import me.bookk.designsystem.resources.WebLocalization
-import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.BandTone
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
-import me.bookk.designsystem.theme.TitleMediumTextStyle
-import me.bookk.designsystem.theme.active
-import me.bookk.designsystem.theme.resolve
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.secondary
-import me.bookk.designsystem.theme.webColors
 import me.bookk.site.landing.FeatureGrid
 import me.bookk.site.landing.FullBleedLandingBand
 import me.bookk.site.landing.HeroActions
@@ -73,7 +64,6 @@ import me.bookk.site.landing.TeamKeyDiagram
 import me.bookk.site.navigation.SiteNavigation
 import me.bookk.site.resources.SiteRes
 import org.jetbrains.compose.web.css.FlexWrap
-import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 
@@ -169,7 +159,7 @@ fun BusinessHeroActions() {
     }
     TextBlock(
         SiteRes.strings.site_stores_coming_soon.desc(),
-        BodyMediumTextStyle
+        BodyLargeTextStyle
             .toModifier()
             .secondary(),
     )
@@ -278,7 +268,7 @@ private fun OpinionRow(opinion: Opinion) {
             Heading(opinion.title, HeadingLevel.H3, HeadlineSmallTextStyle.toModifier())
             TextBlock(
                 opinion.description,
-                BodyMediumTextStyle
+                BodyLargeTextStyle
                     .toModifier()
                     .secondary(),
             )
@@ -317,7 +307,7 @@ fun LaunchSection() {
             )
             TextBlock(
                 SiteRes.strings.site_launch_subtitle.desc(),
-                BodyLargeTextStyle
+                LeadTextStyle
                     .toModifier()
                     .maxWidth(34.cssRem)
                     .secondary(),

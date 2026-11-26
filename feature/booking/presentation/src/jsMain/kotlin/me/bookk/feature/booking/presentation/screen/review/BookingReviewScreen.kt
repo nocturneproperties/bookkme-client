@@ -39,8 +39,8 @@ import me.bookk.designsystem.components.HorizontalDivider
 import me.bookk.designsystem.components.InfoNote
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextField
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
-import me.bookk.designsystem.theme.BodySmallTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
@@ -77,7 +77,7 @@ private fun Title(businessName: StringDesc?) {
         businessName?.let {
             TextBlock(
                 it,
-                textModifier(BodyMediumTextStyle)
+                textModifier(BodyLargeTextStyle)
                     .fontWeight(FontWeight.SemiBold)
                     .minWidth(0.px)
                     .secondary(),
@@ -96,7 +96,7 @@ private fun SummaryCard(summary: ReviewSummary) {
     AppCard(Modifier.fillMaxWidth().boxSizing(BoxSizing.BorderBox).gap(1.cssRem)) {
         Column(Modifier.fillMaxWidth().gap(0.25.cssRem)) {
             TextBlock(summary.day, textModifier(HeadlineSmallTextStyle).fontWeight(FontWeight.Bold))
-            TextBlock(summary.details, textModifier(BodyMediumTextStyle).secondary())
+            TextBlock(summary.details, textModifier(BodyLargeTextStyle).secondary())
         }
         HorizontalDivider()
         Column(Modifier.fillMaxWidth().gap(0.5.cssRem)) {
@@ -110,7 +110,7 @@ private fun SummaryCard(summary: ReviewSummary) {
 @Composable
 private fun ServiceRow(service: ReviewServiceItem) {
     SpacedRow {
-        TextBlock(service.name, textModifier(BodyMediumTextStyle).minWidth(0.px))
+        TextBlock(service.name, textModifier(BodyLargeTextStyle).minWidth(0.px))
         ServicePrice(service)
     }
 }
@@ -124,14 +124,14 @@ private fun ServicePrice(service: ReviewServiceItem) {
         service.previousPrice?.let {
             TextBlock(
                 it,
-                textModifier(BodyMediumTextStyle)
+                textModifier(BodyLargeTextStyle)
                     .textDecorationLine(TextDecorationLine.LineThrough)
                     .secondary(),
             )
         }
         TextBlock(
             service.price,
-            textModifier(BodyMediumTextStyle).thenIf(service.previousPrice != null) {
+            textModifier(BodyLargeTextStyle).thenIf(service.previousPrice != null) {
                 Modifier.fontWeight(FontWeight.Bold)
             },
         )
@@ -169,7 +169,7 @@ private fun SpacedRow(content: @Composable () -> Unit) {
 private fun ConfirmationNotice(text: StringDesc) {
     TextBlock(
         text,
-        textModifier(BodySmallTextStyle)
+        textModifier(BodyMediumTextStyle)
             .fillMaxWidth()
             .textAlign(TextAlign.Center)
             .secondary(),

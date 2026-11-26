@@ -32,8 +32,8 @@ import me.bookk.designsystem.components.HeadingLevel
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextLink
 import me.bookk.designsystem.resources.localized
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
-import me.bookk.designsystem.theme.BodySmallTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.LabelMediumTextStyle
 import me.bookk.designsystem.theme.active
@@ -113,12 +113,12 @@ private fun LegalLanguages(languages: List<LegalLanguageLink>) {
 @Composable
 private fun LegalNoticeCard(notice: LegalNotice) {
     AppCard {
-        TextBlock(notice.message(), BodyMediumTextStyle.toModifier())
+        TextBlock(notice.message(), BodyLargeTextStyle.toModifier())
         notice.link()?.let { (text, path) ->
             TextLink(
                 text,
                 path,
-                BodyMediumTextStyle.toModifier().active(),
+                BodyLargeTextStyle.toModifier().active(),
             )
         }
     }
@@ -146,11 +146,11 @@ private fun LegalHistoryItem(entry: LegalHistoryEntry) {
         SiteRes.strings.site_legal_version.format(entry.version),
         entry.path,
         entry.isSelected,
-        BodyMediumTextStyle.toModifier(),
+        BodyLargeTextStyle.toModifier(),
     )
     TextBlock(
         entry.period.description(),
-        BodySmallTextStyle
+        BodyMediumTextStyle
             .toModifier()
             .secondary(),
     )

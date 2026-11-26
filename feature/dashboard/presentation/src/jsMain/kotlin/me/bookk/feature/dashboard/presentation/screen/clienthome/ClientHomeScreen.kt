@@ -53,9 +53,9 @@ import me.bookk.designsystem.components.fittingItem
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
-import me.bookk.designsystem.theme.BodySmallTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.theme.themed
@@ -224,14 +224,14 @@ private fun SavedBusinessRow(item: SavedBusinessItem, isLast: Boolean) {
         Column(Modifier.fillMaxWidth()) {
             TextBlock(
                 item.name.desc(),
-                BodyLargeTextStyle
+                LeadTextStyle
                     .toModifier()
                     .fontWeight(FontWeight.Medium)
                     .margin(0.px),
             )
             TextBlock(
                 item.subtitle,
-                BodySmallTextStyle
+                BodyMediumTextStyle
                     .toModifier()
                     .margin(0.px)
                     .secondary(),
@@ -269,7 +269,7 @@ private fun NoBusinessYet() {
         )
         TextBlock(
             DashboardRes.strings.dashboard_client_home_empty_body.desc(),
-            BodyLargeTextStyle
+            LeadTextStyle
                 .toModifier()
                 .maxWidth(20.cssRem)
                 .secondary(),
@@ -318,7 +318,7 @@ private fun SectionTitle(text: StringDesc) {
 private fun SecondaryLine(text: StringDesc) {
     TextBlock(
         text,
-        BodyMediumTextStyle
+        BodyLargeTextStyle
             .toModifier()
             .margin(0.px)
             .secondary(),

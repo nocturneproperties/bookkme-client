@@ -13,7 +13,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.id
 import com.varabyte.kobweb.compose.ui.modifiers.minWidth
 import com.varabyte.kobweb.compose.ui.modifiers.scrollMarginBlock
 import com.varabyte.kobweb.silk.style.CssStyle
-import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.desc
@@ -24,7 +23,7 @@ import me.bookk.designsystem.components.Heading
 import me.bookk.designsystem.components.HeadingLevel
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextList
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.LabelMediumTextStyle
 import me.bookk.designsystem.theme.secondary
@@ -80,7 +79,7 @@ fun ContactChannelRow(channel: ContactChannel) {
             Heading(channel.title, HeadingLevel.H2, HeadlineSmallTextStyle.toModifier())
             TextBlock(
                 channel.description,
-                BodyMediumTextStyle
+                BodyLargeTextStyle
                     .toModifier()
                     .secondary(),
             )

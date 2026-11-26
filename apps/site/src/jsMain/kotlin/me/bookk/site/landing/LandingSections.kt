@@ -41,9 +41,9 @@ import me.bookk.designsystem.components.TextLink
 import me.bookk.designsystem.resources.WebLocalization
 import me.bookk.designsystem.theme.BandTone
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.DisplayTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.StatementTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
 import me.bookk.designsystem.theme.active
@@ -124,7 +124,7 @@ private fun HeroText(headline: StringDesc, subheadline: StringDesc) {
     )
     TextBlock(
         subheadline,
-        BodyLargeTextStyle
+        LeadTextStyle
             .toModifier()
             .maxWidth(40.cssRem)
             .whiteSpace(WhiteSpace.PreLine)
@@ -152,7 +152,7 @@ fun SectionIntro(title: StringDesc, subtitle: StringDesc? = null) {
         subtitle?.let {
             TextBlock(
                 it,
-                BodyLargeTextStyle
+                LeadTextStyle
                     .toModifier()
                     .secondary(),
             )
@@ -201,7 +201,7 @@ private fun FeatureItem(feature: Feature) {
     AccentTitledBlock(feature.title) {
         TextBlock(
             feature.description,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .secondary(),
         )
@@ -215,7 +215,7 @@ fun Statement(title: StringDesc, accent: StringDesc, description: StringDesc) {
             StatementTitle(title, accent)
             TextBlock(
                 description,
-                BodyLargeTextStyle
+                LeadTextStyle
                     .toModifier()
                     .maxWidth(37.5.cssRem)
                     .secondary(),
@@ -256,7 +256,7 @@ fun PrivacyPanel(
                 TextLink(
                     SiteRes.strings.site_privacy_policy_link.desc(),
                     WebLocalization.localize(LegalDocument.PRIVACY_POLICY.path),
-                    BodyMediumTextStyle
+                    BodyLargeTextStyle
                         .toModifier()
                         .active(),
                 )
@@ -271,7 +271,7 @@ private fun PrivacyPoint(point: Feature) {
         Heading(point.title, HeadingLevel.H3, TitleMediumTextStyle.toModifier())
         TextBlock(
             point.description,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .secondary(),
         )

@@ -28,8 +28,8 @@ import me.bookk.designsystem.components.HeadingLevel
 import me.bookk.designsystem.components.List
 import me.bookk.designsystem.components.OptionsQuantityList
 import me.bookk.designsystem.components.TextBlock
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
-import me.bookk.designsystem.theme.BodySmallTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.feature.booking.presentation.screen.BookingTotalBar
@@ -67,7 +67,7 @@ private fun Title(businessName: StringDesc?) {
         businessName?.let {
             SecondaryText(
                 it,
-                BodyMediumTextStyle,
+                BodyLargeTextStyle,
                 Modifier.fontWeight(FontWeight.SemiBold),
             )
         }
@@ -91,12 +91,12 @@ private fun ServiceRow(option: ServiceOption) {
     ) {
         TextBlock(
             option.displayName,
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .fontWeight(FontWeight.SemiBold)
                 .margin(0.px),
         )
-        SecondaryText(option.details, BodySmallTextStyle)
+        SecondaryText(option.details, BodyMediumTextStyle)
     }
 }
 

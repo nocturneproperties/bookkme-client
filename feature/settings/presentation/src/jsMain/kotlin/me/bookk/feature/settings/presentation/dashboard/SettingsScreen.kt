@@ -29,7 +29,7 @@ import me.bookk.designsystem.components.MenuItemTone
 import me.bookk.designsystem.components.MenuItemTrailing
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
-import me.bookk.designsystem.theme.BodyMediumTextStyle
+import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.uistate.ButtonState
@@ -77,7 +77,7 @@ private fun ProfileHeader(profile: ProfileSection) {
         )
         TextBlock(
             SettingsRes.strings.settings_profile_booking_hint.desc(),
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .margin(0.px)
                 .secondary(),

@@ -27,8 +27,8 @@ import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextLink
 import me.bookk.designsystem.resources.WebLocalization
 import me.bookk.designsystem.theme.BodyLargeTextStyle
-import me.bookk.designsystem.theme.BodyMediumTextStyle
 import me.bookk.designsystem.theme.HeadlineLargeTextStyle
+import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.active
 import me.bookk.designsystem.theme.secondary
 import me.bookk.site.layout.PageLayoutData
@@ -71,7 +71,7 @@ fun GuidesPage() {
         )
         TextBlock(
             SiteRes.strings.site_guides_coming_soon.desc(),
-            BodyLargeTextStyle
+            LeadTextStyle
                 .toModifier()
                 .maxWidth(32.cssRem)
                 .secondary(),
@@ -79,7 +79,7 @@ fun GuidesPage() {
         TextLink(
             SiteRes.strings.site_guides_contact_link.desc(),
             WebLocalization.localize(SiteNavigation.CONTACT_PATH),
-            BodyMediumTextStyle
+            BodyLargeTextStyle
                 .toModifier()
                 .active(),
         )

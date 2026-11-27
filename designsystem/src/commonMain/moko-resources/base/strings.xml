@@ -58,4 +58,6 @@
 
     <string name="quantity_increase">Add one more</string>
     <string name="quantity_decrease">Remove one</string>
+    <string name="card_rail_previous">Previous</string>
+    <string name="card_rail_next">Next</string>
 </resources>

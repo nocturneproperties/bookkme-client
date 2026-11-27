@@ -66,7 +66,7 @@ class ClientHomeViewModel(
         settingsButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Settings)
         }
-        allBookingsButton.text = DashboardRes.strings.dashboard_client_home_all_bookings.desc()
+        allBookingsButton.text = DashboardRes.strings.dashboard_client_home_more.desc()
         allBookingsButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Bookings)
         }
@@ -74,7 +74,7 @@ class ClientHomeViewModel(
             image = DesignSystem.images.empty,
             label = DashboardRes.strings.dashboard_client_home_no_upcoming.desc(),
         )
-        allBusinessesButton.text = DashboardRes.strings.dashboard_client_home_all_businesses.desc()
+        allBusinessesButton.text = DashboardRes.strings.dashboard_client_home_more.desc()
         allBusinessesButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Businesses)
         }

@@ -30,7 +30,6 @@ import me.bookk.core.test.runUnitTest
 import me.bookk.core.test.then
 import me.bookk.core.test.whenn
 import me.bookk.designsystem.resources.color.ColorToken
-import me.bookk.designsystem.simple
 import me.bookk.designsystem.test.FakeDateLocalizer
 import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
@@ -331,6 +330,25 @@ class ClientHomeViewModelTest {
         assertEquals(
             listOf<ClientHomeDestinations>(ClientHomeDestinations.AppointmentDetails(upcoming.id)),
             sut.uiState.navigation.navigationDestination,
+        )
+    }
+
+    @Test
+    fun `labels links to all bookings and all businesses as more`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = loadedSut(fixture)
+
+        then()
+        assertEquals(
+            DashboardRes.strings.dashboard_client_home_more.desc(),
+            sut.uiState.allBookingsButton.text,
+        )
+        assertEquals(
+            DashboardRes.strings.dashboard_client_home_more.desc(),
+            sut.uiState.allBusinessesButton.text,
         )
     }
 

@@ -48,13 +48,12 @@
     <string name="dashboard_client_home_greeting_default">Cześć</string>
     <string name="dashboard_client_home_settings">Ustawienia</string>
     <string name="dashboard_client_home_upcoming">Nadchodzące</string>
-    <string name="dashboard_client_home_all_bookings">Wszystkie rezerwacje</string>
+    <string name="dashboard_client_home_more">Więcej</string>
     <string name="dashboard_client_home_no_upcoming">Brak nadchodzących rezerwacji</string>
     <string name="dashboard_client_home_time_and_services">%1$s · %2$s</string>
     <string name="dashboard_client_home_status_confirmed">Potwierdzona</string>
     <string name="dashboard_client_home_status_waiting">Czeka na potwierdzenie</string>
     <string name="dashboard_client_home_book_again">Zarezerwuj ponownie</string>
-    <string name="dashboard_client_home_all_businesses">Wszystkie firmy</string>
     <string name="dashboard_client_home_last_visit">Ostatnia wizyta %s</string>
     <string name="dashboard_client_home_no_visits">Brak wizyt</string>
     <string name="dashboard_client_home_not_taking_bookings">Nie przyjmuje rezerwacji</string>

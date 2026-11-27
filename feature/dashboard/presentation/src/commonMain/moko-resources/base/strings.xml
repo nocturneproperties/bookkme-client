@@ -48,13 +48,12 @@
     <string name="dashboard_client_home_greeting_default">Hi</string>
     <string name="dashboard_client_home_settings">Settings</string>
     <string name="dashboard_client_home_upcoming">Upcoming</string>
-    <string name="dashboard_client_home_all_bookings">All bookings</string>
+    <string name="dashboard_client_home_more">More</string>
     <string name="dashboard_client_home_no_upcoming">No upcoming bookings</string>
     <string name="dashboard_client_home_time_and_services">%1$s · %2$s</string>
     <string name="dashboard_client_home_status_confirmed">Confirmed</string>
     <string name="dashboard_client_home_status_waiting">Waiting for confirmation</string>
     <string name="dashboard_client_home_book_again">Book again</string>
-    <string name="dashboard_client_home_all_businesses">All businesses</string>
     <string name="dashboard_client_home_last_visit">Last visit %s</string>
     <string name="dashboard_client_home_no_visits">No visits yet</string>
     <string name="dashboard_client_home_not_taking_bookings">Not taking bookings</string>

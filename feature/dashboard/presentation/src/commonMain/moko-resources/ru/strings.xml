@@ -48,13 +48,12 @@
     <string name="dashboard_client_home_greeting_default">Привет</string>
     <string name="dashboard_client_home_settings">Настройки</string>
     <string name="dashboard_client_home_upcoming">Ближайшие</string>
-    <string name="dashboard_client_home_all_bookings">Все записи</string>
+    <string name="dashboard_client_home_more">Ещё</string>
     <string name="dashboard_client_home_no_upcoming">Ближайших записей нет</string>
     <string name="dashboard_client_home_time_and_services">%1$s · %2$s</string>
     <string name="dashboard_client_home_status_confirmed">Подтверждено</string>
     <string name="dashboard_client_home_status_waiting">Ждёт подтверждения</string>
     <string name="dashboard_client_home_book_again">Записаться снова</string>
-    <string name="dashboard_client_home_all_businesses">Все заведения</string>
     <string name="dashboard_client_home_last_visit">Последний визит %s</string>
     <string name="dashboard_client_home_no_visits">Визитов пока не было</string>
     <string name="dashboard_client_home_not_taking_bookings">Не принимает записи</string>

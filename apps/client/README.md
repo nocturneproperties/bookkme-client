@@ -2,7 +2,7 @@
 
 `:client` is the Kobweb (Kotlin/JS, Compose HTML + Silk) app for people who book, served on its own host, `https://app.bookkme.com`. Today it is the Telegram Mini App; browser booking will join it later. It is separate from the marketing site (`:site`, `bookkme.com`) so the site's download stays free of the client stack (Koin, Ktor, Room/SQLite WASM, sign-in, the Telegram SDK) and each host can send its own headers: the Mini App must be frameable by Telegram Web, the site need not be.
 
-Read [`apps/site/README.md`](../site/README.md) first: the web design system (`:designsystem`'s `jsMain`), the JS-runtime rules, the DOM API setup and the language model apply here too. The project-wide rules in the root `AGENTS.md` apply as everywhere.
+Read [`docs/web.md`](../../docs/web.md) first: the web design system (`:designsystem`'s `jsMain`), the JS-runtime rules, the DOM API setup and the language model apply here too. The project-wide rules in the root `AGENTS.md` apply as everywhere.
 
 ## Commands
 

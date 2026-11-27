@@ -301,7 +301,7 @@ private fun BookAgainSection(state: ClientHomeState) {
         Column(SectionModifier.flexShrink(0)) {
             SectionTitle(DashboardRes.strings.dashboard_client_home_book_again.desc())
             ListContent(state.businesses) { businesses ->
-                CardRail {
+                CardRail(snapsToEachCard = true) {
                     businesses.forEach { SavedBusinessCard(it) }
                 }
             }

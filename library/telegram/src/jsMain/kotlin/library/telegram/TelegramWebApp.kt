@@ -50,6 +50,8 @@ external interface TelegramInitData {
 
     @JsName("start_param")
     val startParam: String?
+
+    val hash: String?
 }
 
 external interface TelegramUser {

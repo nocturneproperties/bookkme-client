@@ -21,6 +21,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import library.money.api.Money
+import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.dashboard.resources.DashboardRes
 import me.bookk.core.domain.launch.ConfirmableAction
 import me.bookk.core.presentation.VmArgs
@@ -58,6 +59,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -126,13 +128,14 @@ class ClientHomeViewModelTest {
         status = status,
     )
 
-    private fun service(name: String, id: Uuid = Uuid.random()) = ServiceSnapshot(
-        id,
-        name,
-        Uuid.random(),
-        Money(1000L, Money.SupportedCurrency.UAH),
-        30.minutes,
-    )
+    private fun service(name: String, id: Uuid = Uuid.random(), duration: Duration = 30.minutes) =
+        ServiceSnapshot(
+            id,
+            name,
+            Uuid.random(),
+            Money(1000L, Money.SupportedCurrency.UAH),
+            duration,
+        )
 
     private fun savedBusiness(
         name: String = "Studio Lumen",
@@ -216,7 +219,7 @@ class ClientHomeViewModelTest {
     }
 
     @Test
-    fun `renders an upcoming booking with day, time and services`() = runUnitTest {
+    fun `renders an upcoming booking with date, business and services`() = runUnitTest {
         given()
         val fixture = Fixture()
         val upcoming = booking(services = listOf(service("Haircut"), service("Beard trim")))
@@ -228,15 +231,31 @@ class ClientHomeViewModelTest {
         then()
         val item = sut.uiState.upcoming.items.single()
         assertEquals(upcoming.id.toString(), item.id)
-        assertEquals("2026-11-24", item.weekday)
-        assertEquals("24", item.day)
+        assertEquals("2026-11-24", item.date)
         assertEquals("Studio Lumen", item.businessName)
+        assertEquals("Haircut, Beard trim", item.services)
+    }
+
+    @Test
+    fun `renders the time range of all services with the specialist name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val upcoming = booking(
+            services = listOf(service("Haircut", duration = 45.minutes), service("Beard trim")),
+        )
+        val sut = loadedSut(fixture)
+
+        whenn()
+        fixture.upcoming.value = listOf(upcoming)
+
+        then()
         assertEquals(
-            DashboardRes.strings.dashboard_client_home_time_and_services.format(
+            DashboardRes.strings.dashboard_client_home_time_and_specialist.format(
                 "14:30",
-                "Haircut, Beard trim",
+                "15:45",
+                "Andrii",
             ),
-            item.summary,
+            sut.uiState.upcoming.items.single().time,
         )
     }
 
@@ -252,13 +271,7 @@ class ClientHomeViewModelTest {
             listOf(booking(services = listOf(haircut, service("Beard trim"), haircut)))
 
         then()
-        assertEquals(
-            DashboardRes.strings.dashboard_client_home_time_and_services.format(
-                "14:30",
-                "Haircut × 2, Beard trim",
-            ),
-            sut.uiState.upcoming.items.single().summary,
-        )
+        assertEquals("Haircut × 2, Beard trim", sut.uiState.upcoming.items.single().services)
     }
 
     @Test
@@ -334,7 +347,7 @@ class ClientHomeViewModelTest {
     }
 
     @Test
-    fun `labels links to all bookings and all businesses as more`() = runUnitTest {
+    fun `labels the link to all bookings as more`() = runUnitTest {
         given()
         val fixture = Fixture()
 
@@ -346,9 +359,20 @@ class ClientHomeViewModelTest {
             DashboardRes.strings.dashboard_client_home_more.desc(),
             sut.uiState.allBookingsButton.text,
         )
+    }
+
+    @Test
+    fun `ends the link to all bookings with a chevron`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = loadedSut(fixture)
+
+        then()
         assertEquals(
-            DashboardRes.strings.dashboard_client_home_more.desc(),
-            sut.uiState.allBusinessesButton.text,
+            DesignSystem.images.material_chevron_right,
+            sut.uiState.allBookingsButton.endIcon,
         )
     }
 
@@ -364,22 +388,6 @@ class ClientHomeViewModelTest {
         then()
         assertEquals(
             listOf<ClientHomeDestinations>(ClientHomeDestinations.Bookings),
-            sut.uiState.navigation.navigationDestination,
-        )
-    }
-
-    @Test
-    fun `opens all businesses`() = runUnitTest {
-        given()
-        val fixture = Fixture()
-        val sut = loadedSut(fixture)
-
-        whenn()
-        sut.uiState.allBusinessesButton.onClick?.invoke()
-
-        then()
-        assertEquals(
-            listOf<ClientHomeDestinations>(ClientHomeDestinations.Businesses),
             sut.uiState.navigation.navigationDestination,
         )
     }
@@ -419,6 +427,32 @@ class ClientHomeViewModelTest {
             DashboardRes.strings.dashboard_client_home_last_visit.format("2026-11-12"),
             item.subtitle,
         )
+    }
+
+    @Test
+    fun `renders the initials of the first two words of a saved business name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = loadedSut(fixture)
+
+        whenn()
+        fixture.businesses.value = listOf(savedBusiness(name = " studio  lumen nails "))
+
+        then()
+        assertEquals("SL", sut.uiState.businesses.items.single().initials)
+    }
+
+    @Test
+    fun `renders one initial for a one-word saved business name`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        val sut = loadedSut(fixture)
+
+        whenn()
+        fixture.businesses.value = listOf(savedBusiness(name = "lumen"))
+
+        then()
+        assertEquals("L", sut.uiState.businesses.items.single().initials)
     }
 
     @Test

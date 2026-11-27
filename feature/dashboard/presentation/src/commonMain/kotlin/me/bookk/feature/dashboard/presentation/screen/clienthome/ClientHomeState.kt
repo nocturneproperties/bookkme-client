@@ -11,7 +11,6 @@ interface ClientHomeState {
     var greeting: StringDesc?
     val settingsButton: ButtonState
     val allBookingsButton: ButtonState
-    val allBusinessesButton: ButtonState
     val upcoming: ListState<UpcomingBookingItem>
     val businesses: ListState<SavedBusinessItem>
     val notifications: PresentationNotificationState
@@ -20,10 +19,10 @@ interface ClientHomeState {
 
 class UpcomingBookingItem(
     val id: String,
-    val weekday: String,
-    val day: String,
+    val date: String,
+    val time: StringDesc,
     val businessName: String,
-    val summary: StringDesc,
+    val services: String,
     val status: StringDesc,
     val statusColor: ColorToken,
     val onClick: () -> Unit,
@@ -32,6 +31,7 @@ class UpcomingBookingItem(
 class SavedBusinessItem(
     val id: String,
     val name: String,
+    val initials: String,
     val subtitle: StringDesc,
     val onClick: () -> Unit,
 )

@@ -13,7 +13,6 @@ internal class WebClientHomeState : ClientHomeState {
     override var greeting: StringDesc? by mutableStateOf(null)
     override val settingsButton = WebButtonState()
     override val allBookingsButton = WebButtonState()
-    override val allBusinessesButton = WebButtonState()
     override val upcoming = WebListState<UpcomingBookingItem>()
     override val businesses = WebListState<SavedBusinessItem>()
     override val notifications = WebNotificationState()

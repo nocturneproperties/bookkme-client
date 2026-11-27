@@ -10,7 +10,6 @@ internal fun rememberClientHomeNavigation(stack: BackStack<ClientScreen>) = reme
     ClientHomeNavigation(
         toSettings = { stack.openSettings() },
         toBookings = { stack.push(ClientScreen.Bookings) },
-        toBusinesses = {},
         toRequestDetails = { stack.push(ClientScreen.BookingRequestDetails(it)) },
         toAppointmentDetails = { stack.push(ClientScreen.BookingAppointmentDetails(it)) },
         toServices = { stack.push(ClientScreen.Services(it)) },

@@ -26,10 +26,6 @@ fun ClientHomeDestination(webApp: TelegramWebApp, navigation: ClientHomeNavigati
                 navigation.toBookings()
             }
 
-            ClientHomeDestinations.Businesses -> {
-                navigation.toBusinesses()
-            }
-
             is ClientHomeDestinations.RequestDetails -> {
                 navigation.toRequestDetails(it.requestId)
             }

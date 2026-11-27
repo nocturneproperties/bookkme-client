@@ -7,7 +7,6 @@ import kotlin.uuid.Uuid
 sealed class ClientHomeDestinations : NavigationDestination() {
     data object Settings : ClientHomeDestinations()
     data object Bookings : ClientHomeDestinations()
-    data object Businesses : ClientHomeDestinations()
     data class RequestDetails(
         val requestId: Uuid,
     ) : ClientHomeDestinations()

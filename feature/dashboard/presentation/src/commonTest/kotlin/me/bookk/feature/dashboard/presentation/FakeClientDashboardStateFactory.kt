@@ -1,7 +1,6 @@
 package me.bookk.feature.dashboard.presentation
 
 import dev.icerock.moko.resources.desc.StringDesc
-import dev.icerock.moko.resources.desc.desc
 import me.bookk.designsystem.test.FakeButtonState
 import me.bookk.designsystem.test.FakeListState
 import me.bookk.designsystem.test.FakeNavigationState
@@ -21,7 +20,6 @@ class FakeClientHomeState : ClientHomeState {
     override var greeting: StringDesc? = null
     override val settingsButton = FakeButtonState()
     override val allBookingsButton = FakeButtonState()
-    override val allBusinessesButton = FakeButtonState()
     override val upcoming = FakeListState<UpcomingBookingItem>()
     override val businesses = FakeListState<SavedBusinessItem>()
     override val notifications = FakeNotificationState()

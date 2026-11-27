@@ -168,6 +168,21 @@ class ConfirmActionViewModelTest {
     }
 
     @Test
+    fun `explains that an account on hold can't be deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+
+        whenn()
+        val sut = fixture.failingSut(CompleteTelegramConfirmation.Error.DeletionOnHold())
+
+        then()
+        assertEquals(
+            SettingsRes.strings.settings_delete_account_on_hold.desc(),
+            sut.singleMessage(),
+        )
+    }
+
+    @Test
     fun `shows the mapped error for an unexpected failure`() = runUnitTest {
         given()
         val fixture = Fixture()

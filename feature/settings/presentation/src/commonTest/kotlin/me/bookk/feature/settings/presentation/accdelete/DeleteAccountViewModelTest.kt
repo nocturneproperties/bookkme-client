@@ -27,6 +27,7 @@ import me.bookk.designsystem.test.FakeErrorMapper
 import me.bookk.designsystem.test.TestException
 import me.bookk.designsystem.test.ViewModelTestDispatchers
 import me.bookk.designsystem.test.assertMappedSingle
+import me.bookk.designsystem.test.assertSingle
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.settings.domain.api.GetAccountDeletion
 import me.bookk.feature.settings.domain.api.RequestAccountDeletion
@@ -306,6 +307,23 @@ class DeleteAccountViewModelTest {
         then()
         fixture.errorMapper.assertMappedSingle(TestException::class)
         assertFalse(sut.uiState.deleteButton.isLoading)
+    }
+
+    @Test
+    fun `explains that an account on hold can't be deleted`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.requestAccountDeletion() } throws
+            RequestAccountDeletion.Error.DeletionOnHold()
+        val sut = fixture.agreedSut()
+
+        whenn()
+        sut.uiState.deleteButton.onClick?.invoke()
+
+        then()
+        val message = sut.uiState.notifications.assertSingle<PresentationNotification.Message>()
+        assertEquals(SettingsRes.strings.settings_delete_account_on_hold.desc(), message.message)
+        assertTrue(fixture.errorMapper.mappedErrors.isEmpty())
     }
 
     @Test

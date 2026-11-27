@@ -2,6 +2,7 @@ package me.bookk.feature.settings.presentation
 
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountState
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBannerState
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
 import me.bookk.feature.settings.presentation.export.PersonalDataExportState
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsState
@@ -13,6 +14,7 @@ interface SettingsStateFactory {
     fun createSettingsState(initData: SettingsState.InitData): SettingsState
     fun createEditProfileState(): EditProfileState
     fun createDeleteAccountState(): DeleteAccountState
+    fun createAccountDeletionBannerState(): AccountDeletionBannerState
     fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState
     fun createNotificationSettingsState(): NotificationSettingsState
     fun createPrivacySettingsState(): PrivacySettingsState

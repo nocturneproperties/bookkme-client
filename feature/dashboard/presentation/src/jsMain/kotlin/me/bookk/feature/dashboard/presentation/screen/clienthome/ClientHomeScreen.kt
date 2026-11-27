@@ -5,7 +5,6 @@ import androidx.compose.runtime.remember
 import com.varabyte.kobweb.compose.css.BoxSizing
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextAlign
-import com.varabyte.kobweb.compose.css.dvh
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
@@ -18,7 +17,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.flex
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.gap
-import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.minHeight
@@ -49,6 +47,7 @@ import me.bookk.designsystem.components.StatusLabel
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TintedIcon
+import me.bookk.designsystem.components.fillScreenHeight
 import me.bookk.designsystem.components.fittingItem
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.BodyLargeTextStyle
@@ -70,7 +69,7 @@ private val BookAgainMinHeight = 7.cssRem
 private val ClientHomeModifier = Modifier
     .fillMaxWidth()
     .maxWidth(40.cssRem)
-    .height(100.dvh)
+    .fillScreenHeight()
     .boxSizing(BoxSizing.BorderBox)
     .padding(top = 0.5.cssRem, bottom = 1.5.cssRem, leftRight = 1.cssRem)
     .gap(1.5.cssRem)

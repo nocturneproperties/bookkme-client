@@ -57,6 +57,7 @@ import me.bookk.feature.employees.presentation.employeesGraph
 import me.bookk.feature.services.presentation.ServicesDestination
 import me.bookk.feature.services.presentation.servicesGraph
 import me.bookk.feature.settings.presentation.SettingsTab
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBanner
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.mp.KoinPlatform
 import kotlin.uuid.ExperimentalUuidApi
@@ -182,6 +183,7 @@ private fun NavigationRoot(
                         )
                     },
                     settingsTab = { SettingsTab() },
+                    accountNotice = { AccountDeletionBanner() },
                     onEnablePlugins = { controller.navigate(BusinessDestination.Plugins(it)) },
                     onAddServiceGroup = {
                         controller.navigate(ServicesDestination.ServiceGroupList)

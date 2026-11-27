@@ -61,6 +61,10 @@ internal class CompleteTelegramConfirmationImpl(
                 Error.ExportTooFrequent()
             }
 
+            is RequestAccountDeletion.Error.DeletionOnHold -> {
+                Error.DeletionOnHold()
+            }
+
             else -> {
                 this
             }

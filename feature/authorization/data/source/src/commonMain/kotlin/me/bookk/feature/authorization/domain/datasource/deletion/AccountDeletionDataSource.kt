@@ -5,6 +5,7 @@ import kotlin.time.Instant
 
 interface AccountDeletionDataSource {
     suspend fun getScheduledDeletion(): Instant?
+    suspend fun cancelScheduledDeletion()
     fun observeScheduledDeletion(): Flow<Instant?>
     suspend fun saveScheduledDeletion(deletesAt: Instant?)
 }

@@ -86,6 +86,7 @@ external interface TelegramHapticFeedback {
 
 object TelegramEvents {
     const val THEME_CHANGED = "themeChanged"
+    const val ACTIVATED = "activated"
 }
 
 object TelegramHaptics {

@@ -5,7 +5,9 @@
 `GetAccountDeletion` tells when the account deletion the person requested runs. The backend erases the account
 7 days after `DELETE /api/auth/account` (backend #208); until then the account keeps working.
 `DeleteAccountViewModel` renders `flow()` and calls `refresh()` when the screen opens, on the mobile apps and in
-the Mini App.
+the Mini App. `AccountDeletionBannerViewModel`, the strip at the bottom of every screen, renders the same `flow()`
+and calls `refresh()` whenever the app starts or comes back to the foreground (see
+[Cancel account deletion](cancel-account-deletion.md#the-strip)).
 
 ```mermaid
 flowchart TD
@@ -21,5 +23,5 @@ flowchart TD
 the `deletesAt` the deletion request answers with through the same datasource, so the screen shows the pending
 deletion at once. While a date is cached, Delete account shows "Deletion requested. Your account will be deleted
 on <date>." (`DateStyle.MEDIUM`, device time zone) and hides the warning, the agreement and the Delete button.
-A failed refresh is only logged: the cached date stays on screen. Logout clears the bucket. Cancelling
-(`DELETE /api/auth/account/deletion`) is not built yet.
+A failed refresh is only logged: the cached date stays on screen. Logout clears the bucket.
+[Cancel account deletion](cancel-account-deletion.md) removes the date once the backend has cancelled it.

@@ -5,6 +5,7 @@ import me.bookk.feature.settings.presentation.SettingsStateFactory
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.confirmaction.ConfirmActionViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBannerViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
 import me.bookk.feature.settings.presentation.factory.WebClientSettingsStateFactory
@@ -25,5 +26,6 @@ internal actual fun platformSettingsDiModule(): Module = module {
     factoryOf(::PrivacySettingsViewModel)
     factoryOf(::PersonalDataExportViewModel)
     factoryOf(::DeleteAccountViewModel)
+    factoryOf(::AccountDeletionBannerViewModel)
     factoryOf(::ConfirmActionViewModel)
 }

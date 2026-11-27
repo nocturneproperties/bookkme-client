@@ -43,6 +43,10 @@
     <string name="settings_delete_account_confirmation_switch">Agree</string>
     <string name="settings_delete_account_confirmation_button">Delete</string>
     <string name="settings_delete_account_pending">Deletion requested. Your account will be deleted on %s. Until then you can keep using it.</string>
+    <string name="settings_delete_account_on_hold">Your account can’t be deleted right now because it’s on hold. Contact support for details.</string>
+    <string name="settings_account_deletion_banner">Account deletion on %s</string>
+    <string name="settings_account_deletion_banner_cancel">Cancel</string>
+    <string name="settings_account_deletion_cancelled">Deletion cancelled</string>
 
     <string name="settings_passkey_title">Passkey</string>
     <string name="settings_passkey_add_button">Add</string>

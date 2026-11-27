@@ -32,6 +32,7 @@ import kotlin.time.Instant
 class CommonAccountDeletionDataSourceTest {
     private class Fixture(
         status: AccountDeletionStatusRemote = AccountDeletionStatusRemote(),
+        responseStatus: HttpStatusCode = HttpStatusCode.OK,
     ) {
         val preferences = FakePreferences()
         val provider = mock<PreferenceProvider> {
@@ -48,7 +49,7 @@ class CommonAccountDeletionDataSourceTest {
                         AccountDeletionStatusRemote.serializer(),
                         status,
                     ),
-                    HttpStatusCode.OK,
+                    responseStatus,
                     headersOf(HttpHeaders.ContentType, ContentType.Application.ProtoBuf.toString()),
                 )
             },
@@ -84,6 +85,19 @@ class CommonAccountDeletionDataSourceTest {
 
         then()
         assertNull(deletesAt)
+    }
+
+    @Test
+    fun `cancels the scheduled deletion on the deletion route`() = runUnitTest {
+        given()
+        val fixture = Fixture(responseStatus = HttpStatusCode.NoContent)
+
+        whenn()
+        fixture.sut.cancelScheduledDeletion()
+
+        then()
+        assertEquals(HttpMethod.Delete, fixture.method)
+        assertEquals("/api/auth/account/deletion", fixture.path)
     }
 
     @Test

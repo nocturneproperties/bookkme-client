@@ -84,6 +84,7 @@ import me.bookk.feature.services.domain.api.service.GetBusinessServices
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.confirmaction.ConfirmActionViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBannerViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsViewModel
@@ -838,6 +839,19 @@ class ClientAppTest {
 
         whenn()
         val viewModel = KoinPlatform.getKoin().getOrNull<DeleteAccountViewModel>()
+
+        then()
+        assertNotNull(viewModel)
+        viewModel.onCleared()
+    }
+
+    @Test
+    fun `provides the account deletion banner view model`() = runUnitTest {
+        given()
+        startClientApp()
+
+        whenn()
+        val viewModel = KoinPlatform.getKoin().getOrNull<AccountDeletionBannerViewModel>()
 
         then()
         assertNotNull(viewModel)

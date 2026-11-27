@@ -2,6 +2,7 @@ package me.bookk.feature.authorization.data.datasource
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.resources.delete
 import io.ktor.client.plugins.resources.get
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -27,6 +28,10 @@ class CommonAccountDeletionDataSource(
 
     override suspend fun getScheduledDeletion(): Instant? = mapExceptions {
         httpClient.get(Auth.Account.Deletion()).body<AccountDeletionStatusRemote>().deletesAt
+    }
+
+    override suspend fun cancelScheduledDeletion(): Unit = mapExceptions {
+        httpClient.delete(Auth.Account.Deletion())
     }
 
     override fun observeScheduledDeletion(): Flow<Instant?> {

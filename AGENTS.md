@@ -416,6 +416,11 @@ Label text                  [ ● ]   StateSwitch(state, onCheckedChange)  (gree
 
  ████░░░░░░░░░░░░░░░        AnimatedLinearProgress(progress: Float 0..1)  — 4dp bar
 
+─────────────────────────────────
+ [🗑] Alert text…         Action     AlertStrip(text, action: ButtonState, icon)  — full-width 44dp strip, opaque 12% error
+─────────────────────────────────      tint, one ellipsized line, bold error action (spinner while loading); iOS
+                                       `AlertStrip(text:action:icon:)`, web `AlertStrip` + `BottomStripLayout`
+
 ╭─────────────────────────────────╮
 │ (i) Optional title              │  InfoNote(text, title = null)  — informational text block:
 │     Informational text          │    actionText info icon, actionText 20% tint background,

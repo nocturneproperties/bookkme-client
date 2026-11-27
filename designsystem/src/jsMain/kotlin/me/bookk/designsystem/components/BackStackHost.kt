@@ -6,12 +6,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import com.varabyte.kobweb.compose.css.BoxSizing
 import com.varabyte.kobweb.compose.css.dvh
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
+import com.varabyte.kobweb.compose.ui.modifiers.boxSizing
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.left
 import com.varabyte.kobweb.compose.ui.modifiers.minHeight
@@ -54,7 +56,13 @@ val ScreenLayerStyle = CssStyle.base {
     Modifier
         .fillMaxWidth()
         .minHeight(100.dvh)
+        .boxSizing(BoxSizing.BorderBox)
+        .styleModifier { property("padding-bottom", BOTTOM_INSET) }
         .backgroundColor(colorMode.webColors().background)
+}
+
+fun Modifier.fillScreenHeight(): Modifier = styleModifier {
+    property("height", "calc(100dvh - $BOTTOM_INSET)")
 }
 
 private class TransitionPlacement(

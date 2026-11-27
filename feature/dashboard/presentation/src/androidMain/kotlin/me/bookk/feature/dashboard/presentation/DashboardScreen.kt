@@ -69,6 +69,7 @@ internal fun DashboardScreen(
     homeScreen: @Composable () -> Unit,
     businessScreen: @Composable () -> Unit,
     settingsScreen: @Composable () -> Unit,
+    accountNotice: @Composable () -> Unit,
 ) {
     val navController = rememberNavController()
     Scaffold(
@@ -135,6 +136,7 @@ internal fun DashboardScreen(
         bottomBar = {
             HideFromIme {
                 Column {
+                    accountNotice()
                     HorizontalDivider(color = LocalColors.current.divider)
                     NavigationBar(
                         modifier = Modifier,
@@ -185,6 +187,7 @@ private fun PreviewDark() {
             homeScreen = {},
             businessScreen = {},
             settingsScreen = {},
+            accountNotice = {},
         )
     }
 }
@@ -198,6 +201,7 @@ private fun PreviewLight() {
             homeScreen = {},
             businessScreen = {},
             settingsScreen = {},
+            accountNotice = {},
         )
     }
 }

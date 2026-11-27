@@ -10,5 +10,13 @@ server:
     prod:
       script: "build/kotlin-webpack/js/productionExecutable/client.js"
       siteRoot: ".kobweb/site"
+  cors:
+    hosts:
+      - name: "app.bookkme.com"
+        schemes:
+          - "https"
+      - name: "local-app.bookkme.app"
+        schemes:
+          - "https"
 
   port: 8081

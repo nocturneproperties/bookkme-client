@@ -13,6 +13,7 @@ object AuthErrorCodes {
     const val TELEGRAM_DATA_INVALID = 14
     const val TELEGRAM_DATA_EXPIRED = 15
     const val TELEGRAM_SIGN_IN_UNAVAILABLE = 16
+    const val ACCOUNT_DELETION_ON_HOLD = 18
     const val TELEGRAM_CONFIRMATION_EXPIRED = 20
     const val TELEGRAM_ACCOUNT_MISMATCH = 21
     const val TELEGRAM_CHAT_UNREACHABLE = 22

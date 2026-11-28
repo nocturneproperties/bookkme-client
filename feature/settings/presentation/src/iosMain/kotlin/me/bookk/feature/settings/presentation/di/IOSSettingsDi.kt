@@ -3,6 +3,7 @@ package me.bookk.feature.settings.presentation.di
 import me.bookk.core.UsedInSwift
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBannerViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsViewModel
@@ -17,6 +18,7 @@ internal actual fun platformSettingsDiModule(): Module = module {
     factoryOf(::SettingsDashboardViewModel)
     factoryOf(::EditProfileViewModel)
     factoryOf(::DeleteAccountViewModel)
+    factoryOf(::AccountDeletionBannerViewModel)
     factoryOf(::PasskeyViewModel)
     factoryOf(::NotificationSettingsViewModel)
     factoryOf(::PersonalDataExportViewModel)
@@ -31,6 +33,11 @@ fun editProfileVM(): EditProfileViewModel = KoinPlatform.getKoin().get()
 
 @UsedInSwift
 fun deleteAccVM(): DeleteAccountViewModel = KoinPlatform.getKoin().get()
+
+@UsedInSwift
+fun accountDeletionBannerVM(): AccountDeletionBannerViewModel {
+    return KoinPlatform.getKoin().get()
+}
 
 @UsedInSwift
 fun passkeyVM(): PasskeyViewModel = KoinPlatform.getKoin().get()

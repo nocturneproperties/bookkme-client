@@ -15,6 +15,7 @@ import me.bookk.core.presentation.date.DateLocalizer
 import me.bookk.core.presentation.date.DateStyle
 import me.bookk.core.presentation.error.PresentationNotification
 import me.bookk.core.presentation.memory.weakVMClosure
+import me.bookk.designsystem.simple
 import me.bookk.designsystem.uistate.TopBarSize
 import me.bookk.feature.settings.domain.api.GetAccountDeletion
 import me.bookk.feature.settings.domain.api.RequestAccountDeletion
@@ -41,7 +42,7 @@ class DeleteAccountViewModel(
         notifications = uiState.notifications,
         action = { requestAccountDeletion() },
         onCompleted = { onAccountDeleted() },
-        onError = { uiState.notifications.add(it.notification()) },
+        onError = { uiState.notifications.add(deletionFailure(it)) },
         isActionAllowed = { uiState.confirmation.isChecked },
     )
 
@@ -97,6 +98,20 @@ class DeleteAccountViewModel(
             deletesAt.toLocalDateTime(TimeZone.currentSystemDefault()),
         )
         return SettingsRes.strings.settings_delete_account_pending.format(date)
+    }
+
+    private fun deletionFailure(error: Throwable): PresentationNotification {
+        return when (error) {
+            is RequestAccountDeletion.Error.DeletionOnHold -> {
+                PresentationNotification.Message.simple(
+                    SettingsRes.strings.settings_delete_account_on_hold.desc(),
+                )
+            }
+
+            else -> {
+                error.notification()
+            }
+        }
     }
 
     private fun onAgreementChanged(isChecked: Boolean) {

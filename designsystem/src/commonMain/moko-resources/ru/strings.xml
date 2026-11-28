@@ -58,4 +58,6 @@
 
     <string name="quantity_increase">Увеличить количество</string>
     <string name="quantity_decrease">Уменьшить количество</string>
+    <string name="card_rail_previous">Назад</string>
+    <string name="card_rail_next">Вперёд</string>
 </resources>

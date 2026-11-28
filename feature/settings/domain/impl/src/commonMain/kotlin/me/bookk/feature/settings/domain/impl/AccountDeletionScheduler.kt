@@ -25,7 +25,13 @@ internal class AccountDeletionScheduler(
                 when (it.errorCode) {
                     AuthErrorCodes.ACTION_CONFIRMATION_INVALID,
                     AuthErrorCodes.VERIFICATION_FAILED,
-                    -> throw RequestAccountDeletion.Error.AccountVerificationFailed()
+                    -> {
+                        throw RequestAccountDeletion.Error.AccountVerificationFailed()
+                    }
+
+                    AuthErrorCodes.ACCOUNT_DELETION_ON_HOLD -> {
+                        throw RequestAccountDeletion.Error.DeletionOnHold()
+                    }
                 }
             }
             .getOrThrow()

@@ -43,6 +43,10 @@
     <string name="settings_delete_account_confirmation_switch">Погоджуюся</string>
     <string name="settings_delete_account_confirmation_button">Видалити</string>
     <string name="settings_delete_account_pending">Видалення заплановано. Ваш обліковий запис буде видалено %s. До того часу ним можна користуватися.</string>
+    <string name="settings_delete_account_on_hold">Зараз обліковий запис не можна видалити: видалення призупинено. Зверніться до підтримки, щоб дізнатися подробиці.</string>
+    <string name="settings_account_deletion_banner">Видалення облікового запису: %s</string>
+    <string name="settings_account_deletion_banner_cancel">Скасувати</string>
+    <string name="settings_account_deletion_cancelled">Видалення скасовано</string>
 
     <string name="settings_passkey_title">Ключ доступу</string>
     <string name="settings_passkey_add_button">Додати</string>

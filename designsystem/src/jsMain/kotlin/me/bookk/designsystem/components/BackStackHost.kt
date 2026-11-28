@@ -6,12 +6,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import com.varabyte.kobweb.compose.css.BoxSizing
 import com.varabyte.kobweb.compose.css.dvh
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
+import com.varabyte.kobweb.compose.ui.modifiers.boxSizing
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.left
 import com.varabyte.kobweb.compose.ui.modifiers.minHeight
@@ -39,7 +41,6 @@ import org.jetbrains.compose.web.dom.Div
 import org.w3c.dom.INSTANT
 import org.w3c.dom.ScrollBehavior
 import org.w3c.dom.ScrollToOptions
-import org.w3c.dom.events.Event
 
 private const val TRANSITION_TIMEOUT_FACTOR = 3
 
@@ -47,14 +48,20 @@ val ScreenStackStyle = CssStyle.base {
     Modifier
         .position(Position.Relative)
         .fillMaxWidth()
-        .styleModifier { property("overflow-x", "clip") }
+        .styleModifier { property("overflow", "clip") }
 }
 
 val ScreenLayerStyle = CssStyle.base {
     Modifier
         .fillMaxWidth()
         .minHeight(100.dvh)
+        .boxSizing(BoxSizing.BorderBox)
+        .styleModifier { property("padding-bottom", BOTTOM_INSET) }
         .backgroundColor(colorMode.webColors().background)
+}
+
+fun Modifier.fillScreenHeight(): Modifier = styleModifier {
+    property("height", "calc(100dvh - $BOTTOM_INSET)")
 }
 
 private class TransitionPlacement(
@@ -64,9 +71,8 @@ private class TransitionPlacement(
 
 @Composable
 fun <R : Any> BackStackHost(stack: BackStack<R>, content: @Composable (R) -> Unit) {
-    TrackScrollPosition(stack)
     val transition = stack.transition
-    val placement = remember(transition) { transition?.placement() }
+    val placement = remember(transition) { transition?.placementLeavingAt(window.scrollY) }
     FinishTransition(stack, transition)
     RestoreScrollPosition(placement)
     Div(ScreenStackStyle.toModifier().toAttrs()) {
@@ -138,11 +144,14 @@ private fun <R : Any> BackStack<R>.upperLayer(transition: BackStackTransition<R>
         .onAnimationEnd { if (it.isOwnAnimation()) finish(transition) }
 }
 
-private fun <R : Any> BackStackTransition<R>.placement(): TransitionPlacement {
+private fun <R : Any> BackStackTransition<R>.placementLeavingAt(
+    scrollTop: Double,
+): TransitionPlacement {
+    from.scrollTop = scrollTop
     val target = if (direction == BackStackDirection.FORWARD) 0.0 else to.scrollTop
     return TransitionPlacement(
         targetScrollTop = target,
-        leavingScreenTop = target - from.scrollTop,
+        leavingScreenTop = target - scrollTop,
     )
 }
 
@@ -172,14 +181,5 @@ private fun RestoreScrollPosition(placement: TransitionPlacement?) {
             )
         }
         onDispose { }
-    }
-}
-
-@Composable
-private fun <R : Any> TrackScrollPosition(stack: BackStack<R>) {
-    DisposableEffect(stack) {
-        val listener: (Event) -> Unit = { stack.currentEntry.scrollTop = window.scrollY }
-        window.addEventListener("scroll", listener)
-        onDispose { window.removeEventListener("scroll", listener) }
     }
 }

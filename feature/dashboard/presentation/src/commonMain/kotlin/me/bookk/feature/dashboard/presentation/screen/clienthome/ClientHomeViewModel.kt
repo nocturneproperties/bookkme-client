@@ -6,7 +6,9 @@ import dev.icerock.moko.resources.format
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.dashboard.resources.DashboardRes
@@ -33,6 +35,7 @@ import me.bookk.feature.authorization.domain.api.UserProfileCRUD
 import me.bookk.feature.business.domain.api.link.ResolveBusinessLink
 import me.bookk.feature.dashboard.presentation.ClientDashboardStateFactory
 import org.koin.core.annotation.InjectedParam
+import kotlin.time.Duration
 import kotlin.uuid.Uuid
 
 class ClientHomeViewModel(
@@ -49,7 +52,7 @@ class ClientHomeViewModel(
 
     val uiState: ClientHomeState = stateFactory.createClientHomeState().setup()
 
-    private val weekdayFormatter = dateLocalizer.strict(WEEKDAY_PATTERN, respectUserSettings = true)
+    private val dateFormatter = dateLocalizer.strict(DATE_PATTERN, respectUserSettings = true)
     private val timeFormatter = dateLocalizer.forStyle(DateStyle.SHORT)
     private val visitFormatter = dateLocalizer.forStyle(DateStyle.D_MMM_YYYY_RELATIVE)
 
@@ -66,7 +69,8 @@ class ClientHomeViewModel(
         settingsButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Settings)
         }
-        allBookingsButton.text = DashboardRes.strings.dashboard_client_home_all_bookings.desc()
+        allBookingsButton.text = DashboardRes.strings.dashboard_client_home_more.desc()
+        allBookingsButton.endIcon = DesignSystem.images.material_chevron_right
         allBookingsButton.onClick = weakVMClosure {
             it.uiState.navigation.push(ClientHomeDestinations.Bookings)
         }
@@ -74,10 +78,6 @@ class ClientHomeViewModel(
             image = DesignSystem.images.empty,
             label = DashboardRes.strings.dashboard_client_home_no_upcoming.desc(),
         )
-        allBusinessesButton.text = DashboardRes.strings.dashboard_client_home_all_businesses.desc()
-        allBusinessesButton.onClick = weakVMClosure {
-            it.uiState.navigation.push(ClientHomeDestinations.Businesses)
-        }
     }
 
     private fun observeFirstName() {
@@ -112,20 +112,28 @@ class ClientHomeViewModel(
     private fun upcomingBookingItem(booking: UpcomingBooking): UpcomingBookingItem {
         return UpcomingBookingItem(
             id = booking.id.toString(),
-            weekday = weekdayFormatter.format(booking.date.date),
-            day = booking.date.day.toString(),
+            date = dateFormatter.format(booking.date.date),
+            time = timeAndSpecialist(booking),
             businessName = booking.businessName,
-            summary = summary(booking),
+            services = servicesText(booking.services),
             status = booking.status.label(),
             statusColor = booking.status.color(),
             onClick = weakVMClosure { it.uiState.navigation.push(booking.detailsDestination()) },
         )
     }
 
-    private fun summary(booking: UpcomingBooking): StringDesc {
-        val time = timeFormatter.format(booking.date.time)
-        val format = DashboardRes.strings.dashboard_client_home_time_and_services
-        return format.format(time, servicesText(booking.services))
+    private fun timeAndSpecialist(booking: UpcomingBooking): StringDesc {
+        return DashboardRes.strings.dashboard_client_home_time_and_specialist.format(
+            timeFormatter.format(booking.date.time),
+            timeFormatter.format(booking.endTime()),
+            booking.employee.fullName,
+        )
+    }
+
+    private fun UpcomingBooking.endTime(): LocalTime {
+        val duration = services.fold(Duration.ZERO) { total, service -> total + service.duration }
+        val end = date.toInstant(TimeZone.UTC) + duration
+        return end.toLocalDateTime(TimeZone.UTC).time
     }
 
     private fun servicesText(services: List<ServiceSnapshot>): String {
@@ -183,11 +191,19 @@ class ClientHomeViewModel(
         return SavedBusinessItem(
             id = business.id.toString(),
             name = business.name,
+            initials = initialsOf(business.name),
             subtitle = savedBusinessSubtitle(business),
             onClick = weakVMClosure {
                 it.uiState.navigation.push(ClientHomeDestinations.Services(business.id))
             },
         )
+    }
+
+    private fun initialsOf(name: String): String {
+        return name.split(' ')
+            .filter { it.isNotBlank() }
+            .take(BUSINESS_INITIALS_COUNT)
+            .joinToString("") { it.first().uppercase() }
     }
 
     private fun savedBusinessSubtitle(business: SavedBusiness): StringDesc {
@@ -303,6 +319,7 @@ class ClientHomeViewModel(
     }
 
     private companion object {
-        const val WEEKDAY_PATTERN = "EEE"
+        const val DATE_PATTERN = "EEE, d MMM"
+        const val BUSINESS_INITIALS_COUNT = 2
     }
 }

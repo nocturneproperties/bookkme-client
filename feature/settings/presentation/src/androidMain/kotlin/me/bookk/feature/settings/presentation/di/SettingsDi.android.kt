@@ -2,6 +2,7 @@ package me.bookk.feature.settings.presentation.di
 
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountViewModel
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardViewModel
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBannerViewModel
 import me.bookk.feature.settings.presentation.editprofile.EditProfileViewModel
 import me.bookk.feature.settings.presentation.export.PersonalDataExportViewModel
 import me.bookk.feature.settings.presentation.notifications.NotificationSettingsViewModel
@@ -15,6 +16,7 @@ internal actual fun platformSettingsDiModule(): Module = module {
     viewModelOf(::SettingsDashboardViewModel)
     viewModelOf(::EditProfileViewModel)
     viewModelOf(::DeleteAccountViewModel)
+    viewModelOf(::AccountDeletionBannerViewModel)
     viewModelOf(::PasskeyViewModel)
     viewModelOf(::NotificationSettingsViewModel)
     viewModelOf(::PersonalDataExportViewModel)

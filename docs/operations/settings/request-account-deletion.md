@@ -24,6 +24,7 @@ flowchart TD
     Confirm -- token --> Del[AuthorizationDataSource.requestAccountDeletion<br/>DELETE /api/auth/account<br/>body confirmationToken]
     Del -- 12 ACTION_CONFIRMATION_INVALID --> E1
     Del -- 4 VERIFICATION_FAILED --> E1
+    Del -- 18 ACCOUNT_DELETION_ON_HOLD --> E2([throw Error.DeletionOnHold])
     Del -- other failure --> EX
     Del -- 200 deletesAt --> Save[AccountDeletionDataSource.saveScheduledDeletion<br/>account_deletion_prefs: deletes_at]
     Save --> R([ActionOutcome.Completed Unit])
@@ -34,6 +35,9 @@ makes no DELETE request. The passkey stays on the device: the account keeps work
 period and the person may need it to sign in and cancel. The returned `deletesAt` is saved for
 [Get account deletion](get-account-deletion.md), which the screen renders. The session, the cache tables and the prefs buckets are never cleared by this operation. The caller profile read can fill its
 normal cache on a miss. No automatic retry of confirmation or the protected DELETE is made.
+`DeletionOnHold` means staff have put the account on hold; `DeleteAccountViewModel` explains in a dialog that the
+account can't be deleted right now and to contact support. A pending deletion is cancelled with
+[Cancel account deletion](cancel-account-deletion.md).
 ## Telegram Mini App
 
 `TelegramRequestAccountDeletionImpl` only asks for a confirmation in the person's Telegram chat; the account is deleted

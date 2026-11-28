@@ -20,6 +20,7 @@ import me.bookk.feature.settings.presentation.dashboard.ProfileSection
 import me.bookk.feature.settings.presentation.dashboard.SettingsDashboardDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
 import me.bookk.feature.settings.presentation.dashboard.SupportSection
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBannerState
 import me.bookk.feature.settings.presentation.editprofile.EditProfileNavigationDestination
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
 import me.bookk.feature.settings.presentation.export.PersonalDataExportDestinations
@@ -48,6 +49,10 @@ internal class FakeSettingsStateFactory : SettingsStateFactory {
 
     override fun createDeleteAccountState(): DeleteAccountState {
         return FakeDeleteAccountState()
+    }
+
+    override fun createAccountDeletionBannerState(): AccountDeletionBannerState {
+        return FakeAccountDeletionBannerState()
     }
 
     override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState =
@@ -109,6 +114,13 @@ internal class FakeEditProfileState : EditProfileState {
     override val confirmButton = FakeButtonState()
     override val notification = FakeNotificationState()
     override val navigation = FakeNavigationState<EditProfileNavigationDestination>()
+}
+
+internal class FakeAccountDeletionBannerState : AccountDeletionBannerState {
+    override var isVisible: Boolean = false
+    override var message: StringDesc = "".desc()
+    override val cancelButton = FakeButtonState()
+    override val notifications = FakeNotificationState()
 }
 
 internal class FakeDeleteAccountState : DeleteAccountState {

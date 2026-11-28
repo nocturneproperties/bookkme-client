@@ -50,6 +50,8 @@ external interface TelegramInitData {
 
     @JsName("start_param")
     val startParam: String?
+
+    val hash: String?
 }
 
 external interface TelegramUser {
@@ -86,6 +88,7 @@ external interface TelegramHapticFeedback {
 
 object TelegramEvents {
     const val THEME_CHANGED = "themeChanged"
+    const val ACTIVATED = "activated"
 }
 
 object TelegramHaptics {

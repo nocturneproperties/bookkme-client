@@ -58,4 +58,6 @@
 
     <string name="quantity_increase">Zwiększ liczbę</string>
     <string name="quantity_decrease">Zmniejsz liczbę</string>
+    <string name="card_rail_previous">Wstecz</string>
+    <string name="card_rail_next">Dalej</string>
 </resources>

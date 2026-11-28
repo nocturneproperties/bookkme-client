@@ -19,6 +19,7 @@ flowchart TD
     Confirm -- token --> Kind{action}
     Kind -- DELETE_ACCOUNT --> Del[AuthorizationDataSource.requestAccountDeletion<br/>DELETE /api/auth/account<br/>body confirmationToken]
     Del -- 12 ACTION_CONFIRMATION_INVALID or 4 VERIFICATION_FAILED --> Expired
+    Del -- 18 ACCOUNT_DELETION_ON_HOLD --> Hold([throw Error.DeletionOnHold])
     Del -- other failure --> EX
     Del -- 200 deletesAt --> Save[AccountDeletionDataSource.saveScheduledDeletion<br/>account_deletion_prefs: deletes_at]
     Save --> R([Unit])
@@ -42,5 +43,5 @@ opens. Both screens render from the local cache, so the saved result shows by it
 requested deletion and its date (see [Get account deletion](get-account-deletion.md)) while the person stays signed
 in, and Export my data to its preparing state from `personal_data_export`. Success plays a haptic; an expired or used
 confirmation, another Telegram account's confirmation, stale Telegram data (reopen the Mini App from the chat
-button) or an export already made today shows its message in a Telegram popup, and other failures show the mapped
-error.
+button), an account staff have put on hold or an export already made today shows its message in a Telegram popup,
+and other failures show the mapped error.

@@ -43,6 +43,10 @@
     <string name="settings_delete_account_confirmation_switch">Принимаю</string>
     <string name="settings_delete_account_confirmation_button">Удалить</string>
     <string name="settings_delete_account_pending">Удаление запланировано. Ваш аккаунт будет удалён %s. До этого момента им можно пользоваться.</string>
+    <string name="settings_delete_account_on_hold">Сейчас аккаунт нельзя удалить: удаление приостановлено. Обратитесь в поддержку, чтобы узнать подробности.</string>
+    <string name="settings_account_deletion_banner">Удаление аккаунта: %s</string>
+    <string name="settings_account_deletion_banner_cancel">Отменить</string>
+    <string name="settings_account_deletion_cancelled">Удаление отменено</string>
 
     <string name="settings_passkey_title">Ключ доступа</string>
     <string name="settings_passkey_add_button">Добавить</string>

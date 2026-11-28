@@ -198,6 +198,23 @@ class RequestAccountDeletionImplTest {
     }
 
     @Test
+    fun `throws DeletionOnHold when staff have put the account on hold`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
+            Error.BusinessError(AuthErrorCodes.ACCOUNT_DELETION_ON_HOLD, "on hold")
+
+        whenn()
+        val result = runCatching { fixture.sut() }
+
+        then()
+        assertFailsWith<RequestAccountDeletion.Error.DeletionOnHold> { result.getOrThrow() }
+        verifySuspend(VerifyMode.not) {
+            fixture.accountDeletionDataSource.saveScheduledDeletion(any())
+        }
+    }
+
+    @Test
     fun `rethrows other business errors`() = runUnitTest {
         given()
         val fixture = Fixture().stubVerifiedDeletion()

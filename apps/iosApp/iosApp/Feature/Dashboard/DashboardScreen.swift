@@ -26,10 +26,14 @@ struct DashboardTabs: View {
 
 	@StateObject private var onboardingNavigationStack = NavigationStackHolder()
 
+	@StateViewModel
+	private var accountDeletionVM = IOSSettingsDiKt.accountDeletionBannerVM()
+
 	var body: some View {
 		tabView
 			.handleNavigation(state.navigation, handler: handleNavigation)
 			.handleNotifications(state.notifications)
+			.sendAccountDeletionEventsTo(accountDeletionVM)
 	}
 
 	private func handleNavigation(_ destination: NavigationDestination) {
@@ -56,6 +60,9 @@ struct DashboardTabs: View {
 				let item = tabItem.impl()
 				Tab(value: item.id) {
 					DashboardTabContent(id: item.id, dashboardState: state, onboardingNavigationStack: onboardingNavigationStack)
+						.safeAreaInset(edge: .bottom, spacing: 0) {
+							AccountDeletionBanner(state: accountDeletionVM.uiState)
+						}
 				} label: {
 					Label(item.text.localized(), systemImage: iconFrom(id: item.id))
 				}

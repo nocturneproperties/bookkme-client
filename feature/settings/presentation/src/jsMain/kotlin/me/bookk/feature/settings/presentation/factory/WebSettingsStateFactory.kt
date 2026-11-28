@@ -5,6 +5,8 @@ import me.bookk.feature.settings.presentation.accdelete.DeleteAccountState
 import me.bookk.feature.settings.presentation.accdelete.WebDeleteAccountState
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
 import me.bookk.feature.settings.presentation.dashboard.WebSettingsState
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBannerState
+import me.bookk.feature.settings.presentation.deletionbanner.WebAccountDeletionBannerState
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
 import me.bookk.feature.settings.presentation.editprofile.WebEditProfileState
 import me.bookk.feature.settings.presentation.export.PersonalDataExportState
@@ -30,6 +32,10 @@ internal class WebSettingsStateFactory : SettingsStateFactory {
 
     override fun createDeleteAccountState(): DeleteAccountState {
         return WebDeleteAccountState()
+    }
+
+    override fun createAccountDeletionBannerState(): AccountDeletionBannerState {
+        return WebAccountDeletionBannerState()
     }
 
     override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState {

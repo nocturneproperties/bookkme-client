@@ -5,20 +5,20 @@ import androidx.compose.runtime.remember
 import com.varabyte.kobweb.compose.css.BoxSizing
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextAlign
-import com.varabyte.kobweb.compose.css.dvh
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
+import com.varabyte.kobweb.compose.ui.modifiers.borderRadius
 import com.varabyte.kobweb.compose.ui.modifiers.boxSizing
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
-import com.varabyte.kobweb.compose.ui.modifiers.flex
 import com.varabyte.kobweb.compose.ui.modifiers.flexGrow
+import com.varabyte.kobweb.compose.ui.modifiers.flexShrink
+import com.varabyte.kobweb.compose.ui.modifiers.fontSize
 import com.varabyte.kobweb.compose.ui.modifiers.fontWeight
 import com.varabyte.kobweb.compose.ui.modifiers.gap
-import com.varabyte.kobweb.compose.ui.modifiers.height
 import com.varabyte.kobweb.compose.ui.modifiers.margin
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.minHeight
@@ -26,30 +26,29 @@ import com.varabyte.kobweb.compose.ui.modifiers.minWidth
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.modifiers.size
 import com.varabyte.kobweb.compose.ui.modifiers.textAlign
+import com.varabyte.kobweb.compose.ui.modifiers.width
 import com.varabyte.kobweb.silk.style.toModifier
 import dev.icerock.moko.resources.desc.StringDesc
 import dev.icerock.moko.resources.desc.desc
 import me.bookk.android.designsystem.resources.DesignSystem
 import me.bookk.android.feature.dashboard.resources.DashboardRes
-import me.bookk.designsystem.components.AppCard
 import me.bookk.designsystem.components.BannerErrorView
 import me.bookk.designsystem.components.CardButton
-import me.bookk.designsystem.components.DayDate
+import me.bookk.designsystem.components.CardRail
+import me.bookk.designsystem.components.CardRailItemStyle
 import me.bookk.designsystem.components.EmptyStateView
-import me.bookk.designsystem.components.FittingList
 import me.bookk.designsystem.components.Heading
 import me.bookk.designsystem.components.HeadingLevel
-import me.bookk.designsystem.components.HorizontalDivider
 import me.bookk.designsystem.components.IconButton
-import me.bookk.designsystem.components.IconTile
 import me.bookk.designsystem.components.InitialLoadingView
-import me.bookk.designsystem.components.ListRowButton
+import me.bookk.designsystem.components.InitialsAvatar
 import me.bookk.designsystem.components.NumberedSteps
-import me.bookk.designsystem.components.StatusLabel
+import me.bookk.designsystem.components.StatusPill
 import me.bookk.designsystem.components.TextBlock
 import me.bookk.designsystem.components.TextButton
 import me.bookk.designsystem.components.TintedIcon
-import me.bookk.designsystem.components.fittingItem
+import me.bookk.designsystem.components.fillScreenHeight
+import me.bookk.designsystem.components.fixedLines
 import me.bookk.designsystem.resources.color.ColorToken
 import me.bookk.designsystem.theme.BodyLargeTextStyle
 import me.bookk.designsystem.theme.BodyMediumTextStyle
@@ -57,6 +56,7 @@ import me.bookk.designsystem.theme.HeadlineLargeTextStyle
 import me.bookk.designsystem.theme.HeadlineSmallTextStyle
 import me.bookk.designsystem.theme.LeadTextStyle
 import me.bookk.designsystem.theme.TitleMediumTextStyle
+import me.bookk.designsystem.theme.active
 import me.bookk.designsystem.theme.secondary
 import me.bookk.designsystem.theme.themed
 import me.bookk.designsystem.uistate.ButtonState
@@ -65,12 +65,16 @@ import me.bookk.designsystem.uistate.simple.BannerErrorState
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.px
 
-private val BookAgainMinHeight = 7.cssRem
+private const val TIME_LINES = 2
+private const val TIME_LINE_HEIGHT = 1.5
+
+private val UpcomingBookingCardWidth = 20.cssRem
+private val SavedBusinessCardWidth = 12.cssRem
 
 private val ClientHomeModifier = Modifier
     .fillMaxWidth()
     .maxWidth(40.cssRem)
-    .height(100.dvh)
+    .fillScreenHeight()
     .boxSizing(BoxSizing.BorderBox)
     .padding(top = 0.5.cssRem, bottom = 1.5.cssRem, leftRight = 1.cssRem)
     .gap(1.5.cssRem)
@@ -168,7 +172,7 @@ private fun NoBusinessYet() {
 
 @Composable
 private fun UpcomingSection(state: ClientHomeState) {
-    Column(SectionModifier) {
+    Column(SectionModifier.flexShrink(0)) {
         SectionHeader(
             DashboardRes.strings.dashboard_client_home_upcoming.desc(),
             state.allBookingsButton,
@@ -176,8 +180,8 @@ private fun UpcomingSection(state: ClientHomeState) {
         val emptyState = state.upcoming.emptyState
         if (state.hasNoUpcomingBookings && emptyState != null) EmptyStateView(emptyState)
         ListContent(state.upcoming) { bookings ->
-            FittingList(bookings, Modifier.gap(0.5.cssRem)) { visibleBookings ->
-                visibleBookings.forEach { UpcomingBookingCard(it) }
+            CardRail(snapsToEachCard = true) {
+                bookings.forEach { UpcomingBookingCard(it) }
             }
         }
     }
@@ -225,43 +229,68 @@ private fun InitialLoadError(message: StringDesc, onRetry: () -> Unit) {
 private fun UpcomingBookingCard(item: UpcomingBookingItem) {
     CardButton(
         onClick = item.onClick,
-        modifier = Modifier
-            .fittingItem()
-            .padding(topBottom = 1.cssRem, leftRight = 0.75.cssRem),
-        verticalAlignment = Alignment.CenterVertically,
+        modifier = CardRailItemStyle
+            .toModifier()
+            .width(UpcomingBookingCardWidth)
+            .padding(1.25.cssRem),
     ) {
-        DayDate(item.weekday, item.day)
         Column(
             Modifier
-                .flexGrow(1)
-                .minWidth(0.px)
-                .gap(0.125.cssRem),
+                .fillMaxWidth()
+                .gap(1.cssRem),
         ) {
-            TextBlock(
-                item.businessName.desc(),
-                TitleMediumTextStyle
-                    .toModifier()
-                    .fontWeight(FontWeight.SemiBold)
-                    .margin(0.px),
-            )
-            SecondaryLine(item.summary)
-            StatusLabel(item.status, item.statusColor, Modifier.margin(top = 0.25.cssRem))
+            StatusPill(item.status, item.statusColor)
+            Column(Modifier.gap(0.5.cssRem)) {
+                UpcomingBookingWhen(item)
+                UpcomingBookingWhere(item)
+            }
         }
-        TintedIcon(
-            DesignSystem.images.material_chevron_right,
-            ColorToken.SecondaryText,
-            Modifier.size(1.25.cssRem),
+    }
+}
+
+@Composable
+private fun UpcomingBookingWhen(item: UpcomingBookingItem) {
+    Column {
+        TextBlock(
+            item.date.desc(),
+            HeadlineSmallTextStyle
+                .toModifier()
+                .fontSize(1.75.cssRem)
+                .fontWeight(FontWeight.Bold)
+                .margin(0.px),
+        )
+        UpcomingBookingTime(item.time)
+    }
+}
+
+@Composable
+private fun UpcomingBookingWhere(item: UpcomingBookingItem) {
+    Column(Modifier.gap(0.1.cssRem)) {
+        TextBlock(
+            item.businessName.desc(),
+            TitleMediumTextStyle
+                .toModifier()
+                .fontWeight(FontWeight.SemiBold)
+                .margin(0.px),
+        )
+        TextBlock(
+            item.services.desc(),
+            BodyMediumTextStyle
+                .toModifier()
+                .margin(0.px)
+                .secondary(),
         )
     }
 }
 
 @Composable
-private fun SecondaryLine(text: StringDesc) {
+private fun UpcomingBookingTime(text: StringDesc) {
     TextBlock(
         text,
         BodyLargeTextStyle
             .toModifier()
             .margin(0.px)
+            .fixedLines(TIME_LINES, TIME_LINE_HEIGHT)
             .secondary(),
     )
 }
@@ -269,18 +298,11 @@ private fun SecondaryLine(text: StringDesc) {
 @Composable
 private fun BookAgainSection(state: ClientHomeState) {
     if (state.showsBookAgain) {
-        Column(
-            SectionModifier
-                .flex(1, 1, 0.px)
-                .minHeight(BookAgainMinHeight),
-        ) {
-            SectionHeader(
-                DashboardRes.strings.dashboard_client_home_book_again.desc(),
-                state.allBusinessesButton,
-            )
+        Column(SectionModifier.flexShrink(0)) {
+            SectionTitle(DashboardRes.strings.dashboard_client_home_book_again.desc())
             ListContent(state.businesses) { businesses ->
-                FittingList(businesses, Modifier.flexGrow(1)) { visibleBusinesses ->
-                    SavedBusinessesCard(visibleBusinesses)
+                CardRail(snapsToEachCard = true) {
+                    businesses.forEach { SavedBusinessCard(it) }
                 }
             }
         }
@@ -288,41 +310,66 @@ private fun BookAgainSection(state: ClientHomeState) {
 }
 
 @Composable
-private fun SavedBusinessesCard(businesses: List<SavedBusinessItem>) {
-    if (businesses.isNotEmpty()) {
-        AppCard(
+private fun SavedBusinessCard(item: SavedBusinessItem) {
+    CardButton(
+        onClick = item.onClick,
+        modifier = CardRailItemStyle
+            .toModifier()
+            .width(SavedBusinessCardWidth)
+            .padding(1.125.cssRem),
+    ) {
+        Column(
             Modifier
                 .fillMaxWidth()
-                .padding(0.px)
-                .gap(0.px),
+                .gap(0.875.cssRem),
         ) {
-            businesses.forEachIndexed { index, business ->
-                SavedBusinessRow(business, isLast = index == businesses.lastIndex)
-            }
+            InitialsAvatar(
+                item.initials,
+                Modifier
+                    .size(3.25.cssRem)
+                    .borderRadius(0.875.cssRem),
+            )
+            SavedBusinessText(item)
+            BookAction()
         }
     }
 }
 
 @Composable
-private fun SavedBusinessRow(item: SavedBusinessItem, isLast: Boolean) {
-    ListRowButton(onClick = item.onClick, modifier = Modifier.fittingItem()) {
-        IconTile(DesignSystem.images.material_business)
-        Column(Modifier.fillMaxWidth()) {
-            TextBlock(
-                item.name.desc(),
-                LeadTextStyle
-                    .toModifier()
-                    .fontWeight(FontWeight.Medium)
-                    .margin(0.px),
-            )
-            TextBlock(
-                item.subtitle,
-                BodyMediumTextStyle
-                    .toModifier()
-                    .margin(0.px)
-                    .secondary(),
-            )
-        }
+private fun SavedBusinessText(item: SavedBusinessItem) {
+    Column(Modifier.gap(0.125.cssRem)) {
+        TextBlock(
+            item.name.desc(),
+            LeadTextStyle
+                .toModifier()
+                .fontWeight(FontWeight.SemiBold)
+                .margin(0.px),
+        )
+        TextBlock(
+            item.subtitle,
+            BodyMediumTextStyle
+                .toModifier()
+                .margin(0.px)
+                .secondary(),
+        )
     }
-    if (!isLast) HorizontalDivider()
+}
+
+@Composable
+private fun BookAction() {
+    Row(Modifier.gap(0.125.cssRem), verticalAlignment = Alignment.CenterVertically) {
+        TextBlock(
+            DashboardRes.strings.dashboard_client_home_book.desc(),
+            BodyLargeTextStyle
+                .toModifier()
+                .fontWeight(FontWeight.SemiBold)
+                .margin(0.px)
+                .active(),
+        )
+        TintedIcon(
+            DesignSystem.images.material_chevron_right,
+            ColorToken.ActionText,
+            Modifier.size(1.cssRem),
+        )
+    }
 }

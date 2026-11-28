@@ -3,6 +3,7 @@ package me.bookk.feature.dashboard.presentation.screen.clienthome
 import androidx.compose.runtime.Composable
 import library.telegram.ObserveTelegramNotifications
 import library.telegram.TelegramWebApp
+import library.telegram.takeStartParam
 import me.bookk.core.presentation.rememberViewModel
 import me.bookk.designsystem.components.ObserveNavigation
 import me.bookk.feature.dashboard.presentation.navigation.ClientHomeNavigation
@@ -10,8 +11,9 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ClientHomeDestination(webApp: TelegramWebApp, navigation: ClientHomeNavigation) {
-    val startParameter = webApp.initDataUnsafe.startParam.orEmpty()
-    val viewModel = rememberViewModel<ClientHomeViewModel> { parametersOf(startParameter) }
+    val viewModel = rememberViewModel<ClientHomeViewModel> {
+        parametersOf(webApp.takeStartParam())
+    }
     ObserveTelegramNotifications(webApp, viewModel.uiState.notifications)
     ClientHomeScreen(viewModel.uiState)
     ObserveNavigation(viewModel.uiState.navigation) {
@@ -22,10 +24,6 @@ fun ClientHomeDestination(webApp: TelegramWebApp, navigation: ClientHomeNavigati
 
             ClientHomeDestinations.Bookings -> {
                 navigation.toBookings()
-            }
-
-            ClientHomeDestinations.Businesses -> {
-                navigation.toBusinesses()
             }
 
             is ClientHomeDestinations.RequestDetails -> {

@@ -26,6 +26,10 @@ class IOSSettingsStateFactory: @MainActor SettingsStateFactory {
 	func createDeleteAccountState() -> any DeleteAccountState {
 		return IOSDeleteAccountState()
 	}
+
+	func createAccountDeletionBannerState() -> any AccountDeletionBannerState {
+		return IOSAccountDeletionBannerState()
+	}
 	
 	func createPasskeyState(initData: PasskeyStateInitData) -> any PasskeyState {
 		return IOSPasskeyState(initData: initData)

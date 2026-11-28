@@ -202,6 +202,22 @@ class CompleteTelegramConfirmationImplTest {
     }
 
     @Test
+    fun `reports an account staff have put on hold`() = runUnitTest {
+        given()
+        val fixture = Fixture()
+        everySuspend { fixture.authorizationDataSource.requestAccountDeletion(any()) } throws
+            Error.BusinessError(AuthErrorCodes.ACCOUNT_DELETION_ON_HOLD, "on hold")
+
+        whenn()
+        val result = runCatching { fixture.sut(ConfirmableAction.DELETE_ACCOUNT, fixture.initData) }
+
+        then()
+        assertFailsWith<CompleteTelegramConfirmation.Error.DeletionOnHold> {
+            result.getOrThrow()
+        }
+    }
+
+    @Test
     fun `reports a token the export rejects as an expired confirmation`() = runUnitTest {
         given()
         val fixture = Fixture()

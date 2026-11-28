@@ -5,6 +5,8 @@ import me.bookk.feature.settings.presentation.accdelete.AndroidDeleteAccountStat
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountState
 import me.bookk.feature.settings.presentation.dashboard.AndroidDashboardState
 import me.bookk.feature.settings.presentation.dashboard.SettingsState
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionBannerState
+import me.bookk.feature.settings.presentation.deletionbanner.AndroidAccountDeletionBannerState
 import me.bookk.feature.settings.presentation.editprofile.AndroidEditProfileState
 import me.bookk.feature.settings.presentation.editprofile.EditProfileState
 import me.bookk.feature.settings.presentation.export.AndroidPersonalDataExportState
@@ -31,6 +33,10 @@ class AndroidSettingsStateFactory : SettingsStateFactory {
 
     override fun createDeleteAccountState(): DeleteAccountState {
         return AndroidDeleteAccountState()
+    }
+
+    override fun createAccountDeletionBannerState(): AccountDeletionBannerState {
+        return AndroidAccountDeletionBannerState()
     }
 
     override fun createPasskeyState(initData: PasskeyState.InitData): PasskeyState {

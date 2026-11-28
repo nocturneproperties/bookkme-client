@@ -24,6 +24,7 @@ import me.bookk.feature.booking.presentation.screen.specialist.BookingSpecialist
 import me.bookk.feature.dashboard.presentation.screen.clienthome.ClientHomeDestination
 import me.bookk.feature.settings.presentation.accdelete.DeleteAccountDestination
 import me.bookk.feature.settings.presentation.dashboard.SettingsDestination
+import me.bookk.feature.settings.presentation.deletionbanner.AccountDeletionNotice
 import me.bookk.feature.settings.presentation.editprofile.BookingProfileDestination
 import me.bookk.feature.settings.presentation.export.PersonalDataExportDestination
 import me.bookk.feature.settings.presentation.navigation.SettingsNavigation
@@ -38,86 +39,88 @@ internal fun TelegramMainContent(webApp: TelegramWebApp) {
     val settingsNavigation = rememberSettingsNavigation(stack, webApp)
     val emailChangeNavigation = rememberEmailChangeNavigation(stack)
     TelegramSettingsButton(webApp, homeNavigation.toSettings)
-    BackStackHost(stack) { screen ->
-        when (screen) {
-            ClientScreen.Home -> {
-                ClientHomeDestination(webApp, homeNavigation)
-            }
+    AccountDeletionNotice(webApp) {
+        BackStackHost(stack) { screen ->
+            when (screen) {
+                ClientScreen.Home -> {
+                    ClientHomeDestination(webApp, homeNavigation)
+                }
 
-            ClientScreen.Bookings -> {
-                BookingsDestination(webApp, bookingNavigation)
-            }
+                ClientScreen.Bookings -> {
+                    BookingsDestination(webApp, bookingNavigation)
+                }
 
-            is ClientScreen.Services -> {
-                BookingServicesDestination(webApp, screen.businessId, bookingNavigation)
-            }
+                is ClientScreen.Services -> {
+                    BookingServicesDestination(webApp, screen.businessId, bookingNavigation)
+                }
 
-            is ClientScreen.Specialist -> {
-                BookingSpecialistDestination(webApp, screen.businessId, bookingNavigation)
-            }
+                is ClientScreen.Specialist -> {
+                    BookingSpecialistDestination(webApp, screen.businessId, bookingNavigation)
+                }
 
-            is ClientScreen.DateTime -> {
-                BookingDateTimeDestination(webApp, screen.businessId, bookingNavigation)
-            }
+                is ClientScreen.DateTime -> {
+                    BookingDateTimeDestination(webApp, screen.businessId, bookingNavigation)
+                }
 
-            is ClientScreen.Review -> {
-                BookingReviewDestination(webApp, screen.businessId, bookingNavigation)
-            }
+                is ClientScreen.Review -> {
+                    BookingReviewDestination(webApp, screen.businessId, bookingNavigation)
+                }
 
-            is ClientScreen.Sent -> {
-                BookingSentDestination(webApp, screen.request, bookingNavigation)
-            }
+                is ClientScreen.Sent -> {
+                    BookingSentDestination(webApp, screen.request, bookingNavigation)
+                }
 
-            is ClientScreen.BookingRequestDetails -> {
-                BookingRequestDetailsDestination(webApp, screen.requestId, bookingNavigation)
-            }
+                is ClientScreen.BookingRequestDetails -> {
+                    BookingRequestDetailsDestination(webApp, screen.requestId, bookingNavigation)
+                }
 
-            is ClientScreen.BookingAppointmentDetails -> {
-                BookingAppointmentDetailsDestination(
-                    webApp,
-                    screen.appointmentId,
-                    bookingNavigation,
-                )
-            }
+                is ClientScreen.BookingAppointmentDetails -> {
+                    BookingAppointmentDetailsDestination(
+                        webApp,
+                        screen.appointmentId,
+                        bookingNavigation,
+                    )
+                }
 
-            ClientScreen.Settings -> {
-                SettingsDestination(webApp, settingsNavigation)
-            }
+                ClientScreen.Settings -> {
+                    SettingsDestination(webApp, settingsNavigation)
+                }
 
-            ClientScreen.BookingProfile -> {
-                BookingProfileDestination(webApp, settingsNavigation)
-            }
+                ClientScreen.BookingProfile -> {
+                    BookingProfileDestination(webApp, settingsNavigation)
+                }
 
-            ClientScreen.ChangeEmail -> {
-                ChangeEmailDestination(webApp, emailChangeNavigation)
-            }
+                ClientScreen.ChangeEmail -> {
+                    ChangeEmailDestination(webApp, emailChangeNavigation)
+                }
 
-            is ClientScreen.VerifyEmail -> {
-                VerifyEmailChangeDestination(
-                    webApp,
-                    screen.pendingEmailChange,
-                    emailChangeNavigation,
-                )
-            }
+                is ClientScreen.VerifyEmail -> {
+                    VerifyEmailChangeDestination(
+                        webApp,
+                        screen.pendingEmailChange,
+                        emailChangeNavigation,
+                    )
+                }
 
-            ClientScreen.NotificationSettings -> {
-                NotificationSettingsDestination(webApp, settingsNavigation)
-            }
+                ClientScreen.NotificationSettings -> {
+                    NotificationSettingsDestination(webApp, settingsNavigation)
+                }
 
-            ClientScreen.PrivacySettings -> {
-                PrivacySettingsDestination(webApp, settingsNavigation)
-            }
+                ClientScreen.PrivacySettings -> {
+                    PrivacySettingsDestination(webApp, settingsNavigation)
+                }
 
-            ClientScreen.PersonalDataExport -> {
-                PersonalDataExportDestination(webApp, settingsNavigation)
-            }
+                ClientScreen.PersonalDataExport -> {
+                    PersonalDataExportDestination(webApp, settingsNavigation)
+                }
 
-            ClientScreen.DeleteAccount -> {
-                DeleteAccountDestination(webApp, settingsNavigation)
-            }
+                ClientScreen.DeleteAccount -> {
+                    DeleteAccountDestination(webApp, settingsNavigation)
+                }
 
-            is ClientScreen.ConfirmAction -> {
-                ConfirmedInTelegram(webApp, screen.action, settingsNavigation)
+                is ClientScreen.ConfirmAction -> {
+                    ConfirmedInTelegram(webApp, screen.action, settingsNavigation)
+                }
             }
         }
     }

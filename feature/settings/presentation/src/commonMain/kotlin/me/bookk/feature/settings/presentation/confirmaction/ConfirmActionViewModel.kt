@@ -62,6 +62,10 @@ class ConfirmActionViewModel(
             is CompleteTelegramConfirmation.Error.ExportTooFrequent -> {
                 SettingsRes.strings.settings_export_too_frequent
             }
+
+            is CompleteTelegramConfirmation.Error.DeletionOnHold -> {
+                SettingsRes.strings.settings_delete_account_on_hold
+            }
         }
     }
 

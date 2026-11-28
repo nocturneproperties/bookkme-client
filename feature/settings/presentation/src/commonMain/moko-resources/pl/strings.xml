@@ -43,6 +43,10 @@
     <string name="settings_delete_account_confirmation_switch">Zgadzam się</string>
     <string name="settings_delete_account_confirmation_button">Usuń</string>
     <string name="settings_delete_account_pending">Usunięcie zostało zaplanowane. Twoje konto zostanie usunięte %s. Do tego czasu możesz z niego korzystać.</string>
+    <string name="settings_delete_account_on_hold">Nie można teraz usunąć konta, bo usuwanie zostało wstrzymane. Skontaktuj się z pomocą techniczną, aby poznać szczegóły.</string>
+    <string name="settings_account_deletion_banner">Usunięcie konta: %s</string>
+    <string name="settings_account_deletion_banner_cancel">Anuluj</string>
+    <string name="settings_account_deletion_cancelled">Usuwanie anulowane</string>
 
     <string name="settings_passkey_title">Klucz dostępu</string>
     <string name="settings_passkey_add_button">Dodaj</string>

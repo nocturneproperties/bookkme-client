@@ -15,6 +15,7 @@ fun NavGraphBuilder.dashboardGraph(
     homeTab: @Composable () -> Unit,
     businessTab: @Composable () -> Unit,
     settingsTab: @Composable () -> Unit,
+    accountNotice: @Composable () -> Unit,
     onEnablePlugins: (Uuid) -> Unit,
     onAddServiceGroup: () -> Unit,
     onAddService: (Uuid) -> Unit,
@@ -28,6 +29,7 @@ fun NavGraphBuilder.dashboardGraph(
             homeScreen = homeTab,
             businessScreen = businessTab,
             settingsScreen = settingsTab,
+            accountNotice = accountNotice,
         )
         ObserveNavigation(viewModel.uiState.navigation) {
             when (it) {

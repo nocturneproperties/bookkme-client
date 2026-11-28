@@ -7,5 +7,6 @@ interface RequestAccountDeletion {
 
     sealed class Error : Throwable() {
         class AccountVerificationFailed : Error()
+        class DeletionOnHold : Error()
     }
 }

@@ -18,5 +18,8 @@ interface CompleteTelegramConfirmation {
         class ExportTooFrequent :
             Exception(),
             Error
+        class DeletionOnHold :
+            Exception(),
+            Error
     }
 }
